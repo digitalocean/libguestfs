@@ -1466,7 +1466,9 @@ guestfs_session_wait_ready(GuestfsSession *session, GError **err)
  *
  * kill the qemu subprocess
  *
- * This kills the qemu subprocess. You should never need to call this.
+ * This kills the qemu subprocess.
+ * 
+ * Do not call this. See: guestfs_session_shutdown() instead.
  * 
  * Returns: true on success, false on error
  */
@@ -4918,6 +4920,51 @@ guestfs_session_umount_local(GuestfsSession *session, GuestfsUmountLocal *optarg
     argvp = &argv;
   }
   int ret = guestfs_umount_local_argv(g, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_shutdown:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * shutdown the qemu subprocess
+ *
+ * This is the opposite of guestfs_session_launch(). It performs an orderly
+ * shutdown of the backend process(es). If the autosync flag is set (which
+ * is the default) then the disk image is synchronized.
+ * 
+ * If the subprocess exits with an error then this function will return an
+ * error, which should *not* be ignored (it may indicate that the disk
+ * image could not be written out properly).
+ * 
+ * It is safe to call this multiple times. Extra calls are ignored.
+ * 
+ * This call does *not* close or free up the handle. You still need to call
+ * guestfs_session_close() afterwards.
+ * 
+ * guestfs_session_close() will call this if you don't do it explicitly,
+ * but note that any errors are ignored in that case.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_shutdown(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "shutdown");
+    return FALSE;
+  }
+
+  int ret = guestfs_shutdown(g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15590,7 +15637,8 @@ guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GError **e
  * The named partition must exist, for example as a string returned from
  * guestfs_session_list_partitions().
  * 
- * See also guestfs_session_part_to_partnum().
+ * See also guestfs_session_part_to_partnum(),
+ * guestfs_session_device_index().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  */
@@ -18895,4 +18943,78 @@ guestfs_session_btrfs_fsck(GuestfsSession *session, const gchar *device, Guestfs
   }
 
   return TRUE;
+}
+
+/**
+ * guestfs_session_device_index:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * convert device to index
+ *
+ * This function takes a device name (eg. "/dev/sdb") and returns the index
+ * of the device in the list of devices.
+ * 
+ * Index numbers start from 0. The named device must exist, for example as
+ * a string returned from guestfs_session_list_devices().
+ * 
+ * See also guestfs_session_list_devices(), guestfs_session_part_to_dev().
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint32
+guestfs_session_device_index(GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "device_index");
+    return -1;
+  }
+
+  int ret = guestfs_device_index(g, device);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_nr_devices:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * return number of whole block devices (disks) added
+ *
+ * This returns the number of whole block devices that were added. This is
+ * the same as the number of devices that would be returned if you called
+ * guestfs_session_list_devices().
+ * 
+ * To find out the maximum number of devices that could be added, call
+ * guestfs_session_max_disks().
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint32
+guestfs_session_nr_devices(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "nr_devices");
+    return -1;
+  }
+
+  int ret = guestfs_nr_devices(g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
 }

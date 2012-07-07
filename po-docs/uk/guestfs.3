@@ -62,7 +62,7 @@
 .\" ========================================================================
 .\"
 .IX Title "guestfs 3"
-.TH guestfs 3 "2012-06-28" "libguestfs-1.18.3" "Virtualization Support"
+.TH guestfs 3 "2012-07-07" "libguestfs-1.18.4" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -82,6 +82,7 @@ guestfs — бібліотека для доступу та внесення з�
 \& guestfs_mount (g, "/dev/sda1", "/");
 \& guestfs_touch (g, "/hello");
 \& guestfs_umount (g, "/");
+\& guestfs_shutdown (g);
 \& guestfs_close (g);
 \&
 \& cc prog.c \-o prog \-lguestfs
@@ -147,13 +148,10 @@ The general structure of all libguestfs-using programs looks like this:
 \&  */
 \& guestfs_touch (g, "/hello");
 \& 
-\& /* This is only needed for libguestfs < 1.5.24.  Since then
-\&  * it is done automatically when you close the handle.  See
-\&  * discussion of autosync in this page.
-\&  */
-\& guestfs_sync (g);
+\& /* Synchronize the disk.  This is the opposite of guestfs_launch. */
+\& guestfs_shutdown (g);
 \& 
-\& /* Закрити дескриптор \*(Aqg\*(Aq. */
+\& /* Close and free the handle \*(Aqg\*(Aq. */
 \& guestfs_close (g);
 .Ve
 .PP
@@ -1354,13 +1352,28 @@ You may also want to configure error handling for the handle.  See the
 \& void guestfs_close (guestfs_h *g);
 .Ve
 .PP
-This closes the connection handle and frees up all resources used.
+This closes the connection handle and frees up all resources used.  If a
+close callback was set on the handle, then it is called.
 .PP
-If autosync was set on the handle and the handle was launched, then this
-implicitly calls various functions to unmount filesystems and sync the
-disk.  See \*(L"guestfs_set_autosync\*(R" for more details.
+The correct way to close the handle is:
 .PP
-If a close callback was set on the handle, then it is called.
+.Vb 4
+\& if (guestfs_shutdown (g) == \-1) {
+\&   /* handle write errors here */
+\& }
+\& guestfs_close (g);
+.Ve
+.PP
+\&\*(L"guestfs_shutdown\*(R" is only needed if \fBall\fR of the following are true:
+.IP "1." 4
+one or more disks were added in read-write mode, \fIand\fR
+.IP "2." 4
+guestfs_launch was called, \fIand\fR
+.IP "3." 4
+you made some changes, \fIand\fR
+.IP "4." 4
+you have a way to handle write errors (eg. by exiting with an error code or
+reporting something to the user).
 .SH "ОБРОБКА ПОМИЛОК"
 .IX Header "ОБРОБКА ПОМИЛОК"
 \&\s-1API\s0 functions can return errors.  For example, almost all functions that
@@ -3383,6 +3396,23 @@ partial copies (see \f(CW\*(C`guestfs_copy_device_to_device\*(C'\fR).
 Ця функція повертає 0 у разі успіху і \-1 у разі помилки.
 .PP
 (Додано у 1.0.80)
+.SS "guestfs_device_index"
+.IX Subsection "guestfs_device_index"
+.Vb 3
+\& int
+\& guestfs_device_index (guestfs_h *g,
+\&                       const char *device);
+.Ve
+.PP
+This function takes a device name (eg. \*(L"/dev/sdb\*(R") and returns the index of
+the device in the list of devices.
+.PP
+Index numbers start from 0.  The named device must exist, for example as a
+string returned from \f(CW\*(C`guestfs_list_devices\*(C'\fR.
+.PP
+See also \f(CW\*(C`guestfs_list_devices\*(C'\fR, \f(CW\*(C`guestfs_part_to_dev\*(C'\fR.
+.PP
+У разі помилки цією функцією буде повернуто \-1.
 .SS "guestfs_df"
 .IX Subsection "guestfs_df"
 .Vb 2
@@ -5979,7 +6009,16 @@ error.  \fIThe caller must call \f(CI\*(C`guestfs_free_isoinfo\*(C'\fI after use
 \& guestfs_kill_subprocess (guestfs_h *g);
 .Ve
 .PP
-This kills the qemu subprocess.  You should never need to call this.
+\&\fIThis function is deprecated.\fR In new code, use the \*(L"guestfs_shutdown\*(R"
+call instead.
+.PP
+Deprecated functions will not be removed from the \s-1API\s0, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+.PP
+This kills the qemu subprocess.
+.PP
+Do not call this.  See: \f(CW\*(C`guestfs_shutdown\*(C'\fR instead.
 .PP
 Ця функція повертає 0 у разі успіху і \-1 у разі помилки.
 .PP
@@ -7898,6 +7937,21 @@ destination filename or destination directory.
 Ця функція повертає 0 у разі успіху і \-1 у разі помилки.
 .PP
 (Додано у 1.0.18)
+.SS "guestfs_nr_devices"
+.IX Subsection "guestfs_nr_devices"
+.Vb 2
+\& int
+\& guestfs_nr_devices (guestfs_h *g);
+.Ve
+.PP
+This returns the number of whole block devices that were added.  This is the
+same as the number of devices that would be returned if you called
+\&\f(CW\*(C`guestfs_list_devices\*(C'\fR.
+.PP
+To find out the maximum number of devices that could be added, call
+\&\f(CW\*(C`guestfs_max_disks\*(C'\fR.
+.PP
+У разі помилки цією функцією буде повернуто \-1.
 .SS "guestfs_ntfs_3g_probe"
 .IX Subsection "guestfs_ntfs_3g_probe"
 .Vb 4
@@ -8471,7 +8525,7 @@ partition number, returning the device name (eg. \*(L"/dev/sdb\*(R").
 The named partition must exist, for example as a string returned from
 \&\f(CW\*(C`guestfs_list_partitions\*(C'\fR.
 .PP
-Див. також \f(CW\*(C`guestfs_part_to_partnum\*(C'\fR.
+See also \f(CW\*(C`guestfs_part_to_partnum\*(C'\fR, \f(CW\*(C`guestfs_device_index\*(C'\fR.
 .PP
 This function returns a string, or \s-1NULL\s0 on error.  \fIThe caller must free
 the returned string after use\fR.
@@ -9751,6 +9805,30 @@ This function returns a NULL-terminated array of strings (like
 strings and the array after use\fR.
 .PP
 (Додано у 1.0.50)
+.SS "guestfs_shutdown"
+.IX Subsection "guestfs_shutdown"
+.Vb 2
+\& int
+\& guestfs_shutdown (guestfs_h *g);
+.Ve
+.PP
+This is the opposite of \f(CW\*(C`guestfs_launch\*(C'\fR.  It performs an orderly shutdown
+of the backend process(es).  If the autosync flag is set (which is the
+default) then the disk image is synchronized.
+.PP
+If the subprocess exits with an error then this function will return an
+error, which should \fInot\fR be ignored (it may indicate that the disk image
+could not be written out properly).
+.PP
+It is safe to call this multiple times.  Extra calls are ignored.
+.PP
+This call does \fInot\fR close or free up the handle.  You still need to call
+\&\f(CW\*(C`guestfs_close\*(C'\fR afterwards.
+.PP
+\&\f(CW\*(C`guestfs_close\*(C'\fR will call this if you don't do it explicitly, but note that
+any errors are ignored in that case.
+.PP
+Ця функція повертає 0 у разі успіху і \-1 у разі помилки.
 .SS "guestfs_sleep"
 .IX Subsection "guestfs_sleep"
 .Vb 3

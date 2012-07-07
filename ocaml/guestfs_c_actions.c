@@ -483,75 +483,18 @@ copy_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
 }
 
 static CAMLprim value
-copy_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
+copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
 {
   CAMLparam0 ();
   CAMLlocal2 (rv, v);
   unsigned int i;
 
-  if (lvm_vgs->len == 0)
+  if (lvm_lvs->len == 0)
     CAMLreturn (Atom (0));
   else {
-    rv = caml_alloc (lvm_vgs->len, 0);
-    for (i = 0; i < lvm_vgs->len; ++i) {
-      v = copy_lvm_vg (&lvm_vgs->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
-copy_stat_list (const struct guestfs_stat_list *stats)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  unsigned int i;
-
-  if (stats->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (stats->len, 0);
-    for (i = 0; i < stats->len; ++i) {
-      v = copy_stat (&stats->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
-copy_mdstat_list (const struct guestfs_mdstat_list *mdstats)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  unsigned int i;
-
-  if (mdstats->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (mdstats->len, 0);
-    for (i = 0; i < mdstats->len; ++i) {
-      v = copy_mdstat (&mdstats->val[i]);
-      caml_modify (&Field (rv, i), v);
-    }
-    CAMLreturn (rv);
-  }
-}
-
-static CAMLprim value
-copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolumes)
-{
-  CAMLparam0 ();
-  CAMLlocal2 (rv, v);
-  unsigned int i;
-
-  if (btrfssubvolumes->len == 0)
-    CAMLreturn (Atom (0));
-  else {
-    rv = caml_alloc (btrfssubvolumes->len, 0);
-    for (i = 0; i < btrfssubvolumes->len; ++i) {
-      v = copy_btrfssubvolume (&btrfssubvolumes->val[i]);
+    rv = caml_alloc (lvm_lvs->len, 0);
+    for (i = 0; i < lvm_lvs->len; ++i) {
+      v = copy_lvm_lv (&lvm_lvs->val[i]);
       caml_modify (&Field (rv, i), v);
     }
     CAMLreturn (rv);
@@ -597,18 +540,37 @@ copy_partition_list (const struct guestfs_partition_list *partitions)
 }
 
 static CAMLprim value
-copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
+copy_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
 {
   CAMLparam0 ();
   CAMLlocal2 (rv, v);
   unsigned int i;
 
-  if (lvm_lvs->len == 0)
+  if (inotify_events->len == 0)
     CAMLreturn (Atom (0));
   else {
-    rv = caml_alloc (lvm_lvs->len, 0);
-    for (i = 0; i < lvm_lvs->len; ++i) {
-      v = copy_lvm_lv (&lvm_lvs->val[i]);
+    rv = caml_alloc (inotify_events->len, 0);
+    for (i = 0; i < inotify_events->len; ++i) {
+      v = copy_inotify_event (&inotify_events->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_application_list (const struct guestfs_application_list *applications)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (applications->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (applications->len, 0);
+    for (i = 0; i < applications->len; ++i) {
+      v = copy_application (&applications->val[i]);
       caml_modify (&Field (rv, i), v);
     }
     CAMLreturn (rv);
@@ -654,18 +616,18 @@ copy_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
 }
 
 static CAMLprim value
-copy_application_list (const struct guestfs_application_list *applications)
+copy_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
 {
   CAMLparam0 ();
   CAMLlocal2 (rv, v);
   unsigned int i;
 
-  if (applications->len == 0)
+  if (lvm_vgs->len == 0)
     CAMLreturn (Atom (0));
   else {
-    rv = caml_alloc (applications->len, 0);
-    for (i = 0; i < applications->len; ++i) {
-      v = copy_application (&applications->val[i]);
+    rv = caml_alloc (lvm_vgs->len, 0);
+    for (i = 0; i < lvm_vgs->len; ++i) {
+      v = copy_lvm_vg (&lvm_vgs->val[i]);
       caml_modify (&Field (rv, i), v);
     }
     CAMLreturn (rv);
@@ -673,18 +635,56 @@ copy_application_list (const struct guestfs_application_list *applications)
 }
 
 static CAMLprim value
-copy_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
+copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
   CAMLparam0 ();
   CAMLlocal2 (rv, v);
   unsigned int i;
 
-  if (inotify_events->len == 0)
+  if (btrfssubvolumes->len == 0)
     CAMLreturn (Atom (0));
   else {
-    rv = caml_alloc (inotify_events->len, 0);
-    for (i = 0; i < inotify_events->len; ++i) {
-      v = copy_inotify_event (&inotify_events->val[i]);
+    rv = caml_alloc (btrfssubvolumes->len, 0);
+    for (i = 0; i < btrfssubvolumes->len; ++i) {
+      v = copy_btrfssubvolume (&btrfssubvolumes->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_mdstat_list (const struct guestfs_mdstat_list *mdstats)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (mdstats->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (mdstats->len, 0);
+    for (i = 0; i < mdstats->len; ++i) {
+      v = copy_mdstat (&mdstats->val[i]);
+      caml_modify (&Field (rv, i), v);
+    }
+    CAMLreturn (rv);
+  }
+}
+
+static CAMLprim value
+copy_stat_list (const struct guestfs_stat_list *stats)
+{
+  CAMLparam0 ();
+  CAMLlocal2 (rv, v);
+  unsigned int i;
+
+  if (stats->len == 0)
+    CAMLreturn (Atom (0));
+  else {
+    rv = caml_alloc (stats->len, 0);
+    for (i = 0; i < stats->len; ++i) {
+      v = copy_stat (&stats->val[i]);
       caml_modify (&Field (rv, i), v);
     }
     CAMLreturn (rv);
@@ -3210,6 +3210,37 @@ ocaml_guestfs_debug_upload (value gv, value filenamev, value tmpnamev, value mod
     ocaml_guestfs_raise_error (g, "debug_upload");
 
   rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val device_index : t -> string -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_device_index (value gv, value devicev);
+
+CAMLprim value
+ocaml_guestfs_device_index (value gv, value devicev)
+{
+  CAMLparam2 (gv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("device_index");
+
+  char *device = guestfs_safe_strdup (g, String_val (devicev));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_device_index (g, device);
+  caml_leave_blocking_section ();
+  free (device);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "device_index");
+
+  rv = Val_int (r);
   CAMLreturn (rv);
 }
 
@@ -9448,6 +9479,35 @@ ocaml_guestfs_mv (value gv, value srcv, value destv)
 }
 
 /* Automatically generated wrapper for function
+ * val nr_devices : t -> int
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_nr_devices (value gv);
+
+CAMLprim value
+ocaml_guestfs_nr_devices (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("nr_devices");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_nr_devices (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "nr_devices");
+
+  rv = Val_int (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val ntfs_3g_probe : t -> bool -> string -> int
  */
 
@@ -12025,6 +12085,35 @@ ocaml_guestfs_sh_lines (value gv, value commandv)
   rv = caml_copy_string_array ((const char **) r);
   for (i = 0; r[i] != NULL; ++i) free (r[i]);
   free (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val shutdown : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+CAMLprim value ocaml_guestfs_shutdown (value gv);
+
+CAMLprim value
+ocaml_guestfs_shutdown (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("shutdown");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_shutdown (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "shutdown");
+
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 

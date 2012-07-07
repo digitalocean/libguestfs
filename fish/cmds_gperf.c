@@ -115,6 +115,7 @@ extern struct command_entry debug_cmdline_cmd_entry;
 extern struct command_entry debug_drives_cmd_entry;
 extern struct command_entry debug_upload_cmd_entry;
 extern struct command_entry delete_event_cmd_entry;
+extern struct command_entry device_index_cmd_entry;
 extern struct command_entry df_cmd_entry;
 extern struct command_entry df_h_cmd_entry;
 extern struct command_entry display_cmd_entry;
@@ -313,6 +314,7 @@ extern struct command_entry mount_vfs_cmd_entry;
 extern struct command_entry mountpoints_cmd_entry;
 extern struct command_entry mounts_cmd_entry;
 extern struct command_entry mv_cmd_entry;
+extern struct command_entry nr_devices_cmd_entry;
 extern struct command_entry ntfs_3g_probe_cmd_entry;
 extern struct command_entry ntfsclone_in_cmd_entry;
 extern struct command_entry ntfsclone_out_cmd_entry;
@@ -393,6 +395,7 @@ extern struct command_entry sfdisk_kernel_geometry_cmd_entry;
 extern struct command_entry sfdisk_l_cmd_entry;
 extern struct command_entry sh_cmd_entry;
 extern struct command_entry sh_lines_cmd_entry;
+extern struct command_entry shutdown_cmd_entry;
 extern struct command_entry sleep_cmd_entry;
 extern struct command_entry sparse_cmd_entry;
 extern struct command_entry stat_cmd_entry;
@@ -465,10 +468,10 @@ extern struct command_entry zfgrepi_cmd_entry;
 extern struct command_entry zfile_cmd_entry;
 extern struct command_entry zgrep_cmd_entry;
 extern struct command_entry zgrepi_cmd_entry;
-#line 466 "cmds_gperf.gperf"
+#line 469 "cmds_gperf.gperf"
 struct command_table;
 
-#define TOTAL_KEYWORDS 735
+#define TOTAL_KEYWORDS 740
 #define MIN_WORD_LENGTH 2
 #define MAX_WORD_LENGTH 39
 #define MIN_HASH_VALUE 17
@@ -532,15 +535,15 @@ hash (register const char *str, register unsigned int len)
       5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297,
       5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297,
       5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297,
-      5297, 5297, 5297, 5297, 5297,    5,  405, 5297,    0, 5297,
-       505,    0,   85, 5297,    0, 5297, 5297,   20,    0, 5297,
+      5297, 5297, 5297, 5297, 5297,    5,  410, 5297,    0, 5297,
+       505,    0,   80, 5297,    0, 5297, 5297,   10,    0, 5297,
       5297, 5297, 5297, 5297, 5297,   35,  655,   15,  340,    0,
        575,   20,  933,    5,  920,  610,  250,  145,   30,   85,
-         0,  751,   25,    0,    0,    5,  405,  845,   65,  916,
-       968,   40, 5297, 5297, 5297,    0,  450,   35,  655,   15,
+         0, 1394,   25,    0,    0,    5,  405,  845,   65,  916,
+       968,   35, 5297, 5297, 5297,    0,  450,   35,  655,   15,
        340,    0,  575,   20,  933,    5,  920,  610,  250,  145,
-        30,   85,    0,  751,   25,    0,    0,    5,  405,  845,
-        65,  916,  968,   40, 5297, 5297, 5297, 5297, 5297, 5297,
+        30,   85,    0, 1394,   25,    0,    0,    5,  405,  845,
+        65,  916,  968,   35, 5297, 5297, 5297, 5297, 5297, 5297,
       5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297,
       5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297,
       5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297, 5297,
@@ -626,202 +629,202 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 600 "cmds_gperf.gperf"
+#line 603 "cmds_gperf.gperf"
       {"cp", &cp_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 680 "cmds_gperf.gperf"
+#line 685 "cmds_gperf.gperf"
       {"get_pid", &get_pid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 681 "cmds_gperf.gperf"
+#line 686 "cmds_gperf.gperf"
       {"get-pid", &get_pid_cmd_entry},
       {(char*)0},
-#line 1098 "cmds_gperf.gperf"
+#line 1106 "cmds_gperf.gperf"
       {"stat", &stat_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 705 "cmds_gperf.gperf"
+#line 710 "cmds_gperf.gperf"
       {"grep", &grep_cmd_entry},
-#line 633 "cmds_gperf.gperf"
+#line 638 "cmds_gperf.gperf"
       {"egrep", &egrep_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 570 "cmds_gperf.gperf"
+#line 573 "cmds_gperf.gperf"
       {"cat", &cat_cmd_entry},
-#line 601 "cmds_gperf.gperf"
+#line 604 "cmds_gperf.gperf"
       {"cp_a", &cp_a_cmd_entry},
-#line 706 "cmds_gperf.gperf"
+#line 711 "cmds_gperf.gperf"
       {"grepi", &grepi_cmd_entry},
-#line 634 "cmds_gperf.gperf"
+#line 639 "cmds_gperf.gperf"
       {"egrepi", &egrepi_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 602 "cmds_gperf.gperf"
+#line 605 "cmds_gperf.gperf"
       {"cp-a", &cp_a_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 810 "cmds_gperf.gperf"
+#line 815 "cmds_gperf.gperf"
       {"run", &launch_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1097 "cmds_gperf.gperf"
+#line 1105 "cmds_gperf.gperf"
       {"sparse", &sparse_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 514 "cmds_gperf.gperf"
+#line 517 "cmds_gperf.gperf"
       {"aug_set", &aug_set_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 637 "cmds_gperf.gperf"
+#line 642 "cmds_gperf.gperf"
       {"exists", &exists_cmd_entry},
-#line 515 "cmds_gperf.gperf"
+#line 518 "cmds_gperf.gperf"
       {"aug-set", &aug_set_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1076 "cmds_gperf.gperf"
+#line 1083 "cmds_gperf.gperf"
       {"trace", &set_trace_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1100 "cmds_gperf.gperf"
+#line 1108 "cmds_gperf.gperf"
       {"strings", &strings_cmd_entry},
       {(char*)0},
-#line 1101 "cmds_gperf.gperf"
+#line 1109 "cmds_gperf.gperf"
       {"strings_e", &strings_e_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 496 "cmds_gperf.gperf"
+#line 499 "cmds_gperf.gperf"
       {"aug_get", &aug_get_cmd_entry},
       {(char*)0},
-#line 1102 "cmds_gperf.gperf"
+#line 1110 "cmds_gperf.gperf"
       {"strings-e", &strings_e_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 497 "cmds_gperf.gperf"
+#line 500 "cmds_gperf.gperf"
       {"aug-get", &aug_get_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1124 "cmds_gperf.gperf"
+#line 1132 "cmds_gperf.gperf"
       {"tar_in", &tar_in_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1125 "cmds_gperf.gperf"
+#line 1133 "cmds_gperf.gperf"
       {"tar-in", &tar_in_cmd_entry},
       {(char*)0},
-#line 770 "cmds_gperf.gperf"
+#line 775 "cmds_gperf.gperf"
       {"inspect_is_netinst", &inspect_is_netinst_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 742 "cmds_gperf.gperf"
+#line 747 "cmds_gperf.gperf"
       {"inspect_get_icon", &inspect_get_icon_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 771 "cmds_gperf.gperf"
+#line 776 "cmds_gperf.gperf"
       {"inspect-is-netinst", &inspect_is_netinst_cmd_entry},
       {(char*)0},
-#line 1059 "cmds_gperf.gperf"
+#line 1066 "cmds_gperf.gperf"
       {"set_pgroup", &set_pgroup_cmd_entry},
-#line 743 "cmds_gperf.gperf"
+#line 748 "cmds_gperf.gperf"
       {"inspect-get-icon", &inspect_get_icon_cmd_entry},
       {(char*)0},
-#line 1134 "cmds_gperf.gperf"
+#line 1142 "cmds_gperf.gperf"
       {"truncate", &truncate_cmd_entry},
       {(char*)0},
-#line 1060 "cmds_gperf.gperf"
+#line 1067 "cmds_gperf.gperf"
       {"set-pgroup", &set_pgroup_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 754 "cmds_gperf.gperf"
+#line 759 "cmds_gperf.gperf"
       {"inspect_get_product_name", &inspect_get_product_name_cmd_entry},
-#line 500 "cmds_gperf.gperf"
+#line 503 "cmds_gperf.gperf"
       {"aug_insert", &aug_insert_cmd_entry},
       {(char*)0},
-#line 756 "cmds_gperf.gperf"
+#line 761 "cmds_gperf.gperf"
       {"inspect_get_product_variant", &inspect_get_product_variant_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 501 "cmds_gperf.gperf"
+#line 504 "cmds_gperf.gperf"
       {"aug-insert", &aug_insert_cmd_entry},
-#line 1080 "cmds_gperf.gperf"
+#line 1087 "cmds_gperf.gperf"
       {"setcon", &setcon_cmd_entry},
       {(char*)0},
-#line 1082 "cmds_gperf.gperf"
+#line 1089 "cmds_gperf.gperf"
       {"setxattr", &setxattr_cmd_entry},
-#line 755 "cmds_gperf.gperf"
+#line 760 "cmds_gperf.gperf"
       {"inspect-get-product-name", &inspect_get_product_name_cmd_entry},
-#line 678 "cmds_gperf.gperf"
+#line 683 "cmds_gperf.gperf"
       {"get_pgroup", &get_pgroup_cmd_entry},
-#line 1061 "cmds_gperf.gperf"
+#line 1068 "cmds_gperf.gperf"
       {"pgroup", &set_pgroup_cmd_entry},
-#line 757 "cmds_gperf.gperf"
+#line 762 "cmds_gperf.gperf"
       {"inspect-get-product-variant", &inspect_get_product_variant_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 679 "cmds_gperf.gperf"
+#line 684 "cmds_gperf.gperf"
       {"get-pgroup", &get_pgroup_cmd_entry},
-#line 1011 "cmds_gperf.gperf"
+#line 1018 "cmds_gperf.gperf"
       {"reopen", &reopen_cmd_entry},
       {(char*)0},
-#line 1073 "cmds_gperf.gperf"
+#line 1080 "cmds_gperf.gperf"
       {"smp", &set_smp_cmd_entry},
       {(char*)0},
-#line 774 "cmds_gperf.gperf"
+#line 779 "cmds_gperf.gperf"
       {"inspect_os", &inspect_os_cmd_entry},
-#line 730 "cmds_gperf.gperf"
+#line 735 "cmds_gperf.gperf"
       {"inspect_get_arch", &inspect_get_arch_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1132 "cmds_gperf.gperf"
+#line 1140 "cmds_gperf.gperf"
       {"time", &time_cmd_entry},
-#line 775 "cmds_gperf.gperf"
+#line 780 "cmds_gperf.gperf"
       {"inspect-os", &inspect_os_cmd_entry},
-#line 699 "cmds_gperf.gperf"
+#line 704 "cmds_gperf.gperf"
       {"getcon", &getcon_cmd_entry},
       {(char*)0},
-#line 700 "cmds_gperf.gperf"
+#line 705 "cmds_gperf.gperf"
       {"getxattr", &getxattr_cmd_entry},
-#line 701 "cmds_gperf.gperf"
+#line 706 "cmds_gperf.gperf"
       {"getxattrs", &getxattrs_cmd_entry},
       {(char*)0},
-#line 731 "cmds_gperf.gperf"
+#line 736 "cmds_gperf.gperf"
       {"inspect-get-arch", &inspect_get_arch_cmd_entry},
-#line 1126 "cmds_gperf.gperf"
+#line 1134 "cmds_gperf.gperf"
       {"tar_out", &tar_out_cmd_entry},
       {(char*)0},
-#line 971 "cmds_gperf.gperf"
+#line 978 "cmds_gperf.gperf"
       {"part_init", &part_init_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1127 "cmds_gperf.gperf"
+#line 1135 "cmds_gperf.gperf"
       {"tar-out", &tar_out_cmd_entry},
       {(char*)0},
-#line 972 "cmds_gperf.gperf"
+#line 979 "cmds_gperf.gperf"
       {"part-init", &part_init_cmd_entry},
-#line 983 "cmds_gperf.gperf"
+#line 990 "cmds_gperf.gperf"
       {"part_to_partnum", &part_to_partnum_cmd_entry},
-#line 750 "cmds_gperf.gperf"
+#line 755 "cmds_gperf.gperf"
       {"inspect_get_package_format", &inspect_get_package_format_cmd_entry},
-#line 1017 "cmds_gperf.gperf"
+#line 1024 "cmds_gperf.gperf"
       {"rm", &rm_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 752 "cmds_gperf.gperf"
+#line 757 "cmds_gperf.gperf"
       {"inspect_get_package_management", &inspect_get_package_management_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 984 "cmds_gperf.gperf"
+#line 991 "cmds_gperf.gperf"
       {"part-to-partnum", &part_to_partnum_cmd_entry},
-#line 751 "cmds_gperf.gperf"
+#line 756 "cmds_gperf.gperf"
       {"inspect-get-package-format", &inspect_get_package_format_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 753 "cmds_gperf.gperf"
+#line 758 "cmds_gperf.gperf"
       {"inspect-get-package-management", &inspect_get_package_management_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 782 "cmds_gperf.gperf"
+#line 787 "cmds_gperf.gperf"
       {"is_config", &is_config_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1156 "cmds_gperf.gperf"
+#line 1164 "cmds_gperf.gperf"
       {"utimens", &utimens_cmd_entry},
       {(char*)0},
-#line 783 "cmds_gperf.gperf"
+#line 788 "cmds_gperf.gperf"
       {"is-config", &is_config_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 632 "cmds_gperf.gperf"
+#line 637 "cmds_gperf.gperf"
       {"emacs", &edit_cmd_entry},
       {(char*)0},
-#line 758 "cmds_gperf.gperf"
+#line 763 "cmds_gperf.gperf"
       {"inspect_get_roots", &inspect_get_roots_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 759 "cmds_gperf.gperf"
+#line 764 "cmds_gperf.gperf"
       {"inspect-get-roots", &inspect_get_roots_cmd_entry},
-#line 878 "cmds_gperf.gperf"
+#line 883 "cmds_gperf.gperf"
       {"man", &man_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -829,1511 +832,1511 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 510 "cmds_gperf.gperf"
+#line 513 "cmds_gperf.gperf"
       {"aug_rm", &aug_rm_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 511 "cmds_gperf.gperf"
+#line 514 "cmds_gperf.gperf"
       {"aug-rm", &aug_rm_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 839 "cmds_gperf.gperf"
+#line 844 "cmds_gperf.gperf"
       {"ls", &ls_cmd_entry},
       {(char*)0},
-#line 928 "cmds_gperf.gperf"
+#line 933 "cmds_gperf.gperf"
       {"less", &more_cmd_entry},
-#line 1096 "cmds_gperf.gperf"
+#line 1104 "cmds_gperf.gperf"
       {"sleep", &sleep_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 927 "cmds_gperf.gperf"
+#line 932 "cmds_gperf.gperf"
       {"more", &more_cmd_entry},
       {(char*)0},
-#line 1068 "cmds_gperf.gperf"
+#line 1075 "cmds_gperf.gperf"
       {"set_selinux", &set_selinux_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1069 "cmds_gperf.gperf"
+#line 1076 "cmds_gperf.gperf"
       {"set-selinux", &set_selinux_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 929 "cmds_gperf.gperf"
+#line 934 "cmds_gperf.gperf"
       {"mount", &mount_cmd_entry},
-#line 945 "cmds_gperf.gperf"
+#line 950 "cmds_gperf.gperf"
       {"mounts", &mounts_cmd_entry},
       {(char*)0},
-#line 930 "cmds_gperf.gperf"
+#line 935 "cmds_gperf.gperf"
       {"mount_9p", &mount_9p_cmd_entry},
       {(char*)0},
-#line 746 "cmds_gperf.gperf"
+#line 751 "cmds_gperf.gperf"
       {"inspect_get_minor_version", &inspect_get_minor_version_cmd_entry},
-#line 1145 "cmds_gperf.gperf"
+#line 1153 "cmds_gperf.gperf"
       {"umount", &umount_cmd_entry},
       {(char*)0},
-#line 931 "cmds_gperf.gperf"
+#line 936 "cmds_gperf.gperf"
       {"mount-9p", &mount_9p_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 687 "cmds_gperf.gperf"
+#line 692 "cmds_gperf.gperf"
       {"get_selinux", &get_selinux_cmd_entry},
-#line 831 "cmds_gperf.gperf"
+#line 836 "cmds_gperf.gperf"
       {"ln", &ln_cmd_entry},
       {(char*)0},
-#line 834 "cmds_gperf.gperf"
+#line 839 "cmds_gperf.gperf"
       {"ln_s", &ln_s_cmd_entry},
-#line 747 "cmds_gperf.gperf"
+#line 752 "cmds_gperf.gperf"
       {"inspect-get-minor-version", &inspect_get_minor_version_cmd_entry},
-#line 688 "cmds_gperf.gperf"
+#line 693 "cmds_gperf.gperf"
       {"get-selinux", &get_selinux_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 835 "cmds_gperf.gperf"
+#line 840 "cmds_gperf.gperf"
       {"ln-s", &ln_s_cmd_entry},
-#line 841 "cmds_gperf.gperf"
+#line 846 "cmds_gperf.gperf"
       {"lstat", &lstat_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1121 "cmds_gperf.gperf"
+#line 1129 "cmds_gperf.gperf"
       {"tail", &tail_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 744 "cmds_gperf.gperf"
+#line 749 "cmds_gperf.gperf"
       {"inspect_get_major_version", &inspect_get_major_version_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 944 "cmds_gperf.gperf"
+#line 949 "cmds_gperf.gperf"
       {"mountpoints", &mountpoints_cmd_entry},
-#line 1146 "cmds_gperf.gperf"
+#line 1154 "cmds_gperf.gperf"
       {"unmount", &umount_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 745 "cmds_gperf.gperf"
+#line 750 "cmds_gperf.gperf"
       {"inspect-get-major-version", &inspect_get_major_version_cmd_entry},
-#line 504 "cmds_gperf.gperf"
+#line 507 "cmds_gperf.gperf"
       {"aug_ls", &aug_ls_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 505 "cmds_gperf.gperf"
+#line 508 "cmds_gperf.gperf"
       {"aug-ls", &aug_ls_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1122 "cmds_gperf.gperf"
+#line 1130 "cmds_gperf.gperf"
       {"tail_n", &tail_n_cmd_entry},
       {(char*)0},
-#line 748 "cmds_gperf.gperf"
+#line 753 "cmds_gperf.gperf"
       {"inspect_get_mountpoints", &inspect_get_mountpoints_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1123 "cmds_gperf.gperf"
+#line 1131 "cmds_gperf.gperf"
       {"tail-n", &tail_n_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 490 "cmds_gperf.gperf"
+#line 493 "cmds_gperf.gperf"
       {"aug_close", &aug_close_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 749 "cmds_gperf.gperf"
+#line 754 "cmds_gperf.gperf"
       {"inspect-get-mountpoints", &inspect_get_mountpoints_cmd_entry},
-#line 491 "cmds_gperf.gperf"
+#line 494 "cmds_gperf.gperf"
       {"aug-close", &aug_close_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 623 "cmds_gperf.gperf"
+#line 628 "cmds_gperf.gperf"
       {"du", &du_cmd_entry},
-#line 682 "cmds_gperf.gperf"
+#line 687 "cmds_gperf.gperf"
       {"pid", &get_pid_cmd_entry},
-#line 630 "cmds_gperf.gperf"
+#line 635 "cmds_gperf.gperf"
       {"edit", &edit_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 940 "cmds_gperf.gperf"
+#line 945 "cmds_gperf.gperf"
       {"mount_ro", &mount_ro_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 941 "cmds_gperf.gperf"
+#line 946 "cmds_gperf.gperf"
       {"mount-ro", &mount_ro_cmd_entry},
-#line 796 "cmds_gperf.gperf"
+#line 801 "cmds_gperf.gperf"
       {"is_socket", &is_socket_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 797 "cmds_gperf.gperf"
+#line 802 "cmds_gperf.gperf"
       {"is-socket", &is_socket_cmd_entry},
-#line 1037 "cmds_gperf.gperf"
+#line 1044 "cmds_gperf.gperf"
       {"set_direct", &set_direct_cmd_entry},
       {(char*)0},
-#line 583 "cmds_gperf.gperf"
+#line 586 "cmds_gperf.gperf"
       {"compress_out", &compress_out_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1038 "cmds_gperf.gperf"
+#line 1045 "cmds_gperf.gperf"
       {"set-direct", &set_direct_cmd_entry},
       {(char*)0},
-#line 584 "cmds_gperf.gperf"
+#line 587 "cmds_gperf.gperf"
       {"compress-out", &compress_out_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 784 "cmds_gperf.gperf"
+#line 789 "cmds_gperf.gperf"
       {"is_dir", &is_dir_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 785 "cmds_gperf.gperf"
+#line 790 "cmds_gperf.gperf"
       {"is-dir", &is_dir_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 840 "cmds_gperf.gperf"
+#line 845 "cmds_gperf.gperf"
       {"lsetxattr", &lsetxattr_cmd_entry},
-#line 662 "cmds_gperf.gperf"
+#line 667 "cmds_gperf.gperf"
       {"get_direct", &get_direct_cmd_entry},
-#line 1039 "cmds_gperf.gperf"
+#line 1046 "cmds_gperf.gperf"
       {"direct", &set_direct_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 663 "cmds_gperf.gperf"
+#line 668 "cmds_gperf.gperf"
       {"get-direct", &get_direct_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 938 "cmds_gperf.gperf"
+#line 943 "cmds_gperf.gperf"
       {"mount_options", &mount_options_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 939 "cmds_gperf.gperf"
+#line 944 "cmds_gperf.gperf"
       {"mount-options", &mount_options_cmd_entry},
       {(char*)0},
-#line 987 "cmds_gperf.gperf"
+#line 994 "cmds_gperf.gperf"
       {"pread", &pread_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 995 "cmds_gperf.gperf"
+#line 1002 "cmds_gperf.gperf"
       {"pvs", &pvs_cmd_entry},
-#line 813 "cmds_gperf.gperf"
+#line 818 "cmds_gperf.gperf"
       {"lgetxattr", &lgetxattr_cmd_entry},
-#line 814 "cmds_gperf.gperf"
+#line 819 "cmds_gperf.gperf"
       {"lgetxattrs", &lgetxattrs_cmd_entry},
-#line 1030 "cmds_gperf.gperf"
+#line 1037 "cmds_gperf.gperf"
       {"append", &set_append_cmd_entry},
-#line 631 "cmds_gperf.gperf"
+#line 636 "cmds_gperf.gperf"
       {"vi", &edit_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1174 "cmds_gperf.gperf"
+#line 1182 "cmds_gperf.gperf"
       {"vgs", &vgs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 636 "cmds_gperf.gperf"
+#line 641 "cmds_gperf.gperf"
       {"event", &event_cmd_entry},
-#line 1081 "cmds_gperf.gperf"
+#line 1088 "cmds_gperf.gperf"
       {"setenv", &setenv_cmd_entry},
       {(char*)0},
-#line 959 "cmds_gperf.gperf"
+#line 966 "cmds_gperf.gperf"
       {"part_add", &part_add_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 960 "cmds_gperf.gperf"
+#line 967 "cmds_gperf.gperf"
       {"part-add", &part_add_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 578 "cmds_gperf.gperf"
+#line 581 "cmds_gperf.gperf"
       {"command", &command_cmd_entry},
-#line 732 "cmds_gperf.gperf"
+#line 737 "cmds_gperf.gperf"
       {"inspect_get_distro", &inspect_get_distro_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 734 "cmds_gperf.gperf"
+#line 739 "cmds_gperf.gperf"
       {"inspect_get_drive_mappings", &inspect_get_drive_mappings_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1103 "cmds_gperf.gperf"
+#line 1111 "cmds_gperf.gperf"
       {"supported", &supported_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 733 "cmds_gperf.gperf"
+#line 738 "cmds_gperf.gperf"
       {"inspect-get-distro", &inspect_get_distro_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 735 "cmds_gperf.gperf"
+#line 740 "cmds_gperf.gperf"
       {"inspect-get-drive-mappings", &inspect_get_drive_mappings_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 768 "cmds_gperf.gperf"
-      {"inspect_is_multipart", &inspect_is_multipart_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 992 "cmds_gperf.gperf"
+      {(char*)0},
+#line 999 "cmds_gperf.gperf"
       {"pvresize", &pvresize_cmd_entry},
+      {(char*)0},
+#line 773 "cmds_gperf.gperf"
+      {"inspect_is_multipart", &inspect_is_multipart_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 769 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 774 "cmds_gperf.gperf"
       {"inspect-is-multipart", &inspect_is_multipart_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 990 "cmds_gperf.gperf"
+#line 997 "cmds_gperf.gperf"
       {"pvcreate", &pvcreate_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 829 "cmds_gperf.gperf"
+#line 834 "cmds_gperf.gperf"
       {"ll", &ll_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 879 "cmds_gperf.gperf"
+#line 884 "cmds_gperf.gperf"
       {"manual", &man_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 617 "cmds_gperf.gperf"
+#line 622 "cmds_gperf.gperf"
       {"dmesg", &dmesg_cmd_entry},
-#line 1177 "cmds_gperf.gperf"
+#line 1185 "cmds_gperf.gperf"
       {"vgscan", &vgscan_cmd_entry},
       {(char*)0},
-#line 1168 "cmds_gperf.gperf"
+#line 1176 "cmds_gperf.gperf"
       {"vgcreate", &vgcreate_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 884 "cmds_gperf.gperf"
+#line 889 "cmds_gperf.gperf"
       {"md_stat", &md_stat_cmd_entry},
-#line 1152 "cmds_gperf.gperf"
+#line 1160 "cmds_gperf.gperf"
       {"unsetenv", &unsetenv_cmd_entry},
       {(char*)0},
-#line 877 "cmds_gperf.gperf"
+#line 882 "cmds_gperf.gperf"
       {"lxattrlist", &lxattrlist_cmd_entry},
       {(char*)0},
-#line 885 "cmds_gperf.gperf"
+#line 890 "cmds_gperf.gperf"
       {"md-stat", &md_stat_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1020 "cmds_gperf.gperf"
+#line 1027 "cmds_gperf.gperf"
       {"rmdir", &rmdir_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 946 "cmds_gperf.gperf"
+#line 951 "cmds_gperf.gperf"
       {"mv", &mv_cmd_entry},
-#line 1173 "cmds_gperf.gperf"
+#line 1181 "cmds_gperf.gperf"
       {"vgrename", &vgrename_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1048 "cmds_gperf.gperf"
+#line 1055 "cmds_gperf.gperf"
       {"set_label", &set_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1049 "cmds_gperf.gperf"
+#line 1056 "cmds_gperf.gperf"
       {"set-label", &set_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1021 "cmds_gperf.gperf"
+#line 1028 "cmds_gperf.gperf"
       {"rmmountpoint", &rmmountpoint_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 936 "cmds_gperf.gperf"
+#line 941 "cmds_gperf.gperf"
       {"mount_loop", &mount_loop_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 937 "cmds_gperf.gperf"
+#line 942 "cmds_gperf.gperf"
       {"mount-loop", &mount_loop_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 811 "cmds_gperf.gperf"
+#line 816 "cmds_gperf.gperf"
       {"lcd", &lcd_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1170 "cmds_gperf.gperf"
+#line 1178 "cmds_gperf.gperf"
       {"vgmeta", &vgmeta_cmd_entry},
-#line 1157 "cmds_gperf.gperf"
+#line 1165 "cmds_gperf.gperf"
       {"version", &version_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 508 "cmds_gperf.gperf"
+#line 511 "cmds_gperf.gperf"
       {"aug_mv", &aug_mv_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 772 "cmds_gperf.gperf"
+#line 777 "cmds_gperf.gperf"
       {"inspect_list_applications", &inspect_list_applications_cmd_entry},
-#line 509 "cmds_gperf.gperf"
+#line 512 "cmds_gperf.gperf"
       {"aug-mv", &aug_mv_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 640 "cmds_gperf.gperf"
+#line 645 "cmds_gperf.gperf"
       {"fgrep", &fgrep_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 773 "cmds_gperf.gperf"
+#line 778 "cmds_gperf.gperf"
       {"inspect-list-applications", &inspect_list_applications_cmd_entry},
-#line 641 "cmds_gperf.gperf"
+#line 646 "cmds_gperf.gperf"
       {"fgrepi", &fgrepi_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 486 "cmds_gperf.gperf"
+#line 489 "cmds_gperf.gperf"
       {"alloc", &alloc_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 473 "cmds_gperf.gperf"
+#line 476 "cmds_gperf.gperf"
       {"domain", &add_domain_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 873 "cmds_gperf.gperf"
+#line 878 "cmds_gperf.gperf"
       {"lvs", &lvs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 792 "cmds_gperf.gperf"
+#line 797 "cmds_gperf.gperf"
       {"is_lv", &is_lv_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 793 "cmds_gperf.gperf"
+#line 798 "cmds_gperf.gperf"
       {"is-lv", &is_lv_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 736 "cmds_gperf.gperf"
+#line 741 "cmds_gperf.gperf"
       {"inspect_get_filesystems", &inspect_get_filesystems_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 603 "cmds_gperf.gperf"
+#line 606 "cmds_gperf.gperf"
       {"dd", &dd_cmd_entry},
-#line 487 "cmds_gperf.gperf"
+#line 490 "cmds_gperf.gperf"
       {"allocate", &alloc_cmd_entry},
-#line 691 "cmds_gperf.gperf"
+#line 696 "cmds_gperf.gperf"
       {"get_state", &get_state_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 737 "cmds_gperf.gperf"
+#line 742 "cmds_gperf.gperf"
       {"inspect-get-filesystems", &inspect_get_filesystems_cmd_entry},
-#line 692 "cmds_gperf.gperf"
+#line 697 "cmds_gperf.gperf"
       {"get-state", &get_state_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 926 "cmds_gperf.gperf"
+#line 931 "cmds_gperf.gperf"
       {"modprobe", &modprobe_cmd_entry},
-#line 1074 "cmds_gperf.gperf"
+#line 1081 "cmds_gperf.gperf"
       {"set_trace", &set_trace_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 804 "cmds_gperf.gperf"
+#line 809 "cmds_gperf.gperf"
       {"isoinfo", &isoinfo_cmd_entry},
       {(char*)0},
-#line 1075 "cmds_gperf.gperf"
+#line 1082 "cmds_gperf.gperf"
       {"set-trace", &set_trace_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 478 "cmds_gperf.gperf"
+#line 481 "cmds_gperf.gperf"
       {"add", &add_drive_opts_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1153 "cmds_gperf.gperf"
+#line 1161 "cmds_gperf.gperf"
       {"upload", &upload_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 693 "cmds_gperf.gperf"
+#line 698 "cmds_gperf.gperf"
       {"get_trace", &get_trace_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 694 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 875 "cmds_gperf.gperf"
+      {"lvresize", &lvresize_cmd_entry},
+#line 699 "cmds_gperf.gperf"
       {"get-trace", &get_trace_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 969 "cmds_gperf.gperf"
+#line 976 "cmds_gperf.gperf"
       {"part_get_parttype", &part_get_parttype_cmd_entry},
-#line 870 "cmds_gperf.gperf"
-      {"lvresize", &lvresize_cmd_entry},
-      {(char*)0},
-#line 766 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 771 "cmds_gperf.gperf"
       {"inspect_is_live", &inspect_is_live_cmd_entry},
-#line 585 "cmds_gperf.gperf"
+#line 588 "cmds_gperf.gperf"
       {"config", &config_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 970 "cmds_gperf.gperf"
+#line 977 "cmds_gperf.gperf"
       {"part-get-parttype", &part_get_parttype_cmd_entry},
-#line 857 "cmds_gperf.gperf"
+#line 862 "cmds_gperf.gperf"
       {"lvcreate", &lvcreate_cmd_entry},
       {(char*)0},
-#line 767 "cmds_gperf.gperf"
+#line 772 "cmds_gperf.gperf"
       {"inspect-is-live", &inspect_is_live_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1006 "cmds_gperf.gperf"
+#line 1013 "cmds_gperf.gperf"
       {"readdir", &readdir_cmd_entry},
-#line 579 "cmds_gperf.gperf"
+#line 582 "cmds_gperf.gperf"
       {"command_lines", &command_lines_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 580 "cmds_gperf.gperf"
+#line 583 "cmds_gperf.gperf"
       {"command-lines", &command_lines_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 998 "cmds_gperf.gperf"
+#line 1005 "cmds_gperf.gperf"
       {"pvuuid", &pvuuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1018 "cmds_gperf.gperf"
+#line 1025 "cmds_gperf.gperf"
       {"rm_rf", &rm_rf_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1019 "cmds_gperf.gperf"
+#line 1026 "cmds_gperf.gperf"
       {"rm-rf", &rm_rf_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 869 "cmds_gperf.gperf"
+#line 874 "cmds_gperf.gperf"
       {"lvrename", &lvrename_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1178 "cmds_gperf.gperf"
+#line 1186 "cmds_gperf.gperf"
       {"vguuid", &vguuid_cmd_entry},
       {(char*)0},
-#line 738 "cmds_gperf.gperf"
+#line 743 "cmds_gperf.gperf"
       {"inspect_get_format", &inspect_get_format_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1062 "cmds_gperf.gperf"
-      {"set_qemu", &set_qemu_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 739 "cmds_gperf.gperf"
+#line 744 "cmds_gperf.gperf"
       {"inspect-get-format", &inspect_get_format_cmd_entry},
-#line 1063 "cmds_gperf.gperf"
-      {"set-qemu", &set_qemu_cmd_entry},
-#line 1144 "cmds_gperf.gperf"
+      {(char*)0},
+#line 1152 "cmds_gperf.gperf"
       {"umask", &umask_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 932 "cmds_gperf.gperf"
+#line 937 "cmds_gperf.gperf"
       {"mount_local", &mount_local_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1026 "cmds_gperf.gperf"
+#line 1033 "cmds_gperf.gperf"
       {"scrub_freespace", &scrub_freespace_cmd_entry},
-#line 933 "cmds_gperf.gperf"
+#line 938 "cmds_gperf.gperf"
       {"mount-local", &mount_local_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 683 "cmds_gperf.gperf"
-      {"get_qemu", &get_qemu_cmd_entry},
-#line 1027 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1034 "cmds_gperf.gperf"
       {"scrub-freespace", &scrub_freespace_cmd_entry},
-#line 981 "cmds_gperf.gperf"
+#line 988 "cmds_gperf.gperf"
       {"part_to_dev", &part_to_dev_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 684 "cmds_gperf.gperf"
-      {"get-qemu", &get_qemu_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 982 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 989 "cmds_gperf.gperf"
       {"part-to-dev", &part_to_dev_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 642 "cmds_gperf.gperf"
+#line 647 "cmds_gperf.gperf"
       {"file", &file_cmd_entry},
       {(char*)0},
-#line 481 "cmds_gperf.gperf"
+#line 484 "cmds_gperf.gperf"
       {"add-ro", &add_drive_ro_cmd_entry},
-#line 988 "cmds_gperf.gperf"
+#line 995 "cmds_gperf.gperf"
       {"pread_device", &pread_device_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 934 "cmds_gperf.gperf"
+#line 939 "cmds_gperf.gperf"
       {"mount_local_run", &mount_local_run_cmd_entry},
       {(char*)0},
-#line 989 "cmds_gperf.gperf"
+#line 996 "cmds_gperf.gperf"
       {"pread-device", &pread_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 935 "cmds_gperf.gperf"
+#line 940 "cmds_gperf.gperf"
       {"mount-local-run", &mount_local_run_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1149 "cmds_gperf.gperf"
+#line 1157 "cmds_gperf.gperf"
       {"unmount-all", &umount_all_cmd_entry},
       {(char*)0},
-#line 979 "cmds_gperf.gperf"
+#line 986 "cmds_gperf.gperf"
       {"part_set_name", &part_set_name_cmd_entry},
-#line 832 "cmds_gperf.gperf"
+#line 837 "cmds_gperf.gperf"
       {"ln_f", &ln_f_cmd_entry},
-#line 836 "cmds_gperf.gperf"
+#line 841 "cmds_gperf.gperf"
       {"ln_sf", &ln_sf_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 833 "cmds_gperf.gperf"
+#line 838 "cmds_gperf.gperf"
       {"ln-f", &ln_f_cmd_entry},
-#line 837 "cmds_gperf.gperf"
+#line 842 "cmds_gperf.gperf"
       {"ln-sf", &ln_sf_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 980 "cmds_gperf.gperf"
+#line 987 "cmds_gperf.gperf"
       {"part-set-name", &part_set_name_cmd_entry},
-      {(char*)0},
-#line 715 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0},
+#line 720 "cmds_gperf.gperf"
       {"initrd-cat", &initrd_cat_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1179 "cmds_gperf.gperf"
-      {"wc_c", &wc_c_cmd_entry},
-#line 1186 "cmds_gperf.gperf"
-      {"write", &write_cmd_entry},
-#line 999 "cmds_gperf.gperf"
-      {"pwrite", &pwrite_cmd_entry},
-      {(char*)0},
-#line 645 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 650 "cmds_gperf.gperf"
       {"filesize", &filesize_cmd_entry},
-#line 1180 "cmds_gperf.gperf"
+#line 1187 "cmds_gperf.gperf"
+      {"wc_c", &wc_c_cmd_entry},
+#line 1194 "cmds_gperf.gperf"
+      {"write", &write_cmd_entry},
+#line 1006 "cmds_gperf.gperf"
+      {"pwrite", &pwrite_cmd_entry},
+      {(char*)0}, {(char*)0},
+#line 1188 "cmds_gperf.gperf"
       {"wc-c", &wc_c_cmd_entry},
       {(char*)0},
-#line 492 "cmds_gperf.gperf"
+#line 495 "cmds_gperf.gperf"
       {"aug_defnode", &aug_defnode_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 493 "cmds_gperf.gperf"
+#line 496 "cmds_gperf.gperf"
       {"aug-defnode", &aug_defnode_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 494 "cmds_gperf.gperf"
+#line 497 "cmds_gperf.gperf"
       {"aug_defvar", &aug_defvar_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 495 "cmds_gperf.gperf"
+#line 498 "cmds_gperf.gperf"
       {"aug-defvar", &aug_defvar_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1071 "cmds_gperf.gperf"
-      {"set_smp", &set_smp_cmd_entry},
-      {(char*)0},
-#line 1064 "cmds_gperf.gperf"
-      {"qemu", &set_qemu_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1072 "cmds_gperf.gperf"
-      {"set-smp", &set_smp_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 714 "cmds_gperf.gperf"
+#line 719 "cmds_gperf.gperf"
       {"initrd_cat", &initrd_cat_cmd_entry},
       {(char*)0},
-#line 613 "cmds_gperf.gperf"
+#line 618 "cmds_gperf.gperf"
       {"df", &df_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 689 "cmds_gperf.gperf"
-      {"get_smp", &get_smp_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 690 "cmds_gperf.gperf"
-      {"get-smp", &get_smp_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 1093 "cmds_gperf.gperf"
+#line 1100 "cmds_gperf.gperf"
       {"sh", &sh_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 949 "cmds_gperf.gperf"
+#line 956 "cmds_gperf.gperf"
       {"ntfsclone_in", &ntfsclone_in_cmd_entry},
-#line 512 "cmds_gperf.gperf"
+#line 515 "cmds_gperf.gperf"
       {"aug_save", &aug_save_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 950 "cmds_gperf.gperf"
+#line 957 "cmds_gperf.gperf"
       {"ntfsclone-in", &ntfsclone_in_cmd_entry},
-#line 513 "cmds_gperf.gperf"
+#line 516 "cmds_gperf.gperf"
       {"aug-save", &aug_save_cmd_entry},
-#line 649 "cmds_gperf.gperf"
+#line 654 "cmds_gperf.gperf"
       {"find", &find_cmd_entry},
-#line 650 "cmds_gperf.gperf"
+#line 655 "cmds_gperf.gperf"
       {"find0", &find0_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1120 "cmds_gperf.gperf"
+#line 1128 "cmds_gperf.gperf"
       {"sync", &sync_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 488 "cmds_gperf.gperf"
+#line 491 "cmds_gperf.gperf"
       {"aug_clear", &aug_clear_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1058 "cmds_gperf.gperf"
+#line 1065 "cmds_gperf.gperf"
       {"path", &set_path_cmd_entry},
       {(char*)0},
-#line 489 "cmds_gperf.gperf"
+#line 492 "cmds_gperf.gperf"
       {"aug-clear", &aug_clear_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1056 "cmds_gperf.gperf"
+#line 1063 "cmds_gperf.gperf"
       {"set_path", &set_path_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1024 "cmds_gperf.gperf"
+#line 1031 "cmds_gperf.gperf"
       {"scrub_file", &scrub_file_cmd_entry},
-#line 1057 "cmds_gperf.gperf"
+#line 1064 "cmds_gperf.gperf"
       {"set-path", &set_path_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 794 "cmds_gperf.gperf"
+#line 799 "cmds_gperf.gperf"
       {"is_ready", &is_ready_cmd_entry},
-#line 1025 "cmds_gperf.gperf"
+#line 1032 "cmds_gperf.gperf"
       {"scrub-file", &scrub_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 795 "cmds_gperf.gperf"
+#line 800 "cmds_gperf.gperf"
       {"is-ready", &is_ready_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 676 "cmds_gperf.gperf"
+#line 681 "cmds_gperf.gperf"
       {"get_path", &get_path_cmd_entry},
       {(char*)0},
-#line 951 "cmds_gperf.gperf"
+#line 958 "cmds_gperf.gperf"
       {"ntfsclone_out", &ntfsclone_out_cmd_entry},
       {(char*)0},
-#line 800 "cmds_gperf.gperf"
+#line 805 "cmds_gperf.gperf"
       {"is_zero", &is_zero_cmd_entry},
-#line 677 "cmds_gperf.gperf"
+#line 682 "cmds_gperf.gperf"
       {"get-path", &get_path_cmd_entry},
-#line 760 "cmds_gperf.gperf"
+#line 765 "cmds_gperf.gperf"
       {"inspect_get_type", &inspect_get_type_cmd_entry},
-#line 952 "cmds_gperf.gperf"
+#line 959 "cmds_gperf.gperf"
       {"ntfsclone-out", &ntfsclone_out_cmd_entry},
       {(char*)0},
-#line 801 "cmds_gperf.gperf"
+#line 806 "cmds_gperf.gperf"
       {"is-zero", &is_zero_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 702 "cmds_gperf.gperf"
+#line 707 "cmds_gperf.gperf"
       {"glob", &glob_cmd_entry},
       {(char*)0},
-#line 876 "cmds_gperf.gperf"
+#line 881 "cmds_gperf.gperf"
       {"lvuuid", &lvuuid_cmd_entry},
-#line 761 "cmds_gperf.gperf"
+#line 766 "cmds_gperf.gperf"
       {"inspect-get-type", &inspect_get_type_cmd_entry},
-#line 1202 "cmds_gperf.gperf"
+#line 1210 "cmds_gperf.gperf"
       {"zgrep", &zgrep_cmd_entry},
-#line 1191 "cmds_gperf.gperf"
+#line 1199 "cmds_gperf.gperf"
       {"zegrep", &zegrep_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1099 "cmds_gperf.gperf"
+#line 1107 "cmds_gperf.gperf"
       {"statvfs", &statvfs_cmd_entry},
-#line 498 "cmds_gperf.gperf"
+#line 501 "cmds_gperf.gperf"
       {"aug_init", &aug_init_cmd_entry},
-#line 1203 "cmds_gperf.gperf"
+#line 1211 "cmds_gperf.gperf"
       {"zgrepi", &zgrepi_cmd_entry},
-#line 604 "cmds_gperf.gperf"
+#line 607 "cmds_gperf.gperf"
       {"debug", &debug_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 499 "cmds_gperf.gperf"
+#line 502 "cmds_gperf.gperf"
       {"aug-init", &aug_init_cmd_entry},
-#line 1128 "cmds_gperf.gperf"
+#line 1136 "cmds_gperf.gperf"
       {"tgz_in", &tgz_in_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 815 "cmds_gperf.gperf"
-      {"list_9p", &list_9p_cmd_entry},
-#line 1129 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 1137 "cmds_gperf.gperf"
       {"tgz-in", &tgz_in_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 627 "cmds_gperf.gperf"
+#line 632 "cmds_gperf.gperf"
       {"echo", &echo_cmd_entry},
-#line 816 "cmds_gperf.gperf"
-      {"list-9p", &list_9p_cmd_entry},
-#line 516 "cmds_gperf.gperf"
+      {(char*)0},
+#line 519 "cmds_gperf.gperf"
       {"available", &available_cmd_entry},
-#line 764 "cmds_gperf.gperf"
+#line 769 "cmds_gperf.gperf"
       {"inspect_get_windows_systemroot", &inspect_get_windows_systemroot_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1133 "cmds_gperf.gperf"
+#line 1141 "cmds_gperf.gperf"
       {"touch", &touch_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 635 "cmds_gperf.gperf"
-      {"equal", &equal_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 762 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 767 "cmds_gperf.gperf"
       {"inspect_get_windows_current_control_set", &inspect_get_windows_current_control_set_cmd_entry},
-#line 765 "cmds_gperf.gperf"
+#line 770 "cmds_gperf.gperf"
       {"inspect-get-windows-systemroot", &inspect_get_windows_systemroot_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 763 "cmds_gperf.gperf"
+#line 768 "cmds_gperf.gperf"
       {"inspect-get-windows-current-control-set", &inspect_get_windows_current_control_set_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1140 "cmds_gperf.gperf"
+#line 1148 "cmds_gperf.gperf"
       {"txz_in", &txz_in_cmd_entry},
-#line 827 "cmds_gperf.gperf"
+#line 832 "cmds_gperf.gperf"
       {"list_partitions", &list_partitions_cmd_entry},
-#line 717 "cmds_gperf.gperf"
-      {"initrd-list", &initrd_list_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1141 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1149 "cmds_gperf.gperf"
       {"txz-in", &txz_in_cmd_entry},
-#line 828 "cmds_gperf.gperf"
+#line 833 "cmds_gperf.gperf"
       {"list-partitions", &list_partitions_cmd_entry},
-      {(char*)0},
-#line 1193 "cmds_gperf.gperf"
+#line 722 "cmds_gperf.gperf"
+      {"initrd-list", &initrd_list_cmd_entry},
+#line 1201 "cmds_gperf.gperf"
       {"zero", &zero_cmd_entry},
       {(char*)0},
-#line 646 "cmds_gperf.gperf"
+#line 651 "cmds_gperf.gperf"
       {"fill", &fill_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1130 "cmds_gperf.gperf"
+#line 1138 "cmds_gperf.gperf"
       {"tgz_out", &tgz_out_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1131 "cmds_gperf.gperf"
+#line 1139 "cmds_gperf.gperf"
       {"tgz-out", &tgz_out_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1135 "cmds_gperf.gperf"
+#line 1143 "cmds_gperf.gperf"
       {"truncate_size", &truncate_size_cmd_entry},
       {(char*)0},
-#line 1034 "cmds_gperf.gperf"
+#line 1041 "cmds_gperf.gperf"
       {"set_autosync", &set_autosync_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1136 "cmds_gperf.gperf"
+#line 1144 "cmds_gperf.gperf"
       {"truncate-size", &truncate_size_cmd_entry},
       {(char*)0},
-#line 1035 "cmds_gperf.gperf"
+#line 1042 "cmds_gperf.gperf"
       {"set-autosync", &set_autosync_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 594 "cmds_gperf.gperf"
+#line 597 "cmds_gperf.gperf"
       {"copy_in", &copy_in_cmd_entry},
-#line 1181 "cmds_gperf.gperf"
+#line 1189 "cmds_gperf.gperf"
       {"wc_l", &wc_l_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 595 "cmds_gperf.gperf"
+#line 598 "cmds_gperf.gperf"
       {"copy-in", &copy_in_cmd_entry},
-#line 1182 "cmds_gperf.gperf"
+#line 1190 "cmds_gperf.gperf"
       {"wc-l", &wc_l_cmd_entry},
-#line 845 "cmds_gperf.gperf"
+#line 850 "cmds_gperf.gperf"
       {"luks_close", &luks_close_cmd_entry},
-#line 716 "cmds_gperf.gperf"
+#line 721 "cmds_gperf.gperf"
       {"initrd_list", &initrd_list_cmd_entry},
-#line 1137 "cmds_gperf.gperf"
+#line 1145 "cmds_gperf.gperf"
       {"tune2fs", &tune2fs_cmd_entry},
-#line 660 "cmds_gperf.gperf"
+#line 665 "cmds_gperf.gperf"
       {"get_autosync", &get_autosync_cmd_entry},
-#line 568 "cmds_gperf.gperf"
+#line 571 "cmds_gperf.gperf"
       {"case_sensitive_path", &case_sensitive_path_cmd_entry},
-#line 846 "cmds_gperf.gperf"
+#line 851 "cmds_gperf.gperf"
       {"luks-close", &luks_close_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 661 "cmds_gperf.gperf"
+#line 666 "cmds_gperf.gperf"
       {"get-autosync", &get_autosync_cmd_entry},
-#line 569 "cmds_gperf.gperf"
+#line 572 "cmds_gperf.gperf"
       {"case-sensitive-path", &case_sensitive_path_cmd_entry},
-#line 888 "cmds_gperf.gperf"
+#line 893 "cmds_gperf.gperf"
       {"mkdir", &mkdir_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1142 "cmds_gperf.gperf"
+#line 1150 "cmds_gperf.gperf"
       {"txz_out", &txz_out_cmd_entry},
       {(char*)0},
-#line 1022 "cmds_gperf.gperf"
+#line 1029 "cmds_gperf.gperf"
       {"scrub_device", &scrub_device_cmd_entry},
       {(char*)0},
-#line 581 "cmds_gperf.gperf"
+#line 584 "cmds_gperf.gperf"
       {"compress_device_out", &compress_device_out_cmd_entry},
-#line 1143 "cmds_gperf.gperf"
+#line 1151 "cmds_gperf.gperf"
       {"txz-out", &txz_out_cmd_entry},
-#line 821 "cmds_gperf.gperf"
+#line 826 "cmds_gperf.gperf"
       {"list_events", &list_events_cmd_entry},
-#line 1023 "cmds_gperf.gperf"
+#line 1030 "cmds_gperf.gperf"
       {"scrub-device", &scrub_device_cmd_entry},
-#line 740 "cmds_gperf.gperf"
+#line 745 "cmds_gperf.gperf"
       {"inspect_get_hostname", &inspect_get_hostname_cmd_entry},
-#line 582 "cmds_gperf.gperf"
+#line 585 "cmds_gperf.gperf"
       {"compress-device-out", &compress_device_out_cmd_entry},
       {(char*)0},
-#line 822 "cmds_gperf.gperf"
+#line 827 "cmds_gperf.gperf"
       {"list-events", &list_events_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1036 "cmds_gperf.gperf"
+#line 1043 "cmds_gperf.gperf"
       {"autosync", &set_autosync_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 741 "cmds_gperf.gperf"
+#line 746 "cmds_gperf.gperf"
       {"inspect-get-hostname", &inspect_get_hostname_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1077 "cmds_gperf.gperf"
+#line 1084 "cmds_gperf.gperf"
       {"set_verbose", &set_verbose_cmd_entry},
-#line 913 "cmds_gperf.gperf"
+#line 918 "cmds_gperf.gperf"
       {"mkmountpoint", &mkmountpoint_cmd_entry},
       {(char*)0},
-#line 1050 "cmds_gperf.gperf"
+#line 1057 "cmds_gperf.gperf"
       {"set_memsize", &set_memsize_cmd_entry},
-#line 1189 "cmds_gperf.gperf"
+#line 1197 "cmds_gperf.gperf"
       {"write_file", &write_file_cmd_entry},
-#line 1078 "cmds_gperf.gperf"
+#line 1085 "cmds_gperf.gperf"
       {"set-verbose", &set_verbose_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1051 "cmds_gperf.gperf"
+#line 1058 "cmds_gperf.gperf"
       {"set-memsize", &set_memsize_cmd_entry},
-#line 1190 "cmds_gperf.gperf"
+#line 1198 "cmds_gperf.gperf"
       {"write-file", &write_file_cmd_entry},
-#line 1028 "cmds_gperf.gperf"
-      {"set_append", &set_append_cmd_entry},
-#line 786 "cmds_gperf.gperf"
+      {(char*)0},
+#line 791 "cmds_gperf.gperf"
       {"is_fifo", &is_fifo_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 1029 "cmds_gperf.gperf"
-      {"set-append", &set_append_cmd_entry},
-#line 787 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 792 "cmds_gperf.gperf"
       {"is-fifo", &is_fifo_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 697 "cmds_gperf.gperf"
+#line 702 "cmds_gperf.gperf"
       {"get_verbose", &get_verbose_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 672 "cmds_gperf.gperf"
+#line 677 "cmds_gperf.gperf"
       {"get_memsize", &get_memsize_cmd_entry},
-#line 825 "cmds_gperf.gperf"
+#line 830 "cmds_gperf.gperf"
       {"list_md_devices", &list_md_devices_cmd_entry},
-#line 698 "cmds_gperf.gperf"
+#line 703 "cmds_gperf.gperf"
       {"get-verbose", &get_verbose_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 673 "cmds_gperf.gperf"
+#line 678 "cmds_gperf.gperf"
       {"get-memsize", &get_memsize_cmd_entry},
-      {(char*)0},
-#line 656 "cmds_gperf.gperf"
-      {"get_append", &get_append_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 880 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 885 "cmds_gperf.gperf"
       {"md_create", &md_create_cmd_entry},
-#line 826 "cmds_gperf.gperf"
+#line 831 "cmds_gperf.gperf"
       {"list-md-devices", &list_md_devices_cmd_entry},
-#line 657 "cmds_gperf.gperf"
-      {"get-append", &get_append_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 881 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 886 "cmds_gperf.gperf"
       {"md-create", &md_create_cmd_entry},
       {(char*)0},
-#line 1040 "cmds_gperf.gperf"
+#line 1047 "cmds_gperf.gperf"
       {"set_e2attrs", &set_e2attrs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1041 "cmds_gperf.gperf"
+#line 1048 "cmds_gperf.gperf"
       {"set-e2attrs", &set_e2attrs_cmd_entry},
-#line 506 "cmds_gperf.gperf"
+#line 509 "cmds_gperf.gperf"
       {"aug_match", &aug_match_cmd_entry},
       {(char*)0},
-#line 655 "cmds_gperf.gperf"
+#line 660 "cmds_gperf.gperf"
       {"fsck", &fsck_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 507 "cmds_gperf.gperf"
+#line 510 "cmds_gperf.gperf"
       {"aug-match", &aug_match_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1070 "cmds_gperf.gperf"
+#line 1077 "cmds_gperf.gperf"
       {"selinux", &set_selinux_cmd_entry},
       {(char*)0},
-#line 914 "cmds_gperf.gperf"
+#line 919 "cmds_gperf.gperf"
       {"mknod", &mknod_cmd_entry},
-#line 664 "cmds_gperf.gperf"
+#line 669 "cmds_gperf.gperf"
       {"get_e2attrs", &get_e2attrs_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 1148 "cmds_gperf.gperf"
-      {"umount-all", &umount_all_cmd_entry},
-#line 665 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 670 "cmds_gperf.gperf"
       {"get-e2attrs", &get_e2attrs_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 520 "cmds_gperf.gperf"
+#line 523 "cmds_gperf.gperf"
       {"base64-in", &base64_in_cmd_entry},
+#line 1156 "cmds_gperf.gperf"
+      {"umount-all", &umount_all_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 915 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 920 "cmds_gperf.gperf"
       {"mknod_b", &mknod_b_cmd_entry},
-#line 961 "cmds_gperf.gperf"
+#line 968 "cmds_gperf.gperf"
       {"part_del", &part_del_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 916 "cmds_gperf.gperf"
+#line 921 "cmds_gperf.gperf"
       {"mknod-b", &mknod_b_cmd_entry},
-#line 962 "cmds_gperf.gperf"
+#line 969 "cmds_gperf.gperf"
       {"part-del", &part_del_cmd_entry},
-#line 973 "cmds_gperf.gperf"
+#line 980 "cmds_gperf.gperf"
       {"part_list", &part_list_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1055 "cmds_gperf.gperf"
+#line 1062 "cmds_gperf.gperf"
       {"network", &set_network_cmd_entry},
       {(char*)0},
-#line 974 "cmds_gperf.gperf"
+#line 981 "cmds_gperf.gperf"
       {"part-list", &part_list_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 471 "cmds_gperf.gperf"
+#line 474 "cmds_gperf.gperf"
       {"add_domain", &add_domain_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 472 "cmds_gperf.gperf"
+#line 475 "cmds_gperf.gperf"
       {"add-domain", &add_domain_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0},
-#line 1147 "cmds_gperf.gperf"
-      {"umount_all", &umount_all_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 519 "cmds_gperf.gperf"
+#line 522 "cmds_gperf.gperf"
       {"base64_in", &base64_in_cmd_entry},
-#line 1046 "cmds_gperf.gperf"
+#line 1155 "cmds_gperf.gperf"
+      {"umount_all", &umount_all_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 1053 "cmds_gperf.gperf"
       {"set_e2uuid", &set_e2uuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 809 "cmds_gperf.gperf"
+#line 814 "cmds_gperf.gperf"
       {"launch", &launch_cmd_entry},
-#line 1047 "cmds_gperf.gperf"
+#line 1054 "cmds_gperf.gperf"
       {"set-e2uuid", &set_e2uuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 522 "cmds_gperf.gperf"
+#line 525 "cmds_gperf.gperf"
       {"base64-out", &base64_out_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 670 "cmds_gperf.gperf"
+#line 675 "cmds_gperf.gperf"
       {"get_e2uuid", &get_e2uuid_cmd_entry},
-#line 1009 "cmds_gperf.gperf"
+#line 1016 "cmds_gperf.gperf"
       {"realpath", &realpath_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 671 "cmds_gperf.gperf"
+#line 676 "cmds_gperf.gperf"
       {"get-e2uuid", &get_e2uuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 469 "cmds_gperf.gperf"
+#line 472 "cmds_gperf.gperf"
       {"add_cdrom", &add_cdrom_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 709 "cmds_gperf.gperf"
+#line 714 "cmds_gperf.gperf"
       {"head", &head_cmd_entry},
       {(char*)0},
-#line 470 "cmds_gperf.gperf"
+#line 473 "cmds_gperf.gperf"
       {"add-cdrom", &add_cdrom_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 985 "cmds_gperf.gperf"
-      {"ping_daemon", &ping_daemon_cmd_entry},
-#line 1151 "cmds_gperf.gperf"
-      {"umount-local", &umount_local_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 521 "cmds_gperf.gperf"
-      {"base64_out", &base64_out_cmd_entry},
-#line 986 "cmds_gperf.gperf"
-      {"ping-daemon", &ping_daemon_cmd_entry},
       {(char*)0},
-#line 886 "cmds_gperf.gperf"
-      {"md_stop", &md_stop_cmd_entry},
+#line 524 "cmds_gperf.gperf"
+      {"base64_out", &base64_out_cmd_entry},
+#line 992 "cmds_gperf.gperf"
+      {"ping_daemon", &ping_daemon_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 887 "cmds_gperf.gperf"
-      {"md-stop", &md_stop_cmd_entry},
-#line 906 "cmds_gperf.gperf"
+#line 993 "cmds_gperf.gperf"
+      {"ping-daemon", &ping_daemon_cmd_entry},
+#line 1159 "cmds_gperf.gperf"
+      {"umount-local", &umount_local_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 876 "cmds_gperf.gperf"
+      {"lvresize_free", &lvresize_free_cmd_entry},
+#line 911 "cmds_gperf.gperf"
       {"mkfs", &mkfs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 871 "cmds_gperf.gperf"
-      {"lvresize_free", &lvresize_free_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 707 "cmds_gperf.gperf"
-      {"grub_install", &grub_install_cmd_entry},
-#line 872 "cmds_gperf.gperf"
+#line 877 "cmds_gperf.gperf"
       {"lvresize-free", &lvresize_free_cmd_entry},
-#line 710 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 712 "cmds_gperf.gperf"
+      {"grub_install", &grub_install_cmd_entry},
+      {(char*)0},
+#line 715 "cmds_gperf.gperf"
       {"head_n", &head_n_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 708 "cmds_gperf.gperf"
+#line 713 "cmds_gperf.gperf"
       {"grub-install", &grub_install_cmd_entry},
-#line 858 "cmds_gperf.gperf"
+#line 863 "cmds_gperf.gperf"
       {"lvcreate_free", &lvcreate_free_cmd_entry},
-#line 711 "cmds_gperf.gperf"
+#line 716 "cmds_gperf.gperf"
       {"head-n", &head_n_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 859 "cmds_gperf.gperf"
+#line 864 "cmds_gperf.gperf"
       {"lvcreate-free", &lvcreate_free_cmd_entry},
       {(char*)0},
-#line 713 "cmds_gperf.gperf"
+#line 718 "cmds_gperf.gperf"
       {"hexedit", &hexedit_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1007 "cmds_gperf.gperf"
+#line 1014 "cmds_gperf.gperf"
       {"readlink", &readlink_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1150 "cmds_gperf.gperf"
+#line 1158 "cmds_gperf.gperf"
       {"umount_local", &umount_local_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1138 "cmds_gperf.gperf"
+#line 1146 "cmds_gperf.gperf"
       {"tune2fs_l", &tune2fs_l_cmd_entry},
       {(char*)0},
-#line 860 "cmds_gperf.gperf"
+#line 865 "cmds_gperf.gperf"
       {"lvm_canonical_lv_name", &lvm_canonical_lv_name_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1139 "cmds_gperf.gperf"
+#line 1147 "cmds_gperf.gperf"
       {"tune2fs-l", &tune2fs_l_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 996 "cmds_gperf.gperf"
+#line 1003 "cmds_gperf.gperf"
       {"pvs_full", &pvs_full_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 861 "cmds_gperf.gperf"
+#line 866 "cmds_gperf.gperf"
       {"lvm-canonical-lv-name", &lvm_canonical_lv_name_cmd_entry},
       {(char*)0},
-#line 997 "cmds_gperf.gperf"
+#line 1004 "cmds_gperf.gperf"
       {"pvs-full", &pvs_full_cmd_entry},
       {(char*)0},
-#line 790 "cmds_gperf.gperf"
+#line 795 "cmds_gperf.gperf"
       {"is_launching", &is_launching_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 502 "cmds_gperf.gperf"
+#line 505 "cmds_gperf.gperf"
       {"aug_load", &aug_load_cmd_entry},
       {(char*)0},
-#line 791 "cmds_gperf.gperf"
+#line 796 "cmds_gperf.gperf"
       {"is-launching", &is_launching_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 503 "cmds_gperf.gperf"
+#line 506 "cmds_gperf.gperf"
       {"aug-load", &aug_load_cmd_entry},
       {(char*)0},
-#line 819 "cmds_gperf.gperf"
+#line 824 "cmds_gperf.gperf"
       {"list_dm_devices", &list_dm_devices_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1175 "cmds_gperf.gperf"
+#line 1183 "cmds_gperf.gperf"
       {"vgs_full", &vgs_full_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1176 "cmds_gperf.gperf"
+#line 1184 "cmds_gperf.gperf"
       {"vgs-full", &vgs_full_cmd_entry},
       {(char*)0},
-#line 820 "cmds_gperf.gperf"
+#line 825 "cmds_gperf.gperf"
       {"list-dm-devices", &list_dm_devices_cmd_entry},
       {(char*)0},
-#line 788 "cmds_gperf.gperf"
+#line 793 "cmds_gperf.gperf"
       {"is_file", &is_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 789 "cmds_gperf.gperf"
+#line 794 "cmds_gperf.gperf"
       {"is-file", &is_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1185 "cmds_gperf.gperf"
+#line 1193 "cmds_gperf.gperf"
       {"wipefs", &wipefs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 1069 "cmds_gperf.gperf"
+      {"set_qemu", &set_qemu_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 1070 "cmds_gperf.gperf"
+      {"set-qemu", &set_qemu_cmd_entry},
+      {(char*)0},
+#line 700 "cmds_gperf.gperf"
+      {"get_umask", &get_umask_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 612 "cmds_gperf.gperf"
+#line 615 "cmds_gperf.gperf"
       {"delete-event", &delete_event_cmd_entry},
       {(char*)0},
-#line 695 "cmds_gperf.gperf"
-      {"get_umask", &get_umask_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 696 "cmds_gperf.gperf"
+#line 701 "cmds_gperf.gperf"
       {"get-umask", &get_umask_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 993 "cmds_gperf.gperf"
-      {"pvresize_size", &pvresize_size_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 842 "cmds_gperf.gperf"
+#line 1000 "cmds_gperf.gperf"
+      {"pvresize_size", &pvresize_size_cmd_entry},
+#line 688 "cmds_gperf.gperf"
+      {"get_qemu", &get_qemu_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1001 "cmds_gperf.gperf"
+      {"pvresize-size", &pvresize_size_cmd_entry},
+#line 689 "cmds_gperf.gperf"
+      {"get-qemu", &get_qemu_cmd_entry},
+      {(char*)0},
+#line 847 "cmds_gperf.gperf"
       {"lstatlist", &lstatlist_cmd_entry},
       {(char*)0},
-#line 994 "cmds_gperf.gperf"
-      {"pvresize-size", &pvresize_size_cmd_entry},
-#line 607 "cmds_gperf.gperf"
+#line 1103 "cmds_gperf.gperf"
+      {"shutdown", &shutdown_cmd_entry},
+#line 610 "cmds_gperf.gperf"
       {"debug_drives", &debug_drives_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 830 "cmds_gperf.gperf"
+#line 835 "cmds_gperf.gperf"
       {"llz", &llz_cmd_entry},
-#line 608 "cmds_gperf.gperf"
+#line 611 "cmds_gperf.gperf"
       {"debug-drives", &debug_drives_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 805 "cmds_gperf.gperf"
+#line 810 "cmds_gperf.gperf"
       {"isoinfo_device", &isoinfo_device_cmd_entry},
-#line 977 "cmds_gperf.gperf"
+#line 984 "cmds_gperf.gperf"
       {"part_set_mbr_id", &part_set_mbr_id_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 806 "cmds_gperf.gperf"
+#line 811 "cmds_gperf.gperf"
       {"isoinfo-device", &isoinfo_device_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 611 "cmds_gperf.gperf"
+#line 614 "cmds_gperf.gperf"
       {"delete_event", &delete_event_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 978 "cmds_gperf.gperf"
+#line 985 "cmds_gperf.gperf"
       {"part-set-mbr-id", &part_set_mbr_id_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 967 "cmds_gperf.gperf"
+#line 974 "cmds_gperf.gperf"
       {"part_get_mbr_id", &part_get_mbr_id_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 975 "cmds_gperf.gperf"
+#line 982 "cmds_gperf.gperf"
       {"part_set_bootable", &part_set_bootable_cmd_entry},
-#line 991 "cmds_gperf.gperf"
+#line 998 "cmds_gperf.gperf"
       {"pvremove", &pvremove_cmd_entry},
-#line 596 "cmds_gperf.gperf"
+#line 599 "cmds_gperf.gperf"
       {"copy_out", &copy_out_cmd_entry},
-#line 968 "cmds_gperf.gperf"
+#line 975 "cmds_gperf.gperf"
       {"part-get-mbr-id", &part_get_mbr_id_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 597 "cmds_gperf.gperf"
+#line 600 "cmds_gperf.gperf"
       {"copy-out", &copy_out_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 976 "cmds_gperf.gperf"
+#line 983 "cmds_gperf.gperf"
       {"part-set-bootable", &part_set_bootable_cmd_entry},
-#line 576 "cmds_gperf.gperf"
+#line 579 "cmds_gperf.gperf"
       {"chmod", &chmod_cmd_entry},
       {(char*)0},
-#line 1031 "cmds_gperf.gperf"
+#line 1038 "cmds_gperf.gperf"
       {"set_attach_method", &set_attach_method_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 965 "cmds_gperf.gperf"
+#line 972 "cmds_gperf.gperf"
       {"part_get_bootable", &part_get_bootable_cmd_entry},
-#line 1172 "cmds_gperf.gperf"
+#line 1180 "cmds_gperf.gperf"
       {"vgremove", &vgremove_cmd_entry},
       {(char*)0},
-#line 1032 "cmds_gperf.gperf"
+#line 1039 "cmds_gperf.gperf"
       {"set-attach-method", &set_attach_method_cmd_entry},
-#line 1083 "cmds_gperf.gperf"
+#line 1090 "cmds_gperf.gperf"
       {"sfdisk", &sfdisk_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1158 "cmds_gperf.gperf"
+#line 1166 "cmds_gperf.gperf"
       {"vfs_label", &vfs_label_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 966 "cmds_gperf.gperf"
+#line 973 "cmds_gperf.gperf"
       {"part-get-bootable", &part_get_bootable_cmd_entry},
       {(char*)0},
-#line 1159 "cmds_gperf.gperf"
+#line 1167 "cmds_gperf.gperf"
       {"vfs-label", &vfs_label_cmd_entry},
-#line 658 "cmds_gperf.gperf"
+#line 663 "cmds_gperf.gperf"
       {"get_attach_method", &get_attach_method_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 1042 "cmds_gperf.gperf"
+#line 1078 "cmds_gperf.gperf"
+      {"set_smp", &set_smp_cmd_entry},
+      {(char*)0},
+#line 1071 "cmds_gperf.gperf"
+      {"qemu", &set_qemu_cmd_entry},
+#line 1049 "cmds_gperf.gperf"
       {"set_e2generation", &set_e2generation_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1043 "cmds_gperf.gperf"
+      {(char*)0},
+#line 1079 "cmds_gperf.gperf"
+      {"set-smp", &set_smp_cmd_entry},
+      {(char*)0}, {(char*)0},
+#line 1050 "cmds_gperf.gperf"
       {"set-e2generation", &set_e2generation_cmd_entry},
-#line 659 "cmds_gperf.gperf"
+#line 664 "cmds_gperf.gperf"
       {"get-attach-method", &get_attach_method_cmd_entry},
       {(char*)0},
-#line 917 "cmds_gperf.gperf"
+#line 922 "cmds_gperf.gperf"
       {"mknod_c", &mknod_c_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 918 "cmds_gperf.gperf"
+#line 923 "cmds_gperf.gperf"
       {"mknod-c", &mknod_c_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1084 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 694 "cmds_gperf.gperf"
+      {"get_smp", &get_smp_cmd_entry},
+#line 1091 "cmds_gperf.gperf"
       {"sfdiskM", &sfdiskM_cmd_entry},
       {(char*)0},
-#line 666 "cmds_gperf.gperf"
+#line 671 "cmds_gperf.gperf"
       {"get_e2generation", &get_e2generation_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 667 "cmds_gperf.gperf"
+      {(char*)0},
+#line 695 "cmds_gperf.gperf"
+      {"get-smp", &get_smp_cmd_entry},
+      {(char*)0}, {(char*)0},
+#line 672 "cmds_gperf.gperf"
       {"get-e2generation", &get_e2generation_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1012 "cmds_gperf.gperf"
+#line 1019 "cmds_gperf.gperf"
       {"resize2fs", &resize2fs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1067 "cmds_gperf.gperf"
+#line 1074 "cmds_gperf.gperf"
       {"recovery-proc", &set_recovery_proc_cmd_entry},
-#line 889 "cmds_gperf.gperf"
+#line 894 "cmds_gperf.gperf"
       {"mkdir_mode", &mkdir_mode_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1199 "cmds_gperf.gperf"
+#line 1207 "cmds_gperf.gperf"
       {"zfgrep", &zfgrep_cmd_entry},
-#line 890 "cmds_gperf.gperf"
+#line 895 "cmds_gperf.gperf"
       {"mkdir-mode", &mkdir_mode_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1044 "cmds_gperf.gperf"
+#line 1051 "cmds_gperf.gperf"
       {"set_e2label", &set_e2label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 616 "cmds_gperf.gperf"
+#line 621 "cmds_gperf.gperf"
       {"display", &display_cmd_entry},
-#line 1045 "cmds_gperf.gperf"
+#line 1052 "cmds_gperf.gperf"
       {"set-e2label", &set_e2label_cmd_entry},
-#line 817 "cmds_gperf.gperf"
+#line 822 "cmds_gperf.gperf"
       {"list_devices", &list_devices_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1004 "cmds_gperf.gperf"
+#line 1011 "cmds_gperf.gperf"
       {"read_lines", &read_lines_cmd_entry},
-#line 1053 "cmds_gperf.gperf"
+#line 1060 "cmds_gperf.gperf"
       {"set_network", &set_network_cmd_entry},
-#line 818 "cmds_gperf.gperf"
+#line 823 "cmds_gperf.gperf"
       {"list-devices", &list_devices_cmd_entry},
-#line 954 "cmds_gperf.gperf"
+#line 961 "cmds_gperf.gperf"
       {"ntfsresize", &ntfsresize_cmd_entry},
       {(char*)0},
-#line 1005 "cmds_gperf.gperf"
+#line 1012 "cmds_gperf.gperf"
       {"read-lines", &read_lines_cmd_entry},
-#line 1054 "cmds_gperf.gperf"
+#line 1061 "cmds_gperf.gperf"
       {"set-network", &set_network_cmd_entry},
-#line 1008 "cmds_gperf.gperf"
+#line 1015 "cmds_gperf.gperf"
       {"readlinklist", &readlinklist_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 668 "cmds_gperf.gperf"
+#line 673 "cmds_gperf.gperf"
       {"get_e2label", &get_e2label_cmd_entry},
-#line 838 "cmds_gperf.gperf"
+#line 843 "cmds_gperf.gperf"
       {"lremovexattr", &lremovexattr_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 669 "cmds_gperf.gperf"
-      {"get-e2label", &get_e2label_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
 #line 674 "cmds_gperf.gperf"
+      {"get-e2label", &get_e2label_cmd_entry},
+#line 617 "cmds_gperf.gperf"
+      {"device-index", &device_index_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 679 "cmds_gperf.gperf"
       {"get_network", &get_network_cmd_entry},
-#line 556 "cmds_gperf.gperf"
+#line 559 "cmds_gperf.gperf"
       {"btrfs_set_seeding", &btrfs_set_seeding_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 675 "cmds_gperf.gperf"
+#line 680 "cmds_gperf.gperf"
       {"get-network", &get_network_cmd_entry},
       {(char*)0},
-#line 874 "cmds_gperf.gperf"
+#line 879 "cmds_gperf.gperf"
       {"lvs_full", &lvs_full_cmd_entry},
       {(char*)0},
-#line 778 "cmds_gperf.gperf"
+#line 783 "cmds_gperf.gperf"
       {"is_busy", &is_busy_cmd_entry},
-#line 919 "cmds_gperf.gperf"
+#line 924 "cmds_gperf.gperf"
       {"mkswap", &mkswap_cmd_entry},
-#line 557 "cmds_gperf.gperf"
+#line 560 "cmds_gperf.gperf"
       {"btrfs-set-seeding", &btrfs_set_seeding_cmd_entry},
-#line 875 "cmds_gperf.gperf"
+#line 880 "cmds_gperf.gperf"
       {"lvs-full", &lvs_full_cmd_entry},
       {(char*)0},
-#line 779 "cmds_gperf.gperf"
+#line 784 "cmds_gperf.gperf"
       {"is-busy", &is_busy_cmd_entry},
       {(char*)0},
-#line 1010 "cmds_gperf.gperf"
+#line 1017 "cmds_gperf.gperf"
       {"removexattr", &removexattr_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 847 "cmds_gperf.gperf"
+#line 852 "cmds_gperf.gperf"
       {"luks_format", &luks_format_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 848 "cmds_gperf.gperf"
+#line 853 "cmds_gperf.gperf"
       {"luks-format", &luks_format_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 517 "cmds_gperf.gperf"
+#line 820 "cmds_gperf.gperf"
+      {"list_9p", &list_9p_cmd_entry},
+#line 616 "cmds_gperf.gperf"
+      {"device_index", &device_index_cmd_entry},
+      {(char*)0}, {(char*)0},
+#line 520 "cmds_gperf.gperf"
       {"available_all_groups", &available_all_groups_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 866 "cmds_gperf.gperf"
+#line 821 "cmds_gperf.gperf"
+      {"list-9p", &list_9p_cmd_entry},
+      {(char*)0}, {(char*)0},
+#line 871 "cmds_gperf.gperf"
       {"lvm_set_filter", &lvm_set_filter_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 518 "cmds_gperf.gperf"
+#line 521 "cmds_gperf.gperf"
       {"available-all-groups", &available_all_groups_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 849 "cmds_gperf.gperf"
+#line 854 "cmds_gperf.gperf"
       {"luks_format_cipher", &luks_format_cipher_cmd_entry},
-#line 867 "cmds_gperf.gperf"
+#line 872 "cmds_gperf.gperf"
       {"lvm-set-filter", &lvm_set_filter_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 850 "cmds_gperf.gperf"
+#line 640 "cmds_gperf.gperf"
+      {"equal", &equal_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 855 "cmds_gperf.gperf"
       {"luks-format-cipher", &luks_format_cipher_cmd_entry},
-#line 942 "cmds_gperf.gperf"
+#line 947 "cmds_gperf.gperf"
       {"mount_vfs", &mount_vfs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 943 "cmds_gperf.gperf"
+#line 948 "cmds_gperf.gperf"
       {"mount-vfs", &mount_vfs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 955 "cmds_gperf.gperf"
+#line 962 "cmds_gperf.gperf"
       {"ntfsresize_opts", &ntfsresize_opts_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 956 "cmds_gperf.gperf"
+#line 963 "cmds_gperf.gperf"
       {"ntfsresize-opts", &ntfsresize_opts_cmd_entry},
-#line 1183 "cmds_gperf.gperf"
+#line 1191 "cmds_gperf.gperf"
       {"wc_w", &wc_w_cmd_entry},
       {(char*)0},
-#line 624 "cmds_gperf.gperf"
+#line 629 "cmds_gperf.gperf"
       {"e2fsck", &e2fsck_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1184 "cmds_gperf.gperf"
+#line 1192 "cmds_gperf.gperf"
       {"wc-w", &wc_w_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1196 "cmds_gperf.gperf"
+#line 1204 "cmds_gperf.gperf"
       {"zero_free_space", &zero_free_space_cmd_entry},
       {(char*)0},
-#line 724 "cmds_gperf.gperf"
+#line 729 "cmds_gperf.gperf"
       {"inotify_init", &inotify_init_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 725 "cmds_gperf.gperf"
+#line 730 "cmds_gperf.gperf"
       {"inotify-init", &inotify_init_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1197 "cmds_gperf.gperf"
+#line 1205 "cmds_gperf.gperf"
       {"zero-free-space", &zero_free_space_cmd_entry},
-#line 1013 "cmds_gperf.gperf"
+#line 1020 "cmds_gperf.gperf"
       {"resize2fs_M", &resize2fs_M_cmd_entry},
       {(char*)0},
-#line 544 "cmds_gperf.gperf"
+#line 547 "cmds_gperf.gperf"
       {"btrfs_device_add", &btrfs_device_add_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1014 "cmds_gperf.gperf"
+#line 1021 "cmds_gperf.gperf"
       {"resize2fs-M", &resize2fs_M_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0},
-#line 853 "cmds_gperf.gperf"
-      {"luks_open", &luks_open_cmd_entry},
-#line 545 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 548 "cmds_gperf.gperf"
       {"btrfs-device-add", &btrfs_device_add_cmd_entry},
       {(char*)0},
-#line 780 "cmds_gperf.gperf"
+#line 785 "cmds_gperf.gperf"
       {"is_chardev", &is_chardev_cmd_entry},
-#line 882 "cmds_gperf.gperf"
+#line 887 "cmds_gperf.gperf"
       {"md_detail", &md_detail_cmd_entry},
-#line 854 "cmds_gperf.gperf"
-      {"luks-open", &luks_open_cmd_entry},
+#line 952 "cmds_gperf.gperf"
+      {"nr_devices", &nr_devices_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 781 "cmds_gperf.gperf"
+#line 786 "cmds_gperf.gperf"
       {"is-chardev", &is_chardev_cmd_entry},
-#line 883 "cmds_gperf.gperf"
+#line 888 "cmds_gperf.gperf"
       {"md-detail", &md_detail_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1079 "cmds_gperf.gperf"
+#line 953 "cmds_gperf.gperf"
+      {"nr-devices", &nr_devices_cmd_entry},
+      {(char*)0},
+#line 1086 "cmds_gperf.gperf"
       {"verbose", &set_verbose_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 868 "cmds_gperf.gperf"
+#line 873 "cmds_gperf.gperf"
       {"lvremove", &lvremove_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1119 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1127 "cmds_gperf.gperf"
       {"swapon-uuid", &swapon_uuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 802 "cmds_gperf.gperf"
+      {(char*)0},
+#line 807 "cmds_gperf.gperf"
       {"is_zero_device", &is_zero_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 803 "cmds_gperf.gperf"
+#line 808 "cmds_gperf.gperf"
       {"is-zero-device", &is_zero_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1094 "cmds_gperf.gperf"
+#line 1101 "cmds_gperf.gperf"
       {"sh_lines", &sh_lines_cmd_entry},
-#line 647 "cmds_gperf.gperf"
+#line 652 "cmds_gperf.gperf"
       {"fill_pattern", &fill_pattern_cmd_entry},
-#line 1201 "cmds_gperf.gperf"
+#line 1209 "cmds_gperf.gperf"
       {"zfile", &zfile_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1095 "cmds_gperf.gperf"
+#line 1102 "cmds_gperf.gperf"
       {"sh-lines", &sh_lines_cmd_entry},
-#line 648 "cmds_gperf.gperf"
+#line 653 "cmds_gperf.gperf"
       {"fill-pattern", &fill_pattern_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 1118 "cmds_gperf.gperf"
+      {(char*)0},
+#line 1035 "cmds_gperf.gperf"
+      {"set_append", &set_append_cmd_entry},
+      {(char*)0},
+#line 1126 "cmds_gperf.gperf"
       {"swapon_uuid", &swapon_uuid_cmd_entry},
+      {(char*)0}, {(char*)0},
+#line 1036 "cmds_gperf.gperf"
+      {"set-append", &set_append_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1065 "cmds_gperf.gperf"
-      {"set_recovery_proc", &set_recovery_proc_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1066 "cmds_gperf.gperf"
+#line 1072 "cmds_gperf.gperf"
+      {"set_recovery_proc", &set_recovery_proc_cmd_entry},
+#line 661 "cmds_gperf.gperf"
+      {"get_append", &get_append_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 662 "cmds_gperf.gperf"
+      {"get-append", &get_append_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1073 "cmds_gperf.gperf"
       {"set-recovery-proc", &set_recovery_proc_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1052 "cmds_gperf.gperf"
+#line 1059 "cmds_gperf.gperf"
       {"memsize", &set_memsize_cmd_entry},
-#line 1164 "cmds_gperf.gperf"
+#line 1172 "cmds_gperf.gperf"
       {"vg_activate", &vg_activate_cmd_entry},
       {(char*)0},
-#line 685 "cmds_gperf.gperf"
+#line 690 "cmds_gperf.gperf"
       {"get_recovery_proc", &get_recovery_proc_cmd_entry},
       {(char*)0},
-#line 643 "cmds_gperf.gperf"
+#line 648 "cmds_gperf.gperf"
       {"file_architecture", &file_architecture_cmd_entry},
-#line 1165 "cmds_gperf.gperf"
+#line 1173 "cmds_gperf.gperf"
       {"vg-activate", &vg_activate_cmd_entry},
-#line 614 "cmds_gperf.gperf"
+#line 619 "cmds_gperf.gperf"
       {"df_h", &df_h_cmd_entry},
-#line 855 "cmds_gperf.gperf"
-      {"luks_open_ro", &luks_open_ro_cmd_entry},
-      {(char*)0},
-#line 644 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 649 "cmds_gperf.gperf"
       {"file-architecture", &file_architecture_cmd_entry},
       {(char*)0},
-#line 615 "cmds_gperf.gperf"
+#line 620 "cmds_gperf.gperf"
       {"df-h", &df_h_cmd_entry},
-#line 686 "cmds_gperf.gperf"
+#line 691 "cmds_gperf.gperf"
       {"get-recovery-proc", &get_recovery_proc_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 856 "cmds_gperf.gperf"
-      {"luks-open-ro", &luks_open_ro_cmd_entry},
-      {(char*)0},
-#line 523 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 526 "cmds_gperf.gperf"
       {"blkid", &blkid_cmd_entry},
-#line 798 "cmds_gperf.gperf"
+#line 803 "cmds_gperf.gperf"
       {"is_symlink", &is_symlink_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 799 "cmds_gperf.gperf"
+#line 804 "cmds_gperf.gperf"
       {"is-symlink", &is_symlink_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 638 "cmds_gperf.gperf"
+#line 643 "cmds_gperf.gperf"
       {"fallocate", &fallocate_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 891 "cmds_gperf.gperf"
-      {"mkdir_p", &mkdir_p_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 892 "cmds_gperf.gperf"
-      {"mkdir-p", &mkdir_p_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0},
-#line 864 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 869 "cmds_gperf.gperf"
       {"lvm_remove_all", &lvm_remove_all_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 865 "cmds_gperf.gperf"
+#line 870 "cmds_gperf.gperf"
       {"lvm-remove-all", &lvm_remove_all_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 554 "cmds_gperf.gperf"
+#line 557 "cmds_gperf.gperf"
       {"btrfs_fsck", &btrfs_fsck_cmd_entry},
       {(char*)0},
-#line 1187 "cmds_gperf.gperf"
+#line 1195 "cmds_gperf.gperf"
       {"write_append", &write_append_cmd_entry},
-#line 577 "cmds_gperf.gperf"
+#line 580 "cmds_gperf.gperf"
       {"chown", &chown_cmd_entry},
       {(char*)0},
-#line 555 "cmds_gperf.gperf"
+#line 558 "cmds_gperf.gperf"
       {"btrfs-fsck", &btrfs_fsck_cmd_entry},
       {(char*)0},
-#line 1188 "cmds_gperf.gperf"
+#line 1196 "cmds_gperf.gperf"
       {"write-append", &write_append_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1110 "cmds_gperf.gperf"
+#line 1118 "cmds_gperf.gperf"
       {"swapoff_uuid", &swapoff_uuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1111 "cmds_gperf.gperf"
+#line 1119 "cmds_gperf.gperf"
       {"swapoff-uuid", &swapoff_uuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 963 "cmds_gperf.gperf"
+#line 970 "cmds_gperf.gperf"
       {"part_disk", &part_disk_cmd_entry},
-#line 1192 "cmds_gperf.gperf"
+#line 1200 "cmds_gperf.gperf"
       {"zegrepi", &zegrepi_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 964 "cmds_gperf.gperf"
+#line 971 "cmds_gperf.gperf"
       {"part-disk", &part_disk_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 639 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 644 "cmds_gperf.gperf"
       {"fallocate64", &fallocate64_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 1086 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0},
+#line 891 "cmds_gperf.gperf"
+      {"md_stop", &md_stop_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 892 "cmds_gperf.gperf"
+      {"md-stop", &md_stop_cmd_entry},
+      {(char*)0},
+#line 1093 "cmds_gperf.gperf"
       {"sfdisk-N", &sfdisk_N_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0},
-#line 907 "cmds_gperf.gperf"
+#line 912 "cmds_gperf.gperf"
       {"mkfs_b", &mkfs_b_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 908 "cmds_gperf.gperf"
+#line 913 "cmds_gperf.gperf"
       {"mkfs-b", &mkfs_b_cmd_entry},
-      {(char*)0},
-#line 893 "cmds_gperf.gperf"
-      {"mkdtemp", &mkdtemp_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 905 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 910 "cmds_gperf.gperf"
       {"mkfifo", &mkfifo_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1085 "cmds_gperf.gperf"
+#line 1092 "cmds_gperf.gperf"
       {"sfdisk_N", &sfdisk_N_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 720 "cmds_gperf.gperf"
+#line 725 "cmds_gperf.gperf"
       {"inotify_close", &inotify_close_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 721 "cmds_gperf.gperf"
+#line 726 "cmds_gperf.gperf"
       {"inotify-close", &inotify_close_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 546 "cmds_gperf.gperf"
+#line 549 "cmds_gperf.gperf"
       {"btrfs_device_delete", &btrfs_device_delete_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 547 "cmds_gperf.gperf"
+#line 550 "cmds_gperf.gperf"
       {"btrfs-device-delete", &btrfs_device_delete_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 923 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 928 "cmds_gperf.gperf"
       {"mkswap-U", &mkswap_U_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1001 "cmds_gperf.gperf"
+#line 1008 "cmds_gperf.gperf"
       {"pwrite-device", &pwrite_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 621 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 626 "cmds_gperf.gperf"
       {"drop_caches", &drop_caches_cmd_entry},
-#line 726 "cmds_gperf.gperf"
+#line 731 "cmds_gperf.gperf"
       {"inotify_read", &inotify_read_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 622 "cmds_gperf.gperf"
+#line 627 "cmds_gperf.gperf"
       {"drop-caches", &drop_caches_cmd_entry},
-#line 727 "cmds_gperf.gperf"
+#line 732 "cmds_gperf.gperf"
       {"inotify-read", &inotify_read_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 922 "cmds_gperf.gperf"
+#line 927 "cmds_gperf.gperf"
       {"mkswap_U", &mkswap_U_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1000 "cmds_gperf.gperf"
+#line 1007 "cmds_gperf.gperf"
       {"pwrite_device", &pwrite_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 953 "cmds_gperf.gperf"
+#line 960 "cmds_gperf.gperf"
       {"ntfsfix", &ntfsfix_cmd_entry},
-#line 1171 "cmds_gperf.gperf"
+#line 1179 "cmds_gperf.gperf"
       {"vgpvuuids", &vgpvuuids_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2341,50 +2344,47 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 571 "cmds_gperf.gperf"
+#line 574 "cmds_gperf.gperf"
       {"checksum", &checksum_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1166 "cmds_gperf.gperf"
+#line 1174 "cmds_gperf.gperf"
       {"vg_activate_all", &vg_activate_all_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 605 "cmds_gperf.gperf"
+#line 608 "cmds_gperf.gperf"
       {"debug_cmdline", &debug_cmdline_cmd_entry},
       {(char*)0},
-#line 1167 "cmds_gperf.gperf"
+#line 1175 "cmds_gperf.gperf"
       {"vg-activate-all", &vg_activate_all_cmd_entry},
       {(char*)0},
-#line 609 "cmds_gperf.gperf"
+#line 612 "cmds_gperf.gperf"
       {"debug_upload", &debug_upload_cmd_entry},
-#line 606 "cmds_gperf.gperf"
+#line 609 "cmds_gperf.gperf"
       {"debug-cmdline", &debug_cmdline_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 610 "cmds_gperf.gperf"
+#line 613 "cmds_gperf.gperf"
       {"debug-upload", &debug_upload_cmd_entry},
       {(char*)0},
-#line 1002 "cmds_gperf.gperf"
+#line 1009 "cmds_gperf.gperf"
       {"read_file", &read_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1003 "cmds_gperf.gperf"
+#line 1010 "cmds_gperf.gperf"
       {"read-file", &read_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 812 "cmds_gperf.gperf"
+#line 817 "cmds_gperf.gperf"
       {"lchown", &lchown_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 911 "cmds_gperf.gperf"
-      {"mkfs_opts", &mkfs_opts_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1113 "cmds_gperf.gperf"
+#line 1121 "cmds_gperf.gperf"
       {"swapon-device", &swapon_device_cmd_entry},
-      {(char*)0},
-#line 912 "cmds_gperf.gperf"
-      {"mkfs-opts", &mkfs_opts_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1092 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 1099 "cmds_gperf.gperf"
       {"sfdisk-l", &sfdisk_l_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2392,36 +2392,32 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0},
-#line 1112 "cmds_gperf.gperf"
+#line 1120 "cmds_gperf.gperf"
       {"swapon_device", &swapon_device_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 574 "cmds_gperf.gperf"
+#line 577 "cmds_gperf.gperf"
       {"checksums_out", &checksums_out_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 575 "cmds_gperf.gperf"
+#line 578 "cmds_gperf.gperf"
       {"checksums-out", &checksums_out_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1091 "cmds_gperf.gperf"
+#line 1098 "cmds_gperf.gperf"
       {"sfdisk_l", &sfdisk_l_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1115 "cmds_gperf.gperf"
-      {"swapon-file", &swapon_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 712 "cmds_gperf.gperf"
-      {"hexdump", &hexdump_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1123 "cmds_gperf.gperf"
+      {"swapon-file", &swapon_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1162 "cmds_gperf.gperf"
+#line 1170 "cmds_gperf.gperf"
       {"vfs_uuid", &vfs_uuid_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 1198 "cmds_gperf.gperf"
+#line 1206 "cmds_gperf.gperf"
       {"zerofree", &zerofree_cmd_entry},
       {(char*)0},
-#line 1163 "cmds_gperf.gperf"
+#line 1171 "cmds_gperf.gperf"
       {"vfs-uuid", &vfs_uuid_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2429,91 +2425,96 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1114 "cmds_gperf.gperf"
+#line 1122 "cmds_gperf.gperf"
       {"swapon_file", &swapon_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 633 "cmds_gperf.gperf"
+      {"echo_daemon", &echo_daemon_cmd_entry},
       {(char*)0},
-#line 654 "cmds_gperf.gperf"
+#line 659 "cmds_gperf.gperf"
       {"findfs-uuid", &findfs_uuid_cmd_entry},
       {(char*)0},
-#line 921 "cmds_gperf.gperf"
+#line 926 "cmds_gperf.gperf"
       {"mkswap-L", &mkswap_L_cmd_entry},
-#line 628 "cmds_gperf.gperf"
-      {"echo_daemon", &echo_daemon_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 629 "cmds_gperf.gperf"
+#line 634 "cmds_gperf.gperf"
       {"echo-daemon", &echo_daemon_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 807 "cmds_gperf.gperf"
+#line 812 "cmds_gperf.gperf"
       {"kill_subprocess", &kill_subprocess_cmd_entry},
-#line 947 "cmds_gperf.gperf"
+#line 954 "cmds_gperf.gperf"
       {"ntfs_3g_probe", &ntfs_3g_probe_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 808 "cmds_gperf.gperf"
+#line 813 "cmds_gperf.gperf"
       {"kill-subprocess", &kill_subprocess_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 948 "cmds_gperf.gperf"
+#line 955 "cmds_gperf.gperf"
       {"ntfs-3g-probe", &ntfs_3g_probe_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1104 "cmds_gperf.gperf"
+#line 1112 "cmds_gperf.gperf"
       {"swapoff_device", &swapoff_device_cmd_entry},
       {(char*)0},
-#line 653 "cmds_gperf.gperf"
+#line 658 "cmds_gperf.gperf"
       {"findfs_uuid", &findfs_uuid_cmd_entry},
-#line 703 "cmds_gperf.gperf"
+#line 708 "cmds_gperf.gperf"
       {"glob_expand", &glob_expand_cmd_entry},
-#line 920 "cmds_gperf.gperf"
+#line 925 "cmds_gperf.gperf"
       {"mkswap_L", &mkswap_L_cmd_entry},
-#line 1105 "cmds_gperf.gperf"
+#line 1113 "cmds_gperf.gperf"
       {"swapoff-device", &swapoff_device_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 704 "cmds_gperf.gperf"
+#line 709 "cmds_gperf.gperf"
       {"glob-expand", &glob_expand_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1169 "cmds_gperf.gperf"
+#line 1177 "cmds_gperf.gperf"
       {"vglvuuids", &vglvuuids_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1155 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 1163 "cmds_gperf.gperf"
       {"upload-offset", &upload_offset_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 858 "cmds_gperf.gperf"
+      {"luks_open", &luks_open_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 859 "cmds_gperf.gperf"
+      {"luks-open", &luks_open_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1106 "cmds_gperf.gperf"
+#line 1114 "cmds_gperf.gperf"
       {"swapoff_file", &swapoff_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1107 "cmds_gperf.gperf"
+#line 1115 "cmds_gperf.gperf"
       {"swapoff-file", &swapoff_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1154 "cmds_gperf.gperf"
+#line 1162 "cmds_gperf.gperf"
       {"upload_offset", &upload_offset_cmd_entry},
-#line 474 "cmds_gperf.gperf"
+#line 477 "cmds_gperf.gperf"
       {"add_drive", &add_drive_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 475 "cmds_gperf.gperf"
+#line 478 "cmds_gperf.gperf"
       {"add-drive", &add_drive_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 1194 "cmds_gperf.gperf"
+#line 1202 "cmds_gperf.gperf"
       {"zero_device", &zero_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1195 "cmds_gperf.gperf"
+#line 1203 "cmds_gperf.gperf"
       {"zero-device", &zero_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2522,76 +2523,84 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 586 "cmds_gperf.gperf"
+#line 589 "cmds_gperf.gperf"
       {"copy_device_to_device", &copy_device_to_device_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 588 "cmds_gperf.gperf"
+#line 591 "cmds_gperf.gperf"
       {"copy_device_to_file", &copy_device_to_file_cmd_entry},
       {(char*)0},
-#line 552 "cmds_gperf.gperf"
+#line 555 "cmds_gperf.gperf"
       {"btrfs_filesystem_sync", &btrfs_filesystem_sync_cmd_entry},
       {(char*)0},
-#line 550 "cmds_gperf.gperf"
+#line 553 "cmds_gperf.gperf"
       {"btrfs_filesystem_resize", &btrfs_filesystem_resize_cmd_entry},
-#line 548 "cmds_gperf.gperf"
+#line 551 "cmds_gperf.gperf"
       {"btrfs_filesystem_balance", &btrfs_filesystem_balance_cmd_entry},
       {(char*)0},
-#line 587 "cmds_gperf.gperf"
+#line 590 "cmds_gperf.gperf"
       {"copy-device-to-device", &copy_device_to_device_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 589 "cmds_gperf.gperf"
+#line 592 "cmds_gperf.gperf"
       {"copy-device-to-file", &copy_device_to_file_cmd_entry},
       {(char*)0},
-#line 553 "cmds_gperf.gperf"
+#line 556 "cmds_gperf.gperf"
       {"btrfs-filesystem-sync", &btrfs_filesystem_sync_cmd_entry},
       {(char*)0},
-#line 551 "cmds_gperf.gperf"
+#line 554 "cmds_gperf.gperf"
       {"btrfs-filesystem-resize", &btrfs_filesystem_resize_cmd_entry},
-#line 549 "cmds_gperf.gperf"
+#line 552 "cmds_gperf.gperf"
       {"btrfs-filesystem-balance", &btrfs_filesystem_balance_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 860 "cmds_gperf.gperf"
+      {"luks_open_ro", &luks_open_ro_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 476 "cmds_gperf.gperf"
+#line 479 "cmds_gperf.gperf"
       {"add_drive_opts", &add_drive_opts_cmd_entry},
+      {(char*)0},
+#line 861 "cmds_gperf.gperf"
+      {"luks-open-ro", &luks_open_ro_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 722 "cmds_gperf.gperf"
+#line 727 "cmds_gperf.gperf"
       {"inotify_files", &inotify_files_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 477 "cmds_gperf.gperf"
+#line 480 "cmds_gperf.gperf"
       {"add-drive-opts", &add_drive_opts_cmd_entry},
-#line 1200 "cmds_gperf.gperf"
+#line 1208 "cmds_gperf.gperf"
       {"zfgrepi", &zfgrepi_cmd_entry},
-#line 723 "cmds_gperf.gperf"
+#line 728 "cmds_gperf.gperf"
       {"inotify-files", &inotify_files_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 479 "cmds_gperf.gperf"
+      {(char*)0},
+#line 896 "cmds_gperf.gperf"
+      {"mkdir_p", &mkdir_p_cmd_entry},
+#line 482 "cmds_gperf.gperf"
       {"add_drive_ro", &add_drive_ro_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 897 "cmds_gperf.gperf"
+      {"mkdir-p", &mkdir_p_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 480 "cmds_gperf.gperf"
+#line 483 "cmds_gperf.gperf"
       {"add-drive-ro", &add_drive_ro_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 862 "cmds_gperf.gperf"
+#line 867 "cmds_gperf.gperf"
       {"lvm_clear_filter", &lvm_clear_filter_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 863 "cmds_gperf.gperf"
+#line 868 "cmds_gperf.gperf"
       {"lvm-clear-filter", &lvm_clear_filter_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 1015 "cmds_gperf.gperf"
+#line 1022 "cmds_gperf.gperf"
       {"resize2fs_size", &resize2fs_size_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1016 "cmds_gperf.gperf"
+#line 1023 "cmds_gperf.gperf"
       {"resize2fs-size", &resize2fs_size_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2600,20 +2609,20 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 957 "cmds_gperf.gperf"
+#line 964 "cmds_gperf.gperf"
       {"ntfsresize_size", &ntfsresize_size_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 958 "cmds_gperf.gperf"
+#line 965 "cmds_gperf.gperf"
       {"ntfsresize-size", &ntfsresize_size_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 909 "cmds_gperf.gperf"
+#line 914 "cmds_gperf.gperf"
       {"mkfs_btrfs", &mkfs_btrfs_cmd_entry},
-      {(char*)0},
-#line 1117 "cmds_gperf.gperf"
-      {"swapon-label", &swapon_label_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 910 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 915 "cmds_gperf.gperf"
       {"mkfs-btrfs", &mkfs_btrfs_cmd_entry},
+      {(char*)0},
+#line 1125 "cmds_gperf.gperf"
+      {"swapon-label", &swapon_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2621,20 +2630,17 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 618 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 623 "cmds_gperf.gperf"
       {"download", &download_cmd_entry},
+      {(char*)0}, {(char*)0},
+#line 898 "cmds_gperf.gperf"
+      {"mkdtemp", &mkdtemp_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1116 "cmds_gperf.gperf"
+      {(char*)0},
+#line 1124 "cmds_gperf.gperf"
       {"swapon_label", &swapon_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 1160 "cmds_gperf.gperf"
-      {"vfs_type", &vfs_type_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1161 "cmds_gperf.gperf"
-      {"vfs-type", &vfs_type_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2643,14 +2649,17 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 626 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0},
+#line 631 "cmds_gperf.gperf"
       {"e2fsck-f", &e2fsck_f_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 776 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 781 "cmds_gperf.gperf"
       {"is_blockdev", &is_blockdev_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 777 "cmds_gperf.gperf"
+#line 782 "cmds_gperf.gperf"
       {"is-blockdev", &is_blockdev_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2659,34 +2668,34 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 728 "cmds_gperf.gperf"
+#line 733 "cmds_gperf.gperf"
       {"inotify_rm_watch", &inotify_rm_watch_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 625 "cmds_gperf.gperf"
+#line 630 "cmds_gperf.gperf"
       {"e2fsck_f", &e2fsck_f_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 729 "cmds_gperf.gperf"
+#line 734 "cmds_gperf.gperf"
       {"inotify-rm-watch", &inotify_rm_watch_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1108 "cmds_gperf.gperf"
+#line 1116 "cmds_gperf.gperf"
       {"swapoff_label", &swapoff_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 1109 "cmds_gperf.gperf"
+#line 1117 "cmds_gperf.gperf"
       {"swapoff-label", &swapoff_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 843 "cmds_gperf.gperf"
+#line 848 "cmds_gperf.gperf"
       {"luks_add_key", &luks_add_key_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 844 "cmds_gperf.gperf"
+#line 849 "cmds_gperf.gperf"
       {"luks-add-key", &luks_add_key_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2695,25 +2704,30 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0},
+#line 916 "cmds_gperf.gperf"
+      {"mkfs_opts", &mkfs_opts_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 917 "cmds_gperf.gperf"
+      {"mkfs-opts", &mkfs_opts_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 566 "cmds_gperf.gperf"
+      {(char*)0},
+#line 569 "cmds_gperf.gperf"
       {"btrfs_subvolume_snapshot", &btrfs_subvolume_snapshot_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 564 "cmds_gperf.gperf"
+#line 567 "cmds_gperf.gperf"
       {"btrfs_subvolume_set_default", &btrfs_subvolume_set_default_cmd_entry},
       {(char*)0},
-#line 567 "cmds_gperf.gperf"
+#line 570 "cmds_gperf.gperf"
       {"btrfs-subvolume-snapshot", &btrfs_subvolume_snapshot_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 565 "cmds_gperf.gperf"
+#line 568 "cmds_gperf.gperf"
       {"btrfs-subvolume-set-default", &btrfs_subvolume_set_default_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 558 "cmds_gperf.gperf"
+#line 561 "cmds_gperf.gperf"
       {"btrfs_subvolume_create", &btrfs_subvolume_create_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 559 "cmds_gperf.gperf"
+#line 562 "cmds_gperf.gperf"
       {"btrfs-subvolume-create", &btrfs_subvolume_create_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2723,42 +2737,44 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0},
-#line 925 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0},
+#line 930 "cmds_gperf.gperf"
       {"mkswap-file", &mkswap_file_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0},
+#line 717 "cmds_gperf.gperf"
+      {"hexdump", &hexdump_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 572 "cmds_gperf.gperf"
+#line 575 "cmds_gperf.gperf"
       {"checksum_device", &checksum_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 573 "cmds_gperf.gperf"
+#line 576 "cmds_gperf.gperf"
       {"checksum-device", &checksum_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 598 "cmds_gperf.gperf"
+#line 601 "cmds_gperf.gperf"
       {"copy_size", &copy_size_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 599 "cmds_gperf.gperf"
+#line 602 "cmds_gperf.gperf"
       {"copy-size", &copy_size_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 924 "cmds_gperf.gperf"
+#line 929 "cmds_gperf.gperf"
       {"mkswap_file", &mkswap_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 823 "cmds_gperf.gperf"
+#line 828 "cmds_gperf.gperf"
       {"list_filesystems", &list_filesystems_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 1088 "cmds_gperf.gperf"
-      {"sfdisk-disk-geometry", &sfdisk_disk_geometry_cmd_entry},
-      {(char*)0},
-#line 824 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 829 "cmds_gperf.gperf"
       {"list-filesystems", &list_filesystems_cmd_entry},
-      {(char*)0},
-#line 1033 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 1095 "cmds_gperf.gperf"
+      {"sfdisk-disk-geometry", &sfdisk_disk_geometry_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1040 "cmds_gperf.gperf"
       {"attach-method", &set_attach_method_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2766,71 +2782,70 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1090 "cmds_gperf.gperf"
+#line 1097 "cmds_gperf.gperf"
       {"sfdisk-kernel-geometry", &sfdisk_kernel_geometry_cmd_entry},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 532 "cmds_gperf.gperf"
+      {(char*)0},
+#line 535 "cmds_gperf.gperf"
       {"blockdev_getss", &blockdev_getss_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 533 "cmds_gperf.gperf"
+#line 536 "cmds_gperf.gperf"
       {"blockdev-getss", &blockdev_getss_cmd_entry},
-#line 1087 "cmds_gperf.gperf"
+#line 1094 "cmds_gperf.gperf"
       {"sfdisk_disk_geometry", &sfdisk_disk_geometry_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 530 "cmds_gperf.gperf"
+#line 533 "cmds_gperf.gperf"
       {"blockdev_getsize64", &blockdev_getsize64_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 531 "cmds_gperf.gperf"
+#line 534 "cmds_gperf.gperf"
       {"blockdev-getsize64", &blockdev_getsize64_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 1089 "cmds_gperf.gperf"
+#line 1096 "cmds_gperf.gperf"
       {"sfdisk_kernel_geometry", &sfdisk_kernel_geometry_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 900 "cmds_gperf.gperf"
+#line 905 "cmds_gperf.gperf"
       {"mke2journal", &mke2journal_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 903 "cmds_gperf.gperf"
+#line 908 "cmds_gperf.gperf"
       {"mke2journal_U", &mke2journal_U_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 904 "cmds_gperf.gperf"
+#line 909 "cmds_gperf.gperf"
       {"mke2journal-U", &mke2journal_U_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 536 "cmds_gperf.gperf"
+#line 539 "cmds_gperf.gperf"
       {"blockdev_rereadpt", &blockdev_rereadpt_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 537 "cmds_gperf.gperf"
+#line 540 "cmds_gperf.gperf"
       {"blockdev-rereadpt", &blockdev_rereadpt_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 540 "cmds_gperf.gperf"
+#line 543 "cmds_gperf.gperf"
       {"blockdev_setro", &blockdev_setro_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 541 "cmds_gperf.gperf"
+#line 544 "cmds_gperf.gperf"
       {"blockdev-setro", &blockdev_setro_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 562 "cmds_gperf.gperf"
+#line 565 "cmds_gperf.gperf"
       {"btrfs_subvolume_list", &btrfs_subvolume_list_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 528 "cmds_gperf.gperf"
+#line 531 "cmds_gperf.gperf"
       {"blockdev_getro", &blockdev_getro_cmd_entry},
-#line 563 "cmds_gperf.gperf"
+#line 566 "cmds_gperf.gperf"
       {"btrfs-subvolume-list", &btrfs_subvolume_list_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 529 "cmds_gperf.gperf"
+#line 532 "cmds_gperf.gperf"
       {"blockdev-getro", &blockdev_getro_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2843,8 +2858,9 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0},
-#line 652 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 657 "cmds_gperf.gperf"
       {"findfs-label", &findfs_label_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2853,21 +2869,20 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 560 "cmds_gperf.gperf"
+      {(char*)0},
+#line 563 "cmds_gperf.gperf"
       {"btrfs_subvolume_delete", &btrfs_subvolume_delete_cmd_entry},
-#line 895 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 564 "cmds_gperf.gperf"
+      {"btrfs-subvolume-delete", &btrfs_subvolume_delete_cmd_entry},
+#line 900 "cmds_gperf.gperf"
       {"mke2fs-J", &mke2fs_J_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 561 "cmds_gperf.gperf"
-      {"btrfs-subvolume-delete", &btrfs_subvolume_delete_cmd_entry},
-      {(char*)0},
-#line 899 "cmds_gperf.gperf"
-      {"mke2fs-JU", &mke2fs_JU_cmd_entry},
-      {(char*)0}, {(char*)0},
-#line 651 "cmds_gperf.gperf"
+#line 656 "cmds_gperf.gperf"
       {"findfs_label", &findfs_label_cmd_entry},
+      {(char*)0},
+#line 904 "cmds_gperf.gperf"
+      {"mke2fs-JU", &mke2fs_JU_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2875,46 +2890,52 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 590 "cmds_gperf.gperf"
+      {(char*)0}, {(char*)0},
+#line 593 "cmds_gperf.gperf"
       {"copy_file_to_device", &copy_file_to_device_cmd_entry},
       {(char*)0}, {(char*)0},
-#line 894 "cmds_gperf.gperf"
+#line 899 "cmds_gperf.gperf"
       {"mke2fs_J", &mke2fs_J_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 898 "cmds_gperf.gperf"
+#line 903 "cmds_gperf.gperf"
       {"mke2fs_JU", &mke2fs_JU_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 591 "cmds_gperf.gperf"
+#line 594 "cmds_gperf.gperf"
       {"copy-file-to-device", &copy_file_to_device_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 851 "cmds_gperf.gperf"
+#line 856 "cmds_gperf.gperf"
       {"luks_kill_slot", &luks_kill_slot_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 852 "cmds_gperf.gperf"
+#line 857 "cmds_gperf.gperf"
       {"luks-kill-slot", &luks_kill_slot_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 901 "cmds_gperf.gperf"
+#line 906 "cmds_gperf.gperf"
       {"mke2journal_L", &mke2journal_L_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 902 "cmds_gperf.gperf"
+#line 907 "cmds_gperf.gperf"
       {"mke2journal-L", &mke2journal_L_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+      {(char*)0}, {(char*)0}, {(char*)0},
+#line 1168 "cmds_gperf.gperf"
+      {"vfs_type", &vfs_type_cmd_entry},
+      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
+#line 1169 "cmds_gperf.gperf"
+      {"vfs-type", &vfs_type_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -2945,26 +2966,24 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 897 "cmds_gperf.gperf"
+#line 902 "cmds_gperf.gperf"
       {"mke2fs-JL", &mke2fs_JL_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-      {(char*)0}, {(char*)0},
-#line 592 "cmds_gperf.gperf"
+      {(char*)0},
+#line 595 "cmds_gperf.gperf"
       {"copy_file_to_file", &copy_file_to_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 593 "cmds_gperf.gperf"
+#line 596 "cmds_gperf.gperf"
       {"copy-file-to-file", &copy_file_to_file_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 896 "cmds_gperf.gperf"
+#line 901 "cmds_gperf.gperf"
       {"mke2fs_JL", &mke2fs_JL_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3001,19 +3020,19 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 538 "cmds_gperf.gperf"
+#line 541 "cmds_gperf.gperf"
       {"blockdev_setbsz", &blockdev_setbsz_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 539 "cmds_gperf.gperf"
+#line 542 "cmds_gperf.gperf"
       {"blockdev-setbsz", &blockdev_setbsz_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 526 "cmds_gperf.gperf"
+#line 529 "cmds_gperf.gperf"
       {"blockdev_getbsz", &blockdev_getbsz_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 527 "cmds_gperf.gperf"
+#line 530 "cmds_gperf.gperf"
       {"blockdev-getbsz", &blockdev_getbsz_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3062,10 +3081,10 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 542 "cmds_gperf.gperf"
+#line 545 "cmds_gperf.gperf"
       {"blockdev_setrw", &blockdev_setrw_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 543 "cmds_gperf.gperf"
+#line 546 "cmds_gperf.gperf"
       {"blockdev-setrw", &blockdev_setrw_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3081,10 +3100,10 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 619 "cmds_gperf.gperf"
+#line 624 "cmds_gperf.gperf"
       {"download_offset", &download_offset_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 620 "cmds_gperf.gperf"
+#line 625 "cmds_gperf.gperf"
       {"download-offset", &download_offset_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3099,10 +3118,10 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 534 "cmds_gperf.gperf"
+#line 537 "cmds_gperf.gperf"
       {"blockdev_getsz", &blockdev_getsz_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 535 "cmds_gperf.gperf"
+#line 538 "cmds_gperf.gperf"
       {"blockdev-getsz", &blockdev_getsz_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3172,12 +3191,12 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 718 "cmds_gperf.gperf"
+#line 723 "cmds_gperf.gperf"
       {"inotify_add_watch", &inotify_add_watch_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 719 "cmds_gperf.gperf"
+#line 724 "cmds_gperf.gperf"
       {"inotify-add-watch", &inotify_add_watch_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3202,13 +3221,13 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 482 "cmds_gperf.gperf"
+#line 485 "cmds_gperf.gperf"
       {"add_drive_ro_with_if", &add_drive_ro_with_if_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 483 "cmds_gperf.gperf"
+#line 486 "cmds_gperf.gperf"
       {"add-drive-ro-with-if", &add_drive_ro_with_if_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3323,12 +3342,12 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 484 "cmds_gperf.gperf"
+#line 487 "cmds_gperf.gperf"
       {"add_drive_with_if", &add_drive_with_if_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 485 "cmds_gperf.gperf"
+#line 488 "cmds_gperf.gperf"
       {"add-drive-with-if", &add_drive_with_if_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -3455,10 +3474,10 @@ lookup_fish_command (register const char *str, register unsigned int len)
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 524 "cmds_gperf.gperf"
+#line 527 "cmds_gperf.gperf"
       {"blockdev_flushbufs", &blockdev_flushbufs_cmd_entry},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 525 "cmds_gperf.gperf"
+#line 528 "cmds_gperf.gperf"
       {"blockdev-flushbufs", &blockdev_flushbufs_cmd_entry}
     };
 

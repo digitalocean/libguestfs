@@ -358,4 +358,6 @@ const char *function_names[] = {
   [330] = "btrfs_device_delete",
   [331] = "btrfs_set_seeding",
   [332] = "btrfs_fsck",
+  [335] = "device_index",
+  [336] = "nr_devices",
 };

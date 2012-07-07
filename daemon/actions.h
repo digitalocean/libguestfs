@@ -410,3 +410,5 @@ extern int do_btrfs_device_add (char *const *devices, const char *fs);
 extern int do_btrfs_device_delete (char *const *devices, const char *fs);
 extern int do_btrfs_set_seeding (const char *device, int seeding);
 extern int do_btrfs_fsck (const char *device, int64_t superblock, int repair);
+extern int do_device_index (const char *device);
+extern int do_nr_devices (void);

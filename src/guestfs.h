@@ -966,6 +966,9 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_debug_drives (guestfs_h *g);
 
 extern GUESTFS_DLL_PUBLIC int guestfs_debug_upload (guestfs_h *g, const char *filename, const char *tmpname, int mode);
 
+#define LIBGUESTFS_HAVE_DEVICE_INDEX 1
+extern GUESTFS_DLL_PUBLIC int guestfs_device_index (guestfs_h *g, const char *device);
+
 #define LIBGUESTFS_HAVE_DF 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_df (guestfs_h *g);
 
@@ -1333,8 +1336,8 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo *guestfs_isoinfo (guestfs_h *g,
 #define LIBGUESTFS_HAVE_ISOINFO_DEVICE 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo *guestfs_isoinfo_device (guestfs_h *g, const char *device);
 
-#define LIBGUESTFS_HAVE_KILL_SUBPROCESS 1
-extern GUESTFS_DLL_PUBLIC int guestfs_kill_subprocess (guestfs_h *g);
+extern GUESTFS_DLL_PUBLIC int guestfs_kill_subprocess (guestfs_h *g)
+  GUESTFS_DEPRECATED_BY ("shutdown");
 
 #define LIBGUESTFS_HAVE_LAUNCH 1
 extern GUESTFS_DLL_PUBLIC int guestfs_launch (guestfs_h *g);
@@ -1790,6 +1793,9 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_mounts (guestfs_h *g);
 #define LIBGUESTFS_HAVE_MV 1
 extern GUESTFS_DLL_PUBLIC int guestfs_mv (guestfs_h *g, const char *src, const char *dest);
 
+#define LIBGUESTFS_HAVE_NR_DEVICES 1
+extern GUESTFS_DLL_PUBLIC int guestfs_nr_devices (guestfs_h *g);
+
 #define LIBGUESTFS_HAVE_NTFS_3G_PROBE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_ntfs_3g_probe (guestfs_h *g, int rw, const char *device);
 
@@ -2123,6 +2129,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_sh (guestfs_h *g, const char *command);
 
 #define LIBGUESTFS_HAVE_SH_LINES 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_sh_lines (guestfs_h *g, const char *command);
+
+#define LIBGUESTFS_HAVE_SHUTDOWN 1
+extern GUESTFS_DLL_PUBLIC int guestfs_shutdown (guestfs_h *g);
 
 #define LIBGUESTFS_HAVE_SLEEP 1
 extern GUESTFS_DLL_PUBLIC int guestfs_sleep (guestfs_h *g, int secs);

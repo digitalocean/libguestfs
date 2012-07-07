@@ -2969,6 +2969,21 @@ struct guestfs_btrfs_fsck_args {
 };
 typedef struct guestfs_btrfs_fsck_args guestfs_btrfs_fsck_args;
 
+struct guestfs_device_index_args {
+	char *device;
+};
+typedef struct guestfs_device_index_args guestfs_device_index_args;
+
+struct guestfs_device_index_ret {
+	int index;
+};
+typedef struct guestfs_device_index_ret guestfs_device_index_ret;
+
+struct guestfs_nr_devices_ret {
+	int nrdisks;
+};
+typedef struct guestfs_nr_devices_ret guestfs_nr_devices_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3302,7 +3317,9 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BTRFS_DEVICE_DELETE = 330,
 	GUESTFS_PROC_BTRFS_SET_SEEDING = 331,
 	GUESTFS_PROC_BTRFS_FSCK = 332,
-	GUESTFS_PROC_NR_PROCS = 332 + 1,
+	GUESTFS_PROC_DEVICE_INDEX = 335,
+	GUESTFS_PROC_NR_DEVICES = 336,
+	GUESTFS_PROC_NR_PROCS = 336 + 1,
 };
 typedef enum guestfs_procedure guestfs_procedure;
 #define GUESTFS_MESSAGE_MAX 4194304
@@ -3838,6 +3855,9 @@ extern  bool_t xdr_guestfs_btrfs_device_add_args (XDR *, guestfs_btrfs_device_ad
 extern  bool_t xdr_guestfs_btrfs_device_delete_args (XDR *, guestfs_btrfs_device_delete_args*);
 extern  bool_t xdr_guestfs_btrfs_set_seeding_args (XDR *, guestfs_btrfs_set_seeding_args*);
 extern  bool_t xdr_guestfs_btrfs_fsck_args (XDR *, guestfs_btrfs_fsck_args*);
+extern  bool_t xdr_guestfs_device_index_args (XDR *, guestfs_device_index_args*);
+extern  bool_t xdr_guestfs_device_index_ret (XDR *, guestfs_device_index_ret*);
+extern  bool_t xdr_guestfs_nr_devices_ret (XDR *, guestfs_nr_devices_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -4321,6 +4341,9 @@ extern bool_t xdr_guestfs_btrfs_device_add_args ();
 extern bool_t xdr_guestfs_btrfs_device_delete_args ();
 extern bool_t xdr_guestfs_btrfs_set_seeding_args ();
 extern bool_t xdr_guestfs_btrfs_fsck_args ();
+extern bool_t xdr_guestfs_device_index_args ();
+extern bool_t xdr_guestfs_device_index_ret ();
+extern bool_t xdr_guestfs_nr_devices_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

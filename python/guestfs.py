@@ -266,8 +266,16 @@ class GuestFS:
         return libguestfsmod.wait_ready (self._o)
 
     def kill_subprocess (self):
-        """This kills the qemu subprocess. You should never need to
-        call this.
+        """This kills the qemu subprocess.
+        
+        Do not call this. See: "g.shutdown" instead.
+        
+        *This function is deprecated.* In new code, use the
+        "shutdown" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         return libguestfsmod.kill_subprocess (self._o)
@@ -1740,6 +1748,29 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.umount_local (self._o, retry)
+
+    def shutdown (self):
+        """This is the opposite of "g.launch". It performs an
+        orderly shutdown of the backend process(es). If the
+        autosync flag is set (which is the default) then the
+        disk image is synchronized.
+        
+        If the subprocess exits with an error then this function
+        will return an error, which should *not* be ignored (it
+        may indicate that the disk image could not be written
+        out properly).
+        
+        It is safe to call this multiple times. Extra calls are
+        ignored.
+        
+        This call does *not* close or free up the handle. You
+        still need to call "g.close" afterwards.
+        
+        "g.close" will call this if you don't do it explicitly,
+        but note that any errors are ignored in that case.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.shutdown (self._o)
 
     def mount (self, device, mountpoint):
         """Mount a guest disk at a position in the filesystem.
@@ -5382,7 +5413,7 @@ class GuestFS:
         The named partition must exist, for example as a string
         returned from "g.list_partitions".
         
-        See also "g.part_to_partnum".
+        See also "g.part_to_partnum", "g.device_index".
         """
         self._check_not_closed ()
         return libguestfsmod.part_to_dev (self._o, partition)
@@ -6409,4 +6440,27 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.btrfs_fsck (self._o, device, superblock, repair)
+
+    def device_index (self, device):
+        """This function takes a device name (eg. "/dev/sdb") and
+        returns the index of the device in the list of devices.
+        
+        Index numbers start from 0. The named device must exist,
+        for example as a string returned from "g.list_devices".
+        
+        See also "g.list_devices", "g.part_to_dev".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.device_index (self._o, device)
+
+    def nr_devices (self):
+        """This returns the number of whole block devices that were
+        added. This is the same as the number of devices that
+        would be returned if you called "g.list_devices".
+        
+        To find out the maximum number of devices that could be
+        added, call "g.max_disks".
+        """
+        self._check_not_closed ()
+        return libguestfsmod.nr_devices (self._o)
 

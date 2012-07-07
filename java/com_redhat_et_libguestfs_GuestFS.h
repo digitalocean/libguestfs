@@ -817,6 +817,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1umount_1local
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _shutdown
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1shutdown
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _mount
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
@@ -3470,6 +3478,22 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1set_1seedi
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1fsck
   (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _device_index
+ * Signature: (JLjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1device_1index
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _nr_devices
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1nr_1devices
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

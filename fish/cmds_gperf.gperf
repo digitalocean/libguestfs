@@ -111,6 +111,7 @@ extern struct command_entry debug_cmdline_cmd_entry;
 extern struct command_entry debug_drives_cmd_entry;
 extern struct command_entry debug_upload_cmd_entry;
 extern struct command_entry delete_event_cmd_entry;
+extern struct command_entry device_index_cmd_entry;
 extern struct command_entry df_cmd_entry;
 extern struct command_entry df_h_cmd_entry;
 extern struct command_entry display_cmd_entry;
@@ -309,6 +310,7 @@ extern struct command_entry mount_vfs_cmd_entry;
 extern struct command_entry mountpoints_cmd_entry;
 extern struct command_entry mounts_cmd_entry;
 extern struct command_entry mv_cmd_entry;
+extern struct command_entry nr_devices_cmd_entry;
 extern struct command_entry ntfs_3g_probe_cmd_entry;
 extern struct command_entry ntfsclone_in_cmd_entry;
 extern struct command_entry ntfsclone_out_cmd_entry;
@@ -389,6 +391,7 @@ extern struct command_entry sfdisk_kernel_geometry_cmd_entry;
 extern struct command_entry sfdisk_l_cmd_entry;
 extern struct command_entry sh_cmd_entry;
 extern struct command_entry sh_lines_cmd_entry;
+extern struct command_entry shutdown_cmd_entry;
 extern struct command_entry sleep_cmd_entry;
 extern struct command_entry sparse_cmd_entry;
 extern struct command_entry stat_cmd_entry;
@@ -610,6 +613,8 @@ debug_upload, &debug_upload_cmd_entry
 debug-upload, &debug_upload_cmd_entry
 delete_event, &delete_event_cmd_entry
 delete-event, &delete_event_cmd_entry
+device_index, &device_index_cmd_entry
+device-index, &device_index_cmd_entry
 df, &df_cmd_entry
 df_h, &df_h_cmd_entry
 df-h, &df_h_cmd_entry
@@ -944,6 +949,8 @@ mount-vfs, &mount_vfs_cmd_entry
 mountpoints, &mountpoints_cmd_entry
 mounts, &mounts_cmd_entry
 mv, &mv_cmd_entry
+nr_devices, &nr_devices_cmd_entry
+nr-devices, &nr_devices_cmd_entry
 ntfs_3g_probe, &ntfs_3g_probe_cmd_entry
 ntfs-3g-probe, &ntfs_3g_probe_cmd_entry
 ntfsclone_in, &ntfsclone_in_cmd_entry
@@ -1093,6 +1100,7 @@ sfdisk-l, &sfdisk_l_cmd_entry
 sh, &sh_cmd_entry
 sh_lines, &sh_lines_cmd_entry
 sh-lines, &sh_lines_cmd_entry
+shutdown, &shutdown_cmd_entry
 sleep, &sleep_cmd_entry
 sparse, &sparse_cmd_entry
 stat, &stat_cmd_entry

@@ -5978,6 +5978,36 @@ xdr_guestfs_btrfs_fsck_args (XDR *xdrs, guestfs_btrfs_fsck_args *objp)
 }
 
 bool_t
+xdr_guestfs_device_index_args (XDR *xdrs, guestfs_device_index_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_device_index_ret (XDR *xdrs, guestfs_device_index_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->index))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_nr_devices_ret (XDR *xdrs, guestfs_nr_devices_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->nrdisks))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

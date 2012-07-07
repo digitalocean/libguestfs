@@ -91,6 +91,7 @@
 <ANCHOR id="guestfs-session-debug-cmdline" href="guestfs/GuestfsSession.html#guestfs-session-debug-cmdline">
 <ANCHOR id="guestfs-session-debug-drives" href="guestfs/GuestfsSession.html#guestfs-session-debug-drives">
 <ANCHOR id="guestfs-session-debug-upload" href="guestfs/GuestfsSession.html#guestfs-session-debug-upload">
+<ANCHOR id="guestfs-session-device-index" href="guestfs/GuestfsSession.html#guestfs-session-device-index">
 <ANCHOR id="guestfs-session-df" href="guestfs/GuestfsSession.html#guestfs-session-df">
 <ANCHOR id="guestfs-session-df-h" href="guestfs/GuestfsSession.html#guestfs-session-df-h">
 <ANCHOR id="guestfs-session-dmesg" href="guestfs/GuestfsSession.html#guestfs-session-dmesg">
@@ -280,6 +281,7 @@
 <ANCHOR id="guestfs-session-mounts" href="guestfs/GuestfsSession.html#guestfs-session-mounts">
 <ANCHOR id="guestfs-session-mv" href="guestfs/GuestfsSession.html#guestfs-session-mv">
 <ANCHOR id="guestfs-session-new" href="guestfs/GuestfsSession.html#guestfs-session-new">
+<ANCHOR id="guestfs-session-nr-devices" href="guestfs/GuestfsSession.html#guestfs-session-nr-devices">
 <ANCHOR id="guestfs-session-ntfs-3g-probe" href="guestfs/GuestfsSession.html#guestfs-session-ntfs-3g-probe">
 <ANCHOR id="guestfs-session-ntfsclone-in" href="guestfs/GuestfsSession.html#guestfs-session-ntfsclone-in">
 <ANCHOR id="guestfs-session-ntfsclone-out" href="guestfs/GuestfsSession.html#guestfs-session-ntfsclone-out">
@@ -358,6 +360,7 @@
 <ANCHOR id="guestfs-session-sfdisk-l" href="guestfs/GuestfsSession.html#guestfs-session-sfdisk-l">
 <ANCHOR id="guestfs-session-sh" href="guestfs/GuestfsSession.html#guestfs-session-sh">
 <ANCHOR id="guestfs-session-sh-lines" href="guestfs/GuestfsSession.html#guestfs-session-sh-lines">
+<ANCHOR id="guestfs-session-shutdown" href="guestfs/GuestfsSession.html#guestfs-session-shutdown">
 <ANCHOR id="guestfs-session-sleep" href="guestfs/GuestfsSession.html#guestfs-session-sleep">
 <ANCHOR id="guestfs-session-stat" href="guestfs/GuestfsSession.html#guestfs-session-stat">
 <ANCHOR id="guestfs-session-statvfs" href="guestfs/GuestfsSession.html#guestfs-session-statvfs">

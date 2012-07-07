@@ -329,6 +329,9 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionEven
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="type">gint32</span></a> mode</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/gio/unstable/GCancellable.html"><span class="type">GCancellable</span></a> *cancellable</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="returnvalue">gint32</span></a>              <a class="link" href="GuestfsSession.html#guestfs-session-device-index" title="guestfs_session_device_index ()">guestfs_session_device_index</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *device</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="GuestfsSession.html#guestfs-session-df" title="guestfs_session_df ()">guestfs_session_df</a>                  (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="GuestfsSession.html#guestfs-session-df-h" title="guestfs_session_df_h ()">guestfs_session_df_h</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -978,6 +981,8 @@ const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.htm
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *dest</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
 <a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="returnvalue">GuestfsSession</span></a> *    <a class="link" href="GuestfsSession.html#guestfs-session-new" title="guestfs_session_new ()">guestfs_session_new</a>                 (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="returnvalue">gint32</span></a>              <a class="link" href="GuestfsSession.html#guestfs-session-nr-devices" title="guestfs_session_nr_devices ()">guestfs_session_nr_devices</a>          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="returnvalue">gint32</span></a>              <a class="link" href="GuestfsSession.html#guestfs-session-ntfs-3g-probe" title="guestfs_session_ntfs_3g_probe ()">guestfs_session_ntfs_3g_probe</a>       (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> rw</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *device</code></em>,
@@ -1269,6 +1274,8 @@ const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.htm
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> **            <a class="link" href="GuestfsSession.html#guestfs-session-sh-lines" title="guestfs_session_sh_lines ()">guestfs_session_sh_lines</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *command</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GuestfsSession.html#guestfs-session-shutdown" title="guestfs_session_shutdown ()">guestfs_session_shutdown</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GuestfsSession.html#guestfs-session-sleep" title="guestfs_session_sleep ()">guestfs_session_sleep</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="type">gint32</span></a> secs</code></em>,
@@ -5352,6 +5359,50 @@ for.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-device-index"></a><h3>guestfs_session_device_index ()</h3>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="returnvalue">gint32</span></a>              guestfs_session_device_index        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *device</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);</pre>
+<p>
+convert device to index
+</p>
+<p>
+This function takes a device name (eg. "/dev/sdb") and returns the index
+of the device in the list of devices.
+</p>
+<p>
+Index numbers start from 0. The named device must exist, for example as
+a string returned from <a class="link" href="GuestfsSession.html#guestfs-session-list-devices" title="guestfs_session_list_devices ()"><code class="function">guestfs_session_list_devices()</code></a>.
+</p>
+<p>
+See also <a class="link" href="GuestfsSession.html#guestfs-session-list-devices" title="guestfs_session_list_devices ()"><code class="function">guestfs_session_list_devices()</code></a>, <a class="link" href="GuestfsSession.html#guestfs-session-part-to-dev" title="guestfs_session_part_to_dev ()"><code class="function">guestfs_session_part_to_dev()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
 </tr>
 </tbody>
 </table></div>
@@ -10447,7 +10498,10 @@ http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor </a>
 kill the qemu subprocess
 </p>
 <p>
-This kills the qemu subprocess. You should never need to call this.
+This kills the qemu subprocess.
+</p>
+<p>
+Do not call this. See: <a class="link" href="GuestfsSession.html#guestfs-session-shutdown" title="guestfs_session_shutdown ()"><code class="function">guestfs_session_shutdown()</code></a> instead.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -14503,6 +14557,42 @@ Create a new libguestfs session.
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-nr-devices"></a><h3>guestfs_session_nr_devices ()</h3>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="returnvalue">gint32</span></a>              guestfs_session_nr_devices          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);</pre>
+<p>
+return number of whole block devices (disks) added
+</p>
+<p>
+This returns the number of whole block devices that were added. This is
+the same as the number of devices that would be returned if you called
+<a class="link" href="GuestfsSession.html#guestfs-session-list-devices" title="guestfs_session_list_devices ()"><code class="function">guestfs_session_list_devices()</code></a>.
+</p>
+<p>
+To find out the maximum number of devices that could be added, call
+<a href="/usr/share/gtk-doc/html/guestfs/GuestfsSession.html#guestfs-session-max-disks"><code class="function">guestfs_session_max_disks()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-ntfs-3g-probe"></a><h3>guestfs_session_ntfs_3g_probe ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint32"><span class="returnvalue">gint32</span></a>              guestfs_session_ntfs_3g_probe       (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> rw</code></em>,
@@ -15518,7 +15608,8 @@ The named partition must exist, for example as a string returned from
 <a class="link" href="GuestfsSession.html#guestfs-session-list-partitions" title="guestfs_session_list_partitions ()"><code class="function">guestfs_session_list_partitions()</code></a>.
 </p>
 <p>
-See also <a class="link" href="GuestfsSession.html#guestfs-session-part-to-partnum" title="guestfs_session_part_to_partnum ()"><code class="function">guestfs_session_part_to_partnum()</code></a>.
+See also <a class="link" href="GuestfsSession.html#guestfs-session-part-to-partnum" title="guestfs_session_part_to_partnum ()"><code class="function">guestfs_session_part_to_partnum()</code></a>,
+<a class="link" href="GuestfsSession.html#guestfs-session-device-index" title="guestfs_session_device_index ()"><code class="function">guestfs_session_device_index()</code></a>.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -18343,6 +18434,54 @@ See also: <a class="link" href="GuestfsSession.html#guestfs-session-command-line
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>an array of returned strings, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span>
 </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-shutdown"></a><h3>guestfs_session_shutdown ()</h3>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            guestfs_session_shutdown            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);</pre>
+<p>
+shutdown the qemu subprocess
+</p>
+<p>
+This is the opposite of <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a>. It performs an orderly
+shutdown of the backend process(es). If the autosync flag is set (which
+is the default) then the disk image is synchronized.
+</p>
+<p>
+If the subprocess exits with an error then this function will return an
+error, which should *not* be ignored (it may indicate that the disk
+image could not be written out properly).
+</p>
+<p>
+It is safe to call this multiple times. Extra calls are ignored.
+</p>
+<p>
+This call does *not* close or free up the handle. You still need to call
+<a class="link" href="GuestfsSession.html#guestfs-session-close" title="guestfs_session_close ()"><code class="function">guestfs_session_close()</code></a> afterwards.
+</p>
+<p>
+<a class="link" href="GuestfsSession.html#guestfs-session-close" title="guestfs_session_close ()"><code class="function">guestfs_session_close()</code></a> will call this if you don't do it explicitly,
+but note that any errors are ignored in that case.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
 </tr>
 </tbody>
 </table></div>

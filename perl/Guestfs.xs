@@ -1931,6 +1931,16 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+shutdown (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_shutdown (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 mount (g, device, mountpoint)
       guestfs_h *g;
       char *device;
@@ -7308,4 +7318,31 @@ PREINIT:
       r = guestfs_btrfs_fsck_argv (g, device, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+SV *
+device_index (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_device_index (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+nr_devices (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_nr_devices (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
 

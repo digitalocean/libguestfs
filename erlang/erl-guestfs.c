@@ -317,51 +317,15 @@ make_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
 }
 
 static ETERM *
-make_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
+make_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
 {
-  ETERM *t[lvm_vgs->len];
+  ETERM *t[lvm_lvs->len];
   size_t i;
 
-  for (i = 0; i < lvm_vgs->len; ++i)
-    t[i] = make_lvm_vg (&lvm_vgs->val[i]);
+  for (i = 0; i < lvm_lvs->len; ++i)
+    t[i] = make_lvm_lv (&lvm_lvs->val[i]);
 
-  return erl_mk_list (t, lvm_vgs->len);
-}
-
-static ETERM *
-make_stat_list (const struct guestfs_stat_list *stats)
-{
-  ETERM *t[stats->len];
-  size_t i;
-
-  for (i = 0; i < stats->len; ++i)
-    t[i] = make_stat (&stats->val[i]);
-
-  return erl_mk_list (t, stats->len);
-}
-
-static ETERM *
-make_mdstat_list (const struct guestfs_mdstat_list *mdstats)
-{
-  ETERM *t[mdstats->len];
-  size_t i;
-
-  for (i = 0; i < mdstats->len; ++i)
-    t[i] = make_mdstat (&mdstats->val[i]);
-
-  return erl_mk_list (t, mdstats->len);
-}
-
-static ETERM *
-make_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolumes)
-{
-  ETERM *t[btrfssubvolumes->len];
-  size_t i;
-
-  for (i = 0; i < btrfssubvolumes->len; ++i)
-    t[i] = make_btrfssubvolume (&btrfssubvolumes->val[i]);
-
-  return erl_mk_list (t, btrfssubvolumes->len);
+  return erl_mk_list (t, lvm_lvs->len);
 }
 
 static ETERM *
@@ -389,15 +353,27 @@ make_partition_list (const struct guestfs_partition_list *partitions)
 }
 
 static ETERM *
-make_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
+make_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
 {
-  ETERM *t[lvm_lvs->len];
+  ETERM *t[inotify_events->len];
   size_t i;
 
-  for (i = 0; i < lvm_lvs->len; ++i)
-    t[i] = make_lvm_lv (&lvm_lvs->val[i]);
+  for (i = 0; i < inotify_events->len; ++i)
+    t[i] = make_inotify_event (&inotify_events->val[i]);
 
-  return erl_mk_list (t, lvm_lvs->len);
+  return erl_mk_list (t, inotify_events->len);
+}
+
+static ETERM *
+make_application_list (const struct guestfs_application_list *applications)
+{
+  ETERM *t[applications->len];
+  size_t i;
+
+  for (i = 0; i < applications->len; ++i)
+    t[i] = make_application (&applications->val[i]);
+
+  return erl_mk_list (t, applications->len);
 }
 
 static ETERM *
@@ -425,27 +401,51 @@ make_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
 }
 
 static ETERM *
-make_application_list (const struct guestfs_application_list *applications)
+make_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
 {
-  ETERM *t[applications->len];
+  ETERM *t[lvm_vgs->len];
   size_t i;
 
-  for (i = 0; i < applications->len; ++i)
-    t[i] = make_application (&applications->val[i]);
+  for (i = 0; i < lvm_vgs->len; ++i)
+    t[i] = make_lvm_vg (&lvm_vgs->val[i]);
 
-  return erl_mk_list (t, applications->len);
+  return erl_mk_list (t, lvm_vgs->len);
 }
 
 static ETERM *
-make_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
+make_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
-  ETERM *t[inotify_events->len];
+  ETERM *t[btrfssubvolumes->len];
   size_t i;
 
-  for (i = 0; i < inotify_events->len; ++i)
-    t[i] = make_inotify_event (&inotify_events->val[i]);
+  for (i = 0; i < btrfssubvolumes->len; ++i)
+    t[i] = make_btrfssubvolume (&btrfssubvolumes->val[i]);
 
-  return erl_mk_list (t, inotify_events->len);
+  return erl_mk_list (t, btrfssubvolumes->len);
+}
+
+static ETERM *
+make_mdstat_list (const struct guestfs_mdstat_list *mdstats)
+{
+  ETERM *t[mdstats->len];
+  size_t i;
+
+  for (i = 0; i < mdstats->len; ++i)
+    t[i] = make_mdstat (&mdstats->val[i]);
+
+  return erl_mk_list (t, mdstats->len);
+}
+
+static ETERM *
+make_stat_list (const struct guestfs_stat_list *stats)
+{
+  ETERM *t[stats->len];
+  size_t i;
+
+  for (i = 0; i < stats->len; ++i)
+    t[i] = make_stat (&stats->val[i]);
+
+  return erl_mk_list (t, stats->len);
 }
 
 static ETERM *
@@ -1839,6 +1839,20 @@ run_debug_upload (ETERM *message)
     return make_error ("debug_upload");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_device_index (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_device_index (g, device);
+  free (device);
+  if (r == -1)
+    return make_error ("device_index");
+
+  return erl_mk_int (r);
 }
 
 static ETERM *
@@ -4966,6 +4980,18 @@ run_mv (ETERM *message)
 }
 
 static ETERM *
+run_nr_devices (ETERM *message)
+{
+  int r;
+
+  r = guestfs_nr_devices (g);
+  if (r == -1)
+    return make_error ("nr_devices");
+
+  return erl_mk_int (r);
+}
+
+static ETERM *
 run_ntfs_3g_probe (ETERM *message)
 {
   int rw = get_bool (ARG (0));
@@ -6262,6 +6288,18 @@ run_sh_lines (ETERM *message)
   free_strings (r);
 
   return rt;
+}
+
+static ETERM *
+run_shutdown (ETERM *message)
+{
+  int r;
+
+  r = guestfs_shutdown (g);
+  if (r == -1)
+    return make_error ("shutdown");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -7951,6 +7989,8 @@ dispatch (ETERM *message)
     return run_debug_drives (message);
   else if (atom_equals (fun, "debug_upload"))
     return run_debug_upload (message);
+  else if (atom_equals (fun, "device_index"))
+    return run_device_index (message);
   else if (atom_equals (fun, "df"))
     return run_df (message);
   else if (atom_equals (fun, "df_h"))
@@ -8329,6 +8369,8 @@ dispatch (ETERM *message)
     return run_mounts (message);
   else if (atom_equals (fun, "mv"))
     return run_mv (message);
+  else if (atom_equals (fun, "nr_devices"))
+    return run_nr_devices (message);
   else if (atom_equals (fun, "ntfs_3g_probe"))
     return run_ntfs_3g_probe (message);
   else if (atom_equals (fun, "ntfsclone_in"))
@@ -8485,6 +8527,8 @@ dispatch (ETERM *message)
     return run_sh (message);
   else if (atom_equals (fun, "sh_lines"))
     return run_sh_lines (message);
+  else if (atom_equals (fun, "shutdown"))
+    return run_shutdown (message);
   else if (atom_equals (fun, "sleep"))
     return run_sleep (message);
   else if (atom_equals (fun, "stat"))

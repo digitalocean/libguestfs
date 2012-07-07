@@ -1021,8 +1021,16 @@ ruby_guestfs_wait_ready (VALUE gv)
  *
  * kill the qemu subprocess
  *
- * This kills the qemu subprocess. You should never need to
- * call this.
+ * This kills the qemu subprocess.
+ * 
+ * Do not call this. See: "g.shutdown" instead.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "shutdown" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -4510,6 +4518,53 @@ ruby_guestfs_umount_local (VALUE gv, VALUE optargsv)
   int r;
 
   r = guestfs_umount_local_argv (g, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.shutdown() -> nil
+ *
+ * shutdown the qemu subprocess
+ *
+ * This is the opposite of "g.launch". It performs an
+ * orderly shutdown of the backend process(es). If the
+ * autosync flag is set (which is the default) then the
+ * disk image is synchronized.
+ * 
+ * If the subprocess exits with an error then this function
+ * will return an error, which should *not* be ignored (it
+ * may indicate that the disk image could not be written
+ * out properly).
+ * 
+ * It is safe to call this multiple times. Extra calls are
+ * ignored.
+ * 
+ * This call does *not* close or free up the handle. You
+ * still need to call "g.close" afterwards.
+ * 
+ * "g.close" will call this if you don't do it explicitly,
+ * but note that any errors are ignored in that case.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_shutdown+[http://libguestfs.org/guestfs.3.html#guestfs_shutdown]).
+ */
+static VALUE
+ruby_guestfs_shutdown (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "shutdown");
+
+
+  int r;
+
+  r = guestfs_shutdown (g);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -15695,7 +15750,7 @@ ruby_guestfs_is_socket (VALUE gv, VALUE pathv)
  * The named partition must exist, for example as a string
  * returned from "g.list_partitions".
  * 
- * See also "g.part_to_partnum".
+ * See also "g.part_to_partnum", "g.device_index".
  *
  *
  * (For the C API documentation for this function, see
@@ -18856,6 +18911,78 @@ ruby_guestfs_btrfs_fsck (VALUE gv, VALUE devicev, VALUE optargsv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.device_index(device) -> fixnum
+ *
+ * convert device to index
+ *
+ * This function takes a device name (eg. "/dev/sdb") and
+ * returns the index of the device in the list of devices.
+ * 
+ * Index numbers start from 0. The named device must exist,
+ * for example as a string returned from "g.list_devices".
+ * 
+ * See also "g.list_devices", "g.part_to_dev".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_device_index+[http://libguestfs.org/guestfs.3.html#guestfs_device_index]).
+ */
+static VALUE
+ruby_guestfs_device_index (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "device_index");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_device_index (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.nr_devices() -> fixnum
+ *
+ * return number of whole block devices (disks) added
+ *
+ * This returns the number of whole block devices that were
+ * added. This is the same as the number of devices that
+ * would be returned if you called "g.list_devices".
+ * 
+ * To find out the maximum number of devices that could be
+ * added, call "g.max_disks".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_nr_devices+[http://libguestfs.org/guestfs.3.html#guestfs_nr_devices]).
+ */
+static VALUE
+ruby_guestfs_nr_devices (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "nr_devices");
+
+
+  int r;
+
+  r = guestfs_nr_devices (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
 /* Initialize the module. */
 void Init__guestfs ()
 {
@@ -19091,6 +19218,8 @@ void Init__guestfs ()
         ruby_guestfs_mount_local_run, 0);
   rb_define_method (c_guestfs, "umount_local",
         ruby_guestfs_umount_local, 1);
+  rb_define_method (c_guestfs, "shutdown",
+        ruby_guestfs_shutdown, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -19755,4 +19884,8 @@ void Init__guestfs ()
         ruby_guestfs_btrfs_set_seeding, 2);
   rb_define_method (c_guestfs, "btrfs_fsck",
         ruby_guestfs_btrfs_fsck, 2);
+  rb_define_method (c_guestfs, "device_index",
+        ruby_guestfs_device_index, 1);
+  rb_define_method (c_guestfs, "nr_devices",
+        ruby_guestfs_nr_devices, 0);
 }
