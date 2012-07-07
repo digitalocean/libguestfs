@@ -6,19 +6,17 @@ Subject: autoreconf
  Makefile.in                   |   37 ++-
  aclocal.m4                    |   24 +-
  align/Makefile.in             |   46 +++-
- appliance/Makefile.in         |   56 +++-
- build-aux/config.guess        |  259 ++++++++++--------
- build-aux/config.sub          |  204 ++++++++++-----
+ appliance/Makefile.in         |   56 ++++-
  cat/Makefile.in               |   46 +++-
  config.h.in                   |   14 +-
- configure                     |  582 +++++++++++++++++++++--------------------
+ configure                     |  559 +++++++++++++++++++++--------------------
  csharp/Makefile.in            |   24 +-
  daemon/Makefile.in            |   33 ++-
  df/Makefile.in                |   46 +++-
  edit/Makefile.in              |   46 +++-
  erlang/Makefile.in            |   34 ++-
  erlang/examples/Makefile.in   |   41 ++-
- examples/Makefile.in          |   58 +++-
+ examples/Makefile.in          |   58 ++++-
  fish/Makefile.in              |   61 ++++-
  format/Makefile.in            |   46 +++-
  fuse/Makefile.in              |   46 +++-
@@ -35,7 +33,7 @@ Subject: autoreconf
  ocaml/examples/Makefile.in    |   41 ++-
  perl/Makefile.in              |   25 +-
  perl/examples/Makefile.in     |   41 ++-
- php/Makefile.in               |   29 +-
+ php/Makefile.in               |   29 ++-
  po-docs/Makefile.in           |   35 ++-
  po-docs/ja/Makefile.in        |   24 +-
  po-docs/uk/Makefile.in        |   24 +-
@@ -65,7 +63,7 @@ Subject: autoreconf
  tests/regressions/Makefile.in |   24 +-
  tests/xml/Makefile.in         |   24 +-
  tools/Makefile.in             |   46 +++-
- 62 files changed, 2370 insertions(+), 735 deletions(-)
+ 60 files changed, 2077 insertions(+), 542 deletions(-)
 
 diff --git a/Makefile.in b/Makefile.in
 index ce2b84a..6425a4d 100644
@@ -421,1068 +419,6 @@ index a31077b..6e08252 100644
  	for p in $$list; do \
  	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
  	  echo "$$d$$p"; \
-diff --git a/build-aux/config.guess b/build-aux/config.guess
-index dc84c68..d622a44 100755
---- a/build-aux/config.guess
-+++ b/build-aux/config.guess
-@@ -1,10 +1,10 @@
- #! /bin/sh
- # Attempt to guess a canonical system name.
- #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
--#   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
--#   Free Software Foundation, Inc.
-+#   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
-+#   2011, 2012 Free Software Foundation, Inc.
- 
--timestamp='2009-11-20'
-+timestamp='2012-02-10'
- 
- # This file is free software; you can redistribute it and/or modify it
- # under the terms of the GNU General Public License as published by
-@@ -17,9 +17,7 @@ timestamp='2009-11-20'
- # General Public License for more details.
- #
- # You should have received a copy of the GNU General Public License
--# along with this program; if not, write to the Free Software
--# Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
--# 02110-1301, USA.
-+# along with this program; if not, see <http://www.gnu.org/licenses/>.
- #
- # As a special exception to the GNU General Public License, if you
- # distribute this file as part of a program that contains a
-@@ -56,8 +54,9 @@ version="\
- GNU config.guess ($timestamp)
- 
- Originally written by Per Bothner.
--Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
--2002, 2003, 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
-+Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
-+2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012
-+Free Software Foundation, Inc.
- 
- This is free software; see the source for copying conditions.  There is NO
- warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
-@@ -144,7 +143,7 @@ UNAME_VERSION=`(uname -v) 2>/dev/null` || UNAME_VERSION=unknown
- case "${UNAME_MACHINE}:${UNAME_SYSTEM}:${UNAME_RELEASE}:${UNAME_VERSION}" in
-     *:NetBSD:*:*)
- 	# NetBSD (nbsd) targets should (where applicable) match one or
--	# more of the tupples: *-*-netbsdelf*, *-*-netbsdaout*,
-+	# more of the tuples: *-*-netbsdelf*, *-*-netbsdaout*,
- 	# *-*-netbsdecoff* and *-*-netbsd*.  For targets that recently
- 	# switched to ELF, *-*-netbsd* would select the old
- 	# object file format.  This provides both forward
-@@ -180,7 +179,7 @@ case "${UNAME_MACHINE}:${UNAME_SYSTEM}:${UNAME_RELEASE}:${UNAME_VERSION}" in
- 		fi
- 		;;
- 	    *)
--	        os=netbsd
-+		os=netbsd
- 		;;
- 	esac
- 	# The OS release
-@@ -223,7 +222,7 @@ case "${UNAME_MACHINE}:${UNAME_SYSTEM}:${UNAME_RELEASE}:${UNAME_VERSION}" in
- 		UNAME_RELEASE=`/usr/sbin/sizer -v | awk '{print $3}'`
- 		;;
- 	*5.*)
--	        UNAME_RELEASE=`/usr/sbin/sizer -v | awk '{print $4}'`
-+		UNAME_RELEASE=`/usr/sbin/sizer -v | awk '{print $4}'`
- 		;;
- 	esac
- 	# According to Compaq, /usr/sbin/psrinfo has been available on
-@@ -269,7 +268,10 @@ case "${UNAME_MACHINE}:${UNAME_SYSTEM}:${UNAME_RELEASE}:${UNAME_VERSION}" in
- 	# A Xn.n version is an unreleased experimental baselevel.
- 	# 1.2 uses "1.2" for uname -r.
- 	echo ${UNAME_MACHINE}-dec-osf`echo ${UNAME_RELEASE} | sed -e 's/^[PVTX]//' | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`
--	exit ;;
-+	# Reset EXIT trap before exiting to avoid spurious non-zero exit code.
-+	exitcode=$?
-+	trap '' 0
-+	exit $exitcode ;;
-     Alpha\ *:Windows_NT*:*)
- 	# How do we know it's Interix rather than the generic POSIX subsystem?
- 	# Should we change UNAME_MACHINE based on the output of uname instead
-@@ -295,7 +297,7 @@ case "${UNAME_MACHINE}:${UNAME_SYSTEM}:${UNAME_RELEASE}:${UNAME_VERSION}" in
- 	echo s390-ibm-zvmoe
- 	exit ;;
-     *:OS400:*:*)
--        echo powerpc-ibm-os400
-+	echo powerpc-ibm-os400
- 	exit ;;
-     arm:RISC*:1.[012]*:*|arm:riscix:1.[012]*:*)
- 	echo arm-acorn-riscix${UNAME_RELEASE}
-@@ -394,23 +396,23 @@ case "${UNAME_MACHINE}:${UNAME_SYSTEM}:${UNAME_RELEASE}:${UNAME_VERSION}" in
-     # MiNT.  But MiNT is downward compatible to TOS, so this should
-     # be no problem.
-     atarist[e]:*MiNT:*:* | atarist[e]:*mint:*:* | atarist[e]:*TOS:*:*)
--        echo m68k-atari-mint${UNAME_RELEASE}
-+	echo m68k-atari-mint${UNAME_RELEASE}
- 	exit ;;
-     atari*:*MiNT:*:* | atari*:*mint:*:* | atarist[e]:*TOS:*:*)
- 	echo m68k-atari-mint${UNAME_RELEASE}
--        exit ;;
-+	exit ;;
-     *falcon*:*MiNT:*:* | *falcon*:*mint:*:* | *falcon*:*TOS:*:*)
--        echo m68k-atari-mint${UNAME_RELEASE}
-+	echo m68k-atari-mint${UNAME_RELEASE}
- 	exit ;;
-     milan*:*MiNT:*:* | milan*:*mint:*:* | *milan*:*TOS:*:*)
--        echo m68k-milan-mint${UNAME_RELEASE}
--        exit ;;
-+	echo m68k-milan-mint${UNAME_RELEASE}
-+	exit ;;
-     hades*:*MiNT:*:* | hades*:*mint:*:* | *hades*:*TOS:*:*)
--        echo m68k-hades-mint${UNAME_RELEASE}
--        exit ;;
-+	echo m68k-hades-mint${UNAME_RELEASE}
-+	exit ;;
-     *:*MiNT:*:* | *:*mint:*:* | *:*TOS:*:*)
--        echo m68k-unknown-mint${UNAME_RELEASE}
--        exit ;;
-+	echo m68k-unknown-mint${UNAME_RELEASE}
-+	exit ;;
-     m68k:machten:*:*)
- 	echo m68k-apple-machten${UNAME_RELEASE}
- 	exit ;;
-@@ -480,8 +482,8 @@ EOF
- 	echo m88k-motorola-sysv3
- 	exit ;;
-     AViiON:dgux:*:*)
--        # DG/UX returns AViiON for all architectures
--        UNAME_PROCESSOR=`/usr/bin/uname -p`
-+	# DG/UX returns AViiON for all architectures
-+	UNAME_PROCESSOR=`/usr/bin/uname -p`
- 	if [ $UNAME_PROCESSOR = mc88100 ] || [ $UNAME_PROCESSOR = mc88110 ]
- 	then
- 	    if [ ${TARGET_BINARY_INTERFACE}x = m88kdguxelfx ] || \
-@@ -494,7 +496,7 @@ EOF
- 	else
- 	    echo i586-dg-dgux${UNAME_RELEASE}
- 	fi
-- 	exit ;;
-+	exit ;;
-     M88*:DolphinOS:*:*)	# DolphinOS (SVR3)
- 	echo m88k-dolphin-sysv3
- 	exit ;;
-@@ -551,7 +553,7 @@ EOF
- 		echo rs6000-ibm-aix3.2
- 	fi
- 	exit ;;
--    *:AIX:*:[456])
-+    *:AIX:*:[4567])
- 	IBM_CPU_ID=`/usr/sbin/lsdev -C -c processor -S available | sed 1q | awk '{ print $1 }'`
- 	if /usr/sbin/lsattr -El ${IBM_CPU_ID} | grep ' POWER' >/dev/null 2>&1; then
- 		IBM_ARCH=rs6000
-@@ -594,52 +596,52 @@ EOF
- 	    9000/[678][0-9][0-9])
- 		if [ -x /usr/bin/getconf ]; then
- 		    sc_cpu_version=`/usr/bin/getconf SC_CPU_VERSION 2>/dev/null`
--                    sc_kernel_bits=`/usr/bin/getconf SC_KERNEL_BITS 2>/dev/null`
--                    case "${sc_cpu_version}" in
--                      523) HP_ARCH="hppa1.0" ;; # CPU_PA_RISC1_0
--                      528) HP_ARCH="hppa1.1" ;; # CPU_PA_RISC1_1
--                      532)                      # CPU_PA_RISC2_0
--                        case "${sc_kernel_bits}" in
--                          32) HP_ARCH="hppa2.0n" ;;
--                          64) HP_ARCH="hppa2.0w" ;;
-+		    sc_kernel_bits=`/usr/bin/getconf SC_KERNEL_BITS 2>/dev/null`
-+		    case "${sc_cpu_version}" in
-+		      523) HP_ARCH="hppa1.0" ;; # CPU_PA_RISC1_0
-+		      528) HP_ARCH="hppa1.1" ;; # CPU_PA_RISC1_1
-+		      532)                      # CPU_PA_RISC2_0
-+			case "${sc_kernel_bits}" in
-+			  32) HP_ARCH="hppa2.0n" ;;
-+			  64) HP_ARCH="hppa2.0w" ;;
- 			  '') HP_ARCH="hppa2.0" ;;   # HP-UX 10.20
--                        esac ;;
--                    esac
-+			esac ;;
-+		    esac
- 		fi
- 		if [ "${HP_ARCH}" = "" ]; then
- 		    eval $set_cc_for_build
--		    sed 's/^              //' << EOF >$dummy.c
-+		    sed 's/^		//' << EOF >$dummy.c
- 
--              #define _HPUX_SOURCE
--              #include <stdlib.h>
--              #include <unistd.h>
-+		#define _HPUX_SOURCE
-+		#include <stdlib.h>
-+		#include <unistd.h>
- 
--              int main ()
--              {
--              #if defined(_SC_KERNEL_BITS)
--                  long bits = sysconf(_SC_KERNEL_BITS);
--              #endif
--                  long cpu  = sysconf (_SC_CPU_VERSION);
-+		int main ()
-+		{
-+		#if defined(_SC_KERNEL_BITS)
-+		    long bits = sysconf(_SC_KERNEL_BITS);
-+		#endif
-+		    long cpu  = sysconf (_SC_CPU_VERSION);
- 
--                  switch (cpu)
--              	{
--              	case CPU_PA_RISC1_0: puts ("hppa1.0"); break;
--              	case CPU_PA_RISC1_1: puts ("hppa1.1"); break;
--              	case CPU_PA_RISC2_0:
--              #if defined(_SC_KERNEL_BITS)
--              	    switch (bits)
--              		{
--              		case 64: puts ("hppa2.0w"); break;
--              		case 32: puts ("hppa2.0n"); break;
--              		default: puts ("hppa2.0"); break;
--              		} break;
--              #else  /* !defined(_SC_KERNEL_BITS) */
--              	    puts ("hppa2.0"); break;
--              #endif
--              	default: puts ("hppa1.0"); break;
--              	}
--                  exit (0);
--              }
-+		    switch (cpu)
-+			{
-+			case CPU_PA_RISC1_0: puts ("hppa1.0"); break;
-+			case CPU_PA_RISC1_1: puts ("hppa1.1"); break;
-+			case CPU_PA_RISC2_0:
-+		#if defined(_SC_KERNEL_BITS)
-+			    switch (bits)
-+				{
-+				case 64: puts ("hppa2.0w"); break;
-+				case 32: puts ("hppa2.0n"); break;
-+				default: puts ("hppa2.0"); break;
-+				} break;
-+		#else  /* !defined(_SC_KERNEL_BITS) */
-+			    puts ("hppa2.0"); break;
-+		#endif
-+			default: puts ("hppa1.0"); break;
-+			}
-+		    exit (0);
-+		}
- EOF
- 		    (CCOPTS= $CC_FOR_BUILD -o $dummy $dummy.c 2>/dev/null) && HP_ARCH=`$dummy`
- 		    test -z "$HP_ARCH" && HP_ARCH=hppa
-@@ -730,22 +732,22 @@ EOF
- 	exit ;;
-     C1*:ConvexOS:*:* | convex:ConvexOS:C1*:*)
- 	echo c1-convex-bsd
--        exit ;;
-+	exit ;;
-     C2*:ConvexOS:*:* | convex:ConvexOS:C2*:*)
- 	if getsysinfo -f scalar_acc
- 	then echo c32-convex-bsd
- 	else echo c2-convex-bsd
- 	fi
--        exit ;;
-+	exit ;;
-     C34*:ConvexOS:*:* | convex:ConvexOS:C34*:*)
- 	echo c34-convex-bsd
--        exit ;;
-+	exit ;;
-     C38*:ConvexOS:*:* | convex:ConvexOS:C38*:*)
- 	echo c38-convex-bsd
--        exit ;;
-+	exit ;;
-     C4*:ConvexOS:*:* | convex:ConvexOS:C4*:*)
- 	echo c4-convex-bsd
--        exit ;;
-+	exit ;;
-     CRAY*Y-MP:*:*:*)
- 	echo ymp-cray-unicos${UNAME_RELEASE} | sed -e 's/\.[^.]*$/.X/'
- 	exit ;;
-@@ -769,14 +771,14 @@ EOF
- 	exit ;;
-     F30[01]:UNIX_System_V:*:* | F700:UNIX_System_V:*:*)
- 	FUJITSU_PROC=`uname -m | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`
--        FUJITSU_SYS=`uname -p | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz' | sed -e 's/\///'`
--        FUJITSU_REL=`echo ${UNAME_RELEASE} | sed -e 's/ /_/'`
--        echo "${FUJITSU_PROC}-fujitsu-${FUJITSU_SYS}${FUJITSU_REL}"
--        exit ;;
-+	FUJITSU_SYS=`uname -p | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz' | sed -e 's/\///'`
-+	FUJITSU_REL=`echo ${UNAME_RELEASE} | sed -e 's/ /_/'`
-+	echo "${FUJITSU_PROC}-fujitsu-${FUJITSU_SYS}${FUJITSU_REL}"
-+	exit ;;
-     5000:UNIX_System_V:4.*:*)
--        FUJITSU_SYS=`uname -p | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz' | sed -e 's/\///'`
--        FUJITSU_REL=`echo ${UNAME_RELEASE} | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz' | sed -e 's/ /_/'`
--        echo "sparc-fujitsu-${FUJITSU_SYS}${FUJITSU_REL}"
-+	FUJITSU_SYS=`uname -p | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz' | sed -e 's/\///'`
-+	FUJITSU_REL=`echo ${UNAME_RELEASE} | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz' | sed -e 's/ /_/'`
-+	echo "sparc-fujitsu-${FUJITSU_SYS}${FUJITSU_REL}"
- 	exit ;;
-     i*86:BSD/386:*:* | i*86:BSD/OS:*:* | *:Ascend\ Embedded/OS:*:*)
- 	echo ${UNAME_MACHINE}-pc-bsdi${UNAME_RELEASE}
-@@ -788,13 +790,12 @@ EOF
- 	echo ${UNAME_MACHINE}-unknown-bsdi${UNAME_RELEASE}
- 	exit ;;
-     *:FreeBSD:*:*)
--	case ${UNAME_MACHINE} in
--	    pc98)
--		echo i386-unknown-freebsd`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'` ;;
-+	UNAME_PROCESSOR=`/usr/bin/uname -p`
-+	case ${UNAME_PROCESSOR} in
- 	    amd64)
- 		echo x86_64-unknown-freebsd`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'` ;;
- 	    *)
--		echo ${UNAME_MACHINE}-unknown-freebsd`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'` ;;
-+		echo ${UNAME_PROCESSOR}-unknown-freebsd`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'` ;;
- 	esac
- 	exit ;;
-     i*:CYGWIN*:*)
-@@ -803,15 +804,18 @@ EOF
-     *:MINGW*:*)
- 	echo ${UNAME_MACHINE}-pc-mingw32
- 	exit ;;
-+    i*:MSYS*:*)
-+	echo ${UNAME_MACHINE}-pc-msys
-+	exit ;;
-     i*:windows32*:*)
--    	# uname -m includes "-pc" on this system.
--    	echo ${UNAME_MACHINE}-mingw32
-+	# uname -m includes "-pc" on this system.
-+	echo ${UNAME_MACHINE}-mingw32
- 	exit ;;
-     i*:PW*:*)
- 	echo ${UNAME_MACHINE}-pc-pw32
- 	exit ;;
-     *:Interix*:*)
--    	case ${UNAME_MACHINE} in
-+	case ${UNAME_MACHINE} in
- 	    x86)
- 		echo i586-pc-interix${UNAME_RELEASE}
- 		exit ;;
-@@ -857,6 +861,13 @@ EOF
-     i*86:Minix:*:*)
- 	echo ${UNAME_MACHINE}-pc-minix
- 	exit ;;
-+    aarch64:Linux:*:*)
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
-+	exit ;;
-+    aarch64_be:Linux:*:*)
-+	UNAME_MACHINE=aarch64_be
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
-+	exit ;;
-     alpha:Linux:*:*)
- 	case `sed -n '/^cpu model/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo` in
- 	  EV5)   UNAME_MACHINE=alphaev5 ;;
-@@ -866,7 +877,7 @@ EOF
- 	  EV6)   UNAME_MACHINE=alphaev6 ;;
- 	  EV67)  UNAME_MACHINE=alphaev67 ;;
- 	  EV68*) UNAME_MACHINE=alphaev68 ;;
--        esac
-+	esac
- 	objdump --private-headers /bin/sh | grep -q ld.so.1
- 	if test "$?" = 0 ; then LIBC="libc1" ; else LIBC="" ; fi
- 	echo ${UNAME_MACHINE}-unknown-linux-gnu${LIBC}
-@@ -878,20 +889,29 @@ EOF
- 	then
- 	    echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	else
--	    echo ${UNAME_MACHINE}-unknown-linux-gnueabi
-+	    if echo __ARM_PCS_VFP | $CC_FOR_BUILD -E - 2>/dev/null \
-+		| grep -q __ARM_PCS_VFP
-+	    then
-+		echo ${UNAME_MACHINE}-unknown-linux-gnueabi
-+	    else
-+		echo ${UNAME_MACHINE}-unknown-linux-gnueabihf
-+	    fi
- 	fi
- 	exit ;;
-     avr32*:Linux:*:*)
- 	echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	exit ;;
-     cris:Linux:*:*)
--	echo cris-axis-linux-gnu
-+	echo ${UNAME_MACHINE}-axis-linux-gnu
- 	exit ;;
-     crisv32:Linux:*:*)
--	echo crisv32-axis-linux-gnu
-+	echo ${UNAME_MACHINE}-axis-linux-gnu
- 	exit ;;
-     frv:Linux:*:*)
--    	echo frv-unknown-linux-gnu
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
-+	exit ;;
-+    hexagon:Linux:*:*)
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	exit ;;
-     i*86:Linux:*:*)
- 	LIBC=gnu
-@@ -933,7 +953,7 @@ EOF
- 	test x"${CPU}" != x && { echo "${CPU}-unknown-linux-gnu"; exit; }
- 	;;
-     or32:Linux:*:*)
--	echo or32-unknown-linux-gnu
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	exit ;;
-     padre:Linux:*:*)
- 	echo sparc-unknown-linux-gnu
-@@ -959,7 +979,7 @@ EOF
- 	echo ${UNAME_MACHINE}-ibm-linux
- 	exit ;;
-     sh64*:Linux:*:*)
--    	echo ${UNAME_MACHINE}-unknown-linux-gnu
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	exit ;;
-     sh*:Linux:*:*)
- 	echo ${UNAME_MACHINE}-unknown-linux-gnu
-@@ -967,14 +987,17 @@ EOF
-     sparc:Linux:*:* | sparc64:Linux:*:*)
- 	echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	exit ;;
-+    tile*:Linux:*:*)
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
-+	exit ;;
-     vax:Linux:*:*)
- 	echo ${UNAME_MACHINE}-dec-linux-gnu
- 	exit ;;
-     x86_64:Linux:*:*)
--	echo x86_64-unknown-linux-gnu
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	exit ;;
-     xtensa*:Linux:*:*)
--    	echo ${UNAME_MACHINE}-unknown-linux-gnu
-+	echo ${UNAME_MACHINE}-unknown-linux-gnu
- 	exit ;;
-     i*86:DYNIX/ptx:4*:*)
- 	# ptx 4.0 does uname -s correctly, with DYNIX/ptx in there.
-@@ -983,11 +1006,11 @@ EOF
- 	echo i386-sequent-sysv4
- 	exit ;;
-     i*86:UNIX_SV:4.2MP:2.*)
--        # Unixware is an offshoot of SVR4, but it has its own version
--        # number series starting with 2...
--        # I am not positive that other SVR4 systems won't match this,
-+	# Unixware is an offshoot of SVR4, but it has its own version
-+	# number series starting with 2...
-+	# I am not positive that other SVR4 systems won't match this,
- 	# I just have to hope.  -- rms.
--        # Use sysv4.2uw... so that sysv4* matches it.
-+	# Use sysv4.2uw... so that sysv4* matches it.
- 	echo ${UNAME_MACHINE}-pc-sysv4.2uw${UNAME_VERSION}
- 	exit ;;
-     i*86:OS/2:*:*)
-@@ -1019,7 +1042,7 @@ EOF
- 	fi
- 	exit ;;
-     i*86:*:5:[678]*)
--    	# UnixWare 7.x, OpenUNIX and OpenServer 6.
-+	# UnixWare 7.x, OpenUNIX and OpenServer 6.
- 	case `/bin/uname -X | grep "^Machine"` in
- 	    *486*)	     UNAME_MACHINE=i486 ;;
- 	    *Pentium)	     UNAME_MACHINE=i586 ;;
-@@ -1047,13 +1070,13 @@ EOF
- 	exit ;;
-     pc:*:*:*)
- 	# Left here for compatibility:
--        # uname -m prints for DJGPP always 'pc', but it prints nothing about
--        # the processor, so we play safe by assuming i586.
-+	# uname -m prints for DJGPP always 'pc', but it prints nothing about
-+	# the processor, so we play safe by assuming i586.
- 	# Note: whatever this is, it MUST be the same as what config.sub
- 	# prints for the "djgpp" host, or else GDB configury will decide that
- 	# this is a cross-build.
- 	echo i586-pc-msdosdjgpp
--        exit ;;
-+	exit ;;
-     Intel:Mach:3*:*)
- 	echo i386-pc-mach3
- 	exit ;;
-@@ -1088,8 +1111,8 @@ EOF
- 	/bin/uname -p 2>/dev/null | /bin/grep entium >/dev/null \
- 	  && { echo i586-ncr-sysv4.3${OS_REL}; exit; } ;;
-     3[34]??:*:4.0:* | 3[34]??,*:*:4.0:*)
--        /bin/uname -p 2>/dev/null | grep 86 >/dev/null \
--          && { echo i486-ncr-sysv4; exit; } ;;
-+	/bin/uname -p 2>/dev/null | grep 86 >/dev/null \
-+	  && { echo i486-ncr-sysv4; exit; } ;;
-     NCR*:*:4.2:* | MPRAS*:*:4.2:*)
- 	OS_REL='.3'
- 	test -r /etc/.relid \
-@@ -1132,10 +1155,10 @@ EOF
- 		echo ns32k-sni-sysv
- 	fi
- 	exit ;;
--    PENTIUM:*:4.0*:*) # Unisys `ClearPath HMP IX 4000' SVR4/MP effort
--                      # says <Richard.M.Bartel@ccMail.Census.GOV>
--        echo i586-unisys-sysv4
--        exit ;;
-+    PENTIUM:*:4.0*:*)	# Unisys `ClearPath HMP IX 4000' SVR4/MP effort
-+			# says <Richard.M.Bartel@ccMail.Census.GOV>
-+	echo i586-unisys-sysv4
-+	exit ;;
-     *:UNIX_System_V:4*:FTX*)
- 	# From Gerald Hewes <hewes@openmarket.com>.
- 	# How about differentiating between stratus architectures? -djm
-@@ -1161,11 +1184,11 @@ EOF
- 	exit ;;
-     R[34]000:*System_V*:*:* | R4000:UNIX_SYSV:*:* | R*000:UNIX_SV:*:*)
- 	if [ -d /usr/nec ]; then
--	        echo mips-nec-sysv${UNAME_RELEASE}
-+		echo mips-nec-sysv${UNAME_RELEASE}
- 	else
--	        echo mips-unknown-sysv${UNAME_RELEASE}
-+		echo mips-unknown-sysv${UNAME_RELEASE}
- 	fi
--        exit ;;
-+	exit ;;
-     BeBox:BeOS:*:*)	# BeOS running on hardware made by Be, PPC only.
- 	echo powerpc-be-beos
- 	exit ;;
-@@ -1230,6 +1253,9 @@ EOF
-     *:QNX:*:4*)
- 	echo i386-pc-qnx
- 	exit ;;
-+    NEO-?:NONSTOP_KERNEL:*:*)
-+	echo neo-tandem-nsk${UNAME_RELEASE}
-+	exit ;;
-     NSE-?:NONSTOP_KERNEL:*:*)
- 	echo nse-tandem-nsk${UNAME_RELEASE}
- 	exit ;;
-@@ -1275,13 +1301,13 @@ EOF
- 	echo pdp10-unknown-its
- 	exit ;;
-     SEI:*:*:SEIUX)
--        echo mips-sei-seiux${UNAME_RELEASE}
-+	echo mips-sei-seiux${UNAME_RELEASE}
- 	exit ;;
-     *:DragonFly:*:*)
- 	echo ${UNAME_MACHINE}-unknown-dragonfly`echo ${UNAME_RELEASE}|sed -e 's/[-(].*//'`
- 	exit ;;
-     *:*VMS:*:*)
--    	UNAME_MACHINE=`(uname -p) 2>/dev/null`
-+	UNAME_MACHINE=`(uname -p) 2>/dev/null`
- 	case "${UNAME_MACHINE}" in
- 	    A*) echo alpha-dec-vms ; exit ;;
- 	    I*) echo ia64-dec-vms ; exit ;;
-@@ -1299,6 +1325,9 @@ EOF
-     i*86:AROS:*:*)
- 	echo ${UNAME_MACHINE}-pc-aros
- 	exit ;;
-+    x86_64:VMkernel:*:*)
-+	echo ${UNAME_MACHINE}-unknown-esx
-+	exit ;;
- esac
- 
- #echo '(No uname command or uname output not recognized.)' 1>&2
-@@ -1321,11 +1350,11 @@ main ()
- #include <sys/param.h>
-   printf ("m68k-sony-newsos%s\n",
- #ifdef NEWSOS4
--          "4"
-+	"4"
- #else
--	  ""
-+	""
- #endif
--         ); exit (0);
-+	); exit (0);
- #endif
- #endif
- 
-diff --git a/build-aux/config.sub b/build-aux/config.sub
-index 2a55a50..c894da4 100755
---- a/build-aux/config.sub
-+++ b/build-aux/config.sub
-@@ -1,10 +1,10 @@
- #! /bin/sh
- # Configuration validation subroutine script.
- #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
--#   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
--#   Free Software Foundation, Inc.
-+#   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
-+#   2011, 2012 Free Software Foundation, Inc.
- 
--timestamp='2009-11-20'
-+timestamp='2012-02-10'
- 
- # This file is (in principle) common to ALL GNU software.
- # The presence of a machine in this file suggests that SOME GNU software
-@@ -21,9 +21,7 @@ timestamp='2009-11-20'
- # GNU General Public License for more details.
- #
- # You should have received a copy of the GNU General Public License
--# along with this program; if not, write to the Free Software
--# Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
--# 02110-1301, USA.
-+# along with this program; if not, see <http://www.gnu.org/licenses/>.
- #
- # As a special exception to the GNU General Public License, if you
- # distribute this file as part of a program that contains a
-@@ -75,8 +73,9 @@ Report bugs and patches to <config-patches@gnu.org>."
- version="\
- GNU config.sub ($timestamp)
- 
--Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
--2002, 2003, 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
-+Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
-+2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012
-+Free Software Foundation, Inc.
- 
- This is free software; see the source for copying conditions.  There is NO
- warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
-@@ -123,13 +122,18 @@ esac
- # Here we must recognize all the valid KERNEL-OS combinations.
- maybe_os=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\2/'`
- case $maybe_os in
--  nto-qnx* | linux-gnu* | linux-dietlibc | linux-newlib* | linux-uclibc* | \
--  uclinux-uclibc* | uclinux-gnu* | kfreebsd*-gnu* | knetbsd*-gnu* | netbsd*-gnu* | \
-+  nto-qnx* | linux-gnu* | linux-android* | linux-dietlibc | linux-newlib* | \
-+  linux-uclibc* | uclinux-uclibc* | uclinux-gnu* | kfreebsd*-gnu* | \
-+  knetbsd*-gnu* | netbsd*-gnu* | \
-   kopensolaris*-gnu* | \
-   storm-chaos* | os2-emx* | rtmk-nova*)
-     os=-$maybe_os
-     basic_machine=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\1/'`
-     ;;
-+  android-linux)
-+    os=-linux-android
-+    basic_machine=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\1/'`-unknown
-+    ;;
-   *)
-     basic_machine=`echo $1 | sed 's/-[^-]*$//'`
-     if [ $basic_machine != $1 ]
-@@ -156,8 +160,8 @@ case $os in
- 		os=
- 		basic_machine=$1
- 		;;
--        -bluegene*)
--	        os=-cnk
-+	-bluegene*)
-+		os=-cnk
- 		;;
- 	-sim | -cisco | -oki | -wec | -winbond)
- 		os=
-@@ -173,10 +177,10 @@ case $os in
- 		os=-chorusos
- 		basic_machine=$1
- 		;;
-- 	-chorusrdb)
-- 		os=-chorusrdb
-+	-chorusrdb)
-+		os=-chorusrdb
- 		basic_machine=$1
-- 		;;
-+		;;
- 	-hiux*)
- 		os=-hiuxwe2
- 		;;
-@@ -245,17 +249,22 @@ case $basic_machine in
- 	# Some are omitted here because they have special meanings below.
- 	1750a | 580 \
- 	| a29k \
-+	| aarch64 | aarch64_be \
- 	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
- 	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \
- 	| am33_2.0 \
- 	| arc | arm | arm[bl]e | arme[lb] | armv[2345] | armv[345][lb] | avr | avr32 \
-+        | be32 | be64 \
- 	| bfin \
- 	| c4x | clipper \
- 	| d10v | d30v | dlx | dsp16xx \
-+	| epiphany \
- 	| fido | fr30 | frv \
- 	| h8300 | h8500 | hppa | hppa1.[01] | hppa2.0 | hppa2.0[nw] | hppa64 \
-+	| hexagon \
- 	| i370 | i860 | i960 | ia64 \
- 	| ip2k | iq2000 \
-+	| le32 | le64 \
- 	| lm32 \
- 	| m32c | m32r | m32rle | m68000 | m68k | m88k \
- 	| maxq | mb | microblaze | mcore | mep | metag \
-@@ -281,29 +290,39 @@ case $basic_machine in
- 	| moxie \
- 	| mt \
- 	| msp430 \
-+	| nds32 | nds32le | nds32be \
- 	| nios | nios2 \
- 	| ns16k | ns32k \
-+	| open8 \
- 	| or32 \
- 	| pdp10 | pdp11 | pj | pjl \
--	| powerpc | powerpc64 | powerpc64le | powerpcle | ppcbe \
-+	| powerpc | powerpc64 | powerpc64le | powerpcle \
- 	| pyramid \
--	| rx \
-+	| rl78 | rx \
- 	| score \
- 	| sh | sh[1234] | sh[24]a | sh[24]aeb | sh[23]e | sh[34]eb | sheb | shbe | shle | sh[1234]le | sh3ele \
- 	| sh64 | sh64le \
- 	| sparc | sparc64 | sparc64b | sparc64v | sparc86x | sparclet | sparclite \
- 	| sparcv8 | sparcv9 | sparcv9b | sparcv9v \
--	| spu | strongarm \
--	| tahoe | thumb | tic4x | tic80 | tron \
-+	| spu \
-+	| tahoe | tic4x | tic54x | tic55x | tic6x | tic80 | tron \
- 	| ubicom32 \
--	| v850 | v850e \
-+	| v850 | v850e | v850e1 | v850e2 | v850es | v850e2v3 \
- 	| we32k \
--	| x86 | xc16x | xscale | xscalee[bl] | xstormy16 | xtensa \
-+	| x86 | xc16x | xstormy16 | xtensa \
- 	| z8k | z80)
- 		basic_machine=$basic_machine-unknown
- 		;;
--	m6811 | m68hc11 | m6812 | m68hc12 | picochip)
--		# Motorola 68HC11/12.
-+	c54x)
-+		basic_machine=tic54x-unknown
-+		;;
-+	c55x)
-+		basic_machine=tic55x-unknown
-+		;;
-+	c6x)
-+		basic_machine=tic6x-unknown
-+		;;
-+	m6811 | m68hc11 | m6812 | m68hc12 | m68hcs12x | picochip)
- 		basic_machine=$basic_machine-unknown
- 		os=-none
- 		;;
-@@ -313,6 +332,21 @@ case $basic_machine in
- 		basic_machine=mt-unknown
- 		;;
- 
-+	strongarm | thumb | xscale)
-+		basic_machine=arm-unknown
-+		;;
-+	xgate)
-+		basic_machine=$basic_machine-unknown
-+		os=-none
-+		;;
-+	xscaleeb)
-+		basic_machine=armeb-unknown
-+		;;
-+
-+	xscaleel)
-+		basic_machine=armel-unknown
-+		;;
-+
- 	# We use `pc' rather than `unknown'
- 	# because (1) that's what they normally are, and
- 	# (2) the word "unknown" tends to confuse beginning users.
-@@ -327,21 +361,25 @@ case $basic_machine in
- 	# Recognize the basic CPU types with company name.
- 	580-* \
- 	| a29k-* \
-+	| aarch64-* | aarch64_be-* \
- 	| alpha-* | alphaev[4-8]-* | alphaev56-* | alphaev6[78]-* \
- 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
- 	| alphapca5[67]-* | alpha64pca5[67]-* | arc-* \
- 	| arm-*  | armbe-* | armle-* | armeb-* | armv*-* \
- 	| avr-* | avr32-* \
-+	| be32-* | be64-* \
- 	| bfin-* | bs2000-* \
--	| c[123]* | c30-* | [cjt]90-* | c4x-* | c54x-* | c55x-* | c6x-* \
-+	| c[123]* | c30-* | [cjt]90-* | c4x-* \
- 	| clipper-* | craynv-* | cydra-* \
- 	| d10v-* | d30v-* | dlx-* \
- 	| elxsi-* \
- 	| f30[01]-* | f700-* | fido-* | fr30-* | frv-* | fx80-* \
- 	| h8300-* | h8500-* \
- 	| hppa-* | hppa1.[01]-* | hppa2.0-* | hppa2.0[nw]-* | hppa64-* \
-+	| hexagon-* \
- 	| i*86-* | i860-* | i960-* | ia64-* \
- 	| ip2k-* | iq2000-* \
-+	| le32-* | le64-* \
- 	| lm32-* \
- 	| m32c-* | m32r-* | m32rle-* \
- 	| m68000-* | m680[012346]0-* | m68360-* | m683?2-* | m68k-* \
-@@ -367,25 +405,29 @@ case $basic_machine in
- 	| mmix-* \
- 	| mt-* \
- 	| msp430-* \
-+	| nds32-* | nds32le-* | nds32be-* \
- 	| nios-* | nios2-* \
- 	| none-* | np1-* | ns16k-* | ns32k-* \
-+	| open8-* \
- 	| orion-* \
- 	| pdp10-* | pdp11-* | pj-* | pjl-* | pn-* | power-* \
--	| powerpc-* | powerpc64-* | powerpc64le-* | powerpcle-* | ppcbe-* \
-+	| powerpc-* | powerpc64-* | powerpc64le-* | powerpcle-* \
- 	| pyramid-* \
--	| romp-* | rs6000-* | rx-* \
-+	| rl78-* | romp-* | rs6000-* | rx-* \
- 	| sh-* | sh[1234]-* | sh[24]a-* | sh[24]aeb-* | sh[23]e-* | sh[34]eb-* | sheb-* | shbe-* \
- 	| shle-* | sh[1234]le-* | sh3ele-* | sh64-* | sh64le-* \
- 	| sparc-* | sparc64-* | sparc64b-* | sparc64v-* | sparc86x-* | sparclet-* \
- 	| sparclite-* \
--	| sparcv8-* | sparcv9-* | sparcv9b-* | sparcv9v-* | strongarm-* | sv1-* | sx?-* \
--	| tahoe-* | thumb-* \
--	| tic30-* | tic4x-* | tic54x-* | tic55x-* | tic6x-* | tic80-* | tile-* \
-+	| sparcv8-* | sparcv9-* | sparcv9b-* | sparcv9v-* | sv1-* | sx?-* \
-+	| tahoe-* \
-+	| tic30-* | tic4x-* | tic54x-* | tic55x-* | tic6x-* | tic80-* \
-+	| tile*-* \
- 	| tron-* \
- 	| ubicom32-* \
--	| v850-* | v850e-* | vax-* \
-+	| v850-* | v850e-* | v850e1-* | v850es-* | v850e2-* | v850e2v3-* \
-+	| vax-* \
- 	| we32k-* \
--	| x86-* | x86_64-* | xc16x-* | xps100-* | xscale-* | xscalee[bl]-* \
-+	| x86-* | x86_64-* | xc16x-* | xps100-* \
- 	| xstormy16-* | xtensa*-* \
- 	| ymp-* \
- 	| z8k-* | z80-*)
-@@ -410,7 +452,7 @@ case $basic_machine in
- 		basic_machine=a29k-amd
- 		os=-udi
- 		;;
--    	abacus)
-+	abacus)
- 		basic_machine=abacus-unknown
- 		;;
- 	adobe68k)
-@@ -480,11 +522,20 @@ case $basic_machine in
- 		basic_machine=powerpc-ibm
- 		os=-cnk
- 		;;
-+	c54x-*)
-+		basic_machine=tic54x-`echo $basic_machine | sed 's/^[^-]*-//'`
-+		;;
-+	c55x-*)
-+		basic_machine=tic55x-`echo $basic_machine | sed 's/^[^-]*-//'`
-+		;;
-+	c6x-*)
-+		basic_machine=tic6x-`echo $basic_machine | sed 's/^[^-]*-//'`
-+		;;
- 	c90)
- 		basic_machine=c90-cray
- 		os=-unicos
- 		;;
--        cegcc)
-+	cegcc)
- 		basic_machine=arm-unknown
- 		os=-cegcc
- 		;;
-@@ -516,7 +567,7 @@ case $basic_machine in
- 		basic_machine=craynv-cray
- 		os=-unicosmp
- 		;;
--	cr16)
-+	cr16 | cr16-*)
- 		basic_machine=cr16-unknown
- 		os=-elf
- 		;;
-@@ -674,7 +725,6 @@ case $basic_machine in
- 	i370-ibm* | ibm*)
- 		basic_machine=i370-ibm
- 		;;
--# I'm not sure what "Sysv32" means.  Should this be sysv3.2?
- 	i*86v32)
- 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
- 		os=-sysv32
-@@ -732,7 +782,7 @@ case $basic_machine in
- 		basic_machine=ns32k-utek
- 		os=-sysv
- 		;;
--        microblaze)
-+	microblaze)
- 		basic_machine=microblaze-xilinx
- 		;;
- 	mingw32)
-@@ -771,10 +821,18 @@ case $basic_machine in
- 	ms1-*)
- 		basic_machine=`echo $basic_machine | sed -e 's/ms1-/mt-/'`
- 		;;
-+	msys)
-+		basic_machine=i386-pc
-+		os=-msys
-+		;;
- 	mvs)
- 		basic_machine=i370-ibm
- 		os=-mvs
- 		;;
-+	nacl)
-+		basic_machine=le32-unknown
-+		os=-nacl
-+		;;
- 	ncr3000)
- 		basic_machine=i486-ncr
- 		os=-sysv4
-@@ -839,6 +897,12 @@ case $basic_machine in
- 	np1)
- 		basic_machine=np1-gould
- 		;;
-+	neo-tandem)
-+		basic_machine=neo-tandem
-+		;;
-+	nse-tandem)
-+		basic_machine=nse-tandem
-+		;;
- 	nsr-tandem)
- 		basic_machine=nsr-tandem
- 		;;
-@@ -921,9 +985,10 @@ case $basic_machine in
- 		;;
- 	power)	basic_machine=power-ibm
- 		;;
--	ppc)	basic_machine=powerpc-unknown
-+	ppc | ppcbe)	basic_machine=powerpc-unknown
- 		;;
--	ppc-*)	basic_machine=powerpc-`echo $basic_machine | sed 's/^[^-]*-//'`
-+	ppc-* | ppcbe-*)
-+		basic_machine=powerpc-`echo $basic_machine | sed 's/^[^-]*-//'`
- 		;;
- 	ppcle | powerpclittle | ppc-le | powerpc-little)
- 		basic_machine=powerpcle-unknown
-@@ -1017,6 +1082,9 @@ case $basic_machine in
- 		basic_machine=i860-stratus
- 		os=-sysv4
- 		;;
-+	strongarm-* | thumb-*)
-+		basic_machine=arm-`echo $basic_machine | sed 's/^[^-]*-//'`
-+		;;
- 	sun2)
- 		basic_machine=m68000-sun
- 		;;
-@@ -1073,20 +1141,8 @@ case $basic_machine in
- 		basic_machine=t90-cray
- 		os=-unicos
- 		;;
--	tic54x | c54x*)
--		basic_machine=tic54x-unknown
--		os=-coff
--		;;
--	tic55x | c55x*)
--		basic_machine=tic55x-unknown
--		os=-coff
--		;;
--	tic6x | c6x*)
--		basic_machine=tic6x-unknown
--		os=-coff
--		;;
- 	tile*)
--		basic_machine=tile-unknown
-+		basic_machine=$basic_machine-unknown
- 		os=-linux-gnu
- 		;;
- 	tx39)
-@@ -1156,6 +1212,9 @@ case $basic_machine in
- 	xps | xps100)
- 		basic_machine=xps100-honeywell
- 		;;
-+	xscale-* | xscalee[bl]-*)
-+		basic_machine=`echo $basic_machine | sed 's/^xscale/arm/'`
-+		;;
- 	ymp)
- 		basic_machine=ymp-cray
- 		os=-unicos
-@@ -1253,11 +1312,11 @@ esac
- if [ x"$os" != x"" ]
- then
- case $os in
--        # First match some system type aliases
--        # that might get confused with valid system types.
-+	# First match some system type aliases
-+	# that might get confused with valid system types.
- 	# -solaris* is a basic system type, with this one exception.
--        -auroraux)
--	        os=-auroraux
-+	-auroraux)
-+		os=-auroraux
- 		;;
- 	-solaris1 | -solaris1.*)
- 		os=`echo $os | sed -e 's|solaris1|sunos4|'`
-@@ -1293,8 +1352,9 @@ case $os in
- 	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* \
- 	      | -udi* | -eabi* | -lites* | -ieee* | -go32* | -aux* \
- 	      | -chorusos* | -chorusrdb* | -cegcc* \
--	      | -cygwin* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
--	      | -mingw32* | -linux-gnu* | -linux-newlib* | -linux-uclibc* \
-+	      | -cygwin* | -msys* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
-+	      | -mingw32* | -linux-gnu* | -linux-android* \
-+	      | -linux-newlib* | -linux-uclibc* \
- 	      | -uxpv* | -beos* | -mpeix* | -udk* \
- 	      | -interix* | -uwin* | -mks* | -rhapsody* | -darwin* | -opened* \
- 	      | -openstep* | -oskit* | -conix* | -pw32* | -nonstopux* \
-@@ -1341,7 +1401,7 @@ case $os in
- 	-opened*)
- 		os=-openedition
- 		;;
--        -os400*)
-+	-os400*)
- 		os=-os400
- 		;;
- 	-wince*)
-@@ -1390,7 +1450,7 @@ case $os in
- 	-sinix*)
- 		os=-sysv4
- 		;;
--        -tpf*)
-+	-tpf*)
- 		os=-tpf
- 		;;
- 	-triton*)
-@@ -1435,6 +1495,8 @@ case $os in
- 	-dicos*)
- 		os=-dicos
- 		;;
-+	-nacl*)
-+		;;
- 	-none)
- 		;;
- 	*)
-@@ -1457,10 +1519,10 @@ else
- # system, and we'll never get to this point.
- 
- case $basic_machine in
--        score-*)
-+	score-*)
- 		os=-elf
- 		;;
--        spu-*)
-+	spu-*)
- 		os=-elf
- 		;;
- 	*-acorn)
-@@ -1472,8 +1534,17 @@ case $basic_machine in
- 	arm*-semi)
- 		os=-aout
- 		;;
--        c4x-* | tic4x-*)
--        	os=-coff
-+	c4x-* | tic4x-*)
-+		os=-coff
-+		;;
-+	tic54x-*)
-+		os=-coff
-+		;;
-+	tic55x-*)
-+		os=-coff
-+		;;
-+	tic6x-*)
-+		os=-coff
- 		;;
- 	# This must come before the *-dec entry.
- 	pdp10-*)
-@@ -1493,14 +1564,11 @@ case $basic_machine in
- 		;;
- 	m68000-sun)
- 		os=-sunos3
--		# This also exists in the configure program, but was not the
--		# default.
--		# os=-sunos4
- 		;;
- 	m68*-cisco)
- 		os=-aout
- 		;;
--        mep-*)
-+	mep-*)
- 		os=-elf
- 		;;
- 	mips*-cisco)
-@@ -1527,7 +1595,7 @@ case $basic_machine in
- 	*-ibm)
- 		os=-aix
- 		;;
--    	*-knuth)
-+	*-knuth)
- 		os=-mmixware
- 		;;
- 	*-wec)
 diff --git a/cat/Makefile.in b/cat/Makefile.in
 index 45c869b..81fd788 100644
 --- a/cat/Makefile.in
@@ -1567,7 +503,7 @@ index 45c869b..81fd788 100644
  	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
  	  echo "$$d$$p"; echo "$$p"; \
 diff --git a/config.h.in b/config.h.in
-index 0e4a7f9..6f9fe0d 100644
+index 7767500..1a994d3 100644
 --- a/config.h.in
 +++ b/config.h.in
 @@ -21,12 +21,12 @@
@@ -1586,7 +522,7 @@ index 0e4a7f9..6f9fe0d 100644
  #undef C_ALLOCA
  
  /* Define as the bit index in the word where to find bit 0 of the exponent of
-@@ -2115,9 +2115,9 @@
+@@ -2118,9 +2118,9 @@
  /* If using the C implementation of alloca, define if you know the
     direction of stack growth for your system; otherwise it will be
     automatically deduced at runtime.
@@ -1599,7 +535,7 @@ index 0e4a7f9..6f9fe0d 100644
  #undef STACK_DIRECTION
  
  /* Define if the block counts reported by statfs may be truncated to 2GB and
-@@ -2229,7 +2229,7 @@
+@@ -2232,7 +2232,7 @@
  /* Name of wrestool program. */
  #undef WRESTOOL
  
@@ -1609,14 +545,14 @@ index 0e4a7f9..6f9fe0d 100644
  # define _DARWIN_USE_64_BIT_INODE 1
  #endif
 diff --git a/configure b/configure
-index 55f4ef2..51c5466 100755
+index 9f5bc4c..a21458f 100755
 --- a/configure
 +++ b/configure
 @@ -1,11 +1,9 @@
  #! /bin/sh
  # Guess values for system-dependent variables and create Makefiles.
--# Generated by GNU Autoconf 2.68 for libguestfs 1.18.3.
-+# Generated by GNU Autoconf 2.69 for libguestfs 1.18.3.
+-# Generated by GNU Autoconf 2.68 for libguestfs 1.18.4.
++# Generated by GNU Autoconf 2.69 for libguestfs 1.18.4.
  #
  #
 -# Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
@@ -1799,7 +735,7 @@ index 55f4ef2..51c5466 100755
 @@ -2644,9 +2662,9 @@ test -n "$ac_init_help" && exit $ac_status
  if $ac_init_version; then
    cat <<\_ACEOF
- libguestfs configure 1.18.3
+ libguestfs configure 1.18.4
 -generated by GNU Autoconf 2.68
 +generated by GNU Autoconf 2.69
  
@@ -1879,7 +815,7 @@ index 55f4ef2..51c5466 100755
 @@ -3507,7 +3530,7 @@ This file contains any messages produced by compilers while
  running configure, to aid debugging if configure makes a mistake.
  
- It was created by libguestfs $as_me 1.18.3, which was
+ It was created by libguestfs $as_me 1.18.4, which was
 -generated by GNU Autoconf 2.68.  Invocation command line was
 +generated by GNU Autoconf 2.69.  Invocation command line was
  
@@ -2518,7 +1454,7 @@ index 55f4ef2..51c5466 100755
  int
  main ()
  {
-@@ -46828,7 +46848,7 @@ do
+@@ -46829,7 +46849,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2527,7 +1463,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_XGETTEXT="xgettext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -46866,7 +46886,7 @@ do
+@@ -46867,7 +46887,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2536,7 +1472,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_MSGCAT="msgcat"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -46904,7 +46924,7 @@ do
+@@ -46905,7 +46925,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2545,7 +1481,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_MSGFMT="msgfmt"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -46942,7 +46962,7 @@ do
+@@ -46943,7 +46963,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2554,7 +1490,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_MSGMERGE="msgmerge"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47111,7 +47131,7 @@ do
+@@ -47112,7 +47132,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2563,7 +1499,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_FEBOOTSTRAP="febootstrap"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47187,7 +47207,7 @@ do
+@@ -47188,7 +47208,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2572,7 +1508,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_RPCGEN="rpcgen"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47328,6 +47348,7 @@ fi
+@@ -47329,6 +47349,7 @@ fi
  
  
  
@@ -2580,7 +1516,7 @@ index 55f4ef2..51c5466 100755
  if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
  	if test -n "$ac_tool_prefix"; then
    # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-@@ -47348,7 +47369,7 @@ do
+@@ -47349,7 +47370,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2589,7 +1525,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47391,7 +47412,7 @@ do
+@@ -47392,7 +47413,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2598,7 +1534,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47456,6 +47477,7 @@ if test -n "$AUGEAS_CFLAGS"; then
+@@ -47457,6 +47478,7 @@ if test -n "$AUGEAS_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_CFLAGS=`$PKG_CONFIG --cflags "augeas" 2>/dev/null`
@@ -2606,7 +1542,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -47472,6 +47494,7 @@ if test -n "$AUGEAS_LIBS"; then
+@@ -47473,6 +47495,7 @@ if test -n "$AUGEAS_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_AUGEAS_LIBS=`$PKG_CONFIG --libs "augeas" 2>/dev/null`
@@ -2614,7 +1550,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -47491,9 +47514,9 @@ else
+@@ -47492,9 +47515,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2626,7 +1562,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$AUGEAS_PKG_ERRORS" >&5
-@@ -47662,7 +47685,7 @@ do
+@@ -47663,7 +47686,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2635,7 +1571,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_CPIO="cpio"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47703,7 +47726,7 @@ do
+@@ -47704,7 +47727,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2644,7 +1580,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_GPERF="gperf"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47744,7 +47767,7 @@ do
+@@ -47745,7 +47768,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2653,7 +1589,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_POD2MAN="pod2man"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47784,7 +47807,7 @@ do
+@@ -47785,7 +47808,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2662,7 +1598,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_POD2TEXT="pod2text"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47824,7 +47847,7 @@ do
+@@ -47825,7 +47848,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2671,7 +1607,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_POD2HTML="pod2html"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47895,7 +47918,7 @@ do
+@@ -47896,7 +47919,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2680,7 +1616,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_GENISOIMAGE="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47939,7 +47962,7 @@ do
+@@ -47940,7 +47963,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2689,7 +1625,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_XMLLINT="xmllint"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -47986,7 +48009,7 @@ do
+@@ -47987,7 +48010,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2698,7 +1634,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PO4A="po4a"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48035,7 +48058,7 @@ do
+@@ -48036,7 +48059,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2707,7 +1643,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_DB_DUMP="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48078,7 +48101,7 @@ do
+@@ -48079,7 +48102,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2716,7 +1652,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_DB_LOAD="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48136,7 +48159,7 @@ do
+@@ -48137,7 +48160,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2725,7 +1661,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PBMTEXT="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48179,7 +48202,7 @@ do
+@@ -48180,7 +48203,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2734,7 +1670,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PNMTOPNG="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48222,7 +48245,7 @@ do
+@@ -48223,7 +48246,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2743,7 +1679,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_BMPTOPNM="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48265,7 +48288,7 @@ do
+@@ -48266,7 +48289,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2752,7 +1688,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PAMCUT="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48337,7 +48360,7 @@ do
+@@ -48338,7 +48361,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2761,7 +1697,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_WRESTOOL="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48399,7 +48422,7 @@ do
+@@ -48400,7 +48423,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2770,7 +1706,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_QEMU="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -48675,6 +48698,7 @@ if test -n "$PCRE_CFLAGS"; then
+@@ -48676,6 +48699,7 @@ if test -n "$PCRE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre" 2>/dev/null`
@@ -2778,7 +1714,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -48691,6 +48715,7 @@ if test -n "$PCRE_LIBS"; then
+@@ -48692,6 +48716,7 @@ if test -n "$PCRE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre" 2>/dev/null`
@@ -2786,7 +1722,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -48710,9 +48735,9 @@ else
+@@ -48711,9 +48736,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2798,7 +1734,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$PCRE_PKG_ERRORS" >&5
-@@ -48727,7 +48752,6 @@ installed software in a non-standard prefix.
+@@ -48728,7 +48753,6 @@ installed software in a non-standard prefix.
  Alternatively, you may set the environment variables PCRE_CFLAGS
  and PCRE_LIBS to avoid the need to call pkg-config.
  See the pkg-config man page for more details." "$LINENO" 5
@@ -2806,7 +1742,7 @@ index 55f4ef2..51c5466 100755
  elif test $pkg_failed = untried; then
       	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
  $as_echo "no" >&6; }
-@@ -48743,7 +48767,6 @@ See the pkg-config man page for more details.
+@@ -48744,7 +48768,6 @@ See the pkg-config man page for more details.
  
  To get pkg-config, see <http://pkg-config.freedesktop.org/>.
  See \`config.log' for more details" "$LINENO" 5; }
@@ -2814,7 +1750,7 @@ index 55f4ef2..51c5466 100755
  else
  	PCRE_CFLAGS=$pkg_cv_PCRE_CFLAGS
  	PCRE_LIBS=$pkg_cv_PCRE_LIBS
-@@ -48822,6 +48845,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
+@@ -48823,6 +48846,7 @@ if test -n "$LIBVIRT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_CFLAGS=`$PKG_CONFIG --cflags "libvirt" 2>/dev/null`
@@ -2822,7 +1758,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -48838,6 +48862,7 @@ if test -n "$LIBVIRT_LIBS"; then
+@@ -48839,6 +48863,7 @@ if test -n "$LIBVIRT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBVIRT_LIBS=`$PKG_CONFIG --libs "libvirt" 2>/dev/null`
@@ -2830,7 +1766,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -48857,9 +48882,9 @@ else
+@@ -48858,9 +48883,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2842,7 +1778,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBVIRT_PKG_ERRORS" >&5
-@@ -48907,6 +48932,7 @@ if test -n "$LIBXML2_CFLAGS"; then
+@@ -48908,6 +48933,7 @@ if test -n "$LIBXML2_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
@@ -2850,7 +1786,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -48923,6 +48949,7 @@ if test -n "$LIBXML2_LIBS"; then
+@@ -48924,6 +48950,7 @@ if test -n "$LIBXML2_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
@@ -2858,7 +1794,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -48942,9 +48969,9 @@ else
+@@ -48943,9 +48970,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2870,7 +1806,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBXML2_PKG_ERRORS" >&5
-@@ -48992,6 +49019,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
+@@ -48993,6 +49020,7 @@ if test -n "$LIBCONFIG_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_CFLAGS=`$PKG_CONFIG --cflags "libconfig" 2>/dev/null`
@@ -2878,7 +1814,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -49008,6 +49036,7 @@ if test -n "$LIBCONFIG_LIBS"; then
+@@ -49009,6 +49037,7 @@ if test -n "$LIBCONFIG_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_LIBCONFIG_LIBS=`$PKG_CONFIG --libs "libconfig" 2>/dev/null`
@@ -2886,7 +1822,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -49027,9 +49056,9 @@ else
+@@ -49028,9 +49057,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2898,7 +1834,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$LIBCONFIG_PKG_ERRORS" >&5
-@@ -49077,6 +49106,7 @@ if test -n "$HIVEX_CFLAGS"; then
+@@ -49078,6 +49107,7 @@ if test -n "$HIVEX_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_CFLAGS=`$PKG_CONFIG --cflags "hivex" 2>/dev/null`
@@ -2906,7 +1842,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -49093,6 +49123,7 @@ if test -n "$HIVEX_LIBS"; then
+@@ -49094,6 +49124,7 @@ if test -n "$HIVEX_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_HIVEX_LIBS=`$PKG_CONFIG --libs "hivex" 2>/dev/null`
@@ -2914,7 +1850,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -49112,9 +49143,9 @@ else
+@@ -49113,9 +49144,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2926,7 +1862,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$HIVEX_PKG_ERRORS" >&5
-@@ -49170,6 +49201,7 @@ if test -n "$FUSE_CFLAGS"; then
+@@ -49171,6 +49202,7 @@ if test -n "$FUSE_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_CFLAGS=`$PKG_CONFIG --cflags "fuse" 2>/dev/null`
@@ -2934,7 +1870,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -49186,6 +49218,7 @@ if test -n "$FUSE_LIBS"; then
+@@ -49187,6 +49219,7 @@ if test -n "$FUSE_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_FUSE_LIBS=`$PKG_CONFIG --libs "fuse" 2>/dev/null`
@@ -2942,7 +1878,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -49205,9 +49238,9 @@ else
+@@ -49206,9 +49239,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -2954,7 +1890,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$FUSE_PKG_ERRORS" >&5
-@@ -49288,7 +49321,7 @@ do
+@@ -49289,7 +49322,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2963,7 +1899,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_CXX="$ac_tool_prefix$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -49332,7 +49365,7 @@ do
+@@ -49333,7 +49366,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2972,7 +1908,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_CXX="$ac_prog"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -52874,7 +52907,7 @@ do
+@@ -52875,7 +52908,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2981,7 +1917,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_VALGRIND="valgrind"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -52943,7 +52976,7 @@ do
+@@ -52944,7 +52977,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2990,7 +1926,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLC="${ac_tool_prefix}ocamlc"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -52983,7 +53016,7 @@ do
+@@ -52984,7 +53017,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -2999,7 +1935,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLC="ocamlc"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53048,7 +53081,7 @@ do
+@@ -53049,7 +53082,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3008,7 +1944,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLOPT="${ac_tool_prefix}ocamlopt"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53088,7 +53121,7 @@ do
+@@ -53089,7 +53122,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3017,7 +1953,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLOPT="ocamlopt"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53158,7 +53191,7 @@ do
+@@ -53159,7 +53192,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3026,7 +1962,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLCDOTOPT="${ac_tool_prefix}ocamlc.opt"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53198,7 +53231,7 @@ do
+@@ -53199,7 +53232,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3035,7 +1971,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLCDOTOPT="ocamlc.opt"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53262,7 +53295,7 @@ do
+@@ -53263,7 +53296,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3044,7 +1980,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLOPTDOTOPT="${ac_tool_prefix}ocamlopt.opt"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53302,7 +53335,7 @@ do
+@@ -53303,7 +53336,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3053,7 +1989,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLOPTDOTOPT="ocamlopt.opt"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53371,7 +53404,7 @@ do
+@@ -53372,7 +53405,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3062,7 +1998,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLDEP="${ac_tool_prefix}ocamldep"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53411,7 +53444,7 @@ do
+@@ -53412,7 +53445,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3071,7 +2007,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLDEP="ocamldep"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53465,7 +53498,7 @@ do
+@@ -53466,7 +53499,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3080,7 +2016,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLMKTOP="${ac_tool_prefix}ocamlmktop"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53505,7 +53538,7 @@ do
+@@ -53506,7 +53539,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3089,7 +2025,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLMKTOP="ocamlmktop"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53559,7 +53592,7 @@ do
+@@ -53560,7 +53593,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3098,7 +2034,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLMKLIB="${ac_tool_prefix}ocamlmklib"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53599,7 +53632,7 @@ do
+@@ -53600,7 +53633,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3107,7 +2043,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLMKLIB="ocamlmklib"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53653,7 +53686,7 @@ do
+@@ -53654,7 +53687,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3116,7 +2052,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLDOC="${ac_tool_prefix}ocamldoc"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53693,7 +53726,7 @@ do
+@@ -53694,7 +53727,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3125,7 +2061,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLDOC="ocamldoc"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53747,7 +53780,7 @@ do
+@@ -53748,7 +53781,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3134,7 +2070,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLBUILD="${ac_tool_prefix}ocamlbuild"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53787,7 +53820,7 @@ do
+@@ -53788,7 +53821,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3143,7 +2079,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLBUILD="ocamlbuild"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53842,7 +53875,7 @@ do
+@@ -53843,7 +53876,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3152,7 +2088,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAMLFIND="${ac_tool_prefix}ocamlfind"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -53882,7 +53915,7 @@ do
+@@ -53883,7 +53916,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3161,7 +2097,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_ac_ct_OCAMLFIND="ocamlfind"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54068,7 +54101,7 @@ do
+@@ -54069,7 +54102,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3170,7 +2106,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_OCAML_GETTEXT="ocaml-gettext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54126,7 +54159,7 @@ do
+@@ -54127,7 +54160,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3179,7 +2115,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PERL="perl"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54207,7 +54240,7 @@ do
+@@ -54208,7 +54241,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3188,7 +2124,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PYTHON="python"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54410,7 +54443,7 @@ do
+@@ -54411,7 +54444,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3197,7 +2133,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_RUBY="ruby"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54448,7 +54481,7 @@ do
+@@ -54449,7 +54482,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3206,60 +2142,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_RAKE="rake"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54470,13 +54503,15 @@ $as_echo "no" >&6; }
- fi
- 
- 
--        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ruby_init in -lruby" >&5
--$as_echo_n "checking for ruby_init in -lruby... " >&6; }
--if ${ac_cv_lib_ruby_ruby_init+:} false; then :
-+        ruby_soname=`$RUBY -rrbconfig -e 'puts RbConfig::CONFIG["RUBY_SO_NAME"]'`
-+        as_ac_Lib=`$as_echo "ac_cv_lib_$ruby_soname''_ruby_init" | $as_tr_sh`
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ruby_init in -l$ruby_soname" >&5
-+$as_echo_n "checking for ruby_init in -l$ruby_soname... " >&6; }
-+if eval \${$as_ac_Lib+:} false; then :
-   $as_echo_n "(cached) " >&6
- else
-   ac_check_lib_save_LIBS=$LIBS
--LIBS="-lruby  $LIBS"
-+LIBS="-l$ruby_soname  $LIBS"
- cat confdefs.h - <<_ACEOF >conftest.$ac_ext
- /* end confdefs.h.  */
- 
-@@ -54496,17 +54531,18 @@ return ruby_init ();
- }
- _ACEOF
- if ac_fn_c_try_link "$LINENO"; then :
--  ac_cv_lib_ruby_ruby_init=yes
-+  eval "$as_ac_Lib=yes"
- else
--  ac_cv_lib_ruby_ruby_init=no
-+  eval "$as_ac_Lib=no"
- fi
- rm -f core conftest.err conftest.$ac_objext \
-     conftest$ac_exeext conftest.$ac_ext
- LIBS=$ac_check_lib_save_LIBS
- fi
--{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ruby_ruby_init" >&5
--$as_echo "$ac_cv_lib_ruby_ruby_init" >&6; }
--if test "x$ac_cv_lib_ruby_ruby_init" = xyes; then :
-+eval ac_res=\$$as_ac_Lib
-+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-+$as_echo "$ac_res" >&6; }
-+if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
-   HAVE_LIBRUBY=1
- else
-   HAVE_LIBRUBY=
-@@ -54516,7 +54552,7 @@ fi
-         if test -n "$HAVE_LIBRUBY"; then :
- 
-             old_LIBS="$LIBS"
--            LIBS="$LIBS -lruby"
-+            LIBS="$LIBS -l$ruby_soname"
-             for ac_func in rb_hash_lookup
- do :
-   ac_fn_c_check_func "$LINENO" "rb_hash_lookup" "ac_cv_func_rb_hash_lookup"
-@@ -54748,7 +54784,7 @@ do
+@@ -54774,7 +54807,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3268,7 +2151,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_GHC="ghc"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54808,7 +54844,7 @@ do
+@@ -54834,7 +54867,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3277,7 +2160,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PHP="php"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54846,7 +54882,7 @@ do
+@@ -54872,7 +54905,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3286,7 +2169,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_PHPIZE="phpize"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54915,7 +54951,7 @@ do
+@@ -54941,7 +54974,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3295,7 +2178,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ERLC="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -54958,7 +54994,7 @@ do
+@@ -54984,7 +55017,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3304,7 +2187,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ac_pt_ERLC="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55023,7 +55059,7 @@ do
+@@ -55049,7 +55082,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3313,7 +2196,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ERL="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55066,7 +55102,7 @@ do
+@@ -55092,7 +55125,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3322,7 +2205,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ac_pt_ERL="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55211,7 +55247,7 @@ do
+@@ -55237,7 +55270,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3331,7 +2214,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ERLC="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55254,7 +55290,7 @@ do
+@@ -55280,7 +55313,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3340,7 +2223,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ac_pt_ERLC="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55321,7 +55357,7 @@ do
+@@ -55347,7 +55380,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3349,7 +2232,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ERL="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55364,7 +55400,7 @@ do
+@@ -55390,7 +55423,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3358,7 +2241,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_ac_pt_ERL="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55523,6 +55559,7 @@ if test -n "$GOBJECT_CFLAGS"; then
+@@ -55549,6 +55582,7 @@ if test -n "$GOBJECT_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -3366,7 +2249,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -55539,6 +55576,7 @@ if test -n "$GOBJECT_LIBS"; then
+@@ -55565,6 +55599,7 @@ if test -n "$GOBJECT_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.26.0" 2>/dev/null`
@@ -3374,7 +2257,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -55558,9 +55596,9 @@ else
+@@ -55584,9 +55619,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -3386,7 +2269,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$GOBJECT_PKG_ERRORS" >&5
-@@ -55603,6 +55641,7 @@ if test -n "$GIO_CFLAGS"; then
+@@ -55629,6 +55664,7 @@ if test -n "$GIO_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GIO_CFLAGS=`$PKG_CONFIG --cflags "gio-2.0 >= 2.26.0" 2>/dev/null`
@@ -3394,7 +2277,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -55619,6 +55658,7 @@ if test -n "$GIO_LIBS"; then
+@@ -55645,6 +55681,7 @@ if test -n "$GIO_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GIO_LIBS=`$PKG_CONFIG --libs "gio-2.0 >= 2.26.0" 2>/dev/null`
@@ -3402,7 +2285,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -55638,9 +55678,9 @@ else
+@@ -55664,9 +55701,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -3414,7 +2297,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$GIO_PKG_ERRORS" >&5
-@@ -55695,7 +55735,7 @@ do
+@@ -55721,7 +55758,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3423,7 +2306,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_prog_GJS="gjs"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55851,7 +55891,7 @@ do
+@@ -55877,7 +55914,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3432,7 +2315,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_GTKDOC_CHECK="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55893,7 +55933,7 @@ do
+@@ -55919,7 +55956,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3441,7 +2324,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_GTKDOC_REBASE="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -55937,7 +55977,7 @@ do
+@@ -55963,7 +56000,7 @@ do
    IFS=$as_save_IFS
    test -z "$as_dir" && as_dir=.
      for ac_exec_ext in '' $ac_executable_extensions; do
@@ -3450,7 +2333,7 @@ index 55f4ef2..51c5466 100755
      ac_cv_path_GTKDOC_MKPDF="$as_dir/$ac_word$ac_exec_ext"
      $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
      break 2
-@@ -56006,6 +56046,7 @@ if test -n "$GTKDOC_DEPS_CFLAGS"; then
+@@ -56032,6 +56069,7 @@ if test -n "$GTKDOC_DEPS_CFLAGS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GTKDOC_DEPS_CFLAGS=`$PKG_CONFIG --cflags "glib-2.0 >= 2.10.0 gobject-2.0  >= 2.10.0" 2>/dev/null`
@@ -3458,7 +2341,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -56022,6 +56063,7 @@ if test -n "$GTKDOC_DEPS_LIBS"; then
+@@ -56048,6 +56086,7 @@ if test -n "$GTKDOC_DEPS_LIBS"; then
    $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
    test $ac_status = 0; }; then
    pkg_cv_GTKDOC_DEPS_LIBS=`$PKG_CONFIG --libs "glib-2.0 >= 2.10.0 gobject-2.0  >= 2.10.0" 2>/dev/null`
@@ -3466,7 +2349,7 @@ index 55f4ef2..51c5466 100755
  else
    pkg_failed=yes
  fi
-@@ -56041,9 +56083,9 @@ else
+@@ -56067,9 +56106,9 @@ else
          _pkg_short_errors_supported=no
  fi
          if test $_pkg_short_errors_supported = yes; then
@@ -3478,7 +2361,7 @@ index 55f4ef2..51c5466 100755
          fi
  	# Put the nasty error message in config.log where it belongs
  	echo "$GTKDOC_DEPS_PKG_ERRORS" >&5
-@@ -56058,7 +56100,6 @@ installed software in a non-standard prefix.
+@@ -56084,7 +56123,6 @@ installed software in a non-standard prefix.
  Alternatively, you may set the environment variables GTKDOC_DEPS_CFLAGS
  and GTKDOC_DEPS_LIBS to avoid the need to call pkg-config.
  See the pkg-config man page for more details." "$LINENO" 5
@@ -3486,7 +2369,7 @@ index 55f4ef2..51c5466 100755
  elif test $pkg_failed = untried; then
       	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
  $as_echo "no" >&6; }
-@@ -56074,7 +56115,6 @@ See the pkg-config man page for more details.
+@@ -56100,7 +56138,6 @@ See the pkg-config man page for more details.
  
  To get pkg-config, see <http://pkg-config.freedesktop.org/>.
  See \`config.log' for more details" "$LINENO" 5; }
@@ -3494,7 +2377,7 @@ index 55f4ef2..51c5466 100755
  else
  	GTKDOC_DEPS_CFLAGS=$pkg_cv_GTKDOC_DEPS_CFLAGS
  	GTKDOC_DEPS_LIBS=$pkg_cv_GTKDOC_DEPS_LIBS
-@@ -56829,16 +56869,16 @@ if (echo >conf$$.file) 2>/dev/null; then
+@@ -56855,16 +56892,16 @@ if (echo >conf$$.file) 2>/dev/null; then
      # ... but there are two gotchas:
      # 1) On MSYS, both `ln -s file dir' and `ln file dir' fail.
      # 2) DJGPP < 2.04 has no symlinks; `ln -s' creates a wrapper executable.
@@ -3515,7 +2398,7 @@ index 55f4ef2..51c5466 100755
  fi
  rm -f conf$$ conf$$.exe conf$$.dir/conf$$.file conf$$.file
  rmdir conf$$.dir 2>/dev/null
-@@ -56898,28 +56938,16 @@ else
+@@ -56924,28 +56961,16 @@ else
    as_mkdir_p=false
  fi
  
@@ -3554,19 +2437,19 @@ index 55f4ef2..51c5466 100755
  
  # Sed expression to map a string onto a valid CPP name.
  as_tr_cpp="eval sed 'y%*$as_cr_letters%P$as_cr_LETTERS%;s%[^_$as_cr_alnum]%_%g'"
-@@ -56941,7 +56969,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
+@@ -56967,7 +56992,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
  # values after options handling.
  ac_log="
- This file was extended by libguestfs $as_me 1.18.3, which was
+ This file was extended by libguestfs $as_me 1.18.4, which was
 -generated by GNU Autoconf 2.68.  Invocation command line was
 +generated by GNU Autoconf 2.69.  Invocation command line was
  
    CONFIG_FILES    = $CONFIG_FILES
    CONFIG_HEADERS  = $CONFIG_HEADERS
-@@ -57011,10 +57039,10 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
+@@ -57037,10 +57062,10 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
  ac_cs_config="`$as_echo "$ac_configure_args" | sed 's/^ //; s/[\\""\`\$]/\\\\&/g'`"
  ac_cs_version="\\
- libguestfs config.status 1.18.3
+ libguestfs config.status 1.18.4
 -configured by $0, generated by GNU Autoconf 2.68,
 +configured by $0, generated by GNU Autoconf 2.69,
    with options \\"\$ac_cs_config\\"
@@ -3576,7 +2459,7 @@ index 55f4ef2..51c5466 100755
  This config.status script is free software; the Free Software Foundation
  gives unlimited permission to copy, distribute and modify it."
  
-@@ -57105,7 +57133,7 @@ fi
+@@ -57131,7 +57156,7 @@ fi
  _ACEOF
  cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
  if \$ac_cs_recheck; then
