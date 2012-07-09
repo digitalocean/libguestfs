@@ -166,8 +166,8 @@ Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libsys-virt-perl, libguestfs-perl (= ${binary:Version}),
  libwin-hivex-perl,
  libintl-perl, libstring-shellquote-perl
-Replaces: libguestfs0 (<< 1.18.2-1~)
-Breaks: libguestfs0 (<< 1.18.2-1~)
+Replaces: libguestfs0 (<< 1:1.18.2-1~)
+Breaks: libguestfs0 (<< 1:1.18.2-1~)
 Description: guest disk image management system - tools
  The libguestfs library allows accessing and modifying guest disk
  images.
