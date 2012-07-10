@@ -1319,7 +1319,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = guestmount.pod test-fuse.sh
+EXTRA_DIST = guestmount.pod test-fuse.sh test-fuse-umount-race.sh
 CLEANFILES = stamp-guestmount.pod
 
 # These source files (all related to option parsing) are shared
@@ -1359,7 +1359,7 @@ CLEANFILES = stamp-guestmount.pod
 @HAVE_FUSE_TRUE@noinst_DATA = $(top_builddir)/html/guestmount.1.html
 
 # Tests.
-@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@TESTS = test-fuse.sh
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@TESTS = test-fuse.sh test-fuse-umount-race.sh
 @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_FUSE_TRUE@	top_builddir=..
 

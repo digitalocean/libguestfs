@@ -1,3 +1,34 @@
+2012-07-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.5.
+
+	fuse: Add regression test for RHBZ#838592. (cherry picked from commit 8df259496a80bc74edbab4436e3679d0900bd173)
+
+2012-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: Add guestmount --pid-file option (RHBZ#838592). (cherry picked from commit 5546ea6d68532caa69fbede1f29385afe34e7362)
+
+	fuse: Link to mount-local documentation in guestmount man page. (cherry picked from commit bfbfe6dd788ee3705383b544c5bc238a7dd5ca53)
+
+	fuse: Document race condition possible with fusermount.
+	See also:
+	https://bugzilla.redhat.com/show_bug.cgi?id=835466#c9
+	(cherry picked from commit 1cde66165aac222f1a07ad4c3873c61d49eabb02)
+
+	fuse: Document Device or resource busy errors from fusermount. (cherry picked from commit b749dc70742e749dbd7c0c20e6e7191fdd199170)
+
+2012-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "launch: Correction in comment."
+	This reverts commit 6e5a85bb9b6557bc337625a339728e23f5f2dd94.
+
+	It turns out this is a bug in QEMU after all.
+	(cherry picked from commit bd3e42a8ded1ed7a4177ad03646572eb6155a49c)
+
+2012-07-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: Add a test using upstream qemu. (cherry picked from commit e6dec159488f589df62c9f59477281f8264a19c8)
+
 2012-07-07  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.4.
