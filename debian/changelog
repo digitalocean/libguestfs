@@ -1,3 +1,10 @@
+libguestfs (1:1.18.5-1) unstable; urgency=low
+
+  * New upstream version
+  * [ba15957] Rebased patch queue
+
+ -- Hilko Bengen <bengen@debian.org>  Tue, 10 Jul 2012 23:56:02 +0200
+
 libguestfs (1:1.18.4-2) unstable; urgency=low
 
   * [f0017a7] Added change to podwrapper.sh.in to pass a specific date to
