@@ -89,6 +89,45 @@ necessary on Debian and derivatives.
 On other distros, no special group is required.  It is not necessary
 on Fedora or Red Hat Enterprise Linux.
 
+=head2 fusermount error: "Device or resource busy"
+
+You can see this error when another process on the system jumps into
+the mountpoint you have just created, holding it open and preventing
+you from unmounting it.  The usual culprits are various GUI "indexing"
+programs.
+
+The popular workaround for this problem is to retry the
+C<fusermount -u> command a few times until it works.  Unfortunately
+this isn't a reliable fix if (for example) the mounted filesystem is
+particularly large and the intruding program is persistent.
+
+A proper fix is to use a private mountpoint by creating a new mount
+namespace using the Linux-specific L<clone(2)>/L<unshare(2)> flag
+C<CLONE_NEWNS>.  Unfortunately at the moment this requires root and we
+would also probably need to add it as a feature to guestmount.
+
+=head2 Race conditions possible when shutting down the connection
+
+When C<fusermount -u> exits, guestmount may still be running and
+cleaning up the mountpoint.  The disk image will not be fully
+finalized.
+
+This means that scripts like the following have a nasty race
+condition:
+
+ guestmount -a disk.img -i /mnt
+ # copy things into /mnt
+ fusermount -u /mnt
+ # immediately try to use 'disk.img' <-- UNSAFE
+
+The solution is to use the I<--pid-file> option to write the
+guestmount PID to a file, then after fusermount spin waiting for this
+PID to exit.
+
+Note that if you use the C<guestfs_mount_local> API directly (see
+L<guestfs(3)/MOUNT LOCAL>) then it is much easier to write a safe,
+race-free program.
+
 =head1 OPTIONS
 
 =over 4
@@ -245,6 +284,10 @@ to the chosen values.
 
 =back
 
+=item B<--pid-file filename>
+
+Write the PID of the guestmount worker process to C<filename>.
+
 =item B<-r>
 
 =item B<--ro>
@@ -321,7 +364,7 @@ L<virt-inspector(1)>,
 L<virt-cat(1)>,
 L<virt-edit(1)>,
 L<virt-tar(1)>,
-L<guestfs(3)>,
+L<guestfs(3)/MOUNT LOCAL>,
 L<http://libguestfs.org/>,
 L<http://fuse.sf.net/>.
 

@@ -40,6 +40,7 @@
 #     (tip: add yourself to the 'disk' group)
 #   - valgrind
 #   - libtool
+#   - qemu in $QEMUDIR
 #
 # These tests may fail for reasons which aren't necessarily real problems.
 #
@@ -1271,6 +1272,14 @@ random_guests := \
 	  LIBVIRT_DEFAULT_URI='qemu+unix:///system?socket=/var/run/libvirt/libvirt-sock-ro' \
 	    $(abs_top_builddir)/run $(srcdir)/pick-guests.pl 5)
 
+
+# When running the extra tests, if directory $HOME/d/qemu exists then
+# we will try to run the basic tests using the version of qemu from
+# that directory.  eg. That might be qemu from git.
+#
+# The directory name can be overridden using:
+#   make extra-tests QEMUDIR=/path/to/other/qemu
+QEMUDIR = $(HOME)/d/qemu
 all: all-am
 
 .SUFFIXES:
@@ -1482,7 +1491,8 @@ extra-tests: \
 	test-sysprep-real \
 	test-ocaml \
 	test-resize \
-	test-sparsify
+	test-sparsify \
+	test-upstream-qemu
 
 test-guests:
 	$(MAKE) -C ../guests check
@@ -1578,6 +1588,12 @@ test-c-api:
 # Test OCaml bindings under valgrind.
 test-ocaml:
 	$(MAKE) -C ../../ocaml VG="$(VG)" check
+export QEMUDIR
+export abs_srcdir
+export MAKE
+
+test-upstream-qemu:
+	./test-upstream-qemu.sh
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
