@@ -130,9 +130,9 @@ override_dh_install:
 # Workaround for python3-defaults < 3.2~b2-1
 # ("do not rename .so files outside dist-packages directory")
 override_dh_python3:
-	dh_python3 -p python-libguestfs
+	dh_python3 -p python-guestfs
 override_dh_python2:
-	dh_python2 -p python-libguestfs -V 2.6-
+	dh_python2 -p python-guestfs -V 2.6-
 
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"
