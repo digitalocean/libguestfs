@@ -142,4 +142,4 @@ override_dh_makeshlibs:
 %:
 	dh $@ \
 	   --without=python-support \
-	   --with=autotools-dev,ocaml,python2,python3,bash-completion,ruby,gir
+	   --with=autoreconf,ocaml,python2,python3,bash-completion,ruby,gir

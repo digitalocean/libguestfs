@@ -6,4 +6,3 @@
 0006-ruby-install-to-vendor_ruby.patch
 0007-podwrapper.sh-Use-date-from-ChangeLog.patch
 0008-Fix-guestfs-supermin-appliance-path.patch
-0009-autoreconf.patch

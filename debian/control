@@ -4,6 +4,7 @@ Priority: extra
 Maintainer: Debian Libvirt Maintainers <pkg-libvirt-maintainers@lists.alioth.debian.org>
 Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, Hilko Bengen <bengen@debian.org>
 Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
+  dh-autoreconf,
   po-debconf, bash-completion,
   febootstrap (>= 3.2),
   libreadline-dev, libaugeas-dev, libselinux1-dev, libhivex-dev, libvirt-dev,
