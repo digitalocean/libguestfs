@@ -1,0 +1,38 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Thu, 19 Jul 2012 17:27:35 +0200
+Subject: Fix guestfs, supermin appliance path
+
+The supermin appliance files are not installed to the multiarch lib directory.
+---
+ appliance/Makefile.am |    4 ++--
+ src/Makefile.am       |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/appliance/Makefile.am b/appliance/Makefile.am
+index 5958997..e87f67c 100644
+--- a/appliance/Makefile.am
++++ b/appliance/Makefile.am
+@@ -29,8 +29,8 @@ EXTRA_DIST = \
+ 	make.sh.in \
+ 	packagelist.in
+ 
+-fsdir = $(libdir)/guestfs
+-superminfsdir = $(libdir)/guestfs/supermin.d
++fsdir = $(prefix)/lib/guestfs
++superminfsdir = $(prefix)/lib/guestfs/supermin.d
+ 
+ fs_DATA =
+ superminfs_DATA = \
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 30e5070..cda57e0 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -161,7 +161,7 @@ noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
+ libguestfs_la_LIBADD += liberrnostring.la libprotocol.la
+ 
+ libguestfs_la_CFLAGS = \
+-  -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
++  -DGUESTFS_DEFAULT_PATH='"$(prefix)/lib/guestfs"' \
+   -DGUESTFS_WARN_DEPRECATED=1 \
+   $(HIVEX_CFLAGS) $(AUGEAS_CFLAGS) $(PCRE_CFLAGS) \
+   $(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) \

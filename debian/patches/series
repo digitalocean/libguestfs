@@ -4,5 +4,6 @@
 0004-out-of-tree-build-fix-building-Perl-bindings.patch
 0005-out-of-tree-build-daemon.patch
 0006-ruby-install-to-vendor_ruby.patch
-0007-autoreconf.patch
-0008-podwrapper.sh-Use-date-from-ChangeLog.patch
+0007-podwrapper.sh-Use-date-from-ChangeLog.patch
+0008-Fix-guestfs-supermin-appliance-path.patch
+0009-autoreconf.patch
