@@ -1,3 +1,10 @@
+libguestfs (1:1.18.6-1) unstable; urgency=low
+
+  * New upstream version
+  * [6e1f12c] Rebased patch queue
+
+ -- Hilko Bengen <bengen@debian.org>  Sat, 11 Aug 2012 20:57:40 +0200
+
 libguestfs (1:1.18.5-3) unstable; urgency=low
 
   * [de8c07e] Added another multiarch fix: supermin appliance stays out of
