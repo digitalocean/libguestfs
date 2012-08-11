@@ -14,8 +14,8 @@
 
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.68],,
-[m4_warning([this file was generated for autoconf 2.68.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.69],,
+[m4_warning([this file was generated for autoconf 2.69.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically `autoreconf'.])])
@@ -1714,6 +1714,7 @@ m4_include([m4/fpending.m4])
 m4_include([m4/fpieee.m4])
 m4_include([m4/fseeko.m4])
 m4_include([m4/fstat.m4])
+m4_include([m4/fstatat.m4])
 m4_include([m4/fsusage.m4])
 m4_include([m4/ftell.m4])
 m4_include([m4/ftello.m4])
@@ -1782,6 +1783,7 @@ m4_include([m4/mbsrtowcs.m4])
 m4_include([m4/mbstate_t.m4])
 m4_include([m4/mbtowc.m4])
 m4_include([m4/memchr.m4])
+m4_include([m4/memmem.m4])
 m4_include([m4/mempcpy.m4])
 m4_include([m4/memrchr.m4])
 m4_include([m4/mkdtemp.m4])

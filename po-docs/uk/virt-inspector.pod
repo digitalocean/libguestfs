@@ -84,8 +84,8 @@ at all.
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
 
 =item B<--echo-keys>
 

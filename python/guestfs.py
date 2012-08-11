@@ -1,3 +1,4 @@
+# coding: utf-8
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
 #   generator/generator_*.ml

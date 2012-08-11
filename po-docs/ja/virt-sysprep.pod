@@ -19,8 +19,8 @@ Each step can be enabled or disabled as required.
 
 Virt-sysprep modifies the guest or disk image I<in place>.  The guest must
 be shut down.  If you want to preserve the existing contents of the guest,
-you I<must copy or clone the disk first>.  See L</COPYING AND CLONING>
-below.
+you I<must snapshot, copy or clone the disk first>.  See L</COPYING AND
+CLONING> below.
 
 You do I<not> need to run virt-sysprep as root.  In fact we'd generally
 recommend that you don't.  The time you might want to run it as root is when
@@ -139,7 +139,7 @@ and all operations were enabled by default.
 
 =item B<--quiet>
 
-Don't print log messages.
+ログメッセージを表示しません。
 
 To enable detailed logging of individual file operations, use I<-x>.
 
@@ -192,7 +192,7 @@ Future versions of virt-sysprep may add more operations.  If you are using
 virt-sysprep and want predictable behaviour, specify only the operations
 that you want to have enabled.
 
-C<*> = enabled by default when no I<--enable> option is given.
+C<*> = I<--enable> オプションが与えられるとき、デフォルトで有効化されます。
 
 @OPERATIONS@
 
@@ -289,31 +289,42 @@ with the template, you will want to make many clones from it.
 
 よりスマート（かつ高速）な方法もあります:
 
-=over 4
-
-=item *
-
                           snapshot
             テンプレート ---------->
                             \------> クローン
                              \-----> 済みゲスト
                               \---->
 
-Use the block device as a backing file and create a snapshot on top for each
-guest.  The advantage is that you don't need to copy the block device (very
-fast) and only changes are stored (less storage required).
+=over 4
+
+=item *
+
+Create a snapshot using qemu-img:
+
+ qemu-img create -f qcow2 -o backing_file=original snapshot.qcow
+
+The advantage is that you don't need to copy the original (very fast)  and
+only changes are stored (less storage required).
 
 Note that writing to the backing file once you have created guests on top of
 it is not possible: you will corrupt the guests.
 
-Tools that can do this include: L<qemu-img(1)> (with the I<create -f qcow2
--o backing_file> option), L<lvcreate(8)> (I<--snapshot> option).  Some
-filesystems (such as btrfs) and most Network Attached Storage devices can
-also create cheap snapshots from files or LUNs.
+=item *
+
+Create a snapshot using C<lvcreate --snapshot>.
 
 =item *
 
-Get your NAS to snapshot and/or duplicate the LUN.
+Other ways to create snapshots include using filesystems-level tools (for
+filesystems such as btrfs).
+
+Most Network Attached Storage (NAS) devices can also create cheap snapshots
+from files or LUNs.
+
+=item *
+
+Get your NAS to duplicate the LUN.  Most NAS devices can also duplicate LUNs
+very cheaply (they copy them on-demand in the background).
 
 =item *
 

@@ -127,8 +127,8 @@ be added to this list in future).
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
+libvirt не буде використовуватися взагалі.
 
 =item B<--csv>
 
@@ -140,8 +140,8 @@ ABOUT CSV FORMAT> below.
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
 
 =item B<--echo-keys>
 
@@ -180,7 +180,7 @@ auto-detection for subsequent I<-a> options.
 
 forces raw format (no auto-detection) for C<disk.img>.
 
- virt-filesystems --format=raw -a disk.img --format -a another.img
+ virt-filesystems --format=raw -a диск.img --format -a інший_диск.img
 
 forces raw format (no auto-detection) for C<disk.img> and reverts to
 auto-detection for C<another.img>.
@@ -216,7 +216,7 @@ programs.
 Use I<-h> if you want sizes to be displayed in human-readable format.  The
 default is to show raw numbers of I<bytes>.
 
-Use I<--uuid> to display UUIDs too.
+Скористайтеся параметром I<--uuid>, щоб було показано також UUID.
 
 =item B<--lvs>
 
@@ -343,7 +343,7 @@ column) a comma-separated list, eg. C</dev/sda,/dev/sdb>.
 If the object has a UUID (used for identifying and mounting filesystems and
 block devices) then this column contains the UUID as a string.
 
-The UUID is only displayed if the I<--uuid> option is given.
+UUID буде показано, лише якщо вказано параметр I<--uuid>.
 
 =back
 

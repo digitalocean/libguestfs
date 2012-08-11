@@ -49,8 +49,8 @@ libvirt が把握している仮想マシンにおいてツールを実行する
  /dev/sda2    105906176         1024K   ok
  /dev/sdb1        65536           64K   ok
 
-Run virt-alignment-scan without any I<-a> or I<-d> options to scan all
-libvirt domains.
+すべての libvirt ドメインをスキャンするには I<-a> や I<-d> オプションをつけずに virt-alignment-scan
+を実行します。
 
  # virt-alignment-scan
  F16x64:/dev/sda1      1048576         1024K   ok

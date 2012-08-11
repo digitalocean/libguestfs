@@ -31,7 +31,7 @@ noinst_DATA = $(top_builddir)/html/guestfs-java.3.html
 guestfs-java.3 $(top_builddir)/html/guestfs-java.3.html: stamp-guestfs-java.pod
 
 stamp-guestfs-java.pod: guestfs-java.pod CreateDisk.java InspectVM.java
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --section 3 \
 	  --man guestfs-java.3 \
 	  --html $(top_builddir)/html/guestfs-java.3.html \
@@ -43,6 +43,8 @@ stamp-guestfs-java.pod: guestfs-java.pod CreateDisk.java InspectVM.java
 if HAVE_JAVA
 
 noinst_SCRIPTS = CreateDisk.class InspectVM.class
+
+JAVAC_FLAGS = $(EXTRA_JAVAC_FLAGS) -encoding utf-8
 
 %.class: %.java
 	$(JAVAC) $(JAVAC_FLAGS) -classpath ../libguestfs-$(VERSION).jar $<

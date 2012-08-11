@@ -55,8 +55,8 @@ L<http://media.netapp.com/documents/tr-3747.pdf>
  /dev/sda2    105906176         1024K   ok
  /dev/sdb1        65536           64K   ok
 
-Run virt-alignment-scan without any I<-a> or I<-d> options to scan all
-libvirt domains.
+Щоб виконати сканування всіх доменів libvirt, віддайте команду
+virt-alignment-scan без параметрів I<-a> та I<-d>.
 
  # virt-alignment-scan
  F16x64:/dev/sda1      1048576         1024K   ok
@@ -127,15 +127,15 @@ particular format use the I<--format=..> option.
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
+libvirt не буде використовуватися взагалі.
 
 =item B<-d> гість
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
 
 =item B<--format=raw|qcow2|..>
 

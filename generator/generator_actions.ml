@@ -18,14 +18,6 @@
 
 (* Please read generator/README first. *)
 
-(* Note about long descriptions: When referring to another
- * action, use the format C<guestfs_other> (ie. the full name of
- * the C function).  This will be replaced as appropriate in other
- * language bindings.
- *
- * Apart from that, long descriptions are just perldoc paragraphs.
- *)
-
 open Generator_types
 open Generator_utils
 
@@ -4846,7 +4838,10 @@ The result list is not sorted.
       [["mkdir"; "/case_sensitive_path3"];
        ["mkdir"; "/case_sensitive_path3/bbb"];
        ["touch"; "/case_sensitive_path3/bbb/c"];
-       ["case_sensitive_path"; "/case_SENSITIVE_path3/bbb/../bbb/C"]])],
+       ["case_sensitive_path"; "/case_SENSITIVE_path3/bbb/../bbb/C"]]);
+    InitScratchFS, Always, TestOutput (
+      [["mkdir"; "/case_sensitive_path4"];
+       ["case_sensitive_path"; "/case_SENSITIVE_path4/new_file"]], "/case_sensitive_path4/new_file")],
    "return true path on case-insensitive filesystem",
    "\
 This can be used to resolve case insensitive paths on

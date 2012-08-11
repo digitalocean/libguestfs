@@ -26,7 +26,6 @@ cscope.out
 .libs
 Makefile
 Makefile.in
-pod2htm?.tmp
 
 /ABOUT-NLS
 /aclocal.m4
@@ -62,8 +61,8 @@ pod2htm?.tmp
 /csharp/Libguestfs.cs
 /daemon/actions.h
 /daemon/errnostring.c
-/daemon/errnostring_gperf.c
-/daemon/errnostring_gperf.gperf
+/daemon/errnostring-gperf.c
+/daemon/errnostring-gperf.gperf
 /daemon/errnostring.h
 /daemon/guestfsd
 /daemon/guestfsd.exe
@@ -105,8 +104,8 @@ pod2htm?.tmp
 /examples/stamp-guestfs-testing.pod
 /examples/virt-dhcp-address
 /fish/cmds.c
-/fish/cmds_gperf.c
-/fish/cmds_gperf.gperf
+/fish/cmds-gperf.c
+/fish/cmds-gperf.gperf
 /fish/completion.c
 /fish/event-names.c
 /fish/fish-cmds.h
@@ -228,9 +227,7 @@ pod2htm?.tmp
 /ocaml/examples/guestfs-ocaml.3
 /ocaml/examples/inspect_vm
 /ocaml/examples/stamp-guestfs-ocaml.pod
-/ocaml/guestfs_c_actions.c
-/ocaml/guestfs_inspector.ml
-/ocaml/guestfs_inspector.mli
+/ocaml/guestfs-c-actions.c
 /ocaml/guestfs.ml
 /ocaml/guestfs.mli
 /ocamlinit-stamp
@@ -247,8 +244,8 @@ pod2htm?.tmp
 /ocaml/t/guestfs_400_events.opt
 /ocaml/t/guestfs_400_progress.bc
 /ocaml/t/guestfs_400_progress.opt
-/ocaml/t/guestfs_500_parallel_mount_local.bc
-/ocaml/t/guestfs_500_parallel_mount_local.opt
+/ocaml/t/guestfs_500_mount_local.bc
+/ocaml/t/guestfs_500_mount_local.opt
 /perl/bindtests.pl
 /perl/blib
 /perl/examples/guestfs-perl.3
@@ -301,7 +298,7 @@ pod2htm?.tmp
 /po-docs/po4a.conf
 /po-docs/*/*.pod
 /po-docs/*/stamp-update-po
-/podwrapper.sh
+/podwrapper.pl
 /po/*.gmo
 /python/bindtests.py
 /python/examples/guestfs-python.3
@@ -339,8 +336,8 @@ pod2htm?.tmp
 /src/actions.c
 /src/bindtests.c
 /src/errnostring.c
-/src/errnostring_gperf.c
-/src/errnostring_gperf.gperf
+/src/errnostring-gperf.c
+/src/errnostring-gperf.gperf
 /src/errnostring.h
 /src/guestfs.3
 /src/guestfs-actions.pod

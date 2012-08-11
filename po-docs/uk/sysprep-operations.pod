@@ -4,12 +4,12 @@
 
 Вилучити журнал команд bash у гостьовій системі.
 
-Remove the bash history of user "root" and any other users who have a
-C<.bash_history> file in their home directory.
+Вилучити журнал команд bash користувача «root» та всіх інших користувачів, у
+домашніх каталогах яких містяться файли C<.bash_history>.
 
 =head2 B<blkid-tab> *
 
-Remove blkid tab in the guest.
+Вилучити вкладку ідентифікаторів блоків у гостьовій системі.
 
 =head2 B<ca-certificates>
 
@@ -112,7 +112,7 @@ Remove Kerberos data in the guest.
 
 =head2 B<pam-data> *
 
-Remove the PAM data in the guest.
+Вилучити дані PAM у гостьовій системі.
 
 =head2 B<random-seed> *
 

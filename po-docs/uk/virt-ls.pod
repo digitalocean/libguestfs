@@ -14,7 +14,7 @@ virt-ls — програма для показу списку файлів у в
 
  virt-ls [--параметри] назва_домену каталог
 
- virt-ls [--options] disk.img [disk.img ...] directory
+ virt-ls [--параметри] диск.img [диск.img ...] каталог
 
 =head1 ОПИС
 
@@ -287,8 +287,8 @@ LISTING> above.
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
+libvirt не буде використовуватися взагалі.
 
 =item B<--csv>
 
@@ -300,8 +300,8 @@ ABOUT CSV FORMAT> below.
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
 
 =item B<--echo-keys>
 
@@ -332,7 +332,7 @@ auto-detection for subsequent I<-a> options.
 
 forces raw format (no auto-detection) for C<disk.img>.
 
- virt-ls --format=raw -a disk.img --format -a another.img /dir
+ virt-ls --format=raw -a диск.img --format -a інший_диск.img /каталог
 
 forces raw format (no auto-detection) for C<disk.img> and reverts to
 auto-detection for C<another.img>.
@@ -440,7 +440,7 @@ Previous versions of virt-ls allowed you to write either:
 
 або
 
- virt-ls guestname /dir
+ virt-ls назва_гостьової_системи /каталог
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.

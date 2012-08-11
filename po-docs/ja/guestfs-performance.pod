@@ -139,10 +139,9 @@ Now you can run libguestfs programs, virt tools, guestfish etc. as normal.
 The programs will use your fixed appliance, and will not ever build,
 rebuild, or cache their own appliance.
 
-(For detailed information on this subject, see:
-L<libguestfs-make-fixed-appliance(1)>).
+(この話題の詳細は L<libguestfs-make-fixed-appliance(1)> を参照してください)。
 
-=head2 PERFORMANCE OF THE FIXED APPLIANCE
+=head2 固定アプライアンスのパフォーマンス
 
 In our testing we did not find that using a fixed appliance gave any
 measurable performance benefit, even when the appliance was located in
@@ -254,27 +253,24 @@ expensive on Windows.
 
 =back
 
-=head1 TROUBLESHOOTING POOR PERFORMANCE
+=head1 性能劣化のトラブルシューティング
 
-=head2 ENSURE HARDWARE VIRTUALIZATION IS AVAILABLE
+=head2 ハードウェア仮想化機能の利用可能性の確認
 
-Use C</proc/cpuinfo> and this page:
+C</proc/cpuinfo> およびこのページを使用します:
 
 http://virt-tools.org/learning/check-hardware-virt/
 
-to ensure that hardware virtualization is available.  Note that you may need
-to enable it in your BIOS.
+ハードウェア仮想化が利用可能であることを確実にします。 BIOS において有効化する必要があるかもしれないことに注意してください。
 
-Hardware virt is not usually available inside VMs, and libguestfs will run
-slowly inside another virtual machine whatever you do.  Nested
-virtualization does not work well in our experience, and is certainly no
-substitute for running libguestfs on baremetal.
+ハードウェア仮想化は一般的に仮想マシンの中において利用可能ではありません。libguestfs
+はどんな他の仮想マシンよりも遅いです。ネスト仮想化は経験上うまく動作しないです。そのため、ベアメタルにおいて libguestfs
+を実行するためにほとんど適切ではありません。
 
-=head2 ENSURE KVM IS AVAILABLE
+=head2 KVM の利用可能性の確認
 
-Ensure that KVM is enabled and available to the user that will run
-libguestfs.  It should be safe to set 0666 permissions on C</dev/kvm> and
-most distributions now do this.
+KVM が有効化され、libguestfs を実行するユーザーが利用可能であることを確実にします。C</dev/kvm> において 0666
+パーミッションを設定して安全にするべきですが、多くのディストリビューションにおいて、現在こうしています。
 
 =head2 PROCESSORS TO AVOID
 
@@ -312,7 +308,7 @@ Save the following script as C<time.stap>:
        printf ("\t%s %s\n", $$name, $$parms);
  }
  
- /* Display all calls to guestfs_* functions. */
+ /* すべての guestfs_* 関数の呼び出しを一覧表示します。 */
  probe process("/usr/lib*/libguestfs.so.0")
            .function("guestfs_[a-z]*") ? {
        display_time();

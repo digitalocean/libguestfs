@@ -31,11 +31,11 @@ bin_PROGRAMS = virt-cat virt-filesystems virt-ls
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c \
-	../fish/virt.c
+	../fish/options.c
 
 virt_cat_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -102,7 +102,7 @@ noinst_DATA = \
 virt-cat.1 $(top_builddir)/html/virt-cat.1.html: stamp-virt-cat.pod
 
 stamp-virt-cat.pod: virt-cat.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-cat.1 \
 	  --html $(top_builddir)/html/virt-cat.1.html \
 	  $<
@@ -111,7 +111,7 @@ stamp-virt-cat.pod: virt-cat.pod
 virt-ls.1 $(top_builddir)/html/virt-ls.1.html: stamp-virt-ls.pod
 
 stamp-virt-ls.pod: virt-ls.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-ls.1 \
 	  --html $(top_builddir)/html/virt-ls.1.html \
 	  $<
@@ -120,7 +120,7 @@ stamp-virt-ls.pod: virt-ls.pod
 virt-filesystems.1 $(top_builddir)/html/virt-filesystems.1.html: stamp-virt-filesystems.pod
 
 stamp-virt-filesystems.pod: virt-filesystems.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-filesystems.1 \
 	  --html $(top_builddir)/html/virt-filesystems.1.html \
 	  $<

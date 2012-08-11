@@ -121,6 +121,12 @@ public class GuestFS {
     _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, _optargs_bitmask, obool, oint, oint64, ostring);
   }
 
+  public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
+    throws LibGuestFSException
+  {
+    test0 (str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, null);
+  }
+
   private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, long _optargs_bitmask, boolean obool, int oint, long oint64, String ostring)
     throws LibGuestFSException;
 
@@ -1999,6 +2005,12 @@ public class GuestFS {
     _add_drive_opts (g, filename, _optargs_bitmask, readonly, format, iface, name);
   }
 
+  public void add_drive_opts (String filename)
+    throws LibGuestFSException
+  {
+    add_drive_opts (filename, null);
+  }
+
   private native void _add_drive_opts (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name)
     throws LibGuestFSException;
 
@@ -2231,6 +2243,12 @@ public class GuestFS {
     }
 
     return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid, readonlydisk);
+  }
+
+  public int add_domain (String dom)
+    throws LibGuestFSException
+  {
+    return add_domain (dom, null);
   }
 
   private native int _add_domain (long g, String dom, long _optargs_bitmask, String libvirturi, boolean readonly, String iface, boolean live, boolean allowuuid, String readonlydisk)
@@ -2812,6 +2830,12 @@ public class GuestFS {
     return _inspect_get_icon (g, root, _optargs_bitmask, favicon, highquality);
   }
 
+  public String inspect_get_icon (String root)
+    throws LibGuestFSException
+  {
+    return inspect_get_icon (root, null);
+  }
+
   private native String _inspect_get_icon (long g, String root, long _optargs_bitmask, boolean favicon, boolean highquality)
     throws LibGuestFSException;
 
@@ -2988,6 +3012,12 @@ public class GuestFS {
     _mount_local (g, localmountpoint, _optargs_bitmask, readonly, options, cachetimeout, debugcalls);
   }
 
+  public void mount_local (String localmountpoint)
+    throws LibGuestFSException
+  {
+    mount_local (localmountpoint, null);
+  }
+
   private native void _mount_local (long g, String localmountpoint, long _optargs_bitmask, boolean readonly, String options, int cachetimeout, boolean debugcalls)
     throws LibGuestFSException;
 
@@ -3060,6 +3090,12 @@ public class GuestFS {
     }
 
     _umount_local (g, _optargs_bitmask, retry);
+  }
+
+  public void umount_local ()
+    throws LibGuestFSException
+  {
+    umount_local (null);
   }
 
   private native void _umount_local (long g, long _optargs_bitmask, boolean retry)
@@ -10392,6 +10428,12 @@ public class GuestFS {
     _mkfs_opts (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize);
   }
 
+  public void mkfs_opts (String fstype, String device)
+    throws LibGuestFSException
+  {
+    mkfs_opts (fstype, device, null);
+  }
+
   private native void _mkfs_opts (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize)
     throws LibGuestFSException;
 
@@ -10608,6 +10650,12 @@ public class GuestFS {
     _mount_9p (g, mounttag, mountpoint, _optargs_bitmask, options);
   }
 
+  public void mount_9p (String mounttag, String mountpoint)
+    throws LibGuestFSException
+  {
+    mount_9p (mounttag, mountpoint, null);
+  }
+
   private native void _mount_9p (long g, String mounttag, String mountpoint, long _optargs_bitmask, String options)
     throws LibGuestFSException;
 
@@ -10702,6 +10750,12 @@ public class GuestFS {
     _ntfsresize_opts (g, device, _optargs_bitmask, size, force);
   }
 
+  public void ntfsresize_opts (String device)
+    throws LibGuestFSException
+  {
+    ntfsresize_opts (device, null);
+  }
+
   private native void _ntfsresize_opts (long g, String device, long _optargs_bitmask, long size, boolean force)
     throws LibGuestFSException;
 
@@ -10749,6 +10803,12 @@ public class GuestFS {
     }
 
     _btrfs_filesystem_resize (g, mountpoint, _optargs_bitmask, size);
+  }
+
+  public void btrfs_filesystem_resize (String mountpoint)
+    throws LibGuestFSException
+  {
+    btrfs_filesystem_resize (mountpoint, null);
   }
 
   private native void _btrfs_filesystem_resize (long g, String mountpoint, long _optargs_bitmask, long size)
@@ -10825,6 +10885,12 @@ public class GuestFS {
     _compress_out (g, ctype, file, zfile, _optargs_bitmask, level);
   }
 
+  public void compress_out (String ctype, String file, String zfile)
+    throws LibGuestFSException
+  {
+    compress_out (ctype, file, zfile, null);
+  }
+
   private native void _compress_out (long g, String ctype, String file, String zfile, long _optargs_bitmask, int level)
     throws LibGuestFSException;
 
@@ -10863,6 +10929,12 @@ public class GuestFS {
     }
 
     _compress_device_out (g, ctype, device, zdevice, _optargs_bitmask, level);
+  }
+
+  public void compress_device_out (String ctype, String device, String zdevice)
+    throws LibGuestFSException
+  {
+    compress_device_out (ctype, device, zdevice, null);
   }
 
   private native void _compress_device_out (long g, String ctype, String device, String zdevice, long _optargs_bitmask, int level)
@@ -10959,6 +11031,12 @@ public class GuestFS {
     _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
   }
 
+  public void copy_device_to_device (String src, String dest)
+    throws LibGuestFSException
+  {
+    copy_device_to_device (src, dest, null);
+  }
+
   private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
     throws LibGuestFSException;
 
@@ -11012,6 +11090,12 @@ public class GuestFS {
     _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
   }
 
+  public void copy_device_to_file (String src, String dest)
+    throws LibGuestFSException
+  {
+    copy_device_to_file (src, dest, null);
+  }
+
   private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
     throws LibGuestFSException;
 
@@ -11063,6 +11147,12 @@ public class GuestFS {
     }
 
     _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+  }
+
+  public void copy_file_to_device (String src, String dest)
+    throws LibGuestFSException
+  {
+    copy_file_to_device (src, dest, null);
   }
 
   private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
@@ -11121,6 +11211,12 @@ public class GuestFS {
     }
 
     _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+  }
+
+  public void copy_file_to_file (String src, String dest)
+    throws LibGuestFSException
+  {
+    copy_file_to_file (src, dest, null);
   }
 
   private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
@@ -11293,6 +11389,12 @@ public class GuestFS {
     _tune2fs (g, device, _optargs_bitmask, force, maxmountcount, mountcount, errorbehavior, group, intervalbetweenchecks, reservedblockspercentage, lastmounteddirectory, reservedblockscount, user);
   }
 
+  public void tune2fs (String device)
+    throws LibGuestFSException
+  {
+    tune2fs (device, null);
+  }
+
   private native void _tune2fs (long g, String device, long _optargs_bitmask, boolean force, int maxmountcount, int mountcount, String errorbehavior, long group, int intervalbetweenchecks, int reservedblockspercentage, String lastmounteddirectory, long reservedblockscount, long user)
     throws LibGuestFSException;
 
@@ -11406,6 +11508,12 @@ public class GuestFS {
     }
 
     _md_create (g, name, devices, _optargs_bitmask, missingbitmap, nrdevices, spare, chunk, level);
+  }
+
+  public void md_create (String name, String[] devices)
+    throws LibGuestFSException
+  {
+    md_create (name, devices, null);
   }
 
   private native void _md_create (long g, String name, String[] devices, long _optargs_bitmask, long missingbitmap, int nrdevices, int spare, long chunk, String level)
@@ -11591,6 +11699,12 @@ public class GuestFS {
     _e2fsck (g, device, _optargs_bitmask, correct, forceall);
   }
 
+  public void e2fsck (String device)
+    throws LibGuestFSException
+  {
+    e2fsck (device, null);
+  }
+
   private native void _e2fsck (long g, String device, long _optargs_bitmask, boolean correct, boolean forceall)
     throws LibGuestFSException;
 
@@ -11688,6 +11802,12 @@ public class GuestFS {
     _ntfsfix (g, device, _optargs_bitmask, clearbadsectors);
   }
 
+  public void ntfsfix (String device)
+    throws LibGuestFSException
+  {
+    ntfsfix (device, null);
+  }
+
   private native void _ntfsfix (long g, String device, long _optargs_bitmask, boolean clearbadsectors)
     throws LibGuestFSException;
 
@@ -11767,6 +11887,12 @@ public class GuestFS {
     }
 
     _ntfsclone_out (g, device, backupfile, _optargs_bitmask, metadataonly, rescue, ignorefscheck, preservetimestamps, force);
+  }
+
+  public void ntfsclone_out (String device, String backupfile)
+    throws LibGuestFSException
+  {
+    ntfsclone_out (device, backupfile, null);
   }
 
   private native void _ntfsclone_out (long g, String device, String backupfile, long _optargs_bitmask, boolean metadataonly, boolean rescue, boolean ignorefscheck, boolean preservetimestamps, boolean force)
@@ -12091,6 +12217,12 @@ public class GuestFS {
     _mkfs_btrfs (g, devices, _optargs_bitmask, allocstart, bytecount, datatype, leafsize, label, metadata, nodesize, sectorsize);
   }
 
+  public void mkfs_btrfs (String[] devices)
+    throws LibGuestFSException
+  {
+    mkfs_btrfs (devices, null);
+  }
+
   private native void _mkfs_btrfs (long g, String[] devices, long _optargs_bitmask, long allocstart, long bytecount, String datatype, int leafsize, String label, String metadata, int nodesize, int sectorsize)
     throws LibGuestFSException;
 
@@ -12237,6 +12369,12 @@ public class GuestFS {
     }
 
     _set_e2attrs (g, file, attrs, _optargs_bitmask, clear);
+  }
+
+  public void set_e2attrs (String file, String attrs)
+    throws LibGuestFSException
+  {
+    set_e2attrs (file, attrs, null);
   }
 
   private native void _set_e2attrs (long g, String file, String attrs, long _optargs_bitmask, boolean clear)
@@ -12535,6 +12673,12 @@ public class GuestFS {
     }
 
     _btrfs_fsck (g, device, _optargs_bitmask, superblock, repair);
+  }
+
+  public void btrfs_fsck (String device)
+    throws LibGuestFSException
+  {
+    btrfs_fsck (device, null);
   }
 
   private native void _btrfs_fsck (long g, String device, long _optargs_bitmask, long superblock, boolean repair)

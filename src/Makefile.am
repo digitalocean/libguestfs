@@ -25,7 +25,7 @@ generator_built = \
 	guestfs-internal-actions.h \
 	actions.c \
 	bindtests.c \
-	errnostring_gperf.gperf \
+	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h \
 	guestfs-actions.pod \
@@ -37,7 +37,7 @@ BUILT_SOURCES = \
 	$(generator_built) \
 	guestfs_protocol.c \
 	guestfs_protocol.h \
-	errnostring_gperf.c
+	errnostring-gperf.c
 
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
@@ -62,12 +62,12 @@ libprotocol_la_CFLAGS = \
 # Build the errnostring perfect hash code.  The generated code has lots
 # of warnings so we must compile it in a separate mini-library.
 liberrnostring_la_SOURCES = \
-	errnostring_gperf.c \
+	errnostring-gperf.c \
 	errnostring.h \
 	errnostring.c
 liberrnostring_la_CFLAGS = $(GCC_VISIBILITY_HIDDEN)
 
-errnostring_gperf.c: errnostring_gperf.gperf
+errnostring-gperf.c: errnostring-gperf.gperf
 	rm -f $@
 	$(GPERF) -t $< > $@-t
 	mv $@-t $@
@@ -128,19 +128,19 @@ libguestfs_la_SOURCES = \
 	dbdump.c \
 	events.c \
 	filearch.c \
+	fuse.c \
 	inspect.c \
-	inspect_apps.c \
-	inspect_fs.c \
-	inspect_fs_cd.c \
-	inspect_fs_unix.c \
-	inspect_fs_windows.c \
-	inspect_icon.c \
+	inspect-apps.c \
+	inspect-fs.c \
+	inspect-fs-cd.c \
+	inspect-fs-unix.c \
+	inspect-fs-windows.c \
+	inspect-icon.c \
 	launch.c \
+	libvirtdomain.c \
 	listfs.c \
 	match.c \
 	proto.c \
-	fuse.c \
-	virt.c \
 	libguestfs.syms
 
 libguestfs_la_LIBADD = \
@@ -177,16 +177,25 @@ libguestfs_la_LIBADD += $(FUSE_LIBS) -lulockmgr
 endif
 
 if HAVE_RPCGEN
+RPCGEN_DEFS =
+if HAVE_XDR_U_INT64_T
+RPCGEN_DEFS += -DHAVE_XDR_U_INT64_T=1
+else
+if HAVE_XDR_UINT64_T
+RPCGEN_DEFS += -DHAVE_XDR_UINT64_T=1
+endif
+endif
+
 guestfs_protocol.c: guestfs_protocol.x
 	rm -f $@-t $@-t2
-	$(RPCGEN) -c -o $@-t $(srcdir)/$<
+	$(RPCGEN) $(RPCGEN_DEFS) -c -o $@-t $(srcdir)/$<
 	sed 's,\.\./\(\.\./\)*src,.,' < $@-t > $@-t2
 	rm $@-t
 	mv $@-t2 $@
 
 guestfs_protocol.h: guestfs_protocol.x
 	rm -f $@-t
-	$(RPCGEN) -h -o $@-t $(srcdir)/$<
+	$(RPCGEN) $(RPCGEN_DEFS) -h -o $@-t $(srcdir)/$<
 	mv $@-t $@
 endif
 
@@ -206,7 +215,7 @@ stamp-guestfs.pod: guestfs.pod \
 		guestfs-actions.pod \
 		guestfs-availability.pod \
 		guestfs-structs.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --section 3 \
 	  --man guestfs.3 \
 	  --html $(top_builddir)/html/guestfs.3.html \

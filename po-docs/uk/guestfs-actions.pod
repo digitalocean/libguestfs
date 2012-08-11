@@ -149,7 +149,7 @@ C<guestfs_add_drive_opts>.
                         const char *dom,
                         va_list args);
 
-This is the "va_list variant" of L</guestfs_add_domain>.
+Це «варіант з va_list» L</guestfs_add_domain>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -160,7 +160,7 @@ This is the "va_list variant" of L</guestfs_add_domain>.
                           const char *dom,
                           const struct guestfs_add_domain_argv *optargs);
 
-This is the "argv variant" of L</guestfs_add_domain>.
+Це «варіант з argv» L</guestfs_add_domain>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -254,7 +254,7 @@ a hint to the guest inspection process if it is available.
                             const char *filename,
                             va_list args);
 
-This is the "va_list variant" of L</guestfs_add_drive_opts>.
+Це «варіант з va_list» L</guestfs_add_drive_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -265,7 +265,7 @@ This is the "va_list variant" of L</guestfs_add_drive_opts>.
                               const char *filename,
                               const struct guestfs_add_drive_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_add_drive_opts>.
+Це «варіант з argv» L</guestfs_add_drive_opts>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -902,7 +902,7 @@ C<fs>.  If C<devices> is an empty list, this does nothing.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_device_delete
 
@@ -916,7 +916,7 @@ C<devices> is an empty list, this does nothing.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_filesystem_balance
 
@@ -929,7 +929,7 @@ underlying devices.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_filesystem_resize
 
@@ -974,7 +974,7 @@ resized to the maximum size.
                                      const char *mountpoint,
                                      va_list args);
 
-This is the "va_list variant" of L</guestfs_btrfs_filesystem_resize>.
+Це «варіант з va_list» L</guestfs_btrfs_filesystem_resize>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -985,7 +985,7 @@ This is the "va_list variant" of L</guestfs_btrfs_filesystem_resize>.
                                        const char *mountpoint,
                                        const struct guestfs_btrfs_filesystem_resize_argv *optargs);
 
-This is the "argv variant" of L</guestfs_btrfs_filesystem_resize>.
+Це «варіант з argv» L</guestfs_btrfs_filesystem_resize>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -999,7 +999,7 @@ Force sync on the btrfs filesystem mounted at C<fs>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_fsck
 
@@ -1029,7 +1029,7 @@ filesystem is stored.
                         const char *device,
                         va_list args);
 
-This is the "va_list variant" of L</guestfs_btrfs_fsck>.
+Це «варіант з va_list» L</guestfs_btrfs_fsck>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1040,7 +1040,7 @@ This is the "va_list variant" of L</guestfs_btrfs_fsck>.
                           const char *device,
                           const struct guestfs_btrfs_fsck_argv *optargs);
 
-This is the "argv variant" of L</guestfs_btrfs_fsck>.
+Це «варіант з argv» L</guestfs_btrfs_fsck>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1069,7 +1069,7 @@ and the name of the snapshot, in the form C</path/to/dest/name>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_subvolume_delete
 
@@ -1081,7 +1081,7 @@ Delete the named btrfs subvolume.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_subvolume_list
 
@@ -1096,7 +1096,7 @@ This function returns a C<struct guestfs_btrfssubvolume_list *>, or NULL if
 there was an error.  I<The caller must call
 C<guestfs_free_btrfssubvolume_list> after use>.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_subvolume_set_default
 
@@ -1110,7 +1110,7 @@ default.  See C<guestfs_btrfs_subvolume_list> to get a list of subvolumes.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_btrfs_subvolume_snapshot
 
@@ -1125,7 +1125,7 @@ form C</path/to/dest/name>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.35)
+(Додано у 1.17.35)
 
 =head2 guestfs_case_sensitive_path
 
@@ -1411,7 +1411,7 @@ C<guestfs_compress_out>.
                                  const char *zdevice,
                                  va_list args);
 
-This is the "va_list variant" of L</guestfs_compress_device_out>.
+Це «варіант з va_list» L</guestfs_compress_device_out>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1424,7 +1424,7 @@ This is the "va_list variant" of L</guestfs_compress_device_out>.
                                    const char *zdevice,
                                    const struct guestfs_compress_device_out_argv *optargs);
 
-This is the "argv variant" of L</guestfs_compress_device_out>.
+Це «варіант з argv» L</guestfs_compress_device_out>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1468,7 +1468,7 @@ default for this parameter depends on the compression program being used.
                           const char *zfile,
                           va_list args);
 
-This is the "va_list variant" of L</guestfs_compress_out>.
+Це «варіант з va_list» L</guestfs_compress_out>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1481,7 +1481,7 @@ This is the "va_list variant" of L</guestfs_compress_out>.
                             const char *zfile,
                             const struct guestfs_compress_out_argv *optargs);
 
-This is the "argv variant" of L</guestfs_compress_out>.
+Це «варіант з argv» L</guestfs_compress_out>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1553,7 +1553,7 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
                                    const char *dest,
                                    va_list args);
 
-This is the "va_list variant" of L</guestfs_copy_device_to_device>.
+Це «варіант з va_list» L</guestfs_copy_device_to_device>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1565,7 +1565,7 @@ This is the "va_list variant" of L</guestfs_copy_device_to_device>.
                                      const char *dest,
                                      const struct guestfs_copy_device_to_device_argv *optargs);
 
-This is the "argv variant" of L</guestfs_copy_device_to_device>.
+Це «варіант з argv» L</guestfs_copy_device_to_device>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1604,7 +1604,7 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
                                  const char *dest,
                                  va_list args);
 
-This is the "va_list variant" of L</guestfs_copy_device_to_file>.
+Це «варіант з va_list» L</guestfs_copy_device_to_file>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1616,7 +1616,7 @@ This is the "va_list variant" of L</guestfs_copy_device_to_file>.
                                    const char *dest,
                                    const struct guestfs_copy_device_to_file_argv *optargs);
 
-This is the "argv variant" of L</guestfs_copy_device_to_file>.
+Це «варіант з argv» L</guestfs_copy_device_to_file>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1655,7 +1655,7 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
                                  const char *dest,
                                  va_list args);
 
-This is the "va_list variant" of L</guestfs_copy_file_to_device>.
+Це «варіант з va_list» L</guestfs_copy_file_to_device>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1667,7 +1667,7 @@ This is the "va_list variant" of L</guestfs_copy_file_to_device>.
                                    const char *dest,
                                    const struct guestfs_copy_file_to_device_argv *optargs);
 
-This is the "argv variant" of L</guestfs_copy_file_to_device>.
+Це «варіант з argv» L</guestfs_copy_file_to_device>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1710,7 +1710,7 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
                                const char *dest,
                                va_list args);
 
-This is the "va_list variant" of L</guestfs_copy_file_to_file>.
+Це «варіант з va_list» L</guestfs_copy_file_to_file>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -1722,7 +1722,7 @@ This is the "va_list variant" of L</guestfs_copy_file_to_file>.
                                  const char *dest,
                                  const struct guestfs_copy_file_to_file_argv *optargs);
 
-This is the "argv variant" of L</guestfs_copy_file_to_file>.
+Це «варіант з argv» L</guestfs_copy_file_to_file>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -2019,7 +2019,7 @@ This option may not be specified at the same time as the C<correct> option.
                     const char *device,
                     va_list args);
 
-This is the "va_list variant" of L</guestfs_e2fsck>.
+Це «варіант з va_list» L</guestfs_e2fsck>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -2030,7 +2030,7 @@ This is the "va_list variant" of L</guestfs_e2fsck>.
                       const char *device,
                       const struct guestfs_e2fsck_argv *optargs);
 
-This is the "argv variant" of L</guestfs_e2fsck>.
+Це «варіант з argv» L</guestfs_e2fsck>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -2514,7 +2514,7 @@ The result list is not sorted.
 This command searches the filesystems and returns the one which has the
 given label.  An error is returned if no such filesystem can be found.
 
-To find the label of a filesystem, use C<guestfs_vfs_label>.
+Щоб визначити мітку файлової системи, скористайтеся C<guestfs_vfs_label>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -2530,7 +2530,7 @@ the returned string after use>.
 This command searches the filesystems and returns the one which has the
 given UUID.  An error is returned if no such filesystem can be found.
 
-To find the UUID of a filesystem, use C<guestfs_vfs_uuid>.
+Щоб визначити UUID файлової системи, скористайтеся C<guestfs_vfs_uuid>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -2740,7 +2740,7 @@ C<guestfs_getxattr>).
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.17.31)
+(Додано у 1.17.31)
 
 =head2 guestfs_get_e2generation
 
@@ -2760,7 +2760,7 @@ error.
 
 У разі помилки цією функцією буде повернуто -1.
 
-(Added in 1.17.31)
+(Додано у 1.17.31)
 
 =head2 guestfs_get_e2label
 
@@ -3699,7 +3699,7 @@ after use>.
                               size_t *size_r,
                               va_list args);
 
-This is the "va_list variant" of L</guestfs_inspect_get_icon>.
+Це «варіант з va_list» L</guestfs_inspect_get_icon>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -3711,7 +3711,7 @@ This is the "va_list variant" of L</guestfs_inspect_get_icon>.
                                 size_t *size_r,
                                 const struct guestfs_inspect_get_icon_argv *optargs);
 
-This is the "argv variant" of L</guestfs_inspect_get_icon>.
+Це «варіант з argv» L</guestfs_inspect_get_icon>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -5013,7 +5013,7 @@ C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does not refer to a
 logical volume.
 
-Див. також C<guestfs_is_lv>.
+See also C<guestfs_is_lv>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -5676,11 +5676,11 @@ information on the optional arguments, see L<mkfs.btrfs(8)>.
 Since btrfs filesystems can span multiple devices, this takes a non-empty
 list of devices.
 
-Для створення файлових систем скористайтеся C<guestfs_mkfs_opts>.
+To create general filesystems, use C<guestfs_mkfs_opts>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.25)
+(Додано у 1.17.25)
 
 =head2 guestfs_mkfs_btrfs_va
 
@@ -7536,7 +7536,7 @@ error.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.31)
+(Додано у 1.17.31)
 
 =head2 guestfs_set_e2attrs_va
 
@@ -7575,7 +7575,7 @@ This sets the ext2 file generation of a file.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.17.31)
+(Додано у 1.17.31)
 
 =head2 guestfs_set_e2label
 

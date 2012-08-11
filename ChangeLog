@@ -1,3 +1,424 @@
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.6.
+
+	fuse: guestmount doesn't let you pass '-- [FUSE options]'.
+	I don't think it ever did, so the --help text was always
+	wrong, and definitely didn't match the real behaviour of
+	the program.
+	(cherry picked from commit 87602b09ead198bd84c0dac83fde2d1c3dfe55bd)
+
+	ruby: Mark all VALUEs as volatile.
+	(cherry picked from commit 083125f709c8ca6ec56abf99df918e70376a99bd)
+
+	fish: Fix 'copy-out /' (RHBZ#845522). (cherry picked from commit 2a87261dfc830cd6bcb44aa1628d955cb6423bd7)
+
+	Document problems copying long filenames from NTFS to Linux filesystems (RHBZ#845488). (cherry picked from commit 7fa67427c6b2725bdcce52c08511f8813b7bd42e)
+
+	build: On x86 search for qemu-system-i386 not qemu-system-i686.
+	host_cpu can be set to i686.  The qemu binary is called
+	qemu-system-i386.  Apply some sed to fix this.
+	(cherry picked from commit f21b866f3141bb85ebf93ccf0c906ab0b73960f9)
+
+2012-08-05  Eric Blake  <eblake@redhat.com>
+
+	build: Allow building with new glibc headers and -O0.
+	This is a patch taken from libvirt.  See:
+
+	http://libvirt.org/git/?p=libvirt.git;a=commitdiff;h=2af63b1c349
+	(cherry picked from commit 06780a92b3e4ea14c09a169cc1d22c1371621fc3)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Exclude kernel* packages explicitly.
+	febootstrap >= 3.19 will no longer exclude the kernel package
+	by default.
+	(cherry picked from commit 77326fa4ad757bb255a3c3a07bef8c3ce050a5ac)
+
+	libguestfs-make-fixed-appliance: Don't reference obsolete development version. (cherry picked from commit 7b2f6bd665bac3890b64eccc77e010e6bf84bda7)
+
+	sysprep: Describe more directly how to use qemu-img for snapshotting. (cherry picked from commit b61a8a50bc8d481df32f929046abf09383c8380e)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Use $(top_builddir)/run in Makefile.am's.
+	Not necessary, but this makes all invocations of 'run' consistent.
+	There is no functional change.
+
+	(cherry picked from commit 590774ed9e005dc85ca6851939e76d02da6624c8)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Allow optional arguments hash to be really optional.
+	Allow optargs functions to be called as either:
+
+	  g.mkfs_opts(fs, device)
+
+	or:
+
+	  g.mkfs_opts(fs, device, { optargs hash })
+
+	This also preserves backwards compatibility with once_has_no_optargs
+	functions such as mkfs.
+
+	(cherry picked from commit 0f837ec068783a6318ba6f7490b567566bce2aa4)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: In event wrapper, ignore callback functions which have type T_ZOMBIE.
+	Note that in old versions of Ruby, T_ZOMBIE was not defined.
+	(cherry picked from commit 5f30912d74a553399d2bda055560d4340a15088d)
+
+	sparsify: Change code that generates qemu-img -o argument.
+	This is just code motion.
+	(cherry picked from commit 0b3b5f984c2011632c6d56e5f0ae1194d2c5074b)
+
+2012-08-05  Matthew Booth  <mbooth@redhat.com>
+
+	fish: Use minimal permissions when initially creating history file (cherry picked from commit 1fb95e65661f19c050b928694f750f2406eff2ac)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Tidy up the Makefile.
+	This is just code motion.
+
+	(cherry picked from commit b7ff02354d6db6b322629ad1d065d56d5ffca3c3)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: Use u_int64_t/uint64_t instead of unsigned hyper in .x file
+
+	RWMJ:
+	  Fixed whitespace in generator_xdr.ml
+	(cherry picked from commit d74e7fad28ae7a2f894a12d30807f4b36078bf13)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: Use libtool --mode=execute instead of LD_LIBRARY_PATH
+	because Mac OS X doesn't support LD_LIBRARY_PATH
+
+	(cherry picked from commit 61c9ea496e0579bb7d1bcf496595d66c3f08cfec)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: Use gnulib stat-time module explicitly.
+	(cherry picked from commit 7d3f190d90140aa15b1326bdf7756c39559ae3c2)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: don't check glibc-style extended printf formatters unless --enable-daemon
+
+	RWMJ:
+	 - Test was in the wrong place (before --enable-daemon had been
+	   detected) so I moved it later.
+	(cherry picked from commit 9519c60ce565437c91ce23ceb380f3bfe49ec224)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: #define UNIX_PATH_MAX 104
+	See http://developer.apple.com/library/mac/documentation/Darwin/Reference/Manpages/man4/unix.4.html
+
+	(cherry picked from commit 7dab20876530a7ac954b4fe809755ac12a8d8c4d)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: Added check of #include <endian.h>
+	Mac OS X doesn't have endian.h
+
+	(cherry picked from commit 6e3f8d2511a63bdcfa7c7d0e5414d5643c4ff599)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: Use gnulib fstatat module explicitly.
+	(cherry picked from commit a47fa7a65e89d80ba1362b39cb9686e5022b7dce)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: Use gnulib memmem module explicitly.
+	m4/.gitignore: Update.
+
+	(cherry picked from commit d6ef91d7c4b6cfbd9e4d49317dc7ed414900c4d2)
+
+2012-08-05  Masami HIRATA  <msmhrt@gmail.com>
+
+	configure: Use $(PERL) instead of perl
+	(cherry picked from commit ef1a8446a659fe3647d755334703a1020a0f88dc)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Skip regression test for 790721 if attach-method is not 'appliance'. (cherry picked from commit 2b059535b19125ca082f4354a7ff73f4f5a33822)
+
+	lib: Initialize libvirt and libxml2 once when the library loads. (cherry picked from commit 941ec968b8a1d6f891d30631a8ddb1e23e427b99)
+
+	python: Set file encoding to utf-8. (cherry picked from commit a6366f5dae0e8332cfdad0894aa6e5c7fc3faa2c)
+
+	tests/protocol: Skip these tests if default attach-method is not 'appliance'. (cherry picked from commit bc917a0efc03b8c28966c9ab474f525752ebe440)
+
+	java: Set '-encoding utf8' for javac and javadoc commands. (cherry picked from commit 7a691e6665ed5079e6baa000c9c475f32ca78475)
+
+	java: JAVAC_FLAGS -> EXTRA_JAVAC_FLAGS.
+	This is just a rename.
+	(cherry picked from commit 7f519bdc06de978c2460112a88e8bfac5f292dee)
+
+2012-08-05  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	fuse:remove the unused macro when fuse is not available
+	Just make gcc happy when fuse is not available.
+
+	(cherry picked from commit a58368b3db4f02b9fd907cec82621be11884d256)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Skip mount-local test if /dev/fuse is not writable. (cherry picked from commit 184b9d7c11f771a74c981f739c28fa0713f3e3e7)
+
+	lib: Use safe_asprintf when constructing attach_method.
+	Just a small code cleanup / simplification.
+	(cherry picked from commit eca544d87d9335123077e30b7547270b6bfe0f2b)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Rename most C files that contain underscore with dash.
+	This is just code motion.
+
+	Some files cannot be renamed.  Notably rpcgen input and output files
+	must not contain dash characters, else rpcgen breaks.
+
+	Cherry picked from commit 2e4089f30007e79bc157c775cfd3b326d22f2992
+	and modified so that conflicts in the following files:
+		po-docs/ja.po
+		po-docs/libguestfs-docs.pot
+		po-docs/uk.po
+	were resolved by simply copying the files from the master branch.
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Rename fish/virt.c to fish/domain.c
+	This file handles the -d option for guestfish and other C command line
+	utilities.  Renaming this file makes it less confusing.
+	(cherry picked from commit 6054051a9d8a5eee4141ca4b12aa5b7d1f36f56d)
+
+	build: Rename src/virt.c to src/libvirtdomain.c
+	This file contains the code implementing guestfs_add_domain
+	(for adding a libvirt domain) so this name is less confusing.
+	(cherry picked from commit d1d29ab488002dda9e9a1b25fc2dbe4cb844f5ef)
+
+	build: Arrange libguestfs_la_SOURCES in order. (cherry picked from commit d88f4ca634685f9aefab1a283f03646e32ba4a25)
+
+	Remove references to long-obsolete Ocaml_inspector module from .gitignore. (cherry picked from commit a8b4ea1f0c173ab5662a4d0d084f0affb972c94e)
+
+	podwrapper: Fix setting of GIT_DIR in git subcommand.
+	This fixes commit 1e17a32060feb937b3972f61b37f9116ad7d8d9a.
+	(cherry picked from commit f514d462cda5395c8614577930ee69eebafc969d)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	license: Use latest license files from gnu.org.
+	COPYING from https://www.gnu.org/licenses/gpl-2.0.txt
+	COPYING.LIB from https://www.gnu.org/licenses/lgpl-2.1.txt
+
+	(Note this change shouldn't alter the licensing of libguestfs)
+	(cherry picked from commit 805d6425655abe1450567786ee4b887b23022a3c)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	gnulib: Don't include or run getlogin_r test (thanks Jim Meyering).
+	See:
+	https://lists.gnu.org/archive/html/bug-gnulib/2012-07/msg00194.html
+	(cherry picked from commit 6e1b5f0feac50a498cb7319e5051a251877fe682)
+
+	build: Return 77 from skipped tests. (cherry picked from commit fc86db3b3bcd884ee37cef79e22b0324df9fcae6)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Test mount-local, without parallel test.
+	Unfortunately the parallel test keeps hitting this bug:
+	https://bugzilla.redhat.com/show_bug.cgi?id=838081
+	which could be a bug in the OCaml runtime.
+
+	Just test simple mount-local.  We will write a parallel test in C to
+	replace this.
+
+	(cherry picked from commit eef11f33f9f14d3706b681bd4e23e334fcc9b791)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	tar-in: Add --no-same-owner flag to tar command when target filesystem doesn't support chown (RHBZ#840572).
+	When using tar-in or tools built around it such as virt-make-fs, if
+	the target filesystem is vfat then unpacking the tarball would fail
+	because tar tries to chown(2) files and fails.
+
+	You would see errors such as:
+
+	tar: <file>: Cannot change ownership to uid 500, gid 500: Operation not permitted
+
+	This change detects whether the target filesystem supports chown(2).
+	If not, it adds the --no-same-owner flag to tar to stop it from trying
+	to change the ownership of newly created files.
+	(cherry picked from commit 50780a84f65ec5d76605691cea889392c2730f54)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Make 'random_name' into a utility function.
+	This is mostly code motion, although the precise contract of this
+	function changes slightly to make it more generally useful
+	(cherry picked from commit 781857a86b3bc8238995a9212ea09aa368fc2fc9)
+
+	virt-make-fs: Suggest guestfish for complex layouts in man page. (cherry picked from commit 9c2b9c2df6c3c10b090d71bc808d755dbf625cbe)
+
+	build: Change how make.sh, packagelist, excludelist are updated.
+	Add proper dependencies for these files, but also use 'cmp' to ensure
+	they only get overwritten if the new files have actually changed, so
+	we don't rebuild the appliance unnecessarily.
+	(cherry picked from commit b25aea33fa314857c8094e09af9654f925fb935f)
+
+2012-08-05  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	augeas: make functions as noreturn
+	Just make gcc happy.
+
+	(cherry picked from commit 2f89f584c0203023f8a829ff9796dc2c14ddeb68)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Use UTF8 in output, send errors to stderr.
+	This fixes commit 1e17a32060feb937b3972f61b37f9116ad7d8d9a.
+	(cherry picked from commit 8e75e21b23f18ec0b0fa4f07f96c31dd56a50f25)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	case_sensitive_path: Allow trailing path element to be missing (RHBZ#840115).
+	case_sensitive_path is undefined when the final path element doesn't
+	exist.  Currently it returns an error, but this means that creating a
+	new file doesn't work as expected:
+
+	  $ guestfish --rw -i -d windows touch 'win:c:\blah'
+	  libguestfs: error: case_sensitive_path: blah no file or directory found with this name
+
+	We should allow this case (provided there is no trailing slash) so
+	that new files or directories can be created.
+
+	(cherry picked from commit 973581780d8a006f336684fef6762801402d775d)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	case_sensitive_path: Move variables to top of function.
+	This is just code motion.
+	(cherry picked from commit ac0373bdecfabe6acf99d3662e5117de73fa2aef)
+
+	docs: Use L<...> for links.
+	Instead of working around bugs, podwrapper has been fixed so that
+	links work in all output formats.
+	(cherry picked from commit 4bc110e2bc738bde9b9c09bc602ef13c06b60e90)
+
+	podwrapper: Subclass Pod::Man so we can fix the way links are generated. (cherry picked from commit 182b4a66609ffd5366575d72351cd8174cf68145)
+
+	podwrapper: Define $VERSION in subclass.
+	The superclass sometimes uses this and will give an undefined
+	error if it's missing.
+	(cherry picked from commit 9967ad3fa13178c70afd5da77f77a4115808733d)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Tidy up the program name.
+	Messages now look like this:
+
+	  podwrapper.pl: wrote guestfs-examples.3
+	  podwrapper.pl: wrote ../html/guestfs-examples.3.html
+	(cherry picked from commit 60c42dd2a1a173ec1161502762bc33ae7a1cf190)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: In examples, call $g->shutdown, $g->close. (cherry picked from commit f6846d74c947bd8b711ef0b29148fa1e90580354)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Use $g instead of $h in documentation.
+	$g is the "standard" name for libguestfs handles.
+
+	(cherry picked from commit a99ea198b24745c49cdb42645c3497ac3b0e6a2f)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: febootstrap is in section 8 of the manual, not section 1. (cherry picked from commit 8d0baf7b859fbbe40bdb072b2009d77c02cee7c3)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Replace podwrapper shell script with custom Perl script.
+	This uses Pod::Simple so it properly parses the input POD and can
+	generate proper custom output as required specifically by libguestfs.
+
+	One immediate benefit is that links between and within manual pages
+	now work mostly correctly.
+	(cherry picked from commit 1e17a32060feb937b3972f61b37f9116ad7d8d9a)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix pod.css for new HTML output from Perl 5.16.
+	There used to be a <div> around the table of contents, but that
+	is no longer present.
+	(cherry picked from commit 0bf1e5b6650e71434430bf119b486a779516886d)
+
+	configure: Make generated files read-only.
+	Some of the generated files anyway.
+	(cherry picked from commit 3a442e66170518f725b92a1041546d81fde95492)
+
+	build: Change calls to podwrapper.sh to use $(PODWRAPPER).
+	This will allow us to easily change the location of this
+	script in future.
+	(cherry picked from commit f2ea617e224cd82496e56a41b5878063d6f02e3d)
+
+	virt-make-fs: Recognize "msdos" as a partition or filesystem type.
+	Set MBR partition type byte accordingly.
+	(cherry picked from commit 24b7979ea25cbe5f08494cc4580c1341e78e090e)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "ocaml: Calling Gc.compact before g#mount_local works around RHBZ#838081."
+	This reverts commit ad7c4498f66f37c4219242c6df04d28e9ee7877f.
+
+	Reverted because we still see core dumps.
+	(cherry picked from commit d69a03e44832d8a8da84696bd4e2aaf3cd5d6cff)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	run: Update comments. (cherry picked from commit 98f2d221cfe184535a493057f5b2b38d8bee34e4)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Generate overloaded non-optargs method for each optargs method.
+	For example the existing method:
+
+	  public void mkfs_opts (String fstype, String device, Map<..> optargs);
+
+	is now accompanied by this overloaded method which is a simple wrapper:
+
+	  public void mkfs_opts (String fstype, String device)
+	    throws LibGuestFSException
+	  {
+	    mkfs_opts (fstype, device, null);
+	  }
+	(cherry picked from commit 0da2dbef26a9efddbc1f4cd6cbe796b3b5f98d13)
+
+2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Better way to ensure 'g' is used and return success or error. (cherry picked from commit 7a0478bed0fe3ccbdf16087552f3d6ea196f29ec)
+
+	generator: Add a note in generator/README about safely extending functions. (cherry picked from commit 196742cd46a8d80f0298f9f58c540482919306a3)
+
+	generator: Move note in comment to generator/README file. (cherry picked from commit cf0defedb8121a0ff39c1d4c6d9f3eee9fd7ee72)
+
+	fuse: Cleaner code and documentation for safe cleanups. (cherry picked from commit ec0c7e0a1aafd145309ab53749d910ad837d8745)
+
+	tests/guests: Add temp files to CLEANFILES. (cherry picked from commit f883e4d8d3ea65c5cd4c2dc5d557989c00aafc56)
+
+	podwrapper: Fix shell script.
+	This fixes commit f9a5e3ed86ee7bcd13619f13b4d4de6ce46ac8c3.
+	(cherry picked from commit 33bb7408f684bf0d4eff0a0e99c53449fa4923e4)
+
+2012-08-05  Hilko Bengen  <bengen@hilluzination.de>
+
+	podwrapper.sh: Take date from ChangeLog or from the latest git commit. (cherry picked from commit f9a5e3ed86ee7bcd13619f13b4d4de6ce46ac8c3)
+
 2012-07-10  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.5.

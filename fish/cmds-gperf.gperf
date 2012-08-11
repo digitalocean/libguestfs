@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cmds_gperf.h"
+#include "cmds-gperf.h"
 
 extern struct command_entry add_cdrom_cmd_entry;
 extern struct command_entry add_domain_cmd_entry;

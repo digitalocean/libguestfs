@@ -140,15 +140,15 @@ Pass additional options to the rescue kernel.
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
+libvirt не буде використовуватися взагалі.
 
 =item B<-d> гість
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
 
 =item B<--format=raw|qcow2|..>
 

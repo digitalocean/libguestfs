@@ -27,7 +27,8 @@ L</add-drive-ro> instead.
 
 =back
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</add_drive_opts> を使用してください。
+I<This function is deprecated.> In new code, use the L</add_drive_opts> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -204,7 +205,8 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</add_drive_opts> を使用してください。
+I<This function is deprecated.> In new code, use the L</add_drive_opts> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -217,7 +219,8 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</add_drive_opts> を使用してください。
+I<This function is deprecated.> In new code, use the L</add_drive_opts> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -643,14 +646,13 @@ ARGUMENTS>.
 
  btrfs-filesystem-sync fs
 
-Force sync on the btrfs filesystem mounted at C<fs>.
+C<fs> にマウントされた btrfs ファイルシステムにおいて強制同期します。
 
 =head2 btrfs-fsck
 
  btrfs-fsck device [superblock:N] [repair:true|false]
 
-Used to check a btrfs filesystem, C<device> is the device file where the
-filesystem is stored.
+btrfs ファイルシステムをチェックするために使用されると、C<device> はファイルシステムが保存されているデバイスファイルです。
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
@@ -659,8 +661,7 @@ ARGUMENTS>.
 
  btrfs-set-seeding device true|false
 
-Enable or disable the seeding feature of a device that contains a btrfs
-filesystem.
+btrfs ファイルシステムを含むデバイスの seeding 機能を有効化または無効化します。
 
 =head2 btrfs-subvolume-create
 
@@ -921,9 +922,9 @@ This can be used to add arbitrary qemu command line parameters of the form
 I<-param value>.  Actually it's not quite arbitrary - we prevent you from
 setting some parameters which would interfere with parameters that we use.
 
-C<param> 文字列の最初の文字は C<-> (ダッシュ) である必要があります。
+The first character of C<param> string must be a C<-> (dash).
 
-C<value> は NULL もありえます。
+C<value> can be NULL.
 
 =head2 copy-device-to-device
 
@@ -1257,7 +1258,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  fgrepi pattern path
 
-This calls the external C<fgrep -i> program and returns the matching lines.
+外部の C<fgrep -i> プログラムを呼び出し、一致した行を返します。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -1266,8 +1267,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  file path
 
-This call uses the standard L<file(1)> command to determine the type or
-contents of the file.
+この呼び出しは、ファイルの形式または内容を決定するために、標準的な L<file(1)> コマンドを使用します。
 
 This call will also transparently look inside various types of compressed
 file.
@@ -1620,15 +1620,15 @@ can be created to this file.
 
 =item 'j'
 
-The file is data-journaled.
+ファイルはジャーナル付きデータです。
 
 =item 's'
 
-When the file is deleted, all its blocks will be zeroed.
+ファイルが削除されるとき、そのブロックはすべてゼロが書き込みされます。
 
 =item 'S'
 
-Changes to this file are written synchronously to disk.
+このファイルへの変更は同期的にディスクに書き込まれます。
 
 =item 'T'
 
@@ -1653,7 +1653,7 @@ The raw contents of the compressed file may be accessed.
 
 =item 'Z'
 
-The compressed file is dirty.
+圧縮されたファイルがダーティーです。
 
 =back
 
@@ -1661,7 +1661,7 @@ More file attributes may be added to this list later.  Not all file
 attributes may be set for all kinds of files.  For detailed information,
 consult the L<chattr(1)> man page.
 
-See also L</set-e2attrs>.
+L</set-e2attrs> 参照。
 
 Don't confuse these attributes with extended attributes (see L</getxattr>).
 
@@ -1677,7 +1677,7 @@ The generation is only present when the file is located on an ext2/3/4
 filesystem.  Using this call on other filesystem types will result in an
 error.
 
-See L</set-e2generation>.
+L</set-e2generation> 参照。
 
 =head2 get-e2label
 
@@ -2068,7 +2068,7 @@ possible return values are listed under L</file-architecture>.
 
 アーキテクチャーが決められなければ、文字列 C<unknown> が返されます。
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-distro
 
@@ -2172,7 +2172,7 @@ Windows はディストリビューションがありません。OS 種別が Wi
 
 libguestfs の将来のバージョンは、ここに他の文字列を返す可能性があります。呼び出し元はあらゆる文字列の処理に備えなければいけません。
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-drive-mappings
 
@@ -2246,7 +2246,7 @@ The format of this disk image is not known.
 
 libguestfs の将来のバージョンは、ここに他の文字列を返す可能性があります。呼び出し元はあらゆる文字列の処理に備えなければいけません。
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-hostname
 
@@ -2258,7 +2258,7 @@ inspection of the guest's configuration files.
 If the hostname could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-icon
 
@@ -2338,7 +2338,7 @@ by consulting Wikipedia or MSDN.
 
 If the version could not be determined, then C<0> is returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-minor-version
 
@@ -2390,7 +2390,7 @@ format I<or> if the operating system does not have a real packaging system
 Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
 C<pkgsrc>.  Future versions of libguestfs may return other strings.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-package-management
 
@@ -2409,7 +2409,7 @@ Possible strings include: C<yum>, C<up2date>, C<apt> (for all Debian
 derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.  Future
 versions of libguestfs may return other strings.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-product-name
 
@@ -2422,7 +2422,7 @@ user, but should not be parsed by programs.
 If the product name could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-product-variant
 
@@ -2459,7 +2459,7 @@ whole inspection process.
 This returns an empty list if either no root devices were found or the
 caller has not called L</inspect-os>.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-type
 
@@ -2502,7 +2502,7 @@ The operating system type could not be determined.
 
 libguestfs の将来のバージョンは、ここに他の文字列を返す可能性があります。呼び出し元はあらゆる文字列の処理に備えなければいけません。
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-windows-current-control-set
 
@@ -2513,7 +2513,7 @@ C<ControlSet001> のようなレジストリキーの名前です。
 
 この呼び出しは、仮想マシンが Windows であり、レジストリが検査により確認できることを仮定しています。該当しない場合、エラーが返されます。
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-get-windows-systemroot
 
@@ -2525,7 +2525,7 @@ This call assumes that the guest is Windows and that the systemroot could be
 determined by inspection.  If this is not the case then an error is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-is-live
 
@@ -2534,7 +2534,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if a live image was detected on the disk.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-is-multipart
 
@@ -2543,7 +2543,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if the disk is part of a set.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-is-netinst
 
@@ -2554,7 +2554,7 @@ then this returns true if the disk is a network installer, ie. not a
 self-contained install CD but one which is likely to require network access
 to complete the install.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-list-applications
 
@@ -2644,7 +2644,7 @@ returned as an empty string C<"">.
 
 =back
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 =head2 inspect-os
 
@@ -2674,7 +2674,7 @@ function may also use Augeas, so any existing Augeas handle will be closed.
 This function cannot decrypt encrypted disks.  The caller must do that first
 (supplying the necessary keys) if the disk is encrypted.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
 L</list-filesystems> 参照。
 
@@ -2962,8 +2962,7 @@ L</list-filesystems> 参照。
 List the files in C<directory> (relative to the root directory, there is no
 cwd) in the format of 'ls -la'.
 
-This command is mostly useful for interactive sessions.  It is I<not>
-intended that you try to parse the output string.
+このコマンドはほとんどの対話式セッションのために有用です。出力文字列を構文解析しようという意図はI<ありません>。
 
 =head2 llz
 
@@ -2971,14 +2970,13 @@ intended that you try to parse the output string.
 
 'ls -laZ' 形式で C<directory> にあるファイルを一覧表示します。
 
-This command is mostly useful for interactive sessions.  It is I<not>
-intended that you try to parse the output string.
+このコマンドはほとんどの対話式セッションのために有用です。出力文字列を構文解析しようという意図はI<ありません>。
 
 =head2 ln
 
  ln target linkname
 
-This command creates a hard link using the C<ln> command.
+このコマンドは C<ln> コマンドを使用してハードリンクを作成します。
 
 =head2 ln-f
 
@@ -2991,7 +2989,7 @@ option removes the link (C<linkname>) if it exists already.
 
  ln-s target linkname
 
-This command creates a symbolic link using the C<ln -s> command.
+このコマンドは C<ln -s> コマンドを使用してシンボリックリンクを作成します。
 
 =head2 ln-sf
 
@@ -3029,12 +3027,12 @@ sets an extended attribute of the link itself.
 
  lstat path
 
-Returns file information for the given C<path>.
+与えられた C<path> のファイル情報を返します。
 
 This is the same as L</stat> except that if C<path> is a symbolic link, then
 the link is stat-ed, not the file it refers to.
 
-This is the same as the C<lstat(2)> system call.
+これは C<lstat(2)> と同じです。
 
 =head2 lstatlist
 
@@ -3170,7 +3168,7 @@ C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does not refer to a
 logical volume.
 
-L</is-lv> 参照。
+See also L</is-lv>.
 
 =head2 lvm-clear-filter
 
@@ -3559,7 +3557,8 @@ filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
 For VFAT and NTFS the C<blocksize> parameter is treated as the requested
 cluster size.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</mkfs_opts> を使用してください。
+I<This function is deprecated.> In new code, use the L</mkfs_opts> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3569,11 +3568,10 @@ these functions.
 
  mkfs-btrfs 'devices ...' [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
 
-Create a btrfs filesystem, allowing all configurables to be set.  For more
-information on the optional arguments, see L<mkfs.btrfs(8)>.
+すべての設定可能なものについて設定を許可して、btrfs ファイルシステムを作成します。オプション引数の詳細は L<mkfs.btrfs(8)>
+を参照してください。
 
-Since btrfs filesystems can span multiple devices, this takes a non-empty
-list of devices.
+btrfs ファイルシステムは複数のデバイスを結合できるので、これは非空白のデバイス一覧をとります。
 
 To create general filesystems, use L</mkfs-opts>.
 
@@ -3973,7 +3971,8 @@ without booting into Windows between each resize.
 
 L<ntfsresize(8)> 参照。
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</ntfsresize_opts> を使用してください。
+I<This function is deprecated.> In new code, use the L</ntfsresize_opts>
+call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4020,7 +4019,8 @@ ARGUMENTS>.
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</ntfsresize_opts> を使用してください。
+I<This function is deprecated.> In new code, use the L</ntfsresize_opts>
+call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4704,9 +4704,9 @@ ARGUMENTS>.
 
  set-e2generation file generation
 
-This sets the ext2 file generation of a file.
+これはファイルの ext2 ファイル世代を設定します。
 
-See L</get-e2generation>.
+L</get-e2generation> を参照してください。
 
 =head2 set-e2label
 
@@ -5072,7 +5072,7 @@ C<secs> 秒間スリープします。
 
  stat path
 
-Returns file information for the given C<path>.
+与えられた C<path> のファイル情報を返します。
 
 これは C<stat(2)> システムコールと同じです。
 
@@ -5808,7 +5808,8 @@ C<directory> にマウントされたファイルシステムにある空き領�
 
 ファイルシステムの内容は影響を受けません。しかし、ファイルシステムにある空き領域はすべて開放されます。
 
-将来（現在ではありません）これらのゼロにされたブロックは「スパース化」されます。つまり、ホストに返されます。
+In future (but not currently) these zeroed blocks will be "sparsified" -
+that is, given back to the host.
 
 =head2 zerofree
 

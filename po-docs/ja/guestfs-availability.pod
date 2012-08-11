@@ -12,13 +12,13 @@ L</guestfs_aug_save> L</guestfs_aug_set>
 
 =item B<btrfs>
 
-The following functions: L</guestfs_btrfs_device_add>
-L</guestfs_btrfs_device_delete> L</guestfs_btrfs_filesystem_balance>
-L</guestfs_btrfs_filesystem_resize> L</guestfs_btrfs_filesystem_sync>
-L</guestfs_btrfs_fsck> L</guestfs_btrfs_set_seeding>
-L</guestfs_btrfs_subvolume_create> L</guestfs_btrfs_subvolume_delete>
-L</guestfs_btrfs_subvolume_list> L</guestfs_btrfs_subvolume_set_default>
-L</guestfs_btrfs_subvolume_snapshot> L</guestfs_mkfs_btrfs>
+以下の関数: L</guestfs_btrfs_device_add> L</guestfs_btrfs_device_delete>
+L</guestfs_btrfs_filesystem_balance> L</guestfs_btrfs_filesystem_resize>
+L</guestfs_btrfs_filesystem_sync> L</guestfs_btrfs_fsck>
+L</guestfs_btrfs_set_seeding> L</guestfs_btrfs_subvolume_create>
+L</guestfs_btrfs_subvolume_delete> L</guestfs_btrfs_subvolume_list>
+L</guestfs_btrfs_subvolume_set_default> L</guestfs_btrfs_subvolume_snapshot>
+L</guestfs_mkfs_btrfs>
 
 =item B<grub>
 
@@ -53,14 +53,14 @@ L</guestfs_luks_kill_slot> L</guestfs_luks_open> L</guestfs_luks_open_ro>
 
 =item B<lvm2>
 
-以下の関数: L</guestfs_is_lv> L</guestfs_lvcreate> L</guestfs_lvcreate_free>
-L</guestfs_lvm_remove_all> L</guestfs_lvm_set_filter> L</guestfs_lvremove>
-L</guestfs_lvresize> L</guestfs_lvresize_free> L</guestfs_lvs>
-L</guestfs_lvs_full> L</guestfs_pvcreate> L</guestfs_pvremove>
-L</guestfs_pvresize> L</guestfs_pvresize_size> L</guestfs_pvs>
-L</guestfs_pvs_full> L</guestfs_vg_activate> L</guestfs_vg_activate_all>
-L</guestfs_vgcreate> L</guestfs_vgmeta> L</guestfs_vgremove> L</guestfs_vgs>
-L</guestfs_vgs_full>
+The following functions: L</guestfs_is_lv> L</guestfs_lvcreate>
+L</guestfs_lvcreate_free> L</guestfs_lvm_remove_all>
+L</guestfs_lvm_set_filter> L</guestfs_lvremove> L</guestfs_lvresize>
+L</guestfs_lvresize_free> L</guestfs_lvs> L</guestfs_lvs_full>
+L</guestfs_pvcreate> L</guestfs_pvremove> L</guestfs_pvresize>
+L</guestfs_pvresize_size> L</guestfs_pvs> L</guestfs_pvs_full>
+L</guestfs_vg_activate> L</guestfs_vg_activate_all> L</guestfs_vgcreate>
+L</guestfs_vgmeta> L</guestfs_vgremove> L</guestfs_vgs> L</guestfs_vgs_full>
 
 =item B<mdadm>
 
@@ -79,7 +79,7 @@ L</guestfs_ntfsclone_out> L</guestfs_ntfsfix>
 
 =item B<ntfsprogs>
 
-以下の関数: L</guestfs_ntfsresize> L</guestfs_ntfsresize_opts>
+The following functions: L</guestfs_ntfsresize> L</guestfs_ntfsresize_opts>
 L</guestfs_ntfsresize_size>
 
 =item B<realpath>

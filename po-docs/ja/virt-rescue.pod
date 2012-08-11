@@ -196,12 +196,11 @@ L<guestfish(1)/OPENING DISKS FOR READ AND WRITE> 参照。
 
 =item B<--scratch=N>
 
-The I<--scratch> option adds a large scratch disk to the rescue appliance.
-I<--scratch=N> adds C<N> scratch disks.  The scratch disk(s) are deleted
-automatically when virt-rescue exits.
+I<--scratch> オプションにより、大きなスクラッチディスクをレスキュー・アプライアンスに追加できます。I<--scratch=N>
+により、C<N> 個のスクラッチディスクを追加できます。virt-rescue が終了するとき、スクラッチディスクは自動的に削除されます。
 
-You can also mix I<-a>, I<-d> and I<--scratch> options.  The scratch disk(s)
-are added to the appliance in the order they appear on the command line.
+I<-a>, I<-d> および I<--scratch>
+オプションは混在できます。スクラッチディスクは、これらがコマンドラインに現れる順番で、アプライアンスに追加されます。
 
 =item B<--selinux>
 

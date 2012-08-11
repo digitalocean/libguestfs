@@ -26,11 +26,11 @@ bin_PROGRAMS = virt-alignment-scan
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c \
-	../fish/virt.c
+	../fish/options.c
 
 virt_alignment_scan_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -62,7 +62,7 @@ noinst_DATA = $(top_builddir)/html/virt-alignment-scan.1.html
 virt-alignment-scan.1 $(top_builddir)/html/virt-alignment-scan.1.html: stamp-virt-alignment-scan.pod
 
 stamp-virt-alignment-scan.pod: virt-alignment-scan.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-alignment-scan.1 \
 	  --html $(top_builddir)/html/virt-alignment-scan.1.html \
 	  $<

@@ -57,7 +57,7 @@ tarball:
 
  libguestfs-make-fixed-appliance --xz
 
-This creates a tarball in the I<current> directory called:
+これは呼び出した I<カレント> ディレクトリーに tar ファイルを作成します:
 
  appliance-<VERSION>.tar.xz
 

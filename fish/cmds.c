@@ -39,7 +39,7 @@
 #include "fish.h"
 #include "fish-cmds.h"
 #include "options.h"
-#include "cmds_gperf.h"
+#include "cmds-gperf.h"
 
 /* Valid suffixes allowed for numbers.  See Gnulib xstrtol function. */
 static const char *xstrtol_suffixes = "0kKMGTPEZY";

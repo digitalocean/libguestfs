@@ -29,9 +29,9 @@ doing this, but doesn't catch all cases.
 C<virt-edit> is a command line tool to edit C<file> where each C<file>
 exists in the named virtual machine (or disk image).
 
-Multiple filenames can be given, in which case they are each edited in
-turn.  Each filename must be a full path, starting at the root directory
-(starting with '/').
+Ви можете вказати декілька назв файлів. Вміст таких файлів буде редаговано
+послідовно. Назви файлів слід вказувати повністю (разом зі шляхом),
+починаючи з кореневого каталогу (тобто назва має починатися з «/»).
 
 If you want to just view a file, use L<virt-cat(1)>.
 
@@ -77,9 +77,9 @@ separate I<-a> options.
 The format of the disk image is auto-detected.  To override this and force a
 particular format use the I<--format=..> option.
 
-=item B<-b> extension
+=item B<-b> суфікс
 
-=item B<--backup> extension
+=item B<--backup> суфікс
 
 Create a backup of the original file I<in the guest disk image>.  The backup
 has the original filename with C<extension> added.
@@ -105,8 +105,8 @@ all.
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
 
 =item B<--echo-keys>
 
@@ -334,7 +334,7 @@ This issue was assigned CVE-2012-2690, and is fixed in libguestfs E<ge>
 1.16.
 
 For further information, see
-https://bugzilla.redhat.com/show_bug.cgi?id=788642
+L<https://bugzilla.redhat.com/show_bug.cgi?id=788642>
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
 

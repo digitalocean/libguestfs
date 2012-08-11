@@ -114,13 +114,13 @@ machine:
 
  guestfish --ro -d libvirt-domain -i cat /etc/group
 
-Another way to edit C</boot/grub/grub.conf> interactively is:
+対話的に C</boot/grub/grub.conf> を編集するもう一つの方法は次のとおりです:
 
  guestfish --rw -a disk.img -i edit /boot/grub/grub.conf
 
 =head2 スクリプトのインタープリターとして
 
-Create a 100MB disk containing an ext2-formatted partition:
+ext2 フォーマット済みパーティションを含む 100MB ディスクを作成します:
 
  #!/usr/bin/guestfish -f
  sparse test1.img 100M
@@ -128,7 +128,7 @@ Create a 100MB disk containing an ext2-formatted partition:
  part-disk /dev/sda mbr
  mkfs ext2 /dev/sda1
 
-=head2 Start with a prepared disk
+=head2 準備済みディスクを用いて起動します
 
 An alternate way to create a 100MB disk called C<test1.img> containing a
 single ext2-formatted partition:
@@ -343,14 +343,13 @@ IMAGES> below.
 
 =item B<--pipe-error>
 
-If writes fail to pipe commands (see L</PIPES> below), then the command
-returns an error.
+コマンドのパイプ (以下の L</PIPES> 参照) への書き込みに失敗すると、コマンドはエラーを返します。
 
 The default (also for historical reasons) is to ignore such errors so that:
 
  ><fs> command_with_lots_of_output | head
 
-doesn't give an error.
+エラーを与えません。
 
 =item B<--progress-bars>
 
