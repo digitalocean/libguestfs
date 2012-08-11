@@ -4,20 +4,17 @@
 
 guestfs-faq - libguestfs Frequently Asked Questions (FAQ)
 
-=head1 ABOUT LIBGUESTFS
+=head1 libguestfs について
 
-=head2 What is libguestfs?
+=head2 libguestfs とは?
 
-libguestfs is a way to create, access and modify disk images.  You can look
-inside disk images, modify the files they contain, create them from scratch,
-resize them, and much more.  It's especially useful from scripts and
-programs and from the command line.
+libguestfs
+はディスクイメージを作成、参照および変更するための手段です。ディスクイメージの中を参照する、含まれているファイルを変更する、イメージを新規作成する、およびさまざまなことができます。スクリプトやプログラムから、およびコマンドラインからはとくに有用です。
 
-libguestfs is a C library (hence "lib-"), and a set of tools built on this
-library, and a set of bindings in many different programming languages.
+libguestfs は C ライブラリ (つまり
+"lib-")、このライブラリに構築された一組のツール、およびさまざまな種類のプログラミング言語における一組のバインドです。
 
-For more information about what libguestfs can do read the introduction on
-the home page (L<http://libguestfs.org>).
+libguestfs が実行できることの詳細はホームページ (L<http://libguestfs.org>) にある紹介を参照できます。
 
 =head2 What are the virt tools?
 
@@ -116,7 +113,7 @@ L<https://www.redhat.com/mailman/listinfo/virt-tools-list>
 
 Please use the following link to enter a bug in Bugzilla:
 
- https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools
+L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
 
 Include as much detail as you can and a way to reproduce the problem.
 
@@ -268,7 +265,7 @@ every user should do this:
 
 =item Ubuntu 10.04
 
-See: L<http://libguestfs.org/download/binaries/ubuntu1004-packages/>
+参照: L<http://libguestfs.org/download/binaries/ubuntu1004-packages/>
 
 =item Ubuntu 12.04
 
@@ -296,11 +293,11 @@ Libguestfs was added to Gentoo in 2012-07.  Do:
 
  emerge libguestfs
 
-=item Other Linux distro
+=item 他の Linux ディストリビューション
 
-Compile from source (next section).
+ソースからコンパイルします (次のセクション)。
 
-=item Other non-Linux distro
+=item 他の非 Linux ディストリビューション
 
 You'll have to compile from source, and port it.
 
@@ -430,7 +427,7 @@ your obligations when distributing libguestfs, contact a lawyer.  In the
 source tree the license is in the file C<COPYING.LIB> (LGPLv2+ for the
 library and bindings) and C<COPYING> (GPLv2+ for the standalone programs).
 
-=head1 DEBUGGING LIBGUESTFS
+=head1 libguestfs のデバッグ
 
 =head2 How do I debug when using any libguestfs program or tool (eg. virt-v2v or
 virt-df)?
@@ -463,7 +460,7 @@ For csh/tcsh the equivalent commands would be:
  setenv LIBGUESTFS_TRACE 1
  setenv LIBGUESTFS_DEBUG 1
 
-For further information, see: L<guestfs(3)/ENVIRONMENT VARIABLES>.
+詳細は L<guestfs(3)/ENVIRONMENT VARIABLES> 参照。
 
 =head2 How do I debug when using guestfish?
 

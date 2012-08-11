@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 3.0.4 */
-/* Command-line: gperf -t errnostring_gperf.gperf  */
+/* Command-line: gperf -t errnostring-gperf.gperf  */
 /* Computed positions: -k'2-3,5-6' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -29,7 +29,7 @@
 #error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
 #endif
 
-#line 28 "errnostring_gperf.gperf"
+#line 28 "errnostring-gperf.gperf"
 
 
 #include <config.h>
@@ -434,7 +434,7 @@
 #define EZZZ EINVAL
 #endif
 
-#line 434 "errnostring_gperf.gperf"
+#line 434 "errnostring-gperf.gperf"
 struct errnostring_entry;
 
 #define TOTAL_KEYWORDS 131
@@ -516,309 +516,309 @@ guestfs___string_to_errno_lookup (register const char *str, register unsigned in
   static const struct errnostring_entry wordlist[] =
     {
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 567 "errnostring_gperf.gperf"
+#line 567 "errnostring-gperf.gperf"
       {"EZZZ", EZZZ},
       {(char*)0},
-#line 505 "errnostring_gperf.gperf"
+#line 505 "errnostring-gperf.gperf"
       {"ENOANO", ENOANO},
       {(char*)0},
-#line 476 "errnostring_gperf.gperf"
+#line 476 "errnostring-gperf.gperf"
       {"EIO", EIO},
       {(char*)0},
-#line 522 "errnostring_gperf.gperf"
+#line 522 "errnostring-gperf.gperf"
       {"ENOSR", ENOSR},
       {(char*)0},
-#line 514 "errnostring_gperf.gperf"
+#line 514 "errnostring-gperf.gperf"
       {"ENOLINK", ENOLINK},
       {(char*)0},
-#line 463 "errnostring_gperf.gperf"
+#line 463 "errnostring-gperf.gperf"
       {"EDOM", EDOM},
-#line 474 "errnostring_gperf.gperf"
+#line 474 "errnostring-gperf.gperf"
       {"EINTR", EINTR},
-#line 520 "errnostring_gperf.gperf"
+#line 520 "errnostring-gperf.gperf"
       {"ENOPROTOOPT", ENOPROTOOPT},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 473 "errnostring_gperf.gperf"
+#line 473 "errnostring-gperf.gperf"
       {"EINPROGRESS", EINPROGRESS},
-#line 527 "errnostring_gperf.gperf"
+#line 527 "errnostring-gperf.gperf"
       {"ENOTDIR", ENOTDIR},
       {(char*)0}, {(char*)0},
-#line 537 "errnostring_gperf.gperf"
+#line 537 "errnostring-gperf.gperf"
       {"EOWNERDEAD", EOWNERDEAD},
-#line 510 "errnostring_gperf.gperf"
+#line 510 "errnostring-gperf.gperf"
       {"ENOENT", ENOENT},
-#line 464 "errnostring_gperf.gperf"
+#line 464 "errnostring-gperf.gperf"
       {"EDOTDOT", EDOTDOT},
-#line 501 "errnostring_gperf.gperf"
+#line 501 "errnostring-gperf.gperf"
       {"ENETDOWN", ENETDOWN},
-#line 515 "errnostring_gperf.gperf"
+#line 515 "errnostring-gperf.gperf"
       {"ENOMEDIUM", ENOMEDIUM},
-#line 530 "errnostring_gperf.gperf"
+#line 530 "errnostring-gperf.gperf"
       {"ENOTRECOVERABLE", ENOTRECOVERABLE},
-#line 523 "errnostring_gperf.gperf"
+#line 523 "errnostring-gperf.gperf"
       {"ENOSTR", ENOSTR},
-#line 529 "errnostring_gperf.gperf"
+#line 529 "errnostring-gperf.gperf"
       {"ENOTNAM", ENOTNAM},
       {(char*)0},
-#line 502 "errnostring_gperf.gperf"
+#line 502 "errnostring-gperf.gperf"
       {"ENETRESET", ENETRESET},
       {(char*)0},
-#line 518 "errnostring_gperf.gperf"
+#line 518 "errnostring-gperf.gperf"
       {"ENONET", ENONET},
       {(char*)0}, {(char*)0},
-#line 441 "errnostring_gperf.gperf"
+#line 441 "errnostring-gperf.gperf"
       {"EADV", EADV},
-#line 558 "errnostring_gperf.gperf"
+#line 558 "errnostring-gperf.gperf"
       {"ETIME", ETIME},
-#line 509 "errnostring_gperf.gperf"
+#line 509 "errnostring-gperf.gperf"
       {"ENODEV", ENODEV},
-#line 546 "errnostring_gperf.gperf"
+#line 546 "errnostring-gperf.gperf"
       {"EREMOTE", EREMOTE},
-#line 531 "errnostring_gperf.gperf"
+#line 531 "errnostring-gperf.gperf"
       {"ENOTSOCK", ENOTSOCK},
-#line 547 "errnostring_gperf.gperf"
+#line 547 "errnostring-gperf.gperf"
       {"EREMOTEIO", EREMOTEIO},
-#line 550 "errnostring_gperf.gperf"
+#line 550 "errnostring-gperf.gperf"
       {"EROFS", EROFS},
-#line 507 "errnostring_gperf.gperf"
+#line 507 "errnostring-gperf.gperf"
       {"ENOCSI", ENOCSI},
-#line 477 "errnostring_gperf.gperf"
+#line 477 "errnostring-gperf.gperf"
       {"EISCONN", EISCONN},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 508 "errnostring_gperf.gperf"
+#line 508 "errnostring-gperf.gperf"
       {"ENODATA", ENODATA},
-#line 440 "errnostring_gperf.gperf"
+#line 440 "errnostring-gperf.gperf"
       {"EADDRNOTAVAIL", EADDRNOTAVAIL},
-#line 559 "errnostring_gperf.gperf"
+#line 559 "errnostring-gperf.gperf"
       {"ETIMEDOUT", ETIMEDOUT},
-#line 439 "errnostring_gperf.gperf"
+#line 439 "errnostring-gperf.gperf"
       {"EADDRINUSE", EADDRINUSE},
-#line 478 "errnostring_gperf.gperf"
+#line 478 "errnostring-gperf.gperf"
       {"EISDIR", EISDIR},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 516 "errnostring_gperf.gperf"
+#line 516 "errnostring-gperf.gperf"
       {"ENOMEM", ENOMEM},
-#line 500 "errnostring_gperf.gperf"
+#line 500 "errnostring-gperf.gperf"
       {"ENAVAIL", ENAVAIL},
-#line 526 "errnostring_gperf.gperf"
+#line 526 "errnostring-gperf.gperf"
       {"ENOTCONN", ENOTCONN},
-#line 528 "errnostring_gperf.gperf"
+#line 528 "errnostring-gperf.gperf"
       {"ENOTEMPTY", ENOTEMPTY},
-#line 471 "errnostring_gperf.gperf"
+#line 471 "errnostring-gperf.gperf"
       {"EIDRM", EIDRM},
-#line 555 "errnostring_gperf.gperf"
+#line 555 "errnostring-gperf.gperf"
       {"ESRMNT", ESRMNT},
-#line 499 "errnostring_gperf.gperf"
+#line 499 "errnostring-gperf.gperf"
       {"ENAMETOOLONG", ENAMETOOLONG},
-#line 548 "errnostring_gperf.gperf"
+#line 548 "errnostring-gperf.gperf"
       {"ERESTART", ERESTART},
-#line 469 "errnostring_gperf.gperf"
+#line 469 "errnostring-gperf.gperf"
       {"EHOSTDOWN", EHOSTDOWN},
-#line 460 "errnostring_gperf.gperf"
+#line 460 "errnostring-gperf.gperf"
       {"ECONNRESET", ECONNRESET},
-#line 512 "errnostring_gperf.gperf"
+#line 512 "errnostring-gperf.gperf"
       {"ENOKEY", ENOKEY},
-#line 459 "errnostring_gperf.gperf"
+#line 459 "errnostring-gperf.gperf"
       {"ECONNREFUSED", ECONNREFUSED},
       {(char*)0}, {(char*)0},
-#line 554 "errnostring_gperf.gperf"
+#line 554 "errnostring-gperf.gperf"
       {"ESRCH", ESRCH},
       {(char*)0},
-#line 462 "errnostring_gperf.gperf"
+#line 462 "errnostring-gperf.gperf"
       {"EDESTADDRREQ", EDESTADDRREQ},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 533 "errnostring_gperf.gperf"
+#line 533 "errnostring-gperf.gperf"
       {"ENOTTY", ENOTTY},
       {(char*)0}, {(char*)0},
-#line 536 "errnostring_gperf.gperf"
+#line 536 "errnostring-gperf.gperf"
       {"EOVERFLOW", EOVERFLOW},
       {(char*)0},
-#line 475 "errnostring_gperf.gperf"
+#line 475 "errnostring-gperf.gperf"
       {"EINVAL", EINVAL},
       {(char*)0}, {(char*)0},
-#line 461 "errnostring_gperf.gperf"
+#line 461 "errnostring-gperf.gperf"
       {"EDEADLOCK", EDEADLOCK},
       {(char*)0}, {(char*)0},
-#line 458 "errnostring_gperf.gperf"
+#line 458 "errnostring-gperf.gperf"
       {"ECONNABORTED", ECONNABORTED},
       {(char*)0}, {(char*)0},
-#line 540 "errnostring_gperf.gperf"
+#line 540 "errnostring-gperf.gperf"
       {"EPIPE", EPIPE},
-#line 524 "errnostring_gperf.gperf"
+#line 524 "errnostring-gperf.gperf"
       {"ENOSYS", ENOSYS},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 560 "errnostring_gperf.gperf"
+#line 560 "errnostring-gperf.gperf"
       {"ETOOMANYREFS", ETOOMANYREFS},
       {(char*)0},
-#line 551 "errnostring_gperf.gperf"
+#line 551 "errnostring-gperf.gperf"
       {"ESHUTDOWN", ESHUTDOWN},
-#line 457 "errnostring_gperf.gperf"
+#line 457 "errnostring-gperf.gperf"
       {"ECOMM", ECOMM},
-#line 541 "errnostring_gperf.gperf"
+#line 541 "errnostring-gperf.gperf"
       {"EPROTO", EPROTO},
-#line 545 "errnostring_gperf.gperf"
+#line 545 "errnostring-gperf.gperf"
       {"EREMCHG", EREMCHG},
       {(char*)0}, {(char*)0},
-#line 543 "errnostring_gperf.gperf"
+#line 543 "errnostring-gperf.gperf"
       {"EPROTOTYPE", EPROTOTYPE},
-#line 504 "errnostring_gperf.gperf"
+#line 504 "errnostring-gperf.gperf"
       {"ENFILE", ENFILE},
-#line 549 "errnostring_gperf.gperf"
+#line 549 "errnostring-gperf.gperf"
       {"ERFKILL", ERFKILL},
       {(char*)0}, {(char*)0},
-#line 542 "errnostring_gperf.gperf"
+#line 542 "errnostring-gperf.gperf"
       {"EPROTONOSUPPORT", EPROTONOSUPPORT},
-#line 479 "errnostring_gperf.gperf"
+#line 479 "errnostring-gperf.gperf"
       {"EISNAM", EISNAM},
-#line 442 "errnostring_gperf.gperf"
+#line 442 "errnostring-gperf.gperf"
       {"EAFNOSUPPORT", EAFNOSUPPORT},
-#line 444 "errnostring_gperf.gperf"
+#line 444 "errnostring-gperf.gperf"
       {"EALREADY", EALREADY},
       {(char*)0}, {(char*)0},
-#line 556 "errnostring_gperf.gperf"
+#line 556 "errnostring-gperf.gperf"
       {"ESTALE", ESTALE},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 465 "errnostring_gperf.gperf"
+#line 465 "errnostring-gperf.gperf"
       {"EDQUOT", EDQUOT},
       {(char*)0},
-#line 497 "errnostring_gperf.gperf"
+#line 497 "errnostring-gperf.gperf"
       {"EMSGSIZE", EMSGSIZE},
       {(char*)0},
-#line 493 "errnostring_gperf.gperf"
+#line 493 "errnostring-gperf.gperf"
       {"ELOOP", ELOOP},
-#line 438 "errnostring_gperf.gperf"
+#line 438 "errnostring-gperf.gperf"
       {"EACCES", EACCES},
-#line 490 "errnostring_gperf.gperf"
+#line 490 "errnostring-gperf.gperf"
       {"ELIBMAX", ELIBMAX},
       {(char*)0}, {(char*)0},
-#line 538 "errnostring_gperf.gperf"
+#line 538 "errnostring-gperf.gperf"
       {"EPERM", EPERM},
-#line 521 "errnostring_gperf.gperf"
+#line 521 "errnostring-gperf.gperf"
       {"ENOSPC", ENOSPC},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 449 "errnostring_gperf.gperf"
+#line 449 "errnostring-gperf.gperf"
       {"EBADR", EBADR},
-#line 483 "errnostring_gperf.gperf"
+#line 483 "errnostring-gperf.gperf"
       {"EL2HLT", EL2HLT},
-#line 487 "errnostring_gperf.gperf"
+#line 487 "errnostring-gperf.gperf"
       {"ELIBACC", ELIBACC},
-#line 557 "errnostring_gperf.gperf"
+#line 557 "errnostring-gperf.gperf"
       {"ESTRPIPE", ESTRPIPE},
       {(char*)0},
-#line 445 "errnostring_gperf.gperf"
+#line 445 "errnostring-gperf.gperf"
       {"EBADE", EBADE},
-#line 467 "errnostring_gperf.gperf"
+#line 467 "errnostring-gperf.gperf"
       {"EFAULT", EFAULT},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 455 "errnostring_gperf.gperf"
+#line 455 "errnostring-gperf.gperf"
       {"ECHILD", ECHILD},
-#line 491 "errnostring_gperf.gperf"
+#line 491 "errnostring-gperf.gperf"
       {"ELIBSCN", ELIBSCN},
-#line 534 "errnostring_gperf.gperf"
+#line 534 "errnostring-gperf.gperf"
       {"ENOTUNIQ", ENOTUNIQ},
-#line 454 "errnostring_gperf.gperf"
+#line 454 "errnostring-gperf.gperf"
       {"ECANCELED", ECANCELED},
       {(char*)0},
-#line 495 "errnostring_gperf.gperf"
+#line 495 "errnostring-gperf.gperf"
       {"EMFILE", EMFILE},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 472 "errnostring_gperf.gperf"
+#line 472 "errnostring-gperf.gperf"
       {"EILSEQ", EILSEQ},
-#line 525 "errnostring_gperf.gperf"
+#line 525 "errnostring-gperf.gperf"
       {"ENOTBLK", ENOTBLK},
-#line 484 "errnostring_gperf.gperf"
+#line 484 "errnostring-gperf.gperf"
       {"EL2NSYNC", EL2NSYNC},
       {(char*)0},
-#line 535 "errnostring_gperf.gperf"
+#line 535 "errnostring-gperf.gperf"
       {"ENXIO", ENXIO},
-#line 503 "errnostring_gperf.gperf"
+#line 503 "errnostring-gperf.gperf"
       {"ENETUNREACH", ENETUNREACH},
-#line 539 "errnostring_gperf.gperf"
+#line 539 "errnostring-gperf.gperf"
       {"EPFNOSUPPORT", EPFNOSUPPORT},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 482 "errnostring_gperf.gperf"
+#line 482 "errnostring-gperf.gperf"
       {"EKEYREVOKED", EKEYREVOKED},
-#line 481 "errnostring_gperf.gperf"
+#line 481 "errnostring-gperf.gperf"
       {"EKEYREJECTED", EKEYREJECTED},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 452 "errnostring_gperf.gperf"
+#line 452 "errnostring-gperf.gperf"
       {"EBFONT", EBFONT},
-#line 511 "errnostring_gperf.gperf"
+#line 511 "errnostring-gperf.gperf"
       {"ENOEXEC", ENOEXEC},
       {(char*)0}, {(char*)0},
-#line 446 "errnostring_gperf.gperf"
+#line 446 "errnostring-gperf.gperf"
       {"EBADF", EBADF},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 532 "errnostring_gperf.gperf"
+#line 532 "errnostring-gperf.gperf"
       {"ENOTSUP", ENOTSUP},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 447 "errnostring_gperf.gperf"
+#line 447 "errnostring-gperf.gperf"
       {"EBADFD", EBADFD},
-#line 488 "errnostring_gperf.gperf"
+#line 488 "errnostring-gperf.gperf"
       {"ELIBBAD", ELIBBAD},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 513 "errnostring_gperf.gperf"
+#line 513 "errnostring-gperf.gperf"
       {"ENOLCK", ENOLCK},
-#line 506 "errnostring_gperf.gperf"
+#line 506 "errnostring-gperf.gperf"
       {"ENOBUFS", ENOBUFS},
       {(char*)0}, {(char*)0},
-#line 565 "errnostring_gperf.gperf"
+#line 565 "errnostring-gperf.gperf"
       {"EXDEV", EXDEV},
-#line 553 "errnostring_gperf.gperf"
+#line 553 "errnostring-gperf.gperf"
       {"ESPIPE", ESPIPE},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 552 "errnostring_gperf.gperf"
+#line 552 "errnostring-gperf.gperf"
       {"ESOCKTNOSUPPORT", ESOCKTNOSUPPORT},
-#line 486 "errnostring_gperf.gperf"
+#line 486 "errnostring-gperf.gperf"
       {"EL3RST", EL3RST},
-#line 470 "errnostring_gperf.gperf"
+#line 470 "errnostring-gperf.gperf"
       {"EHOSTUNREACH", EHOSTUNREACH},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 494 "errnostring_gperf.gperf"
+#line 494 "errnostring-gperf.gperf"
       {"EMEDIUMTYPE", EMEDIUMTYPE},
-#line 448 "errnostring_gperf.gperf"
+#line 448 "errnostring-gperf.gperf"
       {"EBADMSG", EBADMSG},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 485 "errnostring_gperf.gperf"
+#line 485 "errnostring-gperf.gperf"
       {"EL3HLT", EL3HLT},
-#line 451 "errnostring_gperf.gperf"
+#line 451 "errnostring-gperf.gperf"
       {"EBADSLT", EBADSLT},
       {(char*)0},
-#line 498 "errnostring_gperf.gperf"
+#line 498 "errnostring-gperf.gperf"
       {"EMULTIHOP", EMULTIHOP},
       {(char*)0},
-#line 564 "errnostring_gperf.gperf"
+#line 564 "errnostring-gperf.gperf"
       {"EUSERS", EUSERS},
-#line 563 "errnostring_gperf.gperf"
+#line 563 "errnostring-gperf.gperf"
       {"EUNATCH", EUNATCH},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 466 "errnostring_gperf.gperf"
+#line 466 "errnostring-gperf.gperf"
       {"EEXIST", EEXIST},
-#line 450 "errnostring_gperf.gperf"
+#line 450 "errnostring-gperf.gperf"
       {"EBADRQC", EBADRQC},
-#line 489 "errnostring_gperf.gperf"
+#line 489 "errnostring-gperf.gperf"
       {"ELIBEXEC", ELIBEXEC},
       {(char*)0}, {(char*)0},
-#line 496 "errnostring_gperf.gperf"
+#line 496 "errnostring-gperf.gperf"
       {"EMLINK", EMLINK},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 443 "errnostring_gperf.gperf"
+#line 443 "errnostring-gperf.gperf"
       {"EAGAIN", EAGAIN},
-#line 562 "errnostring_gperf.gperf"
+#line 562 "errnostring-gperf.gperf"
       {"EUCLEAN", EUCLEAN},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 517 "errnostring_gperf.gperf"
+#line 517 "errnostring-gperf.gperf"
       {"ENOMSG", ENOMSG},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
-#line 544 "errnostring_gperf.gperf"
+#line 544 "errnostring-gperf.gperf"
       {"ERANGE", ERANGE},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 492 "errnostring_gperf.gperf"
+#line 492 "errnostring-gperf.gperf"
       {"ELNRNG", ELNRNG},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
@@ -829,38 +829,38 @@ guestfs___string_to_errno_lookup (register const char *str, register unsigned in
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 456 "errnostring_gperf.gperf"
+#line 456 "errnostring-gperf.gperf"
       {"ECHRNG", ECHRNG},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 453 "errnostring_gperf.gperf"
+#line 453 "errnostring-gperf.gperf"
       {"EBUSY", EBUSY},
-#line 566 "errnostring_gperf.gperf"
+#line 566 "errnostring-gperf.gperf"
       {"EXFULL", EXFULL},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0},
-#line 480 "errnostring_gperf.gperf"
+#line 480 "errnostring-gperf.gperf"
       {"EKEYEXPIRED", EKEYEXPIRED},
-#line 561 "errnostring_gperf.gperf"
+#line 561 "errnostring-gperf.gperf"
       {"ETXTBSY", ETXTBSY},
       {(char*)0}, {(char*)0},
-#line 437 "errnostring_gperf.gperf"
+#line 437 "errnostring-gperf.gperf"
       {"E2BIG", E2BIG},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0},
-#line 519 "errnostring_gperf.gperf"
+#line 519 "errnostring-gperf.gperf"
       {"ENOPKG", ENOPKG},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0}, {(char*)0}, {(char*)0}, {(char*)0},
       {(char*)0},
-#line 468 "errnostring_gperf.gperf"
+#line 468 "errnostring-gperf.gperf"
       {"EFBIG", EFBIG}
     };
 

@@ -670,6 +670,27 @@ work.
 To resolve the case insensitivity of paths, call
 L</guestfs_case_sensitive_path>.
 
+=head3 LONG FILENAMES ON NTFS
+
+NTFS supports filenames up to 255 characters long.  "Character" means a 2
+byte UTF-16 codepoint which can encode the most common Unicode codepoints.
+
+Most Linux filesystems support filenames up to 255 I<bytes>.  This means you
+may get an error:
+
+ File name too long
+
+when you copy a file from NTFS to a Linux filesystem if the name, when
+reencoded as UTF-8, would exceed 255 bytes in length.
+
+This will most often happen when using non-ASCII names that are longer than
+~127 characters (eg. Greek, Cyrillic) or longer than ~85 characters (Asian
+languages).
+
+A workaround is not to try to store such long filenames on Linux native
+filesystems.  Since the L<tar(1)> format can store unlimited length
+filenames, keep the files in a tarball.
+
 =head3 ДОСТУП ДО РЕГІСТРУ WINDOWS
 
 Libguestfs also provides some help for decoding Windows Registry "hive"
@@ -1285,7 +1306,7 @@ section L</RUNNING COMMANDS>.
 
 =head2 CVE-2010-3851
 
-https://bugzilla.redhat.com/642934
+L<https://bugzilla.redhat.com/642934>
 
 This security bug concerns the automatic disk format detection that qemu
 does on disk images.
@@ -3245,7 +3266,7 @@ L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
 L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
 L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
-L<libguestfs-make-fixed-appliance(1)>, L<febootstrap(1)>,
+L<libguestfs-make-fixed-appliance(1)>, L<febootstrap(8)>,
 L<febootstrap-supermin-helper(8)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
 L<http://libguestfs.org/>.
 

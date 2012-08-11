@@ -81,8 +81,8 @@ particular format use the I<--format=..> option.
 If using libvirt, connect to the given I<URI>.  If omitted, then we connect
 to the default libvirt hypervisor.
 
-If you specify guest block devices directly (I<-a>), then libvirt is not
-used at all.
+Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
+libvirt не буде використовуватися взагалі.
 
 =item B<--csv>
 
@@ -94,8 +94,8 @@ ABOUT CSV FORMAT> below.
 
 =item B<--domain> гість
 
-Add all the disks from the named libvirt guest.  Domain UUIDs can be used
-instead of names.
+Додати всі диски з вказаної гостьової системи libvirt. UUID доменів можна
+використовувати замість назв.
 
 =item B<--format=raw|qcow2|..>
 
@@ -186,7 +186,7 @@ specified.
 
 =back
 
-=head1 STATVFS NUMBERS
+=head1 ЧИСЛОВІ ДАНІ ЩОДО STATVFS
 
 C<virt-df> (and L<df(1)>) get information by issuing a L<statvfs(3)> system
 call.  You can get the same information directly, either from the host

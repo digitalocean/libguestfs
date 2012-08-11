@@ -4515,7 +4515,7 @@ static int test_download_offset_0 (void)
       return -1;
   }
   /* TestOutput for download_offset (0) */
-  const char *expected = "603274a0c34714ef3c2d6cf741995301";
+  const char *expected = "4fbd65380cdd255951079008b364516c";
   {
     const char *path = "/download_offset";
     int r;
@@ -4536,7 +4536,7 @@ static int test_download_offset_0 (void)
     const char *remotefilename = "/download_offset/COPYING.LIB";
     int r;
     suppress_error = 0;
-    r = guestfs_download_offset (g, remotefilename, "testdownload.tmp", 100, 25189);
+    r = guestfs_download_offset (g, remotefilename, "testdownload.tmp", 100, 26430);
     if (r == -1)
       return -1;
   }
@@ -4620,7 +4620,7 @@ static int test_upload_offset_0 (void)
       return -1;
   }
   /* TestOutput for upload_offset (0) */
-  const char *expected = "603274a0c34714ef3c2d6cf741995301";
+  const char *expected = "4fbd65380cdd255951079008b364516c";
   {
     const char *remotefilename = "/upload_offset";
     int r;
@@ -5750,10 +5750,10 @@ static int test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "e7998e53-019c-6f32-ef42-04b941992329";
+  const char *expected = "a633b2de-adf1-cf31-7dcf-306d090afa65";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -10700,6 +10700,86 @@ static int test_case_sensitive_path_6 (void)
   return 0;
 }
 
+static int test_case_sensitive_path_7_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "case_sensitive_path") == NULL;
+  str = getenv ("SKIP_TEST_CASE_SENSITIVE_PATH_7");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_CASE_SENSITIVE_PATH");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int test_case_sensitive_path_7 (void)
+{
+  if (test_case_sensitive_path_7_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_7");
+    return 0;
+  }
+
+  /* InitScratchFS for test_case_sensitive_path_7 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    suppress_error = 0;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    suppress_error = 0;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *options = "";
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mount_options (g, options, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for case_sensitive_path (7) */
+  const char *expected = "/case_sensitive_path4/new_file";
+  {
+    const char *path = "/case_sensitive_path4";
+    int r;
+    suppress_error = 0;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/case_SENSITIVE_path4/new_file";
+    char *r;
+    suppress_error = 0;
+    r = guestfs_case_sensitive_path (g, path);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "test_case_sensitive_path_7: expected \"%s\" but got \"%s\"\n", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
 static int test_echo_daemon_0_skip (void)
 {
   const char *str;
@@ -10910,7 +10990,7 @@ static int test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -10921,7 +11001,7 @@ static int test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     int r;
     suppress_error = 0;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
@@ -11929,7 +12009,7 @@ static int test_swapon_uuid_0 (void)
   }
   /* TestRun for swapon_uuid (0) */
   {
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     const char *device = "/dev/sdc";
     int r;
     suppress_error = 0;
@@ -11938,7 +12018,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_uuid (g, uuid);
@@ -11946,7 +12026,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_uuid (g, uuid);
@@ -15060,7 +15140,7 @@ static int test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -20587,7 +20667,7 @@ static int test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "e7998e53-019c-6f32-ef42-04b941992329";
+  const char *expected = "a633b2de-adf1-cf31-7dcf-306d090afa65";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -20598,7 +20678,7 @@ static int test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -20694,10 +20774,10 @@ static int test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "e7998e53-019c-6f32-ef42-04b941992329";
+  const char *expected = "a633b2de-adf1-cf31-7dcf-306d090afa65";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "e7998e53-019c-6f32-ef42-04b941992329";
+    const char *uuid = "a633b2de-adf1-cf31-7dcf-306d090afa65";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -23220,7 +23300,7 @@ static int test_download_0 (void)
       return -1;
   }
   /* TestOutput for download (0) */
-  const char *expected = "603274a0c34714ef3c2d6cf741995301";
+  const char *expected = "4fbd65380cdd255951079008b364516c";
   {
     const char *path = "/download";
     int r;
@@ -23325,7 +23405,7 @@ static int test_upload_0 (void)
       return -1;
   }
   /* TestOutput for upload (0) */
-  const char *expected = "603274a0c34714ef3c2d6cf741995301";
+  const char *expected = "4fbd65380cdd255951079008b364516c";
   {
     const char *path = "/upload";
     int r;
@@ -33616,7 +33696,7 @@ int main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  nr_tests = 361;
+  nr_tests = 362;
 
   test_num++;
   if (guestfs_get_verbose (g))
@@ -34560,6 +34640,14 @@ int main (int argc, char *argv[])
   printf ("%3d/%3d test_case_sensitive_path_6\n", test_num, nr_tests);
   if (test_case_sensitive_path_6 () == -1) {
     printf ("test_case_sensitive_path_6 FAILED\n");
+    n_failed++;
+  }
+  test_num++;
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3d/%3d test_case_sensitive_path_7\n", test_num, nr_tests);
+  if (test_case_sensitive_path_7 () == -1) {
+    printf ("test_case_sensitive_path_7 FAILED\n");
     n_failed++;
   }
   test_num++;

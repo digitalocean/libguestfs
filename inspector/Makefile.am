@@ -51,11 +51,11 @@ bin_PROGRAMS = virt-inspector
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c \
-	../fish/virt.c
+	../fish/options.c
 
 virt_inspector_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -84,7 +84,7 @@ noinst_DATA = $(top_builddir)/html/virt-inspector.1.html
 virt-inspector.1 $(top_builddir)/html/virt-inspector.1.html: stamp-virt-inspector.pod
 
 stamp-virt-inspector.pod: virt-inspector.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-inspector.1 \
 	  --html $(top_builddir)/html/virt-inspector.1.html \
 	  $<
@@ -104,18 +104,18 @@ endif
 
 example-debian.xml:
 	rm -f $@ $@-t
-	../run $(builddir)/virt-inspector ../tests/guests/debian.img > $@-t
+	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/debian.img > $@-t
 	mv $@-t $@
 example-fedora.xml:
 	rm -f $@ $@-t
-	../run $(builddir)/virt-inspector ../tests/guests/fedora.img > $@-t
+	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/fedora.img > $@-t
 	mv $@-t $@
 example-ubuntu.xml:
 	rm -f $@ $@-t
-	../run $(builddir)/virt-inspector ../tests/guests/ubuntu.img > $@-t
+	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/ubuntu.img > $@-t
 	mv $@-t $@
 example-windows.xml:
 	rm -f $@ $@-t
-	../run $(builddir)/virt-inspector ../tests/guests/windows.img | \
+	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/windows.img | \
 	    fgrep -v '<uuid>' > $@-t
 	mv $@-t $@

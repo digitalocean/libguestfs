@@ -2,14 +2,14 @@
 
 =head2 B<bash-history> *
 
-Remove the bash history in the guest.
+仮想マシンにおいて bash 履歴を削除します。
 
-Remove the bash history of user "root" and any other users who have a
-C<.bash_history> file in their home directory.
+ユーザー "root" および他のあらゆるユーザーのホームディレクトリーに C<.bash_history> ファイルを持つユーザーの bash
+履歴を削除します。
 
 =head2 B<blkid-tab> *
 
-Remove blkid tab in the guest.
+ゲストにある blkid テーブルを削除します。
 
 =head2 B<ca-certificates>
 
@@ -29,7 +29,7 @@ DHCP サーバーのリースを削除します。
 
 =head2 B<dovecot-data> *
 
-Remove Dovecot (mail server) data.
+Dovecot (メールサーバー) のデータを削除します。
 
 =head2 B<flag-reconfiguration>
 
@@ -39,7 +39,7 @@ Note that this may require user intervention when the guest is booted.
 
 =head2 B<hostname> *
 
-Change the hostname of the guest.
+仮想マシンのホスト名を変更します。
 
 This operation changes the hostname of the guest to the value given in the
 I<--hostname> parameter.
@@ -52,9 +52,9 @@ Remove Kerberos data in the guest.
 
 =head2 B<logfiles> *
 
-Remove many log files from the guest.
+仮想マシンから多くのログファイルを削除します。
 
-On Linux the following files are removed:
+Linux においては以下のファイルが削除されます:
 
  /root/anaconda-ks.cfg
  /root/install.log
@@ -100,22 +100,21 @@ On Linux the following files are removed:
 
 =head2 B<net-hwaddr> *
 
-Remove HWADDR (hard-coded MAC address) configuration.
+HWADDR (ハードコードされた MAC アドレス) 設定を削除します。
 
-For Fedora and Red Hat Enterprise Linux, this is removed from C<ifcfg-*>
-files.
+Fedora および Red Hat Enterprise Linux に対して、これは C<ifcfg-*> ファイルから削除されます。
 
 =head2 B<package-manager-cache> *
 
-Remove package manager cache.
+パッケージマネージャーのキャッシュを削除します。
 
 =head2 B<pam-data> *
 
-Remove the PAM data in the guest.
+ゲストにある PAM データを削除します。
 
 =head2 B<random-seed> *
 
-Generate random seed for guest.
+仮想マシンに対して乱数種を生成します。
 
 Write some random bytes from the host into the random seed file of the
 guest.
@@ -128,11 +127,11 @@ RHN システム ID を削除します。
 
 =head2 B<samba-db-log> *
 
-Remove the database and log files of Samba.
+Samba のデータベースおよびログファイルを削除します。
 
 =head2 B<script> *
 
-Run arbitrary scripts against the guest.
+仮想マシンに対して任意のスクリプトを実行します。
 
 The C<script> module lets you run arbitrary shell scripts or programs
 against the guest.
@@ -183,7 +182,7 @@ SSSD のデータベースとログファイルを削除します。
 
 =head2 B<udev-persistent-net> *
 
-Remove udev persistent net rules.
+udev persistent net ルールを削除します。
 
 Remove udev persistent net rules which map the guest's existing MAC address
 to a fixed ethernet device (eg. eth0).

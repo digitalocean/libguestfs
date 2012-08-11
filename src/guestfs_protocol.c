@@ -4,6 +4,10 @@
  */
 
 #include "./guestfs_protocol.h"
+#if HAVE_XDR_U_INT64_T
+#define xdr_uint64_t xdr_u_int64_t
+#define uint64_t u_int64_t
+#endif
 
 bool_t
 xdr_guestfs_str (XDR *xdrs, guestfs_str *objp)
@@ -50,27 +54,27 @@ xdr_guestfs_int_lvm_pv (XDR *xdrs, guestfs_int_lvm_pv *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->pv_fmt, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_size))
+	 if (!xdr_int64_t (xdrs, &objp->pv_size))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->dev_size))
+	 if (!xdr_int64_t (xdrs, &objp->dev_size))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_free))
+	 if (!xdr_int64_t (xdrs, &objp->pv_free))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_used))
+	 if (!xdr_int64_t (xdrs, &objp->pv_used))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->pv_attr, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_pe_count))
+	 if (!xdr_int64_t (xdrs, &objp->pv_pe_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_pe_alloc_count))
+	 if (!xdr_int64_t (xdrs, &objp->pv_pe_alloc_count))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->pv_tags, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pe_start))
+	 if (!xdr_int64_t (xdrs, &objp->pe_start))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_mda_count))
+	 if (!xdr_int64_t (xdrs, &objp->pv_mda_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_mda_free))
+	 if (!xdr_int64_t (xdrs, &objp->pv_mda_free))
 		 return FALSE;
 	return TRUE;
 }
@@ -100,35 +104,35 @@ xdr_guestfs_int_lvm_vg (XDR *xdrs, guestfs_int_lvm_vg *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->vg_attr, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_size))
+	 if (!xdr_int64_t (xdrs, &objp->vg_size))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_free))
+	 if (!xdr_int64_t (xdrs, &objp->vg_free))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->vg_sysid, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_extent_size))
+	 if (!xdr_int64_t (xdrs, &objp->vg_extent_size))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_extent_count))
+	 if (!xdr_int64_t (xdrs, &objp->vg_extent_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_free_count))
+	 if (!xdr_int64_t (xdrs, &objp->vg_free_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->max_lv))
+	 if (!xdr_int64_t (xdrs, &objp->max_lv))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->max_pv))
+	 if (!xdr_int64_t (xdrs, &objp->max_pv))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->pv_count))
+	 if (!xdr_int64_t (xdrs, &objp->pv_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->lv_count))
+	 if (!xdr_int64_t (xdrs, &objp->lv_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->snap_count))
+	 if (!xdr_int64_t (xdrs, &objp->snap_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_seqno))
+	 if (!xdr_int64_t (xdrs, &objp->vg_seqno))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->vg_tags, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_mda_count))
+	 if (!xdr_int64_t (xdrs, &objp->vg_mda_count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->vg_mda_free))
+	 if (!xdr_int64_t (xdrs, &objp->vg_mda_free))
 		 return FALSE;
 	return TRUE;
 }
@@ -156,17 +160,17 @@ xdr_guestfs_int_lvm_lv (XDR *xdrs, guestfs_int_lvm_lv *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->lv_attr, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->lv_major))
+	 if (!xdr_int64_t (xdrs, &objp->lv_major))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->lv_minor))
+	 if (!xdr_int64_t (xdrs, &objp->lv_minor))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->lv_kernel_major))
+	 if (!xdr_int64_t (xdrs, &objp->lv_kernel_major))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->lv_kernel_minor))
+	 if (!xdr_int64_t (xdrs, &objp->lv_kernel_minor))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->lv_size))
+	 if (!xdr_int64_t (xdrs, &objp->lv_size))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->seg_count))
+	 if (!xdr_int64_t (xdrs, &objp->seg_count))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->origin, ~0))
 		 return FALSE;
@@ -201,31 +205,31 @@ xdr_guestfs_int_stat (XDR *xdrs, guestfs_int_stat *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->dev))
+	 if (!xdr_int64_t (xdrs, &objp->dev))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->ino))
+	 if (!xdr_int64_t (xdrs, &objp->ino))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->mode))
+	 if (!xdr_int64_t (xdrs, &objp->mode))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->nlink))
+	 if (!xdr_int64_t (xdrs, &objp->nlink))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->uid))
+	 if (!xdr_int64_t (xdrs, &objp->uid))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->gid))
+	 if (!xdr_int64_t (xdrs, &objp->gid))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->rdev))
+	 if (!xdr_int64_t (xdrs, &objp->rdev))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->blksize))
+	 if (!xdr_int64_t (xdrs, &objp->blksize))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->blocks))
+	 if (!xdr_int64_t (xdrs, &objp->blocks))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->atime))
+	 if (!xdr_int64_t (xdrs, &objp->atime))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->mtime))
+	 if (!xdr_int64_t (xdrs, &objp->mtime))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->ctime))
+	 if (!xdr_int64_t (xdrs, &objp->ctime))
 		 return FALSE;
 	return TRUE;
 }
@@ -246,27 +250,27 @@ xdr_guestfs_int_statvfs (XDR *xdrs, guestfs_int_statvfs *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->bsize))
+	 if (!xdr_int64_t (xdrs, &objp->bsize))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->frsize))
+	 if (!xdr_int64_t (xdrs, &objp->frsize))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->blocks))
+	 if (!xdr_int64_t (xdrs, &objp->blocks))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->bfree))
+	 if (!xdr_int64_t (xdrs, &objp->bfree))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->bavail))
+	 if (!xdr_int64_t (xdrs, &objp->bavail))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->files))
+	 if (!xdr_int64_t (xdrs, &objp->files))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->ffree))
+	 if (!xdr_int64_t (xdrs, &objp->ffree))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->favail))
+	 if (!xdr_int64_t (xdrs, &objp->favail))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->fsid))
+	 if (!xdr_int64_t (xdrs, &objp->fsid))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->flag))
+	 if (!xdr_int64_t (xdrs, &objp->flag))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->namemax))
+	 if (!xdr_int64_t (xdrs, &objp->namemax))
 		 return FALSE;
 	return TRUE;
 }
@@ -287,7 +291,7 @@ xdr_guestfs_int_dirent (XDR *xdrs, guestfs_int_dirent *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->ino))
+	 if (!xdr_int64_t (xdrs, &objp->ino))
 		 return FALSE;
 	 if (!xdr_char (xdrs, &objp->ftyp))
 		 return FALSE;
@@ -312,11 +316,11 @@ xdr_guestfs_int_version (XDR *xdrs, guestfs_int_version *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->major))
+	 if (!xdr_int64_t (xdrs, &objp->major))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->minor))
+	 if (!xdr_int64_t (xdrs, &objp->minor))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->release))
+	 if (!xdr_int64_t (xdrs, &objp->release))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->extra, ~0))
 		 return FALSE;
@@ -362,7 +366,7 @@ xdr_guestfs_int_inotify_event (XDR *xdrs, guestfs_int_inotify_event *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->in_wd))
+	 if (!xdr_int64_t (xdrs, &objp->in_wd))
 		 return FALSE;
 	 if (!xdr_u_int (xdrs, &objp->in_mask))
 		 return FALSE;
@@ -391,11 +395,11 @@ xdr_guestfs_int_partition (XDR *xdrs, guestfs_int_partition *objp)
 
 	 if (!xdr_int (xdrs, &objp->part_num))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->part_start))
+	 if (!xdr_int64_t (xdrs, &objp->part_start))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->part_end))
+	 if (!xdr_int64_t (xdrs, &objp->part_end))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->part_size))
+	 if (!xdr_int64_t (xdrs, &objp->part_size))
 		 return FALSE;
 	return TRUE;
 }
@@ -496,13 +500,13 @@ xdr_guestfs_int_isoinfo (XDR *xdrs, guestfs_int_isoinfo *objp)
 			 return FALSE;
 		 if (!xdr_string (xdrs, &objp->iso_bibliographic_file_id, ~0))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_creation_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_creation_t))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_modification_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_modification_t))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_expiration_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_expiration_t))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_effective_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_effective_t))
 			 return FALSE;
 		return TRUE;
 	} else if (xdrs->x_op == XDR_DECODE) {
@@ -541,13 +545,13 @@ xdr_guestfs_int_isoinfo (XDR *xdrs, guestfs_int_isoinfo *objp)
 			 return FALSE;
 		 if (!xdr_string (xdrs, &objp->iso_bibliographic_file_id, ~0))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_creation_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_creation_t))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_modification_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_modification_t))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_expiration_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_expiration_t))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->iso_volume_effective_t))
+		 if (!xdr_int64_t (xdrs, &objp->iso_volume_effective_t))
 			 return FALSE;
 	 return TRUE;
 	}
@@ -578,13 +582,13 @@ xdr_guestfs_int_isoinfo (XDR *xdrs, guestfs_int_isoinfo *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->iso_bibliographic_file_id, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->iso_volume_creation_t))
+	 if (!xdr_int64_t (xdrs, &objp->iso_volume_creation_t))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->iso_volume_modification_t))
+	 if (!xdr_int64_t (xdrs, &objp->iso_volume_modification_t))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->iso_volume_expiration_t))
+	 if (!xdr_int64_t (xdrs, &objp->iso_volume_expiration_t))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->iso_volume_effective_t))
+	 if (!xdr_int64_t (xdrs, &objp->iso_volume_effective_t))
 		 return FALSE;
 	return TRUE;
 }
@@ -630,9 +634,9 @@ xdr_guestfs_int_btrfssubvolume (XDR *xdrs, guestfs_int_btrfssubvolume *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_u_quad_t (xdrs, &objp->btrfssubvolume_id))
+	 if (!xdr_uint64_t (xdrs, &objp->btrfssubvolume_id))
 		 return FALSE;
-	 if (!xdr_u_quad_t (xdrs, &objp->btrfssubvolume_top_level_id))
+	 if (!xdr_uint64_t (xdrs, &objp->btrfssubvolume_top_level_id))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->btrfssubvolume_path, ~0))
 		 return FALSE;
@@ -1552,7 +1556,7 @@ xdr_guestfs_blockdev_getsz_ret (XDR *xdrs, guestfs_blockdev_getsz_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->sizeinsectors))
+	 if (!xdr_int64_t (xdrs, &objp->sizeinsectors))
 		 return FALSE;
 	return TRUE;
 }
@@ -1572,7 +1576,7 @@ xdr_guestfs_blockdev_getsize64_ret (XDR *xdrs, guestfs_blockdev_getsize64_ret *o
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->sizeinbytes))
+	 if (!xdr_int64_t (xdrs, &objp->sizeinbytes))
 		 return FALSE;
 	return TRUE;
 }
@@ -2576,7 +2580,7 @@ xdr_guestfs_du_ret (XDR *xdrs, guestfs_du_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->sizekb))
+	 if (!xdr_int64_t (xdrs, &objp->sizekb))
 		 return FALSE;
 	return TRUE;
 }
@@ -3540,7 +3544,7 @@ xdr_guestfs_inotify_add_watch_ret (XDR *xdrs, guestfs_inotify_add_watch_ret *obj
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->wd))
+	 if (!xdr_int64_t (xdrs, &objp->wd))
 		 return FALSE;
 	return TRUE;
 }
@@ -3796,7 +3800,7 @@ xdr_guestfs_truncate_size_args (XDR *xdrs, guestfs_truncate_size_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -3808,13 +3812,13 @@ xdr_guestfs_utimens_args (XDR *xdrs, guestfs_utimens_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->atsecs))
+	 if (!xdr_int64_t (xdrs, &objp->atsecs))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->atnsecs))
+	 if (!xdr_int64_t (xdrs, &objp->atnsecs))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->mtsecs))
+	 if (!xdr_int64_t (xdrs, &objp->mtsecs))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->mtnsecs))
+	 if (!xdr_int64_t (xdrs, &objp->mtnsecs))
 		 return FALSE;
 	return TRUE;
 }
@@ -3924,7 +3928,7 @@ xdr_guestfs_pread_args (XDR *xdrs, guestfs_pread_args *objp)
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->offset))
+	 if (!xdr_int64_t (xdrs, &objp->offset))
 		 return FALSE;
 	return TRUE;
 }
@@ -3960,9 +3964,9 @@ xdr_guestfs_part_add_args (XDR *xdrs, guestfs_part_add_args *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->prlogex, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->startsect))
+	 if (!xdr_int64_t (xdrs, &objp->startsect))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->endsect))
+	 if (!xdr_int64_t (xdrs, &objp->endsect))
 		 return FALSE;
 	return TRUE;
 }
@@ -4099,7 +4103,7 @@ xdr_guestfs_filesize_ret (XDR *xdrs, guestfs_filesize_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -4261,7 +4265,7 @@ xdr_guestfs_copy_size_args (XDR *xdrs, guestfs_copy_size_args *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->dest, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -4509,7 +4513,7 @@ xdr_guestfs_pwrite_args (XDR *xdrs, guestfs_pwrite_args *objp)
 		 return FALSE;
 	 if (!xdr_bytes (xdrs, (char **)&objp->content.content_val, (u_int *) &objp->content.content_len, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->offset))
+	 if (!xdr_int64_t (xdrs, &objp->offset))
 		 return FALSE;
 	return TRUE;
 }
@@ -4531,7 +4535,7 @@ xdr_guestfs_resize2fs_size_args (XDR *xdrs, guestfs_resize2fs_size_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -4543,7 +4547,7 @@ xdr_guestfs_pvresize_size_args (XDR *xdrs, guestfs_pvresize_size_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -4555,7 +4559,7 @@ xdr_guestfs_ntfsresize_size_args (XDR *xdrs, guestfs_ntfsresize_size_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -4578,7 +4582,7 @@ xdr_guestfs_fallocate64_args (XDR *xdrs, guestfs_fallocate64_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->len))
+	 if (!xdr_int64_t (xdrs, &objp->len))
 		 return FALSE;
 	return TRUE;
 }
@@ -4919,7 +4923,7 @@ xdr_guestfs_upload_offset_args (XDR *xdrs, guestfs_upload_offset_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->remotefilename, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->offset))
+	 if (!xdr_int64_t (xdrs, &objp->offset))
 		 return FALSE;
 	return TRUE;
 }
@@ -4931,9 +4935,9 @@ xdr_guestfs_download_offset_args (XDR *xdrs, guestfs_download_offset_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->remotefilename, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->offset))
+	 if (!xdr_int64_t (xdrs, &objp->offset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -4947,7 +4951,7 @@ xdr_guestfs_pwrite_device_args (XDR *xdrs, guestfs_pwrite_device_args *objp)
 		 return FALSE;
 	 if (!xdr_bytes (xdrs, (char **)&objp->content.content_val, (u_int *) &objp->content.content_len, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->offset))
+	 if (!xdr_int64_t (xdrs, &objp->offset))
 		 return FALSE;
 	return TRUE;
 }
@@ -4971,7 +4975,7 @@ xdr_guestfs_pread_device_args (XDR *xdrs, guestfs_pread_device_args *objp)
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->count))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->offset))
+	 if (!xdr_int64_t (xdrs, &objp->offset))
 		 return FALSE;
 	return TRUE;
 }
@@ -5163,7 +5167,7 @@ xdr_guestfs_ntfsresize_opts_args (XDR *xdrs, guestfs_ntfsresize_opts_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	 if (!xdr_bool (xdrs, &objp->force))
 		 return FALSE;
@@ -5177,7 +5181,7 @@ xdr_guestfs_btrfs_filesystem_resize_args (XDR *xdrs, guestfs_btrfs_filesystem_re
 
 	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -5251,11 +5255,11 @@ xdr_guestfs_copy_device_to_device_args (XDR *xdrs, guestfs_copy_device_to_device
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->dest, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+	 if (!xdr_int64_t (xdrs, &objp->srcoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+	 if (!xdr_int64_t (xdrs, &objp->destoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -5269,11 +5273,11 @@ xdr_guestfs_copy_device_to_file_args (XDR *xdrs, guestfs_copy_device_to_file_arg
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->dest, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+	 if (!xdr_int64_t (xdrs, &objp->srcoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+	 if (!xdr_int64_t (xdrs, &objp->destoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -5287,11 +5291,11 @@ xdr_guestfs_copy_file_to_device_args (XDR *xdrs, guestfs_copy_file_to_device_arg
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->dest, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+	 if (!xdr_int64_t (xdrs, &objp->srcoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+	 if (!xdr_int64_t (xdrs, &objp->destoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -5305,11 +5309,11 @@ xdr_guestfs_copy_file_to_file_args (XDR *xdrs, guestfs_copy_file_to_file_args *o
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->dest, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->srcoffset))
+	 if (!xdr_int64_t (xdrs, &objp->srcoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->destoffset))
+	 if (!xdr_int64_t (xdrs, &objp->destoffset))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->size))
+	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
 	return TRUE;
 }
@@ -5339,7 +5343,7 @@ xdr_guestfs_tune2fs_args (XDR *xdrs, guestfs_tune2fs_args *objp)
 		}
 		 if (!xdr_string (xdrs, &objp->errorbehavior, ~0))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->group))
+		 if (!xdr_int64_t (xdrs, &objp->group))
 			 return FALSE;
 		 if (!xdr_int (xdrs, &objp->intervalbetweenchecks))
 			 return FALSE;
@@ -5347,9 +5351,9 @@ xdr_guestfs_tune2fs_args (XDR *xdrs, guestfs_tune2fs_args *objp)
 			 return FALSE;
 		 if (!xdr_string (xdrs, &objp->lastmounteddirectory, ~0))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->reservedblockscount))
+		 if (!xdr_int64_t (xdrs, &objp->reservedblockscount))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->user))
+		 if (!xdr_int64_t (xdrs, &objp->user))
 			 return FALSE;
 		return TRUE;
 	} else if (xdrs->x_op == XDR_DECODE) {
@@ -5371,7 +5375,7 @@ xdr_guestfs_tune2fs_args (XDR *xdrs, guestfs_tune2fs_args *objp)
 		}
 		 if (!xdr_string (xdrs, &objp->errorbehavior, ~0))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->group))
+		 if (!xdr_int64_t (xdrs, &objp->group))
 			 return FALSE;
 		 if (!xdr_int (xdrs, &objp->intervalbetweenchecks))
 			 return FALSE;
@@ -5379,9 +5383,9 @@ xdr_guestfs_tune2fs_args (XDR *xdrs, guestfs_tune2fs_args *objp)
 			 return FALSE;
 		 if (!xdr_string (xdrs, &objp->lastmounteddirectory, ~0))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->reservedblockscount))
+		 if (!xdr_int64_t (xdrs, &objp->reservedblockscount))
 			 return FALSE;
-		 if (!xdr_quad_t (xdrs, &objp->user))
+		 if (!xdr_int64_t (xdrs, &objp->user))
 			 return FALSE;
 	 return TRUE;
 	}
@@ -5396,7 +5400,7 @@ xdr_guestfs_tune2fs_args (XDR *xdrs, guestfs_tune2fs_args *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->errorbehavior, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->group))
+	 if (!xdr_int64_t (xdrs, &objp->group))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->intervalbetweenchecks))
 		 return FALSE;
@@ -5404,9 +5408,9 @@ xdr_guestfs_tune2fs_args (XDR *xdrs, guestfs_tune2fs_args *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->lastmounteddirectory, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->reservedblockscount))
+	 if (!xdr_int64_t (xdrs, &objp->reservedblockscount))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->user))
+	 if (!xdr_int64_t (xdrs, &objp->user))
 		 return FALSE;
 	return TRUE;
 }
@@ -5421,13 +5425,13 @@ xdr_guestfs_md_create_args (XDR *xdrs, guestfs_md_create_args *objp)
 	 if (!xdr_array (xdrs, (char **)&objp->devices.devices_val, (u_int *) &objp->devices.devices_len, ~0,
 		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->missingbitmap))
+	 if (!xdr_int64_t (xdrs, &objp->missingbitmap))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->nrdevices))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->spare))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->chunk))
+	 if (!xdr_int64_t (xdrs, &objp->chunk))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->level, ~0))
 		 return FALSE;
@@ -5756,9 +5760,9 @@ xdr_guestfs_mkfs_btrfs_args (XDR *xdrs, guestfs_mkfs_btrfs_args *objp)
 	 if (!xdr_array (xdrs, (char **)&objp->devices.devices_val, (u_int *) &objp->devices.devices_len, ~0,
 		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->allocstart))
+	 if (!xdr_int64_t (xdrs, &objp->allocstart))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->bytecount))
+	 if (!xdr_int64_t (xdrs, &objp->bytecount))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->datatype, ~0))
 		 return FALSE;
@@ -5824,7 +5828,7 @@ xdr_guestfs_get_e2generation_ret (XDR *xdrs, guestfs_get_e2generation_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->generation))
+	 if (!xdr_int64_t (xdrs, &objp->generation))
 		 return FALSE;
 	return TRUE;
 }
@@ -5836,7 +5840,7 @@ xdr_guestfs_set_e2generation_args (XDR *xdrs, guestfs_set_e2generation_args *obj
 
 	 if (!xdr_string (xdrs, &objp->file, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->generation))
+	 if (!xdr_int64_t (xdrs, &objp->generation))
 		 return FALSE;
 	return TRUE;
 }
@@ -5898,7 +5902,7 @@ xdr_guestfs_btrfs_subvolume_set_default_args (XDR *xdrs, guestfs_btrfs_subvolume
 {
 	register int32_t *buf;
 
-	 if (!xdr_quad_t (xdrs, &objp->id))
+	 if (!xdr_int64_t (xdrs, &objp->id))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->fs, ~0))
 		 return FALSE;
@@ -5970,7 +5974,7 @@ xdr_guestfs_btrfs_fsck_args (XDR *xdrs, guestfs_btrfs_fsck_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->device, ~0))
 		 return FALSE;
-	 if (!xdr_quad_t (xdrs, &objp->superblock))
+	 if (!xdr_int64_t (xdrs, &objp->superblock))
 		 return FALSE;
 	 if (!xdr_bool (xdrs, &objp->repair))
 		 return FALSE;
@@ -6064,9 +6068,9 @@ xdr_guestfs_message_header (XDR *xdrs, guestfs_message_header *objp)
 		 return FALSE;
 	 if (!xdr_u_int (xdrs, &objp->serial))
 		 return FALSE;
-	 if (!xdr_u_quad_t (xdrs, &objp->progress_hint))
+	 if (!xdr_uint64_t (xdrs, &objp->progress_hint))
 		 return FALSE;
-	 if (!xdr_u_quad_t (xdrs, &objp->optargs_bitmask))
+	 if (!xdr_uint64_t (xdrs, &objp->optargs_bitmask))
 		 return FALSE;
 	 if (!xdr_guestfs_message_status (xdrs, &objp->status))
 		 return FALSE;
@@ -6094,9 +6098,9 @@ xdr_guestfs_progress (XDR *xdrs, guestfs_progress *objp)
 		 return FALSE;
 	 if (!xdr_u_int (xdrs, &objp->serial))
 		 return FALSE;
-	 if (!xdr_u_quad_t (xdrs, &objp->position))
+	 if (!xdr_uint64_t (xdrs, &objp->position))
 		 return FALSE;
-	 if (!xdr_u_quad_t (xdrs, &objp->total))
+	 if (!xdr_uint64_t (xdrs, &objp->total))
 		 return FALSE;
 	return TRUE;
 }

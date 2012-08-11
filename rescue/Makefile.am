@@ -26,11 +26,11 @@ bin_PROGRAMS = virt-rescue
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c \
-	../fish/virt.c
+	../fish/options.c
 
 virt_rescue_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -57,7 +57,7 @@ noinst_DATA = $(top_builddir)/html/virt-rescue.1.html
 virt-rescue.1 $(top_builddir)/html/virt-rescue.1.html: stamp-virt-rescue.pod
 
 stamp-virt-rescue.pod: virt-rescue.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-rescue.1 \
 	  --html $(top_builddir)/html/virt-rescue.1.html \
 	  $<

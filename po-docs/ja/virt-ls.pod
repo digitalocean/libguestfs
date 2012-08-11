@@ -33,11 +33,11 @@ L<guestfs(3)> API.
 
 =head1 例
 
-Get a list of all files and directories in a virtual machine:
+仮想マシンにあるファイルおよびディレクトリーをすべて取得します:
 
  virt-ls -R -d guest /
 
-List all setuid or setgid programs in a Linux virtual machine:
+Linux 仮想マシンにある setuid または setgid プログラムを一覧表示します:
 
  virt-ls -lR -d guest / | grep '^- [42]'
 

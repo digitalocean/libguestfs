@@ -570,9 +570,8 @@ Inspection currently only works for some common operating systems.
 Contributors are welcome to send patches for other operating systems that we
 currently cannot detect.
 
-Encrypted disks must be opened before inspection.  See L</ENCRYPTED DISKS>
-for more details.  The L</guestfs_inspect_os> function just ignores any
-encrypted devices.
+暗号化ディスクは検査の前に開く必要があります。詳細はL</暗号化ディスク>を参照してください。L</guestfs_inspect_os>
+関数はすべての暗号化デバイスを単に無視します。
 
 I<この関数は推奨されません。> 新しいコードでは、代わりに L</add_drive_opts> を使用してください。
 
@@ -615,6 +614,27 @@ work.
 
 To resolve the case insensitivity of paths, call
 L</guestfs_case_sensitive_path>.
+
+=head3 LONG FILENAMES ON NTFS
+
+NTFS supports filenames up to 255 characters long.  "Character" means a 2
+byte UTF-16 codepoint which can encode the most common Unicode codepoints.
+
+Most Linux filesystems support filenames up to 255 I<bytes>.  This means you
+may get an error:
+
+ File name too long
+
+when you copy a file from NTFS to a Linux filesystem if the name, when
+reencoded as UTF-8, would exceed 255 bytes in length.
+
+This will most often happen when using non-ASCII names that are longer than
+~127 characters (eg. Greek, Cyrillic) or longer than ~85 characters (Asian
+languages).
+
+A workaround is not to try to store such long filenames on Linux native
+filesystems.  Since the L<tar(1)> format can store unlimited length
+filenames, keep the files in a tarball.
 
 =head3 Windows レジストリのアクセス方法
 
@@ -1152,7 +1172,7 @@ doing the wrong thing.  Consider cases such as:
 
 =back
 
-=head2 SECURITY OF MOUNTING FILESYSTEMS
+=head2 ファイルシステムのマウントに関するセキュリティ
 
 When you mount a filesystem under Linux, mistakes in the kernel filesystem
 (VFS) module can sometimes be escalated into exploits by deliberately
@@ -1215,7 +1235,7 @@ section L</RUNNING COMMANDS>.
 
 =head2 CVE-2010-3851
 
-https://bugzilla.redhat.com/642934
+L<https://bugzilla.redhat.com/642934>
 
 このセキュリティバグは、QEMU のディスクイメージでないことをディスクの自動フォーマット検出に関するものです。
 
@@ -1440,9 +1460,9 @@ Note that the message string C<msg> is freed as soon as the callback
 function returns, so if you want to stash it somewhere you must make your
 own copy.
 
-The default handler prints messages on C<stderr>.
+標準のハンドラーは C<stderr> にメッセージを表示します。
 
-If you set C<cb> to C<NULL> then I<no> handler is called.
+C<cb> を C<NULL> に設定すると、 I<no> ハンドラーが呼び出されます。
 
 =head2 guestfs_get_error_handler
 
@@ -1457,8 +1477,7 @@ If you set C<cb> to C<NULL> then I<no> handler is called.
  void guestfs_set_out_of_memory_handler (guestfs_h *g,
                                          guestfs_abort_cb);
 
-The callback C<cb> will be called if there is an out of memory situation.
-I<Note this callback must not return>.
+メモリー不足になると、コールバック C<cb> が呼び出されます。 I<このコールバックは戻ってこない可能性があることに注意してください>。
 
 デフォルトでは L<abort(3)> を呼び出します。
 
@@ -1593,7 +1612,7 @@ I<この関数は推奨されません。> 新しいコードでは、代わり�
  int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename,
                                 va_list args);
 
-=head2 CONSTRUCTING OPTIONAL ARGUMENTS
+=head2 オプション引数の構築
 
 The third variant is useful where you need to construct these calls.  You
 pass in a structure where you fill in the optional fields.  The structure
@@ -2875,7 +2894,7 @@ C ライブラリーのソースコード。
 
 =item C<sysprep>
 
-L<virt-sysprep(1)> command and documentation.
+L<virt-sysprep(1)> コマンドおよびドキュメント。
 
 =item C<test-tool>
 
@@ -3132,7 +3151,7 @@ L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
 L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
 L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
-L<libguestfs-make-fixed-appliance(1)>, L<febootstrap(1)>,
+L<libguestfs-make-fixed-appliance(1)>, L<febootstrap(8)>,
 L<febootstrap-supermin-helper(8)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
 L<http://libguestfs.org/>.
 

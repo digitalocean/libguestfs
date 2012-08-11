@@ -3208,7 +3208,7 @@ C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does not refer to a
 logical volume.
 
-Див. також L</is-lv>.
+See also L</is-lv>.
 
 =head2 lvm-clear-filter
 

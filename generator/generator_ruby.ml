@@ -47,6 +47,17 @@ let rec generate_ruby_c () =
 
 #include \"extconf.h\"
 
+/* Ruby has a mark-sweep garbage collector and performs imprecise
+ * scanning of the stack to look for pointers.  Some implications
+ * of this:
+ * (1) Any VALUE stored in a stack location must be marked as
+ *     volatile so that the compiler doesn't put it in a register.
+ * (2) Anything at all on the stack that \"looks like\" a Ruby
+ *     pointer could be followed, eg. buffers of random data.
+ *     (See: https://bugzilla.redhat.com/show_bug.cgi?id=843188#c6)
+ * We fix (1) by marking everything possible as volatile.
+ */
+
 /* For Ruby < 1.9 */
 #ifndef RARRAY_LEN
 #define RARRAY_LEN(r) (RARRAY((r))->len)
@@ -66,7 +77,7 @@ let rec generate_ruby_c () =
 VALUE
 rb_hash_lookup (VALUE hash, VALUE key)
 {
-  VALUE val;
+  volatile VALUE val;
 
   if (!st_lookup (RHASH(hash)->tbl, key, &val))
     return Qnil;
@@ -240,8 +251,8 @@ ruby_event_callback_wrapper (guestfs_h *g,
                              const uint64_t *array, size_t array_len)
 {
   size_t i;
-  VALUE eventv, event_handlev, bufv, arrayv;
-  VALUE argv[5];
+  volatile VALUE eventv, event_handlev, bufv, arrayv;
+  volatile VALUE argv[5];
 
   eventv = ULL2NUM (event);
   event_handlev = INT2NUM (event_handle);
@@ -269,16 +280,21 @@ static VALUE
 ruby_event_callback_wrapper_wrapper (VALUE argvv)
 {
   VALUE *argv = (VALUE *) argvv;
-  VALUE fn, eventv, event_handlev, bufv, arrayv;
+  volatile VALUE fn, eventv, event_handlev, bufv, arrayv;
 
   fn = argv[0];
 
   /* Check the Ruby callback still exists.  For reasons which are not
    * fully understood, even though we registered this as a global root,
    * it is still possible for the callback to go away (fn value remains
-   * but its type changes from T_DATA to T_NONE).  (RHBZ#733297)
+   * but its type changes from T_DATA to T_NONE or T_ZOMBIE).
+   * (RHBZ#733297, RHBZ#843188)
    */
-  if (rb_type (fn) != T_NONE) {
+  if (rb_type (fn) != T_NONE
+#ifdef T_ZOMBIE
+      && rb_type (fn) != T_ZOMBIE
+#endif
+      ) {
     eventv = argv[1];
     event_handlev = argv[2];
     bufv = argv[3];
@@ -413,19 +429,21 @@ ruby_user_cancel (VALUE gv)
 " name args ret shortdesc doc name name
       );
 
-      (* Generate the function. *)
-      pr "static VALUE\n";
-      pr "ruby_guestfs_%s (VALUE gv" name;
-      List.iter (fun arg -> pr ", VALUE %sv" (name_of_argt arg)) args;
-      (* XXX This makes the hash mandatory, meaning that you have
-       * to specify {} for no arguments.  We could make it so this
-       * can be omitted.  However that is a load of hassle because
-       * you have to completely change the way that arguments are
-       * passed in.  See:
-       * http://www.redhat.com/archives/libvir-list/2008-April/msg00004.html
+      (* Generate the function.  Prototype is completely different
+       * depending on whether it's got optargs or not.
+       *
+       * See:
+       * http://stackoverflow.com/questions/7626745/extending-ruby-in-c-how-to-specify-default-argument-values-to-function
        *)
-      if optargs <> [] then
-        pr ", VALUE optargsv";
+      pr "static VALUE\n";
+      pr "ruby_guestfs_%s (" name;
+      if optargs = [] then (
+        pr "VALUE gv";
+        List.iter
+          (fun arg -> pr ", VALUE %sv" (name_of_argt arg))
+          args
+      ) else
+        pr "int argc, VALUE *argv, VALUE gv";
       pr ")\n";
       pr "{\n";
       pr "  guestfs_h *g;\n";
@@ -435,42 +453,61 @@ ruby_user_cancel (VALUE gv)
         name;
       pr "\n";
 
+      (* For optargs case, get the arg VALUEs into local variables.
+       * Note for compatibility with old code we're still expecting
+       * just a single optional hash parameter as the final element
+       * containing all the optargs.
+       *)
+      if optargs <> [] then (
+        let nr_args = List.length args in
+        pr "  if (argc < %d || argc > %d)\n" nr_args (nr_args+1);
+        pr "    rb_raise (rb_eArgError, \"expecting %d or %d arguments\");\n" nr_args (nr_args+1);
+        pr "\n";
+        iteri (
+          fun i arg ->
+            pr "  volatile VALUE %sv = argv[%d];\n" (name_of_argt arg) i
+        ) args;
+        pr "  volatile VALUE optargsv = argc > %d ? argv[%d] : rb_hash_new ();\n"
+          nr_args nr_args;
+        pr "\n"
+      );
+
       List.iter (
         function
         | Pathname n | Device n | Dev_or_Path n | String n | Key n
         | FileIn n | FileOut n ->
-            pr "  const char *%s = StringValueCStr (%sv);\n" n n;
+          pr "  const char *%s = StringValueCStr (%sv);\n" n n;
         | BufferIn n ->
-            pr "  Check_Type (%sv, T_STRING);\n" n;
-            pr "  const char *%s = RSTRING_PTR (%sv);\n" n n;
-            pr "  if (!%s)\n" n;
-            pr "    rb_raise (rb_eTypeError, \"expected string for parameter %%s of %%s\",\n";
-            pr "              \"%s\", \"%s\");\n" n name;
-            pr "  size_t %s_size = RSTRING_LEN (%sv);\n" n n
+          pr "  Check_Type (%sv, T_STRING);\n" n;
+          pr "  const char *%s = RSTRING_PTR (%sv);\n" n n;
+          pr "  if (!%s)\n" n;
+          pr "    rb_raise (rb_eTypeError, \"expected string for parameter %%s of %%s\",\n";
+          pr "              \"%s\", \"%s\");\n" n name;
+          pr "  size_t %s_size = RSTRING_LEN (%sv);\n" n n
         | OptString n ->
-            pr "  const char *%s = !NIL_P (%sv) ? StringValueCStr (%sv) : NULL;\n" n n n
+          pr "  const char *%s = !NIL_P (%sv) ? StringValueCStr (%sv) : NULL;\n" n n n
         | StringList n | DeviceList n ->
-            pr "  char **%s;\n" n;
-            pr "  Check_Type (%sv, T_ARRAY);\n" n;
-            pr "  {\n";
-            pr "    size_t i, len;\n";
-            pr "    len = RARRAY_LEN (%sv);\n" n;
-            pr "    %s = ALLOC_N (char *, len+1);\n"
-              n;
-            pr "    for (i = 0; i < len; ++i) {\n";
-            pr "      VALUE v = rb_ary_entry (%sv, i);\n" n;
-            pr "      %s[i] = StringValueCStr (v);\n" n;
-            pr "    }\n";
-            pr "    %s[len] = NULL;\n" n;
-            pr "  }\n";
+          pr "  char **%s;\n" n;
+          pr "  Check_Type (%sv, T_ARRAY);\n" n;
+          pr "  {\n";
+          pr "    size_t i, len;\n";
+          pr "    len = RARRAY_LEN (%sv);\n" n;
+          pr "    %s = ALLOC_N (char *, len+1);\n"
+            n;
+          pr "    for (i = 0; i < len; ++i) {\n";
+          pr "      volatile VALUE v = rb_ary_entry (%sv, i);\n" n;
+          pr "      %s[i] = StringValueCStr (v);\n" n;
+          pr "    }\n";
+          pr "    %s[len] = NULL;\n" n;
+          pr "  }\n";
         | Bool n ->
-            pr "  int %s = RTEST (%sv);\n" n n
+          pr "  int %s = RTEST (%sv);\n" n n
         | Int n ->
-            pr "  int %s = NUM2INT (%sv);\n" n n
+          pr "  int %s = NUM2INT (%sv);\n" n n
         | Int64 n ->
-            pr "  long long %s = NUM2LL (%sv);\n" n n
+          pr "  long long %s = NUM2LL (%sv);\n" n n
         | Pointer (t, n) ->
-            pr "  %s %s = (%s) (intptr_t) NUM2LL (%sv);\n" t n t n
+          pr "  %s %s = (%s) (intptr_t) NUM2LL (%sv);\n" t n t n
       ) args;
       pr "\n";
 
@@ -480,7 +517,7 @@ ruby_user_cancel (VALUE gv)
         pr "  Check_Type (optargsv, T_HASH);\n";
         pr "  struct guestfs_%s_argv optargs_s = { .bitmask = 0 };\n" name;
         pr "  struct guestfs_%s_argv *optargs = &optargs_s;\n" name;
-        pr "  VALUE v;\n";
+        pr "  volatile VALUE v;\n";
         List.iter (
           fun argt ->
             let n = name_of_optargt argt in
@@ -561,13 +598,13 @@ ruby_user_cancel (VALUE gv)
            pr "  else\n";
            pr "    return Qnil;\n";
        | RString _ ->
-           pr "  VALUE rv = rb_str_new2 (r);\n";
+           pr "  volatile VALUE rv = rb_str_new2 (r);\n";
            pr "  free (r);\n";
            pr "  return rv;\n";
        | RStringList _ ->
            pr "  size_t i, len = 0;\n";
            pr "  for (i = 0; r[i] != NULL; ++i) len++;\n";
-           pr "  VALUE rv = rb_ary_new2 (len);\n";
+           pr "  volatile VALUE rv = rb_ary_new2 (len);\n";
            pr "  for (i = 0; r[i] != NULL; ++i) {\n";
            pr "    rb_ary_push (rv, rb_str_new2 (r[i]));\n";
            pr "    free (r[i]);\n";
@@ -581,7 +618,7 @@ ruby_user_cancel (VALUE gv)
            let cols = cols_of_struct typ in
            generate_ruby_struct_list_code typ cols
        | RHashtable _ ->
-           pr "  VALUE rv = rb_hash_new ();\n";
+           pr "  volatile VALUE rv = rb_hash_new ();\n";
            pr "  size_t i;\n";
            pr "  for (i = 0; r[i] != NULL; i+=2) {\n";
            pr "    rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));\n";
@@ -591,7 +628,7 @@ ruby_user_cancel (VALUE gv)
            pr "  free (r);\n";
            pr "  return rv;\n"
        | RBufferOut _ ->
-           pr "  VALUE rv = rb_str_new (r, size);\n";
+           pr "  volatile VALUE rv = rb_str_new (r, size);\n";
            pr "  free (r);\n";
            pr "  return rv;\n";
       );
@@ -635,7 +672,7 @@ void Init__guestfs ()
   (* Methods. *)
   List.iter (
     fun (name, (_, args, optargs), _, _, _, _, _) ->
-      let nr_args = List.length args + if optargs <> [] then 1 else 0 in
+      let nr_args = if optargs = [] then List.length args else -1 in
       pr "  rb_define_method (c_guestfs, \"%s\",\n" name;
       pr "        ruby_guestfs_%s, %d);\n" name nr_args
   ) all_functions;
@@ -644,7 +681,7 @@ void Init__guestfs ()
 
 (* Ruby code to return a struct. *)
 and generate_ruby_struct_code typ cols =
-  pr "  VALUE rv = rb_hash_new ();\n";
+  pr "  volatile VALUE rv = rb_hash_new ();\n";
   List.iter (
     function
     | name, FString ->
@@ -671,10 +708,10 @@ and generate_ruby_struct_code typ cols =
 
 (* Ruby code to return a struct list. *)
 and generate_ruby_struct_list_code typ cols =
-  pr "  VALUE rv = rb_ary_new2 (r->len);\n";
+  pr "  volatile VALUE rv = rb_ary_new2 (r->len);\n";
   pr "  size_t i;\n";
   pr "  for (i = 0; i < r->len; ++i) {\n";
-  pr "    VALUE hv = rb_hash_new ();\n";
+  pr "    volatile VALUE hv = rb_hash_new ();\n";
   List.iter (
     function
     | name, FString ->

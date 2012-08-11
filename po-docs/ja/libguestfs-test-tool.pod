@@ -62,7 +62,7 @@ minutes) which does not usually need to be adjusted.
 
 =item B<--version>
 
-Display the libguestfs version number and exit.
+libguestfs のバージョン番号を表示して、終了します。
 
 =back
 

@@ -54,6 +54,7 @@
 /freading.m4
 /fseeko.m4
 /fstat.m4
+/fstatat.m4
 /fsusage.m4
 /ftell.m4
 /ftello.m4
@@ -124,6 +125,7 @@
 /malloca.m4
 /malloc.m4
 /manywarnings.m4
+/memmem.m4
 /math_h.m4
 /mbrtowc.m4
 /mbsinit.m4

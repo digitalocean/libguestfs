@@ -40,7 +40,7 @@ seconds on fast 64 bit hardware).
 
 How to check for hardware virt:
 
-http://virt-tools.org/learning/check-hardware-virt/
+L<http://virt-tools.org/learning/check-hardware-virt/>
 
 上のコマンドがまったく機能しなければ、 L<libguestfs-test-tool(1)> を使用します。
 
@@ -134,8 +134,8 @@ greatly differing numbers.
 Now try to load this into your favorite spreadsheet or database.  Are the
 results reproduced faithfully in the spreadsheet/database?
 
-http://www.postgresql.org/docs/8.1/static/sql-copy.html
-http://dev.mysql.com/doc/refman/5.1/en/load-data.html
+L<http://www.postgresql.org/docs/8.1/static/sql-copy.html>
+L<http://dev.mysql.com/doc/refman/5.1/en/load-data.html>
 
 =head2 B<*> B<シャットオフ>している仮想マシンにあるファイルを編集します。
 
@@ -177,7 +177,7 @@ Do the results match what is actually in the guest?
 
 =head2 すべての仮想マシンにおいて virt-ls の監査機能を試します。
 
-List all setuid or setgid programs in a Linux virtual machine:
+Linux 仮想マシンにある setuid または setgid プログラムを一覧表示します:
 
  virt-ls -lR -d Guest / | grep '^- [42]'
 

@@ -138,6 +138,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module fread-tests:
   # Code from module fstat:
   # Code from module fstat-tests:
+  # Code from module fstatat:
+  # Code from module fstatat-tests:
   # Code from module fsusage:
   # Code from module ftell:
   # Code from module ftell-tests:
@@ -163,7 +165,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module getline:
   # Code from module getline-tests:
   # Code from module getlogin_r:
-  # Code from module getlogin_r-tests:
   # Code from module getopt-gnu:
   # Code from module getopt-posix:
   # Code from module getopt-posix-tests:
@@ -233,6 +234,9 @@ AC_DEFUN([gl_EARLY],
   # Code from module mbtowc:
   # Code from module memchr:
   # Code from module memchr-tests:
+  # Code from module memmem:
+  # Code from module memmem-simple:
+  # Code from module memmem-tests:
   # Code from module mempcpy:
   # Code from module memrchr:
   # Code from module memrchr-tests:
@@ -460,6 +464,7 @@ gl_HEADER_ARPA_INET
 AC_PROG_MKDIR_P
 AC_LIBOBJ([openat-proc])
 AC_REQUIRE([AC_C_INLINE])
+AC_REQUIRE([AC_C_INLINE])
 gl_BYTESWAP
 gl_UNISTD_MODULE_INDICATOR([chdir])
 gl_FUNC_CHDIR_LONG
@@ -568,6 +573,13 @@ if test $REPLACE_FSTAT = 1; then
   gl_PREREQ_FSTAT
 fi
 gl_SYS_STAT_MODULE_INDICATOR([fstat])
+gl_FUNC_FSTATAT
+if test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1; then
+  AC_LIBOBJ([fstatat])
+fi
+AC_REQUIRE([AC_C_INLINE]) dnl because 'inline' is used in lib/openat.h
+gl_MODULE_INDICATOR([fstatat]) dnl for lib/openat.h
+gl_SYS_STAT_MODULE_INDICATOR([fstatat])
 gl_FSUSAGE
 if test $gl_cv_fs_space = yes; then
   AC_LIBOBJ([fsusage])
@@ -742,6 +754,15 @@ if test $HAVE_MEMCHR = 0 || test $REPLACE_MEMCHR = 1; then
   gl_PREREQ_MEMCHR
 fi
 gl_STRING_MODULE_INDICATOR([memchr])
+gl_FUNC_MEMMEM
+if test $HAVE_MEMMEM = 0 || test $REPLACE_MEMMEM = 1; then
+  AC_LIBOBJ([memmem])
+fi
+gl_FUNC_MEMMEM_SIMPLE
+if test $HAVE_MEMMEM = 0 || test $REPLACE_MEMMEM = 1; then
+  AC_LIBOBJ([memmem])
+fi
+gl_STRING_MODULE_INDICATOR([memmem])
 gl_FUNC_MEMPCPY
 if test $HAVE_MEMPCPY = 0; then
   AC_LIBOBJ([mempcpy])
@@ -1143,6 +1164,10 @@ AC_CHECK_FUNCS_ONCE([mprotect])
 gl_FUNC_MMAP_ANON
 AC_CHECK_HEADERS_ONCE([sys/mman.h])
 AC_CHECK_FUNCS_ONCE([mprotect])
+AC_CHECK_DECLS_ONCE([alarm])
+gl_FUNC_MMAP_ANON
+AC_CHECK_HEADERS_ONCE([sys/mman.h])
+AC_CHECK_FUNCS_ONCE([mprotect])
 gl_FUNC_PIPE
 if test $HAVE_PIPE = 0; then
   AC_LIBOBJ([pipe])
@@ -1398,6 +1423,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fpending.c
   lib/fpending.h
   lib/fstat.c
+  lib/fstatat.c
   lib/fsusage.c
   lib/fsusage.h
   lib/ftell.c
@@ -1460,6 +1486,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/mbsrtowcs.c
   lib/memchr.c
   lib/memchr.valgrind
+  lib/memmem.c
   lib/mempcpy.c
   lib/memrchr.c
   lib/mkdtemp.c
@@ -1529,6 +1556,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdio-impl.h
   lib/stdio.in.h
   lib/stdlib.in.h
+  lib/str-two-way.h
   lib/strchrnul.c
   lib/strchrnul.valgrind
   lib/strdup.c
@@ -1635,6 +1663,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fpieee.m4
   m4/fseeko.m4
   m4/fstat.m4
+  m4/fstatat.m4
   m4/fsusage.m4
   m4/ftell.m4
   m4/ftello.m4
@@ -1696,6 +1725,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mbstate_t.m4
   m4/mbtowc.m4
   m4/memchr.m4
+  m4/memmem.m4
   m4/mempcpy.m4
   m4/memrchr.m4
   m4/mkdtemp.m4
@@ -1851,6 +1881,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-fputc.c
   tests/test-fread.c
   tests/test-fstat.c
+  tests/test-fstatat.c
   tests/test-ftell.c
   tests/test-ftell.sh
   tests/test-ftell2.sh
@@ -1871,7 +1902,6 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-getdelim.c
   tests/test-getdtablesize.c
   tests/test-getline.c
-  tests/test-getlogin_r.c
   tests/test-getopt.c
   tests/test-getopt.h
   tests/test-getopt_long.h
@@ -1917,6 +1947,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-mbsrtowcs3.sh
   tests/test-mbsrtowcs4.sh
   tests/test-memchr.c
+  tests/test-memmem.c
   tests/test-memrchr.c
   tests/test-netdb.c
   tests/test-netinet_in.c

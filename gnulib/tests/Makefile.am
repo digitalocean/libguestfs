@@ -414,6 +414,15 @@ EXTRA_DIST += test-fstat.c signature.h macros.h
 
 ## end   gnulib module fstat-tests
 
+## begin gnulib module fstatat-tests
+
+TESTS += test-fstatat
+check_PROGRAMS += test-fstatat
+test_fstatat_LDADD = $(LDADD) @LIBINTL@
+EXTRA_DIST += test-fstatat.c test-lstat.h test-stat.h signature.h macros.h
+
+## end   gnulib module fstatat-tests
+
 ## begin gnulib module ftell-tests
 
 TESTS += test-ftell.sh test-ftell2.sh test-ftell3
@@ -509,14 +518,6 @@ MOSTLYCLEANFILES += test-getline.txt
 EXTRA_DIST += test-getline.c signature.h macros.h
 
 ## end   gnulib module getline-tests
-
-## begin gnulib module getlogin_r-tests
-
-TESTS += test-getlogin_r
-check_PROGRAMS += test-getlogin_r
-EXTRA_DIST += test-getlogin_r.c signature.h macros.h
-
-## end   gnulib module getlogin_r-tests
 
 ## begin gnulib module getopt-posix-tests
 
@@ -803,6 +804,15 @@ check_PROGRAMS += test-memchr
 EXTRA_DIST += test-memchr.c zerosize-ptr.h signature.h macros.h
 
 ## end   gnulib module memchr-tests
+
+## begin gnulib module memmem-tests
+
+TESTS += test-memmem
+check_PROGRAMS += test-memmem
+
+EXTRA_DIST += test-memmem.c zerosize-ptr.h signature.h macros.h
+
+## end   gnulib module memmem-tests
 
 ## begin gnulib module memrchr-tests
 

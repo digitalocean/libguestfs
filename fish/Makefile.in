@@ -73,13 +73,15 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/subdir-rules.mk
 bin_PROGRAMS = guestfish$(EXEEXT)
-@ENABLE_APPLIANCE_TRUE@am__append_1 = \
+@HAVE_RPCGEN_TRUE@@HAVE_XDR_U_INT64_T_TRUE@am__append_1 = -DHAVE_XDR_U_INT64_T=1
+@HAVE_RPCGEN_TRUE@@HAVE_XDR_UINT64_T_TRUE@@HAVE_XDR_U_INT64_T_FALSE@am__append_2 = -DHAVE_XDR_UINT64_T=1
+@ENABLE_APPLIANCE_TRUE@am__append_3 = \
 @ENABLE_APPLIANCE_TRUE@	test-copy.sh \
 @ENABLE_APPLIANCE_TRUE@	test-edit.sh \
 @ENABLE_APPLIANCE_TRUE@	test-find0.sh \
 @ENABLE_APPLIANCE_TRUE@	test-glob.sh \
 @ENABLE_APPLIANCE_TRUE@	test-mount-local.sh \
-@ENABLE_APPLIANCE_TRUE@	test-read_file.sh \
+@ENABLE_APPLIANCE_TRUE@	test-read-file.sh \
 @ENABLE_APPLIANCE_TRUE@	test-remote.sh \
 @ENABLE_APPLIANCE_TRUE@	test-reopen.sh \
 @ENABLE_APPLIANCE_TRUE@	test-stringlist.sh \
@@ -111,16 +113,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
-	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
-	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
-	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd.m4 $(top_srcdir)/m4/getdelim.m4 \
+	$(top_srcdir)/m4/getdtablesize.m4 $(top_srcdir)/m4/getline.m4 \
+	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
+	$(top_srcdir)/m4/getpagesize.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
@@ -145,9 +148,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
 	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
 	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -209,7 +213,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcmds_la_LIBADD =
-am_libcmds_la_OBJECTS = libcmds_la-cmds_gperf.lo
+am_libcmds_la_OBJECTS = libcmds_la-cmds-gperf.lo
 libcmds_la_OBJECTS = $(am_libcmds_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -231,9 +235,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = guestfish-cmds.$(OBJEXT) \
 	guestfish-completion.$(OBJEXT) guestfish-event-names.$(OBJEXT) \
 	guestfish-prepopts.$(OBJEXT)
-am__objects_2 = guestfish-config.$(OBJEXT) guestfish-inspect.$(OBJEXT) \
-	guestfish-keys.$(OBJEXT) guestfish-options.$(OBJEXT) \
-	guestfish-progress.$(OBJEXT) guestfish-virt.$(OBJEXT)
+am__objects_2 = guestfish-config.$(OBJEXT) guestfish-domain.$(OBJEXT) \
+	guestfish-inspect.$(OBJEXT) guestfish-keys.$(OBJEXT) \
+	guestfish-options.$(OBJEXT) guestfish-progress.$(OBJEXT)
 am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-alloc.$(OBJEXT) guestfish-copy.$(OBJEXT) \
 	guestfish-destpaths.$(OBJEXT) guestfish-display.$(OBJEXT) \
@@ -242,9 +246,9 @@ am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	guestfish-glob.$(OBJEXT) guestfish-help.$(OBJEXT) \
 	guestfish-hexedit.$(OBJEXT) guestfish-lcd.$(OBJEXT) \
 	guestfish-man.$(OBJEXT) guestfish-more.$(OBJEXT) \
-	guestfish-prep.$(OBJEXT) guestfish-prep_disk.$(OBJEXT) \
-	guestfish-prep_part.$(OBJEXT) guestfish-prep_fs.$(OBJEXT) \
-	guestfish-prep_lv.$(OBJEXT) guestfish-prep_boot.$(OBJEXT) \
+	guestfish-prep.$(OBJEXT) guestfish-prep-disk.$(OBJEXT) \
+	guestfish-prep-part.$(OBJEXT) guestfish-prep-fs.$(OBJEXT) \
+	guestfish-prep-lv.$(OBJEXT) guestfish-prep-boot.$(OBJEXT) \
 	guestfish-rc.$(OBJEXT) guestfish-reopen.$(OBJEXT) \
 	guestfish-setenv.$(OBJEXT) guestfish-supported.$(OBJEXT) \
 	guestfish-tilde.$(OBJEXT) guestfish-time.$(OBJEXT)
@@ -384,6 +388,7 @@ ERLC = @ERLC@
 ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
+EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
 FEBOOTSTRAP = @FEBOOTSTRAP@
 FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
@@ -953,7 +958,6 @@ JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
-JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVADOC = @JAVADOC@
 JAVAH = @JAVAH@
 JAVA_HOME = @JAVA_HOME@
@@ -1103,11 +1107,7 @@ PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PNMTOPNG = @PNMTOPNG@
 PO4A = @PO4A@
-POD2HTML = @POD2HTML@
-POD2MAN = @POD2MAN@
-POD2TEXT = @POD2TEXT@
-POD2_STDERR_OPTION = @POD2_STDERR_OPTION@
-POD2_UTF8_OPTION = @POD2_UTF8_OPTION@
+PODWRAPPER = @PODWRAPPER@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRIPTR_PREFIX = @PRIPTR_PREFIX@
@@ -1370,7 +1370,7 @@ CLEANFILES = \
 
 generator_built = \
 	cmds.c \
-	cmds_gperf.gperf \
+	cmds-gperf.gperf \
 	completion.c \
 	event-names.c \
 	fish-cmds.h \
@@ -1381,7 +1381,7 @@ generator_built = \
 
 BUILT_SOURCES = \
 	$(generator_built) \
-	cmds_gperf.c \
+	cmds-gperf.c \
 	rc_protocol.h \
 	rc_protocol.c
 
@@ -1392,7 +1392,7 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 	virt-tar-out.pod test-a.sh test-add-domain.sh test-copy.sh \
 	test-d.sh test-edit.sh test-escapes.sh test-events.sh \
 	test-find0.sh test-glob.sh test-mount-local.sh \
-	test-read_file.sh test-remote.sh test-reopen.sh \
+	test-read-file.sh test-remote.sh test-reopen.sh \
 	test-stringlist.sh test-tilde.sh test-upload-to-dir.sh
 
 # These source files (mostly related to option parsing) are shared
@@ -1401,19 +1401,19 @@ EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
 # files must not include other guestfish files.
 SHARED_SOURCE_FILES = \
 	config.c \
+	domain.c \
 	inspect.c \
 	keys.c \
 	options.h \
 	options.c \
 	progress.h \
-	progress.c \
-	virt.c
+	progress.c
 
 guestfish_SOURCES = \
 	$(generator_built) \
 	$(SHARED_SOURCE_FILES) \
 	alloc.c \
-	cmds_gperf.h \
+	cmds-gperf.h \
 	copy.c \
 	destpaths.c \
 	display.c \
@@ -1429,11 +1429,11 @@ guestfish_SOURCES = \
 	man.c \
 	more.c \
 	prep.c \
-	prep_disk.c \
-	prep_part.c \
-	prep_fs.c \
-	prep_lv.c \
-	prep_boot.c \
+	prep-disk.c \
+	prep-part.c \
+	prep-fs.c \
+	prep-lv.c \
+	prep-boot.c \
 	rc.c \
 	reopen.c \
 	setenv.c \
@@ -1449,7 +1449,7 @@ librc_protocol_la_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
 
 # Build the command lookup perfect hash code.  The generated code has
 # lots of warnings so we must compile it in a separate mini-library.
-libcmds_la_SOURCES = cmds_gperf.c
+libcmds_la_SOURCES = cmds-gperf.c
 libcmds_la_CFLAGS = 
 guestfish_CFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
@@ -1466,6 +1466,7 @@ guestfish_LDADD = $(LIBCONFIG_LIBS) $(LIBREADLINE) \
 
 # Make guestfish use the convenience libraries.
 noinst_LTLIBRARIES = libcmds.la librc_protocol.la
+@HAVE_RPCGEN_TRUE@RPCGEN_DEFS = $(am__append_1) $(am__append_2)
 
 # Script wrappers.
 bin_SCRIPTS = virt-copy-in virt-copy-out virt-tar-in virt-tar-out
@@ -1501,7 +1502,7 @@ TESTS_ENVIRONMENT = \
 	$(top_builddir)/run
 
 TESTS = test-a.sh test-add-domain.sh test-d.sh test-escapes.sh \
-	test-events.sh test-tilde.sh $(am__append_1)
+	test-events.sh test-tilde.sh $(am__append_3)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1643,6 +1644,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-copy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-destpaths.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-display.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-echo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-edit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-event-names.Po@am__quote@
@@ -1657,12 +1659,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-man.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-more.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep-boot.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep-disk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep-fs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep-lv.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep-part.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep_boot.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep_disk.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep_fs.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep_lv.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prep_part.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-prepopts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-rc.Po@am__quote@
@@ -1671,8 +1673,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-supported.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-tilde.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-time.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfish-virt.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcmds_la-cmds_gperf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcmds_la-cmds-gperf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librc_protocol_la-rc_protocol.Plo@am__quote@
 
 .c.o:
@@ -1696,12 +1697,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-libcmds_la-cmds_gperf.lo: cmds_gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcmds_la_CFLAGS) $(CFLAGS) -MT libcmds_la-cmds_gperf.lo -MD -MP -MF $(DEPDIR)/libcmds_la-cmds_gperf.Tpo -c -o libcmds_la-cmds_gperf.lo `test -f 'cmds_gperf.c' || echo '$(srcdir)/'`cmds_gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libcmds_la-cmds_gperf.Tpo $(DEPDIR)/libcmds_la-cmds_gperf.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmds_gperf.c' object='libcmds_la-cmds_gperf.lo' libtool=yes @AMDEPBACKSLASH@
+libcmds_la-cmds-gperf.lo: cmds-gperf.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcmds_la_CFLAGS) $(CFLAGS) -MT libcmds_la-cmds-gperf.lo -MD -MP -MF $(DEPDIR)/libcmds_la-cmds-gperf.Tpo -c -o libcmds_la-cmds-gperf.lo `test -f 'cmds-gperf.c' || echo '$(srcdir)/'`cmds-gperf.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libcmds_la-cmds-gperf.Tpo $(DEPDIR)/libcmds_la-cmds-gperf.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmds-gperf.c' object='libcmds_la-cmds-gperf.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcmds_la_CFLAGS) $(CFLAGS) -c -o libcmds_la-cmds_gperf.lo `test -f 'cmds_gperf.c' || echo '$(srcdir)/'`cmds_gperf.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcmds_la_CFLAGS) $(CFLAGS) -c -o libcmds_la-cmds-gperf.lo `test -f 'cmds-gperf.c' || echo '$(srcdir)/'`cmds-gperf.c
 
 librc_protocol_la-rc_protocol.lo: rc_protocol.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(librc_protocol_la_CFLAGS) $(CFLAGS) -MT librc_protocol_la-rc_protocol.lo -MD -MP -MF $(DEPDIR)/librc_protocol_la-rc_protocol.Tpo -c -o librc_protocol_la-rc_protocol.lo `test -f 'rc_protocol.c' || echo '$(srcdir)/'`rc_protocol.c
@@ -1780,6 +1781,20 @@ guestfish-config.obj: config.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-config.obj `if test -f 'config.c'; then $(CYGPATH_W) 'config.c'; else $(CYGPATH_W) '$(srcdir)/config.c'; fi`
 
+guestfish-domain.o: domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-domain.o -MD -MP -MF $(DEPDIR)/guestfish-domain.Tpo -c -o guestfish-domain.o `test -f 'domain.c' || echo '$(srcdir)/'`domain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-domain.Tpo $(DEPDIR)/guestfish-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domain.c' object='guestfish-domain.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-domain.o `test -f 'domain.c' || echo '$(srcdir)/'`domain.c
+
+guestfish-domain.obj: domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-domain.obj -MD -MP -MF $(DEPDIR)/guestfish-domain.Tpo -c -o guestfish-domain.obj `if test -f 'domain.c'; then $(CYGPATH_W) 'domain.c'; else $(CYGPATH_W) '$(srcdir)/domain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-domain.Tpo $(DEPDIR)/guestfish-domain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domain.c' object='guestfish-domain.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-domain.obj `if test -f 'domain.c'; then $(CYGPATH_W) 'domain.c'; else $(CYGPATH_W) '$(srcdir)/domain.c'; fi`
+
 guestfish-inspect.o: inspect.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-inspect.o -MD -MP -MF $(DEPDIR)/guestfish-inspect.Tpo -c -o guestfish-inspect.o `test -f 'inspect.c' || echo '$(srcdir)/'`inspect.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-inspect.Tpo $(DEPDIR)/guestfish-inspect.Po
@@ -1835,20 +1850,6 @@ guestfish-progress.obj: progress.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='progress.c' object='guestfish-progress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-progress.obj `if test -f 'progress.c'; then $(CYGPATH_W) 'progress.c'; else $(CYGPATH_W) '$(srcdir)/progress.c'; fi`
-
-guestfish-virt.o: virt.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-virt.o -MD -MP -MF $(DEPDIR)/guestfish-virt.Tpo -c -o guestfish-virt.o `test -f 'virt.c' || echo '$(srcdir)/'`virt.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-virt.Tpo $(DEPDIR)/guestfish-virt.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virt.c' object='guestfish-virt.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-virt.o `test -f 'virt.c' || echo '$(srcdir)/'`virt.c
-
-guestfish-virt.obj: virt.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-virt.obj -MD -MP -MF $(DEPDIR)/guestfish-virt.Tpo -c -o guestfish-virt.obj `if test -f 'virt.c'; then $(CYGPATH_W) 'virt.c'; else $(CYGPATH_W) '$(srcdir)/virt.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-virt.Tpo $(DEPDIR)/guestfish-virt.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virt.c' object='guestfish-virt.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-virt.obj `if test -f 'virt.c'; then $(CYGPATH_W) 'virt.c'; else $(CYGPATH_W) '$(srcdir)/virt.c'; fi`
 
 guestfish-alloc.o: alloc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-alloc.o -MD -MP -MF $(DEPDIR)/guestfish-alloc.Tpo -c -o guestfish-alloc.o `test -f 'alloc.c' || echo '$(srcdir)/'`alloc.c
@@ -2060,75 +2061,75 @@ guestfish-prep.obj: prep.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep.obj `if test -f 'prep.c'; then $(CYGPATH_W) 'prep.c'; else $(CYGPATH_W) '$(srcdir)/prep.c'; fi`
 
-guestfish-prep_disk.o: prep_disk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_disk.o -MD -MP -MF $(DEPDIR)/guestfish-prep_disk.Tpo -c -o guestfish-prep_disk.o `test -f 'prep_disk.c' || echo '$(srcdir)/'`prep_disk.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_disk.Tpo $(DEPDIR)/guestfish-prep_disk.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_disk.c' object='guestfish-prep_disk.o' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-disk.o: prep-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-disk.o -MD -MP -MF $(DEPDIR)/guestfish-prep-disk.Tpo -c -o guestfish-prep-disk.o `test -f 'prep-disk.c' || echo '$(srcdir)/'`prep-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-disk.Tpo $(DEPDIR)/guestfish-prep-disk.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-disk.c' object='guestfish-prep-disk.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_disk.o `test -f 'prep_disk.c' || echo '$(srcdir)/'`prep_disk.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-disk.o `test -f 'prep-disk.c' || echo '$(srcdir)/'`prep-disk.c
 
-guestfish-prep_disk.obj: prep_disk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_disk.obj -MD -MP -MF $(DEPDIR)/guestfish-prep_disk.Tpo -c -o guestfish-prep_disk.obj `if test -f 'prep_disk.c'; then $(CYGPATH_W) 'prep_disk.c'; else $(CYGPATH_W) '$(srcdir)/prep_disk.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_disk.Tpo $(DEPDIR)/guestfish-prep_disk.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_disk.c' object='guestfish-prep_disk.obj' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-disk.obj: prep-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-disk.obj -MD -MP -MF $(DEPDIR)/guestfish-prep-disk.Tpo -c -o guestfish-prep-disk.obj `if test -f 'prep-disk.c'; then $(CYGPATH_W) 'prep-disk.c'; else $(CYGPATH_W) '$(srcdir)/prep-disk.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-disk.Tpo $(DEPDIR)/guestfish-prep-disk.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-disk.c' object='guestfish-prep-disk.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_disk.obj `if test -f 'prep_disk.c'; then $(CYGPATH_W) 'prep_disk.c'; else $(CYGPATH_W) '$(srcdir)/prep_disk.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-disk.obj `if test -f 'prep-disk.c'; then $(CYGPATH_W) 'prep-disk.c'; else $(CYGPATH_W) '$(srcdir)/prep-disk.c'; fi`
 
-guestfish-prep_part.o: prep_part.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_part.o -MD -MP -MF $(DEPDIR)/guestfish-prep_part.Tpo -c -o guestfish-prep_part.o `test -f 'prep_part.c' || echo '$(srcdir)/'`prep_part.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_part.Tpo $(DEPDIR)/guestfish-prep_part.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_part.c' object='guestfish-prep_part.o' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-part.o: prep-part.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-part.o -MD -MP -MF $(DEPDIR)/guestfish-prep-part.Tpo -c -o guestfish-prep-part.o `test -f 'prep-part.c' || echo '$(srcdir)/'`prep-part.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-part.Tpo $(DEPDIR)/guestfish-prep-part.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-part.c' object='guestfish-prep-part.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_part.o `test -f 'prep_part.c' || echo '$(srcdir)/'`prep_part.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-part.o `test -f 'prep-part.c' || echo '$(srcdir)/'`prep-part.c
 
-guestfish-prep_part.obj: prep_part.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_part.obj -MD -MP -MF $(DEPDIR)/guestfish-prep_part.Tpo -c -o guestfish-prep_part.obj `if test -f 'prep_part.c'; then $(CYGPATH_W) 'prep_part.c'; else $(CYGPATH_W) '$(srcdir)/prep_part.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_part.Tpo $(DEPDIR)/guestfish-prep_part.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_part.c' object='guestfish-prep_part.obj' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-part.obj: prep-part.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-part.obj -MD -MP -MF $(DEPDIR)/guestfish-prep-part.Tpo -c -o guestfish-prep-part.obj `if test -f 'prep-part.c'; then $(CYGPATH_W) 'prep-part.c'; else $(CYGPATH_W) '$(srcdir)/prep-part.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-part.Tpo $(DEPDIR)/guestfish-prep-part.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-part.c' object='guestfish-prep-part.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_part.obj `if test -f 'prep_part.c'; then $(CYGPATH_W) 'prep_part.c'; else $(CYGPATH_W) '$(srcdir)/prep_part.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-part.obj `if test -f 'prep-part.c'; then $(CYGPATH_W) 'prep-part.c'; else $(CYGPATH_W) '$(srcdir)/prep-part.c'; fi`
 
-guestfish-prep_fs.o: prep_fs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_fs.o -MD -MP -MF $(DEPDIR)/guestfish-prep_fs.Tpo -c -o guestfish-prep_fs.o `test -f 'prep_fs.c' || echo '$(srcdir)/'`prep_fs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_fs.Tpo $(DEPDIR)/guestfish-prep_fs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_fs.c' object='guestfish-prep_fs.o' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-fs.o: prep-fs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-fs.o -MD -MP -MF $(DEPDIR)/guestfish-prep-fs.Tpo -c -o guestfish-prep-fs.o `test -f 'prep-fs.c' || echo '$(srcdir)/'`prep-fs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-fs.Tpo $(DEPDIR)/guestfish-prep-fs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-fs.c' object='guestfish-prep-fs.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_fs.o `test -f 'prep_fs.c' || echo '$(srcdir)/'`prep_fs.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-fs.o `test -f 'prep-fs.c' || echo '$(srcdir)/'`prep-fs.c
 
-guestfish-prep_fs.obj: prep_fs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_fs.obj -MD -MP -MF $(DEPDIR)/guestfish-prep_fs.Tpo -c -o guestfish-prep_fs.obj `if test -f 'prep_fs.c'; then $(CYGPATH_W) 'prep_fs.c'; else $(CYGPATH_W) '$(srcdir)/prep_fs.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_fs.Tpo $(DEPDIR)/guestfish-prep_fs.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_fs.c' object='guestfish-prep_fs.obj' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-fs.obj: prep-fs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-fs.obj -MD -MP -MF $(DEPDIR)/guestfish-prep-fs.Tpo -c -o guestfish-prep-fs.obj `if test -f 'prep-fs.c'; then $(CYGPATH_W) 'prep-fs.c'; else $(CYGPATH_W) '$(srcdir)/prep-fs.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-fs.Tpo $(DEPDIR)/guestfish-prep-fs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-fs.c' object='guestfish-prep-fs.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_fs.obj `if test -f 'prep_fs.c'; then $(CYGPATH_W) 'prep_fs.c'; else $(CYGPATH_W) '$(srcdir)/prep_fs.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-fs.obj `if test -f 'prep-fs.c'; then $(CYGPATH_W) 'prep-fs.c'; else $(CYGPATH_W) '$(srcdir)/prep-fs.c'; fi`
 
-guestfish-prep_lv.o: prep_lv.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_lv.o -MD -MP -MF $(DEPDIR)/guestfish-prep_lv.Tpo -c -o guestfish-prep_lv.o `test -f 'prep_lv.c' || echo '$(srcdir)/'`prep_lv.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_lv.Tpo $(DEPDIR)/guestfish-prep_lv.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_lv.c' object='guestfish-prep_lv.o' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-lv.o: prep-lv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-lv.o -MD -MP -MF $(DEPDIR)/guestfish-prep-lv.Tpo -c -o guestfish-prep-lv.o `test -f 'prep-lv.c' || echo '$(srcdir)/'`prep-lv.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-lv.Tpo $(DEPDIR)/guestfish-prep-lv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-lv.c' object='guestfish-prep-lv.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_lv.o `test -f 'prep_lv.c' || echo '$(srcdir)/'`prep_lv.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-lv.o `test -f 'prep-lv.c' || echo '$(srcdir)/'`prep-lv.c
 
-guestfish-prep_lv.obj: prep_lv.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_lv.obj -MD -MP -MF $(DEPDIR)/guestfish-prep_lv.Tpo -c -o guestfish-prep_lv.obj `if test -f 'prep_lv.c'; then $(CYGPATH_W) 'prep_lv.c'; else $(CYGPATH_W) '$(srcdir)/prep_lv.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_lv.Tpo $(DEPDIR)/guestfish-prep_lv.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_lv.c' object='guestfish-prep_lv.obj' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-lv.obj: prep-lv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-lv.obj -MD -MP -MF $(DEPDIR)/guestfish-prep-lv.Tpo -c -o guestfish-prep-lv.obj `if test -f 'prep-lv.c'; then $(CYGPATH_W) 'prep-lv.c'; else $(CYGPATH_W) '$(srcdir)/prep-lv.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-lv.Tpo $(DEPDIR)/guestfish-prep-lv.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-lv.c' object='guestfish-prep-lv.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_lv.obj `if test -f 'prep_lv.c'; then $(CYGPATH_W) 'prep_lv.c'; else $(CYGPATH_W) '$(srcdir)/prep_lv.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-lv.obj `if test -f 'prep-lv.c'; then $(CYGPATH_W) 'prep-lv.c'; else $(CYGPATH_W) '$(srcdir)/prep-lv.c'; fi`
 
-guestfish-prep_boot.o: prep_boot.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_boot.o -MD -MP -MF $(DEPDIR)/guestfish-prep_boot.Tpo -c -o guestfish-prep_boot.o `test -f 'prep_boot.c' || echo '$(srcdir)/'`prep_boot.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_boot.Tpo $(DEPDIR)/guestfish-prep_boot.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_boot.c' object='guestfish-prep_boot.o' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-boot.o: prep-boot.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-boot.o -MD -MP -MF $(DEPDIR)/guestfish-prep-boot.Tpo -c -o guestfish-prep-boot.o `test -f 'prep-boot.c' || echo '$(srcdir)/'`prep-boot.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-boot.Tpo $(DEPDIR)/guestfish-prep-boot.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-boot.c' object='guestfish-prep-boot.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_boot.o `test -f 'prep_boot.c' || echo '$(srcdir)/'`prep_boot.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-boot.o `test -f 'prep-boot.c' || echo '$(srcdir)/'`prep-boot.c
 
-guestfish-prep_boot.obj: prep_boot.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep_boot.obj -MD -MP -MF $(DEPDIR)/guestfish-prep_boot.Tpo -c -o guestfish-prep_boot.obj `if test -f 'prep_boot.c'; then $(CYGPATH_W) 'prep_boot.c'; else $(CYGPATH_W) '$(srcdir)/prep_boot.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep_boot.Tpo $(DEPDIR)/guestfish-prep_boot.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep_boot.c' object='guestfish-prep_boot.obj' libtool=no @AMDEPBACKSLASH@
+guestfish-prep-boot.obj: prep-boot.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-prep-boot.obj -MD -MP -MF $(DEPDIR)/guestfish-prep-boot.Tpo -c -o guestfish-prep-boot.obj `if test -f 'prep-boot.c'; then $(CYGPATH_W) 'prep-boot.c'; else $(CYGPATH_W) '$(srcdir)/prep-boot.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfish-prep-boot.Tpo $(DEPDIR)/guestfish-prep-boot.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='prep-boot.c' object='guestfish-prep-boot.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep_boot.obj `if test -f 'prep_boot.c'; then $(CYGPATH_W) 'prep_boot.c'; else $(CYGPATH_W) '$(srcdir)/prep_boot.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -c -o guestfish-prep-boot.obj `if test -f 'prep-boot.c'; then $(CYGPATH_W) 'prep-boot.c'; else $(CYGPATH_W) '$(srcdir)/prep-boot.c'; fi`
 
 guestfish-rc.o: rc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(guestfish_CFLAGS) $(CFLAGS) -MT guestfish-rc.o -MD -MP -MF $(DEPDIR)/guestfish-rc.Tpo -c -o guestfish-rc.o `test -f 'rc.c' || echo '$(srcdir)/'`rc.c
@@ -2640,27 +2641,27 @@ $(top_builddir)/daemon/guestfsd: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
-cmds_gperf.c: cmds_gperf.gperf
+cmds-gperf.c: cmds-gperf.gperf
 	rm -f $@
 	$(GPERF) -t $< > $@-t
 	mv $@-t $@
 
 @HAVE_RPCGEN_TRUE@rc_protocol.c: rc_protocol.x
 @HAVE_RPCGEN_TRUE@	rm -f $@-t $@-t2
-@HAVE_RPCGEN_TRUE@	$(RPCGEN) -c -o $@-t $<
+@HAVE_RPCGEN_TRUE@	$(RPCGEN) $(RPCGEN_DEFS) -c -o $@-t $<
 @HAVE_RPCGEN_TRUE@	sed 's,\.\./\(\.\./\)*fish,.,' < $@-t > $@-t2
 @HAVE_RPCGEN_TRUE@	rm $@-t
 @HAVE_RPCGEN_TRUE@	mv $@-t2 $@
 
 @HAVE_RPCGEN_TRUE@rc_protocol.h: rc_protocol.x
 @HAVE_RPCGEN_TRUE@	rm -f $@-t
-@HAVE_RPCGEN_TRUE@	$(RPCGEN) -h -o $@-t $<
+@HAVE_RPCGEN_TRUE@	$(RPCGEN) $(RPCGEN_DEFS) -h -o $@-t $<
 @HAVE_RPCGEN_TRUE@	mv $@-t $@
 
 guestfish.1 $(top_builddir)/html/guestfish.1.html: stamp-guestfish.pod
 
 stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man guestfish.1 \
 	  --html $(top_builddir)/html/guestfish.1.html \
 	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
@@ -2671,7 +2672,7 @@ stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
 virt-copy-in.1 $(top_builddir)/html/virt-copy-in.1.html: stamp-virt-copy-in.pod
 
 stamp-virt-copy-in.pod: virt-copy-in.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-copy-in.1 \
 	  --html $(top_builddir)/html/virt-copy-in.1.html \
 	  $<
@@ -2680,7 +2681,7 @@ stamp-virt-copy-in.pod: virt-copy-in.pod
 virt-copy-out.1 $(top_builddir)/html/virt-copy-out.1.html: stamp-virt-copy-out.pod
 
 stamp-virt-copy-out.pod: virt-copy-out.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-copy-out.1 \
 	  --html $(top_builddir)/html/virt-copy-out.1.html \
 	  $<
@@ -2689,7 +2690,7 @@ stamp-virt-copy-out.pod: virt-copy-out.pod
 virt-tar-in.1 $(top_builddir)/html/virt-tar-in.1.html: stamp-virt-tar-in.pod
 
 stamp-virt-tar-in.pod: virt-tar-in.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-tar-in.1 \
 	  --html $(top_builddir)/html/virt-tar-in.1.html \
 	  $<
@@ -2698,7 +2699,7 @@ stamp-virt-tar-in.pod: virt-tar-in.pod
 virt-tar-out.1 $(top_builddir)/html/virt-tar-out.1.html: stamp-virt-tar-out.pod
 
 stamp-virt-tar-out.pod: virt-tar-out.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-tar-out.1 \
 	  --html $(top_builddir)/html/virt-tar-out.1.html \
 	  $<

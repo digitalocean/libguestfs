@@ -26,11 +26,11 @@ bin_PROGRAMS = virt-format
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
+	../fish/domain.c \
 	../fish/inspect.c \
 	../fish/keys.c \
 	../fish/options.h \
-	../fish/options.c \
-	../fish/virt.c
+	../fish/options.c
 
 virt_format_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
@@ -59,7 +59,7 @@ noinst_DATA = $(top_builddir)/html/virt-format.1.html
 virt-format.1 $(top_builddir)/html/virt-format.1.html: stamp-virt-format.pod
 
 stamp-virt-format.pod: virt-format.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-format.1 \
 	  --html $(top_builddir)/html/virt-format.1.html \
 	  $<

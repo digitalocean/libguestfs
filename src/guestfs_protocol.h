@@ -13,6 +13,10 @@
 extern "C" {
 #endif
 
+#if HAVE_XDR_U_INT64_T
+#define xdr_uint64_t xdr_u_int64_t
+#define uint64_t u_int64_t
+#endif
 
 typedef char *guestfs_str;
 
@@ -31,17 +35,17 @@ struct guestfs_int_lvm_pv {
 	char *pv_name;
 	char pv_uuid[32];
 	char *pv_fmt;
-	quad_t pv_size;
-	quad_t dev_size;
-	quad_t pv_free;
-	quad_t pv_used;
+	int64_t pv_size;
+	int64_t dev_size;
+	int64_t pv_free;
+	int64_t pv_used;
 	char *pv_attr;
-	quad_t pv_pe_count;
-	quad_t pv_pe_alloc_count;
+	int64_t pv_pe_count;
+	int64_t pv_pe_alloc_count;
 	char *pv_tags;
-	quad_t pe_start;
-	quad_t pv_mda_count;
-	quad_t pv_mda_free;
+	int64_t pe_start;
+	int64_t pv_mda_count;
+	int64_t pv_mda_free;
 };
 typedef struct guestfs_int_lvm_pv guestfs_int_lvm_pv;
 
@@ -55,21 +59,21 @@ struct guestfs_int_lvm_vg {
 	char vg_uuid[32];
 	char *vg_fmt;
 	char *vg_attr;
-	quad_t vg_size;
-	quad_t vg_free;
+	int64_t vg_size;
+	int64_t vg_free;
 	char *vg_sysid;
-	quad_t vg_extent_size;
-	quad_t vg_extent_count;
-	quad_t vg_free_count;
-	quad_t max_lv;
-	quad_t max_pv;
-	quad_t pv_count;
-	quad_t lv_count;
-	quad_t snap_count;
-	quad_t vg_seqno;
+	int64_t vg_extent_size;
+	int64_t vg_extent_count;
+	int64_t vg_free_count;
+	int64_t max_lv;
+	int64_t max_pv;
+	int64_t pv_count;
+	int64_t lv_count;
+	int64_t snap_count;
+	int64_t vg_seqno;
 	char *vg_tags;
-	quad_t vg_mda_count;
-	quad_t vg_mda_free;
+	int64_t vg_mda_count;
+	int64_t vg_mda_free;
 };
 typedef struct guestfs_int_lvm_vg guestfs_int_lvm_vg;
 
@@ -82,12 +86,12 @@ struct guestfs_int_lvm_lv {
 	char *lv_name;
 	char lv_uuid[32];
 	char *lv_attr;
-	quad_t lv_major;
-	quad_t lv_minor;
-	quad_t lv_kernel_major;
-	quad_t lv_kernel_minor;
-	quad_t lv_size;
-	quad_t seg_count;
+	int64_t lv_major;
+	int64_t lv_minor;
+	int64_t lv_kernel_major;
+	int64_t lv_kernel_minor;
+	int64_t lv_size;
+	int64_t seg_count;
 	char *origin;
 	float snap_percent;
 	float copy_percent;
@@ -104,19 +108,19 @@ typedef struct {
 } guestfs_int_lvm_lv_list;
 
 struct guestfs_int_stat {
-	quad_t dev;
-	quad_t ino;
-	quad_t mode;
-	quad_t nlink;
-	quad_t uid;
-	quad_t gid;
-	quad_t rdev;
-	quad_t size;
-	quad_t blksize;
-	quad_t blocks;
-	quad_t atime;
-	quad_t mtime;
-	quad_t ctime;
+	int64_t dev;
+	int64_t ino;
+	int64_t mode;
+	int64_t nlink;
+	int64_t uid;
+	int64_t gid;
+	int64_t rdev;
+	int64_t size;
+	int64_t blksize;
+	int64_t blocks;
+	int64_t atime;
+	int64_t mtime;
+	int64_t ctime;
 };
 typedef struct guestfs_int_stat guestfs_int_stat;
 
@@ -126,17 +130,17 @@ typedef struct {
 } guestfs_int_stat_list;
 
 struct guestfs_int_statvfs {
-	quad_t bsize;
-	quad_t frsize;
-	quad_t blocks;
-	quad_t bfree;
-	quad_t bavail;
-	quad_t files;
-	quad_t ffree;
-	quad_t favail;
-	quad_t fsid;
-	quad_t flag;
-	quad_t namemax;
+	int64_t bsize;
+	int64_t frsize;
+	int64_t blocks;
+	int64_t bfree;
+	int64_t bavail;
+	int64_t files;
+	int64_t ffree;
+	int64_t favail;
+	int64_t fsid;
+	int64_t flag;
+	int64_t namemax;
 };
 typedef struct guestfs_int_statvfs guestfs_int_statvfs;
 
@@ -146,7 +150,7 @@ typedef struct {
 } guestfs_int_statvfs_list;
 
 struct guestfs_int_dirent {
-	quad_t ino;
+	int64_t ino;
 	char ftyp;
 	char *name;
 };
@@ -158,9 +162,9 @@ typedef struct {
 } guestfs_int_dirent_list;
 
 struct guestfs_int_version {
-	quad_t major;
-	quad_t minor;
-	quad_t release;
+	int64_t major;
+	int64_t minor;
+	int64_t release;
 	char *extra;
 };
 typedef struct guestfs_int_version guestfs_int_version;
@@ -185,7 +189,7 @@ typedef struct {
 } guestfs_int_xattr_list;
 
 struct guestfs_int_inotify_event {
-	quad_t in_wd;
+	int64_t in_wd;
 	u_int in_mask;
 	u_int in_cookie;
 	char *in_name;
@@ -199,9 +203,9 @@ typedef struct {
 
 struct guestfs_int_partition {
 	int part_num;
-	quad_t part_start;
-	quad_t part_end;
-	quad_t part_size;
+	int64_t part_start;
+	int64_t part_end;
+	int64_t part_size;
 };
 typedef struct guestfs_int_partition guestfs_int_partition;
 
@@ -245,10 +249,10 @@ struct guestfs_int_isoinfo {
 	char *iso_copyright_file_id;
 	char *iso_abstract_file_id;
 	char *iso_bibliographic_file_id;
-	quad_t iso_volume_creation_t;
-	quad_t iso_volume_modification_t;
-	quad_t iso_volume_expiration_t;
-	quad_t iso_volume_effective_t;
+	int64_t iso_volume_creation_t;
+	int64_t iso_volume_modification_t;
+	int64_t iso_volume_expiration_t;
+	int64_t iso_volume_effective_t;
 };
 typedef struct guestfs_int_isoinfo guestfs_int_isoinfo;
 
@@ -270,8 +274,8 @@ typedef struct {
 } guestfs_int_mdstat_list;
 
 struct guestfs_int_btrfssubvolume {
-	u_quad_t btrfssubvolume_id;
-	u_quad_t btrfssubvolume_top_level_id;
+	uint64_t btrfssubvolume_id;
+	uint64_t btrfssubvolume_top_level_id;
 	char *btrfssubvolume_path;
 };
 typedef struct guestfs_int_btrfssubvolume guestfs_int_btrfssubvolume;
@@ -748,7 +752,7 @@ struct guestfs_blockdev_getsz_args {
 typedef struct guestfs_blockdev_getsz_args guestfs_blockdev_getsz_args;
 
 struct guestfs_blockdev_getsz_ret {
-	quad_t sizeinsectors;
+	int64_t sizeinsectors;
 };
 typedef struct guestfs_blockdev_getsz_ret guestfs_blockdev_getsz_ret;
 
@@ -758,7 +762,7 @@ struct guestfs_blockdev_getsize64_args {
 typedef struct guestfs_blockdev_getsize64_args guestfs_blockdev_getsize64_args;
 
 struct guestfs_blockdev_getsize64_ret {
-	quad_t sizeinbytes;
+	int64_t sizeinbytes;
 };
 typedef struct guestfs_blockdev_getsize64_ret guestfs_blockdev_getsize64_ret;
 
@@ -1263,7 +1267,7 @@ struct guestfs_du_args {
 typedef struct guestfs_du_args guestfs_du_args;
 
 struct guestfs_du_ret {
-	quad_t sizekb;
+	int64_t sizekb;
 };
 typedef struct guestfs_du_ret guestfs_du_ret;
 
@@ -1727,7 +1731,7 @@ struct guestfs_inotify_add_watch_args {
 typedef struct guestfs_inotify_add_watch_args guestfs_inotify_add_watch_args;
 
 struct guestfs_inotify_add_watch_ret {
-	quad_t wd;
+	int64_t wd;
 };
 typedef struct guestfs_inotify_add_watch_ret guestfs_inotify_add_watch_ret;
 
@@ -1860,16 +1864,16 @@ typedef struct guestfs_truncate_args guestfs_truncate_args;
 
 struct guestfs_truncate_size_args {
 	char *path;
-	quad_t size;
+	int64_t size;
 };
 typedef struct guestfs_truncate_size_args guestfs_truncate_size_args;
 
 struct guestfs_utimens_args {
 	char *path;
-	quad_t atsecs;
-	quad_t atnsecs;
-	quad_t mtsecs;
-	quad_t mtnsecs;
+	int64_t atsecs;
+	int64_t atnsecs;
+	int64_t mtsecs;
+	int64_t mtnsecs;
 };
 typedef struct guestfs_utimens_args guestfs_utimens_args;
 
@@ -1934,7 +1938,7 @@ typedef struct guestfs_readlinklist_ret guestfs_readlinklist_ret;
 struct guestfs_pread_args {
 	char *path;
 	int count;
-	quad_t offset;
+	int64_t offset;
 };
 typedef struct guestfs_pread_args guestfs_pread_args;
 
@@ -1955,8 +1959,8 @@ typedef struct guestfs_part_init_args guestfs_part_init_args;
 struct guestfs_part_add_args {
 	char *device;
 	char *prlogex;
-	quad_t startsect;
-	quad_t endsect;
+	int64_t startsect;
+	int64_t endsect;
 };
 typedef struct guestfs_part_add_args guestfs_part_add_args;
 
@@ -2027,7 +2031,7 @@ struct guestfs_filesize_args {
 typedef struct guestfs_filesize_args guestfs_filesize_args;
 
 struct guestfs_filesize_ret {
-	quad_t size;
+	int64_t size;
 };
 typedef struct guestfs_filesize_ret guestfs_filesize_ret;
 
@@ -2116,7 +2120,7 @@ typedef struct guestfs_vglvuuids_ret guestfs_vglvuuids_ret;
 struct guestfs_copy_size_args {
 	char *src;
 	char *dest;
-	quad_t size;
+	int64_t size;
 };
 typedef struct guestfs_copy_size_args guestfs_copy_size_args;
 
@@ -2246,7 +2250,7 @@ struct guestfs_pwrite_args {
 		u_int content_len;
 		char *content_val;
 	} content;
-	quad_t offset;
+	int64_t offset;
 };
 typedef struct guestfs_pwrite_args guestfs_pwrite_args;
 
@@ -2257,19 +2261,19 @@ typedef struct guestfs_pwrite_ret guestfs_pwrite_ret;
 
 struct guestfs_resize2fs_size_args {
 	char *device;
-	quad_t size;
+	int64_t size;
 };
 typedef struct guestfs_resize2fs_size_args guestfs_resize2fs_size_args;
 
 struct guestfs_pvresize_size_args {
 	char *device;
-	quad_t size;
+	int64_t size;
 };
 typedef struct guestfs_pvresize_size_args guestfs_pvresize_size_args;
 
 struct guestfs_ntfsresize_size_args {
 	char *device;
-	quad_t size;
+	int64_t size;
 };
 typedef struct guestfs_ntfsresize_size_args guestfs_ntfsresize_size_args;
 
@@ -2283,7 +2287,7 @@ typedef struct guestfs_available_all_groups_ret guestfs_available_all_groups_ret
 
 struct guestfs_fallocate64_args {
 	char *path;
-	quad_t len;
+	int64_t len;
 };
 typedef struct guestfs_fallocate64_args guestfs_fallocate64_args;
 
@@ -2456,14 +2460,14 @@ typedef struct guestfs_part_to_dev_ret guestfs_part_to_dev_ret;
 
 struct guestfs_upload_offset_args {
 	char *remotefilename;
-	quad_t offset;
+	int64_t offset;
 };
 typedef struct guestfs_upload_offset_args guestfs_upload_offset_args;
 
 struct guestfs_download_offset_args {
 	char *remotefilename;
-	quad_t offset;
-	quad_t size;
+	int64_t offset;
+	int64_t size;
 };
 typedef struct guestfs_download_offset_args guestfs_download_offset_args;
 
@@ -2473,7 +2477,7 @@ struct guestfs_pwrite_device_args {
 		u_int content_len;
 		char *content_val;
 	} content;
-	quad_t offset;
+	int64_t offset;
 };
 typedef struct guestfs_pwrite_device_args guestfs_pwrite_device_args;
 
@@ -2485,7 +2489,7 @@ typedef struct guestfs_pwrite_device_ret guestfs_pwrite_device_ret;
 struct guestfs_pread_device_args {
 	char *device;
 	int count;
-	quad_t offset;
+	int64_t offset;
 };
 typedef struct guestfs_pread_device_args guestfs_pread_device_args;
 
@@ -2595,14 +2599,14 @@ typedef struct guestfs_list_dm_devices_ret guestfs_list_dm_devices_ret;
 
 struct guestfs_ntfsresize_opts_args {
 	char *device;
-	quad_t size;
+	int64_t size;
 	bool_t force;
 };
 typedef struct guestfs_ntfsresize_opts_args guestfs_ntfsresize_opts_args;
 
 struct guestfs_btrfs_filesystem_resize_args {
 	char *mountpoint;
-	quad_t size;
+	int64_t size;
 };
 typedef struct guestfs_btrfs_filesystem_resize_args guestfs_btrfs_filesystem_resize_args;
 
@@ -2642,36 +2646,36 @@ typedef struct guestfs_part_to_partnum_ret guestfs_part_to_partnum_ret;
 struct guestfs_copy_device_to_device_args {
 	char *src;
 	char *dest;
-	quad_t srcoffset;
-	quad_t destoffset;
-	quad_t size;
+	int64_t srcoffset;
+	int64_t destoffset;
+	int64_t size;
 };
 typedef struct guestfs_copy_device_to_device_args guestfs_copy_device_to_device_args;
 
 struct guestfs_copy_device_to_file_args {
 	char *src;
 	char *dest;
-	quad_t srcoffset;
-	quad_t destoffset;
-	quad_t size;
+	int64_t srcoffset;
+	int64_t destoffset;
+	int64_t size;
 };
 typedef struct guestfs_copy_device_to_file_args guestfs_copy_device_to_file_args;
 
 struct guestfs_copy_file_to_device_args {
 	char *src;
 	char *dest;
-	quad_t srcoffset;
-	quad_t destoffset;
-	quad_t size;
+	int64_t srcoffset;
+	int64_t destoffset;
+	int64_t size;
 };
 typedef struct guestfs_copy_file_to_device_args guestfs_copy_file_to_device_args;
 
 struct guestfs_copy_file_to_file_args {
 	char *src;
 	char *dest;
-	quad_t srcoffset;
-	quad_t destoffset;
-	quad_t size;
+	int64_t srcoffset;
+	int64_t destoffset;
+	int64_t size;
 };
 typedef struct guestfs_copy_file_to_file_args guestfs_copy_file_to_file_args;
 
@@ -2681,12 +2685,12 @@ struct guestfs_tune2fs_args {
 	int maxmountcount;
 	int mountcount;
 	char *errorbehavior;
-	quad_t group;
+	int64_t group;
 	int intervalbetweenchecks;
 	int reservedblockspercentage;
 	char *lastmounteddirectory;
-	quad_t reservedblockscount;
-	quad_t user;
+	int64_t reservedblockscount;
+	int64_t user;
 };
 typedef struct guestfs_tune2fs_args guestfs_tune2fs_args;
 
@@ -2696,10 +2700,10 @@ struct guestfs_md_create_args {
 		u_int devices_len;
 		guestfs_str *devices_val;
 	} devices;
-	quad_t missingbitmap;
+	int64_t missingbitmap;
 	int nrdevices;
 	int spare;
-	quad_t chunk;
+	int64_t chunk;
 	char *level;
 };
 typedef struct guestfs_md_create_args guestfs_md_create_args;
@@ -2852,8 +2856,8 @@ struct guestfs_mkfs_btrfs_args {
 		u_int devices_len;
 		guestfs_str *devices_val;
 	} devices;
-	quad_t allocstart;
-	quad_t bytecount;
+	int64_t allocstart;
+	int64_t bytecount;
 	char *datatype;
 	int leafsize;
 	char *label;
@@ -2886,13 +2890,13 @@ struct guestfs_get_e2generation_args {
 typedef struct guestfs_get_e2generation_args guestfs_get_e2generation_args;
 
 struct guestfs_get_e2generation_ret {
-	quad_t generation;
+	int64_t generation;
 };
 typedef struct guestfs_get_e2generation_ret guestfs_get_e2generation_ret;
 
 struct guestfs_set_e2generation_args {
 	char *file;
-	quad_t generation;
+	int64_t generation;
 };
 typedef struct guestfs_set_e2generation_args guestfs_set_e2generation_args;
 
@@ -2923,7 +2927,7 @@ struct guestfs_btrfs_subvolume_list_ret {
 typedef struct guestfs_btrfs_subvolume_list_ret guestfs_btrfs_subvolume_list_ret;
 
 struct guestfs_btrfs_subvolume_set_default_args {
-	quad_t id;
+	int64_t id;
 	char *fs;
 };
 typedef struct guestfs_btrfs_subvolume_set_default_args guestfs_btrfs_subvolume_set_default_args;
@@ -2964,7 +2968,7 @@ typedef struct guestfs_btrfs_set_seeding_args guestfs_btrfs_set_seeding_args;
 
 struct guestfs_btrfs_fsck_args {
 	char *device;
-	quad_t superblock;
+	int64_t superblock;
 	bool_t repair;
 };
 typedef struct guestfs_btrfs_fsck_args guestfs_btrfs_fsck_args;
@@ -3354,8 +3358,8 @@ struct guestfs_message_header {
 	guestfs_procedure proc;
 	guestfs_message_direction direction;
 	u_int serial;
-	u_quad_t progress_hint;
-	u_quad_t optargs_bitmask;
+	uint64_t progress_hint;
+	uint64_t optargs_bitmask;
 	guestfs_message_status status;
 };
 typedef struct guestfs_message_header guestfs_message_header;
@@ -3373,8 +3377,8 @@ typedef struct guestfs_chunk guestfs_chunk;
 struct guestfs_progress {
 	guestfs_procedure proc;
 	u_int serial;
-	u_quad_t position;
-	u_quad_t total;
+	uint64_t position;
+	uint64_t total;
 };
 typedef struct guestfs_progress guestfs_progress;
 

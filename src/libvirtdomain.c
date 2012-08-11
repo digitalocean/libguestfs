@@ -44,17 +44,6 @@
 
 #if defined(HAVE_LIBVIRT) && defined(HAVE_LIBXML2)
 
-static void init_libxml2 (void) __attribute__((constructor));
-
-static void
-init_libxml2 (void)
-{
-  /* I am told that you don't really need to call virInitialize ... */
-
-  xmlInitParser ();
-  LIBXML_TEST_VERSION;
-}
-
 static void
 ignore_errors (void *ignore, virErrorPtr ignore2)
 {
@@ -584,9 +573,7 @@ connect_live (guestfs_h *g, virDomainPtr dom)
   }
 
   /* Got a path. */
-  attach_method = safe_malloc (g, strlen (path) + 5 + 1);
-  strcpy (attach_method, "unix:");
-  strcat (attach_method, path);
+  attach_method = safe_asprintf (g, "unix:%s", path);
   r = guestfs_set_attach_method (g, attach_method);
 
  cleanup:

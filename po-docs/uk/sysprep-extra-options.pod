@@ -16,12 +16,11 @@ absolute path to the script.
 
 =item B<--scriptdir> scriptdir (see C<script> below)
 
-The mount point (an empty directory on the host) used when the C<script>
-operation is enabled and one or more scripts are specified using I<--script>
-parameter(s).
+Точку монтування (порожній каталог на вузлі), використану при виконанні дії
+C<script>, увімкнено і вказано використання одного або декількох скриптів за
+допомогою I<--script>.
 
-B<Note:> C<scriptdir> B<must> be an absolute path.
+B<Зауваження:> C<scriptdir> B<має> бути вказано повністю.
 
-If I<--scriptdir> is not specified then a temporary mountpoint will be
-created.
+Якщо I<--scriptdir> не вказано, буде створено тимчасову точку монтування
 

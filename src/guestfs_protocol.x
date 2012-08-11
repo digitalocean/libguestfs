@@ -20,6 +20,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#if HAVE_XDR_U_INT64_T
+#define uint64_t u_int64_t
+%#if HAVE_XDR_UINT64_T
+%#define xdr_u_int64_t xdr_uint64_t
+%#define u_int64_t uint64_t
+%#endif
+#else
+%#if HAVE_XDR_U_INT64_T
+%#define xdr_uint64_t xdr_u_int64_t
+%#define uint64_t u_int64_t
+%#endif
+#endif
+
 typedef string guestfs_str<>;
 
 struct guestfs_int_int_bool {
@@ -33,17 +46,17 @@ struct guestfs_int_lvm_pv {
   string pv_name<>;
   opaque pv_uuid[32];
   string pv_fmt<>;
-  hyper pv_size;
-  hyper dev_size;
-  hyper pv_free;
-  hyper pv_used;
+  int64_t pv_size;
+  int64_t dev_size;
+  int64_t pv_free;
+  int64_t pv_used;
   string pv_attr<>;
-  hyper pv_pe_count;
-  hyper pv_pe_alloc_count;
+  int64_t pv_pe_count;
+  int64_t pv_pe_alloc_count;
   string pv_tags<>;
-  hyper pe_start;
-  hyper pv_mda_count;
-  hyper pv_mda_free;
+  int64_t pe_start;
+  int64_t pv_mda_count;
+  int64_t pv_mda_free;
 };
 
 typedef struct guestfs_int_lvm_pv guestfs_int_lvm_pv_list<>;
@@ -53,21 +66,21 @@ struct guestfs_int_lvm_vg {
   opaque vg_uuid[32];
   string vg_fmt<>;
   string vg_attr<>;
-  hyper vg_size;
-  hyper vg_free;
+  int64_t vg_size;
+  int64_t vg_free;
   string vg_sysid<>;
-  hyper vg_extent_size;
-  hyper vg_extent_count;
-  hyper vg_free_count;
-  hyper max_lv;
-  hyper max_pv;
-  hyper pv_count;
-  hyper lv_count;
-  hyper snap_count;
-  hyper vg_seqno;
+  int64_t vg_extent_size;
+  int64_t vg_extent_count;
+  int64_t vg_free_count;
+  int64_t max_lv;
+  int64_t max_pv;
+  int64_t pv_count;
+  int64_t lv_count;
+  int64_t snap_count;
+  int64_t vg_seqno;
   string vg_tags<>;
-  hyper vg_mda_count;
-  hyper vg_mda_free;
+  int64_t vg_mda_count;
+  int64_t vg_mda_free;
 };
 
 typedef struct guestfs_int_lvm_vg guestfs_int_lvm_vg_list<>;
@@ -76,12 +89,12 @@ struct guestfs_int_lvm_lv {
   string lv_name<>;
   opaque lv_uuid[32];
   string lv_attr<>;
-  hyper lv_major;
-  hyper lv_minor;
-  hyper lv_kernel_major;
-  hyper lv_kernel_minor;
-  hyper lv_size;
-  hyper seg_count;
+  int64_t lv_major;
+  int64_t lv_minor;
+  int64_t lv_kernel_major;
+  int64_t lv_kernel_minor;
+  int64_t lv_size;
+  int64_t seg_count;
   string origin<>;
   float snap_percent;
   float copy_percent;
@@ -94,41 +107,41 @@ struct guestfs_int_lvm_lv {
 typedef struct guestfs_int_lvm_lv guestfs_int_lvm_lv_list<>;
 
 struct guestfs_int_stat {
-  hyper dev;
-  hyper ino;
-  hyper mode;
-  hyper nlink;
-  hyper uid;
-  hyper gid;
-  hyper rdev;
-  hyper size;
-  hyper blksize;
-  hyper blocks;
-  hyper atime;
-  hyper mtime;
-  hyper ctime;
+  int64_t dev;
+  int64_t ino;
+  int64_t mode;
+  int64_t nlink;
+  int64_t uid;
+  int64_t gid;
+  int64_t rdev;
+  int64_t size;
+  int64_t blksize;
+  int64_t blocks;
+  int64_t atime;
+  int64_t mtime;
+  int64_t ctime;
 };
 
 typedef struct guestfs_int_stat guestfs_int_stat_list<>;
 
 struct guestfs_int_statvfs {
-  hyper bsize;
-  hyper frsize;
-  hyper blocks;
-  hyper bfree;
-  hyper bavail;
-  hyper files;
-  hyper ffree;
-  hyper favail;
-  hyper fsid;
-  hyper flag;
-  hyper namemax;
+  int64_t bsize;
+  int64_t frsize;
+  int64_t blocks;
+  int64_t bfree;
+  int64_t bavail;
+  int64_t files;
+  int64_t ffree;
+  int64_t favail;
+  int64_t fsid;
+  int64_t flag;
+  int64_t namemax;
 };
 
 typedef struct guestfs_int_statvfs guestfs_int_statvfs_list<>;
 
 struct guestfs_int_dirent {
-  hyper ino;
+  int64_t ino;
   char ftyp;
   string name<>;
 };
@@ -136,9 +149,9 @@ struct guestfs_int_dirent {
 typedef struct guestfs_int_dirent guestfs_int_dirent_list<>;
 
 struct guestfs_int_version {
-  hyper major;
-  hyper minor;
-  hyper release;
+  int64_t major;
+  int64_t minor;
+  int64_t release;
   string extra<>;
 };
 
@@ -152,7 +165,7 @@ struct guestfs_int_xattr {
 typedef struct guestfs_int_xattr guestfs_int_xattr_list<>;
 
 struct guestfs_int_inotify_event {
-  hyper in_wd;
+  int64_t in_wd;
   unsigned int in_mask;
   unsigned int in_cookie;
   string in_name<>;
@@ -162,9 +175,9 @@ typedef struct guestfs_int_inotify_event guestfs_int_inotify_event_list<>;
 
 struct guestfs_int_partition {
   int part_num;
-  hyper part_start;
-  hyper part_end;
-  hyper part_size;
+  int64_t part_start;
+  int64_t part_end;
+  int64_t part_size;
 };
 
 typedef struct guestfs_int_partition guestfs_int_partition_list<>;
@@ -200,10 +213,10 @@ struct guestfs_int_isoinfo {
   string iso_copyright_file_id<>;
   string iso_abstract_file_id<>;
   string iso_bibliographic_file_id<>;
-  hyper iso_volume_creation_t;
-  hyper iso_volume_modification_t;
-  hyper iso_volume_expiration_t;
-  hyper iso_volume_effective_t;
+  int64_t iso_volume_creation_t;
+  int64_t iso_volume_modification_t;
+  int64_t iso_volume_expiration_t;
+  int64_t iso_volume_effective_t;
 };
 
 typedef struct guestfs_int_isoinfo guestfs_int_isoinfo_list<>;
@@ -217,8 +230,8 @@ struct guestfs_int_mdstat {
 typedef struct guestfs_int_mdstat guestfs_int_mdstat_list<>;
 
 struct guestfs_int_btrfssubvolume {
-  unsigned hyper btrfssubvolume_id;
-  unsigned hyper btrfssubvolume_top_level_id;
+  uint64_t btrfssubvolume_id;
+  uint64_t btrfssubvolume_top_level_id;
   string btrfssubvolume_path<>;
 };
 
@@ -564,7 +577,7 @@ struct guestfs_blockdev_getsz_args {
 };
 
 struct guestfs_blockdev_getsz_ret {
-  hyper sizeinsectors;
+  int64_t sizeinsectors;
 };
 
 struct guestfs_blockdev_getsize64_args {
@@ -572,7 +585,7 @@ struct guestfs_blockdev_getsize64_args {
 };
 
 struct guestfs_blockdev_getsize64_ret {
-  hyper sizeinbytes;
+  int64_t sizeinbytes;
 };
 
 struct guestfs_blockdev_flushbufs_args {
@@ -955,7 +968,7 @@ struct guestfs_du_args {
 };
 
 struct guestfs_du_ret {
-  hyper sizekb;
+  int64_t sizekb;
 };
 
 struct guestfs_initrd_list_args {
@@ -1296,7 +1309,7 @@ struct guestfs_inotify_add_watch_args {
 };
 
 struct guestfs_inotify_add_watch_ret {
-  hyper wd;
+  int64_t wd;
 };
 
 struct guestfs_inotify_rm_watch_args {
@@ -1401,15 +1414,15 @@ struct guestfs_truncate_args {
 
 struct guestfs_truncate_size_args {
   string path<>;
-  hyper size;
+  int64_t size;
 };
 
 struct guestfs_utimens_args {
   string path<>;
-  hyper atsecs;
-  hyper atnsecs;
-  hyper mtsecs;
-  hyper mtnsecs;
+  int64_t atsecs;
+  int64_t atnsecs;
+  int64_t mtsecs;
+  int64_t mtnsecs;
 };
 
 struct guestfs_mkdir_mode_args {
@@ -1453,7 +1466,7 @@ struct guestfs_readlinklist_ret {
 struct guestfs_pread_args {
   string path<>;
   int count;
-  hyper offset;
+  int64_t offset;
 };
 
 struct guestfs_pread_ret {
@@ -1468,8 +1481,8 @@ struct guestfs_part_init_args {
 struct guestfs_part_add_args {
   string device<>;
   string prlogex<>;
-  hyper startsect;
-  hyper endsect;
+  int64_t startsect;
+  int64_t endsect;
 };
 
 struct guestfs_part_disk_args {
@@ -1525,7 +1538,7 @@ struct guestfs_filesize_args {
 };
 
 struct guestfs_filesize_ret {
-  hyper size;
+  int64_t size;
 };
 
 struct guestfs_lvrename_args {
@@ -1590,7 +1603,7 @@ struct guestfs_vglvuuids_ret {
 struct guestfs_copy_size_args {
   string src<>;
   string dest<>;
-  hyper size;
+  int64_t size;
 };
 
 struct guestfs_zero_device_args {
@@ -1692,7 +1705,7 @@ struct guestfs_write_args {
 struct guestfs_pwrite_args {
   string path<>;
   opaque content<>;
-  hyper offset;
+  int64_t offset;
 };
 
 struct guestfs_pwrite_ret {
@@ -1701,17 +1714,17 @@ struct guestfs_pwrite_ret {
 
 struct guestfs_resize2fs_size_args {
   string device<>;
-  hyper size;
+  int64_t size;
 };
 
 struct guestfs_pvresize_size_args {
   string device<>;
-  hyper size;
+  int64_t size;
 };
 
 struct guestfs_ntfsresize_size_args {
   string device<>;
-  hyper size;
+  int64_t size;
 };
 
 struct guestfs_available_all_groups_ret {
@@ -1720,7 +1733,7 @@ struct guestfs_available_all_groups_ret {
 
 struct guestfs_fallocate64_args {
   string path<>;
-  hyper len;
+  int64_t len;
 };
 
 struct guestfs_vfs_label_args {
@@ -1859,19 +1872,19 @@ struct guestfs_part_to_dev_ret {
 
 struct guestfs_upload_offset_args {
   string remotefilename<>;
-  hyper offset;
+  int64_t offset;
 };
 
 struct guestfs_download_offset_args {
   string remotefilename<>;
-  hyper offset;
-  hyper size;
+  int64_t offset;
+  int64_t size;
 };
 
 struct guestfs_pwrite_device_args {
   string device<>;
   opaque content<>;
-  hyper offset;
+  int64_t offset;
 };
 
 struct guestfs_pwrite_device_ret {
@@ -1881,7 +1894,7 @@ struct guestfs_pwrite_device_ret {
 struct guestfs_pread_device_args {
   string device<>;
   int count;
-  hyper offset;
+  int64_t offset;
 };
 
 struct guestfs_pread_device_ret {
@@ -1959,13 +1972,13 @@ struct guestfs_list_dm_devices_ret {
 
 struct guestfs_ntfsresize_opts_args {
   string device<>;
-  hyper size;
+  int64_t size;
   bool force;
 };
 
 struct guestfs_btrfs_filesystem_resize_args {
   string mountpoint<>;
-  hyper size;
+  int64_t size;
 };
 
 struct guestfs_write_append_args {
@@ -1996,33 +2009,33 @@ struct guestfs_part_to_partnum_ret {
 struct guestfs_copy_device_to_device_args {
   string src<>;
   string dest<>;
-  hyper srcoffset;
-  hyper destoffset;
-  hyper size;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
 };
 
 struct guestfs_copy_device_to_file_args {
   string src<>;
   string dest<>;
-  hyper srcoffset;
-  hyper destoffset;
-  hyper size;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
 };
 
 struct guestfs_copy_file_to_device_args {
   string src<>;
   string dest<>;
-  hyper srcoffset;
-  hyper destoffset;
-  hyper size;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
 };
 
 struct guestfs_copy_file_to_file_args {
   string src<>;
   string dest<>;
-  hyper srcoffset;
-  hyper destoffset;
-  hyper size;
+  int64_t srcoffset;
+  int64_t destoffset;
+  int64_t size;
 };
 
 struct guestfs_tune2fs_args {
@@ -2031,21 +2044,21 @@ struct guestfs_tune2fs_args {
   int maxmountcount;
   int mountcount;
   string errorbehavior<>;
-  hyper group;
+  int64_t group;
   int intervalbetweenchecks;
   int reservedblockspercentage;
   string lastmounteddirectory<>;
-  hyper reservedblockscount;
-  hyper user;
+  int64_t reservedblockscount;
+  int64_t user;
 };
 
 struct guestfs_md_create_args {
   string name<>;
   guestfs_str devices<>;
-  hyper missingbitmap;
+  int64_t missingbitmap;
   int nrdevices;
   int spare;
-  hyper chunk;
+  int64_t chunk;
   string level<>;
 };
 
@@ -2158,8 +2171,8 @@ struct guestfs_md_stat_ret {
 
 struct guestfs_mkfs_btrfs_args {
   guestfs_str devices<>;
-  hyper allocstart;
-  hyper bytecount;
+  int64_t allocstart;
+  int64_t bytecount;
   string datatype<>;
   int leafsize;
   string label<>;
@@ -2187,12 +2200,12 @@ struct guestfs_get_e2generation_args {
 };
 
 struct guestfs_get_e2generation_ret {
-  hyper generation;
+  int64_t generation;
 };
 
 struct guestfs_set_e2generation_args {
   string file<>;
-  hyper generation;
+  int64_t generation;
 };
 
 struct guestfs_btrfs_subvolume_snapshot_args {
@@ -2217,7 +2230,7 @@ struct guestfs_btrfs_subvolume_list_ret {
 };
 
 struct guestfs_btrfs_subvolume_set_default_args {
-  hyper id;
+  int64_t id;
   string fs<>;
 };
 
@@ -2246,7 +2259,7 @@ struct guestfs_btrfs_set_seeding_args {
 
 struct guestfs_btrfs_fsck_args {
   string device<>;
-  hyper superblock;
+  int64_t superblock;
   bool repair;
 };
 
@@ -2638,8 +2651,8 @@ struct guestfs_message_header {
   guestfs_procedure proc;            /* GUESTFS_PROC_x */
   guestfs_message_direction direction;
   unsigned serial;                   /* message serial number */
-  unsigned hyper progress_hint;      /* upload hint for progress bar */
-  unsigned hyper optargs_bitmask;    /* bitmask for optional args */
+  uint64_t progress_hint;            /* upload hint for progress bar */
+  uint64_t optargs_bitmask;          /* bitmask for optional args */
   guestfs_message_status status;
 };
 
@@ -2669,7 +2682,7 @@ struct guestfs_chunk {
 struct guestfs_progress {
   guestfs_procedure proc;            /* @0:  GUESTFS_PROC_x */
   unsigned serial;                   /* @4:  message serial number */
-  unsigned hyper position;           /* @8:  0 <= position <= total */
-  unsigned hyper total;              /* @16: total size of operation */
+  uint64_t position;                 /* @8:  0 <= position <= total */
+  uint64_t total;                    /* @16: total size of operation */
                                      /* @24: size of structure */
 };

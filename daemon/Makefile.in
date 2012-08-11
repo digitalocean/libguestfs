@@ -98,16 +98,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
-	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
-	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
-	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd.m4 $(top_srcdir)/m4/getdelim.m4 \
+	$(top_srcdir)/m4/getdtablesize.m4 $(top_srcdir)/m4/getline.m4 \
+	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
+	$(top_srcdir)/m4/getpagesize.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
@@ -132,9 +133,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
 	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
 	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -204,7 +206,7 @@ am__v_at_0 = @
 liberrnostring_a_AR = $(AR) $(ARFLAGS)
 liberrnostring_a_LIBADD =
 am_liberrnostring_a_OBJECTS =  \
-	liberrnostring_a-errnostring_gperf.$(OBJEXT) \
+	liberrnostring_a-errnostring-gperf.$(OBJEXT) \
 	liberrnostring_a-errnostring.$(OBJEXT)
 liberrnostring_a_OBJECTS = $(am_liberrnostring_a_OBJECTS)
 libprotocol_a_AR = $(AR) $(ARFLAGS)
@@ -224,7 +226,7 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) \
 	guestfsd-devsparts.$(OBJEXT) guestfsd-df.$(OBJEXT) \
 	guestfsd-dir.$(OBJEXT) guestfsd-dmesg.$(OBJEXT) \
 	guestfsd-dropcaches.$(OBJEXT) guestfsd-du.$(OBJEXT) \
-	guestfsd-echo_daemon.$(OBJEXT) guestfsd-ext2.$(OBJEXT) \
+	guestfsd-echo-daemon.$(OBJEXT) guestfsd-ext2.$(OBJEXT) \
 	guestfsd-fallocate.$(OBJEXT) guestfsd-file.$(OBJEXT) \
 	guestfsd-findfs.$(OBJEXT) guestfsd-fill.$(OBJEXT) \
 	guestfsd-find.$(OBJEXT) guestfsd-fsck.$(OBJEXT) \
@@ -360,6 +362,7 @@ ERLC = @ERLC@
 ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
+EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
 FEBOOTSTRAP = @FEBOOTSTRAP@
 FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
@@ -929,7 +932,6 @@ JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
-JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVADOC = @JAVADOC@
 JAVAH = @JAVAH@
 JAVA_HOME = @JAVA_HOME@
@@ -1079,11 +1081,7 @@ PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PNMTOPNG = @PNMTOPNG@
 PO4A = @PO4A@
-POD2HTML = @POD2HTML@
-POD2MAN = @POD2MAN@
-POD2TEXT = @POD2TEXT@
-POD2_STDERR_OPTION = @POD2_STDERR_OPTION@
-POD2_UTF8_OPTION = @POD2_UTF8_OPTION@
+PODWRAPPER = @PODWRAPPER@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRIPTR_PREFIX = @PRIPTR_PREFIX@
@@ -1347,8 +1345,8 @@ BUILT_SOURCES = \
 	$(generator_built) \
 	guestfs_protocol.c \
 	guestfs_protocol.h \
-	errnostring_gperf.c \
-	errnostring_gperf.gperf \
+	errnostring-gperf.c \
+	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h
 
@@ -1363,7 +1361,7 @@ noinst_LIBRARIES = libprotocol.a liberrnostring.a
 libprotocol_a_SOURCES = guestfs_protocol.c guestfs_protocol.h
 libprotocol_a_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
 liberrnostring_a_SOURCES = \
-	errnostring_gperf.c \
+	errnostring-gperf.c \
 	errnostring.h \
 	errnostring.c
 
@@ -1392,7 +1390,7 @@ guestfsd_SOURCES = \
 	dmesg.c \
 	dropcaches.c \
 	du.c \
-	echo_daemon.c \
+	echo-daemon.c \
 	ext2.c \
 	fallocate.c \
 	file.c \
@@ -1599,7 +1597,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dmesg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-dropcaches.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-du.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-echo_daemon.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-echo-daemon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-ext2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-fallocate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-file.Po@am__quote@
@@ -1658,8 +1656,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-xattr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-zero.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-zerofree.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liberrnostring_a-errnostring-gperf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liberrnostring_a-errnostring.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liberrnostring_a-errnostring_gperf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_a-guestfs_protocol.Po@am__quote@
 
 .c.o:
@@ -1683,19 +1681,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-liberrnostring_a-errnostring_gperf.o: errnostring_gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring_gperf.o -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring_gperf.Tpo -c -o liberrnostring_a-errnostring_gperf.o `test -f 'errnostring_gperf.c' || echo '$(srcdir)/'`errnostring_gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring_gperf.Tpo $(DEPDIR)/liberrnostring_a-errnostring_gperf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring_gperf.c' object='liberrnostring_a-errnostring_gperf.o' libtool=no @AMDEPBACKSLASH@
+liberrnostring_a-errnostring-gperf.o: errnostring-gperf.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring-gperf.o -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo -c -o liberrnostring_a-errnostring-gperf.o `test -f 'errnostring-gperf.c' || echo '$(srcdir)/'`errnostring-gperf.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo $(DEPDIR)/liberrnostring_a-errnostring-gperf.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring-gperf.c' object='liberrnostring_a-errnostring-gperf.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring_gperf.o `test -f 'errnostring_gperf.c' || echo '$(srcdir)/'`errnostring_gperf.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring-gperf.o `test -f 'errnostring-gperf.c' || echo '$(srcdir)/'`errnostring-gperf.c
 
-liberrnostring_a-errnostring_gperf.obj: errnostring_gperf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring_gperf.obj -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring_gperf.Tpo -c -o liberrnostring_a-errnostring_gperf.obj `if test -f 'errnostring_gperf.c'; then $(CYGPATH_W) 'errnostring_gperf.c'; else $(CYGPATH_W) '$(srcdir)/errnostring_gperf.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring_gperf.Tpo $(DEPDIR)/liberrnostring_a-errnostring_gperf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring_gperf.c' object='liberrnostring_a-errnostring_gperf.obj' libtool=no @AMDEPBACKSLASH@
+liberrnostring_a-errnostring-gperf.obj: errnostring-gperf.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring-gperf.obj -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo -c -o liberrnostring_a-errnostring-gperf.obj `if test -f 'errnostring-gperf.c'; then $(CYGPATH_W) 'errnostring-gperf.c'; else $(CYGPATH_W) '$(srcdir)/errnostring-gperf.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/liberrnostring_a-errnostring-gperf.Tpo $(DEPDIR)/liberrnostring_a-errnostring-gperf.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errnostring-gperf.c' object='liberrnostring_a-errnostring-gperf.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring_gperf.obj `if test -f 'errnostring_gperf.c'; then $(CYGPATH_W) 'errnostring_gperf.c'; else $(CYGPATH_W) '$(srcdir)/errnostring_gperf.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -c -o liberrnostring_a-errnostring-gperf.obj `if test -f 'errnostring-gperf.c'; then $(CYGPATH_W) 'errnostring-gperf.c'; else $(CYGPATH_W) '$(srcdir)/errnostring-gperf.c'; fi`
 
 liberrnostring_a-errnostring.o: errnostring.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liberrnostring_a_CFLAGS) $(CFLAGS) -MT liberrnostring_a-errnostring.o -MD -MP -MF $(DEPDIR)/liberrnostring_a-errnostring.Tpo -c -o liberrnostring_a-errnostring.o `test -f 'errnostring.c' || echo '$(srcdir)/'`errnostring.c
@@ -2019,19 +2017,19 @@ guestfsd-du.obj: du.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-du.obj `if test -f 'du.c'; then $(CYGPATH_W) 'du.c'; else $(CYGPATH_W) '$(srcdir)/du.c'; fi`
 
-guestfsd-echo_daemon.o: echo_daemon.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-echo_daemon.o -MD -MP -MF $(DEPDIR)/guestfsd-echo_daemon.Tpo -c -o guestfsd-echo_daemon.o `test -f 'echo_daemon.c' || echo '$(srcdir)/'`echo_daemon.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-echo_daemon.Tpo $(DEPDIR)/guestfsd-echo_daemon.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='echo_daemon.c' object='guestfsd-echo_daemon.o' libtool=no @AMDEPBACKSLASH@
+guestfsd-echo-daemon.o: echo-daemon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-echo-daemon.o -MD -MP -MF $(DEPDIR)/guestfsd-echo-daemon.Tpo -c -o guestfsd-echo-daemon.o `test -f 'echo-daemon.c' || echo '$(srcdir)/'`echo-daemon.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-echo-daemon.Tpo $(DEPDIR)/guestfsd-echo-daemon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='echo-daemon.c' object='guestfsd-echo-daemon.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-echo_daemon.o `test -f 'echo_daemon.c' || echo '$(srcdir)/'`echo_daemon.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-echo-daemon.o `test -f 'echo-daemon.c' || echo '$(srcdir)/'`echo-daemon.c
 
-guestfsd-echo_daemon.obj: echo_daemon.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-echo_daemon.obj -MD -MP -MF $(DEPDIR)/guestfsd-echo_daemon.Tpo -c -o guestfsd-echo_daemon.obj `if test -f 'echo_daemon.c'; then $(CYGPATH_W) 'echo_daemon.c'; else $(CYGPATH_W) '$(srcdir)/echo_daemon.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-echo_daemon.Tpo $(DEPDIR)/guestfsd-echo_daemon.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='echo_daemon.c' object='guestfsd-echo_daemon.obj' libtool=no @AMDEPBACKSLASH@
+guestfsd-echo-daemon.obj: echo-daemon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-echo-daemon.obj -MD -MP -MF $(DEPDIR)/guestfsd-echo-daemon.Tpo -c -o guestfsd-echo-daemon.obj `if test -f 'echo-daemon.c'; then $(CYGPATH_W) 'echo-daemon.c'; else $(CYGPATH_W) '$(srcdir)/echo-daemon.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-echo-daemon.Tpo $(DEPDIR)/guestfsd-echo-daemon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='echo-daemon.c' object='guestfsd-echo-daemon.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-echo_daemon.obj `if test -f 'echo_daemon.c'; then $(CYGPATH_W) 'echo_daemon.c'; else $(CYGPATH_W) '$(srcdir)/echo_daemon.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-echo-daemon.obj `if test -f 'echo-daemon.c'; then $(CYGPATH_W) 'echo-daemon.c'; else $(CYGPATH_W) '$(srcdir)/echo-daemon.c'; fi`
 
 guestfsd-ext2.o: ext2.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-ext2.o -MD -MP -MF $(DEPDIR)/guestfsd-ext2.Tpo -c -o guestfsd-ext2.o `test -f 'ext2.c' || echo '$(srcdir)/'`ext2.c
@@ -3095,11 +3093,11 @@ $(libsrcdir)/guestfs_protocol.c: force
 $(libsrcdir)/guestfs_protocol.h: force
 	$(MAKE) -C $(libsrcdir) guestfs_protocol.h
 
-errnostring_gperf.c: errnostring_gperf.gperf
+errnostring-gperf.c: errnostring-gperf.gperf
 	rm -f $@
 	$(GPERF) -t $< > $@-t
 	mv $@-t $@
-errnostring_gperf.gperf: $(libsrcdir)/errnostring_gperf.gperf
+errnostring-gperf.gperf: $(libsrcdir)/errnostring-gperf.gperf
 	rm -f $@
 	ln $< $@
 errnostring.c: $(libsrcdir)/errnostring.c

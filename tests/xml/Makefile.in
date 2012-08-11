@@ -94,16 +94,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
-	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
-	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
-	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd.m4 $(top_srcdir)/m4/getdelim.m4 \
+	$(top_srcdir)/m4/getdtablesize.m4 $(top_srcdir)/m4/getline.m4 \
+	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
+	$(top_srcdir)/m4/getpagesize.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
@@ -128,9 +129,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
 	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
 	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -191,9 +193,9 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 libfakevirtxml_la_LIBADD =
-am__libfakevirtxml_la_SOURCES_DIST = fake_libvirt_xml.c
+am__libfakevirtxml_la_SOURCES_DIST = fake-libvirt-xml.c
 @HAVE_LIBVIRT_TRUE@am_libfakevirtxml_la_OBJECTS =  \
-@HAVE_LIBVIRT_TRUE@	libfakevirtxml_la-fake_libvirt_xml.lo
+@HAVE_LIBVIRT_TRUE@	libfakevirtxml_la-fake-libvirt-xml.lo
 libfakevirtxml_la_OBJECTS = $(am_libfakevirtxml_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -297,6 +299,7 @@ ERLC = @ERLC@
 ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
+EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
 FEBOOTSTRAP = @FEBOOTSTRAP@
 FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
@@ -866,7 +869,6 @@ JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
-JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVADOC = @JAVADOC@
 JAVAH = @JAVAH@
 JAVA_HOME = @JAVA_HOME@
@@ -1016,11 +1018,7 @@ PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PNMTOPNG = @PNMTOPNG@
 PO4A = @PO4A@
-POD2HTML = @POD2HTML@
-POD2MAN = @POD2MAN@
-POD2TEXT = @POD2TEXT@
-POD2_STDERR_OPTION = @POD2_STDERR_OPTION@
-POD2_UTF8_OPTION = @POD2_UTF8_OPTION@
+PODWRAPPER = @PODWRAPPER@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRIPTR_PREFIX = @PRIPTR_PREFIX@
@@ -1278,7 +1276,7 @@ top_srcdir = @top_srcdir@
 # This LD_PRELOAD library can be used to precisely control the XML
 # returned by libvirt.
 @HAVE_LIBVIRT_TRUE@check_LTLIBRARIES = libfakevirtxml.la
-@HAVE_LIBVIRT_TRUE@libfakevirtxml_la_SOURCES = fake_libvirt_xml.c
+@HAVE_LIBVIRT_TRUE@libfakevirtxml_la_SOURCES = fake-libvirt-xml.c
 @HAVE_LIBVIRT_TRUE@libfakevirtxml_la_CFLAGS = $(LIBVIRT_CFLAGS)
 # -version-info and -rpath force libtool to build a shared library.
 @HAVE_LIBVIRT_TRUE@libfakevirtxml_la_LDFLAGS = -version-info 0:0:0 -rpath /nowhere
@@ -1351,7 +1349,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfakevirtxml_la-fake_libvirt_xml.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfakevirtxml_la-fake-libvirt-xml.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1374,12 +1372,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-libfakevirtxml_la-fake_libvirt_xml.lo: fake_libvirt_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfakevirtxml_la_CFLAGS) $(CFLAGS) -MT libfakevirtxml_la-fake_libvirt_xml.lo -MD -MP -MF $(DEPDIR)/libfakevirtxml_la-fake_libvirt_xml.Tpo -c -o libfakevirtxml_la-fake_libvirt_xml.lo `test -f 'fake_libvirt_xml.c' || echo '$(srcdir)/'`fake_libvirt_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfakevirtxml_la-fake_libvirt_xml.Tpo $(DEPDIR)/libfakevirtxml_la-fake_libvirt_xml.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='fake_libvirt_xml.c' object='libfakevirtxml_la-fake_libvirt_xml.lo' libtool=yes @AMDEPBACKSLASH@
+libfakevirtxml_la-fake-libvirt-xml.lo: fake-libvirt-xml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfakevirtxml_la_CFLAGS) $(CFLAGS) -MT libfakevirtxml_la-fake-libvirt-xml.lo -MD -MP -MF $(DEPDIR)/libfakevirtxml_la-fake-libvirt-xml.Tpo -c -o libfakevirtxml_la-fake-libvirt-xml.lo `test -f 'fake-libvirt-xml.c' || echo '$(srcdir)/'`fake-libvirt-xml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libfakevirtxml_la-fake-libvirt-xml.Tpo $(DEPDIR)/libfakevirtxml_la-fake-libvirt-xml.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='fake-libvirt-xml.c' object='libfakevirtxml_la-fake-libvirt-xml.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfakevirtxml_la_CFLAGS) $(CFLAGS) -c -o libfakevirtxml_la-fake_libvirt_xml.lo `test -f 'fake_libvirt_xml.c' || echo '$(srcdir)/'`fake_libvirt_xml.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfakevirtxml_la_CFLAGS) $(CFLAGS) -c -o libfakevirtxml_la-fake-libvirt-xml.lo `test -f 'fake-libvirt-xml.c' || echo '$(srcdir)/'`fake-libvirt-xml.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

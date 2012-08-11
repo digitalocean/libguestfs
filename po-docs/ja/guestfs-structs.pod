@@ -322,8 +322,8 @@
  };
  
  struct guestfs_btrfssubvolume_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_btrfssubvolume *val; /* Elements. */
+   uint32_t len; /* 一覧にある要素の数 */
+   struct guestfs_btrfssubvolume *val; /* 要素 */
  };
  
  void guestfs_free_btrfssubvolume (struct guestfs_free_btrfssubvolume *);

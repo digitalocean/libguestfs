@@ -32,6 +32,17 @@
 
 #include "extconf.h"
 
+/* Ruby has a mark-sweep garbage collector and performs imprecise
+ * scanning of the stack to look for pointers.  Some implications
+ * of this:
+ * (1) Any VALUE stored in a stack location must be marked as
+ *     volatile so that the compiler doesn't put it in a register.
+ * (2) Anything at all on the stack that "looks like" a Ruby
+ *     pointer could be followed, eg. buffers of random data.
+ *     (See: https://bugzilla.redhat.com/show_bug.cgi?id=843188#c6)
+ * We fix (1) by marking everything possible as volatile.
+ */
+
 /* For Ruby < 1.9 */
 #ifndef RARRAY_LEN
 #define RARRAY_LEN(r) (RARRAY((r))->len)
@@ -51,7 +62,7 @@
 VALUE
 rb_hash_lookup (VALUE hash, VALUE key)
 {
-  VALUE val;
+  volatile VALUE val;
 
   if (!st_lookup (RHASH(hash)->tbl, key, &val))
     return Qnil;
@@ -225,8 +236,8 @@ ruby_event_callback_wrapper (guestfs_h *g,
                              const uint64_t *array, size_t array_len)
 {
   size_t i;
-  VALUE eventv, event_handlev, bufv, arrayv;
-  VALUE argv[5];
+  volatile VALUE eventv, event_handlev, bufv, arrayv;
+  volatile VALUE argv[5];
 
   eventv = ULL2NUM (event);
   event_handlev = INT2NUM (event_handle);
@@ -254,16 +265,21 @@ static VALUE
 ruby_event_callback_wrapper_wrapper (VALUE argvv)
 {
   VALUE *argv = (VALUE *) argvv;
-  VALUE fn, eventv, event_handlev, bufv, arrayv;
+  volatile VALUE fn, eventv, event_handlev, bufv, arrayv;
 
   fn = argv[0];
 
   /* Check the Ruby callback still exists.  For reasons which are not
    * fully understood, even though we registered this as a global root,
    * it is still possible for the callback to go away (fn value remains
-   * but its type changes from T_DATA to T_NONE).  (RHBZ#733297)
+   * but its type changes from T_DATA to T_NONE or T_ZOMBIE).
+   * (RHBZ#733297, RHBZ#843188)
    */
-  if (rb_type (fn) != T_NONE) {
+  if (rb_type (fn) != T_NONE
+#ifdef T_ZOMBIE
+      && rb_type (fn) != T_ZOMBIE
+#endif
+      ) {
     eventv = argv[1];
     event_handlev = argv[2];
     bufv = argv[3];
@@ -342,12 +358,26 @@ ruby_user_cancel (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE bv, VALUE integerv, VALUE integer64v, VALUE fileinv, VALUE fileoutv, VALUE bufferinv, VALUE optargsv)
+ruby_guestfs_test0 (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "test0");
+
+  if (argc < 9 || argc > 10)
+    rb_raise (rb_eArgError, "expecting 9 or 10 arguments");
+
+  volatile VALUE strv = argv[0];
+  volatile VALUE optstrv = argv[1];
+  volatile VALUE strlistv = argv[2];
+  volatile VALUE bv = argv[3];
+  volatile VALUE integerv = argv[4];
+  volatile VALUE integer64v = argv[5];
+  volatile VALUE fileinv = argv[6];
+  volatile VALUE fileoutv = argv[7];
+  volatile VALUE bufferinv = argv[8];
+  volatile VALUE optargsv = argc > 9 ? argv[9] : rb_hash_new ();
 
   const char *str = StringValueCStr (strv);
   const char *optstr = !NIL_P (optstrv) ? StringValueCStr (optstrv) : NULL;
@@ -358,7 +388,7 @@ ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE b
     len = RARRAY_LEN (strlistv);
     strlist = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (strlistv, i);
+      volatile VALUE v = rb_ary_entry (strlistv, i);
       strlist[i] = StringValueCStr (v);
     }
     strlist[len] = NULL;
@@ -378,7 +408,7 @@ ruby_guestfs_test0 (VALUE gv, VALUE strv, VALUE optstrv, VALUE strlistv, VALUE b
   Check_Type (optargsv, T_HASH);
   struct guestfs_test0_argv optargs_s = { .bitmask = 0 };
   struct guestfs_test0_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("obool")));
   if (v != Qnil) {
     optargs_s.obool = RTEST (v);
@@ -613,7 +643,7 @@ ruby_guestfs_test0rstring (VALUE gv, VALUE valv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -633,7 +663,7 @@ ruby_guestfs_test0rstringerr (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -656,7 +686,7 @@ ruby_guestfs_test0rstringlist (VALUE gv, VALUE valv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -682,7 +712,7 @@ ruby_guestfs_test0rstringlisterr (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -707,7 +737,7 @@ ruby_guestfs_test0rstruct (VALUE gv, VALUE valv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("pv_name"), rb_str_new2 (r->pv_name));
   rb_hash_aset (rv, rb_str_new2 ("pv_uuid"), rb_str_new (r->pv_uuid, 32));
   rb_hash_aset (rv, rb_str_new2 ("pv_fmt"), rb_str_new2 (r->pv_fmt));
@@ -741,7 +771,7 @@ ruby_guestfs_test0rstructerr (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("pv_name"), rb_str_new2 (r->pv_name));
   rb_hash_aset (rv, rb_str_new2 ("pv_uuid"), rb_str_new (r->pv_uuid, 32));
   rb_hash_aset (rv, rb_str_new2 ("pv_fmt"), rb_str_new2 (r->pv_fmt));
@@ -776,10 +806,10 @@ ruby_guestfs_test0rstructlist (VALUE gv, VALUE valv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("pv_name"), rb_str_new2 (r->val[i].pv_name));
     rb_hash_aset (hv, rb_str_new2 ("pv_uuid"), rb_str_new (r->val[i].pv_uuid, 32));
     rb_hash_aset (hv, rb_str_new2 ("pv_fmt"), rb_str_new2 (r->val[i].pv_fmt));
@@ -815,10 +845,10 @@ ruby_guestfs_test0rstructlisterr (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("pv_name"), rb_str_new2 (r->val[i].pv_name));
     rb_hash_aset (hv, rb_str_new2 ("pv_uuid"), rb_str_new (r->val[i].pv_uuid, 32));
     rb_hash_aset (hv, rb_str_new2 ("pv_fmt"), rb_str_new2 (r->val[i].pv_fmt));
@@ -855,7 +885,7 @@ ruby_guestfs_test0rhashtable (VALUE gv, VALUE valv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -881,7 +911,7 @@ ruby_guestfs_test0rhashtableerr (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -909,7 +939,7 @@ ruby_guestfs_test0rbufferout (VALUE gv, VALUE valv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -930,7 +960,7 @@ ruby_guestfs_test0rbufferouterr (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -1905,7 +1935,7 @@ ruby_guestfs_version (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("major"), LL2NUM (r->major));
   rb_hash_aset (rv, rb_str_new2 ("minor"), LL2NUM (r->minor));
   rb_hash_aset (rv, rb_str_new2 ("release"), LL2NUM (r->release));
@@ -2382,7 +2412,7 @@ ruby_guestfs_file_architecture (VALUE gv, VALUE filenamev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -2450,7 +2480,7 @@ ruby_guestfs_inspect_os (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -2515,7 +2545,7 @@ ruby_guestfs_inspect_get_type (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -2555,7 +2585,7 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -2665,7 +2695,7 @@ ruby_guestfs_inspect_get_distro (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -2788,7 +2818,7 @@ ruby_guestfs_inspect_get_product_name (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -2845,7 +2875,7 @@ ruby_guestfs_inspect_get_mountpoints (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -2896,7 +2926,7 @@ ruby_guestfs_inspect_get_filesystems (VALUE gv, VALUE rootv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -3028,7 +3058,7 @@ ruby_guestfs_list_filesystems (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -3098,19 +3128,25 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * +guestfs_add_drive_opts+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_opts]).
  */
 static VALUE
-ruby_guestfs_add_drive_opts (VALUE gv, VALUE filenamev, VALUE optargsv)
+ruby_guestfs_add_drive_opts (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "add_drive_opts");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE filenamev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *filename = StringValueCStr (filenamev);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_add_drive_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("readonly")));
   if (v != Qnil) {
     optargs_s.readonly = RTEST (v);
@@ -3177,7 +3213,7 @@ ruby_guestfs_inspect_get_windows_systemroot (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -3219,7 +3255,7 @@ ruby_guestfs_inspect_get_roots (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -3245,7 +3281,7 @@ ruby_guestfs_debug_cmdline (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -3271,7 +3307,7 @@ ruby_guestfs_debug_drives (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -3377,19 +3413,25 @@ ruby_guestfs_debug_drives (VALUE gv)
  * +guestfs_add_domain+[http://libguestfs.org/guestfs.3.html#guestfs_add_domain]).
  */
 static VALUE
-ruby_guestfs_add_domain (VALUE gv, VALUE domv, VALUE optargsv)
+ruby_guestfs_add_domain (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "add_domain");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE domv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *dom = StringValueCStr (domv);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_add_domain_argv optargs_s = { .bitmask = 0 };
   struct guestfs_add_domain_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("libvirturi")));
   if (v != Qnil) {
     optargs_s.libvirturi = StringValueCStr (v);
@@ -3473,7 +3515,7 @@ ruby_guestfs_inspect_get_package_format (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -3522,7 +3564,7 @@ ruby_guestfs_inspect_get_package_management (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -3640,10 +3682,10 @@ ruby_guestfs_inspect_list_applications (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("app_name"), rb_str_new2 (r->val[i].app_name));
     rb_hash_aset (hv, rb_str_new2 ("app_display_name"), rb_str_new2 (r->val[i].app_display_name));
     rb_hash_aset (hv, rb_str_new2 ("app_epoch"), INT2NUM (r->val[i].app_epoch));
@@ -3697,7 +3739,7 @@ ruby_guestfs_inspect_get_hostname (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -3751,7 +3793,7 @@ ruby_guestfs_inspect_get_format (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -3935,7 +3977,7 @@ ruby_guestfs_get_attach_method (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -3990,7 +4032,7 @@ ruby_guestfs_inspect_get_product_variant (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -4031,7 +4073,7 @@ ruby_guestfs_inspect_get_windows_current_control_set (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -4095,7 +4137,7 @@ ruby_guestfs_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -4173,19 +4215,25 @@ ruby_guestfs_inspect_get_drive_mappings (VALUE gv, VALUE rootv)
  * +guestfs_inspect_get_icon+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_get_icon]).
  */
 static VALUE
-ruby_guestfs_inspect_get_icon (VALUE gv, VALUE rootv, VALUE optargsv)
+ruby_guestfs_inspect_get_icon (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "inspect_get_icon");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE rootv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *root = StringValueCStr (rootv);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_inspect_get_icon_argv optargs_s = { .bitmask = 0 };
   struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("favicon")));
   if (v != Qnil) {
     optargs_s.favicon = RTEST (v);
@@ -4204,7 +4252,7 @@ ruby_guestfs_inspect_get_icon (VALUE gv, VALUE rootv, VALUE optargsv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -4388,19 +4436,25 @@ ruby_guestfs_get_smp (VALUE gv)
  * +guestfs_mount_local+[http://libguestfs.org/guestfs.3.html#guestfs_mount_local]).
  */
 static VALUE
-ruby_guestfs_mount_local (VALUE gv, VALUE localmountpointv, VALUE optargsv)
+ruby_guestfs_mount_local (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_local");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE localmountpointv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *localmountpoint = StringValueCStr (localmountpointv);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_mount_local_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mount_local_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("readonly")));
   if (v != Qnil) {
     optargs_s.readonly = RTEST (v);
@@ -4497,18 +4551,23 @@ ruby_guestfs_mount_local_run (VALUE gv)
  * +guestfs_umount_local+[http://libguestfs.org/guestfs.3.html#guestfs_umount_local]).
  */
 static VALUE
-ruby_guestfs_umount_local (VALUE gv, VALUE optargsv)
+ruby_guestfs_umount_local (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "umount_local");
 
+  if (argc < 0 || argc > 1)
+    rb_raise (rb_eArgError, "expecting 0 or 1 arguments");
+
+  volatile VALUE optargsv = argc > 0 ? argv[0] : rb_hash_new ();
+
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_umount_local_argv optargs_s = { .bitmask = 0 };
   struct guestfs_umount_local_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("retry")));
   if (v != Qnil) {
     optargs_s.retry = RTEST (v);
@@ -4733,7 +4792,7 @@ ruby_guestfs_cat (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -4771,7 +4830,7 @@ ruby_guestfs_ll (VALUE gv, VALUE directoryv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -4811,7 +4870,7 @@ ruby_guestfs_ls (VALUE gv, VALUE directoryv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -4854,7 +4913,7 @@ ruby_guestfs_list_devices (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -4900,7 +4959,7 @@ ruby_guestfs_list_partitions (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -4944,7 +5003,7 @@ ruby_guestfs_pvs (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -4988,7 +5047,7 @@ ruby_guestfs_vgs (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -5032,7 +5091,7 @@ ruby_guestfs_lvs (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -5070,10 +5129,10 @@ ruby_guestfs_pvs_full (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("pv_name"), rb_str_new2 (r->val[i].pv_name));
     rb_hash_aset (hv, rb_str_new2 ("pv_uuid"), rb_str_new (r->val[i].pv_uuid, 32));
     rb_hash_aset (hv, rb_str_new2 ("pv_fmt"), rb_str_new2 (r->val[i].pv_fmt));
@@ -5123,10 +5182,10 @@ ruby_guestfs_vgs_full (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("vg_name"), rb_str_new2 (r->val[i].vg_name));
     rb_hash_aset (hv, rb_str_new2 ("vg_uuid"), rb_str_new (r->val[i].vg_uuid, 32));
     rb_hash_aset (hv, rb_str_new2 ("vg_fmt"), rb_str_new2 (r->val[i].vg_fmt));
@@ -5181,10 +5240,10 @@ ruby_guestfs_lvs_full (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("lv_name"), rb_str_new2 (r->val[i].lv_name));
     rb_hash_aset (hv, rb_str_new2 ("lv_uuid"), rb_str_new (r->val[i].lv_uuid, 32));
     rb_hash_aset (hv, rb_str_new2 ("lv_attr"), rb_str_new2 (r->val[i].lv_attr));
@@ -5247,7 +5306,7 @@ ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -5441,7 +5500,7 @@ ruby_guestfs_aug_defnode (VALUE gv, VALUE namev, VALUE exprv, VALUE valv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("i"), INT2NUM (r->i));
   rb_hash_aset (rv, rb_str_new2 ("b"), INT2NUM (r->b));
   guestfs_free_int_bool (r);
@@ -5477,7 +5536,7 @@ ruby_guestfs_aug_get (VALUE gv, VALUE augpathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -5657,7 +5716,7 @@ ruby_guestfs_aug_match (VALUE gv, VALUE augpathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -5764,7 +5823,7 @@ ruby_guestfs_aug_ls (VALUE gv, VALUE augpathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -6175,7 +6234,7 @@ ruby_guestfs_vgcreate (VALUE gv, VALUE volgroupv, VALUE physvolsv)
     len = RARRAY_LEN (physvolsv);
     physvols = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (physvolsv, i);
+      volatile VALUE v = rb_ary_entry (physvolsv, i);
       physvols[i] = StringValueCStr (v);
     }
     physvols[len] = NULL;
@@ -6320,7 +6379,7 @@ ruby_guestfs_sfdisk (VALUE gv, VALUE devicev, VALUE cylsv, VALUE headsv, VALUE s
     len = RARRAY_LEN (linesv);
     lines = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (linesv, i);
+      volatile VALUE v = rb_ary_entry (linesv, i);
       lines[i] = StringValueCStr (v);
     }
     lines[len] = NULL;
@@ -6458,7 +6517,7 @@ ruby_guestfs_mounts (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -6574,7 +6633,7 @@ ruby_guestfs_file (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -6638,7 +6697,7 @@ ruby_guestfs_command (VALUE gv, VALUE argumentsv)
     len = RARRAY_LEN (argumentsv);
     arguments = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (argumentsv, i);
+      volatile VALUE v = rb_ary_entry (argumentsv, i);
       arguments[i] = StringValueCStr (v);
     }
     arguments[len] = NULL;
@@ -6651,7 +6710,7 @@ ruby_guestfs_command (VALUE gv, VALUE argumentsv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -6690,7 +6749,7 @@ ruby_guestfs_command_lines (VALUE gv, VALUE argumentsv)
     len = RARRAY_LEN (argumentsv);
     arguments = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (argumentsv, i);
+      volatile VALUE v = rb_ary_entry (argumentsv, i);
       arguments[i] = StringValueCStr (v);
     }
     arguments[len] = NULL;
@@ -6705,7 +6764,7 @@ ruby_guestfs_command_lines (VALUE gv, VALUE argumentsv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -6744,7 +6803,7 @@ ruby_guestfs_stat (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("dev"), LL2NUM (r->dev));
   rb_hash_aset (rv, rb_str_new2 ("ino"), LL2NUM (r->ino));
   rb_hash_aset (rv, rb_str_new2 ("mode"), LL2NUM (r->mode));
@@ -6796,7 +6855,7 @@ ruby_guestfs_lstat (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("dev"), LL2NUM (r->dev));
   rb_hash_aset (rv, rb_str_new2 ("ino"), LL2NUM (r->ino));
   rb_hash_aset (rv, rb_str_new2 ("mode"), LL2NUM (r->mode));
@@ -6847,7 +6906,7 @@ ruby_guestfs_statvfs (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("bsize"), LL2NUM (r->bsize));
   rb_hash_aset (rv, rb_str_new2 ("frsize"), LL2NUM (r->frsize));
   rb_hash_aset (rv, rb_str_new2 ("blocks"), LL2NUM (r->blocks));
@@ -6898,7 +6957,7 @@ ruby_guestfs_tune2fs_l (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -7402,7 +7461,7 @@ ruby_guestfs_checksum (VALUE gv, VALUE csumtypev, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -7673,7 +7732,7 @@ ruby_guestfs_debug (VALUE gv, VALUE subcmdv, VALUE extraargsv)
     len = RARRAY_LEN (extraargsv);
     extraargs = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (extraargsv, i);
+      volatile VALUE v = rb_ary_entry (extraargsv, i);
       extraargs[i] = StringValueCStr (v);
     }
     extraargs[len] = NULL;
@@ -7686,7 +7745,7 @@ ruby_guestfs_debug (VALUE gv, VALUE subcmdv, VALUE extraargsv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -7876,7 +7935,7 @@ ruby_guestfs_get_e2label (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -7955,7 +8014,7 @@ ruby_guestfs_get_e2uuid (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -8286,7 +8345,7 @@ ruby_guestfs_dmesg (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -8396,7 +8455,7 @@ ruby_guestfs_strings (VALUE gv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -8464,7 +8523,7 @@ ruby_guestfs_strings_e (VALUE gv, VALUE encodingv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -8506,7 +8565,7 @@ ruby_guestfs_hexdump (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -8672,7 +8731,7 @@ ruby_guestfs_sfdisk_l (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -8709,7 +8768,7 @@ ruby_guestfs_sfdisk_kernel_geometry (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -8749,7 +8808,7 @@ ruby_guestfs_sfdisk_disk_geometry (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -8824,7 +8883,7 @@ ruby_guestfs_vg_activate (VALUE gv, VALUE activatev, VALUE volgroupsv)
     len = RARRAY_LEN (volgroupsv);
     volgroups = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (volgroupsv, i);
+      volatile VALUE v = rb_ary_entry (volgroupsv, i);
       volgroups[i] = StringValueCStr (v);
     }
     volgroups[len] = NULL;
@@ -8968,7 +9027,7 @@ ruby_guestfs_find (VALUE gv, VALUE directoryv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -9131,7 +9190,7 @@ ruby_guestfs_sh (VALUE gv, VALUE commandv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -9169,7 +9228,7 @@ ruby_guestfs_sh_lines (VALUE gv, VALUE commandv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -9221,7 +9280,7 @@ ruby_guestfs_glob_expand (VALUE gv, VALUE patternv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -9386,7 +9445,7 @@ ruby_guestfs_mkdtemp (VALUE gv, VALUE tmplv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -9522,7 +9581,7 @@ ruby_guestfs_head (VALUE gv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -9574,7 +9633,7 @@ ruby_guestfs_head_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -9618,7 +9677,7 @@ ruby_guestfs_tail (VALUE gv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -9670,7 +9729,7 @@ ruby_guestfs_tail_n (VALUE gv, VALUE nrlinesv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -9711,7 +9770,7 @@ ruby_guestfs_df (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -9748,7 +9807,7 @@ ruby_guestfs_df_h (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -9831,7 +9890,7 @@ ruby_guestfs_initrd_list (VALUE gv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -10242,10 +10301,10 @@ ruby_guestfs_readdir (VALUE gv, VALUE dirv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("ino"), LL2NUM (r->val[i].ino));
     rb_hash_aset (hv, rb_str_new2 ("ftyp"), ULL2NUM (r->val[i].ftyp));
     rb_hash_aset (hv, rb_str_new2 ("name"), rb_str_new2 (r->val[i].name));
@@ -10297,7 +10356,7 @@ ruby_guestfs_sfdiskM (VALUE gv, VALUE devicev, VALUE linesv)
     len = RARRAY_LEN (linesv);
     lines = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (linesv, i);
+      volatile VALUE v = rb_ary_entry (linesv, i);
       lines[i] = StringValueCStr (v);
     }
     lines[len] = NULL;
@@ -10355,7 +10414,7 @@ ruby_guestfs_zfile (VALUE gv, VALUE methv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -10394,10 +10453,10 @@ ruby_guestfs_getxattrs (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
     rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
     rb_ary_push (rv, hv);
@@ -10436,10 +10495,10 @@ ruby_guestfs_lgetxattrs (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
     rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
     rb_ary_push (rv, hv);
@@ -10620,7 +10679,7 @@ ruby_guestfs_mountpoints (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -10776,7 +10835,7 @@ ruby_guestfs_read_file (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -10817,7 +10876,7 @@ ruby_guestfs_grep (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -10862,7 +10921,7 @@ ruby_guestfs_egrep (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -10907,7 +10966,7 @@ ruby_guestfs_fgrep (VALUE gv, VALUE patternv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -10952,7 +11011,7 @@ ruby_guestfs_grepi (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -10997,7 +11056,7 @@ ruby_guestfs_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11042,7 +11101,7 @@ ruby_guestfs_fgrepi (VALUE gv, VALUE patternv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11087,7 +11146,7 @@ ruby_guestfs_zgrep (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11132,7 +11191,7 @@ ruby_guestfs_zegrep (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11177,7 +11236,7 @@ ruby_guestfs_zfgrep (VALUE gv, VALUE patternv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11222,7 +11281,7 @@ ruby_guestfs_zgrepi (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11267,7 +11326,7 @@ ruby_guestfs_zegrepi (VALUE gv, VALUE regexv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11312,7 +11371,7 @@ ruby_guestfs_zfgrepi (VALUE gv, VALUE patternv, VALUE pathv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -11351,7 +11410,7 @@ ruby_guestfs_realpath (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -11517,7 +11576,7 @@ ruby_guestfs_readlink (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -12038,10 +12097,10 @@ ruby_guestfs_inotify_read (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("in_wd"), LL2NUM (r->val[i].in_wd));
     rb_hash_aset (hv, rb_str_new2 ("in_mask"), UINT2NUM (r->val[i].in_mask));
     rb_hash_aset (hv, rb_str_new2 ("in_cookie"), UINT2NUM (r->val[i].in_cookie));
@@ -12084,7 +12143,7 @@ ruby_guestfs_inotify_files (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -12189,7 +12248,7 @@ ruby_guestfs_getcon (VALUE gv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -12526,7 +12585,7 @@ ruby_guestfs_echo_daemon (VALUE gv, VALUE wordsv)
     len = RARRAY_LEN (wordsv);
     words = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (wordsv, i);
+      volatile VALUE v = rb_ary_entry (wordsv, i);
       words[i] = StringValueCStr (v);
     }
     words[len] = NULL;
@@ -12539,7 +12598,7 @@ ruby_guestfs_echo_daemon (VALUE gv, VALUE wordsv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -12652,7 +12711,7 @@ ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -12692,7 +12751,7 @@ ruby_guestfs_vfs_type (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -12943,7 +13002,7 @@ ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
     len = RARRAY_LEN (namesv);
     names = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (namesv, i);
+      volatile VALUE v = rb_ary_entry (namesv, i);
       names[i] = StringValueCStr (v);
     }
     names[len] = NULL;
@@ -12956,10 +13015,10 @@ ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("dev"), LL2NUM (r->val[i].dev));
     rb_hash_aset (hv, rb_str_new2 ("ino"), LL2NUM (r->val[i].ino));
     rb_hash_aset (hv, rb_str_new2 ("mode"), LL2NUM (r->val[i].mode));
@@ -13030,7 +13089,7 @@ ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
     len = RARRAY_LEN (namesv);
     names = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (namesv, i);
+      volatile VALUE v = rb_ary_entry (namesv, i);
       names[i] = StringValueCStr (v);
     }
     names[len] = NULL;
@@ -13043,10 +13102,10 @@ ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
     rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
     rb_ary_push (rv, hv);
@@ -13104,7 +13163,7 @@ ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
     len = RARRAY_LEN (namesv);
     names = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (namesv, i);
+      volatile VALUE v = rb_ary_entry (namesv, i);
       names[i] = StringValueCStr (v);
     }
     names[len] = NULL;
@@ -13119,7 +13178,7 @@ ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -13170,7 +13229,7 @@ ruby_guestfs_pread (VALUE gv, VALUE pathv, VALUE countv, VALUE offsetv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -13461,10 +13520,10 @@ ruby_guestfs_part_list (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("part_num"), INT2NUM (r->val[i].part_num));
     rb_hash_aset (hv, rb_str_new2 ("part_start"), ULL2NUM (r->val[i].part_start));
     rb_hash_aset (hv, rb_str_new2 ("part_end"), ULL2NUM (r->val[i].part_end));
@@ -13510,7 +13569,7 @@ ruby_guestfs_part_get_parttype (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -13629,7 +13688,7 @@ ruby_guestfs_available (VALUE gv, VALUE groupsv)
     len = RARRAY_LEN (groupsv);
     groups = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (groupsv, i);
+      volatile VALUE v = rb_ary_entry (groupsv, i);
       groups[i] = StringValueCStr (v);
     }
     groups[len] = NULL;
@@ -13837,7 +13896,7 @@ ruby_guestfs_initrd_cat (VALUE gv, VALUE initrdpathv, VALUE filenamev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -13870,7 +13929,7 @@ ruby_guestfs_pvuuid (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -13904,7 +13963,7 @@ ruby_guestfs_vguuid (VALUE gv, VALUE vgnamev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -13937,7 +13996,7 @@ ruby_guestfs_lvuuid (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -13979,7 +14038,7 @@ ruby_guestfs_vgpvuuids (VALUE gv, VALUE vgnamev)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -14024,7 +14083,7 @@ ruby_guestfs_vglvuuids (VALUE gv, VALUE vgnamev)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -14444,7 +14503,7 @@ ruby_guestfs_checksum_device (VALUE gv, VALUE csumtypev, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -14960,7 +15019,7 @@ ruby_guestfs_available_all_groups (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -15050,7 +15109,7 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -15089,7 +15148,7 @@ ruby_guestfs_vfs_uuid (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -15143,7 +15202,7 @@ ruby_guestfs_lvm_set_filter (VALUE gv, VALUE devicesv)
     len = RARRAY_LEN (devicesv);
     devices = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (devicesv, i);
+      volatile VALUE v = rb_ary_entry (devicesv, i);
       devices[i] = StringValueCStr (v);
     }
     devices[len] = NULL;
@@ -15525,7 +15584,7 @@ ruby_guestfs_findfs_uuid (VALUE gv, VALUE uuidv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -15562,7 +15621,7 @@ ruby_guestfs_findfs_label (VALUE gv, VALUE labelv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -15772,7 +15831,7 @@ ruby_guestfs_part_to_dev (VALUE gv, VALUE partitionv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -15964,7 +16023,7 @@ ruby_guestfs_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offsetv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -16004,7 +16063,7 @@ ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -16060,12 +16119,19 @@ ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
  * +guestfs_mkfs_opts+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_opts]).
  */
 static VALUE
-ruby_guestfs_mkfs_opts (VALUE gv, VALUE fstypev, VALUE devicev, VALUE optargsv)
+ruby_guestfs_mkfs_opts (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mkfs_opts");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE fstypev = argv[0];
+  volatile VALUE devicev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *fstype = StringValueCStr (fstypev);
   const char *device = StringValueCStr (devicev);
@@ -16073,7 +16139,7 @@ ruby_guestfs_mkfs_opts (VALUE gv, VALUE fstypev, VALUE devicev, VALUE optargsv)
   Check_Type (optargsv, T_HASH);
   struct guestfs_mkfs_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("blocksize")));
   if (v != Qnil) {
     optargs_s.blocksize = NUM2INT (v);
@@ -16151,7 +16217,7 @@ ruby_guestfs_getxattr (VALUE gv, VALUE pathv, VALUE namev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -16202,7 +16268,7 @@ ruby_guestfs_lgetxattr (VALUE gv, VALUE pathv, VALUE namev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -16363,7 +16429,7 @@ ruby_guestfs_list_9p (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -16394,12 +16460,19 @@ ruby_guestfs_list_9p (VALUE gv)
  * +guestfs_mount_9p+[http://libguestfs.org/guestfs.3.html#guestfs_mount_9p]).
  */
 static VALUE
-ruby_guestfs_mount_9p (VALUE gv, VALUE mounttagv, VALUE mountpointv, VALUE optargsv)
+ruby_guestfs_mount_9p (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_9p");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE mounttagv = argv[0];
+  volatile VALUE mountpointv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *mounttag = StringValueCStr (mounttagv);
   const char *mountpoint = StringValueCStr (mountpointv);
@@ -16407,7 +16480,7 @@ ruby_guestfs_mount_9p (VALUE gv, VALUE mounttagv, VALUE mountpointv, VALUE optar
   Check_Type (optargsv, T_HASH);
   struct guestfs_mount_9p_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mount_9p_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("options")));
   if (v != Qnil) {
     optargs_s.options = StringValueCStr (v);
@@ -16459,7 +16532,7 @@ ruby_guestfs_list_dm_devices (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -16509,19 +16582,25 @@ ruby_guestfs_list_dm_devices (VALUE gv)
  * +guestfs_ntfsresize_opts+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize_opts]).
  */
 static VALUE
-ruby_guestfs_ntfsresize_opts (VALUE gv, VALUE devicev, VALUE optargsv)
+ruby_guestfs_ntfsresize_opts (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsresize_opts");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *device = StringValueCStr (devicev);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
@@ -16572,19 +16651,25 @@ ruby_guestfs_ntfsresize_opts (VALUE gv, VALUE devicev, VALUE optargsv)
  * +guestfs_btrfs_filesystem_resize+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_filesystem_resize]).
  */
 static VALUE
-ruby_guestfs_btrfs_filesystem_resize (VALUE gv, VALUE mountpointv, VALUE optargsv)
+ruby_guestfs_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_filesystem_resize");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE mountpointv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *mountpoint = StringValueCStr (mountpointv);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("size")));
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
@@ -16673,12 +16758,20 @@ ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
  * +guestfs_compress_out+[http://libguestfs.org/guestfs.3.html#guestfs_compress_out]).
  */
 static VALUE
-ruby_guestfs_compress_out (VALUE gv, VALUE ctypev, VALUE filev, VALUE zfilev, VALUE optargsv)
+ruby_guestfs_compress_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "compress_out");
+
+  if (argc < 3 || argc > 4)
+    rb_raise (rb_eArgError, "expecting 3 or 4 arguments");
+
+  volatile VALUE ctypev = argv[0];
+  volatile VALUE filev = argv[1];
+  volatile VALUE zfilev = argv[2];
+  volatile VALUE optargsv = argc > 3 ? argv[3] : rb_hash_new ();
 
   const char *ctype = StringValueCStr (ctypev);
   const char *file = StringValueCStr (filev);
@@ -16687,7 +16780,7 @@ ruby_guestfs_compress_out (VALUE gv, VALUE ctypev, VALUE filev, VALUE zfilev, VA
   Check_Type (optargsv, T_HASH);
   struct guestfs_compress_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_compress_out_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("level")));
   if (v != Qnil) {
     optargs_s.level = NUM2INT (v);
@@ -16724,12 +16817,20 @@ ruby_guestfs_compress_out (VALUE gv, VALUE ctypev, VALUE filev, VALUE zfilev, VA
  * +guestfs_compress_device_out+[http://libguestfs.org/guestfs.3.html#guestfs_compress_device_out]).
  */
 static VALUE
-ruby_guestfs_compress_device_out (VALUE gv, VALUE ctypev, VALUE devicev, VALUE zdevicev, VALUE optargsv)
+ruby_guestfs_compress_device_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "compress_device_out");
+
+  if (argc < 3 || argc > 4)
+    rb_raise (rb_eArgError, "expecting 3 or 4 arguments");
+
+  volatile VALUE ctypev = argv[0];
+  volatile VALUE devicev = argv[1];
+  volatile VALUE zdevicev = argv[2];
+  volatile VALUE optargsv = argc > 3 ? argv[3] : rb_hash_new ();
 
   const char *ctype = StringValueCStr (ctypev);
   const char *device = StringValueCStr (devicev);
@@ -16738,7 +16839,7 @@ ruby_guestfs_compress_device_out (VALUE gv, VALUE ctypev, VALUE devicev, VALUE z
   Check_Type (optargsv, T_HASH);
   struct guestfs_compress_device_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_compress_device_out_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("level")));
   if (v != Qnil) {
     optargs_s.level = NUM2INT (v);
@@ -16825,12 +16926,19 @@ ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
  * +guestfs_copy_device_to_device+[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_device]).
  */
 static VALUE
-ruby_guestfs_copy_device_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_device_to_device");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE srcv = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *src = StringValueCStr (srcv);
   const char *dest = StringValueCStr (destv);
@@ -16838,7 +16946,7 @@ ruby_guestfs_copy_device_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE opt
   Check_Type (optargsv, T_HASH);
   struct guestfs_copy_device_to_device_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
   if (v != Qnil) {
     optargs_s.srcoffset = NUM2LL (v);
@@ -16882,12 +16990,19 @@ ruby_guestfs_copy_device_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE opt
  * +guestfs_copy_device_to_file+[http://libguestfs.org/guestfs.3.html#guestfs_copy_device_to_file]).
  */
 static VALUE
-ruby_guestfs_copy_device_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_device_to_file");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE srcv = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *src = StringValueCStr (srcv);
   const char *dest = StringValueCStr (destv);
@@ -16895,7 +17010,7 @@ ruby_guestfs_copy_device_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optar
   Check_Type (optargsv, T_HASH);
   struct guestfs_copy_device_to_file_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
   if (v != Qnil) {
     optargs_s.srcoffset = NUM2LL (v);
@@ -16939,12 +17054,19 @@ ruby_guestfs_copy_device_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optar
  * +guestfs_copy_file_to_device+[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_device]).
  */
 static VALUE
-ruby_guestfs_copy_file_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_file_to_device");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE srcv = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *src = StringValueCStr (srcv);
   const char *dest = StringValueCStr (destv);
@@ -16952,7 +17074,7 @@ ruby_guestfs_copy_file_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE optar
   Check_Type (optargsv, T_HASH);
   struct guestfs_copy_file_to_device_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
   if (v != Qnil) {
     optargs_s.srcoffset = NUM2LL (v);
@@ -17001,12 +17123,19 @@ ruby_guestfs_copy_file_to_device (VALUE gv, VALUE srcv, VALUE destv, VALUE optar
  * +guestfs_copy_file_to_file+[http://libguestfs.org/guestfs.3.html#guestfs_copy_file_to_file]).
  */
 static VALUE
-ruby_guestfs_copy_file_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optargsv)
+ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "copy_file_to_file");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE srcv = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *src = StringValueCStr (srcv);
   const char *dest = StringValueCStr (destv);
@@ -17014,7 +17143,7 @@ ruby_guestfs_copy_file_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optargs
   Check_Type (optargsv, T_HASH);
   struct guestfs_copy_file_to_file_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("srcoffset")));
   if (v != Qnil) {
     optargs_s.srcoffset = NUM2LL (v);
@@ -17119,19 +17248,25 @@ ruby_guestfs_copy_file_to_file (VALUE gv, VALUE srcv, VALUE destv, VALUE optargs
  * +guestfs_tune2fs+[http://libguestfs.org/guestfs.3.html#guestfs_tune2fs]).
  */
 static VALUE
-ruby_guestfs_tune2fs (VALUE gv, VALUE devicev, VALUE optargsv)
+ruby_guestfs_tune2fs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "tune2fs");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *device = StringValueCStr (devicev);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_tune2fs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_tune2fs_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("force")));
   if (v != Qnil) {
     optargs_s.force = RTEST (v);
@@ -17256,12 +17391,19 @@ ruby_guestfs_tune2fs (VALUE gv, VALUE devicev, VALUE optargsv)
  * +guestfs_md_create+[http://libguestfs.org/guestfs.3.html#guestfs_md_create]).
  */
 static VALUE
-ruby_guestfs_md_create (VALUE gv, VALUE namev, VALUE devicesv, VALUE optargsv)
+ruby_guestfs_md_create (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "md_create");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE namev = argv[0];
+  volatile VALUE devicesv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *name = StringValueCStr (namev);
   char **devices;
@@ -17271,7 +17413,7 @@ ruby_guestfs_md_create (VALUE gv, VALUE namev, VALUE devicesv, VALUE optargsv)
     len = RARRAY_LEN (devicesv);
     devices = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (devicesv, i);
+      volatile VALUE v = rb_ary_entry (devicesv, i);
       devices[i] = StringValueCStr (v);
     }
     devices[len] = NULL;
@@ -17280,7 +17422,7 @@ ruby_guestfs_md_create (VALUE gv, VALUE namev, VALUE devicesv, VALUE optargsv)
   Check_Type (optargsv, T_HASH);
   struct guestfs_md_create_argv optargs_s = { .bitmask = 0 };
   struct guestfs_md_create_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("missingbitmap")));
   if (v != Qnil) {
     optargs_s.missingbitmap = NUM2LL (v);
@@ -17346,7 +17488,7 @@ ruby_guestfs_list_md_devices (VALUE gv)
 
   size_t i, len = 0;
   for (i = 0; r[i] != NULL; ++i) len++;
-  VALUE rv = rb_ary_new2 (len);
+  volatile VALUE rv = rb_ary_new2 (len);
   for (i = 0; r[i] != NULL; ++i) {
     rb_ary_push (rv, rb_str_new2 (r[i]));
     free (r[i]);
@@ -17400,7 +17542,7 @@ ruby_guestfs_md_detail (VALUE gv, VALUE mdv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -17489,7 +17631,7 @@ ruby_guestfs_blkid (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   size_t i;
   for (i = 0; r[i] != NULL; i+=2) {
     rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
@@ -17534,19 +17676,25 @@ ruby_guestfs_blkid (VALUE gv, VALUE devicev)
  * +guestfs_e2fsck+[http://libguestfs.org/guestfs.3.html#guestfs_e2fsck]).
  */
 static VALUE
-ruby_guestfs_e2fsck (VALUE gv, VALUE devicev, VALUE optargsv)
+ruby_guestfs_e2fsck (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "e2fsck");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *device = StringValueCStr (devicev);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_e2fsck_argv optargs_s = { .bitmask = 0 };
   struct guestfs_e2fsck_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("correct")));
   if (v != Qnil) {
     optargs_s.correct = RTEST (v);
@@ -17600,7 +17748,7 @@ ruby_guestfs_llz (VALUE gv, VALUE directoryv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -17671,19 +17819,25 @@ ruby_guestfs_wipefs (VALUE gv, VALUE devicev)
  * +guestfs_ntfsfix+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsfix]).
  */
 static VALUE
-ruby_guestfs_ntfsfix (VALUE gv, VALUE devicev, VALUE optargsv)
+ruby_guestfs_ntfsfix (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsfix");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *device = StringValueCStr (devicev);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_ntfsfix_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsfix_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("clearbadsectors")));
   if (v != Qnil) {
     optargs_s.clearbadsectors = RTEST (v);
@@ -17729,12 +17883,19 @@ ruby_guestfs_ntfsfix (VALUE gv, VALUE devicev, VALUE optargsv)
  * +guestfs_ntfsclone_out+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsclone_out]).
  */
 static VALUE
-ruby_guestfs_ntfsclone_out (VALUE gv, VALUE devicev, VALUE backupfilev, VALUE optargsv)
+ruby_guestfs_ntfsclone_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsclone_out");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE backupfilev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *device = StringValueCStr (devicev);
   const char *backupfile = StringValueCStr (backupfilev);
@@ -17742,7 +17903,7 @@ ruby_guestfs_ntfsclone_out (VALUE gv, VALUE devicev, VALUE backupfilev, VALUE op
   Check_Type (optargsv, T_HASH);
   struct guestfs_ntfsclone_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("metadataonly")));
   if (v != Qnil) {
     optargs_s.metadataonly = RTEST (v);
@@ -17969,7 +18130,7 @@ ruby_guestfs_isoinfo_device (VALUE gv, VALUE devicev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("iso_system_id"), rb_str_new2 (r->iso_system_id));
   rb_hash_aset (rv, rb_str_new2 ("iso_volume_id"), rb_str_new2 (r->iso_volume_id));
   rb_hash_aset (rv, rb_str_new2 ("iso_volume_space_size"), UINT2NUM (r->iso_volume_space_size));
@@ -18024,7 +18185,7 @@ ruby_guestfs_isoinfo (VALUE gv, VALUE isofilev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_hash_new ();
+  volatile VALUE rv = rb_hash_new ();
   rb_hash_aset (rv, rb_str_new2 ("iso_system_id"), rb_str_new2 (r->iso_system_id));
   rb_hash_aset (rv, rb_str_new2 ("iso_volume_id"), rb_str_new2 (r->iso_volume_id));
   rb_hash_aset (rv, rb_str_new2 ("iso_volume_space_size"), UINT2NUM (r->iso_volume_space_size));
@@ -18080,7 +18241,7 @@ ruby_guestfs_vgmeta (VALUE gv, VALUE vgnamev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new (r, size);
+  volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
 }
@@ -18139,10 +18300,10 @@ ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("mdstat_device"), rb_str_new2 (r->val[i].mdstat_device));
     rb_hash_aset (hv, rb_str_new2 ("mdstat_index"), INT2NUM (r->val[i].mdstat_index));
     rb_hash_aset (hv, rb_str_new2 ("mdstat_flags"), rb_str_new2 (r->val[i].mdstat_flags));
@@ -18176,12 +18337,18 @@ ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
  * +guestfs_mkfs_btrfs+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_btrfs]).
  */
 static VALUE
-ruby_guestfs_mkfs_btrfs (VALUE gv, VALUE devicesv, VALUE optargsv)
+ruby_guestfs_mkfs_btrfs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mkfs_btrfs");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicesv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
 
   char **devices;
   Check_Type (devicesv, T_ARRAY);
@@ -18190,7 +18357,7 @@ ruby_guestfs_mkfs_btrfs (VALUE gv, VALUE devicesv, VALUE optargsv)
     len = RARRAY_LEN (devicesv);
     devices = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (devicesv, i);
+      volatile VALUE v = rb_ary_entry (devicesv, i);
       devices[i] = StringValueCStr (v);
     }
     devices[len] = NULL;
@@ -18199,7 +18366,7 @@ ruby_guestfs_mkfs_btrfs (VALUE gv, VALUE devicesv, VALUE optargsv)
   Check_Type (optargsv, T_HASH);
   struct guestfs_mkfs_btrfs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("allocstart")));
   if (v != Qnil) {
     optargs_s.allocstart = NUM2LL (v);
@@ -18354,7 +18521,7 @@ ruby_guestfs_get_e2attrs (VALUE gv, VALUE filev)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_str_new2 (r);
+  volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
 }
@@ -18394,12 +18561,19 @@ ruby_guestfs_get_e2attrs (VALUE gv, VALUE filev)
  * +guestfs_set_e2attrs+[http://libguestfs.org/guestfs.3.html#guestfs_set_e2attrs]).
  */
 static VALUE
-ruby_guestfs_set_e2attrs (VALUE gv, VALUE filev, VALUE attrsv, VALUE optargsv)
+ruby_guestfs_set_e2attrs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "set_e2attrs");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE filev = argv[0];
+  volatile VALUE attrsv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
 
   const char *file = StringValueCStr (filev);
   const char *attrs = StringValueCStr (attrsv);
@@ -18407,7 +18581,7 @@ ruby_guestfs_set_e2attrs (VALUE gv, VALUE filev, VALUE attrsv, VALUE optargsv)
   Check_Type (optargsv, T_HASH);
   struct guestfs_set_e2attrs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("clear")));
   if (v != Qnil) {
     optargs_s.clear = RTEST (v);
@@ -18625,10 +18799,10 @@ ruby_guestfs_btrfs_subvolume_list (VALUE gv, VALUE fsv)
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
-  VALUE rv = rb_ary_new2 (r->len);
+  volatile VALUE rv = rb_ary_new2 (r->len);
   size_t i;
   for (i = 0; i < r->len; ++i) {
-    VALUE hv = rb_hash_new ();
+    volatile VALUE hv = rb_hash_new ();
     rb_hash_aset (hv, rb_str_new2 ("btrfssubvolume_id"), ULL2NUM (r->val[i].btrfssubvolume_id));
     rb_hash_aset (hv, rb_str_new2 ("btrfssubvolume_top_level_id"), ULL2NUM (r->val[i].btrfssubvolume_top_level_id));
     rb_hash_aset (hv, rb_str_new2 ("btrfssubvolume_path"), rb_str_new2 (r->val[i].btrfssubvolume_path));
@@ -18764,7 +18938,7 @@ ruby_guestfs_btrfs_device_add (VALUE gv, VALUE devicesv, VALUE fsv)
     len = RARRAY_LEN (devicesv);
     devices = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (devicesv, i);
+      volatile VALUE v = rb_ary_entry (devicesv, i);
       devices[i] = StringValueCStr (v);
     }
     devices[len] = NULL;
@@ -18810,7 +18984,7 @@ ruby_guestfs_btrfs_device_delete (VALUE gv, VALUE devicesv, VALUE fsv)
     len = RARRAY_LEN (devicesv);
     devices = ALLOC_N (char *, len+1);
     for (i = 0; i < len; ++i) {
-      VALUE v = rb_ary_entry (devicesv, i);
+      volatile VALUE v = rb_ary_entry (devicesv, i);
       devices[i] = StringValueCStr (v);
     }
     devices[len] = NULL;
@@ -18878,19 +19052,25 @@ ruby_guestfs_btrfs_set_seeding (VALUE gv, VALUE devicev, VALUE seedingv)
  * +guestfs_btrfs_fsck+[http://libguestfs.org/guestfs.3.html#guestfs_btrfs_fsck]).
  */
 static VALUE
-ruby_guestfs_btrfs_fsck (VALUE gv, VALUE devicev, VALUE optargsv)
+ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "btrfs_fsck");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *device = StringValueCStr (devicev);
 
   Check_Type (optargsv, T_HASH);
   struct guestfs_btrfs_fsck_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
-  VALUE v;
+  volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("superblock")));
   if (v != Qnil) {
     optargs_s.superblock = NUM2LL (v);
@@ -19021,7 +19201,7 @@ void Init__guestfs ()
                    ULL2NUM (UINT64_C (0x80)));
 
   rb_define_method (c_guestfs, "test0",
-        ruby_guestfs_test0, 10);
+        ruby_guestfs_test0, -1);
   rb_define_method (c_guestfs, "test0rint",
         ruby_guestfs_test0rint, 1);
   rb_define_method (c_guestfs, "test0rinterr",
@@ -19165,7 +19345,7 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "list_filesystems",
         ruby_guestfs_list_filesystems, 0);
   rb_define_method (c_guestfs, "add_drive_opts",
-        ruby_guestfs_add_drive_opts, 2);
+        ruby_guestfs_add_drive_opts, -1);
   rb_define_method (c_guestfs, "inspect_get_windows_systemroot",
         ruby_guestfs_inspect_get_windows_systemroot, 1);
   rb_define_method (c_guestfs, "inspect_get_roots",
@@ -19175,7 +19355,7 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "debug_drives",
         ruby_guestfs_debug_drives, 0);
   rb_define_method (c_guestfs, "add_domain",
-        ruby_guestfs_add_domain, 2);
+        ruby_guestfs_add_domain, -1);
   rb_define_method (c_guestfs, "inspect_get_package_format",
         ruby_guestfs_inspect_get_package_format, 1);
   rb_define_method (c_guestfs, "inspect_get_package_management",
@@ -19203,7 +19383,7 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "inspect_get_drive_mappings",
         ruby_guestfs_inspect_get_drive_mappings, 1);
   rb_define_method (c_guestfs, "inspect_get_icon",
-        ruby_guestfs_inspect_get_icon, 2);
+        ruby_guestfs_inspect_get_icon, -1);
   rb_define_method (c_guestfs, "set_pgroup",
         ruby_guestfs_set_pgroup, 1);
   rb_define_method (c_guestfs, "get_pgroup",
@@ -19213,11 +19393,11 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "get_smp",
         ruby_guestfs_get_smp, 0);
   rb_define_method (c_guestfs, "mount_local",
-        ruby_guestfs_mount_local, 2);
+        ruby_guestfs_mount_local, -1);
   rb_define_method (c_guestfs, "mount_local_run",
         ruby_guestfs_mount_local_run, 0);
   rb_define_method (c_guestfs, "umount_local",
-        ruby_guestfs_umount_local, 1);
+        ruby_guestfs_umount_local, -1);
   rb_define_method (c_guestfs, "shutdown",
         ruby_guestfs_shutdown, 0);
   rb_define_method (c_guestfs, "mount",
@@ -19775,7 +19955,7 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "lvm_canonical_lv_name",
         ruby_guestfs_lvm_canonical_lv_name, 1);
   rb_define_method (c_guestfs, "mkfs_opts",
-        ruby_guestfs_mkfs_opts, 3);
+        ruby_guestfs_mkfs_opts, -1);
   rb_define_method (c_guestfs, "getxattr",
         ruby_guestfs_getxattr, 2);
   rb_define_method (c_guestfs, "lgetxattr",
@@ -19791,33 +19971,33 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "list_9p",
         ruby_guestfs_list_9p, 0);
   rb_define_method (c_guestfs, "mount_9p",
-        ruby_guestfs_mount_9p, 3);
+        ruby_guestfs_mount_9p, -1);
   rb_define_method (c_guestfs, "list_dm_devices",
         ruby_guestfs_list_dm_devices, 0);
   rb_define_method (c_guestfs, "ntfsresize_opts",
-        ruby_guestfs_ntfsresize_opts, 2);
+        ruby_guestfs_ntfsresize_opts, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_resize",
-        ruby_guestfs_btrfs_filesystem_resize, 2);
+        ruby_guestfs_btrfs_filesystem_resize, -1);
   rb_define_method (c_guestfs, "write_append",
         ruby_guestfs_write_append, 2);
   rb_define_method (c_guestfs, "compress_out",
-        ruby_guestfs_compress_out, 4);
+        ruby_guestfs_compress_out, -1);
   rb_define_method (c_guestfs, "compress_device_out",
-        ruby_guestfs_compress_device_out, 4);
+        ruby_guestfs_compress_device_out, -1);
   rb_define_method (c_guestfs, "part_to_partnum",
         ruby_guestfs_part_to_partnum, 1);
   rb_define_method (c_guestfs, "copy_device_to_device",
-        ruby_guestfs_copy_device_to_device, 3);
+        ruby_guestfs_copy_device_to_device, -1);
   rb_define_method (c_guestfs, "copy_device_to_file",
-        ruby_guestfs_copy_device_to_file, 3);
+        ruby_guestfs_copy_device_to_file, -1);
   rb_define_method (c_guestfs, "copy_file_to_device",
-        ruby_guestfs_copy_file_to_device, 3);
+        ruby_guestfs_copy_file_to_device, -1);
   rb_define_method (c_guestfs, "copy_file_to_file",
-        ruby_guestfs_copy_file_to_file, 3);
+        ruby_guestfs_copy_file_to_file, -1);
   rb_define_method (c_guestfs, "tune2fs",
-        ruby_guestfs_tune2fs, 2);
+        ruby_guestfs_tune2fs, -1);
   rb_define_method (c_guestfs, "md_create",
-        ruby_guestfs_md_create, 3);
+        ruby_guestfs_md_create, -1);
   rb_define_method (c_guestfs, "list_md_devices",
         ruby_guestfs_list_md_devices, 0);
   rb_define_method (c_guestfs, "md_detail",
@@ -19827,15 +20007,15 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "blkid",
         ruby_guestfs_blkid, 1);
   rb_define_method (c_guestfs, "e2fsck",
-        ruby_guestfs_e2fsck, 2);
+        ruby_guestfs_e2fsck, -1);
   rb_define_method (c_guestfs, "llz",
         ruby_guestfs_llz, 1);
   rb_define_method (c_guestfs, "wipefs",
         ruby_guestfs_wipefs, 1);
   rb_define_method (c_guestfs, "ntfsfix",
-        ruby_guestfs_ntfsfix, 2);
+        ruby_guestfs_ntfsfix, -1);
   rb_define_method (c_guestfs, "ntfsclone_out",
-        ruby_guestfs_ntfsclone_out, 3);
+        ruby_guestfs_ntfsclone_out, -1);
   rb_define_method (c_guestfs, "ntfsclone_in",
         ruby_guestfs_ntfsclone_in, 2);
   rb_define_method (c_guestfs, "set_label",
@@ -19853,11 +20033,11 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "md_stat",
         ruby_guestfs_md_stat, 1);
   rb_define_method (c_guestfs, "mkfs_btrfs",
-        ruby_guestfs_mkfs_btrfs, 2);
+        ruby_guestfs_mkfs_btrfs, -1);
   rb_define_method (c_guestfs, "get_e2attrs",
         ruby_guestfs_get_e2attrs, 1);
   rb_define_method (c_guestfs, "set_e2attrs",
-        ruby_guestfs_set_e2attrs, 3);
+        ruby_guestfs_set_e2attrs, -1);
   rb_define_method (c_guestfs, "get_e2generation",
         ruby_guestfs_get_e2generation, 1);
   rb_define_method (c_guestfs, "set_e2generation",
@@ -19883,7 +20063,7 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "btrfs_set_seeding",
         ruby_guestfs_btrfs_set_seeding, 2);
   rb_define_method (c_guestfs, "btrfs_fsck",
-        ruby_guestfs_btrfs_fsck, 2);
+        ruby_guestfs_btrfs_fsck, -1);
   rb_define_method (c_guestfs, "device_index",
         ruby_guestfs_device_index, 1);
   rb_define_method (c_guestfs, "nr_devices",

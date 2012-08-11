@@ -28,7 +28,7 @@ bin_PROGRAMS = guestfish
 
 generator_built = \
 	cmds.c \
-	cmds_gperf.gperf \
+	cmds-gperf.gperf \
 	completion.c \
 	event-names.c \
 	fish-cmds.h \
@@ -39,7 +39,7 @@ generator_built = \
 
 BUILT_SOURCES = \
 	$(generator_built) \
-	cmds_gperf.c \
+	cmds-gperf.c \
 	rc_protocol.h \
 	rc_protocol.c
 
@@ -64,19 +64,19 @@ EXTRA_DIST = \
 # files must not include other guestfish files.
 SHARED_SOURCE_FILES = \
 	config.c \
+	domain.c \
 	inspect.c \
 	keys.c \
 	options.h \
 	options.c \
 	progress.h \
-	progress.c \
-	virt.c
+	progress.c
 
 guestfish_SOURCES = \
 	$(generator_built) \
 	$(SHARED_SOURCE_FILES) \
 	alloc.c \
-	cmds_gperf.h \
+	cmds-gperf.h \
 	copy.c \
 	destpaths.c \
 	display.c \
@@ -92,11 +92,11 @@ guestfish_SOURCES = \
 	man.c \
 	more.c \
 	prep.c \
-	prep_disk.c \
-	prep_part.c \
-	prep_fs.c \
-	prep_lv.c \
-	prep_boot.c \
+	prep-disk.c \
+	prep-part.c \
+	prep-fs.c \
+	prep-lv.c \
+	prep-boot.c \
 	rc.c \
 	reopen.c \
 	setenv.c \
@@ -111,10 +111,10 @@ librc_protocol_la_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
 
 # Build the command lookup perfect hash code.  The generated code has
 # lots of warnings so we must compile it in a separate mini-library.
-libcmds_la_SOURCES = cmds_gperf.c
+libcmds_la_SOURCES = cmds-gperf.c
 libcmds_la_CFLAGS =
 
-cmds_gperf.c: cmds_gperf.gperf
+cmds-gperf.c: cmds-gperf.gperf
 	rm -f $@
 	$(GPERF) -t $< > $@-t
 	mv $@-t $@
@@ -138,16 +138,25 @@ noinst_LTLIBRARIES = libcmds.la librc_protocol.la
 guestfish_LDADD += libcmds.la librc_protocol.la ../gnulib/lib/libgnu.la
 
 if HAVE_RPCGEN
+RPCGEN_DEFS =
+if HAVE_XDR_U_INT64_T
+RPCGEN_DEFS += -DHAVE_XDR_U_INT64_T=1
+else
+if HAVE_XDR_UINT64_T
+RPCGEN_DEFS += -DHAVE_XDR_UINT64_T=1
+endif
+endif
+
 rc_protocol.c: rc_protocol.x
 	rm -f $@-t $@-t2
-	$(RPCGEN) -c -o $@-t $<
+	$(RPCGEN) $(RPCGEN_DEFS) -c -o $@-t $<
 	sed 's,\.\./\(\.\./\)*fish,.,' < $@-t > $@-t2
 	rm $@-t
 	mv $@-t2 $@
 
 rc_protocol.h: rc_protocol.x
 	rm -f $@-t
-	$(RPCGEN) -h -o $@-t $<
+	$(RPCGEN) $(RPCGEN_DEFS) -h -o $@-t $<
 	mv $@-t $@
 endif
 
@@ -173,7 +182,7 @@ noinst_DATA = \
 guestfish.1 $(top_builddir)/html/guestfish.1.html: stamp-guestfish.pod
 
 stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man guestfish.1 \
 	  --html $(top_builddir)/html/guestfish.1.html \
 	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
@@ -184,7 +193,7 @@ stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
 virt-copy-in.1 $(top_builddir)/html/virt-copy-in.1.html: stamp-virt-copy-in.pod
 
 stamp-virt-copy-in.pod: virt-copy-in.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-copy-in.1 \
 	  --html $(top_builddir)/html/virt-copy-in.1.html \
 	  $<
@@ -193,7 +202,7 @@ stamp-virt-copy-in.pod: virt-copy-in.pod
 virt-copy-out.1 $(top_builddir)/html/virt-copy-out.1.html: stamp-virt-copy-out.pod
 
 stamp-virt-copy-out.pod: virt-copy-out.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-copy-out.1 \
 	  --html $(top_builddir)/html/virt-copy-out.1.html \
 	  $<
@@ -202,7 +211,7 @@ stamp-virt-copy-out.pod: virt-copy-out.pod
 virt-tar-in.1 $(top_builddir)/html/virt-tar-in.1.html: stamp-virt-tar-in.pod
 
 stamp-virt-tar-in.pod: virt-tar-in.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-tar-in.1 \
 	  --html $(top_builddir)/html/virt-tar-in.1.html \
 	  $<
@@ -211,7 +220,7 @@ stamp-virt-tar-in.pod: virt-tar-in.pod
 virt-tar-out.1 $(top_builddir)/html/virt-tar-out.1.html: stamp-virt-tar-out.pod
 
 stamp-virt-tar-out.pod: virt-tar-out.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-tar-out.1 \
 	  --html $(top_builddir)/html/virt-tar-out.1.html \
 	  $<
@@ -250,7 +259,7 @@ TESTS += \
 	test-find0.sh \
 	test-glob.sh \
 	test-mount-local.sh \
-	test-read_file.sh \
+	test-read-file.sh \
 	test-remote.sh \
 	test-reopen.sh \
 	test-stringlist.sh \
@@ -268,7 +277,7 @@ EXTRA_DIST += \
 	test-find0.sh \
 	test-glob.sh \
 	test-mount-local.sh \
-	test-read_file.sh \
+	test-read-file.sh \
 	test-remote.sh \
 	test-reopen.sh \
 	test-stringlist.sh \

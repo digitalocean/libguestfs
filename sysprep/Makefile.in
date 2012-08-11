@@ -97,16 +97,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/float_h.m4 $(top_srcdir)/m4/fnmatch.m4 \
 	$(top_srcdir)/m4/fpending.m4 $(top_srcdir)/m4/fpieee.m4 \
 	$(top_srcdir)/m4/fseeko.m4 $(top_srcdir)/m4/fstat.m4 \
-	$(top_srcdir)/m4/fsusage.m4 $(top_srcdir)/m4/ftell.m4 \
-	$(top_srcdir)/m4/ftello.m4 $(top_srcdir)/m4/ftruncate.m4 \
-	$(top_srcdir)/m4/fts.m4 $(top_srcdir)/m4/futimens.m4 \
-	$(top_srcdir)/m4/getaddrinfo.m4 $(top_srcdir)/m4/getcwd.m4 \
-	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
-	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
-	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/fstatat.m4 $(top_srcdir)/m4/fsusage.m4 \
+	$(top_srcdir)/m4/ftell.m4 $(top_srcdir)/m4/ftello.m4 \
+	$(top_srcdir)/m4/ftruncate.m4 $(top_srcdir)/m4/fts.m4 \
+	$(top_srcdir)/m4/futimens.m4 $(top_srcdir)/m4/getaddrinfo.m4 \
+	$(top_srcdir)/m4/getcwd.m4 $(top_srcdir)/m4/getdelim.m4 \
+	$(top_srcdir)/m4/getdtablesize.m4 $(top_srcdir)/m4/getline.m4 \
+	$(top_srcdir)/m4/getlogin_r.m4 $(top_srcdir)/m4/getopt.m4 \
+	$(top_srcdir)/m4/getpagesize.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
@@ -131,9 +132,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
 	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
 	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
+	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -297,6 +299,7 @@ ERLC = @ERLC@
 ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
+EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
 FEBOOTSTRAP = @FEBOOTSTRAP@
 FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
@@ -866,7 +869,6 @@ JAR = @JAR@
 JAR_INSTALL_DIR = @JAR_INSTALL_DIR@
 JAVA = @JAVA@
 JAVAC = @JAVAC@
-JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVADOC = @JAVADOC@
 JAVAH = @JAVAH@
 JAVA_HOME = @JAVA_HOME@
@@ -1016,11 +1018,7 @@ PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PNMTOPNG = @PNMTOPNG@
 PO4A = @PO4A@
-POD2HTML = @POD2HTML@
-POD2MAN = @POD2MAN@
-POD2TEXT = @POD2TEXT@
-POD2_STDERR_OPTION = @POD2_STDERR_OPTION@
-POD2_UTF8_OPTION = @POD2_UTF8_OPTION@
+PODWRAPPER = @PODWRAPPER@
 PRAGMA_COLUMNS = @PRAGMA_COLUMNS@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PRIPTR_PREFIX = @PRIPTR_PREFIX@
@@ -1286,39 +1284,24 @@ CLEANFILES = \
 	stamp-virt-sysprep.pod
 
 
+# Filenames sysprep_operation_<name>.ml in alphabetical order.
+operations = \
+	bash_history blkid_tab ca_certificates cron_spool \
+	dhcp_client_state dhcp_server_state dovecot_data flag_reconfiguration \
+	hostname kerberos_data logfiles mail_spool net_hwaddr \
+	package_manager_cache pam_data random_seed \
+	rhn_systemid samba_db_log script smolt_uuid ssh_hostkeys \
+	ssh_userdir sssd_db_log udev_persistent_net user_account \
+	utmp yum_uuid
+
+
 # Alphabetical order.
 SOURCES = \
 	main.ml \
 	sysprep_gettext.ml \
 	sysprep_operation.ml \
 	sysprep_operation.mli \
-	sysprep_operation_bash_history.ml \
-	sysprep_operation_blkid_tab.ml \
-	sysprep_operation_ca_certificates.ml \
-	sysprep_operation_cron_spool.ml \
-	sysprep_operation_dhcp_client_state.ml \
-	sysprep_operation_dhcp_server_state.ml \
-	sysprep_operation_dovecot_data.ml \
-	sysprep_operation_flag_reconfiguration.ml \
-	sysprep_operation_hostname.ml \
-	sysprep_operation_kerberos_data.ml \
-	sysprep_operation_logfiles.ml \
-	sysprep_operation_mail_spool.ml \
-	sysprep_operation_net_hwaddr.ml \
-	sysprep_operation_package_manager_cache.ml \
-	sysprep_operation_pam_data.ml \
-	sysprep_operation_random_seed.ml \
-	sysprep_operation_rhn_systemid.ml \
-	sysprep_operation_samba_db_log.ml \
-	sysprep_operation_script.ml \
-	sysprep_operation_smolt_uuid.ml \
-	sysprep_operation_ssh_hostkeys.ml \
-	sysprep_operation_ssh_userdir.ml \
-	sysprep_operation_sssd_db_log.ml \
-	sysprep_operation_udev_persistent_net.ml \
-	sysprep_operation_user_account.ml \
-	sysprep_operation_utmp.ml \
-	sysprep_operation_yum_uuid.ml \
+	$(patsubst %,sysprep_operation_%.ml,$(operations)) \
 	utils.ml \
 	utils.mli
 
@@ -1328,33 +1311,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	sysprep_gettext.cmx \
 @HAVE_OCAML_TRUE@	utils.cmx \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_bash_history.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_blkid_tab.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_ca_certificates.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_cron_spool.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_dhcp_client_state.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_dhcp_server_state.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_dovecot_data.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_flag_reconfiguration.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_hostname.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_kerberos_data.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_logfiles.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_mail_spool.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_net_hwaddr.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_package_manager_cache.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_pam_data.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_random_seed.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_rhn_systemid.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_samba_db_log.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_script.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_smolt_uuid.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_ssh_hostkeys.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_ssh_userdir.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_sssd_db_log.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_udev_persistent_net.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_user_account.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_utmp.cmx \
-@HAVE_OCAML_TRUE@	sysprep_operation_yum_uuid.cmx \
+@HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 @HAVE_OCAML_TRUE@	main.cmx
 
 @HAVE_OCAML_TRUE@bin_SCRIPTS = virt-sysprep
@@ -1804,7 +1761,7 @@ appliance: force
 @HAVE_OCAML_TRUE@virt-sysprep.1 $(top_builddir)/html/virt-sysprep.1.html: stamp-virt-sysprep.pod
 
 @HAVE_OCAML_TRUE@stamp-virt-sysprep.pod: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.pod
-@HAVE_OCAML_TRUE@	$(top_builddir)/podwrapper.sh \
+@HAVE_OCAML_TRUE@	$(PODWRAPPER) \
 @HAVE_OCAML_TRUE@	  --man virt-sysprep.1 \
 @HAVE_OCAML_TRUE@          --insert sysprep-extra-options.pod:@EXTRA_OPTIONS@ \
 @HAVE_OCAML_TRUE@          --insert sysprep-operations.pod:@OPERATIONS@ \
@@ -1814,12 +1771,12 @@ appliance: force
 
 @HAVE_OCAML_TRUE@sysprep-extra-options.pod: virt-sysprep
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	../run ./$< --dump-pod-options > $@-t
+@HAVE_OCAML_TRUE@	$(top_builddir)/run ./$< --dump-pod-options > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 @HAVE_OCAML_TRUE@sysprep-operations.pod: virt-sysprep
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
-@HAVE_OCAML_TRUE@	../run ./$< --dump-pod > $@-t
+@HAVE_OCAML_TRUE@	$(top_builddir)/run ./$< --dump-pod > $@-t
 @HAVE_OCAML_TRUE@	mv $@-t $@
 
 # Dependencies.

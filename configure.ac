@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [18])
-m4_define([libguestfs_release], [5])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -147,9 +147,12 @@ if test "$gl_gcc_warnings" = yes; then
   AC_SUBST([WARN_CFLAGS])
 
   AC_DEFINE([lint], [1], [Define to 1 if the compiler is checking for lint.])
-  AC_DEFINE([_FORTIFY_SOURCE], [2],
-    [enable compile-time and run-time bounds-checking, and some warnings])
   AC_DEFINE([GNULIB_PORTCHECK], [1], [enable some gnulib portability checks])
+  AH_VERBATIM([FORTIFY_SOURCE],
+    [/* Enable compile-time and run-time bounds-checking, and some warnings. */
+#if __OPTIMIZE__
+# define _FORTIFY_SOURCE 2
+#endif])
 fi
 
 AC_C_PROTOTYPES
@@ -242,22 +245,6 @@ AC_CHECK_LIB([ncurses], [UP], [], [
 ])
 LIBS="$old_LIBS"
 
-dnl For modified printf in the daemon, we need glibc either (old-style)
-dnl register_printf_function or (new-style) register_printf_specifier.
-AC_CHECK_FUNC([register_printf_specifier],[
-        AC_DEFINE([HAVE_REGISTER_PRINTF_SPECIFIER],[1],
-                [Define to 1 if you have new-style register_printf_specifier])
-        ],[
-        AC_CHECK_FUNC([register_printf_function],[
-                AC_DEFINE([HAVE_REGISTER_PRINTF_FUNCTION],[1],
-                        [Define to 1 if you have old-style register_printf_function])
-                ],[
-                AC_MSG_FAILURE(
-[No support for glibc-style extended printf formatters.
-
-This means you either have a very old glibc (pre-2.0) or you
-are using some other libc where this is not supported.])])])
-
 dnl GNU gettext tools (optional).
 AC_CHECK_PROG([XGETTEXT],[xgettext],[xgettext],[no])
 AC_CHECK_PROG([MSGCAT],[msgcat],[msgcat],[no])
@@ -330,6 +317,22 @@ if test "x$enable_daemon" = "xyes"; then
         fi
         AC_MSG_RESULT([$DAEMON_SUPERMIN_DIR])
         AC_SUBST([DAEMON_SUPERMIN_DIR])
+
+        dnl For modified printf in the daemon, we need glibc either (old-style)
+        dnl register_printf_function or (new-style) register_printf_specifier.
+        AC_CHECK_FUNC([register_printf_specifier],[
+                AC_DEFINE([HAVE_REGISTER_PRINTF_SPECIFIER],[1],
+                        [Define to 1 if you have new-style register_printf_specifier])
+                ],[
+                AC_CHECK_FUNC([register_printf_function],[
+                        AC_DEFINE([HAVE_REGISTER_PRINTF_FUNCTION],[1],
+                                [Define to 1 if you have old-style register_printf_function])
+                        ],[
+                        AC_MSG_FAILURE(
+[No support for glibc-style extended printf formatters.
+
+This means you either have a very old glibc (pre-2.0) or you
+are using some other libc where this is not supported.])])])
 fi
 AM_CONDITIONAL([INSTALL_DAEMON],[test "x$enable_install_daemon" = "xyes"])
 AM_CONDITIONAL([VALGRIND_DAEMON],[test "x$enable_valgrind_daemon" = "xyes"])
@@ -392,6 +395,14 @@ AM_CONDITIONAL([HAVE_RPCGEN],[test "x$RPCGEN" != "xno"])
 AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
         AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl])
         ])
+AC_SEARCH_LIBS([xdr_u_int64_t],[portablexdr rpc xdr nsl],[
+        AC_DEFINE([HAVE_XDR_U_INT64_T],[1],[Define to 1 if xdr_u_int64_t() exists])
+        ])
+AC_SEARCH_LIBS([xdr_uint64_t],[portablexdr rpc xdr nsl],[
+        AC_DEFINE([HAVE_XDR_UINT64_T],[1],[Define to 1 if xdr_uint64_t() exists])
+        ])
+AM_CONDITIONAL([HAVE_XDR_U_INT64_T],[test "x$ac_cv_search_xdr_u_int64_t" != "xno"])
+AM_CONDITIONAL([HAVE_XDR_UINT64_T],[test "x$ac_cv_search_xdr_uint64_t" != "xno"])
 
 dnl Check for Augeas (optional).
 PKG_CHECK_MODULES([AUGEAS], [augeas],
@@ -449,37 +460,28 @@ AC_CHECK_PROG([GPERF],[gperf],[gperf],[no])
 test "x$GPERF" = "xno" &&
      AC_MSG_ERROR([gperf must be installed])
 
-dnl Check for pod2man, pod2text, pod2html.
-AC_CHECK_PROG([POD2MAN],[pod2man],[pod2man],[no])
-test "x$POD2MAN" = "xno" &&
-     AC_MSG_ERROR([pod2man must be installed])
-AC_CHECK_PROG([POD2TEXT],[pod2text],[pod2text],[no])
-test "x$POD2TEXT" = "xno" &&
-     AC_MSG_ERROR([pod2text must be installed])
-AC_CHECK_PROG([POD2HTML],[pod2html],[pod2html],[no])
-test "x$POD2HTML" = "xno" &&
-     AC_MSG_ERROR([pod2html must be installed])
+dnl Check for perl.
+AC_CHECK_PROG([PERL],[perl],[perl],[no])
+test "x$PERL" = "xno" &&
+     AC_MSG_ERROR([perl must be installed])
 
-dnl Check if pod2man, pod2text take --stderr and -u options (not in RHEL 5).
-AC_MSG_CHECKING([if pod2man takes --stderr option])
-if "$POD2MAN" --stderr >&AS_MESSAGE_LOG_FD 2>&1; then
-    AC_MSG_RESULT([yes])
-    POD2_STDERR_OPTION="--stderr"
+dnl Check for Pod::Man, Pod::Simple.
+AC_MSG_CHECKING([for Pod::Man])
+if ! $PERL -MPod::Man -e1 >&AS_MESSAGE_LOG_FD 2>&1; then
+    AC_MSG_ERROR([perl Pod::Man must be installed])
 else
-    AC_MSG_RESULT([no])
-    POD2_STDERR_OPTION=""
+    AC_MSG_RESULT([yes])
 fi
-AC_SUBST([POD2_STDERR_OPTION])
+AC_MSG_CHECKING([for Pod::Simple])
+if ! $PERL -MPod::Simple -e1 >&AS_MESSAGE_LOG_FD 2>&1; then
+    AC_MSG_ERROR([perl Pod::Simple must be installed])
+else
+    AC_MSG_RESULT([yes])
+fi
 
-AC_MSG_CHECKING([if pod2man takes -u option])
-if "$POD2MAN" -u >&AS_MESSAGE_LOG_FD 2>&1; then
-    AC_MSG_RESULT([yes])
-    POD2_UTF8_OPTION="-u"
-else
-    AC_MSG_RESULT([no])
-    POD2_UTF8_OPTION=""
-fi
-AC_SUBST([POD2_UTF8_OPTION])
+dnl Define the path to the podwrapper program.
+PODWRAPPER="$PERL $(pwd)/podwrapper.pl"
+AC_SUBST([PODWRAPPER])
 
 dnl Check for genisoimage/mkisofs
 AC_PATH_PROGS([GENISOIMAGE],[genisoimage mkisofs],[no],
@@ -532,7 +534,8 @@ fi
 
 dnl Check for QEMU for running binaries on this $host_cpu, fall
 dnl back to basic 'qemu'.  Allow the user to override it.
-default_qemu="qemu-kvm kvm qemu-system-$host_cpu qemu"
+qemu_system="`echo qemu-system-$host_cpu | $SED 's/i@<:@456@:>@86/i386/g'`"
+default_qemu="qemu-kvm kvm $qemu_system qemu"
 AC_ARG_WITH([qemu],
         [AS_HELP_STRING([--with-qemu],
           [set default QEMU binary @<:@default=[qemu-kvm] qemu-system-<host> qemu@:>@])],
@@ -909,22 +912,17 @@ AM_CONDITIONAL([HAVE_OCAML_GETTEXT],
         [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && test "x$OCAML_PKG_gettext" != "xno" && test "x$OCAML_GETTEXT" != "xno"])
 
 dnl Check for Perl (optional, for Perl bindings and Perl tools).
-PERL=no
 AC_ARG_ENABLE([perl],
         AS_HELP_STRING([--disable-perl], [Disable Perl language bindings]),
         [],
         [enable_perl=yes])
-AS_IF([test "x$enable_perl" != "xno"],
-        [
-        PERL=
-        AC_CHECK_PROG([PERL],[perl],[perl],[no])
-
+AS_IF([test "x$enable_perl" != "xno"],[
         dnl Check for Perl modules that must be present to compile and
         dnl test the Perl bindings.
         missing_perl_modules=no
         for pm in Test::More ExtUtils::MakeMaker; do
             AC_MSG_CHECKING([for $pm])
-            if ! perl -M$pm -e1 >&AS_MESSAGE_LOG_FD 2>&1; then
+            if ! $PERL -M$pm -e1 >&AS_MESSAGE_LOG_FD 2>&1; then
                 AC_MSG_RESULT([no])
                 missing_perl_modules=yes
             else
@@ -1155,20 +1153,20 @@ if test "x$with_java_home" != "xno"; then
 
         dnl Need extra version flag?
         AC_MSG_CHECKING([extra javac flags])
-        JAVAC_FLAGS=
+        EXTRA_JAVAC_FLAGS=
         javac_version=`$JAVAC -version 2>&1`
         case "$javac_version" in
         *Eclipse*)
-            JAVAC_FLAGS="-source 1.5" ;;
+            EXTRA_JAVAC_FLAGS="-source 1.5" ;;
         esac
-        AC_MSG_RESULT([$JAVAC_FLAGS])
+        AC_MSG_RESULT([$EXTRA_JAVAC_FLAGS])
 
         dnl Extra lint flags?
         AC_MSG_CHECKING([extra javac lint flags])
         if $JAVAC -X >/dev/null 2>&1 && \
            $JAVAC -X 2>&1 | grep -q -- '-Xlint:.*all'; then
             AC_MSG_RESULT([-Xlint:all])
-            JAVAC_FLAGS="$JAVAC_FLAGS -Xlint:all"
+            EXTRA_JAVAC_FLAGS="$EXTRA_JAVAC_FLAGS -Xlint:all"
         else
             AC_MSG_RESULT([no])
         fi
@@ -1196,7 +1194,7 @@ AC_SUBST(JAVAH)
 AC_SUBST(JAVADOC)
 AC_SUBST(JAR)
 AC_SUBST(JNI_CFLAGS)
-AC_SUBST(JAVAC_FLAGS)
+AC_SUBST(EXTRA_JAVAC_FLAGS)
 AC_SUBST(JAR_INSTALL_DIR)
 AC_SUBST(JNI_INSTALL_DIR)
 AC_SUBST(JNI_VERSION_INFO)
@@ -1345,11 +1343,11 @@ dnl Produce output files.
 AC_CONFIG_HEADERS([config.h])
 dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
 AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
-                [chmod +x appliance/libguestfs-make-fixed-appliance])
-AC_CONFIG_FILES([podwrapper.sh],
-                [chmod +x podwrapper.sh])
+                [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
+AC_CONFIG_FILES([podwrapper.pl],
+                [chmod +x,-w podwrapper.pl])
 AC_CONFIG_FILES([run],
-                [chmod +x run])
+                [chmod +x,-w run])
 AC_CONFIG_FILES([Makefile
                  align/Makefile
                  appliance/Makefile

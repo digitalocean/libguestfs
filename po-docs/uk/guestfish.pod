@@ -412,7 +412,7 @@ Display the guestfish / libguestfs version number and exit.
 This changes the I<-a>, I<-d> and I<-m> options so that disks are added and
 mounts are done read-write.
 
-See L</OPENING DISKS FOR READ AND WRITE> below.
+Див. L</OPENING DISKS FOR READ AND WRITE> нижче.
 
 =item B<-x>
 

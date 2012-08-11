@@ -32,7 +32,7 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img
 
 # Alphabetical order.
 SOURCES = \
-	progress_c.c \
+	progress-c.c \
 	progress.mli \
 	progress.ml \
 	resize.ml \
@@ -45,7 +45,7 @@ if HAVE_OCAML
 # Note this list must be in dependency order.
 OBJECTS = \
 	$(top_builddir)/fish/guestfish-progress.o \
-	progress_c.o \
+	progress-c.o \
 	resize_gettext.cmx \
 	utils.cmx \
 	progress.cmx \
@@ -92,7 +92,7 @@ noinst_DATA = $(top_builddir)/html/virt-resize.1.html
 virt-resize.1 $(top_builddir)/html/virt-resize.1.html: stamp-virt-resize.pod
 
 stamp-virt-resize.pod: virt-resize.pod
-	$(top_builddir)/podwrapper.sh \
+	$(PODWRAPPER) \
 	  --man virt-resize.1 \
 	  --html $(top_builddir)/html/virt-resize.1.html \
 	  $<
