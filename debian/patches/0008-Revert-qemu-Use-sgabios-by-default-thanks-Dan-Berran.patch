@@ -1,0 +1,29 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Tue, 14 Aug 2012 21:42:08 +0200
+Subject: Revert "qemu: Use sgabios by default (thanks Dan Berrange)."
+
+This reverts commit 82e3b7509dea41823c1ce58acd61d406d460c0ab.
+---
+ src/launch.c |    9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/src/launch.c b/src/launch.c
+index cb51526..b0c810e 100644
+--- a/src/launch.c
++++ b/src/launch.c
+@@ -777,15 +777,6 @@ launch_appliance (guestfs_h *g)
+     add_cmdline (g, "stdio");
+ #endif
+ 
+-    /* Use sgabios instead of vgabios.  This means we'll see BIOS
+-     * messages on the serial port, and also works around this bug
+-     * in qemu 1.1.0:
+-     * https://bugs.launchpad.net/qemu/+bug/1021649
+-     * QEmu has included sgabios upstream since just before 1.0.
+-     */
+-    add_cmdline (g, "-device");
+-    add_cmdline (g, "sga");
+-
+     /* Set up virtio-serial for the communications channel. */
+     add_cmdline (g, "-chardev");
+     snprintf (buf, sizeof buf, "socket,path=%s,id=channel0", guestfsd_sock);
