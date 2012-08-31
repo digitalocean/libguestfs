@@ -18,10 +18,7 @@ libguestfs, L<guestfish(1)> and the virt tools.
 
 =head1 Audit a virtual machine for setuid files
 
-The link below contains a small program which can be used to audit a Linux
-virtual machine to see what setuid and setgid files it contains.
-
-L<https://rwmj.wordpress.com/2010/12/15/tip-audit-virtual-machine-for-setuid-files/#content>
+See: L<virt-ls(1)/EXAMPLES>.
 
 =head1 Change the background image in a Windows XP VM
 
@@ -32,28 +29,12 @@ be substantially different for each version of Windows.
 L<https://lists.fedoraproject.org/pipermail/virt/2011-May/002655.html>
 L<https://lists.fedoraproject.org/pipermail/virt/2011-May/002658.html>
 
-=head1 Клонування віртуальної машини (Linux)
+=head1 Cloning a virtual machine
 
-The guestfish technique described in the link below works well for most
-Linux VMs.  Depending on the Linux distro you may need to change the paths
-slightly.
+Use a combination of tools like L<cp(1)>, L<dd(1)>, and virt tools like
+L<virt-sysprep(1)>, L<virt-sparsify(1)> and L<virt-resize(1)>.
 
-L<https://rwmj.wordpress.com/2010/09/24/tip-my-procedure-for-cloning-a-fedora-vm/#content>
-
-Avoid L<virt-clone(1)>.  Currently what to do about virt-clone is under
-discussion.
-
-L<https://www.redhat.com/archives/virt-tools-list/2011-May/msg00019.html>
-
-=head1 Клонування віртуальної машини (Windows)
-
-It is possible to do a "sysprep" using libguestfs alone, although not
-straightforward.  Currently there is code in the Aeolus Oz project which
-does this (using libguestfs).  As part of our review of the virt-clone tool,
-we may add sysprepping ability.
-
-L<https://github.com/clalancette/oz>
-L<https://www.redhat.com/archives/virt-tools-list/2011-May/msg00019.html>
+For more details, see: L<virt-sysprep(1)/COPYING AND CLONING>.
 
 =head1 Convert a CD-ROM / DVD / ISO to a tarball
 
@@ -67,16 +48,39 @@ To export just a subdirectory, eg. C</files>, do:
 
 =head1 Створення порожніх образів дисків
 
-You can use the L<guestfish(1)> I<-N> option to create empty disk images.
-The useful guide below explains the options available.
+The L<virt-format(1)> tool can do this directly.
+
+Use L<virt-make-fs(1)> to create a disk image with content.  This can also
+create some standard disk images such as virtual floppy devices (VFDs).
+
+You can also use the L<guestfish(1)> I<-N> option to create empty disk
+images.  The useful guide below explains the options available.
 
 L<https://rwmj.wordpress.com/2010/09/08/new-guestfish-n-options-in-1-5-9/#content>
+
+=head1 Delete a file (or other simple file operations)
+
+Use guestfish.  To delete a file:
+
+ guestfish -a disk.img -i rm /file/to/delete
+
+To touch a file (bring it up to date or create it):
+
+ guestfish -a disk.img -i touch /file/to/touch
+
+To stat a file.  Since this is a read-only operation, we can make it safer
+by adding the I<--ro> flag.
+
+ guestfish --ro -a disk.img -i stat /file/to/stat
+
+There are dozens of these commands.  See L<guestfish(1)> or the output of
+C<guestfish -h>
 
 =head1 Dump raw filesystem content from inside a disk image or VM
 
 You can use the L<guestfish(1)> C<download> command to extract the raw
 filesystem content from any filesystem in a disk image or a VM (even one
-which is encrypted or buried inside an LV):
+which is encrypted or buried inside an LV or RAID device):
 
  guestfish --ro -a disk.img run : download /dev/sda1 sda1.img
 
@@ -106,7 +110,7 @@ Change kernel command line options.
 
 Use L<virt-edit(1)> to edit the grub configuration:
 
- virt-edit -d BrokenGuest /boot/grub/grub.conf
+ virt-edit -d BrokenGuest /boot/grub2/grub.cfg
 
 or for general tinkering inside an unbootable VM use L<virt-rescue(1)> like
 this:
@@ -299,9 +303,7 @@ machines), change C<-d "$1"> to C<-a "$1">.  See also L<virt-inspector(1)>.
 
 =head1 Показати список файлів і каталогів у віртуальній машині
 
-This involves using the L<guestfish(1)> C<find0> command like this:
-
- guestfish --ro -d Guest -i find0 / - | tr '\0' '\n' | sort
+Use L<virt-ls(1)>.
 
 =head1 Показати список служб у віртуальній машині Windows
 
@@ -313,10 +315,7 @@ L<https://rwmj.wordpress.com/2010/12/10/tip-list-services-in-a-windows-guest/#co
 
 =head1 Make a disk image sparse
 
-The link below contains some guides for making a disk image sparse (or
-reintroducing sparseness).
-
-L<https://rwmj.wordpress.com/2010/10/19/tip-making-a-disk-image-sparse/#content>
+Use L<virt-sparsify(1)>.
 
 =head1 Monitor disk usage over time
 
@@ -347,6 +346,16 @@ password from a Windows VM, or to be more precise, it gives you a command
 prompt the next time you log in which you can use to bypass any security:
 
 L<https://mdbooth.wordpress.com/2010/10/18/resetting-a-windows-guests-administrator-password-with-guestfish/>
+
+=head1 Sysprepping a virtual machine (Windows)
+
+It is possible to do a "sysprep" using libguestfs alone, although not
+straightforward.  Currently there is code in the Aeolus Oz project which
+does this (using libguestfs).  It is likely we will add this to
+L<virt-sysprep(1)> in future.
+
+L<https://github.com/clalancette/oz>
+L<https://www.redhat.com/archives/virt-tools-list/2011-May/msg00019.html>
 
 =head1 Розпакування компакт-диска з портативною системою
 
@@ -383,23 +392,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc. L<http://libguestfs.org/>, 2009–2012
-
-The examples in this manual page may be freely copied, modified and
-distributed without any restrictions.
-
-This library is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2 of the License, or (at your
-option) any later version.
-
-Ця бібліотека поширюється у сподіванні, що вона буде корисною, але БЕЗ
-БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
-ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
-про це можна дізнатися з GNU General Public License.
-
-Ви маєте отримати копію GNU Lesser General Public License разом з цією
-бібліотекою; якщо це не так, повідомте про факт за адресою Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
-USA
+© Red Hat Inc., 2009–2012
 

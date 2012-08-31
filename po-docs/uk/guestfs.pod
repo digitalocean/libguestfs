@@ -1200,6 +1200,67 @@ filesystem labels.
 
 =back
 
+=head2 NULL DISKS
+
+When adding a disk using, eg., L</guestfs_add_drive>, you can set the
+filename to C<"/dev/null">.  This string is treated specially by libguestfs,
+causing it to add a "null disk".
+
+A null disk has the following properties:
+
+=over 4
+
+=item *
+
+A null disk will appear as a normal device, eg. in calls to
+L</guestfs_list_devices>.
+
+=item *
+
+You may add C<"/dev/null"> multiple times.
+
+=item *
+
+You should not try to access a null disk in any way.  For example, you
+shouldn't try to read it or mount it.
+
+=back
+
+Null disks are used for three main purposes:
+
+=over 4
+
+=item 1.
+
+Performance testing of libguestfs (see L<guestfs-performance(1)>).
+
+=item 2.
+
+The internal test suite.
+
+=item 3.
+
+If you want to use libguestfs APIs that don't refer to disks, since
+libguestfs requires that at least one disk is added, you should add a null
+disk.
+
+For example, to test if a feature is available, use code like this:
+
+ guestfs_h *g;
+ char **groups = [ "btrfs", NULL ];
+ 
+ g = guestfs_create ();
+ guestfs_add_drive (g, "/dev/null");
+ guestfs_launch (g);
+ if (guestfs_available (g, groups) == 0) {
+   // group(s) are available
+ } else {
+   // group(s) are not available
+ }
+ guestfs_close (g);
+
+=back
+
 =head1 БЕЗПЕКА
 
 This section discusses security implications of using libguestfs,
@@ -3273,60 +3334,11 @@ L<http://libguestfs.org/>.
 Tools with a similar purpose: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>,
 L<lvm(8)>, L<disktype(1)>.
 
-=head1 ВАДИ
-
-Щоб переглянути список відомих вад у libguestfs, скористайтеся таким
-посиланням:
-
-L<https://bugzilla.redhat.com/buglist.cgi?component=libguestfs&product=Virtualization+Tools>
-
-Для звітування щодо вад у libguestfs скористайтеся цим посиланням:
-
-L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
-
-Під час створення повідомлення щодо вади вам слід переконатися:
-
-=over 4
-
-=item *
-
-Що про ваду вже не повідомлено кимось іншим.
-
-=item *
-
-Що ви користуєтеся найсвіжішою версією.
-
-=item *
-
-Що ви точно описали ваду та способи її відтворення.
-
-=item *
-
-Run libguestfs-test-tool and paste the B<complete, unedited> output into the
-bug report.
-
-=back
-
 =head1 АВТОРИ
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2012 L<http://libguestfs.org/>
-
-This library is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2 of the License, or (at your
-option) any later version.
-
-Ця бібліотека поширюється у сподіванні, що вона буде корисною, але БЕЗ
-БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
-ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
-про це можна дізнатися з GNU General Public License.
-
-Ви маєте отримати копію GNU Lesser General Public License разом з цією
-бібліотекою; якщо це не так, повідомте про факт за адресою Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
-USA
+© Red Hat Inc., 2009–2012
 

@@ -230,6 +230,12 @@ struct guestfs_h
    */
   int user_cancel;
 
+  /* Used to generate unique numbers, eg for temp files.  To use this,
+   * '++g->unique'.  Note these are only unique per-handle, not
+   * globally unique.
+   */
+  int unique;
+
 #if HAVE_FUSE
   /* These fields are used by guestfs_mount_local. */
   const char *localmountpoint;
@@ -378,6 +384,7 @@ extern void guestfs___debug (guestfs_h *g, const char *fs, ...)
 extern void guestfs___trace (guestfs_h *g, const char *fs, ...)
   __attribute__((format (printf,2,3)));
 extern const char *guestfs___persistent_tmpdir (void);
+extern int guestfs___lazy_make_tmpdir (guestfs_h *g);
 extern void guestfs___remove_tmpdir (const char *dir);
 extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...);
 #if HAVE_FUSE

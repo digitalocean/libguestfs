@@ -52,11 +52,6 @@ then this is just wasted overhead.
 
 Useful if exporting data to a Windows guest.
 
-I<Note for vfat>: The tar archive or local directory must only contain files
-which are owned by root (ie. UID:GID = 0:0).  The reason is that the tar
-program running within libguestfs is unable to change the ownership of
-non-root files, since vfat itself does not support this.
-
 =item I<minix>
 
 Lower overhead than C<ext2>, but certain limitations on filename length and
@@ -221,15 +216,6 @@ L<mkisofs(1)>, L<genisoimage(1)>, L<mksquashfs(1)>, L<mke2fs(8)>,
 L<resize2fs(8)>, L<guestfs(3)>, L<Sys::Guestfs(3)>,
 L<http://libguestfs.org/>.
 
-=head1 バグ
-
-バグを報告するとき、デバッグを有効にして、I<完全な> 出力を記録してください:
-
- export LIBGUESTFS_DEBUG=1
- virt-make-fs --debug [...] > /tmp/virt-make-fs.log 2>&1
-
-/tmp/virt-make-fs.log を L<https://bugzilla.redhat.com/> の新しいバグ報告に添付します
-
 =head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
@@ -237,18 +223,4 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 =head1 COPYRIGHT
 
 Copyright (C) 2010-2012 Red Hat Inc.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
-
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 

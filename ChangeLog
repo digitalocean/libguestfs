@@ -1,3 +1,260 @@
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.7.
+
+	FAQ: Remove link to old RHEL 6.3 preview repo. (cherry picked from commit 8af32b9d5fa0601fabffd9550f1cdc97ac78306a)
+
+	lib: Remove AUGEAS_CFLAGS, AUGEAS_LIBS.
+	The library doesn't actually use libaugeas, except indirectly via the
+	libguestfs API.  The libguestfs API implements this in the daemon, so
+	there's no need for the library to link to augeas at all.
+	(cherry picked from commit 228d49bb842cda517b414bbfab460e8be429cc5f)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Further java/java-home fixes.
+	In particular the JVM executable is now called $JAVA_EXE.
+
+	This fixes commit 40b9c14ca9af3b31ea1cf5336142d63313bbae39.
+
+	(cherry picked from commit 684efb3706795bdd8cb0d4c026067fb4d70e23d1)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: bindtests: Fix 64 bit integers on input on 32 bit Perl interpreter. (cherry picked from commit 15cd9dde5e0e4a7d510de71ef8991750971cf6d1)
+
+2012-08-30  Wulf C. Krueger  <philantrop@exherbo.org>
+
+	Fix Java detection and rename --with-java-home to --with-java.
+	Without this patch, if JAVAC points to a valid executable, --with-java-home=no
+	is not respected but the build simply fails.
+	Furthermore, --with{,out}-java is a more common form and more in-line with all
+	other options.
+	(cherry picked from commit 40b9c14ca9af3b31ea1cf5336142d63313bbae39)
+
+	Fix disabling the Perl bindings.
+	--disable-perl isn't currently respected because $PERL correctly points
+	to the perl executable and $missing_perl_modules doesn't prevent the
+	perl parts to be installed either. Thus, a check for $enable_perl is
+	needed.
+	(cherry picked from commit cab48ce73cb19b1aa8784e6c6a3cb8f47b0cbc0e)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	po-docs: Copy all *.1 and *.3 files to the install dir. (cherry picked from commit 512f21c965c5d4bf1faf922d6a241c397f703e67)
+
+	UPDATE PO-DOCS LIST OF MAN PAGES
+
+	po-docs: Update the list of man pages. (cherry picked from commit 67a803e1f28ef0ba7549ef71cd5a094dabf962a7)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	po-docs: Fix podwrapper so it works on translated POD files.
+	These don't contain literal strings like "AUTHORS" (they have the
+	translated versions instead) and so checking for these English strings
+	is rather useless.
+
+	Also we don't usually have the '--license' parameter conveniently
+	around so don't enforce this section.
+	(cherry picked from commit ddc67d94f37ca4e942cb385d4e5ec476766fef12)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	po-docs: Don't output translated virt-sysprep page as HTML. (cherry picked from commit 540fbfcf34089e2baeea9c94a850cdea0c0db903)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	tools: Fix podwrapper errors in tools directory.
+	This also makes the test for license "code" less strict, so it should
+	only match POD, not Perl comments.
+
+	This fixes commit 2f97bf873b64384835f257f8916bf1ebb2af62b4.
+	(cherry picked from commit 23b7fe09e1589c3c9ca5f52a9588ad1c73649b14)
+
+2012-08-30  Masami HIRATA  <msmhrt@gmail.com>
+
+	Mac OS X: Fixed combination of running autogen.sh on Linux and building on Mac OS X
+	(cherry picked from commit 0a275bd090850963f331a115a4fadfbf1dfb1caf)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Ignore $parser->html_charset if it fails (thanks Wulf C. Krueger).
+	This method was added in Pod::Simple 3.16 so earlier versions of Perl
+	won't have it.  It's not the end of the world if we don't set it.
+	(cherry picked from commit d555a68ca6475bbb6f7f60ae1bdcdffa99df351f)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Call udev_settle after mkswap.
+	This adds a call to udev_settle after creating the swap device.
+	This is an attempt to workaround the following problem seen in Koji
+	and Rawhide:
+
+	libguestfs: trace: mkswap_L "swapit" "/dev/sda1"
+	libguestfs: send_to_daemon: 72 bytes: 00 00 00 44 | 20 00 f5 f5 | 00 00 00 04 | 00 00 00 83 | 00 00 00 00 | ...
+	guestfsd: main_loop: proc 210 (part_disk) took 2.28 seconds
+	guestfsd: main_loop: new request, len 0x44
+	mkswap -f -L swapit /dev/sda1
+	libguestfs: recv_from_daemon: 40 bytes: 20 00 f5 f5 | 00 00 00 04 | 00 00 00 83 | 00 00 00 01 | 00 12 37 cf | ...
+	libguestfs: trace: mkswap_L = 0
+	libguestfs: trace: swapon_label "swapit"
+	libguestfs: send_to_daemon: 56 bytes: 00 00 00 34 | 20 00 f5 f5 | 00 00 00 04 | 00 00 00 ae | 00 00 00 00 | ...
+	guestfsd: main_loop: proc 131 (mkswap_L) took 0.77 seconds
+	guestfsd: main_loop: new request, len 0x34
+	swapon -L swapit
+	swapon: cannot find the device for swapit
+	guestfsd: error: swapit: swapon: cannot find the device for swapit
+	libguestfs: recv_from_daemon: 100 bytes: 20 00 f5 f5 | 00 00 00 04 | 00 00 00 ae | 00 00 00 01 | 00 12 37 d0 | ...
+	libguestfs: trace: swapon_label = -1 (error)
+	swapon_label: swapit: swapon: cannot find the device for swapit
+	test_swapon_label_0 FAILED
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Use man page name as default title in HTML output. (cherry picked from commit c638e1f03d2700560fe32c0889224ac29bd52334)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Add --license parameter, which is required.
+	This adds standard LICENSE and BUGS sections to all of the man pages
+	that are processed by podwrapper.
+
+	Modify all the calls to $(PODWRAPPER) to add the right --license
+	parameter according to the content.  Note that this relaxes the
+	license on some code example pages, making them effectively BSD-style
+	licensed.
+
+	(cherry picked from commit 2f97bf873b64384835f257f8916bf1ebb2af62b4)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	man pages: Ensure consistent copyright/author sections, remove license section.
+	Ensure each man page contains consistent COPYRIGHT and AUTHOR
+	sections.
+
+	Remove the LICENSE section.  We will add that back in podwrapper in a
+	later commit.
+
+	(cherry picked from commit f1d98bbc79496947210ee0305f80440ed8557ec1)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Ensure the input file is printed in some error messages. (cherry picked from commit e89e180d2b1ee7c3a452a327a336dd3facd2a51f)
+
+	docs: Document null disks.
+	It's always been possible to use /dev/null as a disk image.
+	Document this formally in the API.
+	(cherry picked from commit e1e8b3a1cfdeee34fbd51f79b8724c5a58f25c10)
+
+	FAQ: Re-add #backup anchor for section on backups. (cherry picked from commit 984044043dc423687862fe2058b43786ab4acf1a)
+
+	recipes: Update dumping filesystem content to mention that we now support MD/RAID. (cherry picked from commit 52e38c7bdc293cb2f2531eab3dde6d569a05b5e9)
+
+	recipes: Refer to virt-format, virt-make-fs for creating disk images. (cherry picked from commit 1e4c6e36a6d122b4615dc509ef745dde7e37321d)
+
+	recipes: Cloning Windows: plans for virt-sysprep. (cherry picked from commit 5f234548ed07b8e41a31462290aae3ea842630c2)
+
+	recipes: For auditing for setuid files, point to virt-ls examples. (cherry picked from commit 9fd4d16819ad200814be717732c77664e18132f2)
+
+	recipes: For sparsifying guests, point to virt-sparsify. (cherry picked from commit 0d2e70b1c71dba01f71a4375eb10b83059a41bb2)
+
+	recipes: For listing files, point to virt-ls. (cherry picked from commit d944a491ac3aa9b9ed1bcdc0ee378519a367276a)
+
+	recipes: Most guests now use grub2, so change the example. (cherry picked from commit 87cf749cde7b9ecdfd95d0b4cac939a2be767fd7)
+
+	recipes: Add a section on deleting a file and other common file operations. (cherry picked from commit 10d48bef3055e1b7177b4f8df52133c50484a87a)
+
+	recipes: Update cloning section. (cherry picked from commit 1454751b731ff3a448cc5b5b46f4cbc1fc2f66d0)
+
+	FAQ: virt-sparsify and raw sparse output. (cherry picked from commit cd1627e8041ffa06764ef82b984f4291660edcc9)
+
+	run: Disable 'memory optimizations' in glib programs, for valgrind (thanks Dan Berrange). (cherry picked from commit 5e6727746367ba3f935dccb80109abf8e34fe74d)
+
+	sysprep: Improve error messages. (cherry picked from commit 0f33a1d90c65f31444e14aef27d489706230939f)
+
+	subdir-rules.mk: Remove rules that recursively build src/ and daemon/.
+	These are unnecessary, and slow down the whole build.
+	(cherry picked from commit 856e78a2ce025563de5d9e8c416edf054b0db563)
+
+	test-launch-race: Use /dev/null instead of hand-made zero-length file.
+	There seems to be no reason why creating a zero-length
+	file is necessary for this test.
+	(cherry picked from commit 7f9f2818651860a15a7142d3761e3168e062c357)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Move code to add a drive to the list to separate add_drive utility function.
+	This is just code motion / simplification.
+
+	(cherry picked from commit 46cf4a7e875b828c7a97bd85f577721bce386bc3)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Add utility function guestfs___lazy_make_tmpdir.
+	This lets us create g->tmpdir lazily earlier if needed.
+
+	This commit is just code motion.
+
+	(cherry picked from commit 4b8ac437295d5420d3186a913bc3740b69a8d342)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Add 'g->unique' to handle, for making unique IDs. (cherry picked from commit 22607a97cdf115caabf05c3dc87c5f154a2e914c)
+
+	inspect: Clarify comment about uniqueness of cache. (cherry picked from commit 8fd6f1bebef11d1c4eb77ac2b7d95fd5a7e82be9)
+
+	close: Check if g->tmpdir is non-NULL before removing tmpdir.
+	This happens, by chance, to work.
+	(cherry picked from commit ba61236d0d6756f45d8707e96cda00c016cadebe)
+
+	java: Fix bindtests when passing 64 bit integer literals. (cherry picked from commit 704e46af9c054fe3571884989c992dfd7d8284e5)
+
+	ocaml: Fix bindtests when passing negative optional arguments. (cherry picked from commit 9526f632d80f8d66ecf8a7da5444e1446129fceb)
+
+	python: Fix comment referring to Perl(!) (cherry picked from commit 7dd2389359d190e81696f1b2e91e719bdc1822f2)
+
+	generator: Allow permission of output files to be specified. (cherry picked from commit 449bd4b50ff8ecd9128439a39a74ca731a17aa1f)
+
+2012-08-30  Hilko Bengen  <bengen@hilluzination.de>
+
+	Even on Debian, the package containing the diff binary it has been diffutils for two years.
+	There had been a virtual package "diff" that depended on diffutils, but that's gone in wheezy/sid, too.
+	(cherry picked from commit 3234a1f903bb77c66252b38425a4c913f8e7bb8c)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: New utility functions 'join_strings', 'concat_strings'.
+	Useful functions for concatenating strings together.
+	(cherry picked from commit 637b06ab1384f0c904715ba76fc759dac1b95500)
+
+	bindtests: Space before parens in call. (cherry picked from commit 690bdaa3927e56d33e241752eef37f887274d73b)
+
+	docs: Add a section describing how to use gdb + qemu wrappers to debug the appliance. (cherry picked from commit 84c897c93a794e4bdab37dfd505618de68bf145d)
+
+	docs: Show how to use 'annotate-output' command to collect timings. (cherry picked from commit 22da2cb0ae45c1c50e7ba5618f9944a3d417ec7e)
+
+2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Use Store_field macro instead of caml_modify.
+	Use the safer, higher level Store_field macro when constructing arrays
+	of structs to return.
+
+	I don't know if it is strictly necessary in this case, but it's safer.
+	(cherry picked from commit 769a6f24c60e7a4d55560025554796ba4be19d03)
+
+2012-08-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-make-fs: Remove note about vfat and ownership of tarball files.
+	This problem has been fixed in
+	commit 50780a84f65ec5d76605691cea889392c2730f54.
+	(cherry picked from commit 2295b09f259ece053f1370f7527d01705976732a)
+
+	generator: 'delete' is a reserved word (in C++). (cherry picked from commit 7d6f76709e71b38e0bc4f018c4d873a32ffe19da)
+
+	tests/extra: Add workaround for memory leak in libvirt.
+	See: https://bugzilla.redhat.com/show_bug.cgi?id=847429
+	(cherry picked from commit 04b475b41476b75ef3851fdd093a9868df0c7357)
+
 2012-08-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.6.

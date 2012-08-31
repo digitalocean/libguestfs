@@ -277,6 +277,23 @@ KVM が有効化され、libguestfs を実行するユーザーが利用可能�
 Avoid processors that don't have hardware virtualization, and some
 processors which are simply very slow (AMD Geode being a great example).
 
+=head1 DETAILED TIMINGS USING ANNOTATE
+
+Use the L<annotate(1)>/L<annotate-output(1)> command to show detailed
+timings:
+
+ $ annotate-output +'%T.%N' guestfish -a /dev/null run -v
+ 22:17:53.215784625 I: Started guestfish -a /dev/null run -v
+ 22:17:53.240335409 E: libguestfs: [00000ms] febootstrap-supermin-helper --verbose -f checksum '/usr/lib64/guestfs/supermin.d' x86_64
+ 22:17:53.266857866 E: supermin helper [00000ms] whitelist = (not specified), host_cpu = x86_64, kernel = (null), initrd = (null), appliance = (null)
+ 22:17:53.272704072 E: supermin helper [00000ms] inputs[0] = /usr/lib64/guestfs/supermin.d
+ 22:17:53.276528651 E: checking modpath /lib/modules/3.4.0-1.fc17.x86_64.debug is a directory
+ [etc]
+
+The timestamps are C<hours:minutes:seconds.nanoseconds>.  By comparing the
+timestamps you can see exactly how long each operation in the boot sequence
+takes.
+
 =head1 DETAILED TIMINGS USING SYSTEMTAP
 
 You can use SystemTap (L<stap(1)>) to get detailed timings from libguestfs
@@ -342,11 +359,57 @@ taken for each step shown (microseconds in parenthesis).  For example:
 You will need to consult, and even modify, the source to libguestfs to fully
 understand the output.
 
+=head1 DETAILED DEBUGGING USING GDB
+
+You can attach to the appliance BIOS/kernel using gdb.  If you know what
+you're doing, this can be a useful way to diagnose boot regressions.
+
+Firstly, you have to change qemu so it runs with the C<-S> and C<-s>
+options.  These options cause qemu to pause at boot and allow you to attach
+a debugger.  Read L<qemu(1)> for further information.  Libguestfs invokes
+qemu several times (to scan the help output and so on) and you only want the
+final invocation of qemu to use these options, so use a qemu wrapper script
+like this:
+
+ #!/bin/bash -
+ 
+ # Set this to point to the real qemu binary.
+ qemu=/usr/bin/qemu-kvm
+ 
+ if [ "$1" != "-global" ]; then
+     # Scanning help output etc.
+     exec $qemu "$@"
+ else 
+     # Really running qemu.
+     exec $qemu -S -s "$@"
+ fi
+
+Now run guestfish or another libguestfs tool with the qemu wrapper (see
+L<guestfs(3)/QEMU WRAPPERS> to understand what this is doing):
+
+ LIBGUESTFS_QEMU=/path/to/qemu-wrapper guestfish -a /dev/null -v run
+
+This should pause just after qemu launches.  In another window, attach to
+qemu using gdb:
+
+ $ gdb
+ (gdb) set architecture i8086
+ The target architecture is assumed to be i8086
+ (gdb) target remote :1234
+ Remote debugging using :1234
+ 0x0000fff0 in ?? ()
+ (gdb) cont
+
+At this point you can use standard gdb techniques, eg. hitting C<^C> to
+interrupt the boot and C<bt> get a stack trace, setting breakpoints, etc.
+Note that when you are past the BIOS and into the Linux kernel, you'll want
+to change the architecture back to 32 or 64 bit.
+
 =head1 関連項目
 
 L<febootstrap(8)>, L<febootstrap-supermin-helper(8)>, L<guestfish(1)>,
 L<guestfs(3)>, L<guestfs-examples(3)>,
-L<libguestfs-make-fixed-appliance(1)>, L<stap(1)>,
+L<libguestfs-make-fixed-appliance(1)>, L<stap(1)>, L<qemu(1)>, L<gdb(1)>,
 L<http://libguestfs.org/>.
 
 =head1 著者
@@ -355,19 +418,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012 Red Hat Inc. L<http://libguestfs.org/>
-
-This library is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2 of the License, or (at your
-option) any later version.
-
-This library is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
-for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this library; if not, write to the Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+Copyright (C) 2012 Red Hat Inc.
 

@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: libguestfs 1.18.6\n"
+"Project-Id-Version: libguestfs 1.18.7\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2012-08-05 23:28+0100\n"
+"POT-Creation-Date: 2012-08-30 23:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3410,17 +3410,17 @@ msgstr ""
 msgid "guestfs_close: called twice on the same handle\n"
 msgstr ""
 
-#: src/guestfs.c:397
+#: src/guestfs.c:398
 #, c-format
 msgid "warning: %s"
 msgstr ""
 
-#: src/guestfs.c:458
+#: src/guestfs.c:459
 #, c-format
 msgid "libguestfs: error: %s\n"
 msgstr ""
 
-#: src/guestfs.c:1037
+#: src/guestfs.c:1038
 #, c-format
 msgid "<truncated, original size %zu bytes>"
 msgstr ""
@@ -3438,7 +3438,7 @@ msgstr ""
 
 #: src/inspect-fs-unix.c:239 src/inspect-fs-unix.c:766
 #: src/inspect-fs-unix.c:1450 src/inspect-fs.c:533 src/inspect-fs.c:577
-#: src/inspect.c:763
+#: src/inspect.c:765
 #, c-format
 msgid "size of %s is unreasonably large (%<PRIi64> bytes)"
 msgstr ""
@@ -3470,11 +3470,11 @@ msgstr ""
 msgid "not a Windows guest, or CurrentControlSet could not be determined"
 msgstr ""
 
-#: src/inspect.c:799
+#: src/inspect.c:801
 msgid "no inspection data: call guestfs_inspect_os first"
 msgstr ""
 
-#: src/inspect.c:811
+#: src/inspect.c:813
 #, c-format
 msgid ""
 "%s: root device not found: only call this function with a root device "
@@ -3504,46 +3504,46 @@ msgstr ""
 msgid "guestfs_config: parameter '%s' isn't allowed"
 msgstr ""
 
-#: src/launch.c:360 src/launch.c:472
+#: src/launch.c:381 src/launch.c:476
 msgid ""
 "filename cannot contain ':' (colon) character. This is a limitation of qemu."
 msgstr ""
 
-#: src/launch.c:375 src/launch.c:380
+#: src/launch.c:396 src/launch.c:401
 #, c-format
 msgid "%s parameter is empty or contains disallowed characters"
 msgstr ""
 
-#: src/launch.c:494
+#: src/launch.c:498
 msgid "the libguestfs handle has already been launched"
 msgstr ""
 
-#: src/launch.c:505
+#: src/launch.c:547
+msgid "you must call guestfs_add_drive before guestfs_launch"
+msgstr ""
+
+#: src/launch.c:1058 src/launch.c:1063
+msgid "guestfs_launch failed, see earlier error messages"
+msgstr ""
+
+#: src/launch.c:1076
+msgid "qemu launched and contacted daemon, but state != READY"
+msgstr ""
+
+#: src/launch.c:1168
+msgid "guestfs_launch failed, unexpected initial message from guestfsd"
+msgstr ""
+
+#: src/launch.c:1176
+msgid "contacted guestfsd, but state != READY"
+msgstr ""
+
+#: src/launch.c:1266
 #, c-format
 msgid "%s: cannot create temporary directory"
 msgstr ""
 
-#: src/launch.c:549
-msgid "you must call guestfs_add_drive before guestfs_launch"
-msgstr ""
-
-#: src/launch.c:1060 src/launch.c:1065
-msgid "guestfs_launch failed, see earlier error messages"
-msgstr ""
-
-#: src/launch.c:1078
-msgid "qemu launched and contacted daemon, but state != READY"
-msgstr ""
-
-#: src/launch.c:1170
-msgid "guestfs_launch failed, unexpected initial message from guestfsd"
-msgstr ""
-
-#: src/launch.c:1178
-msgid "contacted guestfsd, but state != READY"
-msgstr ""
-
-#: src/launch.c:1377
+#: src/launch.c:1393
 #, c-format
 msgid ""
 "command failed: %s\n"
@@ -3553,7 +3553,7 @@ msgid ""
 "environment variable.  There may also be errors printed above."
 msgstr ""
 
-#: src/launch.c:1530
+#: src/launch.c:1546
 msgid "qemu has not been launched yet"
 msgstr ""
 
@@ -3801,43 +3801,43 @@ msgstr ""
 msgid "virt-list-partitions: no image or VM name given"
 msgstr ""
 
-#: tools/virt-make-fs.pl:296
+#: tools/virt-make-fs.pl:291
 msgid "virt-make-fs input output\n"
 msgstr ""
 
-#: tools/virt-make-fs.pl:326
+#: tools/virt-make-fs.pl:321
 msgid "unexpected output from 'du' command"
 msgstr ""
 
-#: tools/virt-make-fs.pl:338 tools/virt-make-fs.pl:352
-#: tools/virt-make-fs.pl:515
+#: tools/virt-make-fs.pl:333 tools/virt-make-fs.pl:347
+#: tools/virt-make-fs.pl:510
 #, perl-brace-format
 msgid "{f}: unknown input format: {fmt}\n"
 msgstr ""
 
-#: tools/virt-make-fs.pl:403
+#: tools/virt-make-fs.pl:398
 #, perl-brace-format
 msgid "virt-make-fs: cannot parse size parameter: {sz}\n"
 msgstr ""
 
-#: tools/virt-make-fs.pl:418
+#: tools/virt-make-fs.pl:413
 msgid ""
 "qemu-img create: failed to create disk image, see earlier error messages\n"
 msgstr ""
 
-#: tools/virt-make-fs.pl:429
+#: tools/virt-make-fs.pl:424
 msgid "virt-make-fs: NTFS support was disabled when libguestfs was compiled\n"
 msgstr ""
 
-#: tools/virt-make-fs.pl:499
+#: tools/virt-make-fs.pl:494
 msgid "tar: failed, see earlier messages\n"
 msgstr ""
 
-#: tools/virt-make-fs.pl:521
+#: tools/virt-make-fs.pl:516
 msgid "uncompress command failed, see earlier messages\n"
 msgstr ""
 
-#: tools/virt-make-fs.pl:555
+#: tools/virt-make-fs.pl:550
 msgid ""
 "virt-make-fs: error copying contents into filesystem\n"
 "An error here usually means that the program did not estimate the\n"
@@ -4648,6 +4648,26 @@ msgstr ""
 
 #: ../resize/resize.ml:83
 msgid "sectors"
+msgstr ""
+
+#: ../sysprep/main.ml:245
+msgid "sysprep operation failed: %s\n"
+msgstr ""
+
+#: ../sysprep/main.ml:257
+msgid "sysprep operation failed: exception: %s\n"
+msgstr ""
+
+#: ../sysprep/main.ml:254
+msgid "sysprep operation failed: internal error: Not_found exception was thrown\n"
+msgstr ""
+
+#: ../sysprep/main.ml:251
+msgid "sysprep operation failed: internal error: assertion failed at %s, line %d, char %d\n"
+msgstr ""
+
+#: ../sysprep/main.ml:248
+msgid "sysprep operation failed: internal error: invalid argument: %s\n"
 msgstr ""
 
 #: ../resize/resize.ml:374

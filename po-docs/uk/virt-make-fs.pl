@@ -52,11 +52,6 @@ then this is just wasted overhead.
 
 Useful if exporting data to a Windows guest.
 
-I<Note for vfat>: The tar archive or local directory must only contain files
-which are owned by root (ie. UID:GID = 0:0).  The reason is that the tar
-program running within libguestfs is unable to change the ownership of
-non-root files, since vfat itself does not support this.
-
 =item I<minix>
 
 Lower overhead than C<ext2>, but certain limitations on filename length and
@@ -222,17 +217,6 @@ L<mkisofs(1)>, L<genisoimage(1)>, L<mksquashfs(1)>, L<mke2fs(8)>,
 L<resize2fs(8)>, L<guestfs(3)>, L<Sys::Guestfs(3)>,
 L<http://libguestfs.org/>.
 
-=head1 ВАДИ
-
-When reporting bugs, please enable debugging and capture the I<complete>
-output:
-
- export LIBGUESTFS_DEBUG=1
- virt-make-fs --debug [...] > /tmp/virt-make-fs.log 2>&1
-
-Attach /tmp/virt-make-fs.log to a new bug report at
-L<https://bugzilla.redhat.com/>
-
 =head1 АВТОР
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
@@ -240,18 +224,4 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 =head1 АВТОРСЬКІ ПРАВА
 
 © Red Hat Inc., 2010–2012
-
-Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
-змінювати її за умов дотримання GNU General Public License  утому вигляді,
-що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
-забажаєте) будь-якої випущеної пізніше.
-
-Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
-БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
-ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
-про це можна дізнатися з GNU General Public License.
-
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 

@@ -248,12 +248,12 @@ am__DEPENDENCIES_1 =
 libguestfs_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la \
+	../gnulib/lib/libgnu.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) liberrnostring.la \
-	libprotocol.la $(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1) liberrnostring.la libprotocol.la \
+	$(am__DEPENDENCIES_2)
 am_libguestfs_la_OBJECTS = libguestfs_la-guestfs.lo \
 	libguestfs_la-actions.lo libguestfs_la-appliance.lo \
 	libguestfs_la-bindtests.lo libguestfs_la-dbdump.lo \
@@ -948,7 +948,7 @@ JAVA = @JAVA@
 JAVAC = @JAVAC@
 JAVADOC = @JAVADOC@
 JAVAH = @JAVAH@
-JAVA_HOME = @JAVA_HOME@
+JAVA_EXE = @JAVA_EXE@
 JNI_CFLAGS = @JNI_CFLAGS@
 JNI_INSTALL_DIR = @JNI_INSTALL_DIR@
 JNI_VERSION_INFO = @JNI_VERSION_INFO@
@@ -1468,20 +1468,19 @@ libguestfs_la_SOURCES = \
 	proto.c \
 	libguestfs.syms
 
-libguestfs_la_LIBADD = $(HIVEX_LIBS) $(AUGEAS_LIBS) $(PCRE_LIBS) \
-	$(MAGIC_LIBS) $(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
-	../gnulib/lib/libgnu.la $(GETADDRINFO_LIB) $(HOSTENT_LIB) \
-	$(INET_NTOP_LIB) $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIBINTL) \
-	$(LTLIBTHREAD) $(SERVENT_LIB) liberrnostring.la libprotocol.la \
+libguestfs_la_LIBADD = $(HIVEX_LIBS) $(PCRE_LIBS) $(MAGIC_LIBS) \
+	$(LIBVIRT_LIBS) $(LIBXML2_LIBS) ../gnulib/lib/libgnu.la \
+	$(GETADDRINFO_LIB) $(HOSTENT_LIB) $(INET_NTOP_LIB) \
+	$(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIBINTL) $(LTLIBTHREAD) \
+	$(SERVENT_LIB) liberrnostring.la libprotocol.la \
 	$(am__append_2)
 
 # Make libguestfs include the convenience libraries.
 noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
 libguestfs_la_CFLAGS = -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
-	-DGUESTFS_WARN_DEPRECATED=1 $(HIVEX_CFLAGS) $(AUGEAS_CFLAGS) \
-	$(PCRE_CFLAGS) $(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS) $(GCC_VISIBILITY_HIDDEN) \
-	$(am__append_1)
+	-DGUESTFS_WARN_DEPRECATED=1 $(HIVEX_CFLAGS) $(PCRE_CFLAGS) \
+	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) $(WARN_CFLAGS) \
+	$(WERROR_CFLAGS) $(GCC_VISIBILITY_HIDDEN) $(am__append_1)
 libguestfs_la_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 @HAVE_RPCGEN_TRUE@RPCGEN_DEFS = $(am__append_3) $(am__append_4)
 
@@ -2101,19 +2100,11 @@ uninstall-man: uninstall-man3
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 
-# Rebuild rules for common dependencies
-$(top_builddir)/src/libguestfs.la: force
-	$(MAKE) -C $(top_builddir)/src libguestfs.la
-
 # Automatically build targets defined in generator_built
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
 	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# The daemon
-$(top_builddir)/daemon/guestfsd: force
-	$(MAKE) -C $(top_builddir)/daemon
 
 # A symbolic rule to regenerate the appliance
 .PHONY: appliance
@@ -2150,6 +2141,7 @@ stamp-guestfs.pod: guestfs.pod \
 	  --insert $(srcdir)/guestfs-actions.pod:@ACTIONS@ \
 	  --insert $(srcdir)/guestfs-availability.pod:@AVAILABILITY@ \
 	  --insert $(srcdir)/guestfs-structs.pod:@STRUCTS@ \
+	  --license LGPLv2+ \
 	  $<
 	touch $@
 

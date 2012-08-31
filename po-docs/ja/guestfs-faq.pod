@@ -234,10 +234,9 @@ L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 It is part of the default install.  On RHEL 6 (only) you have to install
 C<libguestfs-winsupport> to get Windows guest support.
 
-=item RHEL 6.3
+=item RHEL 6.4
 
-Preview packages are available here:
-L<http://people.redhat.com/~rjones/libguestfs-RHEL-6.3-preview/>
+A preview repository will be announced at a later date.
 
 =item Debian Squeeze (6)
 
@@ -391,6 +390,25 @@ C<$TMPDIR/.guestfs-E<lt>UIDE<gt>> is used instead.
 
 It is safe to delete this directory when you are not using libguestfs.
 
+=head2 virt-sparsify seems to make the image grow to the full size of the virtual
+disk
+
+If the input to L<virt-sparsify(1)> is raw, then the output will be raw
+sparse.  Make sure you are measuring the output with a tool which
+understands sparseness such as C<du-sh>.  It can make a huge difference:
+
+ $ ls -lh test1.img
+ -rw-rw-r--. 1 rjones rjones 100M Aug  8 08:08 test1.img
+ $ du -sh test1.img
+ 3.6M	test1.img
+
+(Compare the apparent size B<100M> vs the actual size B<3.6M>)
+
+If all this confuses you, use a non-sparse output by specifying the
+I<--convert> option, eg:
+
+ virt-sparsify --convert qcow2 disk.raw disk.qcow2
+
 =head1 USING LIBGUESTFS IN YOUR OWN PROGRAMS
 
 =head2 The API has hundreds of methods, where do I start?
@@ -533,6 +551,12 @@ libguestfs API.  However the GVFS FTP backend makes multiple simultaneous
 connections in order to keep interactivity, which we can't easily do with
 libguestfs.
 
+=begin HTML
+
+<!-- old anchor for the next section --> <a name="backup"/>
+
+=end HTML
+
 =head2 Can I use C<guestfish --ro> as a way to backup my virtual machines?
 
 Usually this is not a good idea.  The question is answered in more detail in
@@ -643,19 +667,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012 Red Hat Inc. L<http://libguestfs.org/>
-
-This library is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2 of the License, or (at your
-option) any later version.
-
-This library is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
-for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this library; if not, write to the Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+Copyright (C) 2012 Red Hat Inc.
 

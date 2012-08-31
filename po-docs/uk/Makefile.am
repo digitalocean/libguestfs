@@ -24,26 +24,43 @@ LINGUA = $(shell basename -- `pwd`)
 CLEANFILES = *.1 *.3 stamp-update-po
 
 MANPAGES = \
-	guestfs.3 \
 	guestfish.1 \
+	guestfs.3 \
+	guestfs-erlang.3 \
+	guestfs-examples.3 \
+	guestfs-faq.1 \
+	guestfs-java.3 \
+	guestfs-ocaml.3 \
+	guestfs-performance.1 \
+	guestfs-perl.3 \
+	guestfs-python.3 \
+	guestfs-recipes.1 \
+	guestfs-ruby.3 \
+	guestfs-testing.1 \
+	guestmount.1 \
+	libguestfs-make-fixed-appliance.1 \
+	libguestfs-test-tool.1 \
 	virt-alignment-scan.1 \
+	virt-cat.1 \
 	virt-copy-in.1 \
 	virt-copy-out.1 \
-	virt-tar-in.1 \
-	virt-tar-out.1 \
-	libguestfs-test-tool.1 \
-	guestmount.1 \
-	$(patsubst %.pl,%.1,$(wildcard virt-*.pl)) \
-	virt-cat.1 \
 	virt-df.1 \
 	virt-edit.1 \
 	virt-filesystems.1 \
+	virt-format.1 \
 	virt-inspector.1 \
+	virt-list-filesystems.1 \
+	virt-list-partitions.1 \
 	virt-ls.1 \
+	virt-make-fs.1 \
 	virt-rescue.1 \
 	virt-resize.1 \
 	virt-sparsify.1 \
-	virt-sysprep.1
+	virt-sysprep.1 \
+	virt-tar.1 \
+	virt-tar-in.1 \
+	virt-tar-out.1 \
+	virt-win-reg.1
 
 podfiles := $(shell for f in `cat ../podfiles`; do basename $$f; done)
 
@@ -58,8 +75,10 @@ all-local: $(MANPAGES)
 
 guestfs.3: guestfs.pod guestfs-actions.pod guestfs-availability.pod guestfs-structs.pod
 	$(PODWRAPPER) \
-	  --section 3 \
+	  --no-strict-checks \
 	  --man $@ \
+	  --section 3 \
+	  --license LGPLv2+ \
 	  --insert $(srcdir)/guestfs-actions.pod:@ACTIONS@ \
 	  --insert $(srcdir)/guestfs-availability.pod:@AVAILABILITY@ \
 	  --insert $(srcdir)/guestfs-structs.pod:@STRUCTS@ \
@@ -67,24 +86,40 @@ guestfs.3: guestfs.pod guestfs-actions.pod guestfs-availability.pod guestfs-stru
 
 guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
 	$(PODWRAPPER) \
+	  --no-strict-checks \
 	  --man $@ \
+	  --license GPLv2+ \
 	  --insert $(srcdir)/guestfish-actions.pod:@ACTIONS@ \
 	  --insert $(srcdir)/guestfish-commands.pod:@FISH_COMMANDS@ \
 	  $<
 
 virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.pod
 	$(PODWRAPPER) \
-	  --man virt-sysprep.1 \
+	  --no-strict-checks \
+	  --man $@ \
+	  --license GPLv2+ \
           --insert sysprep-extra-options.pod:@EXTRA_OPTIONS@ \
           --insert sysprep-operations.pod:@OPERATIONS@ \
-	  --html $(top_builddir)/html/virt-sysprep.1.html \
 	  $<
 
 %.1: %.pod
-	$(PODWRAPPER) --man $@ $<
+	$(PODWRAPPER) \
+	  --no-strict-checks \
+	  --man $@ \
+	  $<
+
+%.3: %.pod
+	$(PODWRAPPER) \
+	  --no-strict-checks \
+	  --man $@ \
+	  --section 3 \
+	  $<
 
 %.1: %.pl
-	$(PODWRAPPER) --man $@ $<
+	$(PODWRAPPER) \
+	  --no-strict-checks \
+	  --man $@ \
+	  $<
 
 # Ensure that the first time we build from git, since guestfs.pod
 # hasn't been built yet, build it.
@@ -97,8 +132,6 @@ stamp-update-po:
 # XXX Can automake do this properly?
 install-data-hook:
 	$(MKDIR_P) $(DESTDIR)$(mandir)/$(LINGUA)/man1
-	$(INSTALL) -m 0644 guestfish.1 $(DESTDIR)$(mandir)/$(LINGUA)/man1
-	$(INSTALL) -m 0644 guestmount.1 $(DESTDIR)$(mandir)/$(LINGUA)/man1
-	$(INSTALL) -m 0644 virt-*.1 $(DESTDIR)$(mandir)/$(LINGUA)/man1
+	$(INSTALL) -m 0644 *.1 $(DESTDIR)$(mandir)/$(LINGUA)/man1
 	$(MKDIR_P) $(DESTDIR)$(mandir)/$(LINGUA)/man3
-	$(INSTALL) -m 0644 guestfs.3 $(DESTDIR)$(mandir)/$(LINGUA)/man3
+	$(INSTALL) -m 0644 *.3 $(DESTDIR)$(mandir)/$(LINGUA)/man3

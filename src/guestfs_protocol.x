@@ -20,6 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+%#include <config.h>
 #if HAVE_XDR_U_INT64_T
 #define uint64_t u_int64_t
 %#if HAVE_XDR_UINT64_T

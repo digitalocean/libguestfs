@@ -4,6 +4,7 @@
  */
 
 #include "./guestfs_protocol.h"
+#include <config.h>
 #if HAVE_XDR_U_INT64_T
 #define xdr_uint64_t xdr_u_int64_t
 #define uint64_t u_int64_t

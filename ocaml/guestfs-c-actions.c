@@ -495,7 +495,7 @@ copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
     rv = caml_alloc (lvm_lvs->len, 0);
     for (i = 0; i < lvm_lvs->len; ++i) {
       v = copy_lvm_lv (&lvm_lvs->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -514,7 +514,7 @@ copy_dirent_list (const struct guestfs_dirent_list *dirents)
     rv = caml_alloc (dirents->len, 0);
     for (i = 0; i < dirents->len; ++i) {
       v = copy_dirent (&dirents->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -533,7 +533,7 @@ copy_partition_list (const struct guestfs_partition_list *partitions)
     rv = caml_alloc (partitions->len, 0);
     for (i = 0; i < partitions->len; ++i) {
       v = copy_partition (&partitions->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -552,7 +552,7 @@ copy_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events
     rv = caml_alloc (inotify_events->len, 0);
     for (i = 0; i < inotify_events->len; ++i) {
       v = copy_inotify_event (&inotify_events->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -571,7 +571,7 @@ copy_application_list (const struct guestfs_application_list *applications)
     rv = caml_alloc (applications->len, 0);
     for (i = 0; i < applications->len; ++i) {
       v = copy_application (&applications->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -590,7 +590,7 @@ copy_xattr_list (const struct guestfs_xattr_list *xattrs)
     rv = caml_alloc (xattrs->len, 0);
     for (i = 0; i < xattrs->len; ++i) {
       v = copy_xattr (&xattrs->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -609,7 +609,7 @@ copy_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
     rv = caml_alloc (lvm_pvs->len, 0);
     for (i = 0; i < lvm_pvs->len; ++i) {
       v = copy_lvm_pv (&lvm_pvs->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -628,7 +628,7 @@ copy_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
     rv = caml_alloc (lvm_vgs->len, 0);
     for (i = 0; i < lvm_vgs->len; ++i) {
       v = copy_lvm_vg (&lvm_vgs->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -647,7 +647,7 @@ copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolu
     rv = caml_alloc (btrfssubvolumes->len, 0);
     for (i = 0; i < btrfssubvolumes->len; ++i) {
       v = copy_btrfssubvolume (&btrfssubvolumes->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -666,7 +666,7 @@ copy_mdstat_list (const struct guestfs_mdstat_list *mdstats)
     rv = caml_alloc (mdstats->len, 0);
     for (i = 0; i < mdstats->len; ++i) {
       v = copy_mdstat (&mdstats->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }
@@ -685,7 +685,7 @@ copy_stat_list (const struct guestfs_stat_list *stats)
     rv = caml_alloc (stats->len, 0);
     for (i = 0; i < stats->len; ++i) {
       v = copy_stat (&stats->val[i]);
-      caml_modify (&Field (rv, i), v);
+      Store_field (rv, i, v);
     }
     CAMLreturn (rv);
   }

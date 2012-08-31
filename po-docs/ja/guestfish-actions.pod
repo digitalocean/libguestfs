@@ -153,6 +153,9 @@ image or write access if you want to modify the image).
 
 この呼び出しは C<filename> が存在するかを確認します。
 
+C<filename> may be the special string C<"/dev/null">.  See L<guestfs(3)/NULL
+DISKS>.
+
 オプション引数は次のとおりです:
 
 =over 4

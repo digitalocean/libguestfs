@@ -357,15 +357,6 @@ L<guestfish(1)>, L<virt-cat(1)>, L<Sys::Guestfs(3)>,
 L<Sys::Guestfs::Lib(3)>, L<Win::Hivex(3)>, L<Win::Hivex::Regedit(3)>,
 L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
-=head1 バグ
-
-バグを報告するとき、デバッグを有効にして、I<完全な> 出力を記録してください:
-
- export LIBGUESTFS_DEBUG=1
- virt-win-reg --debug [... rest ...] > /tmp/virt-win-reg.log 2>&1
-
-L<https://bugzilla.redhat.com/> の新規バグ報告に /tmp/virt-win-reg.log を添付してください
-
 =head1 著者
 
 Richard W.M. Jones L<http://people.redhat.com/~rjones/>
@@ -373,18 +364,4 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 =head1 COPYRIGHT
 
 Copyright (C) 2010 Red Hat Inc.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
-
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
