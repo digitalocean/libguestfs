@@ -76,25 +76,25 @@ guestfs__test0 (guestfs_h *g,
   }
   printf ("obool: ");
   if (optargs->bitmask & GUESTFS_TEST0_OBOOL_BITMASK) {
-    printf("%s\n", optargs->obool ? "true" : "false");
+    printf ("%s\n", optargs->obool ? "true" : "false");
   } else {
     printf ("unset\n");
   }
   printf ("oint: ");
   if (optargs->bitmask & GUESTFS_TEST0_OINT_BITMASK) {
-    printf("%i\n", optargs->oint);
+    printf ("%i\n", optargs->oint);
   } else {
     printf ("unset\n");
   }
   printf ("oint64: ");
   if (optargs->bitmask & GUESTFS_TEST0_OINT64_BITMASK) {
-    printf("%" PRIi64 "\n", optargs->oint64);
+    printf ("%" PRIi64 "\n", optargs->oint64);
   } else {
     printf ("unset\n");
   }
   printf ("ostring: ");
   if (optargs->bitmask & GUESTFS_TEST0_OSTRING_BITMASK) {
-    printf("%s\n", optargs->ostring);
+    printf ("%s\n", optargs->ostring);
   } else {
     printf ("unset\n");
   }

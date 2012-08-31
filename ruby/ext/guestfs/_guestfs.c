@@ -3089,6 +3089,9 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * 
  * This call checks that "filename" exists.
  * 
+ * "filename" may be the special string "/dev/null". See
+ * "NULL DISKS" in guestfs(3).
+ * 
  * The optional arguments are:
  * 
  * "readonly"

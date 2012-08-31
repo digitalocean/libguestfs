@@ -97,7 +97,7 @@ print_strings (char *const *argv)
       pr "  printf (\"%s: \");\n" n;
       pr "  if (optargs->bitmask & GUESTFS_TEST0_%s_BITMASK) {\n"
         (String.uppercase n);
-      pr "    printf(%s);\n" printf_args;
+      pr "    printf (%s);\n" printf_args;
       pr "  } else {\n";
       pr "    printf (\"unset\\n\");\n";
       pr "  }\n";
@@ -267,8 +267,8 @@ let () =
       List.map (
         function
         | CallOBool (n, v)    -> "~" ^ n ^ ":" ^ string_of_bool v
-        | CallOInt (n, v)     -> "~" ^ n ^ ":" ^ string_of_int v
-        | CallOInt64 (n, v)   -> "~" ^ n ^ ":" ^ Int64.to_string v ^ "L"
+        | CallOInt (n, v)     -> "~" ^ n ^ ":(" ^ string_of_int v ^ ")"
+        | CallOInt64 (n, v)   -> "~" ^ n ^ ":(" ^ Int64.to_string v ^ "L)"
         | CallOString (n, v)  -> "~" ^ n ^ ":\"" ^ v ^ "\""
       ) optargs
     )
@@ -307,7 +307,7 @@ my $g = Sys::Guestfs->new ();
         | CallStringList xs ->
             "[" ^ String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "]"
         | CallInt i -> string_of_int i
-        | CallInt64 i -> Int64.to_string i
+        | CallInt64 i -> "\"" ^ Int64.to_string i ^ "\""
         | CallBool b -> if b then "1" else "0"
         | CallBuffer s -> "\"" ^ c_quote s ^ "\""
       ) args
@@ -316,7 +316,7 @@ my $g = Sys::Guestfs->new ();
         function
         | CallOBool (n, v)    -> "'" ^ n ^ "' => " ^ if v then "1" else "0"
         | CallOInt (n, v)     -> "'" ^ n ^ "' => " ^ string_of_int v
-        | CallOInt64 (n, v)   -> "'" ^ n ^ "' => " ^ Int64.to_string v
+        | CallOInt64 (n, v)   -> "'" ^ n ^ "' => \"" ^ Int64.to_string v ^ "\""
         | CallOString (n, v)  -> "'" ^ n ^ "' => '" ^ v ^ "'"
       ) optargs
     )
@@ -450,7 +450,7 @@ public class Bindtests {
         | CallOInt (n, v)     ->
           "  put(\"" ^ n ^ "\", " ^ string_of_int v ^ ");"
         | CallOInt64 (n, v)   ->
-          "  put(\"" ^ n ^ "\", " ^ Int64.to_string v ^ "l);"
+          "  put(\"" ^ n ^ "\", " ^ Int64.to_string v ^ "L);"
         | CallOString (n, v)  ->
           "  put(\"" ^ n ^ "\", \"" ^ v ^ "\");"
       ) optargs @
@@ -470,7 +470,7 @@ public class Bindtests {
             "new String[]{" ^
               String.concat "," (List.map (sprintf "\"%s\"") xs) ^ "}"
         | CallInt i -> string_of_int i
-        | CallInt64 i -> Int64.to_string i
+        | CallInt64 i -> Int64.to_string i ^ "L"
         | CallBool b -> string_of_bool b
         | CallBuffer s ->
             "new byte[] { " ^ String.concat "," (

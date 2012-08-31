@@ -1923,6 +1923,9 @@ public class GuestFS {
    * <p>
    * This call checks that "filename" exists.
    * <p>
+   * "filename" may be the special string "/dev/null". See
+   * "NULL DISKS" in guestfs(3).
+   * <p>
    * The optional arguments are:
    * <p>
    * "readonly"

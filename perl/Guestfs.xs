@@ -60,6 +60,28 @@ my_newSVull(unsigned long long val) {
 #endif
 }
 
+/* Convert a 64 bit int on input.  To cope with the case of having
+ * a 32 bit Perl interpreter, we allow the user to pass a string
+ * here which is scanned as a 64 bit integer.
+ */
+static int64_t
+my_SvIV64 (SV *sv)
+{
+#ifdef USE_64_BIT_ALL
+  return SvIV (sv);
+#else
+  if (SvTYPE (sv) == SVt_PV) {
+    const char *str = SvPV_nolen (sv);
+    int64_t r;
+
+    sscanf (str, "%" SCNi64, &r);
+    return r;
+  }
+  else
+    return SvIV (sv);
+#endif
+}
+
 /* http://www.perlmonks.org/?node_id=680842 */
 static char **
 XS_unpack_charPtrPtr (SV *arg) {
@@ -306,7 +328,7 @@ PREINIT:
           this_mask = GUESTFS_TEST0_OINT_BITMASK;
         }
         else if (strcmp (this_arg, "oint64") == 0) {
-          optargs_s.oint64 = SvIV (ST (items_i+1));
+          optargs_s.oint64 = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TEST0_OINT64_BITMASK;
         }
         else if (strcmp (this_arg, "ostring") == 0) {
@@ -6203,7 +6225,7 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "size") == 0) {
-          optargs_s.size = SvIV (ST (items_i+1));
+          optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
         }
         else if (strcmp (this_arg, "force") == 0) {
@@ -6239,7 +6261,7 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "size") == 0) {
-          optargs_s.size = SvIV (ST (items_i+1));
+          optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
@@ -6367,15 +6389,15 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "srcoffset") == 0) {
-          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "destoffset") == 0) {
-          optargs_s.destoffset = SvIV (ST (items_i+1));
+          optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "size") == 0) {
-          optargs_s.size = SvIV (ST (items_i+1));
+          optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
@@ -6408,15 +6430,15 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "srcoffset") == 0) {
-          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "destoffset") == 0) {
-          optargs_s.destoffset = SvIV (ST (items_i+1));
+          optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "size") == 0) {
-          optargs_s.size = SvIV (ST (items_i+1));
+          optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
@@ -6449,15 +6471,15 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "srcoffset") == 0) {
-          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "destoffset") == 0) {
-          optargs_s.destoffset = SvIV (ST (items_i+1));
+          optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "size") == 0) {
-          optargs_s.size = SvIV (ST (items_i+1));
+          optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
@@ -6490,15 +6512,15 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "srcoffset") == 0) {
-          optargs_s.srcoffset = SvIV (ST (items_i+1));
+          optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "destoffset") == 0) {
-          optargs_s.destoffset = SvIV (ST (items_i+1));
+          optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
         }
         else if (strcmp (this_arg, "size") == 0) {
-          optargs_s.size = SvIV (ST (items_i+1));
+          optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
@@ -6546,7 +6568,7 @@ PREINIT:
           this_mask = GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK;
         }
         else if (strcmp (this_arg, "group") == 0) {
-          optargs_s.group = SvIV (ST (items_i+1));
+          optargs_s.group = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_GROUP_BITMASK;
         }
         else if (strcmp (this_arg, "intervalbetweenchecks") == 0) {
@@ -6562,11 +6584,11 @@ PREINIT:
           this_mask = GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK;
         }
         else if (strcmp (this_arg, "reservedblockscount") == 0) {
-          optargs_s.reservedblockscount = SvIV (ST (items_i+1));
+          optargs_s.reservedblockscount = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
         }
         else if (strcmp (this_arg, "user") == 0) {
-          optargs_s.user = SvIV (ST (items_i+1));
+          optargs_s.user = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_USER_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
@@ -6599,7 +6621,7 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "missingbitmap") == 0) {
-          optargs_s.missingbitmap = SvIV (ST (items_i+1));
+          optargs_s.missingbitmap = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
         }
         else if (strcmp (this_arg, "nrdevices") == 0) {
@@ -6611,7 +6633,7 @@ PREINIT:
           this_mask = GUESTFS_MD_CREATE_SPARE_BITMASK;
         }
         else if (strcmp (this_arg, "chunk") == 0) {
-          optargs_s.chunk = SvIV (ST (items_i+1));
+          optargs_s.chunk = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MD_CREATE_CHUNK_BITMASK;
         }
         else if (strcmp (this_arg, "level") == 0) {
@@ -7038,11 +7060,11 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "allocstart") == 0) {
-          optargs_s.allocstart = SvIV (ST (items_i+1));
+          optargs_s.allocstart = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK;
         }
         else if (strcmp (this_arg, "bytecount") == 0) {
-          optargs_s.bytecount = SvIV (ST (items_i+1));
+          optargs_s.bytecount = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK;
         }
         else if (strcmp (this_arg, "datatype") == 0) {
@@ -7301,7 +7323,7 @@ PREINIT:
 
         this_arg = SvPV_nolen (ST (items_i));
         if (strcmp (this_arg, "superblock") == 0) {
-          optargs_s.superblock = SvIV (ST (items_i+1));
+          optargs_s.superblock = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK;
         }
         else if (strcmp (this_arg, "repair") == 0) {

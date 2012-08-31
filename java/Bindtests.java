@@ -37,40 +37,40 @@ public class Bindtests {
               put("oint", 1);
             }};
 
-            g.test0 ("abc", "def", new String[]{}, false, 0, 0, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = new HashMap<String, Object>() {{
-              put("oint64", 1l);
+              put("oint64", 1L);
               put("ostring", "string");
             }};
 
-            g.test0 ("abc", null, new String[]{}, false, 0, 0, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", null, new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = new HashMap<String, Object>() {{
               put("obool", Boolean.FALSE);
             }};
 
-            g.test0 ("", "def", new String[]{}, false, 0, 0, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = new HashMap<String, Object>() {{
             }};
 
-            g.test0 ("", "", new String[]{}, false, 0, 0, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("", "", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1","2"}, false, 0, 0, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1","2"}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, true, 0, 0, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, true, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, -1, -1, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, false, -1, -1L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, -2, -2, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, false, -2, -2L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 1, 1, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, false, 1, 1L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 2, 2, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, false, 2, 2L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 4095, 4095, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, false, 4095, 4095L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0, "", "", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0L, "", "", new byte[] { 97,98,99,0,97,98,99 }, o);
 
             System.out.println ("EOF");
         }

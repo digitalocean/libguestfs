@@ -24,6 +24,19 @@ Virt-sparsify can operate on any disk image, not just ones from virtual
 machines.  If a virtual machine has more than one attached disk, you must
 sparsify each one separately.
 
+=head2 IMPORTANT NOTE ABOUT SPARSE OUTPUT IMAGES
+
+If the input is raw, then the default output is raw sparse.  B<You must
+check the output size using a tool that understands sparseness> such as C<du
+-sh>.  It can make a huge difference:
+
+ $ ls -lh test1.img
+ -rw-rw-r--. 1 rjones rjones 100M Aug  8 08:08 test1.img
+ $ du -sh test1.img
+ 3.6M	test1.img
+
+(Compare the apparent size B<100M> vs the actual size B<3.6M>)
+
 =head2 ВАЖЛИВІ ОБМЕЖЕННЯ
 
 =over 4
@@ -290,19 +303,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011
-
-Ця програма є вільним програмним забезпеченням; ви можете поширювати та/або
-змінювати її за умов дотримання GNU General Public License  утому вигляді,
-що оприлюднений Free Software Foundation; версії 2 цієї Ліцензії, або (якщо
-забажаєте) будь-якої випущеної пізніше.
-
-Ця програма поширюється у сподіванні, що вона буде корисною, але БЕЗ
-БУДЬ-ЯКИХ ГАРАНТІЙНИХ ЗОБОВ’ЯЗАНЬ; навіть без очевидної гарантії
-ПРАЦЕЗДАТНОСТІ або ПРИДАТНОСТІ ДЛЯ ВИКОРИСТАННЯ З ПЕВНОЮ МЕТОЮ. Докладніше
-про це можна дізнатися з GNU General Public License.
-
-Ви маєте отримати копію GNU General Public License разом з цією програмою;
-якщо це не так, повідомте про факт за адресою Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+Copyright (C) 2011-2012 Red Hat Inc.
 

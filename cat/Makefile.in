@@ -935,7 +935,7 @@ JAVA = @JAVA@
 JAVAC = @JAVAC@
 JAVADOC = @JAVADOC@
 JAVAH = @JAVAH@
-JAVA_HOME = @JAVA_HOME@
+JAVA_EXE = @JAVA_EXE@
 JNI_CFLAGS = @JNI_CFLAGS@
 JNI_INSTALL_DIR = @JNI_INSTALL_DIR@
 JNI_VERSION_INFO = @JNI_VERSION_INFO@
@@ -2171,19 +2171,11 @@ uninstall-man: uninstall-man1
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 
-# Rebuild rules for common dependencies
-$(top_builddir)/src/libguestfs.la: force
-	$(MAKE) -C $(top_builddir)/src libguestfs.la
-
 # Automatically build targets defined in generator_built
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
 	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# The daemon
-$(top_builddir)/daemon/guestfsd: force
-	$(MAKE) -C $(top_builddir)/daemon
 
 # A symbolic rule to regenerate the appliance
 .PHONY: appliance
@@ -2196,6 +2188,7 @@ stamp-virt-cat.pod: virt-cat.pod
 	$(PODWRAPPER) \
 	  --man virt-cat.1 \
 	  --html $(top_builddir)/html/virt-cat.1.html \
+	  --license GPLv2+ \
 	  $<
 	touch $@
 
@@ -2205,6 +2198,7 @@ stamp-virt-ls.pod: virt-ls.pod
 	$(PODWRAPPER) \
 	  --man virt-ls.1 \
 	  --html $(top_builddir)/html/virt-ls.1.html \
+	  --license GPLv2+ \
 	  $<
 	touch $@
 
@@ -2214,6 +2208,7 @@ stamp-virt-filesystems.pod: virt-filesystems.pod
 	$(PODWRAPPER) \
 	  --man virt-filesystems.1 \
 	  --html $(top_builddir)/html/virt-filesystems.1.html \
+	  --license GPLv2+ \
 	  $<
 	touch $@
 

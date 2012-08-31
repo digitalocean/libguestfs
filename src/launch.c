@@ -346,14 +346,35 @@ valid_format_iface (const char *str)
   return 1;
 }
 
+static void
+add_drive (guestfs_h *g, const char *path,
+           int readonly, const char *format,
+           const char *iface, const char *name,
+           int use_cache_none)
+{
+  struct drive **drv = &(g->drives);
+
+  while (*drv != NULL)
+    drv = &((*drv)->next);
+
+  *drv = safe_malloc (g, sizeof (struct drive));
+  (*drv)->next = NULL;
+  (*drv)->path = safe_strdup (g, path);
+  (*drv)->readonly = readonly;
+  (*drv)->format = format ? safe_strdup (g, format) : NULL;
+  (*drv)->iface = iface ? safe_strdup (g, iface) : NULL;
+  (*drv)->name = name ? safe_strdup (g, name) : NULL;
+  (*drv)->use_cache_none = use_cache_none;
+}
+
 int
 guestfs__add_drive_opts (guestfs_h *g, const char *filename,
                          const struct guestfs_add_drive_opts_argv *optargs)
 {
   int readonly;
-  char *format;
-  char *iface;
-  char *name;
+  const char *format;
+  const char *iface;
+  const char *name;
   int use_cache_none;
 
   if (strchr (filename, ':') != NULL) {
@@ -365,21 +386,21 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   readonly = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
              ? optargs->readonly : 0;
   format = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK
-           ? safe_strdup (g, optargs->format) : NULL;
+           ? optargs->format : NULL;
   iface = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK
-          ? safe_strdup (g, optargs->iface) : safe_strdup (g, DRIVE_IF);
+          ? optargs->iface : DRIVE_IF;
   name = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK
-          ? safe_strdup (g, optargs->name) : NULL;
+         ? optargs->name : NULL;
 
   if (format && !valid_format_iface (format)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "format");
-    goto err_out;
+    return -1;
   }
   if (!valid_format_iface (iface)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "iface");
-    goto err_out;
+    return -1;
   }
 
   /* For writable files, see if we can use cache=none.  This also
@@ -388,34 +409,17 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
    */
   use_cache_none = readonly ? 0 : test_cache_none (g, filename);
   if (use_cache_none == -1)
-    goto err_out;
+    return -1;
 
   if (readonly) {
     if (access (filename, R_OK) == -1) {
       perrorf (g, "%s", filename);
-      goto err_out;
+      return -1;
     }
   }
 
-  struct drive **i = &(g->drives);
-  while (*i != NULL) i = &((*i)->next);
-
-  *i = safe_malloc (g, sizeof (struct drive));
-  (*i)->next = NULL;
-  (*i)->path = safe_strdup (g, filename);
-  (*i)->readonly = readonly;
-  (*i)->format = format;
-  (*i)->iface = iface;
-  (*i)->name = name;
-  (*i)->use_cache_none = use_cache_none;
-
+  add_drive (g, filename, readonly, format, iface, name, use_cache_none);
   return 0;
-
-err_out:
-  free (format);
-  free (iface);
-  free (name);
-  return -1;
 }
 
 int
@@ -498,14 +502,8 @@ guestfs__launch (guestfs_h *g)
   TRACE0 (launch_start);
 
   /* Make the temporary directory. */
-  if (!g->tmpdir) {
-    TMP_TEMPLATE_ON_STACK (dir_template);
-    g->tmpdir = safe_strdup (g, dir_template);
-    if (mkdtemp (g->tmpdir) == NULL) {
-      perrorf (g, _("%s: cannot create temporary directory"), dir_template);
-      return -1;
-    }
-  }
+  if (guestfs___lazy_make_tmpdir (g) == -1)
+    return -1;
 
   /* Allow anyone to read the temporary directory.  The socket in this
    * directory won't be readable but anyone can see it exists if they
@@ -1252,6 +1250,24 @@ guestfs___persistent_tmpdir (void)
   if (t) tmpdir = t;
 
   return tmpdir;
+}
+
+/* The g->tmpdir (per-handle temporary directory) is not created when
+ * the handle is created.  Instead we create it lazily before the
+ * first time it is used, or during launch.
+ */
+int
+guestfs___lazy_make_tmpdir (guestfs_h *g)
+{
+  if (!g->tmpdir) {
+    TMP_TEMPLATE_ON_STACK (dir_template);
+    g->tmpdir = safe_strdup (g, dir_template);
+    if (mkdtemp (g->tmpdir) == NULL) {
+      perrorf (g, _("%s: cannot create temporary directory"), dir_template);
+      return -1;
+    }
+  }
+  return 0;
 }
 
 /* Recursively remove a temporary directory.  If removal fails, just

@@ -93,6 +93,16 @@ you can use any string as the pattern.
 
 =cut
 
+my @licenses;
+
+=item B<--license=GPLv2+|LGPLv2+|examples>
+
+Add the given license to the end of the man page.  This parameter
+is required.  The parameter may be given multiple times (eg. for
+mixed content).
+
+=cut
+
 my $man;
 
 =item B<--man=output.n>
@@ -118,6 +128,16 @@ my $section;
 Set the section of the man page (a number such as C<1> for
 command line utilities or C<3> for C API documentation).  If
 not set, defaults to C<1>.
+
+=cut
+
+my $strict_checks = 1;
+
+=item B<--no-strict-checks>
+
+Disable strict checks of the man page.  This is only used
+when generating the translated man pages in the C<po-docs>
+subdirectory.
 
 =cut
 
@@ -158,10 +178,12 @@ $progname =~ s{.*/}{};
 # Parse options.
 GetOptions ("help|?" => \$help,
             "html=s" => \$html,
+            "license=s" => \@licenses,
             "insert=s" => \@inserts,
             "man=s" => \$man,
             "name=s" => \$name,
             "section=s" => \$section,
+            "strict-checks!" => \$strict_checks,
             "text=s" => \$text,
             "verbatim=s" => \@verbatims
     ) or pod2usage (2);
@@ -170,8 +192,11 @@ pod2usage (1) if $help;
 die "$progname: missing argument: podwrapper input.pod\n" unless @ARGV == 1;
 my $input = $ARGV[0];
 
+die "$progname: $input: missing argument: --license parameter is required\n"
+    if $strict_checks && @licenses == 0;
+
 # There should be at least one output.
-die "$progname: no output format specified.  Use --man and/or --html and/or --text.\n"
+die "$progname: $input: no output format specified.  Use --man and/or --html and/or --text.\n"
     unless defined $man || defined $html || defined $text;
 
 # Default for $name and $section.
@@ -222,7 +247,7 @@ my $content = read_whole_file ($input);
 # Perform @inserts.
 foreach (@inserts) {
     my @a = split /:/, $_, 2;
-    die "$progname: no colon in parameter of --insert\n" unless @a >= 2;
+    die "$progname: $input: no colon in parameter of --insert\n" unless @a >= 2;
     my $replacement = read_whole_file ($a[0]);
     $content =~ s/$a[1]/$replacement/ge;
 }
@@ -230,10 +255,119 @@ foreach (@inserts) {
 # Perform @verbatims.
 foreach (@verbatims) {
     my @a = split /:/, $_, 2;
-    die "$progname: no colon in parameter of --verbatim\n" unless @a >= 2;
+    die "$progname: $input: no colon in parameter of --verbatim\n" unless @a >= 2;
     my $replacement = read_verbatim_file ($a[0]);
     $content =~ s/$a[1]/$replacement/ge;
 }
+
+if ($strict_checks) {
+    # Verify sections present / not present.
+    die "$progname: $input: missing AUTHOR or AUTHORS section\n"
+        unless $content =~ /^=head1 AUTHOR/m;
+    die "$progname: $input: missing SEE ALSO section\n"
+        unless $content =~ /^=head1 SEE ALSO/m;
+    die "$progname: $input: missing COPYRIGHT section\n"
+        unless $content =~ /^=head1 COPYRIGHT/m;
+    die "$progname: $input: BUGS is now added automatically, do not add it to the POD file\n"
+        if $content =~ /^=head1 (REPORTING )?BUGS/m;
+    die "$progname: $input: LICENSE is now added automatically, do not add it to the POD file\n"
+        if $content =~ /^=head1 LICENSE/m;
+    die "$progname: $input: GPL/LGPL should be specified using the --license parameter, not included in the POD file\n"
+        if $content =~ /^This program is free software/ ||
+        $content =~ /^This library is free software/;
+}
+
+# Add standard LICENSE and BUGS sections.
+my $LGPLv2plus =
+"This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA
+";
+
+my $GPLv2plus =
+"This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+";
+
+my $examples_license =
+"This manual page contains examples which we hope you will use in
+your programs.  The examples may be freely copied, modified and
+distributed for any purpose without any restrictions.
+";
+
+my $reporting_bugs =
+"=head1 BUGS
+
+To get a list of bugs against libguestfs, use this link:
+L<https://bugzilla.redhat.com/buglist.cgi?component=libguestfs&product=Virtualization+Tools>
+
+To report a new bug against libguestfs, use this link:
+L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
+
+When reporting a bug, please supply:
+
+\=over 4
+
+\=item *
+
+The version of libguestfs.
+
+\=item *
+
+Where you got libguestfs (eg. which Linux distro, compiled from source, etc)
+
+\=item *
+
+Describe the bug accurately and give a way to reproduce it.
+
+\=item *
+
+Run L<libguestfs-test-tool(1)> and paste the B<complete, unedited>
+output into the bug report.
+
+\=back
+";
+
+$content .= "\n\n=head1 LICENSE\n\n";
+
+foreach (@licenses) {
+    if ($_ eq "LGPLv2+") {
+        $content .= $LGPLv2plus . "\n\n";
+    }
+    elsif ($_ eq "GPLv2+") {
+        $content .= $GPLv2plus . "\n\n";
+    }
+    elsif ($_ eq "examples") {
+        $content .= $examples_license . "\n\n";
+    }
+    else {
+        die "$progname: $input: invalid --license parameter: $_\n";
+    }
+}
+
+$content .= "\n\n$reporting_bugs";
 
 # Output man page.
 SUBMAN: {
@@ -331,6 +465,11 @@ SUBHTML: {
         $r .= "#" . $self->idify ($anchor, 1) if defined $anchor;
         $r;
     }
+
+    # For some reason Pod::Simple::XHTML usually cannot find a
+    # title for the page.  This defaults the HTML <title> field
+    # to the same as the man page name.
+    sub default_title { $name }
 }
 
 if ($html) {
@@ -339,7 +478,8 @@ if ($html) {
     my $parser = Podwrapper::XHTML->new;
     my $output;
     $parser->output_string (\$output);
-    $parser->html_charset ("UTF-8");
+    # Added in Pod::Simple 3.16, 2011-03-14.
+    eval { $parser->html_charset ("UTF-8") };
     $parser->html_css ("pod.css");
     $parser->index (1);
     $parser->parse_string_document ($content);

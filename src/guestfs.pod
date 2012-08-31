@@ -1249,6 +1249,67 @@ UUIDs and filesystem labels.
 
 =back
 
+=head2 NULL DISKS
+
+When adding a disk using, eg., L</guestfs_add_drive>, you can
+set the filename to C<"/dev/null">.  This string is treated
+specially by libguestfs, causing it to add a "null disk".
+
+A null disk has the following properties:
+
+=over 4
+
+=item *
+
+A null disk will appear as a normal device, eg. in
+calls to L</guestfs_list_devices>.
+
+=item *
+
+You may add C<"/dev/null"> multiple times.
+
+=item *
+
+You should not try to access a null disk in any way.  For
+example, you shouldn't try to read it or mount it.
+
+=back
+
+Null disks are used for three main purposes:
+
+=over 4
+
+=item 1.
+
+Performance testing of libguestfs (see L<guestfs-performance(1)>).
+
+=item 2.
+
+The internal test suite.
+
+=item 3.
+
+If you want to use libguestfs APIs that don't refer to disks, since
+libguestfs requires that at least one disk is added, you should add a
+null disk.
+
+For example, to test if a feature is available, use code like this:
+
+ guestfs_h *g;
+ char **groups = [ "btrfs", NULL ];
+ 
+ g = guestfs_create ();
+ guestfs_add_drive (g, "/dev/null");
+ guestfs_launch (g);
+ if (guestfs_available (g, groups) == 0) {
+   // group(s) are available
+ } else {
+   // group(s) are not available
+ }
+ guestfs_close (g);
+
+=back
+
 =head1 SECURITY
 
 This section discusses security implications of using libguestfs,
@@ -3421,39 +3482,6 @@ L<kpartx(8)>,
 L<lvm(8)>,
 L<disktype(1)>.
 
-=head1 BUGS
-
-To get a list of bugs against libguestfs use this link:
-
-L<https://bugzilla.redhat.com/buglist.cgi?component=libguestfs&product=Virtualization+Tools>
-
-To report a new bug against libguestfs use this link:
-
-L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
-
-When reporting a bug, please check:
-
-=over 4
-
-=item *
-
-That the bug hasn't been reported already.
-
-=item *
-
-That you are testing a recent version.
-
-=item *
-
-Describe the bug accurately, and give a way to reproduce it.
-
-=item *
-
-Run libguestfs-test-tool and paste the B<complete, unedited>
-output into the bug report.
-
-=back
-
 =head1 AUTHORS
 
 Richard W.M. Jones (C<rjones at redhat dot com>)
@@ -3461,18 +3489,3 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 =head1 COPYRIGHT
 
 Copyright (C) 2009-2012 Red Hat Inc.
-L<http://libguestfs.org/>
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA

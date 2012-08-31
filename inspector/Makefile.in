@@ -919,7 +919,7 @@ JAVA = @JAVA@
 JAVAC = @JAVAC@
 JAVADOC = @JAVADOC@
 JAVAH = @JAVAH@
-JAVA_HOME = @JAVA_HOME@
+JAVA_EXE = @JAVA_EXE@
 JNI_CFLAGS = @JNI_CFLAGS@
 JNI_INSTALL_DIR = @JNI_INSTALL_DIR@
 JNI_VERSION_INFO = @JNI_VERSION_INFO@
@@ -1962,19 +1962,11 @@ builddir ?= .
 # Define a force dependency which will always be rebuilt
 .PHONY: force
 
-# Rebuild rules for common dependencies
-$(top_builddir)/src/libguestfs.la: force
-	$(MAKE) -C $(top_builddir)/src libguestfs.la
-
 # Automatically build targets defined in generator_built
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
 	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# The daemon
-$(top_builddir)/daemon/guestfsd: force
-	$(MAKE) -C $(top_builddir)/daemon
 
 # A symbolic rule to regenerate the appliance
 .PHONY: appliance
@@ -1987,6 +1979,7 @@ appliance: force
 @HAVE_LIBXML2_TRUE@	$(PODWRAPPER) \
 @HAVE_LIBXML2_TRUE@	  --man virt-inspector.1 \
 @HAVE_LIBXML2_TRUE@	  --html $(top_builddir)/html/virt-inspector.1.html \
+@HAVE_LIBXML2_TRUE@	  --license GPLv2+ \
 @HAVE_LIBXML2_TRUE@	  $<
 @HAVE_LIBXML2_TRUE@	touch $@
 
