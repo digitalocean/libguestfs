@@ -1,3 +1,13 @@
+libguestfs (1:1.18.8-1) unstable; urgency=low
+
+  * New upstream version
+  * [fccad0e] Rebased patch queue: Disabling FUSE tests is not needed;
+    upstream has picked up the diff->diffutils change.
+  * [92a48b1] Renamed --with-java-home -> --with-java, following change in
+    configure
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 20 Sep 2012 13:08:32 +0200
+
 libguestfs (1:1.18.6-2) unstable; urgency=low
 
   * [e39f17c] Added patch that reverts upstream sgabios change
