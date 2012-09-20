@@ -7,10 +7,10 @@ Subject: ruby: install to vendor_ruby.
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/ruby/Makefile.am b/ruby/Makefile.am
-index c4b680f..db6ec9e 100644
+index 9073ad7..6534c83 100644
 --- a/ruby/Makefile.am
 +++ b/ruby/Makefile.am
-@@ -54,13 +54,13 @@ all: $(generator_built)
+@@ -57,13 +57,13 @@ all: $(generator_built)
  	$(RAKE) build
  	$(RAKE) rdoc
  

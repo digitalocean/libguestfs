@@ -1,9 +1,7 @@
-0001-Disable-fuse-tests-if-dev-fuse-doesn-t-exist.patch
-0002-Mount-run-as-tmpfs-inside-appliance-workaround-for-f.patch
-0003-Fix-for-systemd-based-Debian-systems.patch
-0004-out-of-tree-build-fix-building-Perl-bindings.patch
-0005-out-of-tree-build-daemon.patch
-0006-ruby-install-to-vendor_ruby.patch
-0007-Fix-guestfs-supermin-appliance-path.patch
-0008-Revert-qemu-Use-sgabios-by-default-thanks-Dan-Berran.patch
-0009-The-package-containing-the-diff-binary-has-been-diff.patch
+0001-Mount-run-as-tmpfs-inside-appliance-workaround-for-f.patch
+0002-Fix-for-systemd-based-Debian-systems.patch
+0003-out-of-tree-build-fix-building-Perl-bindings.patch
+0004-out-of-tree-build-daemon.patch
+0005-ruby-install-to-vendor_ruby.patch
+0006-Fix-guestfs-supermin-appliance-path.patch
+0007-Revert-qemu-Use-sgabios-by-default-thanks-Dan-Berran.patch

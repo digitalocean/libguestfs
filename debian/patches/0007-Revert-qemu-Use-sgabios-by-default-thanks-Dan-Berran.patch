@@ -8,10 +8,10 @@ This reverts commit 82e3b7509dea41823c1ce58acd61d406d460c0ab.
  1 file changed, 9 deletions(-)
 
 diff --git a/src/launch.c b/src/launch.c
-index cb51526..b0c810e 100644
+index 54ba471..8993a5b 100644
 --- a/src/launch.c
 +++ b/src/launch.c
-@@ -777,15 +777,6 @@ launch_appliance (guestfs_h *g)
+@@ -775,15 +775,6 @@ launch_appliance (guestfs_h *g)
      add_cmdline (g, "stdio");
  #endif
  

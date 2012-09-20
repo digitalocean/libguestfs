@@ -7,7 +7,7 @@ Subject: out-of-tree build: daemon
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/daemon/Makefile.am b/daemon/Makefile.am
-index 02c21df..c33758f 100644
+index 69699cb..06aaa29 100644
 --- a/daemon/Makefile.am
 +++ b/daemon/Makefile.am
 @@ -42,10 +42,10 @@ noinst_LIBRARIES = libprotocol.a
