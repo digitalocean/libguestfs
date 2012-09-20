@@ -2810,8 +2810,13 @@ If you use Emacs, add the following to one of one of your start-up files
 
 有用なターゲットは次のとおりです:
 
- make syntax-check  # C コードの構文を確認します
- make check         # テストスイートを実行します
+ make syntax-check -j1 -k # checks for various syntax and
+                          # style problems
+ 
+ make check               # runs the test suite
+ 
+ make extra-tests         # in-depth testing using valgrind
+                          # and real guests
 
 =head2 DAEMON CUSTOM PRINTF FORMATTERS
 

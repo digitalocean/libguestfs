@@ -29,10 +29,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-#ifndef O_CLOEXEC
-#define O_CLOEXEC 0
-#endif
-
 #include "guestfs.h"
 
 #define STREQ(a,b) (strcmp((a),(b)) == 0)

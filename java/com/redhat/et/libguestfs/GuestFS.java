@@ -91,7 +91,7 @@ public class GuestFS {
       _optobj = optargs.get ("obool");
     if (_optobj != null) {
       obool = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     int oint = 0;
     _optobj = null;
@@ -99,7 +99,7 @@ public class GuestFS {
       _optobj = optargs.get ("oint");
     if (_optobj != null) {
       oint = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     long oint64 = 0;
     _optobj = null;
@@ -107,7 +107,7 @@ public class GuestFS {
       _optobj = optargs.get ("oint64");
     if (_optobj != null) {
       oint64 = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     String ostring = "";
     _optobj = null;
@@ -115,7 +115,7 @@ public class GuestFS {
       _optobj = optargs.get ("ostring");
     if (_optobj != null) {
       ostring = ((String) _optobj);
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
 
     _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, _optargs_bitmask, obool, oint, oint64, ostring);
@@ -1978,7 +1978,7 @@ public class GuestFS {
       _optobj = optargs.get ("readonly");
     if (_optobj != null) {
       readonly = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     String format = "";
     _optobj = null;
@@ -1986,7 +1986,7 @@ public class GuestFS {
       _optobj = optargs.get ("format");
     if (_optobj != null) {
       format = ((String) _optobj);
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     String iface = "";
     _optobj = null;
@@ -1994,7 +1994,7 @@ public class GuestFS {
       _optobj = optargs.get ("iface");
     if (_optobj != null) {
       iface = ((String) _optobj);
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     String name = "";
     _optobj = null;
@@ -2002,7 +2002,7 @@ public class GuestFS {
       _optobj = optargs.get ("name");
     if (_optobj != null) {
       name = ((String) _optobj);
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
 
     _add_drive_opts (g, filename, _optargs_bitmask, readonly, format, iface, name);
@@ -2202,7 +2202,7 @@ public class GuestFS {
       _optobj = optargs.get ("libvirturi");
     if (_optobj != null) {
       libvirturi = ((String) _optobj);
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     boolean readonly = false;
     _optobj = null;
@@ -2210,7 +2210,7 @@ public class GuestFS {
       _optobj = optargs.get ("readonly");
     if (_optobj != null) {
       readonly = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     String iface = "";
     _optobj = null;
@@ -2218,7 +2218,7 @@ public class GuestFS {
       _optobj = optargs.get ("iface");
     if (_optobj != null) {
       iface = ((String) _optobj);
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     boolean live = false;
     _optobj = null;
@@ -2226,7 +2226,7 @@ public class GuestFS {
       _optobj = optargs.get ("live");
     if (_optobj != null) {
       live = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
     boolean allowuuid = false;
     _optobj = null;
@@ -2234,7 +2234,7 @@ public class GuestFS {
       _optobj = optargs.get ("allowuuid");
     if (_optobj != null) {
       allowuuid = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 16;
+      _optargs_bitmask |= 16L;
     }
     String readonlydisk = "";
     _optobj = null;
@@ -2242,7 +2242,7 @@ public class GuestFS {
       _optobj = optargs.get ("readonlydisk");
     if (_optobj != null) {
       readonlydisk = ((String) _optobj);
-      _optargs_bitmask |= 32;
+      _optargs_bitmask |= 32L;
     }
 
     return _add_domain (g, dom, _optargs_bitmask, libvirturi, readonly, iface, live, allowuuid, readonlydisk);
@@ -2819,7 +2819,7 @@ public class GuestFS {
       _optobj = optargs.get ("favicon");
     if (_optobj != null) {
       favicon = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     boolean highquality = false;
     _optobj = null;
@@ -2827,7 +2827,7 @@ public class GuestFS {
       _optobj = optargs.get ("highquality");
     if (_optobj != null) {
       highquality = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
 
     return _inspect_get_icon (g, root, _optargs_bitmask, favicon, highquality);
@@ -2985,7 +2985,7 @@ public class GuestFS {
       _optobj = optargs.get ("readonly");
     if (_optobj != null) {
       readonly = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     String options = "";
     _optobj = null;
@@ -2993,7 +2993,7 @@ public class GuestFS {
       _optobj = optargs.get ("options");
     if (_optobj != null) {
       options = ((String) _optobj);
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     int cachetimeout = 0;
     _optobj = null;
@@ -3001,7 +3001,7 @@ public class GuestFS {
       _optobj = optargs.get ("cachetimeout");
     if (_optobj != null) {
       cachetimeout = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     boolean debugcalls = false;
     _optobj = null;
@@ -3009,7 +3009,7 @@ public class GuestFS {
       _optobj = optargs.get ("debugcalls");
     if (_optobj != null) {
       debugcalls = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
 
     _mount_local (g, localmountpoint, _optargs_bitmask, readonly, options, cachetimeout, debugcalls);
@@ -3089,7 +3089,7 @@ public class GuestFS {
       _optobj = optargs.get ("retry");
     if (_optobj != null) {
       retry = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
 
     _umount_local (g, _optargs_bitmask, retry);
@@ -10401,7 +10401,7 @@ public class GuestFS {
       _optobj = optargs.get ("blocksize");
     if (_optobj != null) {
       blocksize = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     String features = "";
     _optobj = null;
@@ -10409,7 +10409,7 @@ public class GuestFS {
       _optobj = optargs.get ("features");
     if (_optobj != null) {
       features = ((String) _optobj);
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     int inode = 0;
     _optobj = null;
@@ -10417,7 +10417,7 @@ public class GuestFS {
       _optobj = optargs.get ("inode");
     if (_optobj != null) {
       inode = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     int sectorsize = 0;
     _optobj = null;
@@ -10425,7 +10425,7 @@ public class GuestFS {
       _optobj = optargs.get ("sectorsize");
     if (_optobj != null) {
       sectorsize = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
 
     _mkfs_opts (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize);
@@ -10647,7 +10647,7 @@ public class GuestFS {
       _optobj = optargs.get ("options");
     if (_optobj != null) {
       options = ((String) _optobj);
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
 
     _mount_9p (g, mounttag, mountpoint, _optargs_bitmask, options);
@@ -10739,7 +10739,7 @@ public class GuestFS {
       _optobj = optargs.get ("size");
     if (_optobj != null) {
       size = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     boolean force = false;
     _optobj = null;
@@ -10747,7 +10747,7 @@ public class GuestFS {
       _optobj = optargs.get ("force");
     if (_optobj != null) {
       force = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
 
     _ntfsresize_opts (g, device, _optargs_bitmask, size, force);
@@ -10802,7 +10802,7 @@ public class GuestFS {
       _optobj = optargs.get ("size");
     if (_optobj != null) {
       size = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
 
     _btrfs_filesystem_resize (g, mountpoint, _optargs_bitmask, size);
@@ -10882,7 +10882,7 @@ public class GuestFS {
       _optobj = optargs.get ("level");
     if (_optobj != null) {
       level = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
 
     _compress_out (g, ctype, file, zfile, _optargs_bitmask, level);
@@ -10928,7 +10928,7 @@ public class GuestFS {
       _optobj = optargs.get ("level");
     if (_optobj != null) {
       level = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
 
     _compress_device_out (g, ctype, device, zdevice, _optargs_bitmask, level);
@@ -11012,7 +11012,7 @@ public class GuestFS {
       _optobj = optargs.get ("srcoffset");
     if (_optobj != null) {
       srcoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     long destoffset = 0;
     _optobj = null;
@@ -11020,7 +11020,7 @@ public class GuestFS {
       _optobj = optargs.get ("destoffset");
     if (_optobj != null) {
       destoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     long size = 0;
     _optobj = null;
@@ -11028,7 +11028,7 @@ public class GuestFS {
       _optobj = optargs.get ("size");
     if (_optobj != null) {
       size = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
 
     _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
@@ -11071,7 +11071,7 @@ public class GuestFS {
       _optobj = optargs.get ("srcoffset");
     if (_optobj != null) {
       srcoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     long destoffset = 0;
     _optobj = null;
@@ -11079,7 +11079,7 @@ public class GuestFS {
       _optobj = optargs.get ("destoffset");
     if (_optobj != null) {
       destoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     long size = 0;
     _optobj = null;
@@ -11087,7 +11087,7 @@ public class GuestFS {
       _optobj = optargs.get ("size");
     if (_optobj != null) {
       size = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
 
     _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
@@ -11130,7 +11130,7 @@ public class GuestFS {
       _optobj = optargs.get ("srcoffset");
     if (_optobj != null) {
       srcoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     long destoffset = 0;
     _optobj = null;
@@ -11138,7 +11138,7 @@ public class GuestFS {
       _optobj = optargs.get ("destoffset");
     if (_optobj != null) {
       destoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     long size = 0;
     _optobj = null;
@@ -11146,7 +11146,7 @@ public class GuestFS {
       _optobj = optargs.get ("size");
     if (_optobj != null) {
       size = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
 
     _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
@@ -11194,7 +11194,7 @@ public class GuestFS {
       _optobj = optargs.get ("srcoffset");
     if (_optobj != null) {
       srcoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     long destoffset = 0;
     _optobj = null;
@@ -11202,7 +11202,7 @@ public class GuestFS {
       _optobj = optargs.get ("destoffset");
     if (_optobj != null) {
       destoffset = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     long size = 0;
     _optobj = null;
@@ -11210,7 +11210,7 @@ public class GuestFS {
       _optobj = optargs.get ("size");
     if (_optobj != null) {
       size = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
 
     _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
@@ -11314,7 +11314,7 @@ public class GuestFS {
       _optobj = optargs.get ("force");
     if (_optobj != null) {
       force = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     int maxmountcount = 0;
     _optobj = null;
@@ -11322,7 +11322,7 @@ public class GuestFS {
       _optobj = optargs.get ("maxmountcount");
     if (_optobj != null) {
       maxmountcount = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     int mountcount = 0;
     _optobj = null;
@@ -11330,7 +11330,7 @@ public class GuestFS {
       _optobj = optargs.get ("mountcount");
     if (_optobj != null) {
       mountcount = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     String errorbehavior = "";
     _optobj = null;
@@ -11338,7 +11338,7 @@ public class GuestFS {
       _optobj = optargs.get ("errorbehavior");
     if (_optobj != null) {
       errorbehavior = ((String) _optobj);
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
     long group = 0;
     _optobj = null;
@@ -11346,7 +11346,7 @@ public class GuestFS {
       _optobj = optargs.get ("group");
     if (_optobj != null) {
       group = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 16;
+      _optargs_bitmask |= 16L;
     }
     int intervalbetweenchecks = 0;
     _optobj = null;
@@ -11354,7 +11354,7 @@ public class GuestFS {
       _optobj = optargs.get ("intervalbetweenchecks");
     if (_optobj != null) {
       intervalbetweenchecks = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 32;
+      _optargs_bitmask |= 32L;
     }
     int reservedblockspercentage = 0;
     _optobj = null;
@@ -11362,7 +11362,7 @@ public class GuestFS {
       _optobj = optargs.get ("reservedblockspercentage");
     if (_optobj != null) {
       reservedblockspercentage = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 64;
+      _optargs_bitmask |= 64L;
     }
     String lastmounteddirectory = "";
     _optobj = null;
@@ -11370,7 +11370,7 @@ public class GuestFS {
       _optobj = optargs.get ("lastmounteddirectory");
     if (_optobj != null) {
       lastmounteddirectory = ((String) _optobj);
-      _optargs_bitmask |= 128;
+      _optargs_bitmask |= 128L;
     }
     long reservedblockscount = 0;
     _optobj = null;
@@ -11378,7 +11378,7 @@ public class GuestFS {
       _optobj = optargs.get ("reservedblockscount");
     if (_optobj != null) {
       reservedblockscount = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 256;
+      _optargs_bitmask |= 256L;
     }
     long user = 0;
     _optobj = null;
@@ -11386,7 +11386,7 @@ public class GuestFS {
       _optobj = optargs.get ("user");
     if (_optobj != null) {
       user = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 512;
+      _optargs_bitmask |= 512L;
     }
 
     _tune2fs (g, device, _optargs_bitmask, force, maxmountcount, mountcount, errorbehavior, group, intervalbetweenchecks, reservedblockspercentage, lastmounteddirectory, reservedblockscount, user);
@@ -11475,7 +11475,7 @@ public class GuestFS {
       _optobj = optargs.get ("missingbitmap");
     if (_optobj != null) {
       missingbitmap = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     int nrdevices = 0;
     _optobj = null;
@@ -11483,7 +11483,7 @@ public class GuestFS {
       _optobj = optargs.get ("nrdevices");
     if (_optobj != null) {
       nrdevices = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     int spare = 0;
     _optobj = null;
@@ -11491,7 +11491,7 @@ public class GuestFS {
       _optobj = optargs.get ("spare");
     if (_optobj != null) {
       spare = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     long chunk = 0;
     _optobj = null;
@@ -11499,7 +11499,7 @@ public class GuestFS {
       _optobj = optargs.get ("chunk");
     if (_optobj != null) {
       chunk = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
     String level = "";
     _optobj = null;
@@ -11507,7 +11507,7 @@ public class GuestFS {
       _optobj = optargs.get ("level");
     if (_optobj != null) {
       level = ((String) _optobj);
-      _optargs_bitmask |= 16;
+      _optargs_bitmask |= 16L;
     }
 
     _md_create (g, name, devices, _optargs_bitmask, missingbitmap, nrdevices, spare, chunk, level);
@@ -11688,7 +11688,7 @@ public class GuestFS {
       _optobj = optargs.get ("correct");
     if (_optobj != null) {
       correct = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     boolean forceall = false;
     _optobj = null;
@@ -11696,7 +11696,7 @@ public class GuestFS {
       _optobj = optargs.get ("forceall");
     if (_optobj != null) {
       forceall = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
 
     _e2fsck (g, device, _optargs_bitmask, correct, forceall);
@@ -11799,7 +11799,7 @@ public class GuestFS {
       _optobj = optargs.get ("clearbadsectors");
     if (_optobj != null) {
       clearbadsectors = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
 
     _ntfsfix (g, device, _optargs_bitmask, clearbadsectors);
@@ -11854,7 +11854,7 @@ public class GuestFS {
       _optobj = optargs.get ("metadataonly");
     if (_optobj != null) {
       metadataonly = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     boolean rescue = false;
     _optobj = null;
@@ -11862,7 +11862,7 @@ public class GuestFS {
       _optobj = optargs.get ("rescue");
     if (_optobj != null) {
       rescue = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     boolean ignorefscheck = false;
     _optobj = null;
@@ -11870,7 +11870,7 @@ public class GuestFS {
       _optobj = optargs.get ("ignorefscheck");
     if (_optobj != null) {
       ignorefscheck = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     boolean preservetimestamps = false;
     _optobj = null;
@@ -11878,7 +11878,7 @@ public class GuestFS {
       _optobj = optargs.get ("preservetimestamps");
     if (_optobj != null) {
       preservetimestamps = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
     boolean force = false;
     _optobj = null;
@@ -11886,7 +11886,7 @@ public class GuestFS {
       _optobj = optargs.get ("force");
     if (_optobj != null) {
       force = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 16;
+      _optargs_bitmask |= 16L;
     }
 
     _ntfsclone_out (g, device, backupfile, _optargs_bitmask, metadataonly, rescue, ignorefscheck, preservetimestamps, force);
@@ -12158,7 +12158,7 @@ public class GuestFS {
       _optobj = optargs.get ("allocstart");
     if (_optobj != null) {
       allocstart = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     long bytecount = 0;
     _optobj = null;
@@ -12166,7 +12166,7 @@ public class GuestFS {
       _optobj = optargs.get ("bytecount");
     if (_optobj != null) {
       bytecount = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
     String datatype = "";
     _optobj = null;
@@ -12174,7 +12174,7 @@ public class GuestFS {
       _optobj = optargs.get ("datatype");
     if (_optobj != null) {
       datatype = ((String) _optobj);
-      _optargs_bitmask |= 4;
+      _optargs_bitmask |= 4L;
     }
     int leafsize = 0;
     _optobj = null;
@@ -12182,7 +12182,7 @@ public class GuestFS {
       _optobj = optargs.get ("leafsize");
     if (_optobj != null) {
       leafsize = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 8;
+      _optargs_bitmask |= 8L;
     }
     String label = "";
     _optobj = null;
@@ -12190,7 +12190,7 @@ public class GuestFS {
       _optobj = optargs.get ("label");
     if (_optobj != null) {
       label = ((String) _optobj);
-      _optargs_bitmask |= 16;
+      _optargs_bitmask |= 16L;
     }
     String metadata = "";
     _optobj = null;
@@ -12198,7 +12198,7 @@ public class GuestFS {
       _optobj = optargs.get ("metadata");
     if (_optobj != null) {
       metadata = ((String) _optobj);
-      _optargs_bitmask |= 32;
+      _optargs_bitmask |= 32L;
     }
     int nodesize = 0;
     _optobj = null;
@@ -12206,7 +12206,7 @@ public class GuestFS {
       _optobj = optargs.get ("nodesize");
     if (_optobj != null) {
       nodesize = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 64;
+      _optargs_bitmask |= 64L;
     }
     int sectorsize = 0;
     _optobj = null;
@@ -12214,7 +12214,7 @@ public class GuestFS {
       _optobj = optargs.get ("sectorsize");
     if (_optobj != null) {
       sectorsize = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 128;
+      _optargs_bitmask |= 128L;
     }
 
     _mkfs_btrfs (g, devices, _optargs_bitmask, allocstart, bytecount, datatype, leafsize, label, metadata, nodesize, sectorsize);
@@ -12368,7 +12368,7 @@ public class GuestFS {
       _optobj = optargs.get ("clear");
     if (_optobj != null) {
       clear = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
 
     _set_e2attrs (g, file, attrs, _optargs_bitmask, clear);
@@ -12664,7 +12664,7 @@ public class GuestFS {
       _optobj = optargs.get ("superblock");
     if (_optobj != null) {
       superblock = ((Long) _optobj).longValue();
-      _optargs_bitmask |= 1;
+      _optargs_bitmask |= 1L;
     }
     boolean repair = false;
     _optobj = null;
@@ -12672,7 +12672,7 @@ public class GuestFS {
       _optobj = optargs.get ("repair");
     if (_optobj != null) {
       repair = ((Boolean) _optobj).booleanValue();
-      _optargs_bitmask |= 2;
+      _optargs_bitmask |= 2L;
     }
 
     _btrfs_fsck (g, device, _optargs_bitmask, superblock, repair);

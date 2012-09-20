@@ -22,15 +22,17 @@
 
 #include <config.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <inttypes.h>
+
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 
 #include <guestfs.h>
 
-#ifndef PRId64
-#define PRId64 "lld"
-#endif
+#define STREQ(a,b) (strcmp((a),(b)) == 0)
 
 static SV *
 my_newSVll(long long val) {
@@ -43,10 +45,6 @@ my_newSVll(long long val) {
   return newSVpv(buf, len);
 #endif
 }
-
-#ifndef PRIu64
-#define PRIu64 "llu"
-#endif
 
 static SV *
 my_newSVull(unsigned long long val) {
@@ -319,19 +317,19 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "obool") == 0) {
+        if (STREQ (this_arg, "obool")) {
           optargs_s.obool = SvIV (ST (items_i+1));
           this_mask = GUESTFS_TEST0_OBOOL_BITMASK;
         }
-        else if (strcmp (this_arg, "oint") == 0) {
+        else if (STREQ (this_arg, "oint")) {
           optargs_s.oint = SvIV (ST (items_i+1));
           this_mask = GUESTFS_TEST0_OINT_BITMASK;
         }
-        else if (strcmp (this_arg, "oint64") == 0) {
+        else if (STREQ (this_arg, "oint64")) {
           optargs_s.oint64 = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TEST0_OINT64_BITMASK;
         }
-        else if (strcmp (this_arg, "ostring") == 0) {
+        else if (STREQ (this_arg, "ostring")) {
           optargs_s.ostring = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_TEST0_OSTRING_BITMASK;
         }
@@ -1420,19 +1418,19 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "readonly") == 0) {
+        if (STREQ (this_arg, "readonly")) {
           optargs_s.readonly = SvIV (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK;
         }
-        else if (strcmp (this_arg, "format") == 0) {
+        else if (STREQ (this_arg, "format")) {
           optargs_s.format = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK;
         }
-        else if (strcmp (this_arg, "iface") == 0) {
+        else if (STREQ (this_arg, "iface")) {
           optargs_s.iface = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK;
         }
-        else if (strcmp (this_arg, "name") == 0) {
+        else if (STREQ (this_arg, "name")) {
           optargs_s.name = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
         }
@@ -1533,27 +1531,27 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "libvirturi") == 0) {
+        if (STREQ (this_arg, "libvirturi")) {
           optargs_s.libvirturi = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK;
         }
-        else if (strcmp (this_arg, "readonly") == 0) {
+        else if (STREQ (this_arg, "readonly")) {
           optargs_s.readonly = SvIV (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_READONLY_BITMASK;
         }
-        else if (strcmp (this_arg, "iface") == 0) {
+        else if (STREQ (this_arg, "iface")) {
           optargs_s.iface = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_IFACE_BITMASK;
         }
-        else if (strcmp (this_arg, "live") == 0) {
+        else if (STREQ (this_arg, "live")) {
           optargs_s.live = SvIV (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
         }
-        else if (strcmp (this_arg, "allowuuid") == 0) {
+        else if (STREQ (this_arg, "allowuuid")) {
           optargs_s.allowuuid = SvIV (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
         }
-        else if (strcmp (this_arg, "readonlydisk") == 0) {
+        else if (STREQ (this_arg, "readonlydisk")) {
           optargs_s.readonlydisk = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK;
         }
@@ -1796,11 +1794,11 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "favicon") == 0) {
+        if (STREQ (this_arg, "favicon")) {
           optargs_s.favicon = SvIV (ST (items_i+1));
           this_mask = GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
         }
-        else if (strcmp (this_arg, "highquality") == 0) {
+        else if (STREQ (this_arg, "highquality")) {
           optargs_s.highquality = SvIV (ST (items_i+1));
           this_mask = GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
         }
@@ -1884,19 +1882,19 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "readonly") == 0) {
+        if (STREQ (this_arg, "readonly")) {
           optargs_s.readonly = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MOUNT_LOCAL_READONLY_BITMASK;
         }
-        else if (strcmp (this_arg, "options") == 0) {
+        else if (STREQ (this_arg, "options")) {
           optargs_s.options = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK;
         }
-        else if (strcmp (this_arg, "cachetimeout") == 0) {
+        else if (STREQ (this_arg, "cachetimeout")) {
           optargs_s.cachetimeout = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK;
         }
-        else if (strcmp (this_arg, "debugcalls") == 0) {
+        else if (STREQ (this_arg, "debugcalls")) {
           optargs_s.debugcalls = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK;
         }
@@ -1937,7 +1935,7 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "retry") == 0) {
+        if (STREQ (this_arg, "retry")) {
           optargs_s.retry = SvIV (ST (items_i+1));
           this_mask = GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK;
         }
@@ -6028,19 +6026,19 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "blocksize") == 0) {
+        if (STREQ (this_arg, "blocksize")) {
           optargs_s.blocksize = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
         }
-        else if (strcmp (this_arg, "features") == 0) {
+        else if (STREQ (this_arg, "features")) {
           optargs_s.features = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
         }
-        else if (strcmp (this_arg, "inode") == 0) {
+        else if (STREQ (this_arg, "inode")) {
           optargs_s.inode = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MKFS_OPTS_INODE_BITMASK;
         }
-        else if (strcmp (this_arg, "sectorsize") == 0) {
+        else if (STREQ (this_arg, "sectorsize")) {
           optargs_s.sectorsize = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
         }
@@ -6174,7 +6172,7 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "options") == 0) {
+        if (STREQ (this_arg, "options")) {
           optargs_s.options = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MOUNT_9P_OPTIONS_BITMASK;
         }
@@ -6224,11 +6222,11 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "size") == 0) {
+        if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
         }
-        else if (strcmp (this_arg, "force") == 0) {
+        else if (STREQ (this_arg, "force")) {
           optargs_s.force = SvIV (ST (items_i+1));
           this_mask = GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
         }
@@ -6260,7 +6258,7 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "size") == 0) {
+        if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
         }
@@ -6307,7 +6305,7 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "level") == 0) {
+        if (STREQ (this_arg, "level")) {
           optargs_s.level = SvIV (ST (items_i+1));
           this_mask = GUESTFS_COMPRESS_OUT_LEVEL_BITMASK;
         }
@@ -6341,7 +6339,7 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "level") == 0) {
+        if (STREQ (this_arg, "level")) {
           optargs_s.level = SvIV (ST (items_i+1));
           this_mask = GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK;
         }
@@ -6388,15 +6386,15 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "srcoffset") == 0) {
+        if (STREQ (this_arg, "srcoffset")) {
           optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "destoffset") == 0) {
+        else if (STREQ (this_arg, "destoffset")) {
           optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "size") == 0) {
+        else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
         }
@@ -6429,15 +6427,15 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "srcoffset") == 0) {
+        if (STREQ (this_arg, "srcoffset")) {
           optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "destoffset") == 0) {
+        else if (STREQ (this_arg, "destoffset")) {
           optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "size") == 0) {
+        else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
         }
@@ -6470,15 +6468,15 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "srcoffset") == 0) {
+        if (STREQ (this_arg, "srcoffset")) {
           optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "destoffset") == 0) {
+        else if (STREQ (this_arg, "destoffset")) {
           optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "size") == 0) {
+        else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
         }
@@ -6511,15 +6509,15 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "srcoffset") == 0) {
+        if (STREQ (this_arg, "srcoffset")) {
           optargs_s.srcoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "destoffset") == 0) {
+        else if (STREQ (this_arg, "destoffset")) {
           optargs_s.destoffset = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
         }
-        else if (strcmp (this_arg, "size") == 0) {
+        else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
         }
@@ -6551,43 +6549,43 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "force") == 0) {
+        if (STREQ (this_arg, "force")) {
           optargs_s.force = SvIV (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_FORCE_BITMASK;
         }
-        else if (strcmp (this_arg, "maxmountcount") == 0) {
+        else if (STREQ (this_arg, "maxmountcount")) {
           optargs_s.maxmountcount = SvIV (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK;
         }
-        else if (strcmp (this_arg, "mountcount") == 0) {
+        else if (STREQ (this_arg, "mountcount")) {
           optargs_s.mountcount = SvIV (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK;
         }
-        else if (strcmp (this_arg, "errorbehavior") == 0) {
+        else if (STREQ (this_arg, "errorbehavior")) {
           optargs_s.errorbehavior = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK;
         }
-        else if (strcmp (this_arg, "group") == 0) {
+        else if (STREQ (this_arg, "group")) {
           optargs_s.group = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_GROUP_BITMASK;
         }
-        else if (strcmp (this_arg, "intervalbetweenchecks") == 0) {
+        else if (STREQ (this_arg, "intervalbetweenchecks")) {
           optargs_s.intervalbetweenchecks = SvIV (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK;
         }
-        else if (strcmp (this_arg, "reservedblockspercentage") == 0) {
+        else if (STREQ (this_arg, "reservedblockspercentage")) {
           optargs_s.reservedblockspercentage = SvIV (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
         }
-        else if (strcmp (this_arg, "lastmounteddirectory") == 0) {
+        else if (STREQ (this_arg, "lastmounteddirectory")) {
           optargs_s.lastmounteddirectory = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK;
         }
-        else if (strcmp (this_arg, "reservedblockscount") == 0) {
+        else if (STREQ (this_arg, "reservedblockscount")) {
           optargs_s.reservedblockscount = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
         }
-        else if (strcmp (this_arg, "user") == 0) {
+        else if (STREQ (this_arg, "user")) {
           optargs_s.user = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_TUNE2FS_USER_BITMASK;
         }
@@ -6620,23 +6618,23 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "missingbitmap") == 0) {
+        if (STREQ (this_arg, "missingbitmap")) {
           optargs_s.missingbitmap = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
         }
-        else if (strcmp (this_arg, "nrdevices") == 0) {
+        else if (STREQ (this_arg, "nrdevices")) {
           optargs_s.nrdevices = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MD_CREATE_NRDEVICES_BITMASK;
         }
-        else if (strcmp (this_arg, "spare") == 0) {
+        else if (STREQ (this_arg, "spare")) {
           optargs_s.spare = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MD_CREATE_SPARE_BITMASK;
         }
-        else if (strcmp (this_arg, "chunk") == 0) {
+        else if (STREQ (this_arg, "chunk")) {
           optargs_s.chunk = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MD_CREATE_CHUNK_BITMASK;
         }
-        else if (strcmp (this_arg, "level") == 0) {
+        else if (STREQ (this_arg, "level")) {
           optargs_s.level = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MD_CREATE_LEVEL_BITMASK;
         }
@@ -6736,11 +6734,11 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "correct") == 0) {
+        if (STREQ (this_arg, "correct")) {
           optargs_s.correct = SvIV (ST (items_i+1));
           this_mask = GUESTFS_E2FSCK_CORRECT_BITMASK;
         }
-        else if (strcmp (this_arg, "forceall") == 0) {
+        else if (STREQ (this_arg, "forceall")) {
           optargs_s.forceall = SvIV (ST (items_i+1));
           this_mask = GUESTFS_E2FSCK_FORCEALL_BITMASK;
         }
@@ -6798,7 +6796,7 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "clearbadsectors") == 0) {
+        if (STREQ (this_arg, "clearbadsectors")) {
           optargs_s.clearbadsectors = SvIV (ST (items_i+1));
           this_mask = GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK;
         }
@@ -6831,23 +6829,23 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "metadataonly") == 0) {
+        if (STREQ (this_arg, "metadataonly")) {
           optargs_s.metadataonly = SvIV (ST (items_i+1));
           this_mask = GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK;
         }
-        else if (strcmp (this_arg, "rescue") == 0) {
+        else if (STREQ (this_arg, "rescue")) {
           optargs_s.rescue = SvIV (ST (items_i+1));
           this_mask = GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK;
         }
-        else if (strcmp (this_arg, "ignorefscheck") == 0) {
+        else if (STREQ (this_arg, "ignorefscheck")) {
           optargs_s.ignorefscheck = SvIV (ST (items_i+1));
           this_mask = GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK;
         }
-        else if (strcmp (this_arg, "preservetimestamps") == 0) {
+        else if (STREQ (this_arg, "preservetimestamps")) {
           optargs_s.preservetimestamps = SvIV (ST (items_i+1));
           this_mask = GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK;
         }
-        else if (strcmp (this_arg, "force") == 0) {
+        else if (STREQ (this_arg, "force")) {
           optargs_s.force = SvIV (ST (items_i+1));
           this_mask = GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK;
         }
@@ -7059,35 +7057,35 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "allocstart") == 0) {
+        if (STREQ (this_arg, "allocstart")) {
           optargs_s.allocstart = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK;
         }
-        else if (strcmp (this_arg, "bytecount") == 0) {
+        else if (STREQ (this_arg, "bytecount")) {
           optargs_s.bytecount = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK;
         }
-        else if (strcmp (this_arg, "datatype") == 0) {
+        else if (STREQ (this_arg, "datatype")) {
           optargs_s.datatype = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK;
         }
-        else if (strcmp (this_arg, "leafsize") == 0) {
+        else if (STREQ (this_arg, "leafsize")) {
           optargs_s.leafsize = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK;
         }
-        else if (strcmp (this_arg, "label") == 0) {
+        else if (STREQ (this_arg, "label")) {
           optargs_s.label = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_LABEL_BITMASK;
         }
-        else if (strcmp (this_arg, "metadata") == 0) {
+        else if (STREQ (this_arg, "metadata")) {
           optargs_s.metadata = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_METADATA_BITMASK;
         }
-        else if (strcmp (this_arg, "nodesize") == 0) {
+        else if (STREQ (this_arg, "nodesize")) {
           optargs_s.nodesize = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK;
         }
-        else if (strcmp (this_arg, "sectorsize") == 0) {
+        else if (STREQ (this_arg, "sectorsize")) {
           optargs_s.sectorsize = SvIV (ST (items_i+1));
           this_mask = GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK;
         }
@@ -7136,7 +7134,7 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "clear") == 0) {
+        if (STREQ (this_arg, "clear")) {
           optargs_s.clear = SvIV (ST (items_i+1));
           this_mask = GUESTFS_SET_E2ATTRS_CLEAR_BITMASK;
         }
@@ -7322,11 +7320,11 @@ PREINIT:
         const char *this_arg;
 
         this_arg = SvPV_nolen (ST (items_i));
-        if (strcmp (this_arg, "superblock") == 0) {
+        if (STREQ (this_arg, "superblock")) {
           optargs_s.superblock = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK;
         }
-        else if (strcmp (this_arg, "repair") == 0) {
+        else if (STREQ (this_arg, "repair")) {
           optargs_s.repair = SvIV (ST (items_i+1));
           this_mask = GUESTFS_BTRFS_FSCK_REPAIR_BITMASK;
         }

@@ -594,7 +594,7 @@ struct command_entry add_drive_cmd_entry = {
 
 struct command_entry add_cdrom_cmd_entry = {
   .name = "add-cdrom",
-  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    This is equivalent to the qemu parameter *-cdrom filename*.\n\n    Notes:\n\n    *   This call checks for the existence of \"filename\". This stops you\n        from specifying other types of drive which are supported by qemu\n        such as \"nbd:\" and \"http:\" URLs. To specify those, use the general\n        \"config\" call instead.\n\n    *   If you just want to add an ISO file (often you use this as an\n        efficient way to transfer large files into the guest), then you\n        should probably use \"add_drive_ro\" instead.\n\n    *This function is deprecated.* In new code, use the \"add_drive_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    This is equivalent to the qemu parameter *-cdrom filename*.\n\n    Notes:\n\n    *   This call checks for the existence of \"filename\". This stops you\n        from specifying other types of drive which are supported by qemu\n        such as \"nbd:\" and \"http:\" URLs. To specify those, use the general\n        \"config\" call instead.\n\n    *   If you just want to add an ISO file (often you use this as an\n        efficient way to transfer large files into the guest), then you\n        should probably use \"add_drive_ro\" instead.\n\n    *This function is deprecated.* In new code, use the \"add-drive-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_cdrom
 };
 
@@ -774,13 +774,13 @@ struct command_entry get_recovery_proc_cmd_entry = {
 
 struct command_entry add_drive_with_if_cmd_entry = {
   .name = "add-drive-with-if",
-  .help = "NAME\n    add-drive-with-if - add a drive specifying the QEMU block emulation to\n    use\n\nSYNOPSIS\n     add-drive-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add_drive_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-drive-with-if - add a drive specifying the QEMU block emulation to\n    use\n\nSYNOPSIS\n     add-drive-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add-drive-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_drive_with_if
 };
 
 struct command_entry add_drive_ro_with_if_cmd_entry = {
   .name = "add-drive-ro-with-if",
-  .help = "NAME\n    add-drive-ro-with-if - add a drive read-only specifying the QEMU block\n    emulation to use\n\nSYNOPSIS\n     add-drive-ro-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive_ro\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add_drive_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-drive-ro-with-if - add a drive read-only specifying the QEMU block\n    emulation to use\n\nSYNOPSIS\n     add-drive-ro-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive_ro\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add-drive-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_drive_ro_with_if
 };
 
@@ -1284,7 +1284,7 @@ struct command_entry mkfs_cmd_entry = {
 
 struct command_entry sfdisk_cmd_entry = {
   .name = "sfdisk",
-  .help = "NAME\n    sfdisk - create partitions on a block device\n\nSYNOPSIS\n     sfdisk device cyls heads sectors lines\n\nDESCRIPTION\n    This is a direct interface to the sfdisk(8) program for creating\n    partitions on block devices.\n\n    \"device\" should be a block device, for example \"/dev/sda\".\n\n    \"cyls\", \"heads\" and \"sectors\" are the number of cylinders, heads and\n    sectors on the device, which are passed directly to sfdisk as the *-C*,\n    *-H* and *-S* parameters. If you pass 0 for any of these, then the\n    corresponding parameter is omitted. Usually for 'large' disks, you can\n    just pass 0 for these, but for small (floppy-sized) disks, sfdisk (or\n    rather, the kernel) cannot work out the right geometry and you will need\n    to tell it.\n\n    \"lines\" is a list of lines that we feed to \"sfdisk\". For more\n    information refer to the sfdisk(8) manpage.\n\n    To create a single partition occupying the whole disk, you would pass\n    \"lines\" as a single element list, when the single element being the\n    string \",\" (comma).\n\n    See also: \"sfdisk_l\", \"sfdisk_N\", \"part_init\"\n\n    *This function is deprecated.* In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdisk - create partitions on a block device\n\nSYNOPSIS\n     sfdisk device cyls heads sectors lines\n\nDESCRIPTION\n    This is a direct interface to the sfdisk(8) program for creating\n    partitions on block devices.\n\n    \"device\" should be a block device, for example \"/dev/sda\".\n\n    \"cyls\", \"heads\" and \"sectors\" are the number of cylinders, heads and\n    sectors on the device, which are passed directly to sfdisk as the *-C*,\n    *-H* and *-S* parameters. If you pass 0 for any of these, then the\n    corresponding parameter is omitted. Usually for 'large' disks, you can\n    just pass 0 for these, but for small (floppy-sized) disks, sfdisk (or\n    rather, the kernel) cannot work out the right geometry and you will need\n    to tell it.\n\n    \"lines\" is a list of lines that we feed to \"sfdisk\". For more\n    information refer to the sfdisk(8) manpage.\n\n    To create a single partition occupying the whole disk, you would pass\n    \"lines\" as a single element list, when the single element being the\n    string \",\" (comma).\n\n    See also: \"sfdisk_l\", \"sfdisk_N\", \"part_init\"\n\n    *This function is deprecated.* In new code, use the \"part-add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdisk
 };
 
@@ -1506,13 +1506,13 @@ struct command_entry pvremove_cmd_entry = {
 
 struct command_entry set_e2label_cmd_entry = {
   .name = "set-e2label",
-  .help = "NAME\n    set-e2label - set the ext2/3/4 filesystem label\n\nSYNOPSIS\n     set-e2label device label\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem label of the filesystem on \"device\" to\n    \"label\". Filesystem labels are limited to 16 characters.\n\n    You can use either \"tune2fs_l\" or \"get_e2label\" to return the existing\n    label on a filesystem.\n\n    *This function is deprecated.* In new code, use the \"set_label\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    set-e2label - set the ext2/3/4 filesystem label\n\nSYNOPSIS\n     set-e2label device label\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem label of the filesystem on \"device\" to\n    \"label\". Filesystem labels are limited to 16 characters.\n\n    You can use either \"tune2fs_l\" or \"get_e2label\" to return the existing\n    label on a filesystem.\n\n    *This function is deprecated.* In new code, use the \"set-label\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_set_e2label
 };
 
 struct command_entry get_e2label_cmd_entry = {
   .name = "get-e2label",
-  .help = "NAME\n    get-e2label - get the ext2/3/4 filesystem label\n\nSYNOPSIS\n     get-e2label device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem label of the filesystem on\n    \"device\".\n\n    *This function is deprecated.* In new code, use the \"vfs_label\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    get-e2label - get the ext2/3/4 filesystem label\n\nSYNOPSIS\n     get-e2label device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem label of the filesystem on\n    \"device\".\n\n    *This function is deprecated.* In new code, use the \"vfs-label\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_e2label
 };
 
@@ -1524,7 +1524,7 @@ struct command_entry set_e2uuid_cmd_entry = {
 
 struct command_entry get_e2uuid_cmd_entry = {
   .name = "get-e2uuid",
-  .help = "NAME\n    get-e2uuid - get the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     get-e2uuid device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem UUID of the filesystem on \"device\".\n\n    *This function is deprecated.* In new code, use the \"vfs_uuid\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    get-e2uuid - get the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     get-e2uuid device\n\nDESCRIPTION\n    This returns the ext2/3/4 filesystem UUID of the filesystem on \"device\".\n\n    *This function is deprecated.* In new code, use the \"vfs-uuid\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_e2uuid
 };
 
@@ -1620,13 +1620,13 @@ struct command_entry pvresize_cmd_entry = {
 
 struct command_entry sfdisk_N_cmd_entry = {
   .name = "sfdisk-N",
-  .help = "NAME\n    sfdisk-N - modify a single partition on a block device\n\nSYNOPSIS\n     sfdisk-N device partnum cyls heads sectors line\n\nDESCRIPTION\n    This runs sfdisk(8) option to modify just the single partition \"n\"\n    (note: \"n\" counts from 1).\n\n    For other parameters, see \"sfdisk\". You should usually pass 0 for the\n    cyls/heads/sectors parameters.\n\n    See also: \"part_add\"\n\n    *This function is deprecated.* In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdisk-N - modify a single partition on a block device\n\nSYNOPSIS\n     sfdisk-N device partnum cyls heads sectors line\n\nDESCRIPTION\n    This runs sfdisk(8) option to modify just the single partition \"n\"\n    (note: \"n\" counts from 1).\n\n    For other parameters, see \"sfdisk\". You should usually pass 0 for the\n    cyls/heads/sectors parameters.\n\n    See also: \"part_add\"\n\n    *This function is deprecated.* In new code, use the \"part-add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdisk_N
 };
 
 struct command_entry sfdisk_l_cmd_entry = {
   .name = "sfdisk-l",
-  .help = "NAME\n    sfdisk-l - display the partition table\n\nSYNOPSIS\n     sfdisk-l device\n\nDESCRIPTION\n    This displays the partition table on \"device\", in the human-readable\n    output of the sfdisk(8) command. It is not intended to be parsed.\n\n    See also: \"part_list\"\n\n    *This function is deprecated.* In new code, use the \"part_list\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdisk-l - display the partition table\n\nSYNOPSIS\n     sfdisk-l device\n\nDESCRIPTION\n    This displays the partition table on \"device\", in the human-readable\n    output of the sfdisk(8) command. It is not intended to be parsed.\n\n    See also: \"part_list\"\n\n    *This function is deprecated.* In new code, use the \"part-list\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdisk_l
 };
 
@@ -1860,7 +1860,7 @@ struct command_entry readdir_cmd_entry = {
 
 struct command_entry sfdiskM_cmd_entry = {
   .name = "sfdiskM",
-  .help = "NAME\n    sfdiskM - create partitions on a block device\n\nSYNOPSIS\n     sfdiskM device lines\n\nDESCRIPTION\n    This is a simplified interface to the \"sfdisk\" command, where partition\n    sizes are specified in megabytes only (rounded to the nearest cylinder)\n    and you don't need to specify the cyls, heads and sectors parameters\n    which were rarely if ever used anyway.\n\n    See also: \"sfdisk\", the sfdisk(8) manpage and \"part_disk\"\n\n    *This function is deprecated.* In new code, use the \"part_add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    sfdiskM - create partitions on a block device\n\nSYNOPSIS\n     sfdiskM device lines\n\nDESCRIPTION\n    This is a simplified interface to the \"sfdisk\" command, where partition\n    sizes are specified in megabytes only (rounded to the nearest cylinder)\n    and you don't need to specify the cyls, heads and sectors parameters\n    which were rarely if ever used anyway.\n\n    See also: \"sfdisk\", the sfdisk(8) manpage and \"part_disk\"\n\n    *This function is deprecated.* In new code, use the \"part-add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_sfdiskM
 };
 
@@ -2148,7 +2148,7 @@ struct command_entry getcon_cmd_entry = {
 
 struct command_entry mkfs_b_cmd_entry = {
   .name = "mkfs-b",
-  .help = "NAME\n    mkfs-b - make a filesystem with block size\n\nSYNOPSIS\n     mkfs-b fstype blocksize device\n\nDESCRIPTION\n    This call is similar to \"mkfs\", but it allows you to control the block\n    size of the resulting filesystem. Supported block sizes depend on the\n    filesystem type, but typically they are 1024, 2048 or 4096 only.\n\n    For VFAT and NTFS the \"blocksize\" parameter is treated as the requested\n    cluster size.\n\n    *This function is deprecated.* In new code, use the \"mkfs_opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    mkfs-b - make a filesystem with block size\n\nSYNOPSIS\n     mkfs-b fstype blocksize device\n\nDESCRIPTION\n    This call is similar to \"mkfs\", but it allows you to control the block\n    size of the resulting filesystem. Supported block sizes depend on the\n    filesystem type, but typically they are 1024, 2048 or 4096 only.\n\n    For VFAT and NTFS the \"blocksize\" parameter is treated as the requested\n    cluster size.\n\n    *This function is deprecated.* In new code, use the \"mkfs-opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mkfs_b
 };
 
@@ -2328,7 +2328,7 @@ struct command_entry available_cmd_entry = {
 
 struct command_entry dd_cmd_entry = {
   .name = "dd",
-  .help = "NAME\n    dd - copy from source to destination using dd\n\nSYNOPSIS\n     dd src dest\n\nDESCRIPTION\n    This command copies from one source device or file \"src\" to another\n    destination device or file \"dest\". Normally you would use this to copy\n    to or from a device or partition, for example to duplicate a filesystem.\n\n    If the destination is a device, it must be as large or larger than the\n    source file or device, otherwise the copy will fail. This command cannot\n    do partial copies (see \"copy_device_to_device\").\n\n    *This function is deprecated.* In new code, use the\n    \"copy_device_to_device\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    dd - copy from source to destination using dd\n\nSYNOPSIS\n     dd src dest\n\nDESCRIPTION\n    This command copies from one source device or file \"src\" to another\n    destination device or file \"dest\". Normally you would use this to copy\n    to or from a device or partition, for example to duplicate a filesystem.\n\n    If the destination is a device, it must be as large or larger than the\n    source file or device, otherwise the copy will fail. This command cannot\n    do partial copies (see \"copy_device_to_device\").\n\n    *This function is deprecated.* In new code, use the\n    \"copy-device-to-device\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_dd
 };
 
@@ -2388,7 +2388,7 @@ struct command_entry vglvuuids_cmd_entry = {
 
 struct command_entry copy_size_cmd_entry = {
   .name = "copy-size",
-  .help = "NAME\n    copy-size - copy size bytes from source to destination using dd\n\nSYNOPSIS\n     copy-size src dest size\n\nDESCRIPTION\n    This command copies exactly \"size\" bytes from one source device or file\n    \"src\" to another destination device or file \"dest\".\n\n    Note this will fail if the source is too short or if the destination is\n    not large enough.\n\n    *This function is deprecated.* In new code, use the\n    \"copy_device_to_device\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    copy-size - copy size bytes from source to destination using dd\n\nSYNOPSIS\n     copy-size src dest size\n\nDESCRIPTION\n    This command copies exactly \"size\" bytes from one source device or file\n    \"src\" to another destination device or file \"dest\".\n\n    Note this will fail if the source is too short or if the destination is\n    not large enough.\n\n    *This function is deprecated.* In new code, use the\n    \"copy-device-to-device\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_copy_size
 };
 
@@ -2412,7 +2412,7 @@ struct command_entry txz_out_cmd_entry = {
 
 struct command_entry ntfsresize_cmd_entry = {
   .name = "ntfsresize",
-  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n    *This function is deprecated.* In new code, use the \"ntfsresize_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n    *This function is deprecated.* In new code, use the \"ntfsresize-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_ntfsresize
 };
 
@@ -2526,7 +2526,7 @@ struct command_entry pvresize_size_cmd_entry = {
 
 struct command_entry ntfsresize_size_cmd_entry = {
   .name = "ntfsresize-size",
-  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    *This function is deprecated.* In new code, use the \"ntfsresize_opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    *This function is deprecated.* In new code, use the \"ntfsresize-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_ntfsresize_size
 };
 

@@ -1,3 +1,230 @@
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.8.
+
+	extra-tests: Clean up some comments about the upstream qemu tests. (cherry picked from commit 157b5006dbf2db2927e48ce592a83a279513d183)
+
+	extra-tests: Add scripts used by these tests to EXTRA_DIST. (cherry picked from commit 7e4b197cb6a5071c13e407546a21f9b93fe3798d)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: stubs: Move all arg decls to top of function.
+	For some reason, argument declarations were handled
+	inconsistently for strings and non-string arguments.
+	Non-string arguments were all declared at the top of the
+	function stub, where as string arguments were declared
+	in place.
+
+	Be consistent.
+
+	This is just code motion.
+	(cherry picked from commit c387b69cba8f145438188b2b4567abbc9580ade0)
+
+2012-09-19  Jim Meyering  <jim@meyering.net>
+
+	maint: remove a subsumed syntax-check rule
+	* cfg.mk (sc_prohibit_trailing_blank_lines): Remove rule.  It is now
+	subsumed by the much more efficient sc_prohibit_empty_lines_at_EOF
+	rule in gnulib's maint.mk.
+	(cherry picked from commit 176bd182d3f94fe7e774b8af0b56c014f639d6c7)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Exclude examples and test program from <config.h> requirement (thanks Jim Meyering). (cherry picked from commit 3988dec9b7bbf3cb8628aff879d1f518a9d52404)
+
+	syntax: Allow strncpy in launch-*.c files (thanks Jim Meyering).
+	We use strncpy, justifiably, to copy the socket name into
+	the fixed length Unix domain sun_path buffer.
+	(cherry picked from commit 72ab351acef2f2bc6b0e4f36d69e94f8fa064f3c)
+
+	syntax: Exclude examples from strcmp and strncmp checks (thanks Jim Meyering). (cherry picked from commit 369709177e47773eaa37f1fdbe8d9967b21d1133)
+
+	syntax: Ignore documentation when testing for magic number exit() calls (thanks Jim Meyering). (cherry picked from commit 552576c7f9ccb1862bcfc9fbd5c301d775aaf90c)
+
+	syntax: Exclude PO files from doubled words test (thanks Jim Meyering). (cherry picked from commit 2100ba14fbfaf3e89059d9112959463506932d74)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Remove definitions of O_CLOEXEC, except in examples (thanks Jim Meyering).
+	The gnulib <fcntl.h> replacement header will now define this symbol if
+	it's not defined already.
+
+	(cherry picked from commit cb13ffe190ac41a9b77fe27521838f495c1a5077)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Exclude period in error message checks from PHP programs (thanks: Jim Meyering). (cherry picked from commit 2337b9ccd729e05b46cf6abb1f4173e6e994c1cb)
+
+	syntax: Disable cast arg to free test (thanks Jim Meyering). (cherry picked from commit fbdcfe2b77b6c272876143779912d41b0849111f)
+
+	syntax: Exclude certain files from bindtextdomain test (thanks Jim Meyering). (cherry picked from commit b95fff13577cdd3da4300bbd639441cc77cf935a)
+
+	Update to latest gnulib. (cherry picked from commit e942c02a2eeb4d55606dec5fe943ea7d81f989ba)
+
+	build: Ignore -Wjump-misses-init warning.
+	This libguestfs 1.18-specific patch is necessary because something
+	(gcc? gnulib?) has enabled a strict -Wjump-misses-init warning, which
+	breaks libguestfs builds.  In the development branch we fixed
+	everything (commit e128a627fb8f39f4f4c11b782cef895bd79f0282,
+	commit 74283d58cfb62e6cc73bfe0f62ca142ddc1e8fb2), but that patch is
+	too invasive to backport.
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: Write a qemu wrapper script on the fly.
+	Passing the $upstream_qemu environment variable is not reliable when
+	libvirt is involved: Environment variables are passed to the first
+	instance of the session libvirtd, but because libvirt reuses the
+	session libvirtd, subsequent environment variable settings are lost
+	(this is filed as RHBZ#856619).
+
+	Bypass all of this by writing a custom qemu-wrapper.sh which contains
+	the hard-coded values we want.
+	(cherry picked from commit e6bd0b87eb753fa96b6533b0dbe498697701ad3a)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: The upstream qemu test now reruns all the extra tests. (cherry picked from commit 509dd90c43afed75b861b7d82ebe8739d3500d54)
+
+	extra-tests: Fix libvirt URI so we can run tests with libvirt attach-method. (cherry picked from commit eeb0c598ec8caa50998336713ed4e62902e0a74d)
+
+	syntax: Remove trailing whitespace.
+	Found by 'make syntax-check'.
+	(cherry picked from commit 2cac8d490e9884a8c7376e49fd1cda2e3d3abec1)
+
+	generator: Remove inaccurate comment.
+	The correct way to extend functions is documented in generator/README.
+	This comment was no longer accurate.
+	(cherry picked from commit 44a11e955b31f7c0cf463a04d640263cccdd0c4d)
+
+	syntax: Replace test == with = or -eq as appropriate.
+	Found by 'make syntax-check'.
+	(cherry picked from commit 6361810b53be4d5e0513b4f7c11d29cf1d6d3b45)
+
+	syntax: Use STREQ/STRNEQ in place of strcmp.
+	Found by 'make syntax-check'.
+	(cherry picked from commit b0cefb417d01c6dcb87cc6bafe9c19b98c690c9d)
+
+	syntax: Remove include <signal.h> in file that doesn't use it.
+	Found by 'make syntax-check'.
+	(cherry picked from commit 90b7c53b70dda9a131cf13beb5d1e77cc41534f7)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Remove gnulib "ignore-value.h" in files that don't use it.
+	Found by 'make syntax-check'.
+
+	Cherry picked from commit a67129b0fb45b2f83eb711c6c599569d0f53e580
+	and modified for 1.18 branch.
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Remove include <dirent.h> in files that don't use it.
+	Found by 'make syntax-check'.
+	(cherry picked from commit d6bb49a172c369c3bcc85771af804649c3733ef3)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Remove gnulib c-ctype.h in files that don't use it.
+	Found by 'make syntax-check'.
+
+	Cherry picked from commit 9fce75aa13de52561ec0f4ae083c4ab0fa4455d1
+	and fixed for libguestfs 1.18 branch.
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Remove include <assert.h> where assert is not used.
+	Found by 'make syntax-check'.
+	(cherry picked from commit 6272e49f51a192f2f8ecd8ffbb018f60ca0bac28)
+
+	lib: Rearrange headers.
+	This is just code motion.
+	(cherry picked from commit da75618fb2eecb644d8ec84c9584c402b0bc5339)
+
+	lib: Remove unused headers <arpa/inet.h> and <netinet/in.h>
+	These were used back in the day when we used TCP for the
+	communications channel with the guest.
+	(cherry picked from commit 8747ff743216fbb6119606c22966e2283f30a54a)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	syntax: Remove HAVE_*_H tests which are always true.
+	Gnulib supplies replacements for these headers, so there
+	is no need to test.
+
+	(cherry picked from commit dec73f70fc5320faec46a21f27aae6748cea3450)
+
+2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Add <stdio.h> and <stdlib.h> for printf and malloc. (cherry picked from commit cd8976a5b52425f9d7c45249e1a593a341d91c52)
+
+	perl: Include <inttypes.h> and assume it always defines PRId64 and PRIu64.
+	If these are not defined in the header files, it's a problem on
+	the platform which we should fix with gnulib.  Our replacement
+	definitions might be wrong here.
+	(cherry picked from commit 188b44ee458a666bee8a18ed47cccdec25859aff)
+
+	lib: These optargs structures are not modified, hence const. (cherry picked from commit 5a46eadd3dcab1b8944eabc0f21097048e0ebe13)
+
+	syntax: Remove test for TAB indentation.
+	Nothing particularly wrong with using TABs for indentation,
+	and this test also has a lot of false positives.
+	(cherry picked from commit ae137124ca143e57f16d103f24cb3f21a3157b09)
+
+	docs: Fix documentation of syntax-check target, add extra-tests. (cherry picked from commit 6951becfdb0b69b4defff4393f48314e884ad7c1)
+
+	faq: Make the legal section less unnecessarily legalistic. (cherry picked from commit 244e9a2ac40fa8a1494f769740947c8a600ee8d7)
+
+	faq: Tidy up headings. (cherry picked from commit 19da851610fc14b547ff9e25101921f69edc7f2f)
+
+	faq: Add more answers about read-only disks. (cherry picked from commit 2c59af77545c764ddded93af2c0a0611be79376e)
+
+	test-tool: Print more environment variables.
+	This prints LIBVIRT_*, LIBVIRTD_*, LD_* and PATH, since these are all
+	useful for debugging and could affect libguestfs in some way.
+	(cherry picked from commit 281b155800f2e62b994e59bef418ca200da8e93a)
+
+	fish: Replace '_' with '-' in deprecation cross-refs (thanks Olaf Hering). (cherry picked from commit 8acdc23622ea95a233ac831d67c143517aa94bba)
+
+2012-09-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	extra-tests: Don't use $QEMU as a variable.
+	Since 'QEMU' is set (overwritten) by the autoconf-generated Makefile,
+	this test would always test installed qemu, not upstream qemu,
+	making it pretty useless.  Use another name for this variable.
+	(cherry picked from commit 81c682f1295a934d18bd4dc9e42b8e843df0c207)
+
+2012-09-18  Olaf Hering  <olaf@aepfle.de>
+
+	fix fuse_opt_add_opt_escaped return type
+	I: Program returns random data in a function
+	E: libguestfs no-return-in-nonvoid-function guestmount.c:75
+
+	The function fuse_opt_add_opt_escaped has only one caller and a return
+	code is not checked.
+
+	(cherry picked from commit bdb5689f58c0db18de28d6a703b3af4f22eded38)
+
+2012-09-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	rescue: If -v / debugging enabled, don't mask error messages.
+	We set the error handler to NULL in order to mask "normal" error
+	messages that we expect to see because of the unusual way that
+	virt-rescue runs the appliance.  However if the user selected -v /
+	enabled debugging, then it is reasonable to expect they want to see
+	every message, so do not mask anything.
+	(cherry picked from commit 6fdf1f40fa85d2e6e7a1118f4cfa532ea9831b89)
+
+	java: Fix >= 32 optargs (thanks Wanlong Gao). (cherry picked from commit f65dee769d1fc53c5963c381bf8a1bf02654f78c)
+
+	recipes: Checksum file/device.  Download to stdout. (cherry picked from commit b799bc58a84e155783afae23f64f27e23ddd06dd)
+
+	tests: Attach copyright and license (GPLv2+) notices to various test scripts.
+	For some reason these tests did not have license notices.
+	(cherry picked from commit a1d981edeae120a0523d0974c703f1a956202415)
+
+	src/dbdump.c: Shouldn't depend on HAVE_HIVEX (thanks Tao Zhou). (cherry picked from commit 4e6bf1ed653540a8954a6a11fe5a0fb424013af9)
+
 2012-08-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.7.

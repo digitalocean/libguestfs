@@ -27,7 +27,7 @@ L</add-drive-ro> instead.
 
 =back
 
-I<This function is deprecated.> In new code, use the L</add_drive_opts> call
+I<This function is deprecated.> In new code, use the L</add-drive-opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -208,7 +208,7 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add_drive_opts> call
+I<This function is deprecated.> In new code, use the L</add-drive-opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -222,7 +222,7 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add_drive_opts> call
+I<This function is deprecated.> In new code, use the L</add-drive-opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -990,7 +990,8 @@ C<src> to another destination device or file C<dest>.
 Note this will fail if the source is too short or if the destination is not
 large enough.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</copy_device_to_device> を使用してください。
+I<This function is deprecated.> In new code, use the
+L</copy-device-to-device> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1020,7 +1021,8 @@ If the destination is a device, it must be as large or larger than the
 source file or device, otherwise the copy will fail.  This command cannot do
 partial copies (see L</copy-device-to-device>).
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</copy_device_to_device> を使用してください。
+I<This function is deprecated.> In new code, use the
+L</copy-device-to-device> call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1688,7 +1690,8 @@ L</set-e2generation> 参照。
 
 これは C<device> にあるファイルシステムの ext2/3/4 ファイルシステムラベルを返します。
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</vfs_label> を使用してください。
+I<This function is deprecated.> In new code, use the L</vfs-label> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -1700,7 +1703,8 @@ these functions.
 
 This returns the ext2/3/4 filesystem UUID of the filesystem on C<device>.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</vfs_uuid> を使用してください。
+I<This function is deprecated.> In new code, use the L</vfs-uuid> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -3560,7 +3564,7 @@ filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
 For VFAT and NTFS the C<blocksize> parameter is treated as the requested
 cluster size.
 
-I<This function is deprecated.> In new code, use the L</mkfs_opts> call
+I<This function is deprecated.> In new code, use the L</mkfs-opts> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -3974,7 +3978,7 @@ without booting into Windows between each resize.
 
 L<ntfsresize(8)> 参照。
 
-I<This function is deprecated.> In new code, use the L</ntfsresize_opts>
+I<This function is deprecated.> In new code, use the L</ntfsresize-opts>
 call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4022,7 +4026,7 @@ ARGUMENTS>.
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
 
-I<This function is deprecated.> In new code, use the L</ntfsresize_opts>
+I<This function is deprecated.> In new code, use the L</ntfsresize-opts>
 call instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -4721,7 +4725,8 @@ C<label>.  Filesystem labels are limited to 16 characters.
 You can use either L</tune2fs-l> or L</get-e2label> to return the existing
 label on a filesystem.
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</set_label> を使用してください。
+I<This function is deprecated.> In new code, use the L</set-label> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4946,7 +4951,8 @@ C<,> (comma).
 
 関連項目: L</sfdisk-l>, L</sfdisk-N>, L</part-init>
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</part_add> を使用してください。
+I<This function is deprecated.> In new code, use the L</part-add> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4963,7 +4969,8 @@ rarely if ever used anyway.
 
 関連項目: L</sfdisk>, L<sfdisk(8)> マニュアルページおよび L</part-disk>
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</part_add> を使用してください。
+I<This function is deprecated.> In new code, use the L</part-add> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4981,7 +4988,8 @@ cyls/heads/sectors parameters.
 
 関連項目: L</part-add>
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</part_add> を使用してください。
+I<This function is deprecated.> In new code, use the L</part-add> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -5015,7 +5023,8 @@ of the L<sfdisk(8)> command.  It is not intended to be parsed.
 
 関連項目: L</part-list>
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</part_list> を使用してください。
+I<This function is deprecated.> In new code, use the L</part-list> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
