@@ -23,7 +23,7 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   libstring-shellquote-perl,
   libsys-virt-perl, libwin-hivex-perl,
   libfuse-dev, fuse-utils,
-  libglib2.0-dev, gjs, gobject-introspection, libgirepository1.0-dev,
+  libglib2.0-dev, gjs, gobject-introspection, libgirepository1.0-dev, gtk-doc-tools,
   netpbm, icoutils
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.3
