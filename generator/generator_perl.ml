@@ -37,15 +37,17 @@ let rec generate_perl_xs () =
   pr "\
 #include <config.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <inttypes.h>
+
 #include \"EXTERN.h\"
 #include \"perl.h\"
 #include \"XSUB.h\"
 
 #include <guestfs.h>
 
-#ifndef PRId64
-#define PRId64 \"lld\"
-#endif
+#define STREQ(a,b) (strcmp((a),(b)) == 0)
 
 static SV *
 my_newSVll(long long val) {
@@ -58,10 +60,6 @@ my_newSVll(long long val) {
   return newSVpv(buf, len);
 #endif
 }
-
-#ifndef PRIu64
-#define PRIu64 \"llu\"
-#endif
 
 static SV *
 my_newSVull(unsigned long long val) {
@@ -438,7 +436,7 @@ user_cancel (g)
           fun argt ->
             let n = name_of_optargt argt in
             let uc_n = String.uppercase n in
-            pr "if (strcmp (this_arg, \"%s\") == 0) {\n" n;
+            pr "if (STREQ (this_arg, \"%s\")) {\n" n;
             pr "          optargs_s.%s = " n;
             (match argt with
              | OBool _

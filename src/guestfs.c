@@ -30,36 +30,17 @@
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>
+#include <assert.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/select.h>
-#include <dirent.h>
-#include <assert.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <sys/wait.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-
-#ifdef HAVE_ERRNO_H
-#include <errno.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-
-#ifdef HAVE_SYS_UN_H
-#include <sys/un.h>
-#endif
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
 
 #ifdef HAVE_LIBVIRT
 #include <libvirt/libvirt.h>

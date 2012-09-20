@@ -96,7 +96,9 @@ Libguestfs development happens along an unstable branch and we periodically
 create a stable branch which we backport stable patches to.  To find out
 more, read L<guestfs(3)/LIBGUESTFS VERSION NUMBERS>.
 
-=head2 How can I get help? What mailing lists or chat rooms are available?
+=head2 How can I get help?
+
+=head2 What mailing lists or chat rooms are available?
 
 If you are a Red Hat customer using Red Hat Enterprise Linux, please contact
 Red Hat Support: L<http://redhat.com/support>
@@ -123,7 +125,10 @@ Include as much detail as you can and a way to reproduce the problem.
 
 Include the full output of L<libguestfs-test-tool(1)>.
 
-=head1 COMMON ERRORS
+=head1 COMMON PROBLEMS
+
+See also L<guestfs(3)/LIBGUESTFS GOTCHAS> for some "gotchas" with using the
+libguestfs API.
 
 =head2 "child process died unexpectedly"
 
@@ -134,11 +139,6 @@ get further information about the failure, you have to run:
 
 If, after using this, you still don't understand the failure, contact us
 (see previous section).
-
-=head1 COMMON PROBLEMS
-
-See also L<guestfs(3)/LIBGUESTFS GOTCHAS> for some "gotchas" with using the
-libguestfs API.
 
 =head2 Non-ASCII characters don't appear on VFAT filesystems.
 
@@ -443,11 +443,12 @@ WITH OTHER PROGRAMMING LANGUAGES>.
 
 =head2 Can I use libguestfs in my proprietary / closed source / commercial program?
 
-In general, yes.  However this is not legal advice.  You should read the
-license that comes with libguestfs, and if you have specific questions about
-your obligations when distributing libguestfs, contact a lawyer.  In the
-source tree the license is in the file C<COPYING.LIB> (LGPLv2+ for the
-library and bindings) and C<COPYING> (GPLv2+ for the standalone programs).
+In general, yes.  However this is not legal advice - read the license that
+comes with libguestfs, and if you have specific questions contact a lawyer.
+
+In the source tree the license is in the file C<COPYING.LIB> (LGPLv2+ for
+the library and bindings) and C<COPYING> (GPLv2+ for the standalone
+programs).
 
 =head1 DEBUGGING LIBGUESTFS
 
@@ -567,6 +568,41 @@ Usually this is not a good idea.  The question is answered in more detail in
 this mailing list posting:
 L<https://www.redhat.com/archives/libguestfs/2010-August/msg00024.html>
 
+=head2 Why can I write to the disk, even though I added it read-only?
+
+=head2 Why does C<--ro> appear to have no effect?
+
+When you add a disk read-only, libguestfs places a writable overlay on top
+of the underlying disk.  Writes go into this overlay, and are discarded when
+the handle is closed (or C<guestfish> etc. exits).
+
+There are two reasons for doing it this way: Firstly read-only disks aren't
+possible in many cases (eg. IDE simply doesn't support them, so you couldn't
+have an IDE-emulated read-only disk, although this is not common in real
+libguestfs installations).
+
+Secondly and more importantly, even if read-only disks were possible, you
+wouldn't want them.  Mounting any filesystem that has a journal, even
+C<mount -o ro>, causes writes to the filesystem because the journal has to
+be replayed and metadata updated.  If the disk was truly read-only, you
+wouldn't be able to mount a dirty filesystem.
+
+To make it usable, we create the overlay as a place to temporarily store
+these writes, and then we discard it afterwards.  This ensures that the
+underlying disk is always untouched.
+
+Note also that there is a regression test for this when building libguestfs
+(in C<tests/qemu>).  This is one reason why it's important for packagers to
+run the test suite.
+
+=head2 Does C<--ro> make all disks read-only?
+
+I<No!> The C<--ro> option only affects disks added on the command line,
+ie. using C<-a> and C<-d> options.
+
+In guestfish, if you use the C<add> command, then disk is added read-write
+(unless you specify the C<readonly:true> flag explicitly with the command).
+
 =head2 What's the difference between guestfish and virt-rescue?
 
 A lot of people are confused by the two superficially similar tools we
@@ -605,9 +641,12 @@ Note that you should B<not> rely on this.  It could be removed or changed in
 future. If your program needs some operation, please add it to the
 libguestfs API instead.
 
-=head2 What's the deal with C<guestfish -i>? Why does virt-cat only work on a real
-VM image, but virt-df works on any disk image? What does "no root device
-found in this operating system image" mean?
+=head2 What's the deal with C<guestfish -i>?
+
+=head2 Why does virt-cat only work on a real VM image, but virt-df works on any
+disk image?
+
+=head2 What does "no root device found in this operating system image" mean?
 
 These questions are all related at a fundamental level which may not be
 immediately obvious.

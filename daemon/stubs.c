@@ -41,6 +41,8 @@ mount_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_args args;
+  char *device;
+  char *mountpoint;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -53,9 +55,9 @@ mount_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *mountpoint = args.mountpoint;
+  mountpoint = args.mountpoint;
 
   r = do_mount (device, mountpoint);
   if (r == -1)
@@ -95,6 +97,7 @@ touch_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_touch_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -107,7 +110,7 @@ touch_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -128,6 +131,7 @@ cat_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_cat_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -140,7 +144,7 @@ cat_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -164,6 +168,7 @@ ll_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_ll_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -176,7 +181,7 @@ ll_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -200,6 +205,7 @@ ls_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_ls_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -212,7 +218,7 @@ ls_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -497,6 +503,7 @@ read_lines_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_read_lines_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -509,7 +516,7 @@ read_lines_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -534,6 +541,7 @@ aug_init_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_init_args args;
+  char *root;
   int flags;
 
   /* The caller should have checked before calling this. */
@@ -557,7 +565,7 @@ aug_init_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *root = args.root;
+  root = args.root;
   ABS_PATH (root, , goto done);
   flags = args.flags;
 
@@ -610,6 +618,7 @@ aug_defvar_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_defvar_args args;
+  char *name;
   char *expr;
 
   /* The caller should have checked before calling this. */
@@ -633,7 +642,7 @@ aug_defvar_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *name = args.name;
+  name = args.name;
   expr = args.expr ? *args.expr : NULL;
 
   r = do_aug_defvar (name, expr);
@@ -655,6 +664,9 @@ aug_defnode_stub (XDR *xdr_in)
 {
   guestfs_int_int_bool *r;
   struct guestfs_aug_defnode_args args;
+  char *name;
+  char *expr;
+  char *val;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -677,9 +689,9 @@ aug_defnode_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *name = args.name;
-  char *expr = args.expr;
-  char *val = args.val;
+  name = args.name;
+  expr = args.expr;
+  val = args.val;
 
   r = do_aug_defnode (name, expr, val);
   if (r == NULL)
@@ -702,6 +714,7 @@ aug_get_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_aug_get_args args;
+  char *augpath;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -724,7 +737,7 @@ aug_get_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *augpath = args.augpath;
+  augpath = args.augpath;
 
   r = do_aug_get (augpath);
   if (r == NULL)
@@ -746,6 +759,8 @@ aug_set_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_set_args args;
+  char *augpath;
+  char *val;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -768,8 +783,8 @@ aug_set_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *augpath = args.augpath;
-  char *val = args.val;
+  augpath = args.augpath;
+  val = args.val;
 
   r = do_aug_set (augpath, val);
   if (r == -1)
@@ -788,6 +803,8 @@ aug_insert_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_insert_args args;
+  char *augpath;
+  char *label;
   int before;
 
   /* The caller should have checked before calling this. */
@@ -811,8 +828,8 @@ aug_insert_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *augpath = args.augpath;
-  char *label = args.label;
+  augpath = args.augpath;
+  label = args.label;
   before = args.before;
 
   r = do_aug_insert (augpath, label, before);
@@ -832,6 +849,7 @@ aug_rm_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_rm_args args;
+  char *augpath;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -854,7 +872,7 @@ aug_rm_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *augpath = args.augpath;
+  augpath = args.augpath;
 
   r = do_aug_rm (augpath);
   if (r == -1)
@@ -875,6 +893,8 @@ aug_mv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_mv_args args;
+  char *src;
+  char *dest;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -897,8 +917,8 @@ aug_mv_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
-  char *dest = args.dest;
+  src = args.src;
+  dest = args.dest;
 
   r = do_aug_mv (src, dest);
   if (r == -1)
@@ -917,6 +937,7 @@ aug_match_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_aug_match_args args;
+  char *augpath;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -939,7 +960,7 @@ aug_match_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *augpath = args.augpath;
+  augpath = args.augpath;
 
   r = do_aug_match (augpath);
   if (r == NULL)
@@ -1024,6 +1045,7 @@ aug_ls_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_aug_ls_args args;
+  char *augpath;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -1046,7 +1068,7 @@ aug_ls_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *augpath = args.augpath;
+  augpath = args.augpath;
 
   r = do_aug_ls (augpath);
   if (r == NULL)
@@ -1069,6 +1091,7 @@ rm_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rm_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1081,7 +1104,7 @@ rm_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1102,6 +1125,7 @@ rmdir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rmdir_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1114,7 +1138,7 @@ rmdir_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1135,6 +1159,7 @@ rm_rf_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rm_rf_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1147,7 +1172,7 @@ rm_rf_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1168,6 +1193,7 @@ mkdir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkdir_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1180,7 +1206,7 @@ mkdir_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1201,6 +1227,7 @@ mkdir_p_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkdir_p_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1213,7 +1240,7 @@ mkdir_p_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1235,6 +1262,7 @@ chmod_stub (XDR *xdr_in)
   int r;
   struct guestfs_chmod_args args;
   int mode;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1248,7 +1276,7 @@ chmod_stub (XDR *xdr_in)
     goto done;
   }
   mode = args.mode;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1271,6 +1299,7 @@ chown_stub (XDR *xdr_in)
   struct guestfs_chown_args args;
   int owner;
   int group;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1285,7 +1314,7 @@ chown_stub (XDR *xdr_in)
   }
   owner = args.owner;
   group = args.group;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1306,6 +1335,7 @@ exists_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_exists_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1318,7 +1348,7 @@ exists_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1341,6 +1371,7 @@ is_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_file_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1353,7 +1384,7 @@ is_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1376,6 +1407,7 @@ is_dir_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_dir_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1388,7 +1420,7 @@ is_dir_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1411,6 +1443,7 @@ pvcreate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvcreate_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
@@ -1433,7 +1466,7 @@ pvcreate_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_pvcreate (device);
@@ -1453,6 +1486,7 @@ vgcreate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vgcreate_args args;
+  char *volgroup;
   char **physvols;
 
   /* The caller should have checked before calling this. */
@@ -1476,7 +1510,7 @@ vgcreate_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *volgroup = args.volgroup;
+  volgroup = args.volgroup;
   physvols = realloc (args.physvols.physvols_val,
                 sizeof (char *) * (args.physvols.physvols_len+1));
   if (physvols == NULL) {
@@ -1511,6 +1545,8 @@ lvcreate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvcreate_args args;
+  char *logvol;
+  char *volgroup;
   int mbytes;
 
   /* The caller should have checked before calling this. */
@@ -1534,8 +1570,8 @@ lvcreate_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *logvol = args.logvol;
-  char *volgroup = args.volgroup;
+  logvol = args.logvol;
+  volgroup = args.volgroup;
   mbytes = args.mbytes;
 
   r = do_lvcreate (logvol, volgroup, mbytes);
@@ -1555,6 +1591,8 @@ mkfs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfs_args args;
+  char *fstype;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1567,8 +1605,8 @@ mkfs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fstype = args.fstype;
-  char *device = args.device;
+  fstype = args.fstype;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkfs (fstype, device);
@@ -1588,6 +1626,7 @@ sfdisk_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_sfdisk_args args;
+  char *device;
   int cyls;
   int heads;
   int sectors;
@@ -1604,7 +1643,7 @@ sfdisk_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   cyls = args.cyls;
   heads = args.heads;
@@ -1635,6 +1674,8 @@ write_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_write_file_args args;
+  char *path;
+  char *content;
   int size;
 
   if (optargs_bitmask != 0) {
@@ -1648,9 +1689,9 @@ write_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
-  char *content = args.content;
+  content = args.content;
   size = args.size;
 
   NEED_ROOT (, goto done);
@@ -1671,6 +1712,7 @@ umount_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_umount_args args;
+  char *pathordevice;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1683,7 +1725,7 @@ umount_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *pathordevice = args.pathordevice;
+  pathordevice = args.pathordevice;
 
   r = do_umount (pathordevice);
   if (r == -1)
@@ -1779,6 +1821,7 @@ file_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_file_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1791,7 +1834,7 @@ file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (path, , goto done);
 
   r = do_file (path);
@@ -1899,6 +1942,7 @@ stat_stub (XDR *xdr_in)
 {
   guestfs_int_stat *r;
   struct guestfs_stat_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1911,7 +1955,7 @@ stat_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1936,6 +1980,7 @@ lstat_stub (XDR *xdr_in)
 {
   guestfs_int_stat *r;
   struct guestfs_lstat_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1948,7 +1993,7 @@ lstat_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -1973,6 +2018,7 @@ statvfs_stub (XDR *xdr_in)
 {
   guestfs_int_statvfs *r;
   struct guestfs_statvfs_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -1985,7 +2031,7 @@ statvfs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -2010,6 +2056,7 @@ tune2fs_l_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_tune2fs_l_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2022,7 +2069,7 @@ tune2fs_l_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_tune2fs_l (device);
@@ -2046,6 +2093,7 @@ blockdev_setro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_setro_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2058,7 +2106,7 @@ blockdev_setro_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_setro (device);
@@ -2078,6 +2126,7 @@ blockdev_setrw_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_setrw_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2090,7 +2139,7 @@ blockdev_setrw_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_setrw (device);
@@ -2110,6 +2159,7 @@ blockdev_getro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getro_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2122,7 +2172,7 @@ blockdev_getro_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getro (device);
@@ -2144,6 +2194,7 @@ blockdev_getss_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getss_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2156,7 +2207,7 @@ blockdev_getss_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getss (device);
@@ -2178,6 +2229,7 @@ blockdev_getbsz_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_getbsz_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2190,7 +2242,7 @@ blockdev_getbsz_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getbsz (device);
@@ -2212,6 +2264,7 @@ blockdev_setbsz_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_setbsz_args args;
+  char *device;
   int blocksize;
 
   if (optargs_bitmask != 0) {
@@ -2225,7 +2278,7 @@ blockdev_setbsz_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   blocksize = args.blocksize;
 
@@ -2246,6 +2299,7 @@ blockdev_getsz_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_blockdev_getsz_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2258,7 +2312,7 @@ blockdev_getsz_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getsz (device);
@@ -2280,6 +2334,7 @@ blockdev_getsize64_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_blockdev_getsize64_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2292,7 +2347,7 @@ blockdev_getsize64_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_getsize64 (device);
@@ -2314,6 +2369,7 @@ blockdev_flushbufs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_flushbufs_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2326,7 +2382,7 @@ blockdev_flushbufs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_flushbufs (device);
@@ -2346,6 +2402,7 @@ blockdev_rereadpt_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_blockdev_rereadpt_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2358,7 +2415,7 @@ blockdev_rereadpt_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blockdev_rereadpt (device);
@@ -2378,6 +2435,7 @@ upload_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_upload_args args;
+  char *remotefilename;
 
   if (optargs_bitmask != 0) {
     cancel_receive ();
@@ -2392,7 +2450,7 @@ upload_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *remotefilename = args.remotefilename;
+  remotefilename = args.remotefilename;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, cancel_receive (), goto done);
 
   r = do_upload (remotefilename);
@@ -2412,6 +2470,7 @@ download_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_download_args args;
+  char *remotefilename;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2424,7 +2483,7 @@ download_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *remotefilename = args.remotefilename;
+  remotefilename = args.remotefilename;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, , goto done);
 
   r = do_download (remotefilename);
@@ -2444,6 +2503,8 @@ checksum_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_checksum_args args;
+  char *csumtype;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2456,8 +2517,8 @@ checksum_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *csumtype = args.csumtype;
-  char *path = args.path;
+  csumtype = args.csumtype;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -2481,6 +2542,7 @@ tar_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tar_in_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     cancel_receive ();
@@ -2495,7 +2557,7 @@ tar_in_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, cancel_receive (), goto done);
 
   NEED_ROOT (cancel_receive (), goto done);
@@ -2516,6 +2578,7 @@ tar_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tar_out_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2528,7 +2591,7 @@ tar_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
 
   r = do_tar_out (directory);
   if (r == -1)
@@ -2547,6 +2610,7 @@ tgz_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tgz_in_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     cancel_receive ();
@@ -2561,7 +2625,7 @@ tgz_in_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, cancel_receive (), goto done);
 
   NEED_ROOT (cancel_receive (), goto done);
@@ -2582,6 +2646,7 @@ tgz_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tgz_out_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2594,7 +2659,7 @@ tgz_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -2615,6 +2680,8 @@ mount_ro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_ro_args args;
+  char *device;
+  char *mountpoint;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2627,9 +2694,9 @@ mount_ro_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *mountpoint = args.mountpoint;
+  mountpoint = args.mountpoint;
 
   r = do_mount_ro (device, mountpoint);
   if (r == -1)
@@ -2648,6 +2715,9 @@ mount_options_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_options_args args;
+  char *options;
+  char *device;
+  char *mountpoint;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2660,10 +2730,10 @@ mount_options_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *options = args.options;
-  char *device = args.device;
+  options = args.options;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *mountpoint = args.mountpoint;
+  mountpoint = args.mountpoint;
 
   r = do_mount_options (options, device, mountpoint);
   if (r == -1)
@@ -2682,6 +2752,10 @@ mount_vfs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_vfs_args args;
+  char *options;
+  char *vfstype;
+  char *device;
+  char *mountpoint;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2694,11 +2768,11 @@ mount_vfs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *options = args.options;
-  char *vfstype = args.vfstype;
-  char *device = args.device;
+  options = args.options;
+  vfstype = args.vfstype;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *mountpoint = args.mountpoint;
+  mountpoint = args.mountpoint;
 
   r = do_mount_vfs (options, vfstype, device, mountpoint);
   if (r == -1)
@@ -2717,6 +2791,7 @@ debug_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_debug_args args;
+  char *subcmd;
   char **extraargs;
 
   if (optargs_bitmask != 0) {
@@ -2730,7 +2805,7 @@ debug_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *subcmd = args.subcmd;
+  subcmd = args.subcmd;
   extraargs = realloc (args.extraargs.extraargs_val,
                 sizeof (char *) * (args.extraargs.extraargs_len+1));
   if (extraargs == NULL) {
@@ -2760,6 +2835,7 @@ lvremove_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvremove_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
@@ -2782,7 +2858,7 @@ lvremove_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_lvremove (device);
@@ -2802,6 +2878,7 @@ vgremove_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vgremove_args args;
+  char *vgname;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
@@ -2824,7 +2901,7 @@ vgremove_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *vgname = args.vgname;
+  vgname = args.vgname;
 
   r = do_vgremove (vgname);
   if (r == -1)
@@ -2843,6 +2920,7 @@ pvremove_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvremove_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
@@ -2865,7 +2943,7 @@ pvremove_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_pvremove (device);
@@ -2885,6 +2963,8 @@ set_e2label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_e2label_args args;
+  char *device;
+  char *label;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2897,9 +2977,9 @@ set_e2label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *label = args.label;
+  label = args.label;
 
   r = do_set_e2label (device, label);
   if (r == -1)
@@ -2918,6 +2998,7 @@ get_e2label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_get_e2label_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2930,7 +3011,7 @@ get_e2label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_get_e2label (device);
@@ -2953,6 +3034,8 @@ set_e2uuid_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_e2uuid_args args;
+  char *device;
+  char *uuid;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2965,9 +3048,9 @@ set_e2uuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *uuid = args.uuid;
+  uuid = args.uuid;
 
   r = do_set_e2uuid (device, uuid);
   if (r == -1)
@@ -2986,6 +3069,7 @@ get_e2uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_get_e2uuid_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -2998,7 +3082,7 @@ get_e2uuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_get_e2uuid (device);
@@ -3021,6 +3105,8 @@ fsck_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fsck_args args;
+  char *fstype;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3033,8 +3119,8 @@ fsck_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fstype = args.fstype;
-  char *device = args.device;
+  fstype = args.fstype;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_fsck (fstype, device);
@@ -3056,6 +3142,7 @@ zero_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_zero_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3068,7 +3155,7 @@ zero_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_zero (device);
@@ -3088,6 +3175,8 @@ grub_install_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_grub_install_args args;
+  char *root;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_grub_available ()) {
@@ -3110,9 +3199,9 @@ grub_install_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *root = args.root;
+  root = args.root;
   ABS_PATH (root, , goto done);
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3133,6 +3222,8 @@ cp_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_cp_args args;
+  char *src;
+  char *dest;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3145,9 +3236,9 @@ cp_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   ABS_PATH (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   ABS_PATH (dest, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3168,6 +3259,8 @@ cp_a_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_cp_a_args args;
+  char *src;
+  char *dest;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3180,9 +3273,9 @@ cp_a_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   ABS_PATH (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   ABS_PATH (dest, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3203,6 +3296,8 @@ mv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mv_args args;
+  char *src;
+  char *dest;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3215,9 +3310,9 @@ mv_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   ABS_PATH (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   ABS_PATH (dest, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3315,6 +3410,8 @@ equal_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_equal_args args;
+  char *file1;
+  char *file2;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3327,9 +3424,9 @@ equal_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file1 = args.file1;
+  file1 = args.file1;
   ABS_PATH (file1, , goto done);
-  char *file2 = args.file2;
+  file2 = args.file2;
   ABS_PATH (file2, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3352,6 +3449,7 @@ strings_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_strings_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3364,7 +3462,7 @@ strings_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3389,6 +3487,8 @@ strings_e_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_strings_e_args args;
+  char *encoding;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3401,8 +3501,8 @@ strings_e_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *encoding = args.encoding;
-  char *path = args.path;
+  encoding = args.encoding;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3427,6 +3527,7 @@ hexdump_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_hexdump_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3439,7 +3540,7 @@ hexdump_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3463,6 +3564,7 @@ zerofree_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_zerofree_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_zerofree_available ()) {
@@ -3485,7 +3587,7 @@ zerofree_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_zerofree (device);
@@ -3505,6 +3607,7 @@ pvresize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvresize_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
@@ -3527,7 +3630,7 @@ pvresize_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_pvresize (device);
@@ -3547,10 +3650,12 @@ sfdisk_N_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_sfdisk_N_args args;
+  char *device;
   int partnum;
   int cyls;
   int heads;
   int sectors;
+  char *line;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3563,13 +3668,13 @@ sfdisk_N_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
   cyls = args.cyls;
   heads = args.heads;
   sectors = args.sectors;
-  char *line = args.line;
+  line = args.line;
 
   r = do_sfdisk_N (device, partnum, cyls, heads, sectors, line);
   if (r == -1)
@@ -3588,6 +3693,7 @@ sfdisk_l_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sfdisk_l_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3600,7 +3706,7 @@ sfdisk_l_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_sfdisk_l (device);
@@ -3623,6 +3729,7 @@ sfdisk_kernel_geometry_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sfdisk_kernel_geometry_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3635,7 +3742,7 @@ sfdisk_kernel_geometry_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_sfdisk_kernel_geometry (device);
@@ -3658,6 +3765,7 @@ sfdisk_disk_geometry_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sfdisk_disk_geometry_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3670,7 +3778,7 @@ sfdisk_disk_geometry_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_sfdisk_disk_geometry (device);
@@ -3786,6 +3894,7 @@ lvresize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvresize_args args;
+  char *device;
   int mbytes;
 
   /* The caller should have checked before calling this. */
@@ -3809,7 +3918,7 @@ lvresize_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   mbytes = args.mbytes;
 
@@ -3830,6 +3939,7 @@ resize2fs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_resize2fs_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3842,7 +3952,7 @@ resize2fs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_resize2fs (device);
@@ -3862,6 +3972,7 @@ find_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_find_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3874,7 +3985,7 @@ find_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -3899,6 +4010,7 @@ e2fsck_f_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_e2fsck_f_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -3911,7 +4023,7 @@ e2fsck_f_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_e2fsck_f (device);
@@ -3964,6 +4076,7 @@ ntfs_3g_probe_stub (XDR *xdr_in)
   int r;
   struct guestfs_ntfs_3g_probe_args args;
   int rw;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfs3g_available ()) {
@@ -3987,7 +4100,7 @@ ntfs_3g_probe_stub (XDR *xdr_in)
     goto done;
   }
   rw = args.rw;
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_ntfs_3g_probe (rw, device);
@@ -4009,6 +4122,7 @@ sh_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_sh_args args;
+  char *command;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4021,7 +4135,7 @@ sh_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *command = args.command;
+  command = args.command;
 
   r = do_sh (command);
   if (r == NULL)
@@ -4043,6 +4157,7 @@ sh_lines_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_sh_lines_args args;
+  char *command;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4055,7 +4170,7 @@ sh_lines_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *command = args.command;
+  command = args.command;
 
   r = do_sh_lines (command);
   if (r == NULL)
@@ -4078,6 +4193,7 @@ glob_expand_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_glob_expand_args args;
+  char *pattern;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4090,7 +4206,7 @@ glob_expand_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *pattern = args.pattern;
+  pattern = args.pattern;
   ABS_PATH (pattern, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4115,6 +4231,7 @@ scrub_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_scrub_device_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_scrub_available ()) {
@@ -4137,7 +4254,7 @@ scrub_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_scrub_device (device);
@@ -4157,6 +4274,7 @@ scrub_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_scrub_file_args args;
+  char *file;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_scrub_available ()) {
@@ -4179,7 +4297,7 @@ scrub_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4200,6 +4318,7 @@ scrub_freespace_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_scrub_freespace_args args;
+  char *dir;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_scrub_available ()) {
@@ -4222,7 +4341,7 @@ scrub_freespace_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *dir = args.dir;
+  dir = args.dir;
   ABS_PATH (dir, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4243,6 +4362,7 @@ mkdtemp_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_mkdtemp_args args;
+  char *tmpl;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4255,7 +4375,7 @@ mkdtemp_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *tmpl = args.tmpl;
+  tmpl = args.tmpl;
   ABS_PATH (tmpl, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4279,6 +4399,7 @@ wc_l_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wc_l_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4291,7 +4412,7 @@ wc_l_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4314,6 +4435,7 @@ wc_w_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wc_w_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4326,7 +4448,7 @@ wc_w_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4349,6 +4471,7 @@ wc_c_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wc_c_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4361,7 +4484,7 @@ wc_c_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4384,6 +4507,7 @@ head_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_head_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4396,7 +4520,7 @@ head_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4422,6 +4546,7 @@ head_n_stub (XDR *xdr_in)
   char **r;
   struct guestfs_head_n_args args;
   int nrlines;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4435,7 +4560,7 @@ head_n_stub (XDR *xdr_in)
     goto done;
   }
   nrlines = args.nrlines;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4460,6 +4585,7 @@ tail_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_tail_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4472,7 +4598,7 @@ tail_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4498,6 +4624,7 @@ tail_n_stub (XDR *xdr_in)
   char **r;
   struct guestfs_tail_n_args args;
   int nrlines;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4511,7 +4638,7 @@ tail_n_stub (XDR *xdr_in)
     goto done;
   }
   nrlines = args.nrlines;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4584,6 +4711,7 @@ du_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_du_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4596,7 +4724,7 @@ du_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4619,6 +4747,7 @@ initrd_list_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_initrd_list_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4631,7 +4760,7 @@ initrd_list_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4656,6 +4785,8 @@ mount_loop_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_loop_args args;
+  char *file;
+  char *mountpoint;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4668,9 +4799,9 @@ mount_loop_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
-  char *mountpoint = args.mountpoint;
+  mountpoint = args.mountpoint;
   ABS_PATH (mountpoint, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4691,6 +4822,7 @@ mkswap_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4703,7 +4835,7 @@ mkswap_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkswap (device);
@@ -4723,6 +4855,8 @@ mkswap_L_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_L_args args;
+  char *label;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -4735,8 +4869,8 @@ mkswap_L_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *label = args.label;
-  char *device = args.device;
+  label = args.label;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkswap_L (label, device);
@@ -4756,6 +4890,8 @@ mkswap_U_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_U_args args;
+  char *uuid;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
@@ -4778,8 +4914,8 @@ mkswap_U_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *uuid = args.uuid;
-  char *device = args.device;
+  uuid = args.uuid;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkswap_U (uuid, device);
@@ -4802,6 +4938,7 @@ mknod_stub (XDR *xdr_in)
   int mode;
   int devmajor;
   int devminor;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
@@ -4827,7 +4964,7 @@ mknod_stub (XDR *xdr_in)
   mode = args.mode;
   devmajor = args.devmajor;
   devminor = args.devminor;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4849,6 +4986,7 @@ mkfifo_stub (XDR *xdr_in)
   int r;
   struct guestfs_mkfifo_args args;
   int mode;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
@@ -4872,7 +5010,7 @@ mkfifo_stub (XDR *xdr_in)
     goto done;
   }
   mode = args.mode;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4896,6 +5034,7 @@ mknod_b_stub (XDR *xdr_in)
   int mode;
   int devmajor;
   int devminor;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
@@ -4921,7 +5060,7 @@ mknod_b_stub (XDR *xdr_in)
   mode = args.mode;
   devmajor = args.devmajor;
   devminor = args.devminor;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -4945,6 +5084,7 @@ mknod_c_stub (XDR *xdr_in)
   int mode;
   int devmajor;
   int devminor;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mknod_available ()) {
@@ -4970,7 +5110,7 @@ mknod_c_stub (XDR *xdr_in)
   mode = args.mode;
   devmajor = args.devmajor;
   devminor = args.devminor;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5025,6 +5165,7 @@ readdir_stub (XDR *xdr_in)
 {
   guestfs_int_dirent_list *r;
   struct guestfs_readdir_args args;
+  char *dir;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5037,7 +5178,7 @@ readdir_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *dir = args.dir;
+  dir = args.dir;
   ABS_PATH (dir, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5062,6 +5203,7 @@ sfdiskM_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_sfdiskM_args args;
+  char *device;
   char **lines;
 
   if (optargs_bitmask != 0) {
@@ -5075,7 +5217,7 @@ sfdiskM_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   lines = realloc (args.lines.lines_val,
                 sizeof (char *) * (args.lines.lines_len+1));
@@ -5103,6 +5245,8 @@ zfile_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_zfile_args args;
+  char *meth;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5115,8 +5259,8 @@ zfile_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *meth = args.meth;
-  char *path = args.path;
+  meth = args.meth;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5140,6 +5284,7 @@ getxattrs_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
   struct guestfs_getxattrs_args args;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -5162,7 +5307,7 @@ getxattrs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5187,6 +5332,7 @@ lgetxattrs_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
   struct guestfs_lgetxattrs_args args;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -5209,7 +5355,7 @@ lgetxattrs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5234,7 +5380,10 @@ setxattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_setxattr_args args;
+  char *xattr;
+  char *val;
   int vallen;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -5257,10 +5406,10 @@ setxattr_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *xattr = args.xattr;
-  char *val = args.val;
+  xattr = args.xattr;
+  val = args.val;
   vallen = args.vallen;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5281,7 +5430,10 @@ lsetxattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lsetxattr_args args;
+  char *xattr;
+  char *val;
   int vallen;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -5304,10 +5456,10 @@ lsetxattr_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *xattr = args.xattr;
-  char *val = args.val;
+  xattr = args.xattr;
+  val = args.val;
   vallen = args.vallen;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5328,6 +5480,8 @@ removexattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_removexattr_args args;
+  char *xattr;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -5350,8 +5504,8 @@ removexattr_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *xattr = args.xattr;
-  char *path = args.path;
+  xattr = args.xattr;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5372,6 +5526,8 @@ lremovexattr_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lremovexattr_args args;
+  char *xattr;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -5394,8 +5550,8 @@ lremovexattr_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *xattr = args.xattr;
-  char *path = args.path;
+  xattr = args.xattr;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5441,6 +5597,7 @@ mkmountpoint_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkmountpoint_args args;
+  char *exemptpath;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5453,7 +5610,7 @@ mkmountpoint_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *exemptpath = args.exemptpath;
+  exemptpath = args.exemptpath;
 
   r = do_mkmountpoint (exemptpath);
   if (r == -1)
@@ -5472,6 +5629,7 @@ rmmountpoint_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_rmmountpoint_args args;
+  char *exemptpath;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5484,7 +5642,7 @@ rmmountpoint_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *exemptpath = args.exemptpath;
+  exemptpath = args.exemptpath;
 
   r = do_rmmountpoint (exemptpath);
   if (r == -1)
@@ -5504,6 +5662,7 @@ read_file_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_read_file_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5516,7 +5675,7 @@ read_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5544,6 +5703,8 @@ grep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_grep_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5556,8 +5717,8 @@ grep_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5582,6 +5743,8 @@ egrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_egrep_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5594,8 +5757,8 @@ egrep_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5620,6 +5783,8 @@ fgrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_fgrep_args args;
+  char *pattern;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5632,8 +5797,8 @@ fgrep_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *pattern = args.pattern;
-  char *path = args.path;
+  pattern = args.pattern;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5658,6 +5823,8 @@ grepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_grepi_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5670,8 +5837,8 @@ grepi_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5696,6 +5863,8 @@ egrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_egrepi_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5708,8 +5877,8 @@ egrepi_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5734,6 +5903,8 @@ fgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_fgrepi_args args;
+  char *pattern;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5746,8 +5917,8 @@ fgrepi_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *pattern = args.pattern;
-  char *path = args.path;
+  pattern = args.pattern;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5772,6 +5943,8 @@ zgrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zgrep_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5784,8 +5957,8 @@ zgrep_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5810,6 +5983,8 @@ zegrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zegrep_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5822,8 +5997,8 @@ zegrep_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5848,6 +6023,8 @@ zfgrep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zfgrep_args args;
+  char *pattern;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5860,8 +6037,8 @@ zfgrep_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *pattern = args.pattern;
-  char *path = args.path;
+  pattern = args.pattern;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5886,6 +6063,8 @@ zgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zgrepi_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5898,8 +6077,8 @@ zgrepi_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5924,6 +6103,8 @@ zegrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zegrepi_args args;
+  char *regex;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5936,8 +6117,8 @@ zegrepi_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *regex = args.regex;
-  char *path = args.path;
+  regex = args.regex;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -5962,6 +6143,8 @@ zfgrepi_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_zfgrepi_args args;
+  char *pattern;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -5974,8 +6157,8 @@ zfgrepi_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *pattern = args.pattern;
-  char *path = args.path;
+  pattern = args.pattern;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6000,6 +6183,7 @@ realpath_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_realpath_args args;
+  char *path;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_realpath_available ()) {
@@ -6022,7 +6206,7 @@ realpath_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6046,6 +6230,8 @@ ln_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_args args;
+  char *target;
+  char *linkname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6058,8 +6244,8 @@ ln_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *target = args.target;
-  char *linkname = args.linkname;
+  target = args.target;
+  linkname = args.linkname;
   ABS_PATH (linkname, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6080,6 +6266,8 @@ ln_f_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_f_args args;
+  char *target;
+  char *linkname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6092,8 +6280,8 @@ ln_f_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *target = args.target;
-  char *linkname = args.linkname;
+  target = args.target;
+  linkname = args.linkname;
   ABS_PATH (linkname, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6114,6 +6302,8 @@ ln_s_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_s_args args;
+  char *target;
+  char *linkname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6126,8 +6316,8 @@ ln_s_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *target = args.target;
-  char *linkname = args.linkname;
+  target = args.target;
+  linkname = args.linkname;
   ABS_PATH (linkname, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6148,6 +6338,8 @@ ln_sf_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ln_sf_args args;
+  char *target;
+  char *linkname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6160,8 +6352,8 @@ ln_sf_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *target = args.target;
-  char *linkname = args.linkname;
+  target = args.target;
+  linkname = args.linkname;
   ABS_PATH (linkname, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6182,6 +6374,7 @@ readlink_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_readlink_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6194,7 +6387,7 @@ readlink_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6218,6 +6411,7 @@ fallocate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fallocate_args args;
+  char *path;
   int len;
 
   if (optargs_bitmask != 0) {
@@ -6231,7 +6425,7 @@ fallocate_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   len = args.len;
 
@@ -6253,6 +6447,7 @@ swapon_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_device_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6265,7 +6460,7 @@ swapon_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_swapon_device (device);
@@ -6285,6 +6480,7 @@ swapoff_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_device_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6297,7 +6493,7 @@ swapoff_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_swapoff_device (device);
@@ -6317,6 +6513,7 @@ swapon_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_file_args args;
+  char *file;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6329,7 +6526,7 @@ swapon_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6350,6 +6547,7 @@ swapoff_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_file_args args;
+  char *file;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6362,7 +6560,7 @@ swapoff_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6383,6 +6581,7 @@ swapon_label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_label_args args;
+  char *label;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6395,7 +6594,7 @@ swapon_label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *label = args.label;
+  label = args.label;
 
   r = do_swapon_label (label);
   if (r == -1)
@@ -6414,6 +6613,7 @@ swapoff_label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_label_args args;
+  char *label;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6426,7 +6626,7 @@ swapoff_label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *label = args.label;
+  label = args.label;
 
   r = do_swapoff_label (label);
   if (r == -1)
@@ -6445,6 +6645,7 @@ swapon_uuid_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapon_uuid_args args;
+  char *uuid;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
@@ -6467,7 +6668,7 @@ swapon_uuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *uuid = args.uuid;
+  uuid = args.uuid;
 
   r = do_swapon_uuid (uuid);
   if (r == -1)
@@ -6486,6 +6687,7 @@ swapoff_uuid_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_swapoff_uuid_args args;
+  char *uuid;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
@@ -6508,7 +6710,7 @@ swapoff_uuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *uuid = args.uuid;
+  uuid = args.uuid;
 
   r = do_swapoff_uuid (uuid);
   if (r == -1)
@@ -6527,6 +6729,7 @@ mkswap_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkswap_file_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6539,7 +6742,7 @@ mkswap_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -6602,6 +6805,7 @@ inotify_add_watch_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_inotify_add_watch_args args;
+  char *path;
   int mask;
 
   /* The caller should have checked before calling this. */
@@ -6625,7 +6829,7 @@ inotify_add_watch_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   mask = args.mask;
 
@@ -6792,6 +6996,7 @@ setcon_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_setcon_args args;
+  char *context;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_selinux_available ()) {
@@ -6814,7 +7019,7 @@ setcon_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *context = args.context;
+  context = args.context;
 
   r = do_setcon (context);
   if (r == -1)
@@ -6867,7 +7072,9 @@ mkfs_b_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfs_b_args args;
+  char *fstype;
   int blocksize;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6880,9 +7087,9 @@ mkfs_b_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fstype = args.fstype;
+  fstype = args.fstype;
   blocksize = args.blocksize;
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mkfs_b (fstype, blocksize, device);
@@ -6903,6 +7110,7 @@ mke2journal_stub (XDR *xdr_in)
   int r;
   struct guestfs_mke2journal_args args;
   int blocksize;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6916,7 +7124,7 @@ mke2journal_stub (XDR *xdr_in)
     goto done;
   }
   blocksize = args.blocksize;
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mke2journal (blocksize, device);
@@ -6937,6 +7145,8 @@ mke2journal_L_stub (XDR *xdr_in)
   int r;
   struct guestfs_mke2journal_L_args args;
   int blocksize;
+  char *label;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -6950,8 +7160,8 @@ mke2journal_L_stub (XDR *xdr_in)
     goto done;
   }
   blocksize = args.blocksize;
-  char *label = args.label;
-  char *device = args.device;
+  label = args.label;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mke2journal_L (blocksize, label, device);
@@ -6972,6 +7182,8 @@ mke2journal_U_stub (XDR *xdr_in)
   int r;
   struct guestfs_mke2journal_U_args args;
   int blocksize;
+  char *uuid;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
@@ -6995,8 +7207,8 @@ mke2journal_U_stub (XDR *xdr_in)
     goto done;
   }
   blocksize = args.blocksize;
-  char *uuid = args.uuid;
-  char *device = args.device;
+  uuid = args.uuid;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_mke2journal_U (blocksize, uuid, device);
@@ -7016,7 +7228,10 @@ mke2fs_J_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2fs_J_args args;
+  char *fstype;
   int blocksize;
+  char *device;
+  char *journal;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7029,11 +7244,11 @@ mke2fs_J_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fstype = args.fstype;
+  fstype = args.fstype;
   blocksize = args.blocksize;
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *journal = args.journal;
+  journal = args.journal;
   RESOLVE_DEVICE (journal, , goto done);
 
   r = do_mke2fs_J (fstype, blocksize, device, journal);
@@ -7053,7 +7268,10 @@ mke2fs_JL_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2fs_JL_args args;
+  char *fstype;
   int blocksize;
+  char *device;
+  char *label;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7066,11 +7284,11 @@ mke2fs_JL_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fstype = args.fstype;
+  fstype = args.fstype;
   blocksize = args.blocksize;
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *label = args.label;
+  label = args.label;
 
   r = do_mke2fs_JL (fstype, blocksize, device, label);
   if (r == -1)
@@ -7089,7 +7307,10 @@ mke2fs_JU_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mke2fs_JU_args args;
+  char *fstype;
   int blocksize;
+  char *device;
+  char *uuid;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxfsuuid_available ()) {
@@ -7112,11 +7333,11 @@ mke2fs_JU_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fstype = args.fstype;
+  fstype = args.fstype;
   blocksize = args.blocksize;
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *uuid = args.uuid;
+  uuid = args.uuid;
 
   r = do_mke2fs_JU (fstype, blocksize, device, uuid);
   if (r == -1)
@@ -7135,6 +7356,7 @@ modprobe_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_modprobe_args args;
+  char *modulename;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxmodules_available ()) {
@@ -7157,7 +7379,7 @@ modprobe_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *modulename = args.modulename;
+  modulename = args.modulename;
 
   r = do_modprobe (modulename);
   if (r == -1)
@@ -7218,6 +7440,7 @@ find0_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_find0_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7230,7 +7453,7 @@ find0_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -7251,6 +7474,7 @@ case_sensitive_path_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_case_sensitive_path_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7263,7 +7487,7 @@ case_sensitive_path_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -7287,6 +7511,7 @@ vfs_type_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_type_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7299,7 +7524,7 @@ vfs_type_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_vfs_type (device);
@@ -7322,6 +7547,7 @@ truncate_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_truncate_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7334,7 +7560,7 @@ truncate_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -7355,6 +7581,7 @@ truncate_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_truncate_size_args args;
+  char *path;
   int64_t size;
 
   if (optargs_bitmask != 0) {
@@ -7368,7 +7595,7 @@ truncate_size_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   size = args.size;
 
@@ -7390,6 +7617,7 @@ utimens_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_utimens_args args;
+  char *path;
   int64_t atsecs;
   int64_t atnsecs;
   int64_t mtsecs;
@@ -7406,7 +7634,7 @@ utimens_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   atsecs = args.atsecs;
   atnsecs = args.atnsecs;
@@ -7431,6 +7659,7 @@ mkdir_mode_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkdir_mode_args args;
+  char *path;
   int mode;
 
   if (optargs_bitmask != 0) {
@@ -7444,7 +7673,7 @@ mkdir_mode_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   mode = args.mode;
 
@@ -7468,6 +7697,7 @@ lchown_stub (XDR *xdr_in)
   struct guestfs_lchown_args args;
   int owner;
   int group;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7482,7 +7712,7 @@ lchown_stub (XDR *xdr_in)
   }
   owner = args.owner;
   group = args.group;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -7503,6 +7733,7 @@ lstatlist_stub (XDR *xdr_in)
 {
   guestfs_int_stat_list *r;
   struct guestfs_lstatlist_args args;
+  char *path;
   char **names;
 
   if (optargs_bitmask != 0) {
@@ -7516,7 +7747,7 @@ lstatlist_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   names = realloc (args.names.names_val,
                 sizeof (char *) * (args.names.names_len+1));
@@ -7549,6 +7780,7 @@ lxattrlist_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
   struct guestfs_lxattrlist_args args;
+  char *path;
   char **names;
 
   /* The caller should have checked before calling this. */
@@ -7572,7 +7804,7 @@ lxattrlist_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   names = realloc (args.names.names_val,
                 sizeof (char *) * (args.names.names_len+1));
@@ -7605,6 +7837,7 @@ readlinklist_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_readlinklist_args args;
+  char *path;
   char **names;
 
   if (optargs_bitmask != 0) {
@@ -7618,7 +7851,7 @@ readlinklist_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   names = realloc (args.names.names_val,
                 sizeof (char *) * (args.names.names_len+1));
@@ -7652,6 +7885,7 @@ pread_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_pread_args args;
+  char *path;
   int count;
   int64_t offset;
 
@@ -7666,7 +7900,7 @@ pread_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   count = args.count;
   offset = args.offset;
@@ -7696,6 +7930,8 @@ part_init_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_init_args args;
+  char *device;
+  char *parttype;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7708,9 +7944,9 @@ part_init_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *parttype = args.parttype;
+  parttype = args.parttype;
 
   r = do_part_init (device, parttype);
   if (r == -1)
@@ -7729,6 +7965,8 @@ part_add_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_add_args args;
+  char *device;
+  char *prlogex;
   int64_t startsect;
   int64_t endsect;
 
@@ -7743,9 +7981,9 @@ part_add_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *prlogex = args.prlogex;
+  prlogex = args.prlogex;
   startsect = args.startsect;
   endsect = args.endsect;
 
@@ -7766,6 +8004,8 @@ part_disk_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_disk_args args;
+  char *device;
+  char *parttype;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7778,9 +8018,9 @@ part_disk_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *parttype = args.parttype;
+  parttype = args.parttype;
 
   r = do_part_disk (device, parttype);
   if (r == -1)
@@ -7799,6 +8039,7 @@ part_set_bootable_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_set_bootable_args args;
+  char *device;
   int partnum;
   int bootable;
 
@@ -7813,7 +8054,7 @@ part_set_bootable_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
   bootable = args.bootable;
@@ -7835,7 +8076,9 @@ part_set_name_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_set_name_args args;
+  char *device;
   int partnum;
+  char *name;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7848,10 +8091,10 @@ part_set_name_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
-  char *name = args.name;
+  name = args.name;
 
   r = do_part_set_name (device, partnum, name);
   if (r == -1)
@@ -7870,6 +8113,7 @@ part_list_stub (XDR *xdr_in)
 {
   guestfs_int_partition_list *r;
   struct guestfs_part_list_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7882,7 +8126,7 @@ part_list_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_part_list (device);
@@ -7906,6 +8150,7 @@ part_get_parttype_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_part_get_parttype_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7918,7 +8163,7 @@ part_get_parttype_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_part_get_parttype (device);
@@ -7943,6 +8188,7 @@ fill_stub (XDR *xdr_in)
   struct guestfs_fill_args args;
   int c;
   int len;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7957,7 +8203,7 @@ fill_stub (XDR *xdr_in)
   }
   c = args.c;
   len = args.len;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -8017,6 +8263,8 @@ dd_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_dd_args args;
+  char *src;
+  char *dest;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8029,9 +8277,9 @@ dd_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (dest, , goto done);
 
   r = do_dd (src, dest);
@@ -8051,6 +8299,7 @@ filesize_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_filesize_args args;
+  char *file;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8063,7 +8312,7 @@ filesize_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
 
   NEED_ROOT (, goto done);
@@ -8086,6 +8335,8 @@ lvrename_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvrename_args args;
+  char *logvol;
+  char *newlogvol;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8098,8 +8349,8 @@ lvrename_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *logvol = args.logvol;
-  char *newlogvol = args.newlogvol;
+  logvol = args.logvol;
+  newlogvol = args.newlogvol;
 
   r = do_lvrename (logvol, newlogvol);
   if (r == -1)
@@ -8118,6 +8369,8 @@ vgrename_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_vgrename_args args;
+  char *volgroup;
+  char *newvolgroup;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8130,8 +8383,8 @@ vgrename_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *volgroup = args.volgroup;
-  char *newvolgroup = args.newvolgroup;
+  volgroup = args.volgroup;
+  newvolgroup = args.newvolgroup;
 
   r = do_vgrename (volgroup, newvolgroup);
   if (r == -1)
@@ -8151,6 +8404,8 @@ initrd_cat_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_initrd_cat_args args;
+  char *initrdpath;
+  char *filename;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8163,9 +8418,9 @@ initrd_cat_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *initrdpath = args.initrdpath;
+  initrdpath = args.initrdpath;
   ABS_PATH (initrdpath, , goto done);
-  char *filename = args.filename;
+  filename = args.filename;
 
   NEED_ROOT (, goto done);
   r = do_initrd_cat (initrdpath, filename, &size);
@@ -8192,6 +8447,7 @@ pvuuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_pvuuid_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8204,7 +8460,7 @@ pvuuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_pvuuid (device);
@@ -8227,6 +8483,7 @@ vguuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vguuid_args args;
+  char *vgname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8239,7 +8496,7 @@ vguuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *vgname = args.vgname;
+  vgname = args.vgname;
 
   r = do_vguuid (vgname);
   if (r == NULL)
@@ -8261,6 +8518,7 @@ lvuuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_lvuuid_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8273,7 +8531,7 @@ lvuuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_lvuuid (device);
@@ -8296,6 +8554,7 @@ vgpvuuids_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_vgpvuuids_args args;
+  char *vgname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8308,7 +8567,7 @@ vgpvuuids_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *vgname = args.vgname;
+  vgname = args.vgname;
 
   r = do_vgpvuuids (vgname);
   if (r == NULL)
@@ -8331,6 +8590,7 @@ vglvuuids_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_vglvuuids_args args;
+  char *vgname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8343,7 +8603,7 @@ vglvuuids_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *vgname = args.vgname;
+  vgname = args.vgname;
 
   r = do_vglvuuids (vgname);
   if (r == NULL)
@@ -8366,6 +8626,8 @@ copy_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_size_args args;
+  char *src;
+  char *dest;
   int64_t size;
 
   if (optargs_bitmask != 0) {
@@ -8379,9 +8641,9 @@ copy_size_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (dest, , goto done);
   size = args.size;
 
@@ -8402,6 +8664,7 @@ zero_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_zero_device_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8414,7 +8677,7 @@ zero_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_zero_device (device);
@@ -8434,6 +8697,7 @@ txz_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_txz_in_args args;
+  char *directory;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_xz_available ()) {
@@ -8459,7 +8723,7 @@ txz_in_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, cancel_receive (), goto done);
 
   NEED_ROOT (cancel_receive (), goto done);
@@ -8480,6 +8744,7 @@ txz_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_txz_out_args args;
+  char *directory;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_xz_available ()) {
@@ -8502,7 +8767,7 @@ txz_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -8523,6 +8788,7 @@ ntfsresize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsresize_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfsprogs_available ()) {
@@ -8545,7 +8811,7 @@ ntfsresize_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_ntfsresize (device);
@@ -8586,6 +8852,7 @@ part_del_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_del_args args;
+  char *device;
   int partnum;
 
   if (optargs_bitmask != 0) {
@@ -8599,7 +8866,7 @@ part_del_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
 
@@ -8620,6 +8887,7 @@ part_get_bootable_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_get_bootable_args args;
+  char *device;
   int partnum;
 
   if (optargs_bitmask != 0) {
@@ -8633,7 +8901,7 @@ part_get_bootable_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
 
@@ -8656,6 +8924,7 @@ part_get_mbr_id_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_get_mbr_id_args args;
+  char *device;
   int partnum;
 
   if (optargs_bitmask != 0) {
@@ -8669,7 +8938,7 @@ part_get_mbr_id_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
 
@@ -8692,6 +8961,7 @@ part_set_mbr_id_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_set_mbr_id_args args;
+  char *device;
   int partnum;
   int idbyte;
 
@@ -8706,7 +8976,7 @@ part_set_mbr_id_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   partnum = args.partnum;
   idbyte = args.idbyte;
@@ -8728,6 +8998,8 @@ checksum_device_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_checksum_device_args args;
+  char *csumtype;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8740,8 +9012,8 @@ checksum_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *csumtype = args.csumtype;
-  char *device = args.device;
+  csumtype = args.csumtype;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_checksum_device (csumtype, device);
@@ -8764,6 +9036,7 @@ lvresize_free_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvresize_free_args args;
+  char *lv;
   int percent;
 
   /* The caller should have checked before calling this. */
@@ -8787,7 +9060,7 @@ lvresize_free_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *lv = args.lv;
+  lv = args.lv;
   RESOLVE_DEVICE (lv, , goto done);
   percent = args.percent;
 
@@ -8808,6 +9081,7 @@ aug_clear_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_aug_clear_args args;
+  char *augpath;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_augeas_available ()) {
@@ -8830,7 +9104,7 @@ aug_clear_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *augpath = args.augpath;
+  augpath = args.augpath;
 
   r = do_aug_clear (augpath);
   if (r == -1)
@@ -8872,6 +9146,7 @@ debug_upload_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_debug_upload_args args;
+  char *tmpname;
   int mode;
 
   if (optargs_bitmask != 0) {
@@ -8887,7 +9162,7 @@ debug_upload_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *tmpname = args.tmpname;
+  tmpname = args.tmpname;
   mode = args.mode;
 
   r = do_debug_upload (tmpname, mode);
@@ -8907,6 +9182,7 @@ base64_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_base64_in_args args;
+  char *filename;
 
   if (optargs_bitmask != 0) {
     cancel_receive ();
@@ -8921,7 +9197,7 @@ base64_in_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *filename = args.filename;
+  filename = args.filename;
   ABS_PATH (filename, cancel_receive (), goto done);
 
   NEED_ROOT (cancel_receive (), goto done);
@@ -8942,6 +9218,7 @@ base64_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_base64_out_args args;
+  char *filename;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8954,7 +9231,7 @@ base64_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *filename = args.filename;
+  filename = args.filename;
   ABS_PATH (filename, , goto done);
 
   NEED_ROOT (, goto done);
@@ -8975,6 +9252,8 @@ checksums_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_checksums_out_args args;
+  char *csumtype;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -8987,8 +9266,8 @@ checksums_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *csumtype = args.csumtype;
-  char *directory = args.directory;
+  csumtype = args.csumtype;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -9009,7 +9288,9 @@ fill_pattern_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fill_pattern_args args;
+  char *pattern;
   int len;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9022,9 +9303,9 @@ fill_pattern_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *pattern = args.pattern;
+  pattern = args.pattern;
   len = args.len;
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -9045,6 +9326,7 @@ write_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_write_args args;
+  char *path;
   const char *content;
   size_t content_size;
 
@@ -9059,7 +9341,7 @@ write_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   content = args.content.content_val;
   content_size = args.content.content_len;
@@ -9082,6 +9364,7 @@ pwrite_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pwrite_args args;
+  char *path;
   const char *content;
   size_t content_size;
   int64_t offset;
@@ -9097,7 +9380,7 @@ pwrite_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   content = args.content.content_val;
   content_size = args.content.content_len;
@@ -9123,6 +9406,7 @@ resize2fs_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_resize2fs_size_args args;
+  char *device;
   int64_t size;
 
   if (optargs_bitmask != 0) {
@@ -9136,7 +9420,7 @@ resize2fs_size_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   size = args.size;
 
@@ -9157,6 +9441,7 @@ pvresize_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pvresize_size_args args;
+  char *device;
   int64_t size;
 
   /* The caller should have checked before calling this. */
@@ -9180,7 +9465,7 @@ pvresize_size_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   size = args.size;
 
@@ -9201,6 +9486,7 @@ ntfsresize_size_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsresize_size_args args;
+  char *device;
   int64_t size;
 
   /* The caller should have checked before calling this. */
@@ -9224,7 +9510,7 @@ ntfsresize_size_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   size = args.size;
 
@@ -9270,6 +9556,7 @@ fallocate64_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_fallocate64_args args;
+  char *path;
   int64_t len;
 
   if (optargs_bitmask != 0) {
@@ -9283,7 +9570,7 @@ fallocate64_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   len = args.len;
 
@@ -9305,6 +9592,7 @@ vfs_label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_label_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9317,7 +9605,7 @@ vfs_label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_vfs_label (device);
@@ -9340,6 +9628,7 @@ vfs_uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_uuid_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9352,7 +9641,7 @@ vfs_uuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_vfs_uuid (device);
@@ -9453,6 +9742,9 @@ luks_open_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_open_args args;
+  char *device;
+  char *key;
+  char *mapname;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
@@ -9475,10 +9767,10 @@ luks_open_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *key = args.key;
-  char *mapname = args.mapname;
+  key = args.key;
+  mapname = args.mapname;
 
   r = do_luks_open (device, key, mapname);
   if (r == -1)
@@ -9497,6 +9789,9 @@ luks_open_ro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_open_ro_args args;
+  char *device;
+  char *key;
+  char *mapname;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
@@ -9519,10 +9814,10 @@ luks_open_ro_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *key = args.key;
-  char *mapname = args.mapname;
+  key = args.key;
+  mapname = args.mapname;
 
   r = do_luks_open_ro (device, key, mapname);
   if (r == -1)
@@ -9541,6 +9836,7 @@ luks_close_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_close_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
@@ -9563,7 +9859,7 @@ luks_close_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_luks_close (device);
@@ -9583,6 +9879,8 @@ luks_format_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_format_args args;
+  char *device;
+  char *key;
   int keyslot;
 
   /* The caller should have checked before calling this. */
@@ -9606,9 +9904,9 @@ luks_format_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *key = args.key;
+  key = args.key;
   keyslot = args.keyslot;
 
   r = do_luks_format (device, key, keyslot);
@@ -9628,7 +9926,10 @@ luks_format_cipher_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_format_cipher_args args;
+  char *device;
+  char *key;
   int keyslot;
+  char *cipher;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_luks_available ()) {
@@ -9651,11 +9952,11 @@ luks_format_cipher_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *key = args.key;
+  key = args.key;
   keyslot = args.keyslot;
-  char *cipher = args.cipher;
+  cipher = args.cipher;
 
   r = do_luks_format_cipher (device, key, keyslot, cipher);
   if (r == -1)
@@ -9674,6 +9975,9 @@ luks_add_key_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_add_key_args args;
+  char *device;
+  char *key;
+  char *newkey;
   int keyslot;
 
   /* The caller should have checked before calling this. */
@@ -9697,10 +10001,10 @@ luks_add_key_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *key = args.key;
-  char *newkey = args.newkey;
+  key = args.key;
+  newkey = args.newkey;
   keyslot = args.keyslot;
 
   r = do_luks_add_key (device, key, newkey, keyslot);
@@ -9720,6 +10024,8 @@ luks_kill_slot_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_luks_kill_slot_args args;
+  char *device;
+  char *key;
   int keyslot;
 
   /* The caller should have checked before calling this. */
@@ -9743,9 +10049,9 @@ luks_kill_slot_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *key = args.key;
+  key = args.key;
   keyslot = args.keyslot;
 
   r = do_luks_kill_slot (device, key, keyslot);
@@ -9765,6 +10071,7 @@ is_lv_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_lv_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
@@ -9787,7 +10094,7 @@ is_lv_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_is_lv (device);
@@ -9809,6 +10116,7 @@ findfs_uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_findfs_uuid_args args;
+  char *uuid;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9821,7 +10129,7 @@ findfs_uuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *uuid = args.uuid;
+  uuid = args.uuid;
 
   r = do_findfs_uuid (uuid);
   if (r == NULL)
@@ -9843,6 +10151,7 @@ findfs_label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_findfs_label_args args;
+  char *label;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9855,7 +10164,7 @@ findfs_label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *label = args.label;
+  label = args.label;
 
   r = do_findfs_label (label);
   if (r == NULL)
@@ -9877,6 +10186,7 @@ is_chardev_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_chardev_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9889,7 +10199,7 @@ is_chardev_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -9912,6 +10222,7 @@ is_blockdev_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_blockdev_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9924,7 +10235,7 @@ is_blockdev_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -9947,6 +10258,7 @@ is_fifo_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_fifo_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9959,7 +10271,7 @@ is_fifo_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -9982,6 +10294,7 @@ is_symlink_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_symlink_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9994,7 +10307,7 @@ is_symlink_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -10017,6 +10330,7 @@ is_socket_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_socket_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -10029,7 +10343,7 @@ is_socket_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -10052,6 +10366,7 @@ part_to_dev_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_part_to_dev_args args;
+  char *partition;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -10064,7 +10379,7 @@ part_to_dev_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *partition = args.partition;
+  partition = args.partition;
   RESOLVE_DEVICE (partition, , goto done);
 
   r = do_part_to_dev (partition);
@@ -10087,6 +10402,7 @@ upload_offset_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_upload_offset_args args;
+  char *remotefilename;
   int64_t offset;
 
   if (optargs_bitmask != 0) {
@@ -10102,7 +10418,7 @@ upload_offset_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *remotefilename = args.remotefilename;
+  remotefilename = args.remotefilename;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, cancel_receive (), goto done);
   offset = args.offset;
 
@@ -10123,6 +10439,7 @@ download_offset_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_download_offset_args args;
+  char *remotefilename;
   int64_t offset;
   int64_t size;
 
@@ -10137,7 +10454,7 @@ download_offset_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *remotefilename = args.remotefilename;
+  remotefilename = args.remotefilename;
   REQUIRE_ROOT_OR_RESOLVE_DEVICE (remotefilename, , goto done);
   offset = args.offset;
   size = args.size;
@@ -10159,6 +10476,7 @@ pwrite_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_pwrite_device_args args;
+  char *device;
   const char *content;
   size_t content_size;
   int64_t offset;
@@ -10174,7 +10492,7 @@ pwrite_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   content = args.content.content_val;
   content_size = args.content.content_len;
@@ -10200,6 +10518,7 @@ pread_device_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_pread_device_args args;
+  char *device;
   int count;
   int64_t offset;
 
@@ -10214,7 +10533,7 @@ pread_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   count = args.count;
   offset = args.offset;
@@ -10243,6 +10562,7 @@ lvm_canonical_lv_name_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_lvm_canonical_lv_name_args args;
+  char *lvname;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -10255,7 +10575,7 @@ lvm_canonical_lv_name_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *lvname = args.lvname;
+  lvname = args.lvname;
   RESOLVE_DEVICE (lvname, , goto done);
 
   r = do_lvm_canonical_lv_name (lvname);
@@ -10278,7 +10598,10 @@ mkfs_opts_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mkfs_opts_args args;
+  char *fstype;
+  char *device;
   int blocksize;
+  char *features;
   int inode;
   int sectorsize;
 
@@ -10293,11 +10616,11 @@ mkfs_opts_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fstype = args.fstype;
-  char *device = args.device;
+  fstype = args.fstype;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   blocksize = args.blocksize;
-  char *features = args.features;
+  features = args.features;
   inode = args.inode;
   sectorsize = args.sectorsize;
 
@@ -10319,6 +10642,8 @@ getxattr_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_getxattr_args args;
+  char *path;
+  char *name;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -10341,9 +10666,9 @@ getxattr_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
-  char *name = args.name;
+  name = args.name;
 
   NEED_ROOT (, goto done);
   r = do_getxattr (path, name, &size);
@@ -10371,6 +10696,8 @@ lgetxattr_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_lgetxattr_args args;
+  char *path;
+  char *name;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_linuxxattrs_available ()) {
@@ -10393,9 +10720,9 @@ lgetxattr_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
-  char *name = args.name;
+  name = args.name;
 
   NEED_ROOT (, goto done);
   r = do_lgetxattr (path, name, &size);
@@ -10422,6 +10749,7 @@ resize2fs_M_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_resize2fs_M_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -10434,7 +10762,7 @@ resize2fs_M_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_resize2fs_M (device);
@@ -10475,6 +10803,7 @@ is_zero_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_zero_args args;
+  char *path;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -10487,7 +10816,7 @@ is_zero_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
 
   NEED_ROOT (, goto done);
@@ -10510,6 +10839,7 @@ is_zero_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_is_zero_device_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -10522,7 +10852,7 @@ is_zero_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_is_zero_device (device);
@@ -10569,6 +10899,9 @@ mount_9p_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_9p_args args;
+  char *mounttag;
+  char *mountpoint;
+  char *options;
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
@@ -10581,9 +10914,9 @@ mount_9p_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *mounttag = args.mounttag;
-  char *mountpoint = args.mountpoint;
-  char *options = args.options;
+  mounttag = args.mounttag;
+  mountpoint = args.mountpoint;
+  options = args.options;
 
   r = do_mount_9p (mounttag, mountpoint, options);
   if (r == -1)
@@ -10627,6 +10960,7 @@ ntfsresize_opts_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsresize_opts_args args;
+  char *device;
   int64_t size;
   int force;
 
@@ -10651,7 +10985,7 @@ ntfsresize_opts_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   size = args.size;
   force = args.force;
@@ -10673,6 +11007,7 @@ btrfs_filesystem_resize_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_filesystem_resize_args args;
+  char *mountpoint;
   int64_t size;
 
   /* The caller should have checked before calling this. */
@@ -10696,7 +11031,7 @@ btrfs_filesystem_resize_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *mountpoint = args.mountpoint;
+  mountpoint = args.mountpoint;
   ABS_PATH (mountpoint, , goto done);
   size = args.size;
 
@@ -10718,6 +11053,7 @@ write_append_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_write_append_args args;
+  char *path;
   const char *content;
   size_t content_size;
 
@@ -10732,7 +11068,7 @@ write_append_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *path = args.path;
+  path = args.path;
   ABS_PATH (path, , goto done);
   content = args.content.content_val;
   content_size = args.content.content_len;
@@ -10755,6 +11091,8 @@ compress_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_compress_out_args args;
+  char *ctype;
+  char *file;
   int level;
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
@@ -10768,8 +11106,8 @@ compress_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *ctype = args.ctype;
-  char *file = args.file;
+  ctype = args.ctype;
+  file = args.file;
   ABS_PATH (file, , goto done);
   level = args.level;
 
@@ -10791,6 +11129,8 @@ compress_device_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_compress_device_out_args args;
+  char *ctype;
+  char *device;
   int level;
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
@@ -10804,8 +11144,8 @@ compress_device_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *ctype = args.ctype;
-  char *device = args.device;
+  ctype = args.ctype;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   level = args.level;
 
@@ -10826,6 +11166,7 @@ part_to_partnum_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_part_to_partnum_args args;
+  char *partition;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -10838,7 +11179,7 @@ part_to_partnum_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *partition = args.partition;
+  partition = args.partition;
   RESOLVE_DEVICE (partition, , goto done);
 
   r = do_part_to_partnum (partition);
@@ -10860,6 +11201,8 @@ copy_device_to_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_device_to_device_args args;
+  char *src;
+  char *dest;
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
@@ -10875,9 +11218,9 @@ copy_device_to_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   RESOLVE_DEVICE (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   RESOLVE_DEVICE (dest, , goto done);
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
@@ -10900,6 +11243,8 @@ copy_device_to_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_device_to_file_args args;
+  char *src;
+  char *dest;
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
@@ -10915,9 +11260,9 @@ copy_device_to_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   RESOLVE_DEVICE (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   ABS_PATH (dest, , goto done);
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
@@ -10941,6 +11286,8 @@ copy_file_to_device_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_file_to_device_args args;
+  char *src;
+  char *dest;
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
@@ -10956,9 +11303,9 @@ copy_file_to_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   ABS_PATH (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   RESOLVE_DEVICE (dest, , goto done);
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
@@ -10982,6 +11329,8 @@ copy_file_to_file_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_copy_file_to_file_args args;
+  char *src;
+  char *dest;
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
@@ -10997,9 +11346,9 @@ copy_file_to_file_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *src = args.src;
+  src = args.src;
   ABS_PATH (src, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   ABS_PATH (dest, , goto done);
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
@@ -11023,12 +11372,15 @@ tune2fs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_tune2fs_args args;
+  char *device;
   int force;
   int maxmountcount;
   int mountcount;
+  char *errorbehavior;
   int64_t group;
   int intervalbetweenchecks;
   int reservedblockspercentage;
+  char *lastmounteddirectory;
   int64_t reservedblockscount;
   int64_t user;
 
@@ -11043,16 +11395,16 @@ tune2fs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   force = args.force;
   maxmountcount = args.maxmountcount;
   mountcount = args.mountcount;
-  char *errorbehavior = args.errorbehavior;
+  errorbehavior = args.errorbehavior;
   group = args.group;
   intervalbetweenchecks = args.intervalbetweenchecks;
   reservedblockspercentage = args.reservedblockspercentage;
-  char *lastmounteddirectory = args.lastmounteddirectory;
+  lastmounteddirectory = args.lastmounteddirectory;
   reservedblockscount = args.reservedblockscount;
   user = args.user;
 
@@ -11073,11 +11425,13 @@ md_create_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_md_create_args args;
+  char *name;
   char **devices;
   int64_t missingbitmap;
   int nrdevices;
   int spare;
   int64_t chunk;
+  char *level;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
@@ -11100,7 +11454,7 @@ md_create_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *name = args.name;
+  name = args.name;
   devices = realloc (args.devices.devices_val,
                 sizeof (char *) * (args.devices.devices_len+1));
   if (devices == NULL) {
@@ -11121,7 +11475,7 @@ md_create_stub (XDR *xdr_in)
   nrdevices = args.nrdevices;
   spare = args.spare;
   chunk = args.chunk;
-  char *level = args.level;
+  level = args.level;
 
   r = do_md_create (name, devices, missingbitmap, nrdevices, spare, chunk, level);
   if (r == -1)
@@ -11165,6 +11519,7 @@ md_detail_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_md_detail_args args;
+  char *md;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
@@ -11187,7 +11542,7 @@ md_detail_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *md = args.md;
+  md = args.md;
   RESOLVE_DEVICE (md, , goto done);
 
   r = do_md_detail (md);
@@ -11211,6 +11566,7 @@ md_stop_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_md_stop_args args;
+  char *md;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
@@ -11233,7 +11589,7 @@ md_stop_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *md = args.md;
+  md = args.md;
   RESOLVE_DEVICE (md, , goto done);
 
   r = do_md_stop (md);
@@ -11253,6 +11609,7 @@ blkid_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_blkid_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11265,7 +11622,7 @@ blkid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_blkid (device);
@@ -11289,6 +11646,7 @@ e2fsck_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_e2fsck_args args;
+  char *device;
   int correct;
   int forceall;
 
@@ -11303,7 +11661,7 @@ e2fsck_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   correct = args.correct;
   forceall = args.forceall;
@@ -11325,6 +11683,7 @@ llz_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_llz_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11337,7 +11696,7 @@ llz_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -11361,6 +11720,7 @@ wipefs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_wipefs_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_wipefs_available ()) {
@@ -11383,7 +11743,7 @@ wipefs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_wipefs (device);
@@ -11403,6 +11763,7 @@ ntfsfix_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsfix_args args;
+  char *device;
   int clearbadsectors;
 
   /* The caller should have checked before calling this. */
@@ -11426,7 +11787,7 @@ ntfsfix_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   clearbadsectors = args.clearbadsectors;
 
@@ -11447,6 +11808,7 @@ ntfsclone_out_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsclone_out_args args;
+  char *device;
   int metadataonly;
   int rescue;
   int ignorefscheck;
@@ -11474,7 +11836,7 @@ ntfsclone_out_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   metadataonly = args.metadataonly;
   rescue = args.rescue;
@@ -11499,6 +11861,7 @@ ntfsclone_in_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_ntfsclone_in_args args;
+  char *device;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_ntfs3g_available ()) {
@@ -11524,7 +11887,7 @@ ntfsclone_in_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, cancel_receive (), goto done);
 
   r = do_ntfsclone_in (device);
@@ -11544,6 +11907,8 @@ set_label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_label_args args;
+  char *device;
+  char *label;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11556,9 +11921,9 @@ set_label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
-  char *label = args.label;
+  label = args.label;
 
   r = do_set_label (device, label);
   if (r == -1)
@@ -11577,6 +11942,7 @@ zero_free_space_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_zero_free_space_args args;
+  char *directory;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11589,7 +11955,7 @@ zero_free_space_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *directory = args.directory;
+  directory = args.directory;
   ABS_PATH (directory, , goto done);
 
   NEED_ROOT (, goto done);
@@ -11610,6 +11976,8 @@ lvcreate_free_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_lvcreate_free_args args;
+  char *logvol;
+  char *volgroup;
   int percent;
 
   /* The caller should have checked before calling this. */
@@ -11633,8 +12001,8 @@ lvcreate_free_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *logvol = args.logvol;
-  char *volgroup = args.volgroup;
+  logvol = args.logvol;
+  volgroup = args.volgroup;
   percent = args.percent;
 
   r = do_lvcreate_free (logvol, volgroup, percent);
@@ -11654,6 +12022,7 @@ isoinfo_device_stub (XDR *xdr_in)
 {
   guestfs_int_isoinfo *r;
   struct guestfs_isoinfo_device_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11666,7 +12035,7 @@ isoinfo_device_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_isoinfo_device (device);
@@ -11690,6 +12059,7 @@ isoinfo_stub (XDR *xdr_in)
 {
   guestfs_int_isoinfo *r;
   struct guestfs_isoinfo_args args;
+  char *isofile;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11702,7 +12072,7 @@ isoinfo_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *isofile = args.isofile;
+  isofile = args.isofile;
   ABS_PATH (isofile, , goto done);
 
   NEED_ROOT (, goto done);
@@ -11728,6 +12098,7 @@ vgmeta_stub (XDR *xdr_in)
   size_t size = 1;
   char *r;
   struct guestfs_vgmeta_args args;
+  char *vgname;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_lvm2_available ()) {
@@ -11750,7 +12121,7 @@ vgmeta_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *vgname = args.vgname;
+  vgname = args.vgname;
 
   r = do_vgmeta (vgname, &size);
   /* size == 0 && r == NULL could be a non-error case (just
@@ -11776,6 +12147,7 @@ md_stat_stub (XDR *xdr_in)
 {
   guestfs_int_mdstat_list *r;
   struct guestfs_md_stat_args args;
+  char *md;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_mdadm_available ()) {
@@ -11798,7 +12170,7 @@ md_stat_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *md = args.md;
+  md = args.md;
   RESOLVE_DEVICE (md, , goto done);
 
   r = do_md_stat (md);
@@ -11825,7 +12197,10 @@ mkfs_btrfs_stub (XDR *xdr_in)
   char **devices;
   int64_t allocstart;
   int64_t bytecount;
+  char *datatype;
   int leafsize;
+  char *label;
+  char *metadata;
   int nodesize;
   int sectorsize;
 
@@ -11868,10 +12243,10 @@ mkfs_btrfs_stub (XDR *xdr_in)
   }
   allocstart = args.allocstart;
   bytecount = args.bytecount;
-  char *datatype = args.datatype;
+  datatype = args.datatype;
   leafsize = args.leafsize;
-  char *label = args.label;
-  char *metadata = args.metadata;
+  label = args.label;
+  metadata = args.metadata;
   nodesize = args.nodesize;
   sectorsize = args.sectorsize;
 
@@ -11892,6 +12267,7 @@ get_e2attrs_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_get_e2attrs_args args;
+  char *file;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11904,7 +12280,7 @@ get_e2attrs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
 
   NEED_ROOT (, goto done);
@@ -11928,6 +12304,8 @@ set_e2attrs_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_e2attrs_args args;
+  char *file;
+  char *attrs;
   int clear;
 
   if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
@@ -11941,9 +12319,9 @@ set_e2attrs_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
-  char *attrs = args.attrs;
+  attrs = args.attrs;
   clear = args.clear;
 
   NEED_ROOT (, goto done);
@@ -11964,6 +12342,7 @@ get_e2generation_stub (XDR *xdr_in)
 {
   int64_t r;
   struct guestfs_get_e2generation_args args;
+  char *file;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -11976,7 +12355,7 @@ get_e2generation_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
 
   NEED_ROOT (, goto done);
@@ -11999,6 +12378,7 @@ set_e2generation_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_e2generation_args args;
+  char *file;
   int64_t generation;
 
   if (optargs_bitmask != 0) {
@@ -12012,7 +12392,7 @@ set_e2generation_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *file = args.file;
+  file = args.file;
   ABS_PATH (file, , goto done);
   generation = args.generation;
 
@@ -12034,6 +12414,8 @@ btrfs_subvolume_snapshot_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_subvolume_snapshot_args args;
+  char *source;
+  char *dest;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12056,9 +12438,9 @@ btrfs_subvolume_snapshot_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *source = args.source;
+  source = args.source;
   ABS_PATH (source, , goto done);
-  char *dest = args.dest;
+  dest = args.dest;
   ABS_PATH (dest, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12079,6 +12461,7 @@ btrfs_subvolume_delete_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_subvolume_delete_args args;
+  char *subvolume;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12101,7 +12484,7 @@ btrfs_subvolume_delete_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *subvolume = args.subvolume;
+  subvolume = args.subvolume;
   ABS_PATH (subvolume, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12122,6 +12505,7 @@ btrfs_subvolume_create_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_subvolume_create_args args;
+  char *dest;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12144,7 +12528,7 @@ btrfs_subvolume_create_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *dest = args.dest;
+  dest = args.dest;
   ABS_PATH (dest, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12165,6 +12549,7 @@ btrfs_subvolume_list_stub (XDR *xdr_in)
 {
   guestfs_int_btrfssubvolume_list *r;
   struct guestfs_btrfs_subvolume_list_args args;
+  char *fs;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12187,7 +12572,7 @@ btrfs_subvolume_list_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fs = args.fs;
+  fs = args.fs;
   ABS_PATH (fs, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12213,6 +12598,7 @@ btrfs_subvolume_set_default_stub (XDR *xdr_in)
   int r;
   struct guestfs_btrfs_subvolume_set_default_args args;
   int64_t id;
+  char *fs;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12236,7 +12622,7 @@ btrfs_subvolume_set_default_stub (XDR *xdr_in)
     goto done;
   }
   id = args.id;
-  char *fs = args.fs;
+  fs = args.fs;
   ABS_PATH (fs, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12257,6 +12643,7 @@ btrfs_filesystem_sync_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_filesystem_sync_args args;
+  char *fs;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12279,7 +12666,7 @@ btrfs_filesystem_sync_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fs = args.fs;
+  fs = args.fs;
   ABS_PATH (fs, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12300,6 +12687,7 @@ btrfs_filesystem_balance_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_filesystem_balance_args args;
+  char *fs;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12322,7 +12710,7 @@ btrfs_filesystem_balance_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *fs = args.fs;
+  fs = args.fs;
   ABS_PATH (fs, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12344,6 +12732,7 @@ btrfs_device_add_stub (XDR *xdr_in)
   int r;
   struct guestfs_btrfs_device_add_args args;
   char **devices;
+  char *fs;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12382,7 +12771,7 @@ btrfs_device_add_stub (XDR *xdr_in)
     for (i = 0; devices[i] != NULL; ++i)
       RESOLVE_DEVICE (devices[i], , goto done);
   }
-  char *fs = args.fs;
+  fs = args.fs;
   ABS_PATH (fs, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12404,6 +12793,7 @@ btrfs_device_delete_stub (XDR *xdr_in)
   int r;
   struct guestfs_btrfs_device_delete_args args;
   char **devices;
+  char *fs;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12442,7 +12832,7 @@ btrfs_device_delete_stub (XDR *xdr_in)
     for (i = 0; devices[i] != NULL; ++i)
       RESOLVE_DEVICE (devices[i], , goto done);
   }
-  char *fs = args.fs;
+  fs = args.fs;
   ABS_PATH (fs, , goto done);
 
   NEED_ROOT (, goto done);
@@ -12463,6 +12853,7 @@ btrfs_set_seeding_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_set_seeding_args args;
+  char *device;
   int seeding;
 
   /* The caller should have checked before calling this. */
@@ -12486,7 +12877,7 @@ btrfs_set_seeding_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   seeding = args.seeding;
 
@@ -12507,6 +12898,7 @@ btrfs_fsck_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_btrfs_fsck_args args;
+  char *device;
   int64_t superblock;
   int repair;
 
@@ -12531,7 +12923,7 @@ btrfs_fsck_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
   superblock = args.superblock;
   repair = args.repair;
@@ -12553,6 +12945,7 @@ device_index_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_device_index_args args;
+  char *device;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -12565,7 +12958,7 @@ device_index_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  char *device = args.device;
+  device = args.device;
   RESOLVE_DEVICE (device, , goto done);
 
   r = do_device_index (device);
