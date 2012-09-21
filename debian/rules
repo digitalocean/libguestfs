@@ -125,7 +125,7 @@ override_dh_install:
 		debian/tmp/usr/lib/guestfs/supermin.d/
 
 	erlang-depends -perlang-guestfs
-	dh_install
+	dh_install --fail-missing
 
 # Workaround for python3-defaults < 3.2~b2-1
 # ("do not rename .so files outside dist-packages directory")
