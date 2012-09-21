@@ -108,6 +108,8 @@ override_dh_install:
 # W: libguestfs-perl: script-not-executable usr/lib/perl5/Sys/bindtests.pl
 	rm -f debian/tmp/usr/lib/perl5/Sys/bindtests.pl
 
+	rm -f debian/tmp/usr/lib/ocaml/stublibs/*.so.owner
+
 # Workaround for:
 # E: libguestfs-dev: non-empty-dependency_libs-in-la-file usr/lib/libguestfs.la
 	find debian/tmp -name *.la | xargs sed -i '/^dependency_libs/ s/^/# /'
