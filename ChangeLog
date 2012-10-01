@@ -1,3 +1,137 @@
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.9.
+
+	configure: Rearrange build options report in ./configure output.
+	This had accreted over a long period of time, so it wasn't
+	arranged very logically.
+	(cherry picked from commit 572291c64ed79b4988de6d23c31458d7c3c71b1d)
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: When sorting devices, don't fail on mix of /dev/sd and /dev/vd (RHBZ#858128).
+	If compare_device_names was given two devices with devices with
+	different interfaces (eg. /dev/sda and /dev/vda) then it would try to
+	compare the partition numbers, and fail when it could parse them.
+
+	It's arguable what we should be doing in this case (except for
+	strongly discouraging people from using the interface feature), but
+	let's at least not cause the daemon to assert-fail.
+
+	Found by Red Hat QA, thanks Mohua Li.
+	(cherry picked from commit 6f53d49a27fbf7f1b5c22080e2509375e128d5e4)
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Fix calls to case_sensitive_path (RHBZ#858126).
+	Don't assume that if guestfs_case_sensitive_path returns NULL, that it
+	means the file does not exist.
+
+	The (previously undefined) behaviour of case_sensitive_path was that a
+	NULL return meant "either the file doesn't exist or some other error".
+	However in commit 973581780d8a006f336684fef6762801402d775d this was
+	changed so that if the last element of the path didn't exist, it was
+	assumed to be a new file and the (non-NULL) path of the new file is
+	returned.
+
+	This change breaks code (including in libguestfs) which tries to use
+	case_sensitive_path as a dual-purpose call to fix-up a path for
+	Windows and test if the file exists.  Such code should be rewritten so
+	that it explicitly tests for file existence after calling
+	case_sensitive_path.
+
+	I examined all the calls to case_sensitive_path in libguestfs and
+	modified them where necessary.
+
+	Cherry picked from commit 9ea6e9701461e594033999150f930cc4fafec4d2.
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-edit: If case_sensitive_path returns an error, exit.
+	The 'windows_path' function was blindly copied from virt-cat.  In
+	virt-cat, errors are checked by the caller to 'windows_path'.  But
+	virt-edit lacks this check.  Change the function in virt-edit to add a
+	check and exit on error.
+	(cherry picked from commit 55b7c4df7895b8c22d737723d857a9a63db69926)
+
+	recipes: Add a section about diagnosing hanging guests. (cherry picked from commit f7e138835a7194135113088767c46df65dbf292a)
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	test-tool: Add prominent warning about including complete output.
+	Everyone ignores the documentation.  Everyone ignores me even
+	when I specifically tell them to include the complete output.
+
+	Place a prominent notice at the beginning of the output.
+	(cherry picked from commit 4f3048c6be0663c6c254a765ec5f83a7b40a8808)
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	test-tool: guestfs_get_path might return NULL.
+	It would almost certainly indicate a bug if it happens, but
+	don't rely on printf not segfaulting if it did happen.
+	(cherry picked from commit ca2e65275d797864d2a5b3b3d0e115460522e5bb)
+
+	guestfs-testing(1): Start by running libguestfs-test-tool. (cherry picked from commit 9b7813c5bd91d53e358deee64ab42b00b42c37ba)
+
+2012-10-01  Wanlong Gao  <gaowanlong@cn.fujitsu.com>
+
+	remove the useless "h" option
+	"h" option is not enabled in virt-cat, remove it.
+
+	(cherry picked from commit f7f746a98e8d378ac8934a7f7b82a48b3e2a5aa4)
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Miscellaneous cleanups.
+	- Use S<...> for non-breaking spaces.
+	- Arrange the builds section better.
+	- Add a section on enabling sVirt.
+	- Other small fixes.
+	(cherry picked from commit 19b29c36370beb76fd3f3a1f45289ce34c03e3c3)
+
+	docs: Link to guestfs-recipes(1) from intro in guestfs(3). (cherry picked from commit d19e557df54f3822d38621b8c2da098bf44b4d53)
+
+	generator: Tidy up comments in guestfs_protocol.x. (cherry picked from commit db6a8512402f068815f882928662af0d8f5eec83)
+
+	generator: Allow an optional emacs-mode at the top of generated files. (cherry picked from commit a95d4261b8cedc31bfc3c5358be7b346b27d457b)
+
+	test-launch-race: Add comment. (cherry picked from commit 09c372ea250e8241d62e9fde70eabe7bdca83050)
+
+2012-10-01  Hilko Bengen  <bengen@hilluzination.de>
+
+	./run: Keep gnome-keyring from disturbing test script output (cherry picked from commit 71f87d9a8f04212fc0534b3fb423780185181585)
+
+2012-10-01  Olaf Hering  <olaf@aepfle.de>
+
+	rename local variable to avoid clash with match macro
+	match will expand to guestfs___match, rename the local variable to avoid clash.
+
+	(cherry picked from commit b36b44af9e177fe5c9677d430abc7cba0633049c)
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Add links to various guestfs-* man pages from guestfs(3).
+	Cherry picked from commit 64cc0dafd03bb23ef1520c8f46fd2dd44a0d8c4e.
+	Remove ref to guestfs-release-notes(1) which doesn't exist in 1.18.
+
+	recipes: Add section about uploading raw filesystem content. (cherry picked from commit 8aa8eb205b02e1014e5ed9577f4a9da9fd864aba)
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Make the "launched failed" message more explanatory.
+	Since this is the most common error seen by people who have
+	installation problems, buggy qemu, etc, and since no one reads the
+	FAQ, describe in this error message what resources are available to
+	debug launch problems.
+
+	Cherry picked from commit 840deea12079b05a9f588016af273843d5d6e1b8
+	and fixed for the stable branch.
+
+2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Create /etc/sysconfig/network file if it doesn't exist (RHBZ#858696). (cherry picked from commit 88c406feba1390f830c20bfb4c11989a4e877b91)
+
 2012-09-19  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.8.

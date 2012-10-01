@@ -111,6 +111,8 @@ To download to stdout, replace the filename with a C<-> character:
 
 ディスクイメージにあるファイルシステムを一覧表示するには L<virt-filesystems(1)> を使用します。
 
+See also L</Uploading raw filesystem content>.
+
 =head1 仮想マシンの GRUB 設定を編集します
 
 次の目的のために実行できます:
@@ -260,6 +262,35 @@ Augeas を使用します。また、以下のように、多くのさまざま�
 
 L<http://augeas.net/>
 
+=head1 Hanging guests
+
+There are various ways to use libguestfs to find out why a guest is hanging
+or unresponsive:
+
+=over 4
+
+=item 1.
+
+Read the log files using virt-cat:
+
+ virt-cat Guest /var/log/messages | less
+
+=item 2.
+
+Read the Windows Event Log (Windows Vista or later only):
+
+L<https://rwmj.wordpress.com/2011/04/17/decoding-the-windows-event-log-using-guestfish/#content>
+
+=item 3.
+
+Find out which files were last updated in a guest:
+
+L<https://rwmj.wordpress.com/2012/02/27/using-libguestfs-to-find-out-why-a-windows-guest-was-hanging/#content>
+
+This might give you a clue as to what program is running.
+
+=back
+
 =head1 仮想マシンに RPM をインストールします
 
 以下のリンクは、仮想マシンにおいて RPM をインストールする方法があります。実際、仮想マシンの次回起動時にインストールされる "firstboot"
@@ -379,6 +410,27 @@ L<https://rwmj.wordpress.com/2009/07/15/unpack-the-russian-doll-of-a-f11-live-cd
 以下のリンクは、仮想マシンにファイルをアップロード、および仮想マシンからファイルをダウンロードすることに関する、一般的なヒントがあります。
 
 L<https://rwmj.wordpress.com/2010/12/02/tip-uploading-and-downloading/#content>
+
+=head1 Uploading raw filesystem content
+
+You can use L<guestfish(1)> to upload whole filesystems into a VM, even into
+a filesystem which is encrypted or buried inside an LV or RAID device:
+
+ guestfish --rw -a disk.img run : upload sda1.img /dev/sda1
+
+ guestfish --rw -d Guest run : upload lv.img /dev/vg_guest/lv_root
+
+One common problem is that the filesystem isn't the right size for the
+target.  If it is too large, there's not much you can do with libguestfs -
+you have to prepare the filesystem differently.  But if the filesystem needs
+to expand into the target, you can use guestfish to resize it to the right
+size:
+
+ guestfish --rw -d Guest run : \
+   upload lv.img /dev/vg_guest/lv_root : \
+   resize2fs /dev/vg_guest/lv_root
+
+(or use C<ntfsresize> if the filesystem is NTFS).
 
 =head1 VMware ESX 仮想マシンにおいて libguestfs ツールを使用します
 

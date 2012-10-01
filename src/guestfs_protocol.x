@@ -1,4 +1,4 @@
-/* libguestfs generated file
+/* libguestfs generated file -*- c -*-
  * WARNING: THIS FILE IS GENERATED FROM:
  *   generator/generator_*.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
@@ -20,7 +20,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/* This file defines the protocol used between the library and
+ * the appliance/daemon.  For more information see the COMMUNICATION
+ * PROTOCOL section in guestfs(3).  Note this protocol is internal
+ * to libguestfs and may change at any time.
+ */
+
 %#include <config.h>
+
+/* This has to be defined to get around a limitation in Mac OS X's rpcgen. */
 #if HAVE_XDR_U_INT64_T
 #define uint64_t u_int64_t
 %#if HAVE_XDR_UINT64_T
@@ -34,7 +42,10 @@
 %#endif
 #endif
 
+/* This has to be defined to get around a limitation in Sun's rpcgen. */
 typedef string guestfs_str<>;
+
+/* Internal structures. */
 
 struct guestfs_int_int_bool {
   int i;
@@ -237,6 +248,8 @@ struct guestfs_int_btrfssubvolume {
 };
 
 typedef struct guestfs_int_btrfssubvolume guestfs_int_btrfssubvolume_list<>;
+
+/* Function arguments and return values. */
 
 struct guestfs_mount_args {
   string device<>;
@@ -2276,6 +2289,7 @@ struct guestfs_nr_devices_ret {
   int nrdisks;
 };
 
+/* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
   GUESTFS_PROC_SYNC = 2,
@@ -2614,11 +2628,9 @@ enum guestfs_procedure {
   GUESTFS_PROC_NR_PROCS
 };
 
-const GUESTFS_MESSAGE_MAX = 4194304;
+/* The remote procedure call protocol. */
 
-/* The communication protocol is now documented in the guestfs(3)
- * manpage.
- */
+const GUESTFS_MESSAGE_MAX = 4194304;
 
 const GUESTFS_PROGRAM = 0x2000F5F5;
 const GUESTFS_PROTOCOL_VERSION = 4;
