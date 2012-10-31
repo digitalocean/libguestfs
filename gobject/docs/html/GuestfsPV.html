@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsPV</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsIntBool.html" title="GuestfsIntBool">
@@ -77,63 +77,66 @@ struct              <a class="link" href="GuestfsPV.html#GuestfsPV-struct" title
   guint64 pv_mda_free;
 };
 </pre>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-name"></a>pv_name</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-name"></a>pv_name</code></em>;</span></p></td>
 <td>A NULL-terminated string</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-uuid"></a>pv_uuid</code></em>[32];</span></p></td>
+<td><p><span class="term"><span class="type">gchar</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-uuid"></a>pv_uuid</code></em>[32];</span></p></td>
 <td>A 32 byte UUID. Note that this is not NULL-terminated</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-fmt"></a>pv_fmt</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-fmt"></a>pv_fmt</code></em>;</span></p></td>
 <td>A NULL-terminated string</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-size"></a>pv_size</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-size"></a>pv_size</code></em>;</span></p></td>
 <td>An unsigned 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.dev-size"></a>dev_size</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.dev-size"></a>dev_size</code></em>;</span></p></td>
 <td>An unsigned 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-free"></a>pv_free</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-free"></a>pv_free</code></em>;</span></p></td>
 <td>An unsigned 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-used"></a>pv_used</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-used"></a>pv_used</code></em>;</span></p></td>
 <td>An unsigned 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-attr"></a>pv_attr</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-attr"></a>pv_attr</code></em>;</span></p></td>
 <td>A NULL-terminated string</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-pe-count"></a>pv_pe_count</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-pe-count"></a>pv_pe_count</code></em>;</span></p></td>
 <td>A signed 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-pe-alloc-count"></a>pv_pe_alloc_count</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-pe-alloc-count"></a>pv_pe_alloc_count</code></em>;</span></p></td>
 <td>A signed 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-tags"></a>pv_tags</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsPV-struct.pv-tags"></a>pv_tags</code></em>;</span></p></td>
 <td>A NULL-terminated string</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pe-start"></a>pe_start</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pe-start"></a>pe_start</code></em>;</span></p></td>
 <td>An unsigned 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-mda-count"></a>pv_mda_count</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-mda-count"></a>pv_mda_count</code></em>;</span></p></td>
 <td>A signed 64-bit integer</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> <em class="structfield"><code><a name="GuestfsPV-struct.pv-mda-free"></a>pv_mda_free</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsPV-struct.pv-mda-free"></a>pv_mda_free</code></em>;</span></p></td>
 <td>An unsigned 64-bit integer</td>
 </tr>
 </tbody>

@@ -1,3 +1,146 @@
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.10.
+
+	build: Source 'localenv' in top-level Makefile.
+	Also document 'local*' files.
+	(cherry picked from commit de129a136355a92aa6a4afe47678aa13160fc806)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Allow more tests to be skipped.
+	Specifically tests which involve btrfs, because btrfs is
+	currently broken upstream (RHBZ#863978).
+
+	(cherry picked from commit f5194e6b0a470d6fe05eaa39b57eb9d0770bbe38)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	guestfs-testing: Use L<> around links. (cherry picked from commit dd09744432468c416033ca84dc0ae1a438240de0)
+
+	docs: Review and clarify ERROR HANDLING section of guestfs(3).
+	Cherry picked from commit 3c1d85ae95452cee30029c719aa2523fdb5384c7.
+	Modified to remove references to libguestfs 1.20.
+
+	gitignore: Ignore config.cache file. (cherry picked from commit 835ae2c43ca70a90e33262bb71da1883ab6a4473)
+
+	daemon: Mark some functions as attribute((noreturn)). (cherry picked from commit 5c8f073786285303f3bda1c30bd0b1953e0667a7)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Depend explicitly on Unix module.
+	Commit a0722c7ad846960be54978a31ebe73b76e119203 introduced a
+	dependency on the Unix module.  This was not listed in the list of
+	'-package's, but as long as you had ocaml-gettext installed it would
+	still work because that pulled in Unix implicitly.
+
+	Thanks Olaf Hering.
+	(cherry picked from commit a66fd2fac25d5520b4eb2935dea6a501daed946a)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	valgrind: Add suppression for memory leak in libdl:_dl_init function. (cherry picked from commit 2dab72794eef55f941cc61f1f34baa9fc7988298)
+
+	configure: Add db5.1_dump, db5.1_load for Debian Wheezy. (cherry picked from commit 67e483689c086e22e9a3e038ea4e7285d9a0c4d2)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Get rid of CAMLprim.
+	It's wrong to use it, and in any case it doesn't do anything on Linux.
+
+	(cherry picked from commit 3d46f7dc038f87e00a27e9f294d4115436f1ff23)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize, sparsify: Suppress progress bar when output is not a tty. (cherry picked from commit a0722c7ad846960be54978a31ebe73b76e119203)
+
+	sparsify: Fix dependencies so they include resize/progress.*
+	This fixes commit 91b2238fc8e462c02f697f0c053043a55f43c13d.
+	(cherry picked from commit c9acb029edf7c20ca937a1f6051b5834cdfdddf7)
+
+	valgrind: Fix FUSE memory leak suppression. (cherry picked from commit 626ca8e74f97a8c5fbe354211e81132976a21435)
+
+	docs: Make 'EVENTS' into its own =head1 section.
+	For some reason it was stuck under "CALLS WITH OPTIONAL ARGUMENTS",
+	which made no sense.
+	(cherry picked from commit 085bf7c97aae67e8f84fe95f97ee4bfee849d523)
+
+	lib: Pointer arg to safe_memdup function should be const. (cherry picked from commit 64e8e0011c6e961bae010b6008d07f501d53f35d)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Fix capitalization in configure script.
+	Just make the output of ./configure --help and the <config.h>
+	file consistent.
+
+	(cherry picked from commit bdfe2216715ff15691ab719ee0e63ccc2e84526c)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Fix C++ compiler test so it doesn't print random junk. (cherry picked from commit 467fb589b969b2d5a6fbb72c327c6c57cb65fcc3)
+
+	daemon: Call udev-settle at the start of the daemon. (cherry picked from commit 15b9ed3ed2078c034f25bf3ba31298dd89c6cddf)
+
+	fish: progress bar: Send interactive progress bar output to /dev/tty (RHBZ#859875). (cherry picked from commit 911a16a9fa965ce8defb3307f6bf338f5d2d5c94)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Re-use progress bar wrapper code from virt-resize.
+	The code was identical -- just copied with s/resize/sparsify/.
+	Instead of duplicating identical code, cause the Makefile.am to use
+	the code from the ../resize/ directory.
+
+	Unfortunately because there are two Utils modules (which are
+	different), this means we had to rename those modules to Resize_utils
+	and Sparsify_utils respectively.  So this is a rather larger change
+	than intended.  However it's just code motion.
+
+	(cherry picked from commit 91b2238fc8e462c02f697f0c053043a55f43c13d)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: inspect: Move variable decls to top of function.
+	This is just code motion.
+	(cherry picked from commit c34dcf184ef4eaa35634d1696e0c68d21b811170)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Add warning not to avoid calling launch twice on the same handle.
+	For more information on this topic, see:
+	https://www.redhat.com/archives/libguestfs/2012-October/msg00045.html
+
+	(cherry picked from commit 2e388e8a3740aa470276b78027f51304a7f0ff92)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Fully document all subdirectories of the source. (cherry picked from commit 0032c60336c6f819859d30ec68179373e8943ef6)
+
+	docs: Add overview to guestfs(3)/EXTENDING LIBGUESTFS. (cherry picked from commit b54fa22cd0a6a091324ff1978e0de2c54a0fabde)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Use 'tmp-d' as name of temporary directory instead of 'tmp'.
+	When building supermin.d/daemon.img, use 'tmp-d' instead of 'tmp'
+	as the name of the temporary directory.
+
+	This is just code motion.
+	(cherry picked from commit 92feed7d662b7d9d1f8c475cf06df203143a3a5f)
+
+2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: add_drive: Clean up documentation of the 'filename' parameter.
+	Cherry picked from commit 1467ea00b850bec2722671a400adb2ffda533365
+	and modified for stable-1.18 branch.
+
+	FAQ: Document debug* and internal* functions in the FAQ. (cherry picked from commit 9bd3d5bc6d6a3be517da5faf9e7c8a84394ca0f9)
+
+	docs: Minor cleanup of documentation for add_drive 'name' parameter. (cherry picked from commit 60650da1ed7b6d916ceeee0e397c7bb2fbc282e5)
+
+	syntax: Use __PATTERNS__ instead of @PATTERNS@ in podwrapper man pages.
+	It is slightly dangerous to use @PATTERNS@, since these might
+	be substituted by autoconf when they appear in Makefile.am files.
+	(cherry picked from commit 4a4ca0c01da3307b69fc4925c5f2ece1e728d4b3)
+
 2012-10-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.9.

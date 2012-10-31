@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsCompressOut</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsBTRFSFilesystemResize.html" title="GuestfsBTRFSFilesystemResize">
@@ -52,14 +52,14 @@ struct              <a class="link" href="GuestfsCompressOut.html#GuestfsCompres
 <div class="refsect1">
 <a name="GuestfsCompressOut.object-hierarchy"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
-  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+  GObject
    +----GuestfsCompressOut
 </pre>
 </div>
 <div class="refsect1">
 <a name="GuestfsCompressOut.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
-  "<a class="link" href="GuestfsCompressOut.html#GuestfsCompressOut--level" title='The "level" property'>level</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsCompressOut.html#GuestfsCompressOut--level" title='The "level" property'>level</a>"                    <span class="type">gint</span>                  : Read / Write / Construct
 </pre>
 </div>
 <div class="refsect1">
@@ -87,10 +87,13 @@ An object encapsulating optional arguments for guestfs_session_compress_out.
 <p>
 A class metadata object for GuestfsCompressOut.
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsCompressOutClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsCompressOutClass.parent-class"></a>parent_class</code></em>;</span></p></td>
 <td>The superclass of GuestfsCompressOutClass</td>
 </tr></tbody>
 </table></div>
@@ -102,8 +105,11 @@ A class metadata object for GuestfsCompressOut.
 <p>
 Create a new GuestfsCompressOut object
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>a new GuestfsCompressOut object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
@@ -116,7 +122,7 @@ Create a new GuestfsCompressOut object
 <a name="GuestfsCompressOut.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
 <a name="GuestfsCompressOut--level"></a><h3>The <code class="literal">"level"</code> property</h3>
-<pre class="programlisting">  "level"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<pre class="programlisting">  "level"                    <span class="type">gint</span>                  : Read / Write / Construct</pre>
 <p>
 A 32-bit integer.
 </p>

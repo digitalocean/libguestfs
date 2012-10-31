@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsMDCreate</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsTune2FS.html" title="GuestfsTune2FS">
@@ -52,18 +52,18 @@ struct              <a class="link" href="GuestfsMDCreate.html#GuestfsMDCreateCl
 <div class="refsect1">
 <a name="GuestfsMDCreate.object-hierarchy"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
-  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+  GObject
    +----GuestfsMDCreate
 </pre>
 </div>
 <div class="refsect1">
 <a name="GuestfsMDCreate.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--chunk" title='The "chunk" property'>chunk</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--level" title='The "level" property'>level</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--missingbitmap" title='The "missingbitmap" property'>missingbitmap</a>"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--nrdevices" title='The "nrdevices" property'>nrdevices</a>"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
-  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--spare" title='The "spare" property'>spare</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--chunk" title='The "chunk" property'>chunk</a>"                    <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--level" title='The "level" property'>level</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--missingbitmap" title='The "missingbitmap" property'>missingbitmap</a>"            <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--nrdevices" title='The "nrdevices" property'>nrdevices</a>"                <span class="type">gint</span>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsMDCreate.html#GuestfsMDCreate--spare" title='The "spare" property'>spare</a>"                    <span class="type">gint</span>                  : Read / Write / Construct
 </pre>
 </div>
 <div class="refsect1">
@@ -91,10 +91,13 @@ An object encapsulating optional arguments for guestfs_session_md_create.
 <p>
 A class metadata object for GuestfsMDCreate.
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsMDCreateClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsMDCreateClass.parent-class"></a>parent_class</code></em>;</span></p></td>
 <td>The superclass of GuestfsMDCreateClass</td>
 </tr></tbody>
 </table></div>
@@ -106,8 +109,11 @@ A class metadata object for GuestfsMDCreate.
 <p>
 Create a new GuestfsMDCreate object
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>a new GuestfsMDCreate object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
@@ -120,7 +126,7 @@ Create a new GuestfsMDCreate object
 <a name="GuestfsMDCreate.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
 <a name="GuestfsMDCreate--chunk"></a><h3>The <code class="literal">"chunk"</code> property</h3>
-<pre class="programlisting">  "chunk"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<pre class="programlisting">  "chunk"                    <span class="type">gint64</span>                : Read / Write / Construct</pre>
 <p>
 A 64-bit integer.
 </p>
@@ -129,7 +135,7 @@ A 64-bit integer.
 <hr>
 <div class="refsect2">
 <a name="GuestfsMDCreate--level"></a><h3>The <code class="literal">"level"</code> property</h3>
-<pre class="programlisting">  "level"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<pre class="programlisting">  "level"                    <span class="type">gchar</span>*                : Read / Write / Construct</pre>
 <p>
 A string.
 </p>
@@ -138,7 +144,7 @@ A string.
 <hr>
 <div class="refsect2">
 <a name="GuestfsMDCreate--missingbitmap"></a><h3>The <code class="literal">"missingbitmap"</code> property</h3>
-<pre class="programlisting">  "missingbitmap"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<pre class="programlisting">  "missingbitmap"            <span class="type">gint64</span>                : Read / Write / Construct</pre>
 <p>
 A 64-bit integer.
 </p>
@@ -147,7 +153,7 @@ A 64-bit integer.
 <hr>
 <div class="refsect2">
 <a name="GuestfsMDCreate--nrdevices"></a><h3>The <code class="literal">"nrdevices"</code> property</h3>
-<pre class="programlisting">  "nrdevices"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<pre class="programlisting">  "nrdevices"                <span class="type">gint</span>                  : Read / Write / Construct</pre>
 <p>
 A 32-bit integer.
 </p>
@@ -156,7 +162,7 @@ A 32-bit integer.
 <hr>
 <div class="refsect2">
 <a name="GuestfsMDCreate--spare"></a><h3>The <code class="literal">"spare"</code> property</h3>
-<pre class="programlisting">  "spare"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write / Construct</pre>
+<pre class="programlisting">  "spare"                    <span class="type">gint</span>                  : Read / Write / Construct</pre>
 <p>
 A 32-bit integer.
 </p>

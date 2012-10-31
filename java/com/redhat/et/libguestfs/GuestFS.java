@@ -413,6 +413,12 @@ public class GuestFS {
    * You should call this after configuring the handle (eg.
    * adding drives) but before performing any actions.
    * <p>
+   * Do not call "g.launch" twice on the same handle.
+   * Although it will not give an error (for historical
+   * reasons), the precise behaviour when you do this is not
+   * well defined. Handles are very cheap to create, so
+   * create a new one for each launch.
+   * <p>
    * @throws LibGuestFSException
    */
   public void launch ()
@@ -1909,10 +1915,12 @@ public class GuestFS {
   /**
    * add an image to examine or modify
    * <p>
-   * This function adds a virtual machine disk image
-   * "filename" to libguestfs. The first time you call this
-   * function, the disk appears as "/dev/sda", the second
-   * time as "/dev/sdb", and so on.
+   * This function adds a disk image called "filename" to the
+   * handle. "filename" may be a regular host file or a host
+   * device.
+   * <p>
+   * The first time you call this function, the disk appears
+   * as "/dev/sda", the second time as "/dev/sdb", and so on.
    * <p>
    * You don't necessarily need to be root when using
    * libguestfs. However you obviously do need sufficient
@@ -1953,7 +1961,7 @@ public class GuestFS {
    * <p>
    * "name"
    * The name the drive had in the original guest, e.g.
-   * /dev/sdb. This is used as a hint to the guest
+   * "/dev/sdb". This is used as a hint to the guest
    * inspection process if it is available.
    * <p>
    * Optional arguments are supplied in the final

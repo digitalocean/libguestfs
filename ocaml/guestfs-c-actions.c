@@ -41,7 +41,7 @@
  * the list in reverse order, but hashtables aren't supposed to be
  * ordered anyway.
  */
-static CAMLprim value
+static value
 copy_table (char * const * argv)
 {
   CAMLparam0 ();
@@ -64,7 +64,7 @@ copy_table (char * const * argv)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_int_bool (const struct guestfs_int_bool *int_bool)
 {
   CAMLparam0 ();
@@ -78,7 +78,7 @@ copy_int_bool (const struct guestfs_int_bool *int_bool)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_lvm_pv (const struct guestfs_lvm_pv *lvm_pv)
 {
   CAMLparam0 ();
@@ -117,7 +117,7 @@ copy_lvm_pv (const struct guestfs_lvm_pv *lvm_pv)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_lvm_vg (const struct guestfs_lvm_vg *lvm_vg)
 {
   CAMLparam0 ();
@@ -166,7 +166,7 @@ copy_lvm_vg (const struct guestfs_lvm_vg *lvm_vg)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_lvm_lv (const struct guestfs_lvm_lv *lvm_lv)
 {
   CAMLparam0 ();
@@ -219,7 +219,7 @@ copy_lvm_lv (const struct guestfs_lvm_lv *lvm_lv)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_stat (const struct guestfs_stat *stat)
 {
   CAMLparam0 ();
@@ -255,7 +255,7 @@ copy_stat (const struct guestfs_stat *stat)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_statvfs (const struct guestfs_statvfs *statvfs)
 {
   CAMLparam0 ();
@@ -287,7 +287,7 @@ copy_statvfs (const struct guestfs_statvfs *statvfs)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_dirent (const struct guestfs_dirent *dirent)
 {
   CAMLparam0 ();
@@ -303,7 +303,7 @@ copy_dirent (const struct guestfs_dirent *dirent)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_version (const struct guestfs_version *version)
 {
   CAMLparam0 ();
@@ -321,7 +321,7 @@ copy_version (const struct guestfs_version *version)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_xattr (const struct guestfs_xattr *xattr)
 {
   CAMLparam0 ();
@@ -336,7 +336,7 @@ copy_xattr (const struct guestfs_xattr *xattr)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_inotify_event (const struct guestfs_inotify_event *inotify_event)
 {
   CAMLparam0 ();
@@ -354,7 +354,7 @@ copy_inotify_event (const struct guestfs_inotify_event *inotify_event)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_partition (const struct guestfs_partition *partition)
 {
   CAMLparam0 ();
@@ -372,7 +372,7 @@ copy_partition (const struct guestfs_partition *partition)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_application (const struct guestfs_application *application)
 {
   CAMLparam0 ();
@@ -406,7 +406,7 @@ copy_application (const struct guestfs_application *application)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_isoinfo (const struct guestfs_isoinfo *isoinfo)
 {
   CAMLparam0 ();
@@ -450,7 +450,7 @@ copy_isoinfo (const struct guestfs_isoinfo *isoinfo)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_mdstat (const struct guestfs_mdstat *mdstat)
 {
   CAMLparam0 ();
@@ -466,7 +466,7 @@ copy_mdstat (const struct guestfs_mdstat *mdstat)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
 {
   CAMLparam0 ();
@@ -482,7 +482,7 @@ copy_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
   CAMLreturn (rv);
 }
 
-static CAMLprim value
+static value
 copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
 {
   CAMLparam0 ();
@@ -501,7 +501,7 @@ copy_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
   }
 }
 
-static CAMLprim value
+static value
 copy_dirent_list (const struct guestfs_dirent_list *dirents)
 {
   CAMLparam0 ();
@@ -520,7 +520,7 @@ copy_dirent_list (const struct guestfs_dirent_list *dirents)
   }
 }
 
-static CAMLprim value
+static value
 copy_partition_list (const struct guestfs_partition_list *partitions)
 {
   CAMLparam0 ();
@@ -539,7 +539,7 @@ copy_partition_list (const struct guestfs_partition_list *partitions)
   }
 }
 
-static CAMLprim value
+static value
 copy_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
 {
   CAMLparam0 ();
@@ -558,7 +558,7 @@ copy_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events
   }
 }
 
-static CAMLprim value
+static value
 copy_application_list (const struct guestfs_application_list *applications)
 {
   CAMLparam0 ();
@@ -577,7 +577,7 @@ copy_application_list (const struct guestfs_application_list *applications)
   }
 }
 
-static CAMLprim value
+static value
 copy_xattr_list (const struct guestfs_xattr_list *xattrs)
 {
   CAMLparam0 ();
@@ -596,7 +596,7 @@ copy_xattr_list (const struct guestfs_xattr_list *xattrs)
   }
 }
 
-static CAMLprim value
+static value
 copy_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
 {
   CAMLparam0 ();
@@ -615,7 +615,7 @@ copy_lvm_pv_list (const struct guestfs_lvm_pv_list *lvm_pvs)
   }
 }
 
-static CAMLprim value
+static value
 copy_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
 {
   CAMLparam0 ();
@@ -634,7 +634,7 @@ copy_lvm_vg_list (const struct guestfs_lvm_vg_list *lvm_vgs)
   }
 }
 
-static CAMLprim value
+static value
 copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolumes)
 {
   CAMLparam0 ();
@@ -653,7 +653,7 @@ copy_btrfssubvolume_list (const struct guestfs_btrfssubvolume_list *btrfssubvolu
   }
 }
 
-static CAMLprim value
+static value
 copy_mdstat_list (const struct guestfs_mdstat_list *mdstats)
 {
   CAMLparam0 ();
@@ -672,7 +672,7 @@ copy_mdstat_list (const struct guestfs_mdstat_list *mdstats)
   }
 }
 
-static CAMLprim value
+static value
 copy_stat_list (const struct guestfs_stat_list *stats)
 {
   CAMLparam0 ();
@@ -696,9 +696,9 @@ copy_stat_list (const struct guestfs_stat_list *stats)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_cdrom (value gv, value filenamev);
+value ocaml_guestfs_add_cdrom (value gv, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_add_cdrom (value gv, value filenamev)
 {
   CAMLparam2 (gv, filenamev);
@@ -727,9 +727,9 @@ ocaml_guestfs_add_cdrom (value gv, value filenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value domv);
+value ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value domv);
 
-CAMLprim value
+value
 ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value ifacev, value livev, value allowuuidv, value readonlydiskv, value domv)
 {
   CAMLparam5 (gv, libvirturiv, readonlyv, ifacev, livev);
@@ -787,8 +787,9 @@ ocaml_guestfs_add_domain (value gv, value libvirturiv, value readonlyv, value if
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_domain_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_add_domain_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_add_domain_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_add_domain (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
@@ -799,9 +800,9 @@ ocaml_guestfs_add_domain_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_drive (value gv, value filenamev);
+value ocaml_guestfs_add_drive (value gv, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_add_drive (value gv, value filenamev)
 {
   CAMLparam2 (gv, filenamev);
@@ -830,9 +831,9 @@ ocaml_guestfs_add_drive (value gv, value filenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_drive_opts (value gv, value readonlyv, value formatv, value ifacev, value namev, value filenamev);
+value ocaml_guestfs_add_drive_opts (value gv, value readonlyv, value formatv, value ifacev, value namev, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_add_drive_opts (value gv, value readonlyv, value formatv, value ifacev, value namev, value filenamev)
 {
   CAMLparam5 (gv, readonlyv, formatv, ifacev, namev);
@@ -882,8 +883,9 @@ ocaml_guestfs_add_drive_opts (value gv, value readonlyv, value formatv, value if
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_drive_opts_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_add_drive_opts_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_add_drive_opts_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_add_drive_opts (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -894,9 +896,9 @@ ocaml_guestfs_add_drive_opts_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_drive_ro (value gv, value filenamev);
+value ocaml_guestfs_add_drive_ro (value gv, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_add_drive_ro (value gv, value filenamev)
 {
   CAMLparam2 (gv, filenamev);
@@ -925,9 +927,9 @@ ocaml_guestfs_add_drive_ro (value gv, value filenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_drive_ro_with_if (value gv, value filenamev, value ifacev);
+value ocaml_guestfs_add_drive_ro_with_if (value gv, value filenamev, value ifacev);
 
-CAMLprim value
+value
 ocaml_guestfs_add_drive_ro_with_if (value gv, value filenamev, value ifacev)
 {
   CAMLparam3 (gv, filenamev, ifacev);
@@ -958,9 +960,9 @@ ocaml_guestfs_add_drive_ro_with_if (value gv, value filenamev, value ifacev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_add_drive_with_if (value gv, value filenamev, value ifacev);
+value ocaml_guestfs_add_drive_with_if (value gv, value filenamev, value ifacev);
 
-CAMLprim value
+value
 ocaml_guestfs_add_drive_with_if (value gv, value filenamev, value ifacev)
 {
   CAMLparam3 (gv, filenamev, ifacev);
@@ -991,9 +993,9 @@ ocaml_guestfs_add_drive_with_if (value gv, value filenamev, value ifacev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_clear (value gv, value augpathv);
+value ocaml_guestfs_aug_clear (value gv, value augpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_clear (value gv, value augpathv)
 {
   CAMLparam2 (gv, augpathv);
@@ -1022,9 +1024,9 @@ ocaml_guestfs_aug_clear (value gv, value augpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_close (value gv);
+value ocaml_guestfs_aug_close (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_close (value gv)
 {
   CAMLparam1 (gv);
@@ -1051,9 +1053,9 @@ ocaml_guestfs_aug_close (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv);
+value ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv)
 {
   CAMLparam4 (gv, namev, exprv, valv);
@@ -1087,9 +1089,9 @@ ocaml_guestfs_aug_defnode (value gv, value namev, value exprv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_defvar (value gv, value namev, value exprv);
+value ocaml_guestfs_aug_defvar (value gv, value namev, value exprv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_defvar (value gv, value namev, value exprv)
 {
   CAMLparam3 (gv, namev, exprv);
@@ -1122,9 +1124,9 @@ ocaml_guestfs_aug_defvar (value gv, value namev, value exprv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_get (value gv, value augpathv);
+value ocaml_guestfs_aug_get (value gv, value augpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_get (value gv, value augpathv)
 {
   CAMLparam2 (gv, augpathv);
@@ -1154,9 +1156,9 @@ ocaml_guestfs_aug_get (value gv, value augpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_init (value gv, value rootv, value flagsv);
+value ocaml_guestfs_aug_init (value gv, value rootv, value flagsv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_init (value gv, value rootv, value flagsv)
 {
   CAMLparam3 (gv, rootv, flagsv);
@@ -1186,9 +1188,9 @@ ocaml_guestfs_aug_init (value gv, value rootv, value flagsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_insert (value gv, value augpathv, value labelv, value beforev);
+value ocaml_guestfs_aug_insert (value gv, value augpathv, value labelv, value beforev);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_insert (value gv, value augpathv, value labelv, value beforev)
 {
   CAMLparam4 (gv, augpathv, labelv, beforev);
@@ -1220,9 +1222,9 @@ ocaml_guestfs_aug_insert (value gv, value augpathv, value labelv, value beforev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_load (value gv);
+value ocaml_guestfs_aug_load (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_load (value gv)
 {
   CAMLparam1 (gv);
@@ -1249,9 +1251,9 @@ ocaml_guestfs_aug_load (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_ls (value gv, value augpathv);
+value ocaml_guestfs_aug_ls (value gv, value augpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_ls (value gv, value augpathv)
 {
   CAMLparam2 (gv, augpathv);
@@ -1283,9 +1285,9 @@ ocaml_guestfs_aug_ls (value gv, value augpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_match (value gv, value augpathv);
+value ocaml_guestfs_aug_match (value gv, value augpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_match (value gv, value augpathv)
 {
   CAMLparam2 (gv, augpathv);
@@ -1317,9 +1319,9 @@ ocaml_guestfs_aug_match (value gv, value augpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_mv (value gv, value srcv, value destv);
+value ocaml_guestfs_aug_mv (value gv, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_mv (value gv, value srcv, value destv)
 {
   CAMLparam3 (gv, srcv, destv);
@@ -1350,9 +1352,9 @@ ocaml_guestfs_aug_mv (value gv, value srcv, value destv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_rm (value gv, value augpathv);
+value ocaml_guestfs_aug_rm (value gv, value augpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_rm (value gv, value augpathv)
 {
   CAMLparam2 (gv, augpathv);
@@ -1381,9 +1383,9 @@ ocaml_guestfs_aug_rm (value gv, value augpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_save (value gv);
+value ocaml_guestfs_aug_save (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_save (value gv)
 {
   CAMLparam1 (gv);
@@ -1410,9 +1412,9 @@ ocaml_guestfs_aug_save (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_aug_set (value gv, value augpathv, value valv);
+value ocaml_guestfs_aug_set (value gv, value augpathv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_aug_set (value gv, value augpathv, value valv)
 {
   CAMLparam3 (gv, augpathv, valv);
@@ -1443,9 +1445,9 @@ ocaml_guestfs_aug_set (value gv, value augpathv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_available (value gv, value groupsv);
+value ocaml_guestfs_available (value gv, value groupsv);
 
-CAMLprim value
+value
 ocaml_guestfs_available (value gv, value groupsv)
 {
   CAMLparam2 (gv, groupsv);
@@ -1474,9 +1476,9 @@ ocaml_guestfs_available (value gv, value groupsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_available_all_groups (value gv);
+value ocaml_guestfs_available_all_groups (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_available_all_groups (value gv)
 {
   CAMLparam1 (gv);
@@ -1506,9 +1508,9 @@ ocaml_guestfs_available_all_groups (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_base64_in (value gv, value base64filev, value filenamev);
+value ocaml_guestfs_base64_in (value gv, value base64filev, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_base64_in (value gv, value base64filev, value filenamev)
 {
   CAMLparam3 (gv, base64filev, filenamev);
@@ -1539,9 +1541,9 @@ ocaml_guestfs_base64_in (value gv, value base64filev, value filenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_base64_out (value gv, value filenamev, value base64filev);
+value ocaml_guestfs_base64_out (value gv, value filenamev, value base64filev);
 
-CAMLprim value
+value
 ocaml_guestfs_base64_out (value gv, value filenamev, value base64filev)
 {
   CAMLparam3 (gv, filenamev, base64filev);
@@ -1572,9 +1574,9 @@ ocaml_guestfs_base64_out (value gv, value filenamev, value base64filev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blkid (value gv, value devicev);
+value ocaml_guestfs_blkid (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blkid (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1606,9 +1608,9 @@ ocaml_guestfs_blkid (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_flushbufs (value gv, value devicev);
+value ocaml_guestfs_blockdev_flushbufs (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_flushbufs (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1637,9 +1639,9 @@ ocaml_guestfs_blockdev_flushbufs (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_getbsz (value gv, value devicev);
+value ocaml_guestfs_blockdev_getbsz (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_getbsz (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1668,9 +1670,9 @@ ocaml_guestfs_blockdev_getbsz (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_getro (value gv, value devicev);
+value ocaml_guestfs_blockdev_getro (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_getro (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1699,9 +1701,9 @@ ocaml_guestfs_blockdev_getro (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_getsize64 (value gv, value devicev);
+value ocaml_guestfs_blockdev_getsize64 (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_getsize64 (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1730,9 +1732,9 @@ ocaml_guestfs_blockdev_getsize64 (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_getss (value gv, value devicev);
+value ocaml_guestfs_blockdev_getss (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_getss (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1761,9 +1763,9 @@ ocaml_guestfs_blockdev_getss (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_getsz (value gv, value devicev);
+value ocaml_guestfs_blockdev_getsz (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_getsz (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1792,9 +1794,9 @@ ocaml_guestfs_blockdev_getsz (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_rereadpt (value gv, value devicev);
+value ocaml_guestfs_blockdev_rereadpt (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_rereadpt (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1823,9 +1825,9 @@ ocaml_guestfs_blockdev_rereadpt (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev);
+value ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev)
 {
   CAMLparam3 (gv, devicev, blocksizev);
@@ -1855,9 +1857,9 @@ ocaml_guestfs_blockdev_setbsz (value gv, value devicev, value blocksizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_setro (value gv, value devicev);
+value ocaml_guestfs_blockdev_setro (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_setro (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1886,9 +1888,9 @@ ocaml_guestfs_blockdev_setro (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_blockdev_setrw (value gv, value devicev);
+value ocaml_guestfs_blockdev_setrw (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_blockdev_setrw (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -1917,9 +1919,9 @@ ocaml_guestfs_blockdev_setrw (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_device_add (value gv, value devicesv, value fsv);
+value ocaml_guestfs_btrfs_device_add (value gv, value devicesv, value fsv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_device_add (value gv, value devicesv, value fsv)
 {
   CAMLparam3 (gv, devicesv, fsv);
@@ -1950,9 +1952,9 @@ ocaml_guestfs_btrfs_device_add (value gv, value devicesv, value fsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_device_delete (value gv, value devicesv, value fsv);
+value ocaml_guestfs_btrfs_device_delete (value gv, value devicesv, value fsv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_device_delete (value gv, value devicesv, value fsv)
 {
   CAMLparam3 (gv, devicesv, fsv);
@@ -1983,9 +1985,9 @@ ocaml_guestfs_btrfs_device_delete (value gv, value devicesv, value fsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_filesystem_balance (value gv, value fsv);
+value ocaml_guestfs_btrfs_filesystem_balance (value gv, value fsv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_filesystem_balance (value gv, value fsv)
 {
   CAMLparam2 (gv, fsv);
@@ -2014,9 +2016,9 @@ ocaml_guestfs_btrfs_filesystem_balance (value gv, value fsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_filesystem_resize (value gv, value sizev, value mountpointv);
+value ocaml_guestfs_btrfs_filesystem_resize (value gv, value sizev, value mountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_filesystem_resize (value gv, value sizev, value mountpointv)
 {
   CAMLparam3 (gv, sizev, mountpointv);
@@ -2051,9 +2053,9 @@ ocaml_guestfs_btrfs_filesystem_resize (value gv, value sizev, value mountpointv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_filesystem_sync (value gv, value fsv);
+value ocaml_guestfs_btrfs_filesystem_sync (value gv, value fsv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_filesystem_sync (value gv, value fsv)
 {
   CAMLparam2 (gv, fsv);
@@ -2082,9 +2084,9 @@ ocaml_guestfs_btrfs_filesystem_sync (value gv, value fsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_fsck (value gv, value superblockv, value repairv, value devicev);
+value ocaml_guestfs_btrfs_fsck (value gv, value superblockv, value repairv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_fsck (value gv, value superblockv, value repairv, value devicev)
 {
   CAMLparam4 (gv, superblockv, repairv, devicev);
@@ -2123,9 +2125,9 @@ ocaml_guestfs_btrfs_fsck (value gv, value superblockv, value repairv, value devi
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_set_seeding (value gv, value devicev, value seedingv);
+value ocaml_guestfs_btrfs_set_seeding (value gv, value devicev, value seedingv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_set_seeding (value gv, value devicev, value seedingv)
 {
   CAMLparam3 (gv, devicev, seedingv);
@@ -2155,9 +2157,9 @@ ocaml_guestfs_btrfs_set_seeding (value gv, value devicev, value seedingv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_subvolume_create (value gv, value destv);
+value ocaml_guestfs_btrfs_subvolume_create (value gv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_subvolume_create (value gv, value destv)
 {
   CAMLparam2 (gv, destv);
@@ -2186,9 +2188,9 @@ ocaml_guestfs_btrfs_subvolume_create (value gv, value destv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_subvolume_delete (value gv, value subvolumev);
+value ocaml_guestfs_btrfs_subvolume_delete (value gv, value subvolumev);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_subvolume_delete (value gv, value subvolumev)
 {
   CAMLparam2 (gv, subvolumev);
@@ -2217,9 +2219,9 @@ ocaml_guestfs_btrfs_subvolume_delete (value gv, value subvolumev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_subvolume_list (value gv, value fsv);
+value ocaml_guestfs_btrfs_subvolume_list (value gv, value fsv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_subvolume_list (value gv, value fsv)
 {
   CAMLparam2 (gv, fsv);
@@ -2249,9 +2251,9 @@ ocaml_guestfs_btrfs_subvolume_list (value gv, value fsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_subvolume_set_default (value gv, value idv, value fsv);
+value ocaml_guestfs_btrfs_subvolume_set_default (value gv, value idv, value fsv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_subvolume_set_default (value gv, value idv, value fsv)
 {
   CAMLparam3 (gv, idv, fsv);
@@ -2281,9 +2283,9 @@ ocaml_guestfs_btrfs_subvolume_set_default (value gv, value idv, value fsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value sourcev, value destv);
+value ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value sourcev, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value sourcev, value destv)
 {
   CAMLparam3 (gv, sourcev, destv);
@@ -2314,9 +2316,9 @@ ocaml_guestfs_btrfs_subvolume_snapshot (value gv, value sourcev, value destv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_case_sensitive_path (value gv, value pathv);
+value ocaml_guestfs_case_sensitive_path (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_case_sensitive_path (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -2346,9 +2348,9 @@ ocaml_guestfs_case_sensitive_path (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_cat (value gv, value pathv);
+value ocaml_guestfs_cat (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_cat (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -2378,9 +2380,9 @@ ocaml_guestfs_cat (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_checksum (value gv, value csumtypev, value pathv);
+value ocaml_guestfs_checksum (value gv, value csumtypev, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_checksum (value gv, value csumtypev, value pathv)
 {
   CAMLparam3 (gv, csumtypev, pathv);
@@ -2412,9 +2414,9 @@ ocaml_guestfs_checksum (value gv, value csumtypev, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_checksum_device (value gv, value csumtypev, value devicev);
+value ocaml_guestfs_checksum_device (value gv, value csumtypev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_checksum_device (value gv, value csumtypev, value devicev)
 {
   CAMLparam3 (gv, csumtypev, devicev);
@@ -2446,9 +2448,9 @@ ocaml_guestfs_checksum_device (value gv, value csumtypev, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_checksums_out (value gv, value csumtypev, value directoryv, value sumsfilev);
+value ocaml_guestfs_checksums_out (value gv, value csumtypev, value directoryv, value sumsfilev);
 
-CAMLprim value
+value
 ocaml_guestfs_checksums_out (value gv, value csumtypev, value directoryv, value sumsfilev)
 {
   CAMLparam4 (gv, csumtypev, directoryv, sumsfilev);
@@ -2481,9 +2483,9 @@ ocaml_guestfs_checksums_out (value gv, value csumtypev, value directoryv, value 
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_chmod (value gv, value modev, value pathv);
+value ocaml_guestfs_chmod (value gv, value modev, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_chmod (value gv, value modev, value pathv)
 {
   CAMLparam3 (gv, modev, pathv);
@@ -2513,9 +2515,9 @@ ocaml_guestfs_chmod (value gv, value modev, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv);
+value ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv)
 {
   CAMLparam4 (gv, ownerv, groupv, pathv);
@@ -2546,9 +2548,9 @@ ocaml_guestfs_chown (value gv, value ownerv, value groupv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_command (value gv, value argumentsv);
+value ocaml_guestfs_command (value gv, value argumentsv);
 
-CAMLprim value
+value
 ocaml_guestfs_command (value gv, value argumentsv)
 {
   CAMLparam2 (gv, argumentsv);
@@ -2578,9 +2580,9 @@ ocaml_guestfs_command (value gv, value argumentsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_command_lines (value gv, value argumentsv);
+value ocaml_guestfs_command_lines (value gv, value argumentsv);
 
-CAMLprim value
+value
 ocaml_guestfs_command_lines (value gv, value argumentsv)
 {
   CAMLparam2 (gv, argumentsv);
@@ -2612,9 +2614,9 @@ ocaml_guestfs_command_lines (value gv, value argumentsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_compress_device_out (value gv, value levelv, value ctypev, value devicev, value zdevicev);
+value ocaml_guestfs_compress_device_out (value gv, value levelv, value ctypev, value devicev, value zdevicev);
 
-CAMLprim value
+value
 ocaml_guestfs_compress_device_out (value gv, value levelv, value ctypev, value devicev, value zdevicev)
 {
   CAMLparam5 (gv, levelv, ctypev, devicev, zdevicev);
@@ -2653,9 +2655,9 @@ ocaml_guestfs_compress_device_out (value gv, value levelv, value ctypev, value d
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_compress_out (value gv, value levelv, value ctypev, value filev, value zfilev);
+value ocaml_guestfs_compress_out (value gv, value levelv, value ctypev, value filev, value zfilev);
 
-CAMLprim value
+value
 ocaml_guestfs_compress_out (value gv, value levelv, value ctypev, value filev, value zfilev)
 {
   CAMLparam5 (gv, levelv, ctypev, filev, zfilev);
@@ -2694,9 +2696,9 @@ ocaml_guestfs_compress_out (value gv, value levelv, value ctypev, value filev, v
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev);
+value ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev);
 
-CAMLprim value
+value
 ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev)
 {
   CAMLparam3 (gv, qemuparamv, qemuvaluev);
@@ -2729,9 +2731,9 @@ ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
 {
   CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
@@ -2773,8 +2775,9 @@ ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffse
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_copy_device_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -2785,9 +2788,9 @@ ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
 {
   CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
@@ -2829,8 +2832,9 @@ ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_copy_device_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -2841,9 +2845,9 @@ ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
 {
   CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
@@ -2885,8 +2889,9 @@ ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_copy_file_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -2897,9 +2902,9 @@ ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
 {
   CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
@@ -2941,8 +2946,9 @@ ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, 
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_copy_file_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -2953,9 +2959,9 @@ ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_copy_size (value gv, value srcv, value destv, value sizev);
+value ocaml_guestfs_copy_size (value gv, value srcv, value destv, value sizev);
 
-CAMLprim value
+value
 ocaml_guestfs_copy_size (value gv, value srcv, value destv, value sizev)
 {
   CAMLparam4 (gv, srcv, destv, sizev);
@@ -2987,9 +2993,9 @@ ocaml_guestfs_copy_size (value gv, value srcv, value destv, value sizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_cp (value gv, value srcv, value destv);
+value ocaml_guestfs_cp (value gv, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_cp (value gv, value srcv, value destv)
 {
   CAMLparam3 (gv, srcv, destv);
@@ -3020,9 +3026,9 @@ ocaml_guestfs_cp (value gv, value srcv, value destv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_cp_a (value gv, value srcv, value destv);
+value ocaml_guestfs_cp_a (value gv, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_cp_a (value gv, value srcv, value destv)
 {
   CAMLparam3 (gv, srcv, destv);
@@ -3053,9 +3059,9 @@ ocaml_guestfs_cp_a (value gv, value srcv, value destv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_dd (value gv, value srcv, value destv);
+value ocaml_guestfs_dd (value gv, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_dd (value gv, value srcv, value destv)
 {
   CAMLparam3 (gv, srcv, destv);
@@ -3086,9 +3092,9 @@ ocaml_guestfs_dd (value gv, value srcv, value destv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv);
+value ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv);
 
-CAMLprim value
+value
 ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv)
 {
   CAMLparam3 (gv, subcmdv, extraargsv);
@@ -3120,9 +3126,9 @@ ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_debug_cmdline (value gv);
+value ocaml_guestfs_debug_cmdline (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_debug_cmdline (value gv)
 {
   CAMLparam1 (gv);
@@ -3152,9 +3158,9 @@ ocaml_guestfs_debug_cmdline (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_debug_drives (value gv);
+value ocaml_guestfs_debug_drives (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_debug_drives (value gv)
 {
   CAMLparam1 (gv);
@@ -3184,9 +3190,9 @@ ocaml_guestfs_debug_drives (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_debug_upload (value gv, value filenamev, value tmpnamev, value modev);
+value ocaml_guestfs_debug_upload (value gv, value filenamev, value tmpnamev, value modev);
 
-CAMLprim value
+value
 ocaml_guestfs_debug_upload (value gv, value filenamev, value tmpnamev, value modev)
 {
   CAMLparam4 (gv, filenamev, tmpnamev, modev);
@@ -3218,9 +3224,9 @@ ocaml_guestfs_debug_upload (value gv, value filenamev, value tmpnamev, value mod
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_device_index (value gv, value devicev);
+value ocaml_guestfs_device_index (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_device_index (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -3249,9 +3255,9 @@ ocaml_guestfs_device_index (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_df (value gv);
+value ocaml_guestfs_df (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_df (value gv)
 {
   CAMLparam1 (gv);
@@ -3279,9 +3285,9 @@ ocaml_guestfs_df (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_df_h (value gv);
+value ocaml_guestfs_df_h (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_df_h (value gv)
 {
   CAMLparam1 (gv);
@@ -3309,9 +3315,9 @@ ocaml_guestfs_df_h (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_dmesg (value gv);
+value ocaml_guestfs_dmesg (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_dmesg (value gv)
 {
   CAMLparam1 (gv);
@@ -3339,9 +3345,9 @@ ocaml_guestfs_dmesg (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_download (value gv, value remotefilenamev, value filenamev);
+value ocaml_guestfs_download (value gv, value remotefilenamev, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_download (value gv, value remotefilenamev, value filenamev)
 {
   CAMLparam3 (gv, remotefilenamev, filenamev);
@@ -3372,9 +3378,9 @@ ocaml_guestfs_download (value gv, value remotefilenamev, value filenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_download_offset (value gv, value remotefilenamev, value filenamev, value offsetv, value sizev);
+value ocaml_guestfs_download_offset (value gv, value remotefilenamev, value filenamev, value offsetv, value sizev);
 
-CAMLprim value
+value
 ocaml_guestfs_download_offset (value gv, value remotefilenamev, value filenamev, value offsetv, value sizev)
 {
   CAMLparam5 (gv, remotefilenamev, filenamev, offsetv, sizev);
@@ -3407,9 +3413,9 @@ ocaml_guestfs_download_offset (value gv, value remotefilenamev, value filenamev,
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_drop_caches (value gv, value whattodropv);
+value ocaml_guestfs_drop_caches (value gv, value whattodropv);
 
-CAMLprim value
+value
 ocaml_guestfs_drop_caches (value gv, value whattodropv)
 {
   CAMLparam2 (gv, whattodropv);
@@ -3437,9 +3443,9 @@ ocaml_guestfs_drop_caches (value gv, value whattodropv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_du (value gv, value pathv);
+value ocaml_guestfs_du (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_du (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -3468,9 +3474,9 @@ ocaml_guestfs_du (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_e2fsck (value gv, value correctv, value forceallv, value devicev);
+value ocaml_guestfs_e2fsck (value gv, value correctv, value forceallv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_e2fsck (value gv, value correctv, value forceallv, value devicev)
 {
   CAMLparam4 (gv, correctv, forceallv, devicev);
@@ -3509,9 +3515,9 @@ ocaml_guestfs_e2fsck (value gv, value correctv, value forceallv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_e2fsck_f (value gv, value devicev);
+value ocaml_guestfs_e2fsck_f (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_e2fsck_f (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -3540,9 +3546,9 @@ ocaml_guestfs_e2fsck_f (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_echo_daemon (value gv, value wordsv);
+value ocaml_guestfs_echo_daemon (value gv, value wordsv);
 
-CAMLprim value
+value
 ocaml_guestfs_echo_daemon (value gv, value wordsv)
 {
   CAMLparam2 (gv, wordsv);
@@ -3572,9 +3578,9 @@ ocaml_guestfs_echo_daemon (value gv, value wordsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_egrep (value gv, value regexv, value pathv);
+value ocaml_guestfs_egrep (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_egrep (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);
@@ -3608,9 +3614,9 @@ ocaml_guestfs_egrep (value gv, value regexv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_egrepi (value gv, value regexv, value pathv);
+value ocaml_guestfs_egrepi (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_egrepi (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);
@@ -3644,9 +3650,9 @@ ocaml_guestfs_egrepi (value gv, value regexv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_equal (value gv, value file1v, value file2v);
+value ocaml_guestfs_equal (value gv, value file1v, value file2v);
 
-CAMLprim value
+value
 ocaml_guestfs_equal (value gv, value file1v, value file2v)
 {
   CAMLparam3 (gv, file1v, file2v);
@@ -3677,9 +3683,9 @@ ocaml_guestfs_equal (value gv, value file1v, value file2v)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_exists (value gv, value pathv);
+value ocaml_guestfs_exists (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_exists (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -3708,9 +3714,9 @@ ocaml_guestfs_exists (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_fallocate (value gv, value pathv, value lenv);
+value ocaml_guestfs_fallocate (value gv, value pathv, value lenv);
 
-CAMLprim value
+value
 ocaml_guestfs_fallocate (value gv, value pathv, value lenv)
 {
   CAMLparam3 (gv, pathv, lenv);
@@ -3740,9 +3746,9 @@ ocaml_guestfs_fallocate (value gv, value pathv, value lenv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_fallocate64 (value gv, value pathv, value lenv);
+value ocaml_guestfs_fallocate64 (value gv, value pathv, value lenv);
 
-CAMLprim value
+value
 ocaml_guestfs_fallocate64 (value gv, value pathv, value lenv)
 {
   CAMLparam3 (gv, pathv, lenv);
@@ -3772,9 +3778,9 @@ ocaml_guestfs_fallocate64 (value gv, value pathv, value lenv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_fgrep (value gv, value patternv, value pathv);
+value ocaml_guestfs_fgrep (value gv, value patternv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_fgrep (value gv, value patternv, value pathv)
 {
   CAMLparam3 (gv, patternv, pathv);
@@ -3808,9 +3814,9 @@ ocaml_guestfs_fgrep (value gv, value patternv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_fgrepi (value gv, value patternv, value pathv);
+value ocaml_guestfs_fgrepi (value gv, value patternv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_fgrepi (value gv, value patternv, value pathv)
 {
   CAMLparam3 (gv, patternv, pathv);
@@ -3844,9 +3850,9 @@ ocaml_guestfs_fgrepi (value gv, value patternv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_file (value gv, value pathv);
+value ocaml_guestfs_file (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_file (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -3876,9 +3882,9 @@ ocaml_guestfs_file (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_file_architecture (value gv, value filenamev);
+value ocaml_guestfs_file_architecture (value gv, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_file_architecture (value gv, value filenamev)
 {
   CAMLparam2 (gv, filenamev);
@@ -3908,9 +3914,9 @@ ocaml_guestfs_file_architecture (value gv, value filenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_filesize (value gv, value filev);
+value ocaml_guestfs_filesize (value gv, value filev);
 
-CAMLprim value
+value
 ocaml_guestfs_filesize (value gv, value filev)
 {
   CAMLparam2 (gv, filev);
@@ -3939,9 +3945,9 @@ ocaml_guestfs_filesize (value gv, value filev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_fill (value gv, value cv, value lenv, value pathv);
+value ocaml_guestfs_fill (value gv, value cv, value lenv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_fill (value gv, value cv, value lenv, value pathv)
 {
   CAMLparam4 (gv, cv, lenv, pathv);
@@ -3972,9 +3978,9 @@ ocaml_guestfs_fill (value gv, value cv, value lenv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_fill_pattern (value gv, value patternv, value lenv, value pathv);
+value ocaml_guestfs_fill_pattern (value gv, value patternv, value lenv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_fill_pattern (value gv, value patternv, value lenv, value pathv)
 {
   CAMLparam4 (gv, patternv, lenv, pathv);
@@ -4006,9 +4012,9 @@ ocaml_guestfs_fill_pattern (value gv, value patternv, value lenv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_find (value gv, value directoryv);
+value ocaml_guestfs_find (value gv, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_find (value gv, value directoryv)
 {
   CAMLparam2 (gv, directoryv);
@@ -4040,9 +4046,9 @@ ocaml_guestfs_find (value gv, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_find0 (value gv, value directoryv, value filesv);
+value ocaml_guestfs_find0 (value gv, value directoryv, value filesv);
 
-CAMLprim value
+value
 ocaml_guestfs_find0 (value gv, value directoryv, value filesv)
 {
   CAMLparam3 (gv, directoryv, filesv);
@@ -4073,9 +4079,9 @@ ocaml_guestfs_find0 (value gv, value directoryv, value filesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_findfs_label (value gv, value labelv);
+value ocaml_guestfs_findfs_label (value gv, value labelv);
 
-CAMLprim value
+value
 ocaml_guestfs_findfs_label (value gv, value labelv)
 {
   CAMLparam2 (gv, labelv);
@@ -4105,9 +4111,9 @@ ocaml_guestfs_findfs_label (value gv, value labelv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_findfs_uuid (value gv, value uuidv);
+value ocaml_guestfs_findfs_uuid (value gv, value uuidv);
 
-CAMLprim value
+value
 ocaml_guestfs_findfs_uuid (value gv, value uuidv)
 {
   CAMLparam2 (gv, uuidv);
@@ -4137,9 +4143,9 @@ ocaml_guestfs_findfs_uuid (value gv, value uuidv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_fsck (value gv, value fstypev, value devicev);
+value ocaml_guestfs_fsck (value gv, value fstypev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_fsck (value gv, value fstypev, value devicev)
 {
   CAMLparam3 (gv, fstypev, devicev);
@@ -4170,9 +4176,9 @@ ocaml_guestfs_fsck (value gv, value fstypev, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_append (value gv);
+value ocaml_guestfs_get_append (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_append (value gv)
 {
   CAMLparam1 (gv);
@@ -4202,9 +4208,9 @@ ocaml_guestfs_get_append (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_attach_method (value gv);
+value ocaml_guestfs_get_attach_method (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_attach_method (value gv)
 {
   CAMLparam1 (gv);
@@ -4232,9 +4238,9 @@ ocaml_guestfs_get_attach_method (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_autosync (value gv);
+value ocaml_guestfs_get_autosync (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_autosync (value gv)
 {
   CAMLparam1 (gv);
@@ -4261,9 +4267,9 @@ ocaml_guestfs_get_autosync (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_direct (value gv);
+value ocaml_guestfs_get_direct (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_direct (value gv)
 {
   CAMLparam1 (gv);
@@ -4290,9 +4296,9 @@ ocaml_guestfs_get_direct (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_e2attrs (value gv, value filev);
+value ocaml_guestfs_get_e2attrs (value gv, value filev);
 
-CAMLprim value
+value
 ocaml_guestfs_get_e2attrs (value gv, value filev)
 {
   CAMLparam2 (gv, filev);
@@ -4322,9 +4328,9 @@ ocaml_guestfs_get_e2attrs (value gv, value filev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_e2generation (value gv, value filev);
+value ocaml_guestfs_get_e2generation (value gv, value filev);
 
-CAMLprim value
+value
 ocaml_guestfs_get_e2generation (value gv, value filev)
 {
   CAMLparam2 (gv, filev);
@@ -4353,9 +4359,9 @@ ocaml_guestfs_get_e2generation (value gv, value filev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_e2label (value gv, value devicev);
+value ocaml_guestfs_get_e2label (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_get_e2label (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -4385,9 +4391,9 @@ ocaml_guestfs_get_e2label (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_e2uuid (value gv, value devicev);
+value ocaml_guestfs_get_e2uuid (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_get_e2uuid (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -4417,9 +4423,9 @@ ocaml_guestfs_get_e2uuid (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_memsize (value gv);
+value ocaml_guestfs_get_memsize (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_memsize (value gv)
 {
   CAMLparam1 (gv);
@@ -4446,9 +4452,9 @@ ocaml_guestfs_get_memsize (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_network (value gv);
+value ocaml_guestfs_get_network (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_network (value gv)
 {
   CAMLparam1 (gv);
@@ -4475,9 +4481,9 @@ ocaml_guestfs_get_network (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_path (value gv);
+value ocaml_guestfs_get_path (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_path (value gv)
 {
   CAMLparam1 (gv);
@@ -4504,9 +4510,9 @@ ocaml_guestfs_get_path (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_pgroup (value gv);
+value ocaml_guestfs_get_pgroup (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_pgroup (value gv)
 {
   CAMLparam1 (gv);
@@ -4533,9 +4539,9 @@ ocaml_guestfs_get_pgroup (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_pid (value gv);
+value ocaml_guestfs_get_pid (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_pid (value gv)
 {
   CAMLparam1 (gv);
@@ -4562,9 +4568,9 @@ ocaml_guestfs_get_pid (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_qemu (value gv);
+value ocaml_guestfs_get_qemu (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_qemu (value gv)
 {
   CAMLparam1 (gv);
@@ -4591,9 +4597,9 @@ ocaml_guestfs_get_qemu (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_recovery_proc (value gv);
+value ocaml_guestfs_get_recovery_proc (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_recovery_proc (value gv)
 {
   CAMLparam1 (gv);
@@ -4620,9 +4626,9 @@ ocaml_guestfs_get_recovery_proc (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_selinux (value gv);
+value ocaml_guestfs_get_selinux (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_selinux (value gv)
 {
   CAMLparam1 (gv);
@@ -4649,9 +4655,9 @@ ocaml_guestfs_get_selinux (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_smp (value gv);
+value ocaml_guestfs_get_smp (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_smp (value gv)
 {
   CAMLparam1 (gv);
@@ -4678,9 +4684,9 @@ ocaml_guestfs_get_smp (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_state (value gv);
+value ocaml_guestfs_get_state (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_state (value gv)
 {
   CAMLparam1 (gv);
@@ -4707,9 +4713,9 @@ ocaml_guestfs_get_state (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_trace (value gv);
+value ocaml_guestfs_get_trace (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_trace (value gv)
 {
   CAMLparam1 (gv);
@@ -4736,9 +4742,9 @@ ocaml_guestfs_get_trace (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_umask (value gv);
+value ocaml_guestfs_get_umask (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_umask (value gv)
 {
   CAMLparam1 (gv);
@@ -4765,9 +4771,9 @@ ocaml_guestfs_get_umask (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_get_verbose (value gv);
+value ocaml_guestfs_get_verbose (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_get_verbose (value gv)
 {
   CAMLparam1 (gv);
@@ -4794,9 +4800,9 @@ ocaml_guestfs_get_verbose (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_getcon (value gv);
+value ocaml_guestfs_getcon (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_getcon (value gv)
 {
   CAMLparam1 (gv);
@@ -4824,9 +4830,9 @@ ocaml_guestfs_getcon (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_getxattr (value gv, value pathv, value namev);
+value ocaml_guestfs_getxattr (value gv, value pathv, value namev);
 
-CAMLprim value
+value
 ocaml_guestfs_getxattr (value gv, value pathv, value namev)
 {
   CAMLparam3 (gv, pathv, namev);
@@ -4860,9 +4866,9 @@ ocaml_guestfs_getxattr (value gv, value pathv, value namev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_getxattrs (value gv, value pathv);
+value ocaml_guestfs_getxattrs (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_getxattrs (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -4892,9 +4898,9 @@ ocaml_guestfs_getxattrs (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_glob_expand (value gv, value patternv);
+value ocaml_guestfs_glob_expand (value gv, value patternv);
 
-CAMLprim value
+value
 ocaml_guestfs_glob_expand (value gv, value patternv)
 {
   CAMLparam2 (gv, patternv);
@@ -4926,9 +4932,9 @@ ocaml_guestfs_glob_expand (value gv, value patternv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_grep (value gv, value regexv, value pathv);
+value ocaml_guestfs_grep (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_grep (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);
@@ -4962,9 +4968,9 @@ ocaml_guestfs_grep (value gv, value regexv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_grepi (value gv, value regexv, value pathv);
+value ocaml_guestfs_grepi (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_grepi (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);
@@ -4998,9 +5004,9 @@ ocaml_guestfs_grepi (value gv, value regexv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_grub_install (value gv, value rootv, value devicev);
+value ocaml_guestfs_grub_install (value gv, value rootv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_grub_install (value gv, value rootv, value devicev)
 {
   CAMLparam3 (gv, rootv, devicev);
@@ -5031,9 +5037,9 @@ ocaml_guestfs_grub_install (value gv, value rootv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_head (value gv, value pathv);
+value ocaml_guestfs_head (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_head (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -5065,9 +5071,9 @@ ocaml_guestfs_head (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_head_n (value gv, value nrlinesv, value pathv);
+value ocaml_guestfs_head_n (value gv, value nrlinesv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_head_n (value gv, value nrlinesv, value pathv)
 {
   CAMLparam3 (gv, nrlinesv, pathv);
@@ -5100,9 +5106,9 @@ ocaml_guestfs_head_n (value gv, value nrlinesv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_hexdump (value gv, value pathv);
+value ocaml_guestfs_hexdump (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_hexdump (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -5132,9 +5138,9 @@ ocaml_guestfs_hexdump (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_initrd_cat (value gv, value initrdpathv, value filenamev);
+value ocaml_guestfs_initrd_cat (value gv, value initrdpathv, value filenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_initrd_cat (value gv, value initrdpathv, value filenamev)
 {
   CAMLparam3 (gv, initrdpathv, filenamev);
@@ -5168,9 +5174,9 @@ ocaml_guestfs_initrd_cat (value gv, value initrdpathv, value filenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_initrd_list (value gv, value pathv);
+value ocaml_guestfs_initrd_list (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_initrd_list (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -5202,9 +5208,9 @@ ocaml_guestfs_initrd_list (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inotify_add_watch (value gv, value pathv, value maskv);
+value ocaml_guestfs_inotify_add_watch (value gv, value pathv, value maskv);
 
-CAMLprim value
+value
 ocaml_guestfs_inotify_add_watch (value gv, value pathv, value maskv)
 {
   CAMLparam3 (gv, pathv, maskv);
@@ -5234,9 +5240,9 @@ ocaml_guestfs_inotify_add_watch (value gv, value pathv, value maskv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inotify_close (value gv);
+value ocaml_guestfs_inotify_close (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_inotify_close (value gv)
 {
   CAMLparam1 (gv);
@@ -5263,9 +5269,9 @@ ocaml_guestfs_inotify_close (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inotify_files (value gv);
+value ocaml_guestfs_inotify_files (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_inotify_files (value gv)
 {
   CAMLparam1 (gv);
@@ -5295,9 +5301,9 @@ ocaml_guestfs_inotify_files (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inotify_init (value gv, value maxeventsv);
+value ocaml_guestfs_inotify_init (value gv, value maxeventsv);
 
-CAMLprim value
+value
 ocaml_guestfs_inotify_init (value gv, value maxeventsv)
 {
   CAMLparam2 (gv, maxeventsv);
@@ -5325,9 +5331,9 @@ ocaml_guestfs_inotify_init (value gv, value maxeventsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inotify_read (value gv);
+value ocaml_guestfs_inotify_read (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_inotify_read (value gv)
 {
   CAMLparam1 (gv);
@@ -5355,9 +5361,9 @@ ocaml_guestfs_inotify_read (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inotify_rm_watch (value gv, value wdv);
+value ocaml_guestfs_inotify_rm_watch (value gv, value wdv);
 
-CAMLprim value
+value
 ocaml_guestfs_inotify_rm_watch (value gv, value wdv)
 {
   CAMLparam2 (gv, wdv);
@@ -5385,9 +5391,9 @@ ocaml_guestfs_inotify_rm_watch (value gv, value wdv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_arch (value gv, value rootv);
+value ocaml_guestfs_inspect_get_arch (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_arch (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5417,9 +5423,9 @@ ocaml_guestfs_inspect_get_arch (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_distro (value gv, value rootv);
+value ocaml_guestfs_inspect_get_distro (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_distro (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5449,9 +5455,9 @@ ocaml_guestfs_inspect_get_distro (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_drive_mappings (value gv, value rootv);
+value ocaml_guestfs_inspect_get_drive_mappings (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_drive_mappings (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5483,9 +5489,9 @@ ocaml_guestfs_inspect_get_drive_mappings (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_filesystems (value gv, value rootv);
+value ocaml_guestfs_inspect_get_filesystems (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_filesystems (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5517,9 +5523,9 @@ ocaml_guestfs_inspect_get_filesystems (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_format (value gv, value rootv);
+value ocaml_guestfs_inspect_get_format (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_format (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5549,9 +5555,9 @@ ocaml_guestfs_inspect_get_format (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_hostname (value gv, value rootv);
+value ocaml_guestfs_inspect_get_hostname (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_hostname (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5581,9 +5587,9 @@ ocaml_guestfs_inspect_get_hostname (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_icon (value gv, value faviconv, value highqualityv, value rootv);
+value ocaml_guestfs_inspect_get_icon (value gv, value faviconv, value highqualityv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_icon (value gv, value faviconv, value highqualityv, value rootv)
 {
   CAMLparam4 (gv, faviconv, highqualityv, rootv);
@@ -5625,9 +5631,9 @@ ocaml_guestfs_inspect_get_icon (value gv, value faviconv, value highqualityv, va
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_major_version (value gv, value rootv);
+value ocaml_guestfs_inspect_get_major_version (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_major_version (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5656,9 +5662,9 @@ ocaml_guestfs_inspect_get_major_version (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_minor_version (value gv, value rootv);
+value ocaml_guestfs_inspect_get_minor_version (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_minor_version (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5687,9 +5693,9 @@ ocaml_guestfs_inspect_get_minor_version (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_mountpoints (value gv, value rootv);
+value ocaml_guestfs_inspect_get_mountpoints (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_mountpoints (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5721,9 +5727,9 @@ ocaml_guestfs_inspect_get_mountpoints (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_package_format (value gv, value rootv);
+value ocaml_guestfs_inspect_get_package_format (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_package_format (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5753,9 +5759,9 @@ ocaml_guestfs_inspect_get_package_format (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_package_management (value gv, value rootv);
+value ocaml_guestfs_inspect_get_package_management (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_package_management (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5785,9 +5791,9 @@ ocaml_guestfs_inspect_get_package_management (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_product_name (value gv, value rootv);
+value ocaml_guestfs_inspect_get_product_name (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_product_name (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5817,9 +5823,9 @@ ocaml_guestfs_inspect_get_product_name (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_product_variant (value gv, value rootv);
+value ocaml_guestfs_inspect_get_product_variant (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_product_variant (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5849,9 +5855,9 @@ ocaml_guestfs_inspect_get_product_variant (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_roots (value gv);
+value ocaml_guestfs_inspect_get_roots (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_roots (value gv)
 {
   CAMLparam1 (gv);
@@ -5881,9 +5887,9 @@ ocaml_guestfs_inspect_get_roots (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_type (value gv, value rootv);
+value ocaml_guestfs_inspect_get_type (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_type (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5913,9 +5919,9 @@ ocaml_guestfs_inspect_get_type (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_windows_current_control_set (value gv, value rootv);
+value ocaml_guestfs_inspect_get_windows_current_control_set (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_windows_current_control_set (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5945,9 +5951,9 @@ ocaml_guestfs_inspect_get_windows_current_control_set (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_get_windows_systemroot (value gv, value rootv);
+value ocaml_guestfs_inspect_get_windows_systemroot (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_get_windows_systemroot (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -5977,9 +5983,9 @@ ocaml_guestfs_inspect_get_windows_systemroot (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_is_live (value gv, value rootv);
+value ocaml_guestfs_inspect_is_live (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_is_live (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -6008,9 +6014,9 @@ ocaml_guestfs_inspect_is_live (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_is_multipart (value gv, value rootv);
+value ocaml_guestfs_inspect_is_multipart (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_is_multipart (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -6039,9 +6045,9 @@ ocaml_guestfs_inspect_is_multipart (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_is_netinst (value gv, value rootv);
+value ocaml_guestfs_inspect_is_netinst (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_is_netinst (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -6070,9 +6076,9 @@ ocaml_guestfs_inspect_is_netinst (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_list_applications (value gv, value rootv);
+value ocaml_guestfs_inspect_list_applications (value gv, value rootv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_list_applications (value gv, value rootv)
 {
   CAMLparam2 (gv, rootv);
@@ -6102,9 +6108,9 @@ ocaml_guestfs_inspect_list_applications (value gv, value rootv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_inspect_os (value gv);
+value ocaml_guestfs_inspect_os (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_inspect_os (value gv)
 {
   CAMLparam1 (gv);
@@ -6134,9 +6140,9 @@ ocaml_guestfs_inspect_os (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_internal_autosync (value gv);
+value ocaml_guestfs_internal_autosync (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_internal_autosync (value gv)
 {
   CAMLparam1 (gv);
@@ -6163,9 +6169,9 @@ ocaml_guestfs_internal_autosync (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_blockdev (value gv, value pathv);
+value ocaml_guestfs_is_blockdev (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_blockdev (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6194,9 +6200,9 @@ ocaml_guestfs_is_blockdev (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_busy (value gv);
+value ocaml_guestfs_is_busy (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_busy (value gv)
 {
   CAMLparam1 (gv);
@@ -6223,9 +6229,9 @@ ocaml_guestfs_is_busy (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_chardev (value gv, value pathv);
+value ocaml_guestfs_is_chardev (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_chardev (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6254,9 +6260,9 @@ ocaml_guestfs_is_chardev (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_config (value gv);
+value ocaml_guestfs_is_config (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_config (value gv)
 {
   CAMLparam1 (gv);
@@ -6283,9 +6289,9 @@ ocaml_guestfs_is_config (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_dir (value gv, value pathv);
+value ocaml_guestfs_is_dir (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_dir (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6314,9 +6320,9 @@ ocaml_guestfs_is_dir (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_fifo (value gv, value pathv);
+value ocaml_guestfs_is_fifo (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_fifo (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6345,9 +6351,9 @@ ocaml_guestfs_is_fifo (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_file (value gv, value pathv);
+value ocaml_guestfs_is_file (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_file (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6376,9 +6382,9 @@ ocaml_guestfs_is_file (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_launching (value gv);
+value ocaml_guestfs_is_launching (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_launching (value gv)
 {
   CAMLparam1 (gv);
@@ -6405,9 +6411,9 @@ ocaml_guestfs_is_launching (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_lv (value gv, value devicev);
+value ocaml_guestfs_is_lv (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_is_lv (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -6436,9 +6442,9 @@ ocaml_guestfs_is_lv (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_ready (value gv);
+value ocaml_guestfs_is_ready (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_ready (value gv)
 {
   CAMLparam1 (gv);
@@ -6465,9 +6471,9 @@ ocaml_guestfs_is_ready (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_socket (value gv, value pathv);
+value ocaml_guestfs_is_socket (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_socket (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6496,9 +6502,9 @@ ocaml_guestfs_is_socket (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_symlink (value gv, value pathv);
+value ocaml_guestfs_is_symlink (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_symlink (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6527,9 +6533,9 @@ ocaml_guestfs_is_symlink (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_zero (value gv, value pathv);
+value ocaml_guestfs_is_zero (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_is_zero (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6558,9 +6564,9 @@ ocaml_guestfs_is_zero (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_is_zero_device (value gv, value devicev);
+value ocaml_guestfs_is_zero_device (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_is_zero_device (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -6589,9 +6595,9 @@ ocaml_guestfs_is_zero_device (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_isoinfo (value gv, value isofilev);
+value ocaml_guestfs_isoinfo (value gv, value isofilev);
 
-CAMLprim value
+value
 ocaml_guestfs_isoinfo (value gv, value isofilev)
 {
   CAMLparam2 (gv, isofilev);
@@ -6621,9 +6627,9 @@ ocaml_guestfs_isoinfo (value gv, value isofilev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_isoinfo_device (value gv, value devicev);
+value ocaml_guestfs_isoinfo_device (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_isoinfo_device (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -6653,9 +6659,9 @@ ocaml_guestfs_isoinfo_device (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_kill_subprocess (value gv);
+value ocaml_guestfs_kill_subprocess (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_kill_subprocess (value gv)
 {
   CAMLparam1 (gv);
@@ -6682,9 +6688,9 @@ ocaml_guestfs_kill_subprocess (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_launch (value gv);
+value ocaml_guestfs_launch (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_launch (value gv)
 {
   CAMLparam1 (gv);
@@ -6711,9 +6717,9 @@ ocaml_guestfs_launch (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lchown (value gv, value ownerv, value groupv, value pathv);
+value ocaml_guestfs_lchown (value gv, value ownerv, value groupv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_lchown (value gv, value ownerv, value groupv, value pathv)
 {
   CAMLparam4 (gv, ownerv, groupv, pathv);
@@ -6744,9 +6750,9 @@ ocaml_guestfs_lchown (value gv, value ownerv, value groupv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lgetxattr (value gv, value pathv, value namev);
+value ocaml_guestfs_lgetxattr (value gv, value pathv, value namev);
 
-CAMLprim value
+value
 ocaml_guestfs_lgetxattr (value gv, value pathv, value namev)
 {
   CAMLparam3 (gv, pathv, namev);
@@ -6780,9 +6786,9 @@ ocaml_guestfs_lgetxattr (value gv, value pathv, value namev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lgetxattrs (value gv, value pathv);
+value ocaml_guestfs_lgetxattrs (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_lgetxattrs (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -6812,9 +6818,9 @@ ocaml_guestfs_lgetxattrs (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_list_9p (value gv);
+value ocaml_guestfs_list_9p (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_list_9p (value gv)
 {
   CAMLparam1 (gv);
@@ -6844,9 +6850,9 @@ ocaml_guestfs_list_9p (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_list_devices (value gv);
+value ocaml_guestfs_list_devices (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_list_devices (value gv)
 {
   CAMLparam1 (gv);
@@ -6876,9 +6882,9 @@ ocaml_guestfs_list_devices (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_list_dm_devices (value gv);
+value ocaml_guestfs_list_dm_devices (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_list_dm_devices (value gv)
 {
   CAMLparam1 (gv);
@@ -6908,9 +6914,9 @@ ocaml_guestfs_list_dm_devices (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_list_filesystems (value gv);
+value ocaml_guestfs_list_filesystems (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_list_filesystems (value gv)
 {
   CAMLparam1 (gv);
@@ -6940,9 +6946,9 @@ ocaml_guestfs_list_filesystems (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_list_md_devices (value gv);
+value ocaml_guestfs_list_md_devices (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_list_md_devices (value gv)
 {
   CAMLparam1 (gv);
@@ -6972,9 +6978,9 @@ ocaml_guestfs_list_md_devices (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_list_partitions (value gv);
+value ocaml_guestfs_list_partitions (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_list_partitions (value gv)
 {
   CAMLparam1 (gv);
@@ -7004,9 +7010,9 @@ ocaml_guestfs_list_partitions (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ll (value gv, value directoryv);
+value ocaml_guestfs_ll (value gv, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_ll (value gv, value directoryv)
 {
   CAMLparam2 (gv, directoryv);
@@ -7036,9 +7042,9 @@ ocaml_guestfs_ll (value gv, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_llz (value gv, value directoryv);
+value ocaml_guestfs_llz (value gv, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_llz (value gv, value directoryv)
 {
   CAMLparam2 (gv, directoryv);
@@ -7068,9 +7074,9 @@ ocaml_guestfs_llz (value gv, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ln (value gv, value targetv, value linknamev);
+value ocaml_guestfs_ln (value gv, value targetv, value linknamev);
 
-CAMLprim value
+value
 ocaml_guestfs_ln (value gv, value targetv, value linknamev)
 {
   CAMLparam3 (gv, targetv, linknamev);
@@ -7101,9 +7107,9 @@ ocaml_guestfs_ln (value gv, value targetv, value linknamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ln_f (value gv, value targetv, value linknamev);
+value ocaml_guestfs_ln_f (value gv, value targetv, value linknamev);
 
-CAMLprim value
+value
 ocaml_guestfs_ln_f (value gv, value targetv, value linknamev)
 {
   CAMLparam3 (gv, targetv, linknamev);
@@ -7134,9 +7140,9 @@ ocaml_guestfs_ln_f (value gv, value targetv, value linknamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ln_s (value gv, value targetv, value linknamev);
+value ocaml_guestfs_ln_s (value gv, value targetv, value linknamev);
 
-CAMLprim value
+value
 ocaml_guestfs_ln_s (value gv, value targetv, value linknamev)
 {
   CAMLparam3 (gv, targetv, linknamev);
@@ -7167,9 +7173,9 @@ ocaml_guestfs_ln_s (value gv, value targetv, value linknamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ln_sf (value gv, value targetv, value linknamev);
+value ocaml_guestfs_ln_sf (value gv, value targetv, value linknamev);
 
-CAMLprim value
+value
 ocaml_guestfs_ln_sf (value gv, value targetv, value linknamev)
 {
   CAMLparam3 (gv, targetv, linknamev);
@@ -7200,9 +7206,9 @@ ocaml_guestfs_ln_sf (value gv, value targetv, value linknamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv);
+value ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv)
 {
   CAMLparam3 (gv, xattrv, pathv);
@@ -7233,9 +7239,9 @@ ocaml_guestfs_lremovexattr (value gv, value xattrv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ls (value gv, value directoryv);
+value ocaml_guestfs_ls (value gv, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_ls (value gv, value directoryv)
 {
   CAMLparam2 (gv, directoryv);
@@ -7267,9 +7273,9 @@ ocaml_guestfs_ls (value gv, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, value pathv);
+value ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
 {
   CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
@@ -7303,9 +7309,9 @@ ocaml_guestfs_lsetxattr (value gv, value xattrv, value valv, value vallenv, valu
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lstat (value gv, value pathv);
+value ocaml_guestfs_lstat (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_lstat (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -7335,9 +7341,9 @@ ocaml_guestfs_lstat (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lstatlist (value gv, value pathv, value namesv);
+value ocaml_guestfs_lstatlist (value gv, value pathv, value namesv);
 
-CAMLprim value
+value
 ocaml_guestfs_lstatlist (value gv, value pathv, value namesv)
 {
   CAMLparam3 (gv, pathv, namesv);
@@ -7369,9 +7375,9 @@ ocaml_guestfs_lstatlist (value gv, value pathv, value namesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_luks_add_key (value gv, value devicev, value keyv, value newkeyv, value keyslotv);
+value ocaml_guestfs_luks_add_key (value gv, value devicev, value keyv, value newkeyv, value keyslotv);
 
-CAMLprim value
+value
 ocaml_guestfs_luks_add_key (value gv, value devicev, value keyv, value newkeyv, value keyslotv)
 {
   CAMLparam5 (gv, devicev, keyv, newkeyv, keyslotv);
@@ -7405,9 +7411,9 @@ ocaml_guestfs_luks_add_key (value gv, value devicev, value keyv, value newkeyv, 
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_luks_close (value gv, value devicev);
+value ocaml_guestfs_luks_close (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_luks_close (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -7436,9 +7442,9 @@ ocaml_guestfs_luks_close (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_luks_format (value gv, value devicev, value keyv, value keyslotv);
+value ocaml_guestfs_luks_format (value gv, value devicev, value keyv, value keyslotv);
 
-CAMLprim value
+value
 ocaml_guestfs_luks_format (value gv, value devicev, value keyv, value keyslotv)
 {
   CAMLparam4 (gv, devicev, keyv, keyslotv);
@@ -7470,9 +7476,9 @@ ocaml_guestfs_luks_format (value gv, value devicev, value keyv, value keyslotv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_luks_format_cipher (value gv, value devicev, value keyv, value keyslotv, value cipherv);
+value ocaml_guestfs_luks_format_cipher (value gv, value devicev, value keyv, value keyslotv, value cipherv);
 
-CAMLprim value
+value
 ocaml_guestfs_luks_format_cipher (value gv, value devicev, value keyv, value keyslotv, value cipherv)
 {
   CAMLparam5 (gv, devicev, keyv, keyslotv, cipherv);
@@ -7506,9 +7512,9 @@ ocaml_guestfs_luks_format_cipher (value gv, value devicev, value keyv, value key
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_luks_kill_slot (value gv, value devicev, value keyv, value keyslotv);
+value ocaml_guestfs_luks_kill_slot (value gv, value devicev, value keyv, value keyslotv);
 
-CAMLprim value
+value
 ocaml_guestfs_luks_kill_slot (value gv, value devicev, value keyv, value keyslotv)
 {
   CAMLparam4 (gv, devicev, keyv, keyslotv);
@@ -7540,9 +7546,9 @@ ocaml_guestfs_luks_kill_slot (value gv, value devicev, value keyv, value keyslot
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_luks_open (value gv, value devicev, value keyv, value mapnamev);
+value ocaml_guestfs_luks_open (value gv, value devicev, value keyv, value mapnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_luks_open (value gv, value devicev, value keyv, value mapnamev)
 {
   CAMLparam4 (gv, devicev, keyv, mapnamev);
@@ -7575,9 +7581,9 @@ ocaml_guestfs_luks_open (value gv, value devicev, value keyv, value mapnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_luks_open_ro (value gv, value devicev, value keyv, value mapnamev);
+value ocaml_guestfs_luks_open_ro (value gv, value devicev, value keyv, value mapnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_luks_open_ro (value gv, value devicev, value keyv, value mapnamev)
 {
   CAMLparam4 (gv, devicev, keyv, mapnamev);
@@ -7610,9 +7616,9 @@ ocaml_guestfs_luks_open_ro (value gv, value devicev, value keyv, value mapnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv);
+value ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv)
 {
   CAMLparam4 (gv, logvolv, volgroupv, mbytesv);
@@ -7644,9 +7650,9 @@ ocaml_guestfs_lvcreate (value gv, value logvolv, value volgroupv, value mbytesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvcreate_free (value gv, value logvolv, value volgroupv, value percentv);
+value ocaml_guestfs_lvcreate_free (value gv, value logvolv, value volgroupv, value percentv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvcreate_free (value gv, value logvolv, value volgroupv, value percentv)
 {
   CAMLparam4 (gv, logvolv, volgroupv, percentv);
@@ -7678,9 +7684,9 @@ ocaml_guestfs_lvcreate_free (value gv, value logvolv, value volgroupv, value per
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvm_canonical_lv_name (value gv, value lvnamev);
+value ocaml_guestfs_lvm_canonical_lv_name (value gv, value lvnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_lvm_canonical_lv_name (value gv, value lvnamev)
 {
   CAMLparam2 (gv, lvnamev);
@@ -7710,9 +7716,9 @@ ocaml_guestfs_lvm_canonical_lv_name (value gv, value lvnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvm_clear_filter (value gv);
+value ocaml_guestfs_lvm_clear_filter (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvm_clear_filter (value gv)
 {
   CAMLparam1 (gv);
@@ -7739,9 +7745,9 @@ ocaml_guestfs_lvm_clear_filter (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvm_remove_all (value gv);
+value ocaml_guestfs_lvm_remove_all (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvm_remove_all (value gv)
 {
   CAMLparam1 (gv);
@@ -7768,9 +7774,9 @@ ocaml_guestfs_lvm_remove_all (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvm_set_filter (value gv, value devicesv);
+value ocaml_guestfs_lvm_set_filter (value gv, value devicesv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvm_set_filter (value gv, value devicesv)
 {
   CAMLparam2 (gv, devicesv);
@@ -7799,9 +7805,9 @@ ocaml_guestfs_lvm_set_filter (value gv, value devicesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvremove (value gv, value devicev);
+value ocaml_guestfs_lvremove (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_lvremove (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -7830,9 +7836,9 @@ ocaml_guestfs_lvremove (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvrename (value gv, value logvolv, value newlogvolv);
+value ocaml_guestfs_lvrename (value gv, value logvolv, value newlogvolv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvrename (value gv, value logvolv, value newlogvolv)
 {
   CAMLparam3 (gv, logvolv, newlogvolv);
@@ -7863,9 +7869,9 @@ ocaml_guestfs_lvrename (value gv, value logvolv, value newlogvolv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvresize (value gv, value devicev, value mbytesv);
+value ocaml_guestfs_lvresize (value gv, value devicev, value mbytesv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvresize (value gv, value devicev, value mbytesv)
 {
   CAMLparam3 (gv, devicev, mbytesv);
@@ -7895,9 +7901,9 @@ ocaml_guestfs_lvresize (value gv, value devicev, value mbytesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvresize_free (value gv, value lvv, value percentv);
+value ocaml_guestfs_lvresize_free (value gv, value lvv, value percentv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvresize_free (value gv, value lvv, value percentv)
 {
   CAMLparam3 (gv, lvv, percentv);
@@ -7927,9 +7933,9 @@ ocaml_guestfs_lvresize_free (value gv, value lvv, value percentv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvs (value gv);
+value ocaml_guestfs_lvs (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvs (value gv)
 {
   CAMLparam1 (gv);
@@ -7959,9 +7965,9 @@ ocaml_guestfs_lvs (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvs_full (value gv);
+value ocaml_guestfs_lvs_full (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_lvs_full (value gv)
 {
   CAMLparam1 (gv);
@@ -7989,9 +7995,9 @@ ocaml_guestfs_lvs_full (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lvuuid (value gv, value devicev);
+value ocaml_guestfs_lvuuid (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_lvuuid (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -8021,9 +8027,9 @@ ocaml_guestfs_lvuuid (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_lxattrlist (value gv, value pathv, value namesv);
+value ocaml_guestfs_lxattrlist (value gv, value pathv, value namesv);
 
-CAMLprim value
+value
 ocaml_guestfs_lxattrlist (value gv, value pathv, value namesv)
 {
   CAMLparam3 (gv, pathv, namesv);
@@ -8055,9 +8061,9 @@ ocaml_guestfs_lxattrlist (value gv, value pathv, value namesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_md_create (value gv, value missingbitmapv, value nrdevicesv, value sparev, value chunkv, value levelv, value namev, value devicesv);
+value ocaml_guestfs_md_create (value gv, value missingbitmapv, value nrdevicesv, value sparev, value chunkv, value levelv, value namev, value devicesv);
 
-CAMLprim value
+value
 ocaml_guestfs_md_create (value gv, value missingbitmapv, value nrdevicesv, value sparev, value chunkv, value levelv, value namev, value devicesv)
 {
   CAMLparam5 (gv, missingbitmapv, nrdevicesv, sparev, chunkv);
@@ -8109,8 +8115,9 @@ ocaml_guestfs_md_create (value gv, value missingbitmapv, value nrdevicesv, value
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_md_create_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_md_create_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_md_create_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_md_create (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
@@ -8121,9 +8128,9 @@ ocaml_guestfs_md_create_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_md_detail (value gv, value mdv);
+value ocaml_guestfs_md_detail (value gv, value mdv);
 
-CAMLprim value
+value
 ocaml_guestfs_md_detail (value gv, value mdv)
 {
   CAMLparam2 (gv, mdv);
@@ -8155,9 +8162,9 @@ ocaml_guestfs_md_detail (value gv, value mdv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_md_stat (value gv, value mdv);
+value ocaml_guestfs_md_stat (value gv, value mdv);
 
-CAMLprim value
+value
 ocaml_guestfs_md_stat (value gv, value mdv)
 {
   CAMLparam2 (gv, mdv);
@@ -8187,9 +8194,9 @@ ocaml_guestfs_md_stat (value gv, value mdv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_md_stop (value gv, value mdv);
+value ocaml_guestfs_md_stop (value gv, value mdv);
 
-CAMLprim value
+value
 ocaml_guestfs_md_stop (value gv, value mdv)
 {
   CAMLparam2 (gv, mdv);
@@ -8218,9 +8225,9 @@ ocaml_guestfs_md_stop (value gv, value mdv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkdir (value gv, value pathv);
+value ocaml_guestfs_mkdir (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mkdir (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -8249,9 +8256,9 @@ ocaml_guestfs_mkdir (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkdir_mode (value gv, value pathv, value modev);
+value ocaml_guestfs_mkdir_mode (value gv, value pathv, value modev);
 
-CAMLprim value
+value
 ocaml_guestfs_mkdir_mode (value gv, value pathv, value modev)
 {
   CAMLparam3 (gv, pathv, modev);
@@ -8281,9 +8288,9 @@ ocaml_guestfs_mkdir_mode (value gv, value pathv, value modev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkdir_p (value gv, value pathv);
+value ocaml_guestfs_mkdir_p (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mkdir_p (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -8312,9 +8319,9 @@ ocaml_guestfs_mkdir_p (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkdtemp (value gv, value tmplv);
+value ocaml_guestfs_mkdtemp (value gv, value tmplv);
 
-CAMLprim value
+value
 ocaml_guestfs_mkdtemp (value gv, value tmplv)
 {
   CAMLparam2 (gv, tmplv);
@@ -8344,9 +8351,9 @@ ocaml_guestfs_mkdtemp (value gv, value tmplv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mke2fs_J (value gv, value fstypev, value blocksizev, value devicev, value journalv);
+value ocaml_guestfs_mke2fs_J (value gv, value fstypev, value blocksizev, value devicev, value journalv);
 
-CAMLprim value
+value
 ocaml_guestfs_mke2fs_J (value gv, value fstypev, value blocksizev, value devicev, value journalv)
 {
   CAMLparam5 (gv, fstypev, blocksizev, devicev, journalv);
@@ -8380,9 +8387,9 @@ ocaml_guestfs_mke2fs_J (value gv, value fstypev, value blocksizev, value devicev
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mke2fs_JL (value gv, value fstypev, value blocksizev, value devicev, value labelv);
+value ocaml_guestfs_mke2fs_JL (value gv, value fstypev, value blocksizev, value devicev, value labelv);
 
-CAMLprim value
+value
 ocaml_guestfs_mke2fs_JL (value gv, value fstypev, value blocksizev, value devicev, value labelv)
 {
   CAMLparam5 (gv, fstypev, blocksizev, devicev, labelv);
@@ -8416,9 +8423,9 @@ ocaml_guestfs_mke2fs_JL (value gv, value fstypev, value blocksizev, value device
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mke2fs_JU (value gv, value fstypev, value blocksizev, value devicev, value uuidv);
+value ocaml_guestfs_mke2fs_JU (value gv, value fstypev, value blocksizev, value devicev, value uuidv);
 
-CAMLprim value
+value
 ocaml_guestfs_mke2fs_JU (value gv, value fstypev, value blocksizev, value devicev, value uuidv)
 {
   CAMLparam5 (gv, fstypev, blocksizev, devicev, uuidv);
@@ -8452,9 +8459,9 @@ ocaml_guestfs_mke2fs_JU (value gv, value fstypev, value blocksizev, value device
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mke2journal (value gv, value blocksizev, value devicev);
+value ocaml_guestfs_mke2journal (value gv, value blocksizev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mke2journal (value gv, value blocksizev, value devicev)
 {
   CAMLparam3 (gv, blocksizev, devicev);
@@ -8484,9 +8491,9 @@ ocaml_guestfs_mke2journal (value gv, value blocksizev, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mke2journal_L (value gv, value blocksizev, value labelv, value devicev);
+value ocaml_guestfs_mke2journal_L (value gv, value blocksizev, value labelv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mke2journal_L (value gv, value blocksizev, value labelv, value devicev)
 {
   CAMLparam4 (gv, blocksizev, labelv, devicev);
@@ -8518,9 +8525,9 @@ ocaml_guestfs_mke2journal_L (value gv, value blocksizev, value labelv, value dev
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mke2journal_U (value gv, value blocksizev, value uuidv, value devicev);
+value ocaml_guestfs_mke2journal_U (value gv, value blocksizev, value uuidv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mke2journal_U (value gv, value blocksizev, value uuidv, value devicev)
 {
   CAMLparam4 (gv, blocksizev, uuidv, devicev);
@@ -8552,9 +8559,9 @@ ocaml_guestfs_mke2journal_U (value gv, value blocksizev, value uuidv, value devi
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkfifo (value gv, value modev, value pathv);
+value ocaml_guestfs_mkfifo (value gv, value modev, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mkfifo (value gv, value modev, value pathv)
 {
   CAMLparam3 (gv, modev, pathv);
@@ -8584,9 +8591,9 @@ ocaml_guestfs_mkfifo (value gv, value modev, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkfs (value gv, value fstypev, value devicev);
+value ocaml_guestfs_mkfs (value gv, value fstypev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mkfs (value gv, value fstypev, value devicev)
 {
   CAMLparam3 (gv, fstypev, devicev);
@@ -8617,9 +8624,9 @@ ocaml_guestfs_mkfs (value gv, value fstypev, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkfs_b (value gv, value fstypev, value blocksizev, value devicev);
+value ocaml_guestfs_mkfs_b (value gv, value fstypev, value blocksizev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mkfs_b (value gv, value fstypev, value blocksizev, value devicev)
 {
   CAMLparam4 (gv, fstypev, blocksizev, devicev);
@@ -8651,9 +8658,9 @@ ocaml_guestfs_mkfs_b (value gv, value fstypev, value blocksizev, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkfs_btrfs (value gv, value allocstartv, value bytecountv, value datatypev, value leafsizev, value labelv, value metadatav, value nodesizev, value sectorsizev, value devicesv);
+value ocaml_guestfs_mkfs_btrfs (value gv, value allocstartv, value bytecountv, value datatypev, value leafsizev, value labelv, value metadatav, value nodesizev, value sectorsizev, value devicesv);
 
-CAMLprim value
+value
 ocaml_guestfs_mkfs_btrfs (value gv, value allocstartv, value bytecountv, value datatypev, value leafsizev, value labelv, value metadatav, value nodesizev, value sectorsizev, value devicesv)
 {
   CAMLparam5 (gv, allocstartv, bytecountv, datatypev, leafsizev);
@@ -8719,8 +8726,9 @@ ocaml_guestfs_mkfs_btrfs (value gv, value allocstartv, value bytecountv, value d
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkfs_btrfs_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_mkfs_btrfs_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_mkfs_btrfs_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_mkfs_btrfs (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9]);
@@ -8731,9 +8739,9 @@ ocaml_guestfs_mkfs_btrfs_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkfs_opts (value gv, value blocksizev, value featuresv, value inodev, value sectorsizev, value fstypev, value devicev);
+value ocaml_guestfs_mkfs_opts (value gv, value blocksizev, value featuresv, value inodev, value sectorsizev, value fstypev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mkfs_opts (value gv, value blocksizev, value featuresv, value inodev, value sectorsizev, value fstypev, value devicev)
 {
   CAMLparam5 (gv, blocksizev, featuresv, inodev, sectorsizev);
@@ -8781,8 +8789,9 @@ ocaml_guestfs_mkfs_opts (value gv, value blocksizev, value featuresv, value inod
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkfs_opts_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_mkfs_opts_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_mkfs_opts_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_mkfs_opts (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
@@ -8793,9 +8802,9 @@ ocaml_guestfs_mkfs_opts_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkmountpoint (value gv, value exemptpathv);
+value ocaml_guestfs_mkmountpoint (value gv, value exemptpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mkmountpoint (value gv, value exemptpathv)
 {
   CAMLparam2 (gv, exemptpathv);
@@ -8824,9 +8833,9 @@ ocaml_guestfs_mkmountpoint (value gv, value exemptpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mknod (value gv, value modev, value devmajorv, value devminorv, value pathv);
+value ocaml_guestfs_mknod (value gv, value modev, value devmajorv, value devminorv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mknod (value gv, value modev, value devmajorv, value devminorv, value pathv)
 {
   CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
@@ -8858,9 +8867,9 @@ ocaml_guestfs_mknod (value gv, value modev, value devmajorv, value devminorv, va
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mknod_b (value gv, value modev, value devmajorv, value devminorv, value pathv);
+value ocaml_guestfs_mknod_b (value gv, value modev, value devmajorv, value devminorv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mknod_b (value gv, value modev, value devmajorv, value devminorv, value pathv)
 {
   CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
@@ -8892,9 +8901,9 @@ ocaml_guestfs_mknod_b (value gv, value modev, value devmajorv, value devminorv, 
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mknod_c (value gv, value modev, value devmajorv, value devminorv, value pathv);
+value ocaml_guestfs_mknod_c (value gv, value modev, value devmajorv, value devminorv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mknod_c (value gv, value modev, value devmajorv, value devminorv, value pathv)
 {
   CAMLparam5 (gv, modev, devmajorv, devminorv, pathv);
@@ -8926,9 +8935,9 @@ ocaml_guestfs_mknod_c (value gv, value modev, value devmajorv, value devminorv, 
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkswap (value gv, value devicev);
+value ocaml_guestfs_mkswap (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mkswap (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -8957,9 +8966,9 @@ ocaml_guestfs_mkswap (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkswap_L (value gv, value labelv, value devicev);
+value ocaml_guestfs_mkswap_L (value gv, value labelv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mkswap_L (value gv, value labelv, value devicev)
 {
   CAMLparam3 (gv, labelv, devicev);
@@ -8990,9 +8999,9 @@ ocaml_guestfs_mkswap_L (value gv, value labelv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkswap_U (value gv, value uuidv, value devicev);
+value ocaml_guestfs_mkswap_U (value gv, value uuidv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_mkswap_U (value gv, value uuidv, value devicev)
 {
   CAMLparam3 (gv, uuidv, devicev);
@@ -9023,9 +9032,9 @@ ocaml_guestfs_mkswap_U (value gv, value uuidv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mkswap_file (value gv, value pathv);
+value ocaml_guestfs_mkswap_file (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_mkswap_file (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -9054,9 +9063,9 @@ ocaml_guestfs_mkswap_file (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_modprobe (value gv, value modulenamev);
+value ocaml_guestfs_modprobe (value gv, value modulenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_modprobe (value gv, value modulenamev)
 {
   CAMLparam2 (gv, modulenamev);
@@ -9085,9 +9094,9 @@ ocaml_guestfs_modprobe (value gv, value modulenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount (value gv, value devicev, value mountpointv);
+value ocaml_guestfs_mount (value gv, value devicev, value mountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount (value gv, value devicev, value mountpointv)
 {
   CAMLparam3 (gv, devicev, mountpointv);
@@ -9118,9 +9127,9 @@ ocaml_guestfs_mount (value gv, value devicev, value mountpointv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_9p (value gv, value optionsv, value mounttagv, value mountpointv);
+value ocaml_guestfs_mount_9p (value gv, value optionsv, value mounttagv, value mountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount_9p (value gv, value optionsv, value mounttagv, value mountpointv)
 {
   CAMLparam4 (gv, optionsv, mounttagv, mountpointv);
@@ -9159,9 +9168,9 @@ ocaml_guestfs_mount_9p (value gv, value optionsv, value mounttagv, value mountpo
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_local (value gv, value readonlyv, value optionsv, value cachetimeoutv, value debugcallsv, value localmountpointv);
+value ocaml_guestfs_mount_local (value gv, value readonlyv, value optionsv, value cachetimeoutv, value debugcallsv, value localmountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount_local (value gv, value readonlyv, value optionsv, value cachetimeoutv, value debugcallsv, value localmountpointv)
 {
   CAMLparam5 (gv, readonlyv, optionsv, cachetimeoutv, debugcallsv);
@@ -9207,8 +9216,9 @@ ocaml_guestfs_mount_local (value gv, value readonlyv, value optionsv, value cach
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_local_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_mount_local_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_mount_local_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_mount_local (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -9219,9 +9229,9 @@ ocaml_guestfs_mount_local_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_local_run (value gv);
+value ocaml_guestfs_mount_local_run (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount_local_run (value gv)
 {
   CAMLparam1 (gv);
@@ -9248,9 +9258,9 @@ ocaml_guestfs_mount_local_run (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv);
+value ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv)
 {
   CAMLparam3 (gv, filev, mountpointv);
@@ -9281,9 +9291,9 @@ ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv);
+value ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv)
 {
   CAMLparam4 (gv, optionsv, devicev, mountpointv);
@@ -9316,9 +9326,9 @@ ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value moun
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv);
+value ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv)
 {
   CAMLparam3 (gv, devicev, mountpointv);
@@ -9349,9 +9359,9 @@ ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv);
+value ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv);
 
-CAMLprim value
+value
 ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv)
 {
   CAMLparam5 (gv, optionsv, vfstypev, devicev, mountpointv);
@@ -9386,9 +9396,9 @@ ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mountpoints (value gv);
+value ocaml_guestfs_mountpoints (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_mountpoints (value gv)
 {
   CAMLparam1 (gv);
@@ -9418,9 +9428,9 @@ ocaml_guestfs_mountpoints (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mounts (value gv);
+value ocaml_guestfs_mounts (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_mounts (value gv)
 {
   CAMLparam1 (gv);
@@ -9450,9 +9460,9 @@ ocaml_guestfs_mounts (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_mv (value gv, value srcv, value destv);
+value ocaml_guestfs_mv (value gv, value srcv, value destv);
 
-CAMLprim value
+value
 ocaml_guestfs_mv (value gv, value srcv, value destv)
 {
   CAMLparam3 (gv, srcv, destv);
@@ -9483,9 +9493,9 @@ ocaml_guestfs_mv (value gv, value srcv, value destv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_nr_devices (value gv);
+value ocaml_guestfs_nr_devices (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_nr_devices (value gv)
 {
   CAMLparam1 (gv);
@@ -9512,9 +9522,9 @@ ocaml_guestfs_nr_devices (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfs_3g_probe (value gv, value rwv, value devicev);
+value ocaml_guestfs_ntfs_3g_probe (value gv, value rwv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_ntfs_3g_probe (value gv, value rwv, value devicev)
 {
   CAMLparam3 (gv, rwv, devicev);
@@ -9544,9 +9554,9 @@ ocaml_guestfs_ntfs_3g_probe (value gv, value rwv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfsclone_in (value gv, value backupfilev, value devicev);
+value ocaml_guestfs_ntfsclone_in (value gv, value backupfilev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_ntfsclone_in (value gv, value backupfilev, value devicev)
 {
   CAMLparam3 (gv, backupfilev, devicev);
@@ -9577,9 +9587,9 @@ ocaml_guestfs_ntfsclone_in (value gv, value backupfilev, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfsclone_out (value gv, value metadataonlyv, value rescuev, value ignorefscheckv, value preservetimestampsv, value forcev, value devicev, value backupfilev);
+value ocaml_guestfs_ntfsclone_out (value gv, value metadataonlyv, value rescuev, value ignorefscheckv, value preservetimestampsv, value forcev, value devicev, value backupfilev);
 
-CAMLprim value
+value
 ocaml_guestfs_ntfsclone_out (value gv, value metadataonlyv, value rescuev, value ignorefscheckv, value preservetimestampsv, value forcev, value devicev, value backupfilev)
 {
   CAMLparam5 (gv, metadataonlyv, rescuev, ignorefscheckv, preservetimestampsv);
@@ -9629,8 +9639,9 @@ ocaml_guestfs_ntfsclone_out (value gv, value metadataonlyv, value rescuev, value
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfsclone_out_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_ntfsclone_out_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_ntfsclone_out_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_ntfsclone_out (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
@@ -9641,9 +9652,9 @@ ocaml_guestfs_ntfsclone_out_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfsfix (value gv, value clearbadsectorsv, value devicev);
+value ocaml_guestfs_ntfsfix (value gv, value clearbadsectorsv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_ntfsfix (value gv, value clearbadsectorsv, value devicev)
 {
   CAMLparam3 (gv, clearbadsectorsv, devicev);
@@ -9678,9 +9689,9 @@ ocaml_guestfs_ntfsfix (value gv, value clearbadsectorsv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfsresize (value gv, value devicev);
+value ocaml_guestfs_ntfsresize (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_ntfsresize (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -9709,9 +9720,9 @@ ocaml_guestfs_ntfsresize (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfsresize_opts (value gv, value sizev, value forcev, value devicev);
+value ocaml_guestfs_ntfsresize_opts (value gv, value sizev, value forcev, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_ntfsresize_opts (value gv, value sizev, value forcev, value devicev)
 {
   CAMLparam4 (gv, sizev, forcev, devicev);
@@ -9750,9 +9761,9 @@ ocaml_guestfs_ntfsresize_opts (value gv, value sizev, value forcev, value device
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ntfsresize_size (value gv, value devicev, value sizev);
+value ocaml_guestfs_ntfsresize_size (value gv, value devicev, value sizev);
 
-CAMLprim value
+value
 ocaml_guestfs_ntfsresize_size (value gv, value devicev, value sizev)
 {
   CAMLparam3 (gv, devicev, sizev);
@@ -9782,9 +9793,9 @@ ocaml_guestfs_ntfsresize_size (value gv, value devicev, value sizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_add (value gv, value devicev, value prlogexv, value startsectv, value endsectv);
+value ocaml_guestfs_part_add (value gv, value devicev, value prlogexv, value startsectv, value endsectv);
 
-CAMLprim value
+value
 ocaml_guestfs_part_add (value gv, value devicev, value prlogexv, value startsectv, value endsectv)
 {
   CAMLparam5 (gv, devicev, prlogexv, startsectv, endsectv);
@@ -9817,9 +9828,9 @@ ocaml_guestfs_part_add (value gv, value devicev, value prlogexv, value startsect
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_del (value gv, value devicev, value partnumv);
+value ocaml_guestfs_part_del (value gv, value devicev, value partnumv);
 
-CAMLprim value
+value
 ocaml_guestfs_part_del (value gv, value devicev, value partnumv)
 {
   CAMLparam3 (gv, devicev, partnumv);
@@ -9849,9 +9860,9 @@ ocaml_guestfs_part_del (value gv, value devicev, value partnumv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_disk (value gv, value devicev, value parttypev);
+value ocaml_guestfs_part_disk (value gv, value devicev, value parttypev);
 
-CAMLprim value
+value
 ocaml_guestfs_part_disk (value gv, value devicev, value parttypev)
 {
   CAMLparam3 (gv, devicev, parttypev);
@@ -9882,9 +9893,9 @@ ocaml_guestfs_part_disk (value gv, value devicev, value parttypev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_get_bootable (value gv, value devicev, value partnumv);
+value ocaml_guestfs_part_get_bootable (value gv, value devicev, value partnumv);
 
-CAMLprim value
+value
 ocaml_guestfs_part_get_bootable (value gv, value devicev, value partnumv)
 {
   CAMLparam3 (gv, devicev, partnumv);
@@ -9914,9 +9925,9 @@ ocaml_guestfs_part_get_bootable (value gv, value devicev, value partnumv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_get_mbr_id (value gv, value devicev, value partnumv);
+value ocaml_guestfs_part_get_mbr_id (value gv, value devicev, value partnumv);
 
-CAMLprim value
+value
 ocaml_guestfs_part_get_mbr_id (value gv, value devicev, value partnumv)
 {
   CAMLparam3 (gv, devicev, partnumv);
@@ -9946,9 +9957,9 @@ ocaml_guestfs_part_get_mbr_id (value gv, value devicev, value partnumv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_get_parttype (value gv, value devicev);
+value ocaml_guestfs_part_get_parttype (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_part_get_parttype (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -9978,9 +9989,9 @@ ocaml_guestfs_part_get_parttype (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_init (value gv, value devicev, value parttypev);
+value ocaml_guestfs_part_init (value gv, value devicev, value parttypev);
 
-CAMLprim value
+value
 ocaml_guestfs_part_init (value gv, value devicev, value parttypev)
 {
   CAMLparam3 (gv, devicev, parttypev);
@@ -10011,9 +10022,9 @@ ocaml_guestfs_part_init (value gv, value devicev, value parttypev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_list (value gv, value devicev);
+value ocaml_guestfs_part_list (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_part_list (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -10043,9 +10054,9 @@ ocaml_guestfs_part_list (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_set_bootable (value gv, value devicev, value partnumv, value bootablev);
+value ocaml_guestfs_part_set_bootable (value gv, value devicev, value partnumv, value bootablev);
 
-CAMLprim value
+value
 ocaml_guestfs_part_set_bootable (value gv, value devicev, value partnumv, value bootablev)
 {
   CAMLparam4 (gv, devicev, partnumv, bootablev);
@@ -10076,9 +10087,9 @@ ocaml_guestfs_part_set_bootable (value gv, value devicev, value partnumv, value 
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_set_mbr_id (value gv, value devicev, value partnumv, value idbytev);
+value ocaml_guestfs_part_set_mbr_id (value gv, value devicev, value partnumv, value idbytev);
 
-CAMLprim value
+value
 ocaml_guestfs_part_set_mbr_id (value gv, value devicev, value partnumv, value idbytev)
 {
   CAMLparam4 (gv, devicev, partnumv, idbytev);
@@ -10109,9 +10120,9 @@ ocaml_guestfs_part_set_mbr_id (value gv, value devicev, value partnumv, value id
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_set_name (value gv, value devicev, value partnumv, value namev);
+value ocaml_guestfs_part_set_name (value gv, value devicev, value partnumv, value namev);
 
-CAMLprim value
+value
 ocaml_guestfs_part_set_name (value gv, value devicev, value partnumv, value namev)
 {
   CAMLparam4 (gv, devicev, partnumv, namev);
@@ -10143,9 +10154,9 @@ ocaml_guestfs_part_set_name (value gv, value devicev, value partnumv, value name
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_to_dev (value gv, value partitionv);
+value ocaml_guestfs_part_to_dev (value gv, value partitionv);
 
-CAMLprim value
+value
 ocaml_guestfs_part_to_dev (value gv, value partitionv)
 {
   CAMLparam2 (gv, partitionv);
@@ -10175,9 +10186,9 @@ ocaml_guestfs_part_to_dev (value gv, value partitionv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_part_to_partnum (value gv, value partitionv);
+value ocaml_guestfs_part_to_partnum (value gv, value partitionv);
 
-CAMLprim value
+value
 ocaml_guestfs_part_to_partnum (value gv, value partitionv)
 {
   CAMLparam2 (gv, partitionv);
@@ -10206,9 +10217,9 @@ ocaml_guestfs_part_to_partnum (value gv, value partitionv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_ping_daemon (value gv);
+value ocaml_guestfs_ping_daemon (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_ping_daemon (value gv)
 {
   CAMLparam1 (gv);
@@ -10235,9 +10246,9 @@ ocaml_guestfs_ping_daemon (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pread (value gv, value pathv, value countv, value offsetv);
+value ocaml_guestfs_pread (value gv, value pathv, value countv, value offsetv);
 
-CAMLprim value
+value
 ocaml_guestfs_pread (value gv, value pathv, value countv, value offsetv)
 {
   CAMLparam4 (gv, pathv, countv, offsetv);
@@ -10271,9 +10282,9 @@ ocaml_guestfs_pread (value gv, value pathv, value countv, value offsetv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pread_device (value gv, value devicev, value countv, value offsetv);
+value ocaml_guestfs_pread_device (value gv, value devicev, value countv, value offsetv);
 
-CAMLprim value
+value
 ocaml_guestfs_pread_device (value gv, value devicev, value countv, value offsetv)
 {
   CAMLparam4 (gv, devicev, countv, offsetv);
@@ -10307,9 +10318,9 @@ ocaml_guestfs_pread_device (value gv, value devicev, value countv, value offsetv
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pvcreate (value gv, value devicev);
+value ocaml_guestfs_pvcreate (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_pvcreate (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -10338,9 +10349,9 @@ ocaml_guestfs_pvcreate (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pvremove (value gv, value devicev);
+value ocaml_guestfs_pvremove (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_pvremove (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -10369,9 +10380,9 @@ ocaml_guestfs_pvremove (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pvresize (value gv, value devicev);
+value ocaml_guestfs_pvresize (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_pvresize (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -10400,9 +10411,9 @@ ocaml_guestfs_pvresize (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pvresize_size (value gv, value devicev, value sizev);
+value ocaml_guestfs_pvresize_size (value gv, value devicev, value sizev);
 
-CAMLprim value
+value
 ocaml_guestfs_pvresize_size (value gv, value devicev, value sizev)
 {
   CAMLparam3 (gv, devicev, sizev);
@@ -10432,9 +10443,9 @@ ocaml_guestfs_pvresize_size (value gv, value devicev, value sizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pvs (value gv);
+value ocaml_guestfs_pvs (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_pvs (value gv)
 {
   CAMLparam1 (gv);
@@ -10464,9 +10475,9 @@ ocaml_guestfs_pvs (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pvs_full (value gv);
+value ocaml_guestfs_pvs_full (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_pvs_full (value gv)
 {
   CAMLparam1 (gv);
@@ -10494,9 +10505,9 @@ ocaml_guestfs_pvs_full (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pvuuid (value gv, value devicev);
+value ocaml_guestfs_pvuuid (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_pvuuid (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -10526,9 +10537,9 @@ ocaml_guestfs_pvuuid (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pwrite (value gv, value pathv, value contentv, value offsetv);
+value ocaml_guestfs_pwrite (value gv, value pathv, value contentv, value offsetv);
 
-CAMLprim value
+value
 ocaml_guestfs_pwrite (value gv, value pathv, value contentv, value offsetv)
 {
   CAMLparam4 (gv, pathv, contentv, offsetv);
@@ -10561,9 +10572,9 @@ ocaml_guestfs_pwrite (value gv, value pathv, value contentv, value offsetv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_pwrite_device (value gv, value devicev, value contentv, value offsetv);
+value ocaml_guestfs_pwrite_device (value gv, value devicev, value contentv, value offsetv);
 
-CAMLprim value
+value
 ocaml_guestfs_pwrite_device (value gv, value devicev, value contentv, value offsetv)
 {
   CAMLparam4 (gv, devicev, contentv, offsetv);
@@ -10596,9 +10607,9 @@ ocaml_guestfs_pwrite_device (value gv, value devicev, value contentv, value offs
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_read_file (value gv, value pathv);
+value ocaml_guestfs_read_file (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_read_file (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -10630,9 +10641,9 @@ ocaml_guestfs_read_file (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_read_lines (value gv, value pathv);
+value ocaml_guestfs_read_lines (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_read_lines (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -10664,9 +10675,9 @@ ocaml_guestfs_read_lines (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_readdir (value gv, value dirv);
+value ocaml_guestfs_readdir (value gv, value dirv);
 
-CAMLprim value
+value
 ocaml_guestfs_readdir (value gv, value dirv)
 {
   CAMLparam2 (gv, dirv);
@@ -10696,9 +10707,9 @@ ocaml_guestfs_readdir (value gv, value dirv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_readlink (value gv, value pathv);
+value ocaml_guestfs_readlink (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_readlink (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -10728,9 +10739,9 @@ ocaml_guestfs_readlink (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_readlinklist (value gv, value pathv, value namesv);
+value ocaml_guestfs_readlinklist (value gv, value pathv, value namesv);
 
-CAMLprim value
+value
 ocaml_guestfs_readlinklist (value gv, value pathv, value namesv)
 {
   CAMLparam3 (gv, pathv, namesv);
@@ -10764,9 +10775,9 @@ ocaml_guestfs_readlinklist (value gv, value pathv, value namesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_realpath (value gv, value pathv);
+value ocaml_guestfs_realpath (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_realpath (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -10796,9 +10807,9 @@ ocaml_guestfs_realpath (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_removexattr (value gv, value xattrv, value pathv);
+value ocaml_guestfs_removexattr (value gv, value xattrv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_removexattr (value gv, value xattrv, value pathv)
 {
   CAMLparam3 (gv, xattrv, pathv);
@@ -10829,9 +10840,9 @@ ocaml_guestfs_removexattr (value gv, value xattrv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_resize2fs (value gv, value devicev);
+value ocaml_guestfs_resize2fs (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_resize2fs (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -10860,9 +10871,9 @@ ocaml_guestfs_resize2fs (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_resize2fs_M (value gv, value devicev);
+value ocaml_guestfs_resize2fs_M (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_resize2fs_M (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -10891,9 +10902,9 @@ ocaml_guestfs_resize2fs_M (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_resize2fs_size (value gv, value devicev, value sizev);
+value ocaml_guestfs_resize2fs_size (value gv, value devicev, value sizev);
 
-CAMLprim value
+value
 ocaml_guestfs_resize2fs_size (value gv, value devicev, value sizev)
 {
   CAMLparam3 (gv, devicev, sizev);
@@ -10923,9 +10934,9 @@ ocaml_guestfs_resize2fs_size (value gv, value devicev, value sizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_rm (value gv, value pathv);
+value ocaml_guestfs_rm (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_rm (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -10954,9 +10965,9 @@ ocaml_guestfs_rm (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_rm_rf (value gv, value pathv);
+value ocaml_guestfs_rm_rf (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_rm_rf (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -10985,9 +10996,9 @@ ocaml_guestfs_rm_rf (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_rmdir (value gv, value pathv);
+value ocaml_guestfs_rmdir (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_rmdir (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -11016,9 +11027,9 @@ ocaml_guestfs_rmdir (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_rmmountpoint (value gv, value exemptpathv);
+value ocaml_guestfs_rmmountpoint (value gv, value exemptpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_rmmountpoint (value gv, value exemptpathv)
 {
   CAMLparam2 (gv, exemptpathv);
@@ -11047,9 +11058,9 @@ ocaml_guestfs_rmmountpoint (value gv, value exemptpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_scrub_device (value gv, value devicev);
+value ocaml_guestfs_scrub_device (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_scrub_device (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -11078,9 +11089,9 @@ ocaml_guestfs_scrub_device (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_scrub_file (value gv, value filev);
+value ocaml_guestfs_scrub_file (value gv, value filev);
 
-CAMLprim value
+value
 ocaml_guestfs_scrub_file (value gv, value filev)
 {
   CAMLparam2 (gv, filev);
@@ -11109,9 +11120,9 @@ ocaml_guestfs_scrub_file (value gv, value filev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_scrub_freespace (value gv, value dirv);
+value ocaml_guestfs_scrub_freespace (value gv, value dirv);
 
-CAMLprim value
+value
 ocaml_guestfs_scrub_freespace (value gv, value dirv)
 {
   CAMLparam2 (gv, dirv);
@@ -11140,9 +11151,9 @@ ocaml_guestfs_scrub_freespace (value gv, value dirv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_append (value gv, value appendv);
+value ocaml_guestfs_set_append (value gv, value appendv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_append (value gv, value appendv)
 {
   CAMLparam2 (gv, appendv);
@@ -11173,9 +11184,9 @@ ocaml_guestfs_set_append (value gv, value appendv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_attach_method (value gv, value attachmethodv);
+value ocaml_guestfs_set_attach_method (value gv, value attachmethodv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_attach_method (value gv, value attachmethodv)
 {
   CAMLparam2 (gv, attachmethodv);
@@ -11204,9 +11215,9 @@ ocaml_guestfs_set_attach_method (value gv, value attachmethodv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_autosync (value gv, value autosyncv);
+value ocaml_guestfs_set_autosync (value gv, value autosyncv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_autosync (value gv, value autosyncv)
 {
   CAMLparam2 (gv, autosyncv);
@@ -11234,9 +11245,9 @@ ocaml_guestfs_set_autosync (value gv, value autosyncv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_direct (value gv, value directv);
+value ocaml_guestfs_set_direct (value gv, value directv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_direct (value gv, value directv)
 {
   CAMLparam2 (gv, directv);
@@ -11264,9 +11275,9 @@ ocaml_guestfs_set_direct (value gv, value directv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_e2attrs (value gv, value clearv, value filev, value attrsv);
+value ocaml_guestfs_set_e2attrs (value gv, value clearv, value filev, value attrsv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_e2attrs (value gv, value clearv, value filev, value attrsv)
 {
   CAMLparam4 (gv, clearv, filev, attrsv);
@@ -11303,9 +11314,9 @@ ocaml_guestfs_set_e2attrs (value gv, value clearv, value filev, value attrsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_e2generation (value gv, value filev, value generationv);
+value ocaml_guestfs_set_e2generation (value gv, value filev, value generationv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_e2generation (value gv, value filev, value generationv)
 {
   CAMLparam3 (gv, filev, generationv);
@@ -11335,9 +11346,9 @@ ocaml_guestfs_set_e2generation (value gv, value filev, value generationv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_e2label (value gv, value devicev, value labelv);
+value ocaml_guestfs_set_e2label (value gv, value devicev, value labelv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_e2label (value gv, value devicev, value labelv)
 {
   CAMLparam3 (gv, devicev, labelv);
@@ -11368,9 +11379,9 @@ ocaml_guestfs_set_e2label (value gv, value devicev, value labelv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv);
+value ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv)
 {
   CAMLparam3 (gv, devicev, uuidv);
@@ -11401,9 +11412,9 @@ ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_label (value gv, value devicev, value labelv);
+value ocaml_guestfs_set_label (value gv, value devicev, value labelv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_label (value gv, value devicev, value labelv)
 {
   CAMLparam3 (gv, devicev, labelv);
@@ -11434,9 +11445,9 @@ ocaml_guestfs_set_label (value gv, value devicev, value labelv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_memsize (value gv, value memsizev);
+value ocaml_guestfs_set_memsize (value gv, value memsizev);
 
-CAMLprim value
+value
 ocaml_guestfs_set_memsize (value gv, value memsizev)
 {
   CAMLparam2 (gv, memsizev);
@@ -11464,9 +11475,9 @@ ocaml_guestfs_set_memsize (value gv, value memsizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_network (value gv, value networkv);
+value ocaml_guestfs_set_network (value gv, value networkv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_network (value gv, value networkv)
 {
   CAMLparam2 (gv, networkv);
@@ -11494,9 +11505,9 @@ ocaml_guestfs_set_network (value gv, value networkv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_path (value gv, value searchpathv);
+value ocaml_guestfs_set_path (value gv, value searchpathv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_path (value gv, value searchpathv)
 {
   CAMLparam2 (gv, searchpathv);
@@ -11527,9 +11538,9 @@ ocaml_guestfs_set_path (value gv, value searchpathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_pgroup (value gv, value pgroupv);
+value ocaml_guestfs_set_pgroup (value gv, value pgroupv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_pgroup (value gv, value pgroupv)
 {
   CAMLparam2 (gv, pgroupv);
@@ -11557,9 +11568,9 @@ ocaml_guestfs_set_pgroup (value gv, value pgroupv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_qemu (value gv, value qemuv);
+value ocaml_guestfs_set_qemu (value gv, value qemuv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_qemu (value gv, value qemuv)
 {
   CAMLparam2 (gv, qemuv);
@@ -11590,9 +11601,9 @@ ocaml_guestfs_set_qemu (value gv, value qemuv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_recovery_proc (value gv, value recoveryprocv);
+value ocaml_guestfs_set_recovery_proc (value gv, value recoveryprocv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_recovery_proc (value gv, value recoveryprocv)
 {
   CAMLparam2 (gv, recoveryprocv);
@@ -11620,9 +11631,9 @@ ocaml_guestfs_set_recovery_proc (value gv, value recoveryprocv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_selinux (value gv, value selinuxv);
+value ocaml_guestfs_set_selinux (value gv, value selinuxv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_selinux (value gv, value selinuxv)
 {
   CAMLparam2 (gv, selinuxv);
@@ -11650,9 +11661,9 @@ ocaml_guestfs_set_selinux (value gv, value selinuxv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_smp (value gv, value smpv);
+value ocaml_guestfs_set_smp (value gv, value smpv);
 
-CAMLprim value
+value
 ocaml_guestfs_set_smp (value gv, value smpv)
 {
   CAMLparam2 (gv, smpv);
@@ -11680,9 +11691,9 @@ ocaml_guestfs_set_smp (value gv, value smpv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_trace (value gv, value tracev);
+value ocaml_guestfs_set_trace (value gv, value tracev);
 
-CAMLprim value
+value
 ocaml_guestfs_set_trace (value gv, value tracev)
 {
   CAMLparam2 (gv, tracev);
@@ -11710,9 +11721,9 @@ ocaml_guestfs_set_trace (value gv, value tracev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_set_verbose (value gv, value verbosev);
+value ocaml_guestfs_set_verbose (value gv, value verbosev);
 
-CAMLprim value
+value
 ocaml_guestfs_set_verbose (value gv, value verbosev)
 {
   CAMLparam2 (gv, verbosev);
@@ -11740,9 +11751,9 @@ ocaml_guestfs_set_verbose (value gv, value verbosev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_setcon (value gv, value contextv);
+value ocaml_guestfs_setcon (value gv, value contextv);
 
-CAMLprim value
+value
 ocaml_guestfs_setcon (value gv, value contextv)
 {
   CAMLparam2 (gv, contextv);
@@ -11771,9 +11782,9 @@ ocaml_guestfs_setcon (value gv, value contextv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value pathv);
+value ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value pathv)
 {
   CAMLparam5 (gv, xattrv, valv, vallenv, pathv);
@@ -11807,9 +11818,9 @@ ocaml_guestfs_setxattr (value gv, value xattrv, value valv, value vallenv, value
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value sectorsv, value linesv);
+value ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value sectorsv, value linesv);
 
-CAMLprim value
+value
 ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value sectorsv, value linesv)
 {
   CAMLparam5 (gv, devicev, cylsv, headsv, sectorsv);
@@ -11840,8 +11851,9 @@ ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value 
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdisk_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_sfdisk_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_sfdisk_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_sfdisk (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -11852,9 +11864,9 @@ ocaml_guestfs_sfdisk_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv);
+value ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv);
 
-CAMLprim value
+value
 ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv)
 {
   CAMLparam3 (gv, devicev, linesv);
@@ -11885,9 +11897,9 @@ ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, value headsv, value sectorsv, value linev);
+value ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, value headsv, value sectorsv, value linev);
 
-CAMLprim value
+value
 ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, value headsv, value sectorsv, value linev)
 {
   CAMLparam5 (gv, devicev, partnumv, cylsv, headsv);
@@ -11919,8 +11931,9 @@ ocaml_guestfs_sfdisk_N (value gv, value devicev, value partnumv, value cylsv, va
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdisk_N_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_sfdisk_N_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_sfdisk_N_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_sfdisk_N (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
@@ -11931,9 +11944,9 @@ ocaml_guestfs_sfdisk_N_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev);
+value ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -11963,9 +11976,9 @@ ocaml_guestfs_sfdisk_disk_geometry (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdisk_kernel_geometry (value gv, value devicev);
+value ocaml_guestfs_sfdisk_kernel_geometry (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_sfdisk_kernel_geometry (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -11995,9 +12008,9 @@ ocaml_guestfs_sfdisk_kernel_geometry (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sfdisk_l (value gv, value devicev);
+value ocaml_guestfs_sfdisk_l (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_sfdisk_l (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -12027,9 +12040,9 @@ ocaml_guestfs_sfdisk_l (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sh (value gv, value commandv);
+value ocaml_guestfs_sh (value gv, value commandv);
 
-CAMLprim value
+value
 ocaml_guestfs_sh (value gv, value commandv)
 {
   CAMLparam2 (gv, commandv);
@@ -12059,9 +12072,9 @@ ocaml_guestfs_sh (value gv, value commandv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sh_lines (value gv, value commandv);
+value ocaml_guestfs_sh_lines (value gv, value commandv);
 
-CAMLprim value
+value
 ocaml_guestfs_sh_lines (value gv, value commandv)
 {
   CAMLparam2 (gv, commandv);
@@ -12093,9 +12106,9 @@ ocaml_guestfs_sh_lines (value gv, value commandv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_shutdown (value gv);
+value ocaml_guestfs_shutdown (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_shutdown (value gv)
 {
   CAMLparam1 (gv);
@@ -12122,9 +12135,9 @@ ocaml_guestfs_shutdown (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sleep (value gv, value secsv);
+value ocaml_guestfs_sleep (value gv, value secsv);
 
-CAMLprim value
+value
 ocaml_guestfs_sleep (value gv, value secsv)
 {
   CAMLparam2 (gv, secsv);
@@ -12152,9 +12165,9 @@ ocaml_guestfs_sleep (value gv, value secsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_stat (value gv, value pathv);
+value ocaml_guestfs_stat (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_stat (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -12184,9 +12197,9 @@ ocaml_guestfs_stat (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_statvfs (value gv, value pathv);
+value ocaml_guestfs_statvfs (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_statvfs (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -12216,9 +12229,9 @@ ocaml_guestfs_statvfs (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_strings (value gv, value pathv);
+value ocaml_guestfs_strings (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_strings (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -12250,9 +12263,9 @@ ocaml_guestfs_strings (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_strings_e (value gv, value encodingv, value pathv);
+value ocaml_guestfs_strings_e (value gv, value encodingv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_strings_e (value gv, value encodingv, value pathv)
 {
   CAMLparam3 (gv, encodingv, pathv);
@@ -12286,9 +12299,9 @@ ocaml_guestfs_strings_e (value gv, value encodingv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapoff_device (value gv, value devicev);
+value ocaml_guestfs_swapoff_device (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_swapoff_device (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -12317,9 +12330,9 @@ ocaml_guestfs_swapoff_device (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapoff_file (value gv, value filev);
+value ocaml_guestfs_swapoff_file (value gv, value filev);
 
-CAMLprim value
+value
 ocaml_guestfs_swapoff_file (value gv, value filev)
 {
   CAMLparam2 (gv, filev);
@@ -12348,9 +12361,9 @@ ocaml_guestfs_swapoff_file (value gv, value filev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapoff_label (value gv, value labelv);
+value ocaml_guestfs_swapoff_label (value gv, value labelv);
 
-CAMLprim value
+value
 ocaml_guestfs_swapoff_label (value gv, value labelv)
 {
   CAMLparam2 (gv, labelv);
@@ -12379,9 +12392,9 @@ ocaml_guestfs_swapoff_label (value gv, value labelv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapoff_uuid (value gv, value uuidv);
+value ocaml_guestfs_swapoff_uuid (value gv, value uuidv);
 
-CAMLprim value
+value
 ocaml_guestfs_swapoff_uuid (value gv, value uuidv)
 {
   CAMLparam2 (gv, uuidv);
@@ -12410,9 +12423,9 @@ ocaml_guestfs_swapoff_uuid (value gv, value uuidv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapon_device (value gv, value devicev);
+value ocaml_guestfs_swapon_device (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_swapon_device (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -12441,9 +12454,9 @@ ocaml_guestfs_swapon_device (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapon_file (value gv, value filev);
+value ocaml_guestfs_swapon_file (value gv, value filev);
 
-CAMLprim value
+value
 ocaml_guestfs_swapon_file (value gv, value filev)
 {
   CAMLparam2 (gv, filev);
@@ -12472,9 +12485,9 @@ ocaml_guestfs_swapon_file (value gv, value filev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapon_label (value gv, value labelv);
+value ocaml_guestfs_swapon_label (value gv, value labelv);
 
-CAMLprim value
+value
 ocaml_guestfs_swapon_label (value gv, value labelv)
 {
   CAMLparam2 (gv, labelv);
@@ -12503,9 +12516,9 @@ ocaml_guestfs_swapon_label (value gv, value labelv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_swapon_uuid (value gv, value uuidv);
+value ocaml_guestfs_swapon_uuid (value gv, value uuidv);
 
-CAMLprim value
+value
 ocaml_guestfs_swapon_uuid (value gv, value uuidv)
 {
   CAMLparam2 (gv, uuidv);
@@ -12534,9 +12547,9 @@ ocaml_guestfs_swapon_uuid (value gv, value uuidv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_sync (value gv);
+value ocaml_guestfs_sync (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_sync (value gv)
 {
   CAMLparam1 (gv);
@@ -12563,9 +12576,9 @@ ocaml_guestfs_sync (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tail (value gv, value pathv);
+value ocaml_guestfs_tail (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_tail (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -12597,9 +12610,9 @@ ocaml_guestfs_tail (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv);
+value ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv)
 {
   CAMLparam3 (gv, nrlinesv, pathv);
@@ -12632,9 +12645,9 @@ ocaml_guestfs_tail_n (value gv, value nrlinesv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tar_in (value gv, value tarfilev, value directoryv);
+value ocaml_guestfs_tar_in (value gv, value tarfilev, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_tar_in (value gv, value tarfilev, value directoryv)
 {
   CAMLparam3 (gv, tarfilev, directoryv);
@@ -12665,9 +12678,9 @@ ocaml_guestfs_tar_in (value gv, value tarfilev, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tar_out (value gv, value directoryv, value tarfilev);
+value ocaml_guestfs_tar_out (value gv, value directoryv, value tarfilev);
 
-CAMLprim value
+value
 ocaml_guestfs_tar_out (value gv, value directoryv, value tarfilev)
 {
   CAMLparam3 (gv, directoryv, tarfilev);
@@ -12698,9 +12711,9 @@ ocaml_guestfs_tar_out (value gv, value directoryv, value tarfilev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0 (value gv, value oboolv, value ointv, value oint64v, value ostringv, value strv, value optstrv, value strlistv, value bv, value integerv, value integer64v, value fileinv, value fileoutv, value bufferinv);
+value ocaml_guestfs_test0 (value gv, value oboolv, value ointv, value oint64v, value ostringv, value strv, value optstrv, value strlistv, value bv, value integerv, value integer64v, value fileinv, value fileoutv, value bufferinv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0 (value gv, value oboolv, value ointv, value oint64v, value ostringv, value strv, value optstrv, value strlistv, value bv, value integerv, value integer64v, value fileinv, value fileoutv, value bufferinv)
 {
   CAMLparam5 (gv, oboolv, ointv, oint64v, ostringv);
@@ -12763,8 +12776,9 @@ ocaml_guestfs_test0 (value gv, value oboolv, value ointv, value oint64v, value o
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_test0_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_test0_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_test0 (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], argv[12], argv[13]);
@@ -12775,9 +12789,9 @@ ocaml_guestfs_test0_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rbool (value gv, value valv);
+value ocaml_guestfs_test0rbool (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rbool (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -12806,9 +12820,9 @@ ocaml_guestfs_test0rbool (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rboolerr (value gv);
+value ocaml_guestfs_test0rboolerr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rboolerr (value gv)
 {
   CAMLparam1 (gv);
@@ -12835,9 +12849,9 @@ ocaml_guestfs_test0rboolerr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rbufferout (value gv, value valv);
+value ocaml_guestfs_test0rbufferout (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rbufferout (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -12869,9 +12883,9 @@ ocaml_guestfs_test0rbufferout (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rbufferouterr (value gv);
+value ocaml_guestfs_test0rbufferouterr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rbufferouterr (value gv)
 {
   CAMLparam1 (gv);
@@ -12901,9 +12915,9 @@ ocaml_guestfs_test0rbufferouterr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rconstoptstring (value gv, value valv);
+value ocaml_guestfs_test0rconstoptstring (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rconstoptstring (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -12935,9 +12949,9 @@ ocaml_guestfs_test0rconstoptstring (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rconstoptstringerr (value gv);
+value ocaml_guestfs_test0rconstoptstringerr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rconstoptstringerr (value gv)
 {
   CAMLparam1 (gv);
@@ -12967,9 +12981,9 @@ ocaml_guestfs_test0rconstoptstringerr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rconststring (value gv, value valv);
+value ocaml_guestfs_test0rconststring (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rconststring (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -12998,9 +13012,9 @@ ocaml_guestfs_test0rconststring (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rconststringerr (value gv);
+value ocaml_guestfs_test0rconststringerr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rconststringerr (value gv)
 {
   CAMLparam1 (gv);
@@ -13027,9 +13041,9 @@ ocaml_guestfs_test0rconststringerr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rhashtable (value gv, value valv);
+value ocaml_guestfs_test0rhashtable (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rhashtable (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -13061,9 +13075,9 @@ ocaml_guestfs_test0rhashtable (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rhashtableerr (value gv);
+value ocaml_guestfs_test0rhashtableerr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rhashtableerr (value gv)
 {
   CAMLparam1 (gv);
@@ -13093,9 +13107,9 @@ ocaml_guestfs_test0rhashtableerr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rint (value gv, value valv);
+value ocaml_guestfs_test0rint (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rint (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -13124,9 +13138,9 @@ ocaml_guestfs_test0rint (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rint64 (value gv, value valv);
+value ocaml_guestfs_test0rint64 (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rint64 (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -13155,9 +13169,9 @@ ocaml_guestfs_test0rint64 (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rint64err (value gv);
+value ocaml_guestfs_test0rint64err (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rint64err (value gv)
 {
   CAMLparam1 (gv);
@@ -13184,9 +13198,9 @@ ocaml_guestfs_test0rint64err (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rinterr (value gv);
+value ocaml_guestfs_test0rinterr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rinterr (value gv)
 {
   CAMLparam1 (gv);
@@ -13213,9 +13227,9 @@ ocaml_guestfs_test0rinterr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstring (value gv, value valv);
+value ocaml_guestfs_test0rstring (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstring (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -13245,9 +13259,9 @@ ocaml_guestfs_test0rstring (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstringerr (value gv);
+value ocaml_guestfs_test0rstringerr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstringerr (value gv)
 {
   CAMLparam1 (gv);
@@ -13275,9 +13289,9 @@ ocaml_guestfs_test0rstringerr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstringlist (value gv, value valv);
+value ocaml_guestfs_test0rstringlist (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstringlist (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -13309,9 +13323,9 @@ ocaml_guestfs_test0rstringlist (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstringlisterr (value gv);
+value ocaml_guestfs_test0rstringlisterr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstringlisterr (value gv)
 {
   CAMLparam1 (gv);
@@ -13341,9 +13355,9 @@ ocaml_guestfs_test0rstringlisterr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstruct (value gv, value valv);
+value ocaml_guestfs_test0rstruct (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstruct (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -13373,9 +13387,9 @@ ocaml_guestfs_test0rstruct (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstructerr (value gv);
+value ocaml_guestfs_test0rstructerr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstructerr (value gv)
 {
   CAMLparam1 (gv);
@@ -13403,9 +13417,9 @@ ocaml_guestfs_test0rstructerr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstructlist (value gv, value valv);
+value ocaml_guestfs_test0rstructlist (value gv, value valv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstructlist (value gv, value valv)
 {
   CAMLparam2 (gv, valv);
@@ -13435,9 +13449,9 @@ ocaml_guestfs_test0rstructlist (value gv, value valv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_test0rstructlisterr (value gv);
+value ocaml_guestfs_test0rstructlisterr (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_test0rstructlisterr (value gv)
 {
   CAMLparam1 (gv);
@@ -13465,9 +13479,9 @@ ocaml_guestfs_test0rstructlisterr (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tgz_in (value gv, value tarballv, value directoryv);
+value ocaml_guestfs_tgz_in (value gv, value tarballv, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_tgz_in (value gv, value tarballv, value directoryv)
 {
   CAMLparam3 (gv, tarballv, directoryv);
@@ -13498,9 +13512,9 @@ ocaml_guestfs_tgz_in (value gv, value tarballv, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tgz_out (value gv, value directoryv, value tarballv);
+value ocaml_guestfs_tgz_out (value gv, value directoryv, value tarballv);
 
-CAMLprim value
+value
 ocaml_guestfs_tgz_out (value gv, value directoryv, value tarballv)
 {
   CAMLparam3 (gv, directoryv, tarballv);
@@ -13531,9 +13545,9 @@ ocaml_guestfs_tgz_out (value gv, value directoryv, value tarballv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_touch (value gv, value pathv);
+value ocaml_guestfs_touch (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_touch (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -13562,9 +13576,9 @@ ocaml_guestfs_touch (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_truncate (value gv, value pathv);
+value ocaml_guestfs_truncate (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_truncate (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -13593,9 +13607,9 @@ ocaml_guestfs_truncate (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_truncate_size (value gv, value pathv, value sizev);
+value ocaml_guestfs_truncate_size (value gv, value pathv, value sizev);
 
-CAMLprim value
+value
 ocaml_guestfs_truncate_size (value gv, value pathv, value sizev)
 {
   CAMLparam3 (gv, pathv, sizev);
@@ -13625,9 +13639,9 @@ ocaml_guestfs_truncate_size (value gv, value pathv, value sizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tune2fs (value gv, value forcev, value maxmountcountv, value mountcountv, value errorbehaviorv, value groupv, value intervalbetweenchecksv, value reservedblockspercentagev, value lastmounteddirectoryv, value reservedblockscountv, value userv, value devicev);
+value ocaml_guestfs_tune2fs (value gv, value forcev, value maxmountcountv, value mountcountv, value errorbehaviorv, value groupv, value intervalbetweenchecksv, value reservedblockspercentagev, value lastmounteddirectoryv, value reservedblockscountv, value userv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_tune2fs (value gv, value forcev, value maxmountcountv, value mountcountv, value errorbehaviorv, value groupv, value intervalbetweenchecksv, value reservedblockspercentagev, value lastmounteddirectoryv, value reservedblockscountv, value userv, value devicev)
 {
   CAMLparam5 (gv, forcev, maxmountcountv, mountcountv, errorbehaviorv);
@@ -13700,8 +13714,9 @@ ocaml_guestfs_tune2fs (value gv, value forcev, value maxmountcountv, value mount
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tune2fs_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_tune2fs_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_tune2fs_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_tune2fs (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11]);
@@ -13712,9 +13727,9 @@ ocaml_guestfs_tune2fs_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_tune2fs_l (value gv, value devicev);
+value ocaml_guestfs_tune2fs_l (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_tune2fs_l (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -13746,9 +13761,9 @@ ocaml_guestfs_tune2fs_l (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_txz_in (value gv, value tarballv, value directoryv);
+value ocaml_guestfs_txz_in (value gv, value tarballv, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_txz_in (value gv, value tarballv, value directoryv)
 {
   CAMLparam3 (gv, tarballv, directoryv);
@@ -13779,9 +13794,9 @@ ocaml_guestfs_txz_in (value gv, value tarballv, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_txz_out (value gv, value directoryv, value tarballv);
+value ocaml_guestfs_txz_out (value gv, value directoryv, value tarballv);
 
-CAMLprim value
+value
 ocaml_guestfs_txz_out (value gv, value directoryv, value tarballv)
 {
   CAMLparam3 (gv, directoryv, tarballv);
@@ -13812,9 +13827,9 @@ ocaml_guestfs_txz_out (value gv, value directoryv, value tarballv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_umask (value gv, value maskv);
+value ocaml_guestfs_umask (value gv, value maskv);
 
-CAMLprim value
+value
 ocaml_guestfs_umask (value gv, value maskv)
 {
   CAMLparam2 (gv, maskv);
@@ -13842,9 +13857,9 @@ ocaml_guestfs_umask (value gv, value maskv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_umount (value gv, value pathordevicev);
+value ocaml_guestfs_umount (value gv, value pathordevicev);
 
-CAMLprim value
+value
 ocaml_guestfs_umount (value gv, value pathordevicev)
 {
   CAMLparam2 (gv, pathordevicev);
@@ -13873,9 +13888,9 @@ ocaml_guestfs_umount (value gv, value pathordevicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_umount_all (value gv);
+value ocaml_guestfs_umount_all (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_umount_all (value gv)
 {
   CAMLparam1 (gv);
@@ -13902,9 +13917,9 @@ ocaml_guestfs_umount_all (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_umount_local (value gv, value retryv);
+value ocaml_guestfs_umount_local (value gv, value retryv);
 
-CAMLprim value
+value
 ocaml_guestfs_umount_local (value gv, value retryv)
 {
   CAMLparam2 (gv, retryv);
@@ -13937,9 +13952,9 @@ ocaml_guestfs_umount_local (value gv, value retryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_upload (value gv, value filenamev, value remotefilenamev);
+value ocaml_guestfs_upload (value gv, value filenamev, value remotefilenamev);
 
-CAMLprim value
+value
 ocaml_guestfs_upload (value gv, value filenamev, value remotefilenamev)
 {
   CAMLparam3 (gv, filenamev, remotefilenamev);
@@ -13970,9 +13985,9 @@ ocaml_guestfs_upload (value gv, value filenamev, value remotefilenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_upload_offset (value gv, value filenamev, value remotefilenamev, value offsetv);
+value ocaml_guestfs_upload_offset (value gv, value filenamev, value remotefilenamev, value offsetv);
 
-CAMLprim value
+value
 ocaml_guestfs_upload_offset (value gv, value filenamev, value remotefilenamev, value offsetv)
 {
   CAMLparam4 (gv, filenamev, remotefilenamev, offsetv);
@@ -14004,9 +14019,9 @@ ocaml_guestfs_upload_offset (value gv, value filenamev, value remotefilenamev, v
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_utimens (value gv, value pathv, value atsecsv, value atnsecsv, value mtsecsv, value mtnsecsv);
+value ocaml_guestfs_utimens (value gv, value pathv, value atsecsv, value atnsecsv, value mtsecsv, value mtnsecsv);
 
-CAMLprim value
+value
 ocaml_guestfs_utimens (value gv, value pathv, value atsecsv, value atnsecsv, value mtsecsv, value mtnsecsv)
 {
   CAMLparam5 (gv, pathv, atsecsv, atnsecsv, mtsecsv);
@@ -14036,8 +14051,9 @@ ocaml_guestfs_utimens (value gv, value pathv, value atsecsv, value atnsecsv, val
 }
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_utimens_byte (value *argv, int argn);
-CAMLprim value
+value ocaml_guestfs_utimens_byte (value *argv, int argn);
+
+value
 ocaml_guestfs_utimens_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
   return ocaml_guestfs_utimens (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
@@ -14048,9 +14064,9 @@ ocaml_guestfs_utimens_byte (value *argv, int argn ATTRIBUTE_UNUSED)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_version (value gv);
+value ocaml_guestfs_version (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_version (value gv)
 {
   CAMLparam1 (gv);
@@ -14078,9 +14094,9 @@ ocaml_guestfs_version (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vfs_label (value gv, value devicev);
+value ocaml_guestfs_vfs_label (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_vfs_label (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -14110,9 +14126,9 @@ ocaml_guestfs_vfs_label (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vfs_type (value gv, value devicev);
+value ocaml_guestfs_vfs_type (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_vfs_type (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -14142,9 +14158,9 @@ ocaml_guestfs_vfs_type (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vfs_uuid (value gv, value devicev);
+value ocaml_guestfs_vfs_uuid (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_vfs_uuid (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -14174,9 +14190,9 @@ ocaml_guestfs_vfs_uuid (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv);
+value ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv);
 
-CAMLprim value
+value
 ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv)
 {
   CAMLparam3 (gv, activatev, volgroupsv);
@@ -14206,9 +14222,9 @@ ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vg_activate_all (value gv, value activatev);
+value ocaml_guestfs_vg_activate_all (value gv, value activatev);
 
-CAMLprim value
+value
 ocaml_guestfs_vg_activate_all (value gv, value activatev)
 {
   CAMLparam2 (gv, activatev);
@@ -14236,9 +14252,9 @@ ocaml_guestfs_vg_activate_all (value gv, value activatev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv);
+value ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv);
 
-CAMLprim value
+value
 ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv)
 {
   CAMLparam3 (gv, volgroupv, physvolsv);
@@ -14269,9 +14285,9 @@ ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vglvuuids (value gv, value vgnamev);
+value ocaml_guestfs_vglvuuids (value gv, value vgnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_vglvuuids (value gv, value vgnamev)
 {
   CAMLparam2 (gv, vgnamev);
@@ -14303,9 +14319,9 @@ ocaml_guestfs_vglvuuids (value gv, value vgnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgmeta (value gv, value vgnamev);
+value ocaml_guestfs_vgmeta (value gv, value vgnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_vgmeta (value gv, value vgnamev)
 {
   CAMLparam2 (gv, vgnamev);
@@ -14337,9 +14353,9 @@ ocaml_guestfs_vgmeta (value gv, value vgnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgpvuuids (value gv, value vgnamev);
+value ocaml_guestfs_vgpvuuids (value gv, value vgnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_vgpvuuids (value gv, value vgnamev)
 {
   CAMLparam2 (gv, vgnamev);
@@ -14371,9 +14387,9 @@ ocaml_guestfs_vgpvuuids (value gv, value vgnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgremove (value gv, value vgnamev);
+value ocaml_guestfs_vgremove (value gv, value vgnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_vgremove (value gv, value vgnamev)
 {
   CAMLparam2 (gv, vgnamev);
@@ -14402,9 +14418,9 @@ ocaml_guestfs_vgremove (value gv, value vgnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgrename (value gv, value volgroupv, value newvolgroupv);
+value ocaml_guestfs_vgrename (value gv, value volgroupv, value newvolgroupv);
 
-CAMLprim value
+value
 ocaml_guestfs_vgrename (value gv, value volgroupv, value newvolgroupv)
 {
   CAMLparam3 (gv, volgroupv, newvolgroupv);
@@ -14435,9 +14451,9 @@ ocaml_guestfs_vgrename (value gv, value volgroupv, value newvolgroupv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgs (value gv);
+value ocaml_guestfs_vgs (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_vgs (value gv)
 {
   CAMLparam1 (gv);
@@ -14467,9 +14483,9 @@ ocaml_guestfs_vgs (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgs_full (value gv);
+value ocaml_guestfs_vgs_full (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_vgs_full (value gv)
 {
   CAMLparam1 (gv);
@@ -14497,9 +14513,9 @@ ocaml_guestfs_vgs_full (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vgscan (value gv);
+value ocaml_guestfs_vgscan (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_vgscan (value gv)
 {
   CAMLparam1 (gv);
@@ -14526,9 +14542,9 @@ ocaml_guestfs_vgscan (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_vguuid (value gv, value vgnamev);
+value ocaml_guestfs_vguuid (value gv, value vgnamev);
 
-CAMLprim value
+value
 ocaml_guestfs_vguuid (value gv, value vgnamev)
 {
   CAMLparam2 (gv, vgnamev);
@@ -14558,9 +14574,9 @@ ocaml_guestfs_vguuid (value gv, value vgnamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_wait_ready (value gv);
+value ocaml_guestfs_wait_ready (value gv);
 
-CAMLprim value
+value
 ocaml_guestfs_wait_ready (value gv)
 {
   CAMLparam1 (gv);
@@ -14587,9 +14603,9 @@ ocaml_guestfs_wait_ready (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_wc_c (value gv, value pathv);
+value ocaml_guestfs_wc_c (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_wc_c (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -14618,9 +14634,9 @@ ocaml_guestfs_wc_c (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_wc_l (value gv, value pathv);
+value ocaml_guestfs_wc_l (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_wc_l (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -14649,9 +14665,9 @@ ocaml_guestfs_wc_l (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_wc_w (value gv, value pathv);
+value ocaml_guestfs_wc_w (value gv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_wc_w (value gv, value pathv)
 {
   CAMLparam2 (gv, pathv);
@@ -14680,9 +14696,9 @@ ocaml_guestfs_wc_w (value gv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_wipefs (value gv, value devicev);
+value ocaml_guestfs_wipefs (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_wipefs (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -14711,9 +14727,9 @@ ocaml_guestfs_wipefs (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_write (value gv, value pathv, value contentv);
+value ocaml_guestfs_write (value gv, value pathv, value contentv);
 
-CAMLprim value
+value
 ocaml_guestfs_write (value gv, value pathv, value contentv)
 {
   CAMLparam3 (gv, pathv, contentv);
@@ -14745,9 +14761,9 @@ ocaml_guestfs_write (value gv, value pathv, value contentv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_write_append (value gv, value pathv, value contentv);
+value ocaml_guestfs_write_append (value gv, value pathv, value contentv);
 
-CAMLprim value
+value
 ocaml_guestfs_write_append (value gv, value pathv, value contentv)
 {
   CAMLparam3 (gv, pathv, contentv);
@@ -14779,9 +14795,9 @@ ocaml_guestfs_write_append (value gv, value pathv, value contentv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_write_file (value gv, value pathv, value contentv, value sizev);
+value ocaml_guestfs_write_file (value gv, value pathv, value contentv, value sizev);
 
-CAMLprim value
+value
 ocaml_guestfs_write_file (value gv, value pathv, value contentv, value sizev)
 {
   CAMLparam4 (gv, pathv, contentv, sizev);
@@ -14813,9 +14829,9 @@ ocaml_guestfs_write_file (value gv, value pathv, value contentv, value sizev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zegrep (value gv, value regexv, value pathv);
+value ocaml_guestfs_zegrep (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_zegrep (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);
@@ -14849,9 +14865,9 @@ ocaml_guestfs_zegrep (value gv, value regexv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zegrepi (value gv, value regexv, value pathv);
+value ocaml_guestfs_zegrepi (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_zegrepi (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);
@@ -14885,9 +14901,9 @@ ocaml_guestfs_zegrepi (value gv, value regexv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zero (value gv, value devicev);
+value ocaml_guestfs_zero (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_zero (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -14916,9 +14932,9 @@ ocaml_guestfs_zero (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zero_device (value gv, value devicev);
+value ocaml_guestfs_zero_device (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_zero_device (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -14947,9 +14963,9 @@ ocaml_guestfs_zero_device (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zero_free_space (value gv, value directoryv);
+value ocaml_guestfs_zero_free_space (value gv, value directoryv);
 
-CAMLprim value
+value
 ocaml_guestfs_zero_free_space (value gv, value directoryv)
 {
   CAMLparam2 (gv, directoryv);
@@ -14978,9 +14994,9 @@ ocaml_guestfs_zero_free_space (value gv, value directoryv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zerofree (value gv, value devicev);
+value ocaml_guestfs_zerofree (value gv, value devicev);
 
-CAMLprim value
+value
 ocaml_guestfs_zerofree (value gv, value devicev)
 {
   CAMLparam2 (gv, devicev);
@@ -15009,9 +15025,9 @@ ocaml_guestfs_zerofree (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zfgrep (value gv, value patternv, value pathv);
+value ocaml_guestfs_zfgrep (value gv, value patternv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_zfgrep (value gv, value patternv, value pathv)
 {
   CAMLparam3 (gv, patternv, pathv);
@@ -15045,9 +15061,9 @@ ocaml_guestfs_zfgrep (value gv, value patternv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zfgrepi (value gv, value patternv, value pathv);
+value ocaml_guestfs_zfgrepi (value gv, value patternv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_zfgrepi (value gv, value patternv, value pathv)
 {
   CAMLparam3 (gv, patternv, pathv);
@@ -15081,9 +15097,9 @@ ocaml_guestfs_zfgrepi (value gv, value patternv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zfile (value gv, value methv, value pathv);
+value ocaml_guestfs_zfile (value gv, value methv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_zfile (value gv, value methv, value pathv)
 {
   CAMLparam3 (gv, methv, pathv);
@@ -15115,9 +15131,9 @@ ocaml_guestfs_zfile (value gv, value methv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zgrep (value gv, value regexv, value pathv);
+value ocaml_guestfs_zgrep (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_zgrep (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);
@@ -15151,9 +15167,9 @@ ocaml_guestfs_zgrep (value gv, value regexv, value pathv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-CAMLprim value ocaml_guestfs_zgrepi (value gv, value regexv, value pathv);
+value ocaml_guestfs_zgrepi (value gv, value regexv, value pathv);
 
-CAMLprim value
+value
 ocaml_guestfs_zgrepi (value gv, value regexv, value pathv)
 {
   CAMLparam3 (gv, regexv, pathv);

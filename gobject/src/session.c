@@ -1397,6 +1397,11 @@ guestfs_session_test0rbufferouterr(GuestfsSession *session, gsize *size_r, GErro
  * You should call this after configuring the handle (eg. adding drives)
  * but before performing any actions.
  * 
+ * Do not call guestfs_session_launch() twice on the same handle. Although
+ * it will not give an error (for historical reasons), the precise
+ * behaviour when you do this is not well defined. Handles are very cheap
+ * to create, so create a new one for each launch.
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -3436,7 +3441,9 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  *
  * add an image to examine or modify
  *
- * This function adds a virtual machine disk image @filename to libguestfs.
+ * This function adds a disk image called @filename to the handle.
+ * @filename may be a regular host file or a host device.
+ * 
  * The first time you call this function, the disk appears as "/dev/sda",
  * the second time as "/dev/sdb", and so on.
  * 
@@ -3477,8 +3484,9 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * deprecated guestfs_session_add_drive_with_if() call (q.v.)
  * 
  * @name
- * The name the drive had in the original guest, e.g. /dev/sdb. This is
- * used as a hint to the guest inspection process if it is available.
+ * The name the drive had in the original guest, e.g. "/dev/sdb". This
+ * is used as a hint to the guest inspection process if it is
+ * available.
  * 
  * Returns: true on success, false on error
  */
