@@ -38,6 +38,12 @@ For examples of using the API from C, see L<guestfs-examples(3)>.  For
 examples in other languages, see
 L</USING LIBGUESTFS WITH OTHER PROGRAMMING LANGUAGES> below.
 
+For tips and recipes, see L<guestfs-recipes(1)>.
+
+If you are having performance problems, read
+L<guestfs-performance(1)>.  To help test libguestfs, read
+L<libguestfs-test-tool(1)> and L<guestfs-testing(1)>.
+
 =head1 API OVERVIEW
 
 This section provides a gentler overview of the libguestfs API.  We
@@ -1561,32 +1567,40 @@ since the default error handler will ensure that an error message has
 been printed to C<stderr> before the program exits.
 
 For other programs the caller will almost certainly want to install an
-alternate error handler or do error handling in-line like this:
+alternate error handler or do error handling in-line as in the example
+below.  The non-C language bindings all install NULL error handlers
+and turn errors into exceptions using code similar to this:
 
+ const char *msg;
+ int errnum;
+ 
  /* This disables the default behaviour of printing errors
     on stderr. */
  guestfs_set_error_handler (g, NULL, NULL);
  
  if (guestfs_launch (g) == -1) {
-   /* Examine the error message and print it etc. */
-   char *msg = guestfs_last_error (g);
-   int errnum = guestfs_last_errno (g);
+   /* Examine the error message and print it, throw it,
+      etc. */
+   msg = guestfs_last_error (g);
+   errnum = guestfs_last_errno (g);
+ 
    fprintf (stderr, "%s", msg);
    if (errnum != 0)
      fprintf (stderr, ": %s", strerror (errnum));
    fprintf (stderr, "\n");
+ 
    /* ... */
  }
-
-Out of memory errors are handled differently.  The default action is
-to call L<abort(3)>.  If this is undesirable, then you can set a
-handler using L</guestfs_set_out_of_memory_handler>.
 
 L</guestfs_create> returns C<NULL> if the handle cannot be created,
 and because there is no handle if this happens there is no way to get
 additional error information.  However L</guestfs_create> is supposed
 to be a lightweight operation which can only fail because of
 insufficient memory (it returns NULL in this case).
+
+Out of memory errors are handled differently.  The default action is
+to call L<abort(3)>.  If this is undesirable, then you can set a
+handler using L</guestfs_set_out_of_memory_handler>.
 
 =head2 guestfs_last_error
 
@@ -1596,8 +1610,14 @@ This returns the last error message that happened on C<g>.  If
 there has not been an error since the handle was created, then this
 returns C<NULL>.
 
-The lifetime of the returned string is until the next error occurs, or
-L</guestfs_close> is called.
+Note the returned string does I<not> have a newline character at the
+end.  Most error messages are single lines.  Some are split over
+multiple lines and contain C<\n> characters within the string but not
+at the end.
+
+The lifetime of the returned string is until the next error occurs
+on the same handle, or L</guestfs_close> is called.  If you need
+to keep it longer, copy it.
 
 =head2 guestfs_last_errno
 
@@ -1607,8 +1627,11 @@ This returns the last error number (errno) that happened on C<g>.
 
 If successful, an errno integer not equal to zero is returned.
 
-If no error, this returns 0.  This call can return 0 in three
-situations:
+In many cases the special errno C<ENOTSUP> is returned if you tried to
+call a function or use a feature which is not supported.
+
+If no error number is available, this returns 0.  This call can return
+0 in three situations:
 
 =over 4
 
@@ -1691,11 +1714,11 @@ This returns the current out of memory handler.
 
 =head1 API CALLS
 
-@ACTIONS@
+__ACTIONS__
 
 =head1 STRUCTURES
 
-@STRUCTS@
+__STRUCTS__
 
 =head1 AVAILABILITY
 
@@ -1706,7 +1729,7 @@ the following groups of functions.  This test queries the
 appliance to see if the appliance you are currently using
 supports the functionality.
 
-@AVAILABILITY@
+__AVAILABILITY__
 
 =head2 GUESTFISH supported COMMAND
 
@@ -1884,6 +1907,8 @@ language-specific documentation for more details on that.
 
 For guestfish, see L<guestfish(1)/OPTIONAL ARGUMENTS>.
 
+=head1 EVENTS
+
 =head2 SETTING CALLBACKS TO HANDLE EVENTS
 
 B<Note:> This section documents the generic event mechanism introduced
@@ -1912,7 +1937,7 @@ Events may contain a payload, usually nothing (void), an array of 64
 bit unsigned integers, or a message buffer.  Payloads are discussed
 later on.
 
-=head3 CLASSES OF EVENTS
+=head2 CLASSES OF EVENTS
 
 =over 4
 
@@ -2069,6 +2094,8 @@ If no callback is registered: the event is ignored.
 
 =back
 
+=head2 EVENT API
+
 =head3 guestfs_set_event_callback
 
  int guestfs_set_event_callback (guestfs_h *g,
@@ -2142,7 +2169,7 @@ contain arbitrary 8 bit data, including NUL bytes.
 C<array> and C<array_len> is an array of 64 bit unsigned integers.  At
 the moment this is only used for progress messages.
 
-=head3 EXAMPLE: CAPTURING LOG MESSAGES
+=head2 EXAMPLE: CAPTURING LOG MESSAGES
 
 One motivation for the generic event API was to allow GUI programs to
 capture debug and other messages.  In libguestfs E<le> 1.8 these were
@@ -2850,11 +2877,77 @@ time.
 
 =head1 EXTENDING LIBGUESTFS
 
-=head2 ADDING A NEW API ACTION
+This section is for hackers who want to extend libguestfs itself.
+
+=head2 OVERVIEW OF THE SOURCE CODE
+
+Libguestfs source is located in the github repository
+L<https://github.com/libguestfs/libguestfs>
 
 Large amounts of boilerplate code in libguestfs (RPC, bindings,
-documentation) are generated, and this makes it easy to extend the
-libguestfs API.
+documentation) are generated.  This means that many source files will
+appear to be missing from a straightforward git checkout.  You have to
+run the generator (C<./autogen.sh && make -C generator>) in order to
+create those files.
+
+Libguestfs uses an autotools-based build system, with the main files
+being C<configure.ac> and C<Makefile.am>.  The C<generator>
+subdirectory contains the generator, plus files describing the API.
+The C<src> subdirectory contains source for the library.  The
+C<appliance> and C<daemon> subdirectories contain the source for the
+code that builds the appliance, and the code that runs in the
+appliance respectively.  Other directories are covered in the section
+L<SOURCE CODE SUBDIRECTORIES> below.
+
+Apart from the fact that all API entry points go via some generated
+code, the library is straightforward.  (In fact, even the generated
+code is designed to be readable, and should be read as ordinary code).
+Some actions run entirely in the library, and are written as C
+functions in files under C<src>.  Others are forwarded to the daemon
+where (after some generated RPC marshalling) they appear as C
+functions in files under C<daemon>.
+
+To build from source, first read the C<README> file.
+
+=head2 C<local*> FILES
+
+Files in the top source directory that begin with the prefix C<local*>
+are ignored by git.  These files can contain local configuration or
+scripts that you need to build libguestfs.
+
+By convention, I have a file called C<localconfigure> which is a
+simple wrapper around C<autogen.sh> containing local configure
+customizations that I need:
+
+ . localenv
+ ./autogen.sh \
+     --with-default-attach-method=libvirt \
+     --enable-gcc-warnings \
+     --enable-gtk-doc \
+     -C \
+     "$@"
+
+So I can use this to build libguestfs:
+
+ ./localconfigure && make
+
+If there is a file in the top build directory called C<localenv>, then
+it will be sourced by C<make>.  This file can contain any local
+environment variables needed, eg. for skipping tests:
+
+ # Use an alternate python binary.
+ export PYTHON=python3
+ # Skip this test, it is broken.
+ export SKIP_TEST_BTRFS_FSCK=1
+
+Note that C<localenv> is included by the top Makefile (so it's a
+Makefile fragment).  But if it is also sourced by your
+C<localconfigure> script then it is used as a shell script.
+
+=head2 ADDING A NEW API ACTION
+
+Because large amounts of boilerplate code in libguestfs are generated,
+this makes it easy to extend the libguestfs API.
 
 To add a new API action there are two changes:
 
@@ -3096,6 +3189,10 @@ L<virt-alignment-scan(1)> command and documentation.
 
 The libguestfs appliance, build scripts and so on.
 
+=item C<build-aux>
+
+Various build scripts used by autotools.
+
 =item C<cat>
 
 The L<virt-cat(1)>, L<virt-filesystems(1)> and L<virt-ls(1)> commands
@@ -3141,6 +3238,15 @@ L<guestmount(1)>, FUSE (userspace filesystem) built on top of libguestfs.
 The crucially important generator, used to automatically generate
 large amounts of boilerplate C code for things like RPC and bindings.
 
+=item C<gnulib>
+
+Gnulib is used as a portability library.  A copy of gnulib is included
+under here.
+
+=item C<html>
+
+Generated HTML manual pages.
+
 =item C<inspector>
 
 L<virt-inspector(1)>, the virtual machine image inspector.
@@ -3182,6 +3288,10 @@ Source code to the C library.
 =item C<sysprep>
 
 L<virt-sysprep(1)> command and documentation.
+
+=item C<tests>
+
+Tests.
 
 =item C<test-tool>
 

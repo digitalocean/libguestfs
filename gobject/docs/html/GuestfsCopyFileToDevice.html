@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsCopyFileToDevice</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsCopyDeviceToFile.html" title="GuestfsCopyDeviceToFile">
@@ -53,16 +53,16 @@ struct              <a class="link" href="GuestfsCopyFileToDevice.html#GuestfsCo
 <div class="refsect1">
 <a name="GuestfsCopyFileToDevice.object-hierarchy"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
-  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+  GObject
    +----GuestfsCopyFileToDevice
 </pre>
 </div>
 <div class="refsect1">
 <a name="GuestfsCopyFileToDevice.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
-  "<a class="link" href="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--destoffset" title='The "destoffset" property'>destoffset</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
-  "<a class="link" href="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--size" title='The "size" property'>size</a>"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
-  "<a class="link" href="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--srcoffset" title='The "srcoffset" property'>srcoffset</a>"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct
+  "<a class="link" href="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--destoffset" title='The "destoffset" property'>destoffset</a>"               <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--size" title='The "size" property'>size</a>"                     <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--srcoffset" title='The "srcoffset" property'>srcoffset</a>"                <span class="type">gint64</span>                : Read / Write / Construct
 </pre>
 </div>
 <div class="refsect1">
@@ -90,10 +90,13 @@ An object encapsulating optional arguments for guestfs_session_copy_file_to_devi
 <p>
 A class metadata object for GuestfsCopyFileToDevice.
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsCopyFileToDeviceClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsCopyFileToDeviceClass.parent-class"></a>parent_class</code></em>;</span></p></td>
 <td>The superclass of GuestfsCopyFileToDeviceClass</td>
 </tr></tbody>
 </table></div>
@@ -106,8 +109,11 @@ A class metadata object for GuestfsCopyFileToDevice.
 <p>
 Create a new GuestfsCopyFileToDevice object
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>a new GuestfsCopyFileToDevice object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
@@ -120,7 +126,7 @@ Create a new GuestfsCopyFileToDevice object
 <a name="GuestfsCopyFileToDevice.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
 <a name="GuestfsCopyFileToDevice--destoffset"></a><h3>The <code class="literal">"destoffset"</code> property</h3>
-<pre class="programlisting">  "destoffset"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<pre class="programlisting">  "destoffset"               <span class="type">gint64</span>                : Read / Write / Construct</pre>
 <p>
 A 64-bit integer.
 </p>
@@ -129,7 +135,7 @@ A 64-bit integer.
 <hr>
 <div class="refsect2">
 <a name="GuestfsCopyFileToDevice--size"></a><h3>The <code class="literal">"size"</code> property</h3>
-<pre class="programlisting">  "size"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<pre class="programlisting">  "size"                     <span class="type">gint64</span>                : Read / Write / Construct</pre>
 <p>
 A 64-bit integer.
 </p>
@@ -138,7 +144,7 @@ A 64-bit integer.
 <hr>
 <div class="refsect2">
 <a name="GuestfsCopyFileToDevice--srcoffset"></a><h3>The <code class="literal">"srcoffset"</code> property</h3>
-<pre class="programlisting">  "srcoffset"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write / Construct</pre>
+<pre class="programlisting">  "srcoffset"                <span class="type">gint64</span>                : Read / Write / Construct</pre>
 <p>
 A 64-bit integer.
 </p>

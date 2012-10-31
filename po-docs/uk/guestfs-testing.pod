@@ -17,15 +17,29 @@ careful.  The others are safe and won't modify anything.
 
 You can report bugs you find through this link:
 
-https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools
+L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
 
 or post on the mailing list (registration is B<not> required, but if you're
 not registered then you'll have to wait for a moderator to manually approve
 your message):
 
-https://www.redhat.com/mailman/listinfo/libguestfs
+L<https://www.redhat.com/mailman/listinfo/libguestfs>
 
 =head1 ТЕСТИ
+
+=head2 Run libguestfs-test-tool
+
+Віддайте команду:
+
+ libguestfs-test-tool
+
+This command does a very simple, non-destructive test that basic libguestfs
+is functioning.  You don't need to run it as root.
+
+If it I<doesn't> print C<===== TEST FINISHED OK =====>, report it as a bug.
+It is very important that you include the B<complete, unedited> output of
+C<libguestfs-test-tool> in your bug report.  See the L</BUGS> section at the
+end of this page.
 
 =head2 Check KVM acceleration is being used.
 

@@ -64,7 +64,7 @@
 /* Enable packet dumps in verbose mode. */
 #undef ENABLE_PACKET_DUMP
 
-/* enable systemtap/DTrace userspace probes */
+/* Enable systemtap/DTrace userspace probes. */
 #undef ENABLE_PROBES
 
 /* Define this to 1 if F_DUPFD behavior does not match POSIX */
@@ -127,7 +127,7 @@
    whether the gnulib module openat-safer shall be considered present. */
 #undef GNULIB_OPENAT_SAFER
 
-/* enable some gnulib portability checks */
+/* Enable some gnulib portability checks. */
 #undef GNULIB_PORTCHECK
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
@@ -420,7 +420,7 @@
 /* Define to 1 if you have the <attr/xattr.h> header file. */
 #undef HAVE_ATTR_XATTR_H
 
-/* Define to 1 if you have Augeas */
+/* Define to 1 if you have Augeas. */
 #undef HAVE_AUGEAS
 
 /* Define to 1 if you have the `aug_defnode' function. */
@@ -692,7 +692,7 @@
 /* Define to 1 if you have the `funlockfile' function. */
 #undef HAVE_FUNLOCKFILE
 
-/* Define to 1 if you have FUSE */
+/* Define to 1 if you have FUSE. */
 #undef HAVE_FUSE
 
 /* Define to 1 if you have the `fuse_opt_add_opt_escaped' function. */
@@ -749,7 +749,7 @@
 /* Define to 1 if you have the <glob.h> header file. */
 #undef HAVE_GLOB_H
 
-/* gobject library found at compile time. */
+/* GObject library found at compile time. */
 #undef HAVE_GOBJECT
 
 /* hivex library found at compile time. */
@@ -824,10 +824,10 @@
 /* Define to 1 if you have the `portablexdr' library (-lportablexdr). */
 #undef HAVE_LIBPORTABLEXDR
 
-/* Define if you have libreadline */
+/* Define if you have libreadline. */
 #undef HAVE_LIBREADLINE
 
-/* Define to 1 if you have libselinux */
+/* Define to 1 if you have libselinux. */
 #undef HAVE_LIBSELINUX
 
 /* libvirt found at compile time. */
@@ -955,10 +955,10 @@
 /* Define if the POSIX multithreading library has read/write locks. */
 #undef HAVE_PTHREAD_RWLOCK
 
-/* Found PyCapsule_New in libpython */
+/* Found PyCapsule_New in libpython. */
 #undef HAVE_PYCAPSULE_NEW
 
-/* Found PyString_AsString in libpython */
+/* Found PyString_AsString in libpython. */
 #undef HAVE_PYSTRING_ASSTRING
 
 /* Define to 1 if you have the `raise' function. */
@@ -1631,10 +1631,10 @@
 /* Define to 1 if you have the `realpath' function. */
 #undef HAVE_REALPATH
 
-/* Define to 1 if you have old-style register_printf_function */
+/* Define to 1 if you have old-style register_printf_function. */
 #undef HAVE_REGISTER_PRINTF_FUNCTION
 
-/* Define to 1 if you have new-style register_printf_specifier */
+/* Define to 1 if you have new-style register_printf_specifier. */
 #undef HAVE_REGISTER_PRINTF_SPECIFIER
 
 /* Define to 1 if you have the `removexattr' function. */
@@ -1784,7 +1784,7 @@
 /* Define to 1 if `st_birthtim.tv_nsec' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_BIRTHTIM_TV_NSEC
 
-/* Define to 1 if 'st_blksize' is a member of 'struct stat' */
+/* Define to 1 if 'st_blksize' is a member of 'struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_BLKSIZE
 
 /* Define to 1 if `st_blocks' is a member of `struct stat'. */
@@ -1978,10 +1978,10 @@
 /* Define to 1 if you have the <ws2tcpip.h> header file. */
 #undef HAVE_WS2TCPIP_H
 
-/* Define to 1 if xdr_uint64_t() exists */
+/* Define to 1 if xdr_uint64_t() exists. */
 #undef HAVE_XDR_UINT64_T
 
-/* Define to 1 if xdr_u_int64_t() exists */
+/* Define to 1 if xdr_u_int64_t() exists. */
 #undef HAVE_XDR_U_INT64_T
 
 /* Define to 1 if you have the <xlocale.h> header file. */
@@ -2064,16 +2064,16 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Extra version string */
+/* Extra version string. */
 #undef PACKAGE_VERSION_EXTRA
 
-/* Major version number */
+/* Major version number. */
 #undef PACKAGE_VERSION_MAJOR
 
-/* Minor version number */
+/* Minor version number. */
 #undef PACKAGE_VERSION_MINOR
 
-/* Release number */
+/* Release number. */
 #undef PACKAGE_VERSION_RELEASE
 
 /* Name of pamcut program. */
@@ -2111,7 +2111,7 @@
 /* qemu -machine accel=tcg option is broken (in qemu 0.15 only) */
 #undef QEMU_MACHINE_TYPE_IS_BROKEN
 
-/* extra options for qemu command line */
+/* Extra options for qemu command line. */
 #undef QEMU_OPTIONS
 
 /* Define to 1 if readlink fails to recognize a trailing slash. */
@@ -2238,10 +2238,10 @@
 /* Define if the native Windows multithreading API can be used. */
 #undef USE_WINDOWS_THREADS
 
-/* Define to 1 to run the daemon under valgrind */
+/* Define to 1 to run the daemon under valgrind. */
 #undef VALGRIND_DAEMON
 
-/* Path to save valgrind log files */
+/* Path to save valgrind log files. */
 #undef VALGRIND_LOG_PATH
 
 /* Version number of package */

@@ -169,7 +169,7 @@ L</SELINUX RELABELLING> below for more details.
 
 libguestfs API 呼び出しのトレースを有効にします。
 
-@EXTRA_OPTIONS@
+__EXTRA_OPTIONS__
 
 =back
 
@@ -194,7 +194,7 @@ that you want to have enabled.
 
 C<*> = I<--enable> オプションが与えられるとき、デフォルトで有効化されます。
 
-@OPERATIONS@
+__OPERATIONS__
 
 =head1 コピー方法およびクローン方法
 

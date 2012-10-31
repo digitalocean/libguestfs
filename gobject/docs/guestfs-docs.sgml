@@ -8,7 +8,7 @@
   <bookinfo>
     <title>Libguestfs GObject Bindings Reference Manual</title>
     <releaseinfo>
-      for libguestfs 1.18.8.
+      for libguestfs 1.18.10.
       <!--
       The latest version of this documentation can be found on-line at
       <ulink role="online-location" url="http://[SERVER]/guestfs/index.html">http://[SERVER]/guestfs/</ulink>.

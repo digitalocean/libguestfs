@@ -1080,11 +1080,11 @@ With a C<cmd> parameter, this displays detailed help for that command.
 
 これは guestfish を終了します。C<^D> キーを使用することもできます。
 
-@FISH_COMMANDS@
+__FISH_COMMANDS__
 
 =head1 コマンド
 
-@ACTIONS@
+__ACTIONS__
 
 =head1 終了ステータス
 

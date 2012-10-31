@@ -267,6 +267,17 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
+  /* Wait for udev devices to be created.  If you start libguestfs,
+   * especially with disks that contain complex (eg. mdadm) data
+   * already, then it is possible for the 'mdadm' and LVM commands
+   * that the init script runs to have not completed by the time the
+   * daemon starts executing library commands.  (This is very rare and
+   * hard to test however, but we have seen it in 'brew').  Run
+   * udev_settle, but do it as late as possible to minimize the chance
+   * that we'll have to do any waiting here.
+   */
+  udev_settle ();
+
   /* Send the magic length message which indicates that
    * userspace is up inside the guest.
    */
@@ -555,6 +566,14 @@ compare_device_names (const char *a, const char *b)
   /* Compare partitions numbers. */
   a += a_devlen;
   b += a_devlen;
+
+  /* If no partition numbers, bail -- the devices are the same.  This
+   * can happen in one peculiar case: where you have a mix of devices
+   * with different interfaces (eg. /dev/sda and /dev/vda).
+   * (RHBZ#858128).
+   */
+  if (!*a && !*b)
+    return 0;
 
   r = sscanf (a, "%d", &a_partnum);
   assert (r == 1);

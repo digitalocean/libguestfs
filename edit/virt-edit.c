@@ -198,9 +198,6 @@ main (int argc, char *argv[])
       perl_expr = optarg;
       break;
 
-    case 'h':
-      usage (EXIT_SUCCESS);
-
     case 'v':
       OPTION_v;
       break;
@@ -649,6 +646,8 @@ windows_path (guestfs_h *g, const char *root, const char *path)
   char *t = guestfs_case_sensitive_path (g, ret);
   free (ret);
   ret = t;
+  if (ret == NULL)
+    exit (EXIT_FAILURE);
 
   return ret;
 }

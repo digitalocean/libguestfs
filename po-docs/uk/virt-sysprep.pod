@@ -175,7 +175,7 @@ L</SELINUX RELABELLING> below for more details.
 
 Увімкнути трасування викликів програмного інтерфейсу libguestfs.
 
-@EXTRA_OPTIONS@
+__EXTRA_OPTIONS__
 
 =back
 
@@ -200,7 +200,7 @@ that you want to have enabled.
 
 C<*> = enabled by default when no I<--enable> option is given.
 
-@OPERATIONS@
+__OPERATIONS__
 
 =head1 КОПІЮВАННЯ ТА КЛОНУВАННЯ
 

@@ -370,7 +370,7 @@ extern void guestfs_perrorf (guestfs_h *g, const char *fs, ...)
 extern void *guestfs_safe_realloc (guestfs_h *g, void *ptr, size_t nbytes);
 extern char *guestfs_safe_strdup (guestfs_h *g, const char *str);
 extern char *guestfs_safe_strndup (guestfs_h *g, const char *str, size_t n);
-extern void *guestfs_safe_memdup (guestfs_h *g, void *ptr, size_t size);
+extern void *guestfs_safe_memdup (guestfs_h *g, const void *ptr, size_t size);
 extern char *guestfs_safe_asprintf (guestfs_h *g, const char *fs, ...)
   __attribute__((format (printf,2,3)));
 extern void guestfs___warning (guestfs_h *g, const char *fs, ...)
@@ -414,6 +414,7 @@ extern void guestfs___call_callbacks_message (guestfs_h *g, uint64_t event, cons
 extern void guestfs___call_callbacks_array (guestfs_h *g, uint64_t event, const uint64_t *array, size_t array_len);
 extern int guestfs___is_file_nocase (guestfs_h *g, const char *);
 extern int guestfs___is_dir_nocase (guestfs_h *g, const char *);
+extern void guestfs___launch_failed_error (guestfs_h *g);
 extern char *guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, uint64_t max_size);
 extern char *guestfs___case_sensitive_path_silently (guestfs_h *g, const char *);
 extern struct inspect_fs *guestfs___search_for_root (guestfs_h *g, const char *root);

@@ -104,6 +104,17 @@ main (int argc, char *argv[])
   struct guestfs_version *vers;
   char *p;
 
+  /* Everyone ignores the documentation, so ... */
+  printf ("     ************************************************************\n"
+          "     *                    IMPORTANT NOTICE\n"
+          "     *\n"
+          "     * When reporting bugs, include the COMPLETE, UNEDITED\n"
+          "     * output below in your bug report.\n"
+          "     *\n"
+          "     ************************************************************\n"
+          );
+  sleep (3);
+
   /* Create the handle. */
   g = guestfs_create ();
   if (g == NULL) {
@@ -211,7 +222,7 @@ main (int argc, char *argv[])
   printf ("guestfs_get_direct: %d\n", guestfs_get_direct (g));
   printf ("guestfs_get_memsize: %d\n", guestfs_get_memsize (g));
   printf ("guestfs_get_network: %d\n", guestfs_get_network (g));
-  printf ("guestfs_get_path: %s\n", guestfs_get_path (g));
+  printf ("guestfs_get_path: %s\n", guestfs_get_path (g) ? : "(null)");
   printf ("guestfs_get_pgroup: %d\n", guestfs_get_pgroup (g));
   printf ("guestfs_get_qemu: %s\n", guestfs_get_qemu (g));
   printf ("guestfs_get_recovery_proc: %d\n", guestfs_get_recovery_proc (g));

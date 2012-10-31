@@ -112,7 +112,12 @@ Internally libguestfs is implemented by running a virtual machine
 using L<qemu(1)>.
 
 You should call this after configuring the handle
-(eg. adding drives) but before performing any actions.");
+(eg. adding drives) but before performing any actions.
+
+Do not call C<guestfs_launch> twice on the same handle.  Although
+it will not give an error (for historical reasons), the precise
+behaviour when you do this is not well defined.  Handles are
+very cheap to create, so create a new one for each launch.");
 
   ("wait_ready", (RErr, [], []), -1, [NotInFish; DeprecatedBy "launch"],
    [],
@@ -1025,10 +1030,11 @@ not all belong to a single logical operating system
    [],
    "add an image to examine or modify",
    "\
-This function adds a virtual machine disk image C<filename> to
-libguestfs.  The first time you call this function, the disk
-appears as C</dev/sda>, the second time as C</dev/sdb>, and
-so on.
+This function adds a disk image called C<filename> to the handle.
+C<filename> may be a regular host file or a host device.
+
+The first time you call this function, the disk appears as
+C</dev/sda>, the second time as C</dev/sdb>, and so on.
 
 You don't necessarily need to be root when using libguestfs.  However
 you obviously do need sufficient permissions to access the filename
@@ -1069,8 +1075,9 @@ deprecated C<guestfs_add_drive_with_if> call (q.v.)
 
 =item C<name>
 
-The name the drive had in the original guest, e.g. /dev/sdb. This is used as a
-hint to the guest inspection process if it is available.
+The name the drive had in the original guest, e.g. C</dev/sdb>.
+This is used as a hint to the guest inspection process if
+it is available.
 
 =back");
 

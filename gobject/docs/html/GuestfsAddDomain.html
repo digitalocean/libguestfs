@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsAddDomain</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsAddDriveOpts.html" title="GuestfsAddDriveOpts">
@@ -52,7 +52,7 @@ struct              <a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain
 <div class="refsect1">
 <a name="GuestfsAddDomain.object-hierarchy"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
-  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+  GObject
    +----GuestfsAddDomain
 </pre>
 </div>
@@ -60,11 +60,11 @@ struct              <a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain
 <a name="GuestfsAddDomain.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--allowuuid" title='The "allowuuid" property'>allowuuid</a>"                <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
-  "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--iface" title='The "iface" property'>iface</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
-  "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--libvirturi" title='The "libvirturi" property'>libvirturi</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--iface" title='The "iface" property'>iface</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--libvirturi" title='The "libvirturi" property'>libvirturi</a>"               <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--live" title='The "live" property'>live</a>"                     <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
   "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--readonly" title='The "readonly" property'>readonly</a>"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
-  "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--readonlydisk" title='The "readonlydisk" property'>readonlydisk</a>"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDomain.html#GuestfsAddDomain--readonlydisk" title='The "readonlydisk" property'>readonlydisk</a>"             <span class="type">gchar</span>*                : Read / Write / Construct
 </pre>
 </div>
 <div class="refsect1">
@@ -92,10 +92,13 @@ An object encapsulating optional arguments for guestfs_session_add_domain.
 <p>
 A class metadata object for GuestfsAddDomain.
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="GuestfsAddDomainClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsAddDomainClass.parent-class"></a>parent_class</code></em>;</span></p></td>
 <td>The superclass of GuestfsAddDomainClass</td>
 </tr></tbody>
 </table></div>
@@ -107,8 +110,11 @@ A class metadata object for GuestfsAddDomain.
 <p>
 Create a new GuestfsAddDomain object
 </p>
-<div class="variablelist"><table border="0">
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
 <col align="left" valign="top">
+<col>
+</colgroup>
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>a new GuestfsAddDomain object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
@@ -130,7 +136,7 @@ A boolean.
 <hr>
 <div class="refsect2">
 <a name="GuestfsAddDomain--iface"></a><h3>The <code class="literal">"iface"</code> property</h3>
-<pre class="programlisting">  "iface"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<pre class="programlisting">  "iface"                    <span class="type">gchar</span>*                : Read / Write / Construct</pre>
 <p>
 A string.
 </p>
@@ -139,7 +145,7 @@ A string.
 <hr>
 <div class="refsect2">
 <a name="GuestfsAddDomain--libvirturi"></a><h3>The <code class="literal">"libvirturi"</code> property</h3>
-<pre class="programlisting">  "libvirturi"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<pre class="programlisting">  "libvirturi"               <span class="type">gchar</span>*                : Read / Write / Construct</pre>
 <p>
 A string.
 </p>
@@ -166,7 +172,7 @@ A boolean.
 <hr>
 <div class="refsect2">
 <a name="GuestfsAddDomain--readonlydisk"></a><h3>The <code class="literal">"readonlydisk"</code> property</h3>
-<pre class="programlisting">  "readonlydisk"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write / Construct</pre>
+<pre class="programlisting">  "readonlydisk"             <span class="type">gchar</span>*                : Read / Write / Construct</pre>
 <p>
 A string.
 </p>
