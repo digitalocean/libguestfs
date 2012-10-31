@@ -9,7 +9,7 @@ The supermin appliance files are not installed to the multiarch lib directory.
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index fb1f676..0a6fdde 100644
+index 6d8b74a..c6a48d9 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
 @@ -29,8 +29,8 @@ EXTRA_DIST = \
@@ -24,7 +24,7 @@ index fb1f676..0a6fdde 100644
  fs_DATA =
  superminfs_DATA = \
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 111e179..dd90c11 100644
+index bfd319b..7f4fb4d 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -161,7 +161,7 @@ noinst_LTLIBRARIES = liberrnostring.la libprotocol.la

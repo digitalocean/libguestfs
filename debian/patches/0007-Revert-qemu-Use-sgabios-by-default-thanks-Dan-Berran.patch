@@ -8,7 +8,7 @@ This reverts commit 82e3b7509dea41823c1ce58acd61d406d460c0ab.
  1 file changed, 9 deletions(-)
 
 diff --git a/src/launch.c b/src/launch.c
-index 54ba471..8993a5b 100644
+index 7447308..e4c4eaa 100644
 --- a/src/launch.c
 +++ b/src/launch.c
 @@ -775,15 +775,6 @@ launch_appliance (guestfs_h *g)

@@ -1,0 +1,21 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Wed, 31 Oct 2012 20:34:10 +0100
+Subject: message catalogs don't need to be executable
+
+---
+ po/Makefile.am |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/po/Makefile.am b/po/Makefile.am
+index 141896a..f401a6f 100644
+--- a/po/Makefile.am
++++ b/po/Makefile.am
+@@ -97,7 +97,7 @@ install-data-hook: $(GMOFILES)
+ 	for lang in $(linguas); do \
+ 	  d=$(DESTDIR)$(langinstdir)/$$lang/LC_MESSAGES; \
+ 	  mkdir -p $$d; \
+-	  install -m 0755 $$lang.gmo $$d/$(DOMAIN).mo; \
++	  install -m 0644 $$lang.gmo $$d/$(DOMAIN).mo; \
+ 	done
+ 
+ .PRECIOUS: $(DOMAIN).pot $(POFILES)

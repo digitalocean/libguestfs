@@ -5,3 +5,4 @@
 0005-ruby-install-to-vendor_ruby.patch
 0006-Fix-guestfs-supermin-appliance-path.patch
 0007-Revert-qemu-Use-sgabios-by-default-thanks-Dan-Berran.patch
+0008-message-catalogs-don-t-need-to-be-executable.patch
