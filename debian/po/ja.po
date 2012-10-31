@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# victory <victory.deb@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libguestfs\n"
+"Report-Msgid-Bugs-To: libguestfs@packages.debian.org\n"
+"POT-Creation-Date: 2012-09-21 14:34+0000\n"
+"PO-Revision-Date: 2012-09-21 23:34+0900\n"
+"Last-Translator: victory <victory.deb@gmail.com>\n"
+"Language-Team: Japanese <debian-japanese@lists.debian.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs-tools.templates:2001
+msgid "Create or update supermin appliance now?"
+msgstr "supermin appliance をここで生成または更新しますか?"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs-tools.templates:2001
+msgid ""
+"A \"supermin appliance\" is mandatory for libguestfs. It contains lists of "
+"files and directories. These will be copied into an ad-hoc file system "
+"whenever libguestfs starts a virtual machine."
+msgstr ""
+"\"supermin appliance\" が libguestfs には必須です。これにはファイルとディレク"
+"トリの一覧が含まれます。これは libguestfs が仮想マシンを起動する時にその場限り"
+"のファイルシステムにコピーされます。"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs-tools.templates:2001
+msgid ""
+"To generate or update a supermin appliance, network access to a package "
+"repository is needed."
+msgstr ""
+"supermin appliance の生成や更新にはネットワークアクセスかパッケージリポジトリ"
+"が必要です。"
+
+#. Type: boolean
+#. Description
+#: ../libguestfs-tools.templates:2001
+msgid ""
+"This can be done later by using the update-guestfs-appliance(8) utility."
+msgstr ""
+"これは後で update-guestfs-appliance(8) ユーティリティを使って行うことができま"
+"す。"
+
