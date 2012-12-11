@@ -1,3 +1,16 @@
+libguestfs (1:1.18.11-1) unstable; urgency=low
+
+  * New upstream version
+  * [9d3debd] Rebased patch queue; upstream has picked up mode 644 for
+    installed message catalogs
+  * [7b05d06] Relaxed Build-Depends since no graphical OCaml
+    programs/libraries are built
+  * [0bfad2b] Don't install gobject-introspection files to multiarch
+    locations (Closes: #695339)
+  * [85bbca9] Imported Upstream version 1.18.11
+
+ -- Hilko Bengen <bengen@debian.org>  Wed, 12 Dec 2012 00:50:33 +0100
+
 libguestfs (1:1.18.10-1) unstable; urgency=low
 
   * New upstream version
