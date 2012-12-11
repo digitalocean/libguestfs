@@ -1552,7 +1552,7 @@ abs_srcdir ?= $(shell cd $(top_srcdir)/po && pwd)
 @HAVE_GNU_GETTEXT_TRUE@	for lang in $(linguas); do \
 @HAVE_GNU_GETTEXT_TRUE@	  d=$(DESTDIR)$(langinstdir)/$$lang/LC_MESSAGES; \
 @HAVE_GNU_GETTEXT_TRUE@	  mkdir -p $$d; \
-@HAVE_GNU_GETTEXT_TRUE@	  install -m 0755 $$lang.gmo $$d/$(DOMAIN).mo; \
+@HAVE_GNU_GETTEXT_TRUE@	  install -m 0644 $$lang.gmo $$d/$(DOMAIN).mo; \
 @HAVE_GNU_GETTEXT_TRUE@	done
 
 @HAVE_GNU_GETTEXT_TRUE@.PRECIOUS: $(DOMAIN).pot $(POFILES)

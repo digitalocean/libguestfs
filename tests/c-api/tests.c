@@ -44,30 +44,22 @@
 static guestfs_h *g;
 static int suppress_error = 0;
 
-static void print_error (guestfs_h *g, void *data, const char *msg)
+static void
+print_error (guestfs_h *g, void *data, const char *msg)
 {
   if (!suppress_error)
     fprintf (stderr, "%s\n", msg);
 }
 
 /* FIXME: nearly identical code appears in fish.c */
-static void print_strings (char *const *argv)
+static void
+print_strings (char *const *argv)
 {
   size_t argc;
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     printf ("\t%s\n", argv[argc]);
 }
-
-/*
-static void print_table (char const *const *argv)
-{
-  size_t i;
-
-  for (i = 0; argv[i] != NULL; i += 2)
-    printf ("%s: %s\n", argv[i], argv[i+1]);
-}
-*/
 
 static int
 is_available (const char *group)
@@ -127,211 +119,230 @@ get_key (char **hash, const char *key)
   return NULL; /* key not found */
 }
 
-static void no_test_warnings (void)
+static void
+next_test (guestfs_h *g, size_t test_num, size_t nr_tests,
+           const char *test_name)
 {
-  fprintf (stderr, "warning: \"guestfs_test0\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rint\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rinterr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rint64\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rint64err\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rbool\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rboolerr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rconststring\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rconststringerr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rconstoptstring\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rconstoptstringerr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstring\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstringerr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstringlist\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstringlisterr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstruct\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstructerr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstructlist\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rstructlisterr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rhashtable\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rhashtableerr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rbufferout\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_test0rbufferouterr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_launch\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_wait_ready\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_kill_subprocess\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_add_drive\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_add_cdrom\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_add_drive_ro\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_config\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_qemu\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_path\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_append\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_append\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_autosync\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_verbose\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_verbose\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_state\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_memsize\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_selinux\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_selinux\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_direct\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_direct\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_recovery_proc\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_recovery_proc\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_add_drive_with_if\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_add_drive_ro_with_if\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_os\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_type\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_arch\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_distro\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_major_version\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_minor_version\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_product_name\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_mountpoints\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_filesystems\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_network\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_network\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_list_filesystems\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_add_drive_opts\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_windows_systemroot\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_roots\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_debug_cmdline\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_debug_drives\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_add_domain\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_package_format\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_package_management\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_list_applications\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_hostname\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_format\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_is_live\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_is_netinst\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_is_multipart\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_attach_method\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_product_variant\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_windows_current_control_set\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_drive_mappings\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inspect_get_icon\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_pgroup\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_pgroup\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_set_smp\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_get_smp\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_mount_local\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_mount_local_run\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_umount_local\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_shutdown\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_ll\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_pvs_full\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_vgs_full\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lvs_full\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_init\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_close\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_defvar\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_defnode\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_get\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_set\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_insert\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_rm\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_mv\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_match\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_save\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_load\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_ls\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_chown\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sfdisk\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lvm_remove_all\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_blockdev_getbsz\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_blockdev_setbsz\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_tar_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_tgz_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_mount_vfs\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_debug\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_pvresize\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sfdisk_N\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sfdisk_l\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sfdisk_kernel_geometry\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sfdisk_disk_geometry\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_vg_activate_all\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sh\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sh_lines\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_scrub_freespace\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_df\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_df_h\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_mount_loop\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_readdir\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_sfdiskM\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_zfile\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_getxattrs\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lgetxattrs\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_setxattr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lsetxattr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_removexattr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lremovexattr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_mountpoints\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_mkmountpoint\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_rmmountpoint\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inotify_rm_watch\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inotify_read\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_inotify_close\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_setcon\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_getcon\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_find0\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lchown\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lstatlist\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lxattrlist\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_readlinklist\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_part_list\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_pvuuid\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_vguuid\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lvuuid\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_vgpvuuids\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_vglvuuids\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_txz_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_ntfsresize\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_aug_clear\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_debug_upload\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_base64_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_checksums_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_resize2fs_size\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_pvresize_size\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_ntfsresize_size\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lvm_set_filter\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lvm_clear_filter\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_luks_open\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_luks_open_ro\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_luks_close\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_luks_format\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_luks_format_cipher\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_luks_add_key\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_luks_kill_slot\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_findfs_uuid\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_findfs_label\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_getxattr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_lgetxattr\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_resize2fs_M\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_internal_autosync\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_list_9p\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_mount_9p\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_list_dm_devices\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_ntfsresize_opts\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_btrfs_filesystem_resize\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_compress_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_compress_device_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_copy_device_to_device\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_copy_device_to_file\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_copy_file_to_device\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_md_create\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_list_md_devices\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_md_detail\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_md_stop\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_llz\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_ntfsclone_out\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_ntfsclone_in\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_isoinfo\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_vgmeta\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_md_stat\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_btrfs_subvolume_list\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_btrfs_subvolume_set_default\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_btrfs_device_add\" has no tests\n");
-  fprintf (stderr, "warning: \"guestfs_btrfs_device_delete\" has no tests\n");
+  if (guestfs_get_verbose (g))
+    printf ("-------------------------------------------------------------------------------\n");
+  printf ("%3zu/%3zu %s\n", test_num, nr_tests, test_name);
 }
 
-static int test_nr_devices_0_skip (void)
+static void
+no_test_warnings (void)
+{
+  size_t i;
+  const char *no_tests[] = {
+    "add_cdrom",
+    "add_domain",
+    "add_drive",
+    "add_drive_opts",
+    "add_drive_ro",
+    "add_drive_ro_with_if",
+    "add_drive_with_if",
+    "aug_clear",
+    "aug_close",
+    "aug_defnode",
+    "aug_defvar",
+    "aug_get",
+    "aug_init",
+    "aug_insert",
+    "aug_load",
+    "aug_ls",
+    "aug_match",
+    "aug_mv",
+    "aug_rm",
+    "aug_save",
+    "aug_set",
+    "base64_out",
+    "blockdev_getbsz",
+    "blockdev_setbsz",
+    "btrfs_device_add",
+    "btrfs_device_delete",
+    "btrfs_filesystem_resize",
+    "btrfs_subvolume_list",
+    "btrfs_subvolume_set_default",
+    "checksums_out",
+    "chown",
+    "compress_device_out",
+    "compress_out",
+    "config",
+    "copy_device_to_device",
+    "copy_device_to_file",
+    "copy_file_to_device",
+    "debug",
+    "debug_cmdline",
+    "debug_drives",
+    "debug_upload",
+    "df",
+    "df_h",
+    "find0",
+    "findfs_label",
+    "findfs_uuid",
+    "get_append",
+    "get_direct",
+    "get_network",
+    "get_pgroup",
+    "get_recovery_proc",
+    "get_selinux",
+    "get_smp",
+    "get_state",
+    "get_verbose",
+    "getcon",
+    "getxattr",
+    "getxattrs",
+    "inotify_close",
+    "inotify_read",
+    "inotify_rm_watch",
+    "inspect_get_arch",
+    "inspect_get_distro",
+    "inspect_get_drive_mappings",
+    "inspect_get_filesystems",
+    "inspect_get_format",
+    "inspect_get_hostname",
+    "inspect_get_icon",
+    "inspect_get_major_version",
+    "inspect_get_minor_version",
+    "inspect_get_mountpoints",
+    "inspect_get_package_format",
+    "inspect_get_package_management",
+    "inspect_get_product_name",
+    "inspect_get_product_variant",
+    "inspect_get_roots",
+    "inspect_get_type",
+    "inspect_get_windows_current_control_set",
+    "inspect_get_windows_systemroot",
+    "inspect_is_live",
+    "inspect_is_multipart",
+    "inspect_is_netinst",
+    "inspect_list_applications",
+    "inspect_os",
+    "internal_autosync",
+    "isoinfo",
+    "kill_subprocess",
+    "launch",
+    "lchown",
+    "lgetxattr",
+    "lgetxattrs",
+    "list_9p",
+    "list_dm_devices",
+    "list_filesystems",
+    "list_md_devices",
+    "ll",
+    "llz",
+    "lremovexattr",
+    "lsetxattr",
+    "lstatlist",
+    "luks_add_key",
+    "luks_close",
+    "luks_format",
+    "luks_format_cipher",
+    "luks_kill_slot",
+    "luks_open",
+    "luks_open_ro",
+    "lvm_clear_filter",
+    "lvm_remove_all",
+    "lvm_set_filter",
+    "lvs_full",
+    "lvuuid",
+    "lxattrlist",
+    "md_create",
+    "md_detail",
+    "md_stat",
+    "md_stop",
+    "mkmountpoint",
+    "mount_9p",
+    "mount_local",
+    "mount_local_run",
+    "mount_loop",
+    "mount_vfs",
+    "mountpoints",
+    "ntfsclone_in",
+    "ntfsclone_out",
+    "ntfsresize",
+    "ntfsresize_opts",
+    "ntfsresize_size",
+    "part_list",
+    "pvresize",
+    "pvresize_size",
+    "pvs_full",
+    "pvuuid",
+    "readdir",
+    "readlinklist",
+    "removexattr",
+    "resize2fs_M",
+    "resize2fs_size",
+    "rmmountpoint",
+    "scrub_freespace",
+    "set_append",
+    "set_attach_method",
+    "set_autosync",
+    "set_direct",
+    "set_memsize",
+    "set_network",
+    "set_path",
+    "set_pgroup",
+    "set_qemu",
+    "set_recovery_proc",
+    "set_selinux",
+    "set_smp",
+    "set_verbose",
+    "setcon",
+    "setxattr",
+    "sfdisk",
+    "sfdiskM",
+    "sfdisk_N",
+    "sfdisk_disk_geometry",
+    "sfdisk_kernel_geometry",
+    "sfdisk_l",
+    "sh",
+    "sh_lines",
+    "shutdown",
+    "tar_out",
+    "test0",
+    "test0rbool",
+    "test0rboolerr",
+    "test0rbufferout",
+    "test0rbufferouterr",
+    "test0rconstoptstring",
+    "test0rconstoptstringerr",
+    "test0rconststring",
+    "test0rconststringerr",
+    "test0rhashtable",
+    "test0rhashtableerr",
+    "test0rint",
+    "test0rint64",
+    "test0rint64err",
+    "test0rinterr",
+    "test0rstring",
+    "test0rstringerr",
+    "test0rstringlist",
+    "test0rstringlisterr",
+    "test0rstruct",
+    "test0rstructerr",
+    "test0rstructlist",
+    "test0rstructlisterr",
+    "tgz_out",
+    "txz_out",
+    "umount_local",
+    "vg_activate_all",
+    "vglvuuids",
+    "vgmeta",
+    "vgpvuuids",
+    "vgs_full",
+    "vguuid",
+    "wait_ready",
+    "zfile",
+    NULL
+  };
+
+  for (i = 0; no_tests[i] != NULL; ++i)
+    fprintf (stderr, "warning: \"guestfs_%s\" has no tests\n",
+             no_tests[i]);
+}
+
+static int
+test_nr_devices_0_skip (void)
 {
   const char *str;
 
@@ -345,7 +356,8 @@ static int test_nr_devices_0_skip (void)
   return 0;
 }
 
-static int test_nr_devices_0 (void)
+static int
+test_nr_devices_0 (void)
 {
   if (test_nr_devices_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_nr_devices_0");
@@ -383,14 +395,15 @@ static int test_nr_devices_0 (void)
     if (r == -1)
       return -1;
     if (r != 4) {
-      fprintf (stderr, "test_nr_devices_0: expected 4 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 4 but got %d\n",               "test_nr_devices_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_device_index_0_skip (void)
+static int
+test_device_index_0_skip (void)
 {
   const char *str;
 
@@ -404,7 +417,8 @@ static int test_device_index_0_skip (void)
   return 0;
 }
 
-static int test_device_index_0 (void)
+static int
+test_device_index_0 (void)
 {
   if (test_device_index_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_device_index_0");
@@ -443,14 +457,15 @@ static int test_device_index_0 (void)
     if (r == -1)
       return -1;
     if (r != 0) {
-      fprintf (stderr, "test_device_index_0: expected 0 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 0 but got %d\n",               "test_device_index_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_btrfs_fsck_0_skip (void)
+static int
+test_btrfs_fsck_0_skip (void)
 {
   const char *str;
 
@@ -464,7 +479,8 @@ static int test_btrfs_fsck_0_skip (void)
   return 0;
 }
 
-static int test_btrfs_fsck_0 (void)
+static int
+test_btrfs_fsck_0 (void)
 {
   if (test_btrfs_fsck_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_btrfs_fsck_0");
@@ -540,7 +556,8 @@ static int test_btrfs_fsck_0 (void)
   return 0;
 }
 
-static int test_btrfs_set_seeding_0_skip (void)
+static int
+test_btrfs_set_seeding_0_skip (void)
 {
   const char *str;
 
@@ -554,7 +571,8 @@ static int test_btrfs_set_seeding_0_skip (void)
   return 0;
 }
 
-static int test_btrfs_set_seeding_0 (void)
+static int
+test_btrfs_set_seeding_0 (void)
 {
   if (test_btrfs_set_seeding_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_btrfs_set_seeding_0");
@@ -636,7 +654,8 @@ static int test_btrfs_set_seeding_0 (void)
   return 0;
 }
 
-static int test_btrfs_filesystem_sync_0_skip (void)
+static int
+test_btrfs_filesystem_sync_0_skip (void)
 {
   const char *str;
 
@@ -650,7 +669,8 @@ static int test_btrfs_filesystem_sync_0_skip (void)
   return 0;
 }
 
-static int test_btrfs_filesystem_sync_0 (void)
+static int
+test_btrfs_filesystem_sync_0 (void)
 {
   if (test_btrfs_filesystem_sync_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_btrfs_filesystem_sync_0");
@@ -749,7 +769,8 @@ static int test_btrfs_filesystem_sync_0 (void)
   return 0;
 }
 
-static int test_btrfs_subvolume_delete_0_skip (void)
+static int
+test_btrfs_subvolume_delete_0_skip (void)
 {
   const char *str;
 
@@ -763,7 +784,8 @@ static int test_btrfs_subvolume_delete_0_skip (void)
   return 0;
 }
 
-static int test_btrfs_subvolume_delete_0 (void)
+static int
+test_btrfs_subvolume_delete_0 (void)
 {
   if (test_btrfs_subvolume_delete_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_btrfs_subvolume_delete_0");
@@ -854,7 +876,8 @@ static int test_btrfs_subvolume_delete_0 (void)
   return 0;
 }
 
-static int test_btrfs_subvolume_snapshot_0_skip (void)
+static int
+test_btrfs_subvolume_snapshot_0_skip (void)
 {
   const char *str;
 
@@ -868,7 +891,8 @@ static int test_btrfs_subvolume_snapshot_0_skip (void)
   return 0;
 }
 
-static int test_btrfs_subvolume_snapshot_0 (void)
+static int
+test_btrfs_subvolume_snapshot_0 (void)
 {
   if (test_btrfs_subvolume_snapshot_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_btrfs_subvolume_snapshot_0");
@@ -984,7 +1008,8 @@ static int test_btrfs_subvolume_snapshot_0 (void)
   return 0;
 }
 
-static int test_get_e2generation_0_skip (void)
+static int
+test_get_e2generation_0_skip (void)
 {
   const char *str;
 
@@ -998,7 +1023,8 @@ static int test_get_e2generation_0_skip (void)
   return 0;
 }
 
-static int test_get_e2generation_0 (void)
+static int
+test_get_e2generation_0 (void)
 {
   if (test_get_e2generation_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2generation_0");
@@ -1063,14 +1089,15 @@ static int test_get_e2generation_0 (void)
     if (r == -1)
       return -1;
     if (r != 123456) {
-      fprintf (stderr, "test_get_e2generation_0: expected 123456 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 123456 but got %d\n",               "test_get_e2generation_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_get_e2attrs_0_skip (void)
+static int
+test_get_e2attrs_0_skip (void)
 {
   const char *str;
 
@@ -1084,7 +1111,8 @@ static int test_get_e2attrs_0_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_0 (void)
+static int
+test_get_e2attrs_0 (void)
 {
   if (test_get_e2attrs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_0");
@@ -1142,7 +1170,7 @@ static int test_get_e2attrs_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_get_e2attrs_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_get_e2attrs_0", expected, r);
       return -1;
     }
     free (r);
@@ -1150,7 +1178,8 @@ static int test_get_e2attrs_0 (void)
   return 0;
 }
 
-static int test_get_e2attrs_1_skip (void)
+static int
+test_get_e2attrs_1_skip (void)
 {
   const char *str;
 
@@ -1164,7 +1193,8 @@ static int test_get_e2attrs_1_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_1 (void)
+static int
+test_get_e2attrs_1 (void)
 {
   if (test_get_e2attrs_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_1");
@@ -1234,7 +1264,7 @@ static int test_get_e2attrs_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_get_e2attrs_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_get_e2attrs_1", expected, r);
       return -1;
     }
     free (r);
@@ -1242,7 +1272,8 @@ static int test_get_e2attrs_1 (void)
   return 0;
 }
 
-static int test_get_e2attrs_2_skip (void)
+static int
+test_get_e2attrs_2_skip (void)
 {
   const char *str;
 
@@ -1256,7 +1287,8 @@ static int test_get_e2attrs_2_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_2 (void)
+static int
+test_get_e2attrs_2 (void)
 {
   if (test_get_e2attrs_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_2");
@@ -1338,7 +1370,7 @@ static int test_get_e2attrs_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_get_e2attrs_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_get_e2attrs_2", expected, r);
       return -1;
     }
     free (r);
@@ -1346,7 +1378,8 @@ static int test_get_e2attrs_2 (void)
   return 0;
 }
 
-static int test_get_e2attrs_3_skip (void)
+static int
+test_get_e2attrs_3_skip (void)
 {
   const char *str;
 
@@ -1360,7 +1393,8 @@ static int test_get_e2attrs_3_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_3 (void)
+static int
+test_get_e2attrs_3 (void)
 {
   if (test_get_e2attrs_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_3");
@@ -1490,7 +1524,7 @@ static int test_get_e2attrs_3 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_get_e2attrs_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_get_e2attrs_3", expected, r);
       return -1;
     }
     free (r);
@@ -1498,7 +1532,8 @@ static int test_get_e2attrs_3 (void)
   return 0;
 }
 
-static int test_get_e2attrs_4_skip (void)
+static int
+test_get_e2attrs_4_skip (void)
 {
   const char *str;
 
@@ -1512,7 +1547,8 @@ static int test_get_e2attrs_4_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_4 (void)
+static int
+test_get_e2attrs_4 (void)
 {
   if (test_get_e2attrs_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_4");
@@ -1576,7 +1612,8 @@ static int test_get_e2attrs_4 (void)
   return 0;
 }
 
-static int test_get_e2attrs_5_skip (void)
+static int
+test_get_e2attrs_5_skip (void)
 {
   const char *str;
 
@@ -1590,7 +1627,8 @@ static int test_get_e2attrs_5_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_5 (void)
+static int
+test_get_e2attrs_5 (void)
 {
   if (test_get_e2attrs_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_5");
@@ -1654,7 +1692,8 @@ static int test_get_e2attrs_5 (void)
   return 0;
 }
 
-static int test_get_e2attrs_6_skip (void)
+static int
+test_get_e2attrs_6_skip (void)
 {
   const char *str;
 
@@ -1668,7 +1707,8 @@ static int test_get_e2attrs_6_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_6 (void)
+static int
+test_get_e2attrs_6 (void)
 {
   if (test_get_e2attrs_6_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_6");
@@ -1732,7 +1772,8 @@ static int test_get_e2attrs_6 (void)
   return 0;
 }
 
-static int test_get_e2attrs_7_skip (void)
+static int
+test_get_e2attrs_7_skip (void)
 {
   const char *str;
 
@@ -1746,7 +1787,8 @@ static int test_get_e2attrs_7_skip (void)
   return 0;
 }
 
-static int test_get_e2attrs_7 (void)
+static int
+test_get_e2attrs_7 (void)
 {
   if (test_get_e2attrs_7_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2attrs_7");
@@ -1810,7 +1852,8 @@ static int test_get_e2attrs_7 (void)
   return 0;
 }
 
-static int test_mkfs_btrfs_0_skip (void)
+static int
+test_mkfs_btrfs_0_skip (void)
 {
   const char *str;
 
@@ -1824,7 +1867,8 @@ static int test_mkfs_btrfs_0_skip (void)
   return 0;
 }
 
-static int test_mkfs_btrfs_0 (void)
+static int
+test_mkfs_btrfs_0 (void)
 {
   if (test_mkfs_btrfs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_btrfs_0");
@@ -1893,7 +1937,8 @@ static int test_mkfs_btrfs_0 (void)
   return 0;
 }
 
-static int test_isoinfo_device_0_skip (void)
+static int
+test_isoinfo_device_0_skip (void)
 {
   const char *str;
 
@@ -1907,7 +1952,8 @@ static int test_isoinfo_device_0_skip (void)
   return 0;
 }
 
-static int test_isoinfo_device_0 (void)
+static int
+test_isoinfo_device_0 (void)
 {
   if (test_isoinfo_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_isoinfo_device_0");
@@ -1946,33 +1992,33 @@ static int test_isoinfo_device_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r->iso_system_id, "LINUX")) {
-      fprintf (stderr, "test_isoinfo_device_0: iso_system_id was \"%s\", expected \"LINUX\"\n",
-               r->iso_system_id);
+      fprintf (stderr, "%s: iso_system_id was \"%s\", expected \"LINUX\"\n",
+               "test_isoinfo_device_0", r->iso_system_id);
       return -1;
     }
     if (STRNEQ (r->iso_volume_id, "CDROM")) {
-      fprintf (stderr, "test_isoinfo_device_0: iso_volume_id was \"%s\", expected \"CDROM\"\n",
-               r->iso_volume_id);
+      fprintf (stderr, "%s: iso_volume_id was \"%s\", expected \"CDROM\"\n",
+               "test_isoinfo_device_0", r->iso_volume_id);
       return -1;
     }
     if (STRNEQ (r->iso_volume_set_id, "")) {
-      fprintf (stderr, "test_isoinfo_device_0: iso_volume_set_id was \"%s\", expected \"\"\n",
-               r->iso_volume_set_id);
+      fprintf (stderr, "%s: iso_volume_set_id was \"%s\", expected \"\"\n",
+               "test_isoinfo_device_0", r->iso_volume_set_id);
       return -1;
     }
     if (r->iso_volume_set_size != 1) {
-      fprintf (stderr, "test_isoinfo_device_0: iso_volume_set_size was %d, expected 1\n",
-               (int) r->iso_volume_set_size);
+      fprintf (stderr, "%s: iso_volume_set_size was %d, expected 1\n",
+               "test_isoinfo_device_0", (int) r->iso_volume_set_size);
       return -1;
     }
     if (r->iso_volume_sequence_number != 1) {
-      fprintf (stderr, "test_isoinfo_device_0: iso_volume_sequence_number was %d, expected 1\n",
-               (int) r->iso_volume_sequence_number);
+      fprintf (stderr, "%s: iso_volume_sequence_number was %d, expected 1\n",
+               "test_isoinfo_device_0", (int) r->iso_volume_sequence_number);
       return -1;
     }
     if (r->iso_logical_block_size != 2048) {
-      fprintf (stderr, "test_isoinfo_device_0: iso_logical_block_size was %d, expected 2048\n",
-               (int) r->iso_logical_block_size);
+      fprintf (stderr, "%s: iso_logical_block_size was %d, expected 2048\n",
+               "test_isoinfo_device_0", (int) r->iso_logical_block_size);
       return -1;
     }
     guestfs_free_isoinfo (r);
@@ -1980,7 +2026,8 @@ static int test_isoinfo_device_0 (void)
   return 0;
 }
 
-static int test_lvcreate_free_0_skip (void)
+static int
+test_lvcreate_free_0_skip (void)
 {
   const char *str;
 
@@ -1994,7 +2041,8 @@ static int test_lvcreate_free_0_skip (void)
   return 0;
 }
 
-static int test_lvcreate_free_0 (void)
+static int
+test_lvcreate_free_0 (void)
 {
   if (test_lvcreate_free_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvcreate_free_0");
@@ -2103,55 +2151,55 @@ static int test_lvcreate_free_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_lvcreate_free_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_free_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG/LV1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_lvcreate_free_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_free_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_lvcreate_free_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_free_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG/LV2";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_lvcreate_free_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_free_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_lvcreate_free_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_free_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG/LV3";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_lvcreate_free_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_free_0", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_lvcreate_free_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_free_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG/LV4";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_lvcreate_free_0: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_free_0", expected, r[3]);
         return -1;
       }
     }
     if (r[4] != NULL) {
-      fprintf (stderr, "test_lvcreate_free_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvcreate_free_0");
       print_strings (r);
       return -1;
     }
@@ -2162,7 +2210,8 @@ static int test_lvcreate_free_0 (void)
   return 0;
 }
 
-static int test_zero_free_space_0_skip (void)
+static int
+test_zero_free_space_0_skip (void)
 {
   const char *str;
 
@@ -2176,7 +2225,8 @@ static int test_zero_free_space_0_skip (void)
   return 0;
 }
 
-static int test_zero_free_space_0 (void)
+static int
+test_zero_free_space_0 (void)
 {
   if (test_zero_free_space_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zero_free_space_0");
@@ -2228,7 +2278,8 @@ static int test_zero_free_space_0 (void)
   return 0;
 }
 
-static int test_set_label_0_skip (void)
+static int
+test_set_label_0_skip (void)
 {
   const char *str;
 
@@ -2242,7 +2293,8 @@ static int test_set_label_0_skip (void)
   return 0;
 }
 
-static int test_set_label_0 (void)
+static int
+test_set_label_0 (void)
 {
   if (test_set_label_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_label_0");
@@ -2319,7 +2371,7 @@ static int test_set_label_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_set_label_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_set_label_0", expected, r);
       return -1;
     }
     free (r);
@@ -2327,7 +2379,8 @@ static int test_set_label_0 (void)
   return 0;
 }
 
-static int test_set_label_1_skip (void)
+static int
+test_set_label_1_skip (void)
 {
   const char *str;
 
@@ -2341,7 +2394,8 @@ static int test_set_label_1_skip (void)
   return 0;
 }
 
-static int test_set_label_1 (void)
+static int
+test_set_label_1 (void)
 {
   if (test_set_label_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_label_1");
@@ -2413,7 +2467,7 @@ static int test_set_label_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_set_label_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_set_label_1", expected, r);
       return -1;
     }
     free (r);
@@ -2421,7 +2475,8 @@ static int test_set_label_1 (void)
   return 0;
 }
 
-static int test_set_label_2_skip (void)
+static int
+test_set_label_2_skip (void)
 {
   const char *str;
 
@@ -2435,7 +2490,8 @@ static int test_set_label_2_skip (void)
   return 0;
 }
 
-static int test_set_label_2 (void)
+static int
+test_set_label_2 (void)
 {
   if (test_set_label_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_label_2");
@@ -2495,7 +2551,8 @@ static int test_set_label_2 (void)
   return 0;
 }
 
-static int test_ntfsfix_0_skip (void)
+static int
+test_ntfsfix_0_skip (void)
 {
   const char *str;
 
@@ -2509,7 +2566,8 @@ static int test_ntfsfix_0_skip (void)
   return 0;
 }
 
-static int test_ntfsfix_0 (void)
+static int
+test_ntfsfix_0 (void)
 {
   if (test_ntfsfix_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ntfsfix_0");
@@ -2581,7 +2639,8 @@ static int test_ntfsfix_0 (void)
   return 0;
 }
 
-static int test_wipefs_0_skip (void)
+static int
+test_wipefs_0_skip (void)
 {
   const char *str;
 
@@ -2595,7 +2654,8 @@ static int test_wipefs_0_skip (void)
   return 0;
 }
 
-static int test_wipefs_0 (void)
+static int
+test_wipefs_0 (void)
 {
   if (test_wipefs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_wipefs_0");
@@ -2689,6 +2749,14 @@ static int test_wipefs_0 (void)
   }
   /* TestRun for wipefs (0) */
   {
+    const char *pathordevice = "/dev/VG/LV";
+    int r;
+    suppress_error = 0;
+    r = guestfs_umount (g, pathordevice);
+    if (r == -1)
+      return -1;
+  }
+  {
     const char *device = "/dev/VG/LV";
     int r;
     suppress_error = 0;
@@ -2699,7 +2767,8 @@ static int test_wipefs_0 (void)
   return 0;
 }
 
-static int test_blkid_0_skip (void)
+static int
+test_blkid_0_skip (void)
 {
   const char *str;
 
@@ -2713,7 +2782,8 @@ static int test_blkid_0_skip (void)
   return 0;
 }
 
-static int test_blkid_0 (void)
+static int
+test_blkid_0 (void)
 {
   if (test_blkid_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blkid_0");
@@ -2767,66 +2837,66 @@ static int test_blkid_0 (void)
     expected = "ext2";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_blkid_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_blkid_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_blkid_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_blkid_0", key, expected, value);
       return -1;
     }
     key = "USAGE";
     expected = "filesystem";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_blkid_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_blkid_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_blkid_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_blkid_0", key, expected, value);
       return -1;
     }
     key = "PART_ENTRY_NUMBER";
     expected = "1";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_blkid_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_blkid_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_blkid_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_blkid_0", key, expected, value);
       return -1;
     }
     key = "PART_ENTRY_TYPE";
     expected = "0x83";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_blkid_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_blkid_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_blkid_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_blkid_0", key, expected, value);
       return -1;
     }
     key = "PART_ENTRY_OFFSET";
     expected = "128";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_blkid_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_blkid_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_blkid_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_blkid_0", key, expected, value);
       return -1;
     }
     key = "PART_ENTRY_SIZE";
     expected = "102145";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_blkid_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_blkid_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_blkid_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_blkid_0", key, expected, value);
       return -1;
     }
     for (i = 0; r[i] != NULL; ++i)
@@ -2836,7 +2906,8 @@ static int test_blkid_0 (void)
   return 0;
 }
 
-static int test_tune2fs_0_skip (void)
+static int
+test_tune2fs_0_skip (void)
 {
   const char *str;
 
@@ -2850,7 +2921,8 @@ static int test_tune2fs_0_skip (void)
   return 0;
 }
 
-static int test_tune2fs_0 (void)
+static int
+test_tune2fs_0 (void)
 {
   if (test_tune2fs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tune2fs_0");
@@ -2917,22 +2989,22 @@ static int test_tune2fs_0 (void)
     expected = "0 (<none>)";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_0", key, expected, value);
       return -1;
     }
     key = "Maximum mount count";
     expected = "-1";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_0", key, expected, value);
       return -1;
     }
     for (i = 0; r[i] != NULL; ++i)
@@ -2942,7 +3014,8 @@ static int test_tune2fs_0 (void)
   return 0;
 }
 
-static int test_tune2fs_1_skip (void)
+static int
+test_tune2fs_1_skip (void)
 {
   const char *str;
 
@@ -2956,7 +3029,8 @@ static int test_tune2fs_1_skip (void)
   return 0;
 }
 
-static int test_tune2fs_1 (void)
+static int
+test_tune2fs_1 (void)
 {
   if (test_tune2fs_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tune2fs_1");
@@ -3023,22 +3097,22 @@ static int test_tune2fs_1 (void)
     expected = "86400 (1 day)";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_1: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_1", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_1: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_1", key, expected, value);
       return -1;
     }
     key = "Maximum mount count";
     expected = "-1";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_1: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_1", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_1: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_1", key, expected, value);
       return -1;
     }
     for (i = 0; r[i] != NULL; ++i)
@@ -3048,7 +3122,8 @@ static int test_tune2fs_1 (void)
   return 0;
 }
 
-static int test_tune2fs_2_skip (void)
+static int
+test_tune2fs_2_skip (void)
 {
   const char *str;
 
@@ -3062,7 +3137,8 @@ static int test_tune2fs_2_skip (void)
   return 0;
 }
 
-static int test_tune2fs_2 (void)
+static int
+test_tune2fs_2 (void)
 {
   if (test_tune2fs_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tune2fs_2");
@@ -3129,22 +3205,22 @@ static int test_tune2fs_2 (void)
     expected = "1 (user bin)";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_2: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_2", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_2: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_2", key, expected, value);
       return -1;
     }
     key = "Reserved blocks gid";
     expected = "1 (group bin)";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_2: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_2", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_2: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_2", key, expected, value);
       return -1;
     }
     for (i = 0; r[i] != NULL; ++i)
@@ -3154,7 +3230,8 @@ static int test_tune2fs_2 (void)
   return 0;
 }
 
-static int test_tune2fs_3_skip (void)
+static int
+test_tune2fs_3_skip (void)
 {
   const char *str;
 
@@ -3168,7 +3245,8 @@ static int test_tune2fs_3_skip (void)
   return 0;
 }
 
-static int test_tune2fs_3 (void)
+static int
+test_tune2fs_3 (void)
 {
   if (test_tune2fs_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tune2fs_3");
@@ -3235,22 +3313,22 @@ static int test_tune2fs_3 (void)
     expected = "0 (user root)";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_3: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_3", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_3: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_3", key, expected, value);
       return -1;
     }
     key = "Reserved blocks gid";
     expected = "0 (group root)";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_3: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_3", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_3: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_3", key, expected, value);
       return -1;
     }
     for (i = 0; r[i] != NULL; ++i)
@@ -3260,7 +3338,8 @@ static int test_tune2fs_3 (void)
   return 0;
 }
 
-static int test_copy_file_to_file_0_skip (void)
+static int
+test_copy_file_to_file_0_skip (void)
 {
   const char *str;
 
@@ -3274,7 +3353,8 @@ static int test_copy_file_to_file_0_skip (void)
   return 0;
 }
 
-static int test_copy_file_to_file_0 (void)
+static int
+test_copy_file_to_file_0 (void)
 {
   if (test_copy_file_to_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_copy_file_to_file_0");
@@ -3354,11 +3434,11 @@ static int test_copy_file_to_file_0 (void)
     if (r == NULL)
       return -1;
     if (size != 12) {
-      fprintf (stderr, "test_copy_file_to_file_0: returned size of buffer wrong, expected 12 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 12 but got %zu\n", "test_copy_file_to_file_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_copy_file_to_file_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_copy_file_to_file_0", expected, r);
       return -1;
     }
     free (r);
@@ -3366,7 +3446,8 @@ static int test_copy_file_to_file_0 (void)
   return 0;
 }
 
-static int test_part_to_partnum_0_skip (void)
+static int
+test_part_to_partnum_0_skip (void)
 {
   const char *str;
 
@@ -3380,7 +3461,8 @@ static int test_part_to_partnum_0_skip (void)
   return 0;
 }
 
-static int test_part_to_partnum_0 (void)
+static int
+test_part_to_partnum_0 (void)
 {
   if (test_part_to_partnum_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_to_partnum_0");
@@ -3428,14 +3510,15 @@ static int test_part_to_partnum_0 (void)
     if (r == -1)
       return -1;
     if (r != 1) {
-      fprintf (stderr, "test_part_to_partnum_0: expected 1 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 1 but got %d\n",               "test_part_to_partnum_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_part_to_partnum_1_skip (void)
+static int
+test_part_to_partnum_1_skip (void)
 {
   const char *str;
 
@@ -3449,7 +3532,8 @@ static int test_part_to_partnum_1_skip (void)
   return 0;
 }
 
-static int test_part_to_partnum_1 (void)
+static int
+test_part_to_partnum_1 (void)
 {
   if (test_part_to_partnum_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_to_partnum_1");
@@ -3491,7 +3575,8 @@ static int test_part_to_partnum_1 (void)
   return 0;
 }
 
-static int test_write_append_0_skip (void)
+static int
+test_write_append_0_skip (void)
 {
   const char *str;
 
@@ -3505,7 +3590,8 @@ static int test_write_append_0_skip (void)
   return 0;
 }
 
-static int test_write_append_0 (void)
+static int
+test_write_append_0 (void)
 {
   if (test_write_append_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_append_0");
@@ -3595,7 +3681,7 @@ static int test_write_append_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_append_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_write_append_0", expected, r);
       return -1;
     }
     free (r);
@@ -3603,7 +3689,8 @@ static int test_write_append_0 (void)
   return 0;
 }
 
-static int test_is_zero_device_0_skip (void)
+static int
+test_is_zero_device_0_skip (void)
 {
   const char *str;
 
@@ -3617,7 +3704,8 @@ static int test_is_zero_device_0_skip (void)
   return 0;
 }
 
-static int test_is_zero_device_0 (void)
+static int
+test_is_zero_device_0 (void)
 {
   if (test_is_zero_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_zero_device_0");
@@ -3700,14 +3788,15 @@ static int test_is_zero_device_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_zero_device_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_zero_device_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_zero_device_1_skip (void)
+static int
+test_is_zero_device_1_skip (void)
 {
   const char *str;
 
@@ -3721,7 +3810,8 @@ static int test_is_zero_device_1_skip (void)
   return 0;
 }
 
-static int test_is_zero_device_1 (void)
+static int
+test_is_zero_device_1 (void)
 {
   if (test_is_zero_device_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_zero_device_1");
@@ -3788,14 +3878,15 @@ static int test_is_zero_device_1 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_zero_device_1: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_zero_device_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_zero_0_skip (void)
+static int
+test_is_zero_0_skip (void)
 {
   const char *str;
 
@@ -3809,7 +3900,8 @@ static int test_is_zero_0_skip (void)
   return 0;
 }
 
-static int test_is_zero_0 (void)
+static int
+test_is_zero_0 (void)
 {
   if (test_is_zero_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_zero_0");
@@ -3857,14 +3949,15 @@ static int test_is_zero_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_zero_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_zero_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_zero_1_skip (void)
+static int
+test_is_zero_1_skip (void)
 {
   const char *str;
 
@@ -3878,7 +3971,8 @@ static int test_is_zero_1_skip (void)
   return 0;
 }
 
-static int test_is_zero_1 (void)
+static int
+test_is_zero_1 (void)
 {
   if (test_is_zero_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_zero_1");
@@ -3926,14 +4020,15 @@ static int test_is_zero_1 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_zero_1: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_zero_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mkfs_opts_0_skip (void)
+static int
+test_mkfs_opts_0_skip (void)
 {
   const char *str;
 
@@ -3947,7 +4042,8 @@ static int test_mkfs_opts_0_skip (void)
   return 0;
 }
 
-static int test_mkfs_opts_0 (void)
+static int
+test_mkfs_opts_0 (void)
 {
   if (test_mkfs_opts_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_opts_0");
@@ -4027,7 +4123,7 @@ static int test_mkfs_opts_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mkfs_opts_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mkfs_opts_0", expected, r);
       return -1;
     }
     free (r);
@@ -4035,7 +4131,8 @@ static int test_mkfs_opts_0 (void)
   return 0;
 }
 
-static int test_lvm_canonical_lv_name_0_skip (void)
+static int
+test_lvm_canonical_lv_name_0_skip (void)
 {
   const char *str;
 
@@ -4049,7 +4146,8 @@ static int test_lvm_canonical_lv_name_0_skip (void)
   return 0;
 }
 
-static int test_lvm_canonical_lv_name_0 (void)
+static int
+test_lvm_canonical_lv_name_0 (void)
 {
   if (test_lvm_canonical_lv_name_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvm_canonical_lv_name_0");
@@ -4152,7 +4250,7 @@ static int test_lvm_canonical_lv_name_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_lvm_canonical_lv_name_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvm_canonical_lv_name_0", expected, r);
       return -1;
     }
     free (r);
@@ -4160,7 +4258,8 @@ static int test_lvm_canonical_lv_name_0 (void)
   return 0;
 }
 
-static int test_lvm_canonical_lv_name_1_skip (void)
+static int
+test_lvm_canonical_lv_name_1_skip (void)
 {
   const char *str;
 
@@ -4174,7 +4273,8 @@ static int test_lvm_canonical_lv_name_1_skip (void)
   return 0;
 }
 
-static int test_lvm_canonical_lv_name_1 (void)
+static int
+test_lvm_canonical_lv_name_1 (void)
 {
   if (test_lvm_canonical_lv_name_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvm_canonical_lv_name_1");
@@ -4277,7 +4377,7 @@ static int test_lvm_canonical_lv_name_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_lvm_canonical_lv_name_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvm_canonical_lv_name_1", expected, r);
       return -1;
     }
     free (r);
@@ -4285,7 +4385,8 @@ static int test_lvm_canonical_lv_name_1 (void)
   return 0;
 }
 
-static int test_pread_device_0_skip (void)
+static int
+test_pread_device_0_skip (void)
 {
   const char *str;
 
@@ -4299,7 +4400,8 @@ static int test_pread_device_0_skip (void)
   return 0;
 }
 
-static int test_pread_device_0 (void)
+static int
+test_pread_device_0 (void)
 {
   if (test_pread_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pread_device_0");
@@ -4340,11 +4442,11 @@ static int test_pread_device_0 (void)
     if (r == NULL)
       return -1;
     if (size != 8) {
-      fprintf (stderr, "test_pread_device_0: returned size of buffer wrong, expected 8 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 8 but got %zu\n", "test_pread_device_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_pread_device_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pread_device_0", expected, r);
       return -1;
     }
     free (r);
@@ -4352,7 +4454,8 @@ static int test_pread_device_0 (void)
   return 0;
 }
 
-static int test_pwrite_device_0_skip (void)
+static int
+test_pwrite_device_0_skip (void)
 {
   const char *str;
 
@@ -4366,7 +4469,8 @@ static int test_pwrite_device_0_skip (void)
   return 0;
 }
 
-static int test_pwrite_device_0 (void)
+static int
+test_pwrite_device_0 (void)
 {
   if (test_pwrite_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_device_0");
@@ -4432,7 +4536,7 @@ static int test_pwrite_device_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_pwrite_device_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pwrite_device_0");
       print_strings (r);
       return -1;
     }
@@ -4440,12 +4544,12 @@ static int test_pwrite_device_0 (void)
       const char *expected = "/dev/sdb1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_pwrite_device_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pwrite_device_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_pwrite_device_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_pwrite_device_0");
       print_strings (r);
       return -1;
     }
@@ -4456,7 +4560,8 @@ static int test_pwrite_device_0 (void)
   return 0;
 }
 
-static int test_download_offset_0_skip (void)
+static int
+test_download_offset_0_skip (void)
 {
   const char *str;
 
@@ -4470,7 +4575,8 @@ static int test_download_offset_0_skip (void)
   return 0;
 }
 
-static int test_download_offset_0 (void)
+static int
+test_download_offset_0 (void)
 {
   if (test_download_offset_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_download_offset_0");
@@ -4553,7 +4659,7 @@ static int test_download_offset_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_download_offset_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_download_offset_0", expected, r);
       return -1;
     }
     free (r);
@@ -4561,7 +4667,8 @@ static int test_download_offset_0 (void)
   return 0;
 }
 
-static int test_upload_offset_0_skip (void)
+static int
+test_upload_offset_0_skip (void)
 {
   const char *str;
 
@@ -4575,7 +4682,8 @@ static int test_upload_offset_0_skip (void)
   return 0;
 }
 
-static int test_upload_offset_0 (void)
+static int
+test_upload_offset_0 (void)
 {
   if (test_upload_offset_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_upload_offset_0");
@@ -4634,7 +4742,7 @@ static int test_upload_offset_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_upload_offset_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_upload_offset_0", expected, r);
       return -1;
     }
     free (r);
@@ -4642,7 +4750,8 @@ static int test_upload_offset_0 (void)
   return 0;
 }
 
-static int test_part_to_dev_0_skip (void)
+static int
+test_part_to_dev_0_skip (void)
 {
   const char *str;
 
@@ -4656,7 +4765,8 @@ static int test_part_to_dev_0_skip (void)
   return 0;
 }
 
-static int test_part_to_dev_0 (void)
+static int
+test_part_to_dev_0 (void)
 {
   if (test_part_to_dev_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_to_dev_0");
@@ -4706,7 +4816,7 @@ static int test_part_to_dev_0 (void)
       return -1;
     r[5] = 's';
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_part_to_dev_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_part_to_dev_0", expected, r);
       return -1;
     }
     free (r);
@@ -4714,7 +4824,8 @@ static int test_part_to_dev_0 (void)
   return 0;
 }
 
-static int test_part_to_dev_1_skip (void)
+static int
+test_part_to_dev_1_skip (void)
 {
   const char *str;
 
@@ -4728,7 +4839,8 @@ static int test_part_to_dev_1_skip (void)
   return 0;
 }
 
-static int test_part_to_dev_1 (void)
+static int
+test_part_to_dev_1 (void)
 {
   if (test_part_to_dev_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_to_dev_1");
@@ -4771,7 +4883,8 @@ static int test_part_to_dev_1 (void)
   return 0;
 }
 
-static int test_is_socket_0_skip (void)
+static int
+test_is_socket_0_skip (void)
 {
   const char *str;
 
@@ -4785,7 +4898,8 @@ static int test_is_socket_0_skip (void)
   return 0;
 }
 
-static int test_is_socket_0 (void)
+static int
+test_is_socket_0 (void)
 {
   if (test_is_socket_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_socket_0");
@@ -4833,14 +4947,15 @@ static int test_is_socket_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_socket_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_socket_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_symlink_0_skip (void)
+static int
+test_is_symlink_0_skip (void)
 {
   const char *str;
 
@@ -4854,7 +4969,8 @@ static int test_is_symlink_0_skip (void)
   return 0;
 }
 
-static int test_is_symlink_0 (void)
+static int
+test_is_symlink_0 (void)
 {
   if (test_is_symlink_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_symlink_0");
@@ -4902,14 +5018,15 @@ static int test_is_symlink_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_symlink_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_symlink_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_symlink_1_skip (void)
+static int
+test_is_symlink_1_skip (void)
 {
   const char *str;
 
@@ -4923,7 +5040,8 @@ static int test_is_symlink_1_skip (void)
   return 0;
 }
 
-static int test_is_symlink_1 (void)
+static int
+test_is_symlink_1 (void)
 {
   if (test_is_symlink_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_symlink_1");
@@ -4971,14 +5089,15 @@ static int test_is_symlink_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_symlink_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_symlink_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_fifo_0_skip (void)
+static int
+test_is_fifo_0_skip (void)
 {
   const char *str;
 
@@ -4992,7 +5111,8 @@ static int test_is_fifo_0_skip (void)
   return 0;
 }
 
-static int test_is_fifo_0 (void)
+static int
+test_is_fifo_0 (void)
 {
   if (test_is_fifo_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_fifo_0");
@@ -5040,14 +5160,15 @@ static int test_is_fifo_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_fifo_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_fifo_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_fifo_1_skip (void)
+static int
+test_is_fifo_1_skip (void)
 {
   const char *str;
 
@@ -5061,7 +5182,8 @@ static int test_is_fifo_1_skip (void)
   return 0;
 }
 
-static int test_is_fifo_1 (void)
+static int
+test_is_fifo_1 (void)
 {
   if (test_is_fifo_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_fifo_1");
@@ -5118,14 +5240,15 @@ static int test_is_fifo_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_fifo_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_fifo_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_blockdev_0_skip (void)
+static int
+test_is_blockdev_0_skip (void)
 {
   const char *str;
 
@@ -5139,7 +5262,8 @@ static int test_is_blockdev_0_skip (void)
   return 0;
 }
 
-static int test_is_blockdev_0 (void)
+static int
+test_is_blockdev_0 (void)
 {
   if (test_is_blockdev_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_blockdev_0");
@@ -5187,14 +5311,15 @@ static int test_is_blockdev_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_blockdev_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_blockdev_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_blockdev_1_skip (void)
+static int
+test_is_blockdev_1_skip (void)
 {
   const char *str;
 
@@ -5208,7 +5333,8 @@ static int test_is_blockdev_1_skip (void)
   return 0;
 }
 
-static int test_is_blockdev_1 (void)
+static int
+test_is_blockdev_1 (void)
 {
   if (test_is_blockdev_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_blockdev_1");
@@ -5265,14 +5391,15 @@ static int test_is_blockdev_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_blockdev_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_blockdev_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_chardev_0_skip (void)
+static int
+test_is_chardev_0_skip (void)
 {
   const char *str;
 
@@ -5286,7 +5413,8 @@ static int test_is_chardev_0_skip (void)
   return 0;
 }
 
-static int test_is_chardev_0 (void)
+static int
+test_is_chardev_0 (void)
 {
   if (test_is_chardev_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_chardev_0");
@@ -5334,14 +5462,15 @@ static int test_is_chardev_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_chardev_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_chardev_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_chardev_1_skip (void)
+static int
+test_is_chardev_1_skip (void)
 {
   const char *str;
 
@@ -5355,7 +5484,8 @@ static int test_is_chardev_1_skip (void)
   return 0;
 }
 
-static int test_is_chardev_1 (void)
+static int
+test_is_chardev_1 (void)
 {
   if (test_is_chardev_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_chardev_1");
@@ -5412,14 +5542,15 @@ static int test_is_chardev_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_chardev_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_chardev_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_lv_0_skip (void)
+static int
+test_is_lv_0_skip (void)
 {
   const char *str;
 
@@ -5433,7 +5564,8 @@ static int test_is_lv_0_skip (void)
   return 0;
 }
 
-static int test_is_lv_0 (void)
+static int
+test_is_lv_0 (void)
 {
   if (test_is_lv_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_lv_0");
@@ -5539,14 +5671,15 @@ static int test_is_lv_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_lv_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_lv_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_lv_1_skip (void)
+static int
+test_is_lv_1_skip (void)
 {
   const char *str;
 
@@ -5560,7 +5693,8 @@ static int test_is_lv_1_skip (void)
   return 0;
 }
 
-static int test_is_lv_1 (void)
+static int
+test_is_lv_1 (void)
 {
   if (test_is_lv_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_lv_1");
@@ -5666,14 +5800,15 @@ static int test_is_lv_1 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_lv_1: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_lv_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_vfs_uuid_0_skip (void)
+static int
+test_vfs_uuid_0_skip (void)
 {
   const char *str;
 
@@ -5687,7 +5822,8 @@ static int test_vfs_uuid_0_skip (void)
   return 0;
 }
 
-static int test_vfs_uuid_0 (void)
+static int
+test_vfs_uuid_0 (void)
 {
   if (test_vfs_uuid_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vfs_uuid_0");
@@ -5746,10 +5882,10 @@ static int test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+  const char *expected = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -5764,7 +5900,7 @@ static int test_vfs_uuid_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_vfs_uuid_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vfs_uuid_0", expected, r);
       return -1;
     }
     free (r);
@@ -5772,7 +5908,8 @@ static int test_vfs_uuid_0 (void)
   return 0;
 }
 
-static int test_vfs_label_0_skip (void)
+static int
+test_vfs_label_0_skip (void)
 {
   const char *str;
 
@@ -5786,7 +5923,8 @@ static int test_vfs_label_0_skip (void)
   return 0;
 }
 
-static int test_vfs_label_0 (void)
+static int
+test_vfs_label_0 (void)
 {
   if (test_vfs_label_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vfs_label_0");
@@ -5863,7 +6001,7 @@ static int test_vfs_label_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_vfs_label_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vfs_label_0", expected, r);
       return -1;
     }
     free (r);
@@ -5871,7 +6009,8 @@ static int test_vfs_label_0 (void)
   return 0;
 }
 
-static int test_fallocate64_0_skip (void)
+static int
+test_fallocate64_0_skip (void)
 {
   const char *str;
 
@@ -5885,7 +6024,8 @@ static int test_fallocate64_0_skip (void)
   return 0;
 }
 
-static int test_fallocate64_0 (void)
+static int
+test_fallocate64_0 (void)
 {
   if (test_fallocate64_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fallocate64_0");
@@ -5942,8 +6082,8 @@ static int test_fallocate64_0 (void)
     if (r == NULL)
       return -1;
     if (r->size != 1000000) {
-      fprintf (stderr, "test_fallocate64_0: size was %d, expected 1000000\n",
-               (int) r->size);
+      fprintf (stderr, "%s: size was %d, expected 1000000\n",
+               "test_fallocate64_0", (int) r->size);
       return -1;
     }
     guestfs_free_stat (r);
@@ -5951,7 +6091,8 @@ static int test_fallocate64_0 (void)
   return 0;
 }
 
-static int test_available_all_groups_0_skip (void)
+static int
+test_available_all_groups_0_skip (void)
 {
   const char *str;
 
@@ -5965,7 +6106,8 @@ static int test_available_all_groups_0_skip (void)
   return 0;
 }
 
-static int test_available_all_groups_0 (void)
+static int
+test_available_all_groups_0 (void)
 {
   if (test_available_all_groups_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_available_all_groups_0");
@@ -6010,7 +6152,8 @@ static int test_available_all_groups_0 (void)
   return 0;
 }
 
-static int test_pwrite_0_skip (void)
+static int
+test_pwrite_0_skip (void)
 {
   const char *str;
 
@@ -6024,7 +6167,8 @@ static int test_pwrite_0_skip (void)
   return 0;
 }
 
-static int test_pwrite_0 (void)
+static int
+test_pwrite_0 (void)
 {
   if (test_pwrite_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_0");
@@ -6094,7 +6238,7 @@ static int test_pwrite_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_pwrite_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pwrite_0", expected, r);
       return -1;
     }
     free (r);
@@ -6102,7 +6246,8 @@ static int test_pwrite_0 (void)
   return 0;
 }
 
-static int test_pwrite_1_skip (void)
+static int
+test_pwrite_1_skip (void)
 {
   const char *str;
 
@@ -6116,7 +6261,8 @@ static int test_pwrite_1_skip (void)
   return 0;
 }
 
-static int test_pwrite_1 (void)
+static int
+test_pwrite_1 (void)
 {
   if (test_pwrite_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_1");
@@ -6186,7 +6332,7 @@ static int test_pwrite_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_pwrite_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pwrite_1", expected, r);
       return -1;
     }
     free (r);
@@ -6194,7 +6340,8 @@ static int test_pwrite_1 (void)
   return 0;
 }
 
-static int test_pwrite_2_skip (void)
+static int
+test_pwrite_2_skip (void)
 {
   const char *str;
 
@@ -6208,7 +6355,8 @@ static int test_pwrite_2_skip (void)
   return 0;
 }
 
-static int test_pwrite_2 (void)
+static int
+test_pwrite_2 (void)
 {
   if (test_pwrite_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pwrite_2");
@@ -6278,7 +6426,7 @@ static int test_pwrite_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_pwrite_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pwrite_2", expected, r);
       return -1;
     }
     free (r);
@@ -6286,7 +6434,8 @@ static int test_pwrite_2 (void)
   return 0;
 }
 
-static int test_write_0_skip (void)
+static int
+test_write_0_skip (void)
 {
   const char *str;
 
@@ -6300,7 +6449,8 @@ static int test_write_0_skip (void)
   return 0;
 }
 
-static int test_write_0 (void)
+static int
+test_write_0 (void)
 {
   if (test_write_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_0");
@@ -6360,7 +6510,7 @@ static int test_write_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_write_0", expected, r);
       return -1;
     }
     free (r);
@@ -6368,7 +6518,8 @@ static int test_write_0 (void)
   return 0;
 }
 
-static int test_write_1_skip (void)
+static int
+test_write_1_skip (void)
 {
   const char *str;
 
@@ -6382,7 +6533,8 @@ static int test_write_1_skip (void)
   return 0;
 }
 
-static int test_write_1 (void)
+static int
+test_write_1 (void)
 {
   if (test_write_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_1");
@@ -6442,7 +6594,7 @@ static int test_write_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_write_1", expected, r);
       return -1;
     }
     free (r);
@@ -6450,7 +6602,8 @@ static int test_write_1 (void)
   return 0;
 }
 
-static int test_write_2_skip (void)
+static int
+test_write_2_skip (void)
 {
   const char *str;
 
@@ -6464,7 +6617,8 @@ static int test_write_2_skip (void)
   return 0;
 }
 
-static int test_write_2 (void)
+static int
+test_write_2 (void)
 {
   if (test_write_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_2");
@@ -6524,7 +6678,7 @@ static int test_write_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_write_2", expected, r);
       return -1;
     }
     free (r);
@@ -6532,7 +6686,8 @@ static int test_write_2 (void)
   return 0;
 }
 
-static int test_write_3_skip (void)
+static int
+test_write_3_skip (void)
 {
   const char *str;
 
@@ -6546,7 +6701,8 @@ static int test_write_3_skip (void)
   return 0;
 }
 
-static int test_write_3 (void)
+static int
+test_write_3 (void)
 {
   if (test_write_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_3");
@@ -6606,7 +6762,7 @@ static int test_write_3 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_write_3", expected, r);
       return -1;
     }
     free (r);
@@ -6614,7 +6770,8 @@ static int test_write_3 (void)
   return 0;
 }
 
-static int test_write_4_skip (void)
+static int
+test_write_4_skip (void)
 {
   const char *str;
 
@@ -6628,7 +6785,8 @@ static int test_write_4_skip (void)
   return 0;
 }
 
-static int test_write_4 (void)
+static int
+test_write_4 (void)
 {
   if (test_write_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_4");
@@ -6688,7 +6846,7 @@ static int test_write_4 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_write_4", expected, r);
       return -1;
     }
     free (r);
@@ -6696,7 +6854,8 @@ static int test_write_4 (void)
   return 0;
 }
 
-static int test_write_5_skip (void)
+static int
+test_write_5_skip (void)
 {
   const char *str;
 
@@ -6710,7 +6869,8 @@ static int test_write_5_skip (void)
   return 0;
 }
 
-static int test_write_5 (void)
+static int
+test_write_5 (void)
 {
   if (test_write_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_5");
@@ -6770,7 +6930,7 @@ static int test_write_5 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_write_5: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_write_5", expected, r);
       return -1;
     }
     free (r);
@@ -6778,7 +6938,8 @@ static int test_write_5 (void)
   return 0;
 }
 
-static int test_fill_pattern_0_skip (void)
+static int
+test_fill_pattern_0_skip (void)
 {
   const char *str;
 
@@ -6792,7 +6953,8 @@ static int test_fill_pattern_0_skip (void)
   return 0;
 }
 
-static int test_fill_pattern_0 (void)
+static int
+test_fill_pattern_0 (void)
 {
   if (test_fill_pattern_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fill_pattern_0");
@@ -6852,11 +7014,11 @@ static int test_fill_pattern_0 (void)
     if (r == NULL)
       return -1;
     if (size != 28) {
-      fprintf (stderr, "test_fill_pattern_0: returned size of buffer wrong, expected 28 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 28 but got %zu\n", "test_fill_pattern_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_fill_pattern_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_fill_pattern_0", expected, r);
       return -1;
     }
     free (r);
@@ -6864,7 +7026,8 @@ static int test_fill_pattern_0 (void)
   return 0;
 }
 
-static int test_base64_in_0_skip (void)
+static int
+test_base64_in_0_skip (void)
 {
   const char *str;
 
@@ -6878,7 +7041,8 @@ static int test_base64_in_0_skip (void)
   return 0;
 }
 
-static int test_base64_in_0 (void)
+static int
+test_base64_in_0 (void)
 {
   if (test_base64_in_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_base64_in_0");
@@ -6936,7 +7100,7 @@ static int test_base64_in_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_base64_in_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_base64_in_0", expected, r);
       return -1;
     }
     free (r);
@@ -6944,7 +7108,8 @@ static int test_base64_in_0 (void)
   return 0;
 }
 
-static int test_get_umask_0_skip (void)
+static int
+test_get_umask_0_skip (void)
 {
   const char *str;
 
@@ -6958,7 +7123,8 @@ static int test_get_umask_0_skip (void)
   return 0;
 }
 
-static int test_get_umask_0 (void)
+static int
+test_get_umask_0 (void)
 {
   if (test_get_umask_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_umask_0");
@@ -6996,14 +7162,15 @@ static int test_get_umask_0 (void)
     if (r == -1)
       return -1;
     if (r != 18) {
-      fprintf (stderr, "test_get_umask_0: expected 18 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 18 but got %d\n",               "test_get_umask_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_lvresize_free_0_skip (void)
+static int
+test_lvresize_free_0_skip (void)
 {
   const char *str;
 
@@ -7017,7 +7184,8 @@ static int test_lvresize_free_0_skip (void)
   return 0;
 }
 
-static int test_lvresize_free_0 (void)
+static int
+test_lvresize_free_0 (void)
 {
   if (test_lvresize_free_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvresize_free_0");
@@ -7102,7 +7270,8 @@ static int test_lvresize_free_0 (void)
   return 0;
 }
 
-static int test_checksum_device_0_skip (void)
+static int
+test_checksum_device_0_skip (void)
 {
   const char *str;
 
@@ -7116,7 +7285,8 @@ static int test_checksum_device_0_skip (void)
   return 0;
 }
 
-static int test_checksum_device_0 (void)
+static int
+test_checksum_device_0 (void)
 {
   if (test_checksum_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_device_0");
@@ -7167,7 +7337,7 @@ static int test_checksum_device_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_device_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_device_0", expected, r);
       return -1;
     }
     free (r);
@@ -7175,7 +7345,8 @@ static int test_checksum_device_0 (void)
   return 0;
 }
 
-static int test_part_get_mbr_id_0_skip (void)
+static int
+test_part_get_mbr_id_0_skip (void)
 {
   const char *str;
 
@@ -7189,7 +7360,8 @@ static int test_part_get_mbr_id_0_skip (void)
   return 0;
 }
 
-static int test_part_get_mbr_id_0 (void)
+static int
+test_part_get_mbr_id_0 (void)
 {
   if (test_part_get_mbr_id_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_get_mbr_id_0");
@@ -7254,14 +7426,15 @@ static int test_part_get_mbr_id_0 (void)
     if (r == -1)
       return -1;
     if (r != 127) {
-      fprintf (stderr, "test_part_get_mbr_id_0: expected 127 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 127 but got %d\n",               "test_part_get_mbr_id_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_part_get_bootable_0_skip (void)
+static int
+test_part_get_bootable_0_skip (void)
 {
   const char *str;
 
@@ -7275,7 +7448,8 @@ static int test_part_get_bootable_0_skip (void)
   return 0;
 }
 
-static int test_part_get_bootable_0 (void)
+static int
+test_part_get_bootable_0 (void)
 {
   if (test_part_get_bootable_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_get_bootable_0");
@@ -7340,14 +7514,15 @@ static int test_part_get_bootable_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_part_get_bootable_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_part_get_bootable_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_part_del_0_skip (void)
+static int
+test_part_del_0_skip (void)
 {
   const char *str;
 
@@ -7361,7 +7536,8 @@ static int test_part_del_0_skip (void)
   return 0;
 }
 
-static int test_part_del_0 (void)
+static int
+test_part_del_0 (void)
 {
   if (test_part_del_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_del_0");
@@ -7421,7 +7597,8 @@ static int test_part_del_0 (void)
   return 0;
 }
 
-static int test_vgscan_0_skip (void)
+static int
+test_vgscan_0_skip (void)
 {
   const char *str;
 
@@ -7435,7 +7612,8 @@ static int test_vgscan_0_skip (void)
   return 0;
 }
 
-static int test_vgscan_0 (void)
+static int
+test_vgscan_0 (void)
 {
   if (test_vgscan_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vgscan_0");
@@ -7476,7 +7654,8 @@ static int test_vgscan_0 (void)
   return 0;
 }
 
-static int test_txz_in_0_skip (void)
+static int
+test_txz_in_0_skip (void)
 {
   const char *str;
 
@@ -7490,7 +7669,8 @@ static int test_txz_in_0_skip (void)
   return 0;
 }
 
-static int test_txz_in_0 (void)
+static int
+test_txz_in_0 (void)
 {
   if (test_txz_in_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_txz_in_0");
@@ -7560,7 +7740,7 @@ static int test_txz_in_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_txz_in_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_txz_in_0", expected, r);
       return -1;
     }
     free (r);
@@ -7568,7 +7748,8 @@ static int test_txz_in_0 (void)
   return 0;
 }
 
-static int test_zero_device_0_skip (void)
+static int
+test_zero_device_0_skip (void)
 {
   const char *str;
 
@@ -7582,7 +7763,8 @@ static int test_zero_device_0_skip (void)
   return 0;
 }
 
-static int test_zero_device_0 (void)
+static int
+test_zero_device_0 (void)
 {
   if (test_zero_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zero_device_0");
@@ -7682,7 +7864,8 @@ static int test_zero_device_0 (void)
   return 0;
 }
 
-static int test_copy_size_0_skip (void)
+static int
+test_copy_size_0_skip (void)
 {
   const char *str;
 
@@ -7696,7 +7879,8 @@ static int test_copy_size_0_skip (void)
   return 0;
 }
 
-static int test_copy_size_0 (void)
+static int
+test_copy_size_0 (void)
 {
   if (test_copy_size_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_copy_size_0");
@@ -7774,11 +7958,11 @@ static int test_copy_size_0 (void)
     if (r == NULL)
       return -1;
     if (size != 5) {
-      fprintf (stderr, "test_copy_size_0: returned size of buffer wrong, expected 5 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 5 but got %zu\n", "test_copy_size_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_copy_size_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_copy_size_0", expected, r);
       return -1;
     }
     free (r);
@@ -7786,7 +7970,8 @@ static int test_copy_size_0 (void)
   return 0;
 }
 
-static int test_initrd_cat_0_skip (void)
+static int
+test_initrd_cat_0_skip (void)
 {
   const char *str;
 
@@ -7800,7 +7985,8 @@ static int test_initrd_cat_0_skip (void)
   return 0;
 }
 
-static int test_initrd_cat_0 (void)
+static int
+test_initrd_cat_0 (void)
 {
   if (test_initrd_cat_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_initrd_cat_0");
@@ -7851,11 +8037,11 @@ static int test_initrd_cat_0 (void)
     if (r == NULL)
       return -1;
     if (size != 11) {
-      fprintf (stderr, "test_initrd_cat_0: returned size of buffer wrong, expected 11 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 11 but got %zu\n", "test_initrd_cat_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_initrd_cat_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_initrd_cat_0", expected, r);
       return -1;
     }
     free (r);
@@ -7863,7 +8049,8 @@ static int test_initrd_cat_0 (void)
   return 0;
 }
 
-static int test_vgrename_0_skip (void)
+static int
+test_vgrename_0_skip (void)
 {
   const char *str;
 
@@ -7877,7 +8064,8 @@ static int test_vgrename_0_skip (void)
   return 0;
 }
 
-static int test_vgrename_0 (void)
+static int
+test_vgrename_0 (void)
 {
   if (test_vgrename_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vgrename_0");
@@ -8025,19 +8213,19 @@ static int test_vgrename_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_vgrename_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_vgrename_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "VG2";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_vgrename_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vgrename_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_vgrename_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_vgrename_0");
       print_strings (r);
       return -1;
     }
@@ -8048,7 +8236,8 @@ static int test_vgrename_0 (void)
   return 0;
 }
 
-static int test_lvrename_0_skip (void)
+static int
+test_lvrename_0_skip (void)
 {
   const char *str;
 
@@ -8062,7 +8251,8 @@ static int test_lvrename_0_skip (void)
   return 0;
 }
 
-static int test_lvrename_0 (void)
+static int
+test_lvrename_0 (void)
 {
   if (test_lvrename_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvrename_0");
@@ -8168,19 +8358,19 @@ static int test_lvrename_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_lvrename_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvrename_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG/LV2";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_lvrename_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvrename_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_lvrename_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvrename_0");
       print_strings (r);
       return -1;
     }
@@ -8191,7 +8381,8 @@ static int test_lvrename_0 (void)
   return 0;
 }
 
-static int test_filesize_0_skip (void)
+static int
+test_filesize_0_skip (void)
 {
   const char *str;
 
@@ -8205,7 +8396,8 @@ static int test_filesize_0_skip (void)
   return 0;
 }
 
-static int test_filesize_0 (void)
+static int
+test_filesize_0 (void)
 {
   if (test_filesize_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_filesize_0");
@@ -8264,14 +8456,15 @@ static int test_filesize_0 (void)
     if (r == -1)
       return -1;
     if (r != 12) {
-      fprintf (stderr, "test_filesize_0: expected 12 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 12 but got %d\n",               "test_filesize_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_dd_0_skip (void)
+static int
+test_dd_0_skip (void)
 {
   const char *str;
 
@@ -8285,7 +8478,8 @@ static int test_dd_0_skip (void)
   return 0;
 }
 
-static int test_dd_0 (void)
+static int
+test_dd_0 (void)
 {
   if (test_dd_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_dd_0");
@@ -8363,11 +8557,11 @@ static int test_dd_0 (void)
     if (r == NULL)
       return -1;
     if (size != 12) {
-      fprintf (stderr, "test_dd_0: returned size of buffer wrong, expected 12 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 12 but got %zu\n", "test_dd_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_dd_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_dd_0", expected, r);
       return -1;
     }
     free (r);
@@ -8375,7 +8569,8 @@ static int test_dd_0 (void)
   return 0;
 }
 
-static int test_available_0_skip (void)
+static int
+test_available_0_skip (void)
 {
   const char *str;
 
@@ -8389,7 +8584,8 @@ static int test_available_0_skip (void)
   return 0;
 }
 
-static int test_available_0 (void)
+static int
+test_available_0 (void)
 {
   if (test_available_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_available_0");
@@ -8431,7 +8627,8 @@ static int test_available_0 (void)
   return 0;
 }
 
-static int test_fill_0_skip (void)
+static int
+test_fill_0_skip (void)
 {
   const char *str;
 
@@ -8445,7 +8642,8 @@ static int test_fill_0_skip (void)
   return 0;
 }
 
-static int test_fill_0 (void)
+static int
+test_fill_0 (void)
 {
   if (test_fill_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fill_0");
@@ -8504,11 +8702,11 @@ static int test_fill_0 (void)
     if (r == NULL)
       return -1;
     if (size != 10) {
-      fprintf (stderr, "test_fill_0: returned size of buffer wrong, expected 10 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 10 but got %zu\n", "test_fill_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_fill_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_fill_0", expected, r);
       return -1;
     }
     free (r);
@@ -8516,7 +8714,8 @@ static int test_fill_0 (void)
   return 0;
 }
 
-static int test_part_get_parttype_0_skip (void)
+static int
+test_part_get_parttype_0_skip (void)
 {
   const char *str;
 
@@ -8530,7 +8729,8 @@ static int test_part_get_parttype_0_skip (void)
   return 0;
 }
 
-static int test_part_get_parttype_0 (void)
+static int
+test_part_get_parttype_0 (void)
 {
   if (test_part_get_parttype_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_get_parttype_0");
@@ -8579,7 +8779,7 @@ static int test_part_get_parttype_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_part_get_parttype_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_part_get_parttype_0", expected, r);
       return -1;
     }
     free (r);
@@ -8587,7 +8787,8 @@ static int test_part_get_parttype_0 (void)
   return 0;
 }
 
-static int test_part_set_name_0_skip (void)
+static int
+test_part_set_name_0_skip (void)
 {
   const char *str;
 
@@ -8601,7 +8802,8 @@ static int test_part_set_name_0_skip (void)
   return 0;
 }
 
-static int test_part_set_name_0 (void)
+static int
+test_part_set_name_0 (void)
 {
   if (test_part_set_name_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_set_name_0");
@@ -8653,7 +8855,8 @@ static int test_part_set_name_0 (void)
   return 0;
 }
 
-static int test_part_set_bootable_0_skip (void)
+static int
+test_part_set_bootable_0_skip (void)
 {
   const char *str;
 
@@ -8667,7 +8870,8 @@ static int test_part_set_bootable_0_skip (void)
   return 0;
 }
 
-static int test_part_set_bootable_0 (void)
+static int
+test_part_set_bootable_0 (void)
 {
   if (test_part_set_bootable_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_set_bootable_0");
@@ -8718,7 +8922,8 @@ static int test_part_set_bootable_0 (void)
   return 0;
 }
 
-static int test_part_disk_0_skip (void)
+static int
+test_part_disk_0_skip (void)
 {
   const char *str;
 
@@ -8732,7 +8937,8 @@ static int test_part_disk_0_skip (void)
   return 0;
 }
 
-static int test_part_disk_0 (void)
+static int
+test_part_disk_0 (void)
 {
   if (test_part_disk_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_disk_0");
@@ -8775,7 +8981,8 @@ static int test_part_disk_0 (void)
   return 0;
 }
 
-static int test_part_disk_1_skip (void)
+static int
+test_part_disk_1_skip (void)
 {
   const char *str;
 
@@ -8789,7 +8996,8 @@ static int test_part_disk_1_skip (void)
   return 0;
 }
 
-static int test_part_disk_1 (void)
+static int
+test_part_disk_1 (void)
 {
   if (test_part_disk_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_disk_1");
@@ -8832,7 +9040,8 @@ static int test_part_disk_1 (void)
   return 0;
 }
 
-static int test_part_add_0_skip (void)
+static int
+test_part_add_0_skip (void)
 {
   const char *str;
 
@@ -8846,7 +9055,8 @@ static int test_part_add_0_skip (void)
   return 0;
 }
 
-static int test_part_add_0 (void)
+static int
+test_part_add_0 (void)
 {
   if (test_part_add_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_add_0");
@@ -8898,7 +9108,8 @@ static int test_part_add_0 (void)
   return 0;
 }
 
-static int test_part_add_1_skip (void)
+static int
+test_part_add_1_skip (void)
 {
   const char *str;
 
@@ -8912,7 +9123,8 @@ static int test_part_add_1_skip (void)
   return 0;
 }
 
-static int test_part_add_1 (void)
+static int
+test_part_add_1 (void)
 {
   if (test_part_add_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_add_1");
@@ -8973,7 +9185,8 @@ static int test_part_add_1 (void)
   return 0;
 }
 
-static int test_part_add_2_skip (void)
+static int
+test_part_add_2_skip (void)
 {
   const char *str;
 
@@ -8987,7 +9200,8 @@ static int test_part_add_2_skip (void)
   return 0;
 }
 
-static int test_part_add_2 (void)
+static int
+test_part_add_2 (void)
 {
   if (test_part_add_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_add_2");
@@ -9066,7 +9280,8 @@ static int test_part_add_2 (void)
   return 0;
 }
 
-static int test_part_init_0_skip (void)
+static int
+test_part_init_0_skip (void)
 {
   const char *str;
 
@@ -9080,7 +9295,8 @@ static int test_part_init_0_skip (void)
   return 0;
 }
 
-static int test_part_init_0 (void)
+static int
+test_part_init_0 (void)
 {
   if (test_part_init_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_part_init_0");
@@ -9123,7 +9339,8 @@ static int test_part_init_0 (void)
   return 0;
 }
 
-static int test_pread_0_skip (void)
+static int
+test_pread_0_skip (void)
 {
   const char *str;
 
@@ -9137,7 +9354,8 @@ static int test_pread_0_skip (void)
   return 0;
 }
 
-static int test_pread_0 (void)
+static int
+test_pread_0 (void)
 {
   if (test_pread_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pread_0");
@@ -9187,11 +9405,11 @@ static int test_pread_0 (void)
     if (r == NULL)
       return -1;
     if (size != 1) {
-      fprintf (stderr, "test_pread_0: returned size of buffer wrong, expected 1 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 1 but got %zu\n", "test_pread_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_pread_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pread_0", expected, r);
       return -1;
     }
     free (r);
@@ -9199,7 +9417,8 @@ static int test_pread_0 (void)
   return 0;
 }
 
-static int test_pread_1_skip (void)
+static int
+test_pread_1_skip (void)
 {
   const char *str;
 
@@ -9213,7 +9432,8 @@ static int test_pread_1_skip (void)
   return 0;
 }
 
-static int test_pread_1 (void)
+static int
+test_pread_1 (void)
 {
   if (test_pread_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pread_1");
@@ -9263,11 +9483,11 @@ static int test_pread_1 (void)
     if (r == NULL)
       return -1;
     if (size != 0) {
-      fprintf (stderr, "test_pread_1: returned size of buffer wrong, expected 0 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 0 but got %zu\n", "test_pread_1", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_pread_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pread_1", expected, r);
       return -1;
     }
     free (r);
@@ -9275,7 +9495,8 @@ static int test_pread_1 (void)
   return 0;
 }
 
-static int test_mkdir_mode_0_skip (void)
+static int
+test_mkdir_mode_0_skip (void)
 {
   const char *str;
 
@@ -9289,7 +9510,8 @@ static int test_mkdir_mode_0_skip (void)
   return 0;
 }
 
-static int test_mkdir_mode_0 (void)
+static int
+test_mkdir_mode_0 (void)
 {
   if (test_mkdir_mode_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_mode_0");
@@ -9346,8 +9568,8 @@ static int test_mkdir_mode_0 (void)
     if (r == NULL)
       return -1;
     if (r->mode != 16457) {
-      fprintf (stderr, "test_mkdir_mode_0: mode was %d, expected 16457\n",
-               (int) r->mode);
+      fprintf (stderr, "%s: mode was %d, expected 16457\n",
+               "test_mkdir_mode_0", (int) r->mode);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9355,7 +9577,8 @@ static int test_mkdir_mode_0 (void)
   return 0;
 }
 
-static int test_utimens_0_skip (void)
+static int
+test_utimens_0_skip (void)
 {
   const char *str;
 
@@ -9369,7 +9592,8 @@ static int test_utimens_0_skip (void)
   return 0;
 }
 
-static int test_utimens_0 (void)
+static int
+test_utimens_0 (void)
 {
   if (test_utimens_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_0");
@@ -9434,8 +9658,8 @@ static int test_utimens_0 (void)
     if (r == NULL)
       return -1;
     if (r->mtime != 9876) {
-      fprintf (stderr, "test_utimens_0: mtime was %d, expected 9876\n",
-               (int) r->mtime);
+      fprintf (stderr, "%s: mtime was %d, expected 9876\n",
+               "test_utimens_0", (int) r->mtime);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9443,7 +9667,8 @@ static int test_utimens_0 (void)
   return 0;
 }
 
-static int test_utimens_1_skip (void)
+static int
+test_utimens_1_skip (void)
 {
   const char *str;
 
@@ -9457,7 +9682,8 @@ static int test_utimens_1_skip (void)
   return 0;
 }
 
-static int test_utimens_1 (void)
+static int
+test_utimens_1 (void)
 {
   if (test_utimens_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_1");
@@ -9522,8 +9748,8 @@ static int test_utimens_1 (void)
     if (r == NULL)
       return -1;
     if (r->mtime != 9876) {
-      fprintf (stderr, "test_utimens_1: mtime was %d, expected 9876\n",
-               (int) r->mtime);
+      fprintf (stderr, "%s: mtime was %d, expected 9876\n",
+               "test_utimens_1", (int) r->mtime);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9531,7 +9757,8 @@ static int test_utimens_1 (void)
   return 0;
 }
 
-static int test_utimens_2_skip (void)
+static int
+test_utimens_2_skip (void)
 {
   const char *str;
 
@@ -9545,7 +9772,8 @@ static int test_utimens_2_skip (void)
   return 0;
 }
 
-static int test_utimens_2 (void)
+static int
+test_utimens_2 (void)
 {
   if (test_utimens_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_2");
@@ -9610,8 +9838,8 @@ static int test_utimens_2 (void)
     if (r == NULL)
       return -1;
     if (r->mtime != 9876) {
-      fprintf (stderr, "test_utimens_2: mtime was %d, expected 9876\n",
-               (int) r->mtime);
+      fprintf (stderr, "%s: mtime was %d, expected 9876\n",
+               "test_utimens_2", (int) r->mtime);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9619,7 +9847,8 @@ static int test_utimens_2 (void)
   return 0;
 }
 
-static int test_utimens_3_skip (void)
+static int
+test_utimens_3_skip (void)
 {
   const char *str;
 
@@ -9633,7 +9862,8 @@ static int test_utimens_3_skip (void)
   return 0;
 }
 
-static int test_utimens_3 (void)
+static int
+test_utimens_3 (void)
 {
   if (test_utimens_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_3");
@@ -9699,8 +9929,8 @@ static int test_utimens_3 (void)
     if (r == NULL)
       return -1;
     if (r->mtime != 9876) {
-      fprintf (stderr, "test_utimens_3: mtime was %d, expected 9876\n",
-               (int) r->mtime);
+      fprintf (stderr, "%s: mtime was %d, expected 9876\n",
+               "test_utimens_3", (int) r->mtime);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9708,7 +9938,8 @@ static int test_utimens_3 (void)
   return 0;
 }
 
-static int test_utimens_4_skip (void)
+static int
+test_utimens_4_skip (void)
 {
   const char *str;
 
@@ -9722,7 +9953,8 @@ static int test_utimens_4_skip (void)
   return 0;
 }
 
-static int test_utimens_4 (void)
+static int
+test_utimens_4 (void)
 {
   if (test_utimens_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_4");
@@ -9787,8 +10019,8 @@ static int test_utimens_4 (void)
     if (r == NULL)
       return -1;
     if (r->mtime != 9876) {
-      fprintf (stderr, "test_utimens_4: mtime was %d, expected 9876\n",
-               (int) r->mtime);
+      fprintf (stderr, "%s: mtime was %d, expected 9876\n",
+               "test_utimens_4", (int) r->mtime);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9796,7 +10028,8 @@ static int test_utimens_4 (void)
   return 0;
 }
 
-static int test_utimens_5_skip (void)
+static int
+test_utimens_5_skip (void)
 {
   const char *str;
 
@@ -9810,7 +10043,8 @@ static int test_utimens_5_skip (void)
   return 0;
 }
 
-static int test_utimens_5 (void)
+static int
+test_utimens_5 (void)
 {
   if (test_utimens_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_utimens_5");
@@ -9875,8 +10109,8 @@ static int test_utimens_5 (void)
     if (r == NULL)
       return -1;
     if (r->mtime != 9876) {
-      fprintf (stderr, "test_utimens_5: mtime was %d, expected 9876\n",
-               (int) r->mtime);
+      fprintf (stderr, "%s: mtime was %d, expected 9876\n",
+               "test_utimens_5", (int) r->mtime);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9884,7 +10118,8 @@ static int test_utimens_5 (void)
   return 0;
 }
 
-static int test_truncate_size_0_skip (void)
+static int
+test_truncate_size_0_skip (void)
 {
   const char *str;
 
@@ -9898,7 +10133,8 @@ static int test_truncate_size_0_skip (void)
   return 0;
 }
 
-static int test_truncate_size_0 (void)
+static int
+test_truncate_size_0 (void)
 {
   if (test_truncate_size_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_truncate_size_0");
@@ -9963,8 +10199,8 @@ static int test_truncate_size_0 (void)
     if (r == NULL)
       return -1;
     if (r->size != 1000) {
-      fprintf (stderr, "test_truncate_size_0: size was %d, expected 1000\n",
-               (int) r->size);
+      fprintf (stderr, "%s: size was %d, expected 1000\n",
+               "test_truncate_size_0", (int) r->size);
       return -1;
     }
     guestfs_free_stat (r);
@@ -9972,7 +10208,8 @@ static int test_truncate_size_0 (void)
   return 0;
 }
 
-static int test_truncate_0_skip (void)
+static int
+test_truncate_0_skip (void)
 {
   const char *str;
 
@@ -9986,7 +10223,8 @@ static int test_truncate_0_skip (void)
   return 0;
 }
 
-static int test_truncate_0 (void)
+static int
+test_truncate_0 (void)
 {
   if (test_truncate_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_truncate_0");
@@ -10053,8 +10291,8 @@ static int test_truncate_0 (void)
     if (r == NULL)
       return -1;
     if (r->size != 0) {
-      fprintf (stderr, "test_truncate_0: size was %d, expected 0\n",
-               (int) r->size);
+      fprintf (stderr, "%s: size was %d, expected 0\n",
+               "test_truncate_0", (int) r->size);
       return -1;
     }
     guestfs_free_stat (r);
@@ -10062,7 +10300,8 @@ static int test_truncate_0 (void)
   return 0;
 }
 
-static int test_vfs_type_0_skip (void)
+static int
+test_vfs_type_0_skip (void)
 {
   const char *str;
 
@@ -10076,7 +10315,8 @@ static int test_vfs_type_0_skip (void)
   return 0;
 }
 
-static int test_vfs_type_0 (void)
+static int
+test_vfs_type_0 (void)
 {
   if (test_vfs_type_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vfs_type_0");
@@ -10126,7 +10366,7 @@ static int test_vfs_type_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_vfs_type_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vfs_type_0", expected, r);
       return -1;
     }
     free (r);
@@ -10134,7 +10374,8 @@ static int test_vfs_type_0 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_0_skip (void)
+static int
+test_case_sensitive_path_0_skip (void)
 {
   const char *str;
 
@@ -10148,7 +10389,8 @@ static int test_case_sensitive_path_0_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_0 (void)
+static int
+test_case_sensitive_path_0 (void)
 {
   if (test_case_sensitive_path_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_0");
@@ -10197,7 +10439,7 @@ static int test_case_sensitive_path_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_case_sensitive_path_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_case_sensitive_path_0", expected, r);
       return -1;
     }
     free (r);
@@ -10205,7 +10447,8 @@ static int test_case_sensitive_path_0 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_1_skip (void)
+static int
+test_case_sensitive_path_1_skip (void)
 {
   const char *str;
 
@@ -10219,7 +10462,8 @@ static int test_case_sensitive_path_1_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_1 (void)
+static int
+test_case_sensitive_path_1 (void)
 {
   if (test_case_sensitive_path_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_1");
@@ -10268,7 +10512,7 @@ static int test_case_sensitive_path_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_case_sensitive_path_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_case_sensitive_path_1", expected, r);
       return -1;
     }
     free (r);
@@ -10276,7 +10520,8 @@ static int test_case_sensitive_path_1 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_2_skip (void)
+static int
+test_case_sensitive_path_2_skip (void)
 {
   const char *str;
 
@@ -10290,7 +10535,8 @@ static int test_case_sensitive_path_2_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_2 (void)
+static int
+test_case_sensitive_path_2 (void)
 {
   if (test_case_sensitive_path_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_2");
@@ -10339,7 +10585,7 @@ static int test_case_sensitive_path_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_case_sensitive_path_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_case_sensitive_path_2", expected, r);
       return -1;
     }
     free (r);
@@ -10347,7 +10593,8 @@ static int test_case_sensitive_path_2 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_3_skip (void)
+static int
+test_case_sensitive_path_3_skip (void)
 {
   const char *str;
 
@@ -10361,7 +10608,8 @@ static int test_case_sensitive_path_3_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_3 (void)
+static int
+test_case_sensitive_path_3 (void)
 {
   if (test_case_sensitive_path_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_3");
@@ -10413,7 +10661,8 @@ static int test_case_sensitive_path_3 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_4_skip (void)
+static int
+test_case_sensitive_path_4_skip (void)
 {
   const char *str;
 
@@ -10427,7 +10676,8 @@ static int test_case_sensitive_path_4_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_4 (void)
+static int
+test_case_sensitive_path_4 (void)
 {
   if (test_case_sensitive_path_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_4");
@@ -10501,7 +10751,7 @@ static int test_case_sensitive_path_4 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_case_sensitive_path_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_case_sensitive_path_4", expected, r);
       return -1;
     }
     free (r);
@@ -10509,7 +10759,8 @@ static int test_case_sensitive_path_4 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_5_skip (void)
+static int
+test_case_sensitive_path_5_skip (void)
 {
   const char *str;
 
@@ -10523,7 +10774,8 @@ static int test_case_sensitive_path_5_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_5 (void)
+static int
+test_case_sensitive_path_5 (void)
 {
   if (test_case_sensitive_path_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_5");
@@ -10597,7 +10849,7 @@ static int test_case_sensitive_path_5 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_case_sensitive_path_5: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_case_sensitive_path_5", expected, r);
       return -1;
     }
     free (r);
@@ -10605,7 +10857,8 @@ static int test_case_sensitive_path_5 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_6_skip (void)
+static int
+test_case_sensitive_path_6_skip (void)
 {
   const char *str;
 
@@ -10619,7 +10872,8 @@ static int test_case_sensitive_path_6_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_6 (void)
+static int
+test_case_sensitive_path_6 (void)
 {
   if (test_case_sensitive_path_6_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_6");
@@ -10696,7 +10950,8 @@ static int test_case_sensitive_path_6 (void)
   return 0;
 }
 
-static int test_case_sensitive_path_7_skip (void)
+static int
+test_case_sensitive_path_7_skip (void)
 {
   const char *str;
 
@@ -10710,7 +10965,8 @@ static int test_case_sensitive_path_7_skip (void)
   return 0;
 }
 
-static int test_case_sensitive_path_7 (void)
+static int
+test_case_sensitive_path_7 (void)
 {
   if (test_case_sensitive_path_7_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_case_sensitive_path_7");
@@ -10768,7 +11024,7 @@ static int test_case_sensitive_path_7 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_case_sensitive_path_7: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_case_sensitive_path_7", expected, r);
       return -1;
     }
     free (r);
@@ -10776,7 +11032,8 @@ static int test_case_sensitive_path_7 (void)
   return 0;
 }
 
-static int test_echo_daemon_0_skip (void)
+static int
+test_echo_daemon_0_skip (void)
 {
   const char *str;
 
@@ -10790,7 +11047,8 @@ static int test_echo_daemon_0_skip (void)
   return 0;
 }
 
-static int test_echo_daemon_0 (void)
+static int
+test_echo_daemon_0 (void)
 {
   if (test_echo_daemon_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_echo_daemon_0");
@@ -10840,7 +11098,7 @@ static int test_echo_daemon_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_echo_daemon_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_echo_daemon_0", expected, r);
       return -1;
     }
     free (r);
@@ -10848,7 +11106,8 @@ static int test_echo_daemon_0 (void)
   return 0;
 }
 
-static int test_modprobe_0_skip (void)
+static int
+test_modprobe_0_skip (void)
 {
   const char *str;
 
@@ -10862,7 +11121,8 @@ static int test_modprobe_0_skip (void)
   return 0;
 }
 
-static int test_modprobe_0 (void)
+static int
+test_modprobe_0 (void)
 {
   if (test_modprobe_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_modprobe_0");
@@ -10908,7 +11168,8 @@ static int test_modprobe_0 (void)
   return 0;
 }
 
-static int test_mke2journal_U_0_skip (void)
+static int
+test_mke2journal_U_0_skip (void)
 {
   const char *str;
 
@@ -10922,7 +11183,8 @@ static int test_mke2journal_U_0_skip (void)
   return 0;
 }
 
-static int test_mke2journal_U_0 (void)
+static int
+test_mke2journal_U_0 (void)
 {
   if (test_mke2journal_U_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mke2journal_U_0");
@@ -10986,7 +11248,7 @@ static int test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -10997,7 +11259,7 @@ static int test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     int r;
     suppress_error = 0;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
@@ -11032,7 +11294,7 @@ static int test_mke2journal_U_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mke2journal_U_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mke2journal_U_0", expected, r);
       return -1;
     }
     free (r);
@@ -11040,7 +11302,8 @@ static int test_mke2journal_U_0 (void)
   return 0;
 }
 
-static int test_mke2journal_L_0_skip (void)
+static int
+test_mke2journal_L_0_skip (void)
 {
   const char *str;
 
@@ -11054,7 +11317,8 @@ static int test_mke2journal_L_0_skip (void)
   return 0;
 }
 
-static int test_mke2journal_L_0 (void)
+static int
+test_mke2journal_L_0 (void)
 {
   if (test_mke2journal_L_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mke2journal_L_0");
@@ -11160,7 +11424,7 @@ static int test_mke2journal_L_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mke2journal_L_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mke2journal_L_0", expected, r);
       return -1;
     }
     free (r);
@@ -11168,7 +11432,8 @@ static int test_mke2journal_L_0 (void)
   return 0;
 }
 
-static int test_mke2journal_0_skip (void)
+static int
+test_mke2journal_0_skip (void)
 {
   const char *str;
 
@@ -11182,7 +11447,8 @@ static int test_mke2journal_0_skip (void)
   return 0;
 }
 
-static int test_mke2journal_0 (void)
+static int
+test_mke2journal_0 (void)
 {
   if (test_mke2journal_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mke2journal_0");
@@ -11287,7 +11553,7 @@ static int test_mke2journal_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mke2journal_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mke2journal_0", expected, r);
       return -1;
     }
     free (r);
@@ -11295,7 +11561,8 @@ static int test_mke2journal_0 (void)
   return 0;
 }
 
-static int test_mkfs_b_0_skip (void)
+static int
+test_mkfs_b_0_skip (void)
 {
   const char *str;
 
@@ -11309,7 +11576,8 @@ static int test_mkfs_b_0_skip (void)
   return 0;
 }
 
-static int test_mkfs_b_0 (void)
+static int
+test_mkfs_b_0 (void)
 {
   if (test_mkfs_b_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_0");
@@ -11387,7 +11655,7 @@ static int test_mkfs_b_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mkfs_b_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mkfs_b_0", expected, r);
       return -1;
     }
     free (r);
@@ -11395,7 +11663,8 @@ static int test_mkfs_b_0 (void)
   return 0;
 }
 
-static int test_mkfs_b_1_skip (void)
+static int
+test_mkfs_b_1_skip (void)
 {
   const char *str;
 
@@ -11409,7 +11678,8 @@ static int test_mkfs_b_1_skip (void)
   return 0;
 }
 
-static int test_mkfs_b_1 (void)
+static int
+test_mkfs_b_1 (void)
 {
   if (test_mkfs_b_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_1");
@@ -11461,7 +11731,8 @@ static int test_mkfs_b_1 (void)
   return 0;
 }
 
-static int test_mkfs_b_2_skip (void)
+static int
+test_mkfs_b_2_skip (void)
 {
   const char *str;
 
@@ -11475,7 +11746,8 @@ static int test_mkfs_b_2_skip (void)
   return 0;
 }
 
-static int test_mkfs_b_2 (void)
+static int
+test_mkfs_b_2 (void)
 {
   if (test_mkfs_b_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_2");
@@ -11527,7 +11799,8 @@ static int test_mkfs_b_2 (void)
   return 0;
 }
 
-static int test_mkfs_b_3_skip (void)
+static int
+test_mkfs_b_3_skip (void)
 {
   const char *str;
 
@@ -11541,7 +11814,8 @@ static int test_mkfs_b_3_skip (void)
   return 0;
 }
 
-static int test_mkfs_b_3 (void)
+static int
+test_mkfs_b_3 (void)
 {
   if (test_mkfs_b_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_3");
@@ -11593,7 +11867,8 @@ static int test_mkfs_b_3 (void)
   return 0;
 }
 
-static int test_mkfs_b_4_skip (void)
+static int
+test_mkfs_b_4_skip (void)
 {
   const char *str;
 
@@ -11607,7 +11882,8 @@ static int test_mkfs_b_4_skip (void)
   return 0;
 }
 
-static int test_mkfs_b_4 (void)
+static int
+test_mkfs_b_4 (void)
 {
   if (test_mkfs_b_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_b_4");
@@ -11664,7 +11940,8 @@ static int test_mkfs_b_4 (void)
   return 0;
 }
 
-static int test_inotify_add_watch_0_skip (void)
+static int
+test_inotify_add_watch_0_skip (void)
 {
   const char *str;
 
@@ -11678,7 +11955,8 @@ static int test_inotify_add_watch_0_skip (void)
   return 0;
 }
 
-static int test_inotify_add_watch_0 (void)
+static int
+test_inotify_add_watch_0 (void)
 {
   if (test_inotify_add_watch_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_inotify_add_watch_0");
@@ -11770,31 +12048,31 @@ static int test_inotify_add_watch_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_inotify_add_watch_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_inotify_add_watch_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "a";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_inotify_add_watch_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_inotify_add_watch_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_inotify_add_watch_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_inotify_add_watch_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "b";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_inotify_add_watch_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_inotify_add_watch_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_inotify_add_watch_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_inotify_add_watch_0");
       print_strings (r);
       return -1;
     }
@@ -11805,7 +12083,8 @@ static int test_inotify_add_watch_0 (void)
   return 0;
 }
 
-static int test_inotify_init_0_skip (void)
+static int
+test_inotify_init_0_skip (void)
 {
   const char *str;
 
@@ -11819,7 +12098,8 @@ static int test_inotify_init_0_skip (void)
   return 0;
 }
 
-static int test_inotify_init_0 (void)
+static int
+test_inotify_init_0 (void)
 {
   if (test_inotify_init_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_inotify_init_0");
@@ -11873,7 +12153,8 @@ static int test_inotify_init_0 (void)
   return 0;
 }
 
-static int test_mkswap_file_0_skip (void)
+static int
+test_mkswap_file_0_skip (void)
 {
   const char *str;
 
@@ -11887,7 +12168,8 @@ static int test_mkswap_file_0_skip (void)
   return 0;
 }
 
-static int test_mkswap_file_0 (void)
+static int
+test_mkswap_file_0 (void)
 {
   if (test_mkswap_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkswap_file_0");
@@ -11955,7 +12237,8 @@ static int test_mkswap_file_0 (void)
   return 0;
 }
 
-static int test_swapon_uuid_0_skip (void)
+static int
+test_swapon_uuid_0_skip (void)
 {
   const char *str;
 
@@ -11969,7 +12252,8 @@ static int test_swapon_uuid_0_skip (void)
   return 0;
 }
 
-static int test_swapon_uuid_0 (void)
+static int
+test_swapon_uuid_0 (void)
 {
   if (test_swapon_uuid_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_swapon_uuid_0");
@@ -12005,7 +12289,7 @@ static int test_swapon_uuid_0 (void)
   }
   /* TestRun for swapon_uuid (0) */
   {
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     const char *device = "/dev/sdc";
     int r;
     suppress_error = 0;
@@ -12014,7 +12298,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     int r;
     suppress_error = 0;
     r = guestfs_swapon_uuid (g, uuid);
@@ -12022,7 +12306,7 @@ static int test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     int r;
     suppress_error = 0;
     r = guestfs_swapoff_uuid (g, uuid);
@@ -12032,7 +12316,8 @@ static int test_swapon_uuid_0 (void)
   return 0;
 }
 
-static int test_swapon_label_0_skip (void)
+static int
+test_swapon_label_0_skip (void)
 {
   const char *str;
 
@@ -12046,7 +12331,8 @@ static int test_swapon_label_0_skip (void)
   return 0;
 }
 
-static int test_swapon_label_0 (void)
+static int
+test_swapon_label_0 (void)
 {
   if (test_swapon_label_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_swapon_label_0");
@@ -12130,7 +12416,8 @@ static int test_swapon_label_0 (void)
   return 0;
 }
 
-static int test_swapon_file_0_skip (void)
+static int
+test_swapon_file_0_skip (void)
 {
   const char *str;
 
@@ -12144,7 +12431,8 @@ static int test_swapon_file_0_skip (void)
   return 0;
 }
 
-static int test_swapon_file_0 (void)
+static int
+test_swapon_file_0 (void)
 {
   if (test_swapon_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_swapon_file_0");
@@ -12228,7 +12516,8 @@ static int test_swapon_file_0 (void)
   return 0;
 }
 
-static int test_swapon_device_0_skip (void)
+static int
+test_swapon_device_0_skip (void)
 {
   const char *str;
 
@@ -12242,7 +12531,8 @@ static int test_swapon_device_0_skip (void)
   return 0;
 }
 
-static int test_swapon_device_0 (void)
+static int
+test_swapon_device_0 (void)
 {
   if (test_swapon_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_swapon_device_0");
@@ -12309,7 +12599,8 @@ static int test_swapon_device_0 (void)
   return 0;
 }
 
-static int test_fallocate_0_skip (void)
+static int
+test_fallocate_0_skip (void)
 {
   const char *str;
 
@@ -12323,7 +12614,8 @@ static int test_fallocate_0_skip (void)
   return 0;
 }
 
-static int test_fallocate_0 (void)
+static int
+test_fallocate_0 (void)
 {
   if (test_fallocate_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fallocate_0");
@@ -12380,8 +12672,8 @@ static int test_fallocate_0 (void)
     if (r == NULL)
       return -1;
     if (r->size != 1000000) {
-      fprintf (stderr, "test_fallocate_0: size was %d, expected 1000000\n",
-               (int) r->size);
+      fprintf (stderr, "%s: size was %d, expected 1000000\n",
+               "test_fallocate_0", (int) r->size);
       return -1;
     }
     guestfs_free_stat (r);
@@ -12389,7 +12681,8 @@ static int test_fallocate_0 (void)
   return 0;
 }
 
-static int test_ln_sf_0_skip (void)
+static int
+test_ln_sf_0_skip (void)
 {
   const char *str;
 
@@ -12403,7 +12696,8 @@ static int test_ln_sf_0_skip (void)
   return 0;
 }
 
-static int test_ln_sf_0 (void)
+static int
+test_ln_sf_0 (void)
 {
   if (test_ln_sf_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ln_sf_0");
@@ -12478,7 +12772,7 @@ static int test_ln_sf_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_ln_sf_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_ln_sf_0", expected, r);
       return -1;
     }
     free (r);
@@ -12486,7 +12780,8 @@ static int test_ln_sf_0 (void)
   return 0;
 }
 
-static int test_ln_s_0_skip (void)
+static int
+test_ln_s_0_skip (void)
 {
   const char *str;
 
@@ -12500,7 +12795,8 @@ static int test_ln_s_0_skip (void)
   return 0;
 }
 
-static int test_ln_s_0 (void)
+static int
+test_ln_s_0 (void)
 {
   if (test_ln_s_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ln_s_0");
@@ -12574,8 +12870,8 @@ static int test_ln_s_0 (void)
     if (r == NULL)
       return -1;
     if (r->mode != 41471) {
-      fprintf (stderr, "test_ln_s_0: mode was %d, expected 41471\n",
-               (int) r->mode);
+      fprintf (stderr, "%s: mode was %d, expected 41471\n",
+               "test_ln_s_0", (int) r->mode);
       return -1;
     }
     guestfs_free_stat (r);
@@ -12583,7 +12879,8 @@ static int test_ln_s_0 (void)
   return 0;
 }
 
-static int test_ln_f_0_skip (void)
+static int
+test_ln_f_0_skip (void)
 {
   const char *str;
 
@@ -12597,7 +12894,8 @@ static int test_ln_f_0_skip (void)
   return 0;
 }
 
-static int test_ln_f_0 (void)
+static int
+test_ln_f_0 (void)
 {
   if (test_ln_f_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ln_f_0");
@@ -12679,8 +12977,8 @@ static int test_ln_f_0 (void)
     if (r == NULL)
       return -1;
     if (r->nlink != 2) {
-      fprintf (stderr, "test_ln_f_0: nlink was %d, expected 2\n",
-               (int) r->nlink);
+      fprintf (stderr, "%s: nlink was %d, expected 2\n",
+               "test_ln_f_0", (int) r->nlink);
       return -1;
     }
     guestfs_free_stat (r);
@@ -12688,7 +12986,8 @@ static int test_ln_f_0 (void)
   return 0;
 }
 
-static int test_ln_0_skip (void)
+static int
+test_ln_0_skip (void)
 {
   const char *str;
 
@@ -12702,7 +13001,8 @@ static int test_ln_0_skip (void)
   return 0;
 }
 
-static int test_ln_0 (void)
+static int
+test_ln_0 (void)
 {
   if (test_ln_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ln_0");
@@ -12776,8 +13076,8 @@ static int test_ln_0 (void)
     if (r == NULL)
       return -1;
     if (r->nlink != 2) {
-      fprintf (stderr, "test_ln_0: nlink was %d, expected 2\n",
-               (int) r->nlink);
+      fprintf (stderr, "%s: nlink was %d, expected 2\n",
+               "test_ln_0", (int) r->nlink);
       return -1;
     }
     guestfs_free_stat (r);
@@ -12785,7 +13085,8 @@ static int test_ln_0 (void)
   return 0;
 }
 
-static int test_realpath_0_skip (void)
+static int
+test_realpath_0_skip (void)
 {
   const char *str;
 
@@ -12799,7 +13100,8 @@ static int test_realpath_0_skip (void)
   return 0;
 }
 
-static int test_realpath_0 (void)
+static int
+test_realpath_0 (void)
 {
   if (test_realpath_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_realpath_0");
@@ -12852,7 +13154,7 @@ static int test_realpath_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_realpath_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_realpath_0", expected, r);
       return -1;
     }
     free (r);
@@ -12860,7 +13162,8 @@ static int test_realpath_0 (void)
   return 0;
 }
 
-static int test_zfgrepi_0_skip (void)
+static int
+test_zfgrepi_0_skip (void)
 {
   const char *str;
 
@@ -12874,7 +13177,8 @@ static int test_zfgrepi_0_skip (void)
   return 0;
 }
 
-static int test_zfgrepi_0 (void)
+static int
+test_zfgrepi_0 (void)
 {
   if (test_zfgrepi_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zfgrepi_0");
@@ -12924,43 +13228,43 @@ static int test_zfgrepi_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_zfgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zfgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_zfgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zfgrepi_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_zfgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zfgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_zfgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zfgrepi_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_zfgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zfgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "ABC";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_zfgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zfgrepi_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_zfgrepi_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_zfgrepi_0");
       print_strings (r);
       return -1;
     }
@@ -12971,7 +13275,8 @@ static int test_zfgrepi_0 (void)
   return 0;
 }
 
-static int test_zegrepi_0_skip (void)
+static int
+test_zegrepi_0_skip (void)
 {
   const char *str;
 
@@ -12985,7 +13290,8 @@ static int test_zegrepi_0_skip (void)
   return 0;
 }
 
-static int test_zegrepi_0 (void)
+static int
+test_zegrepi_0 (void)
 {
   if (test_zegrepi_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zegrepi_0");
@@ -13035,43 +13341,43 @@ static int test_zegrepi_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_zegrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zegrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_zegrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zegrepi_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_zegrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zegrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_zegrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zegrepi_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_zegrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zegrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "ABC";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_zegrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zegrepi_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_zegrepi_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_zegrepi_0");
       print_strings (r);
       return -1;
     }
@@ -13082,7 +13388,8 @@ static int test_zegrepi_0 (void)
   return 0;
 }
 
-static int test_zgrepi_0_skip (void)
+static int
+test_zgrepi_0_skip (void)
 {
   const char *str;
 
@@ -13096,7 +13403,8 @@ static int test_zgrepi_0_skip (void)
   return 0;
 }
 
-static int test_zgrepi_0 (void)
+static int
+test_zgrepi_0 (void)
 {
   if (test_zgrepi_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zgrepi_0");
@@ -13146,43 +13454,43 @@ static int test_zgrepi_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_zgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_zgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zgrepi_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_zgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_zgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zgrepi_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_zgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "ABC";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_zgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zgrepi_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_zgrepi_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_zgrepi_0");
       print_strings (r);
       return -1;
     }
@@ -13193,7 +13501,8 @@ static int test_zgrepi_0 (void)
   return 0;
 }
 
-static int test_zfgrep_0_skip (void)
+static int
+test_zfgrep_0_skip (void)
 {
   const char *str;
 
@@ -13207,7 +13516,8 @@ static int test_zfgrep_0_skip (void)
   return 0;
 }
 
-static int test_zfgrep_0 (void)
+static int
+test_zfgrep_0 (void)
 {
   if (test_zfgrep_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zfgrep_0");
@@ -13257,31 +13567,31 @@ static int test_zfgrep_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_zfgrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zfgrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_zfgrep_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zfgrep_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_zfgrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zfgrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_zfgrep_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zfgrep_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_zfgrep_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_zfgrep_0");
       print_strings (r);
       return -1;
     }
@@ -13292,7 +13602,8 @@ static int test_zfgrep_0 (void)
   return 0;
 }
 
-static int test_zegrep_0_skip (void)
+static int
+test_zegrep_0_skip (void)
 {
   const char *str;
 
@@ -13306,7 +13617,8 @@ static int test_zegrep_0_skip (void)
   return 0;
 }
 
-static int test_zegrep_0 (void)
+static int
+test_zegrep_0 (void)
 {
   if (test_zegrep_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zegrep_0");
@@ -13356,31 +13668,31 @@ static int test_zegrep_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_zegrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zegrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_zegrep_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zegrep_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_zegrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zegrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_zegrep_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zegrep_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_zegrep_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_zegrep_0");
       print_strings (r);
       return -1;
     }
@@ -13391,7 +13703,8 @@ static int test_zegrep_0 (void)
   return 0;
 }
 
-static int test_zgrep_0_skip (void)
+static int
+test_zgrep_0_skip (void)
 {
   const char *str;
 
@@ -13405,7 +13718,8 @@ static int test_zgrep_0_skip (void)
   return 0;
 }
 
-static int test_zgrep_0 (void)
+static int
+test_zgrep_0 (void)
 {
   if (test_zgrep_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zgrep_0");
@@ -13455,31 +13769,31 @@ static int test_zgrep_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_zgrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zgrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_zgrep_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zgrep_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_zgrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_zgrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_zgrep_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zgrep_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_zgrep_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_zgrep_0");
       print_strings (r);
       return -1;
     }
@@ -13490,7 +13804,8 @@ static int test_zgrep_0 (void)
   return 0;
 }
 
-static int test_fgrepi_0_skip (void)
+static int
+test_fgrepi_0_skip (void)
 {
   const char *str;
 
@@ -13504,7 +13819,8 @@ static int test_fgrepi_0_skip (void)
   return 0;
 }
 
-static int test_fgrepi_0 (void)
+static int
+test_fgrepi_0 (void)
 {
   if (test_fgrepi_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fgrepi_0");
@@ -13554,43 +13870,43 @@ static int test_fgrepi_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_fgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_fgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_fgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_fgrepi_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_fgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_fgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_fgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_fgrepi_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_fgrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_fgrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "ABC";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_fgrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_fgrepi_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_fgrepi_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_fgrepi_0");
       print_strings (r);
       return -1;
     }
@@ -13601,7 +13917,8 @@ static int test_fgrepi_0 (void)
   return 0;
 }
 
-static int test_egrepi_0_skip (void)
+static int
+test_egrepi_0_skip (void)
 {
   const char *str;
 
@@ -13615,7 +13932,8 @@ static int test_egrepi_0_skip (void)
   return 0;
 }
 
-static int test_egrepi_0 (void)
+static int
+test_egrepi_0 (void)
 {
   if (test_egrepi_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_egrepi_0");
@@ -13665,43 +13983,43 @@ static int test_egrepi_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_egrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_egrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_egrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_egrepi_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_egrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_egrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_egrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_egrepi_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_egrepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_egrepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "ABC";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_egrepi_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_egrepi_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_egrepi_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_egrepi_0");
       print_strings (r);
       return -1;
     }
@@ -13712,7 +14030,8 @@ static int test_egrepi_0 (void)
   return 0;
 }
 
-static int test_grepi_0_skip (void)
+static int
+test_grepi_0_skip (void)
 {
   const char *str;
 
@@ -13726,7 +14045,8 @@ static int test_grepi_0_skip (void)
   return 0;
 }
 
-static int test_grepi_0 (void)
+static int
+test_grepi_0 (void)
 {
   if (test_grepi_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_grepi_0");
@@ -13776,43 +14096,43 @@ static int test_grepi_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_grepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_grepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_grepi_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_grepi_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_grepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_grepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_grepi_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_grepi_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_grepi_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_grepi_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "ABC";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_grepi_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_grepi_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_grepi_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_grepi_0");
       print_strings (r);
       return -1;
     }
@@ -13823,7 +14143,8 @@ static int test_grepi_0 (void)
   return 0;
 }
 
-static int test_fgrep_0_skip (void)
+static int
+test_fgrep_0_skip (void)
 {
   const char *str;
 
@@ -13837,7 +14158,8 @@ static int test_fgrep_0_skip (void)
   return 0;
 }
 
-static int test_fgrep_0 (void)
+static int
+test_fgrep_0 (void)
 {
   if (test_fgrep_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fgrep_0");
@@ -13887,31 +14209,31 @@ static int test_fgrep_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_fgrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_fgrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_fgrep_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_fgrep_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_fgrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_fgrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_fgrep_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_fgrep_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_fgrep_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_fgrep_0");
       print_strings (r);
       return -1;
     }
@@ -13922,7 +14244,8 @@ static int test_fgrep_0 (void)
   return 0;
 }
 
-static int test_egrep_0_skip (void)
+static int
+test_egrep_0_skip (void)
 {
   const char *str;
 
@@ -13936,7 +14259,8 @@ static int test_egrep_0_skip (void)
   return 0;
 }
 
-static int test_egrep_0 (void)
+static int
+test_egrep_0 (void)
 {
   if (test_egrep_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_egrep_0");
@@ -13986,31 +14310,31 @@ static int test_egrep_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_egrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_egrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_egrep_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_egrep_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_egrep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_egrep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_egrep_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_egrep_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_egrep_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_egrep_0");
       print_strings (r);
       return -1;
     }
@@ -14021,7 +14345,8 @@ static int test_egrep_0 (void)
   return 0;
 }
 
-static int test_grep_0_skip (void)
+static int
+test_grep_0_skip (void)
 {
   const char *str;
 
@@ -14035,7 +14360,8 @@ static int test_grep_0_skip (void)
   return 0;
 }
 
-static int test_grep_0 (void)
+static int
+test_grep_0 (void)
 {
   if (test_grep_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_grep_0");
@@ -14085,31 +14411,31 @@ static int test_grep_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_grep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_grep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_grep_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_grep_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_grep_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_grep_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc123";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_grep_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_grep_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_grep_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_grep_0");
       print_strings (r);
       return -1;
     }
@@ -14120,7 +14446,8 @@ static int test_grep_0 (void)
   return 0;
 }
 
-static int test_grep_1_skip (void)
+static int
+test_grep_1_skip (void)
 {
   const char *str;
 
@@ -14134,7 +14461,8 @@ static int test_grep_1_skip (void)
   return 0;
 }
 
-static int test_grep_1 (void)
+static int
+test_grep_1 (void)
 {
   if (test_grep_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_grep_1");
@@ -14184,7 +14512,7 @@ static int test_grep_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_grep_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_grep_1");
       print_strings (r);
       return -1;
     }
@@ -14195,7 +14523,8 @@ static int test_grep_1 (void)
   return 0;
 }
 
-static int test_grep_2_skip (void)
+static int
+test_grep_2_skip (void)
 {
   const char *str;
 
@@ -14209,7 +14538,8 @@ static int test_grep_2_skip (void)
   return 0;
 }
 
-static int test_grep_2 (void)
+static int
+test_grep_2 (void)
 {
   if (test_grep_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_grep_2");
@@ -14259,7 +14589,7 @@ static int test_grep_2 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_grep_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_grep_2");
       print_strings (r);
       return -1;
     }
@@ -14270,7 +14600,8 @@ static int test_grep_2 (void)
   return 0;
 }
 
-static int test_read_file_0_skip (void)
+static int
+test_read_file_0_skip (void)
 {
   const char *str;
 
@@ -14284,7 +14615,8 @@ static int test_read_file_0_skip (void)
   return 0;
 }
 
-static int test_read_file_0 (void)
+static int
+test_read_file_0 (void)
 {
   if (test_read_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_read_file_0");
@@ -14334,11 +14666,11 @@ static int test_read_file_0 (void)
     if (r == NULL)
       return -1;
     if (size != 11) {
-      fprintf (stderr, "test_read_file_0: returned size of buffer wrong, expected 11 but got %zu\n", size);
+      fprintf (stderr, "%s: returned size of buffer wrong, expected 11 but got %zu\n", "test_read_file_0", size);
       return -1;
     }
     if (STRNEQLEN (r, expected, size)) {
-      fprintf (stderr, "test_read_file_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_read_file_0", expected, r);
       return -1;
     }
     free (r);
@@ -14346,7 +14678,8 @@ static int test_read_file_0 (void)
   return 0;
 }
 
-static int test_read_file_1_skip (void)
+static int
+test_read_file_1_skip (void)
 {
   const char *str;
 
@@ -14360,7 +14693,8 @@ static int test_read_file_1_skip (void)
   return 0;
 }
 
-static int test_read_file_1 (void)
+static int
+test_read_file_1 (void)
 {
   if (test_read_file_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_read_file_1");
@@ -14430,7 +14764,8 @@ static int test_read_file_1 (void)
   return 0;
 }
 
-static int test_read_file_2_skip (void)
+static int
+test_read_file_2_skip (void)
 {
   const char *str;
 
@@ -14444,7 +14779,8 @@ static int test_read_file_2_skip (void)
   return 0;
 }
 
-static int test_read_file_2 (void)
+static int
+test_read_file_2 (void)
 {
   if (test_read_file_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_read_file_2");
@@ -14514,7 +14850,8 @@ static int test_read_file_2 (void)
   return 0;
 }
 
-static int test_read_file_3_skip (void)
+static int
+test_read_file_3_skip (void)
 {
   const char *str;
 
@@ -14528,7 +14865,8 @@ static int test_read_file_3_skip (void)
   return 0;
 }
 
-static int test_read_file_3 (void)
+static int
+test_read_file_3 (void)
 {
   if (test_read_file_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_read_file_3");
@@ -14598,7 +14936,8 @@ static int test_read_file_3 (void)
   return 0;
 }
 
-static int test_umask_0_skip (void)
+static int
+test_umask_0_skip (void)
 {
   const char *str;
 
@@ -14612,7 +14951,8 @@ static int test_umask_0_skip (void)
   return 0;
 }
 
-static int test_umask_0 (void)
+static int
+test_umask_0 (void)
 {
   if (test_umask_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_umask_0");
@@ -14650,14 +14990,15 @@ static int test_umask_0 (void)
     if (r == -1)
       return -1;
     if (r != 18) {
-      fprintf (stderr, "test_umask_0: expected 18 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 18 but got %d\n",               "test_umask_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mknod_c_0_skip (void)
+static int
+test_mknod_c_0_skip (void)
 {
   const char *str;
 
@@ -14671,7 +15012,8 @@ static int test_mknod_c_0_skip (void)
   return 0;
 }
 
-static int test_mknod_c_0 (void)
+static int
+test_mknod_c_0 (void)
 {
   if (test_mknod_c_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mknod_c_0");
@@ -14732,8 +15074,8 @@ static int test_mknod_c_0 (void)
     if (r == NULL)
       return -1;
     if (r->mode != 8685) {
-      fprintf (stderr, "test_mknod_c_0: mode was %d, expected 8685\n",
-               (int) r->mode);
+      fprintf (stderr, "%s: mode was %d, expected 8685\n",
+               "test_mknod_c_0", (int) r->mode);
       return -1;
     }
     guestfs_free_stat (r);
@@ -14741,7 +15083,8 @@ static int test_mknod_c_0 (void)
   return 0;
 }
 
-static int test_mknod_b_0_skip (void)
+static int
+test_mknod_b_0_skip (void)
 {
   const char *str;
 
@@ -14755,7 +15098,8 @@ static int test_mknod_b_0_skip (void)
   return 0;
 }
 
-static int test_mknod_b_0 (void)
+static int
+test_mknod_b_0 (void)
 {
   if (test_mknod_b_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mknod_b_0");
@@ -14816,8 +15160,8 @@ static int test_mknod_b_0 (void)
     if (r == NULL)
       return -1;
     if (r->mode != 25069) {
-      fprintf (stderr, "test_mknod_b_0: mode was %d, expected 25069\n",
-               (int) r->mode);
+      fprintf (stderr, "%s: mode was %d, expected 25069\n",
+               "test_mknod_b_0", (int) r->mode);
       return -1;
     }
     guestfs_free_stat (r);
@@ -14825,7 +15169,8 @@ static int test_mknod_b_0 (void)
   return 0;
 }
 
-static int test_mkfifo_0_skip (void)
+static int
+test_mkfifo_0_skip (void)
 {
   const char *str;
 
@@ -14839,7 +15184,8 @@ static int test_mkfifo_0_skip (void)
   return 0;
 }
 
-static int test_mkfifo_0 (void)
+static int
+test_mkfifo_0 (void)
 {
   if (test_mkfifo_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfifo_0");
@@ -14900,8 +15246,8 @@ static int test_mkfifo_0 (void)
     if (r == NULL)
       return -1;
     if (r->mode != 4589) {
-      fprintf (stderr, "test_mkfifo_0: mode was %d, expected 4589\n",
-               (int) r->mode);
+      fprintf (stderr, "%s: mode was %d, expected 4589\n",
+               "test_mkfifo_0", (int) r->mode);
       return -1;
     }
     guestfs_free_stat (r);
@@ -14909,7 +15255,8 @@ static int test_mkfifo_0 (void)
   return 0;
 }
 
-static int test_mknod_0_skip (void)
+static int
+test_mknod_0_skip (void)
 {
   const char *str;
 
@@ -14923,7 +15270,8 @@ static int test_mknod_0_skip (void)
   return 0;
 }
 
-static int test_mknod_0 (void)
+static int
+test_mknod_0 (void)
 {
   if (test_mknod_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mknod_0");
@@ -14984,8 +15332,8 @@ static int test_mknod_0 (void)
     if (r == NULL)
       return -1;
     if (r->mode != 4589) {
-      fprintf (stderr, "test_mknod_0: mode was %d, expected 4589\n",
-               (int) r->mode);
+      fprintf (stderr, "%s: mode was %d, expected 4589\n",
+               "test_mknod_0", (int) r->mode);
       return -1;
     }
     guestfs_free_stat (r);
@@ -14993,7 +15341,8 @@ static int test_mknod_0 (void)
   return 0;
 }
 
-static int test_mknod_1_skip (void)
+static int
+test_mknod_1_skip (void)
 {
   const char *str;
 
@@ -15007,7 +15356,8 @@ static int test_mknod_1_skip (void)
   return 0;
 }
 
-static int test_mknod_1 (void)
+static int
+test_mknod_1 (void)
 {
   if (test_mknod_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mknod_1");
@@ -15068,8 +15418,8 @@ static int test_mknod_1 (void)
     if (r == NULL)
       return -1;
     if (r->mode != 25069) {
-      fprintf (stderr, "test_mknod_1: mode was %d, expected 25069\n",
-               (int) r->mode);
+      fprintf (stderr, "%s: mode was %d, expected 25069\n",
+               "test_mknod_1", (int) r->mode);
       return -1;
     }
     guestfs_free_stat (r);
@@ -15077,7 +15427,8 @@ static int test_mknod_1 (void)
   return 0;
 }
 
-static int test_mkswap_U_0_skip (void)
+static int
+test_mkswap_U_0_skip (void)
 {
   const char *str;
 
@@ -15091,7 +15442,8 @@ static int test_mkswap_U_0_skip (void)
   return 0;
 }
 
-static int test_mkswap_U_0 (void)
+static int
+test_mkswap_U_0 (void)
 {
   if (test_mkswap_U_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkswap_U_0");
@@ -15136,7 +15488,7 @@ static int test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     const char *device = "/dev/sda1";
     int r;
     suppress_error = 0;
@@ -15147,7 +15499,8 @@ static int test_mkswap_U_0 (void)
   return 0;
 }
 
-static int test_mkswap_L_0_skip (void)
+static int
+test_mkswap_L_0_skip (void)
 {
   const char *str;
 
@@ -15161,7 +15514,8 @@ static int test_mkswap_L_0_skip (void)
   return 0;
 }
 
-static int test_mkswap_L_0 (void)
+static int
+test_mkswap_L_0 (void)
 {
   if (test_mkswap_L_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkswap_L_0");
@@ -15213,7 +15567,8 @@ static int test_mkswap_L_0 (void)
   return 0;
 }
 
-static int test_mkswap_0_skip (void)
+static int
+test_mkswap_0_skip (void)
 {
   const char *str;
 
@@ -15227,7 +15582,8 @@ static int test_mkswap_0_skip (void)
   return 0;
 }
 
-static int test_mkswap_0 (void)
+static int
+test_mkswap_0 (void)
 {
   if (test_mkswap_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkswap_0");
@@ -15278,7 +15634,8 @@ static int test_mkswap_0 (void)
   return 0;
 }
 
-static int test_initrd_list_0_skip (void)
+static int
+test_initrd_list_0_skip (void)
 {
   const char *str;
 
@@ -15292,7 +15649,8 @@ static int test_initrd_list_0_skip (void)
   return 0;
 }
 
-static int test_initrd_list_0 (void)
+static int
+test_initrd_list_0 (void)
 {
   if (test_initrd_list_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_initrd_list_0");
@@ -15341,79 +15699,79 @@ static int test_initrd_list_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_initrd_list_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_initrd_list_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "empty";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_initrd_list_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_initrd_list_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_initrd_list_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_initrd_list_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "known-1";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_initrd_list_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_initrd_list_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_initrd_list_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_initrd_list_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "known-2";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_initrd_list_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_initrd_list_0", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_initrd_list_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_initrd_list_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "known-3";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_initrd_list_0: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_initrd_list_0", expected, r[3]);
         return -1;
       }
     }
     if (!r[4]) {
-      fprintf (stderr, "test_initrd_list_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_initrd_list_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "known-4";
       if (STRNEQ (r[4], expected)) {
-        fprintf (stderr, "test_initrd_list_0: expected \"%s\" but got \"%s\"\n", expected, r[4]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_initrd_list_0", expected, r[4]);
         return -1;
       }
     }
     if (!r[5]) {
-      fprintf (stderr, "test_initrd_list_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_initrd_list_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "known-5";
       if (STRNEQ (r[5], expected)) {
-        fprintf (stderr, "test_initrd_list_0: expected \"%s\" but got \"%s\"\n", expected, r[5]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_initrd_list_0", expected, r[5]);
         return -1;
       }
     }
     if (r[6] != NULL) {
-      fprintf (stderr, "test_initrd_list_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_initrd_list_0");
       print_strings (r);
       return -1;
     }
@@ -15424,7 +15782,8 @@ static int test_initrd_list_0 (void)
   return 0;
 }
 
-static int test_du_0_skip (void)
+static int
+test_du_0_skip (void)
 {
   const char *str;
 
@@ -15438,7 +15797,8 @@ static int test_du_0_skip (void)
   return 0;
 }
 
-static int test_du_0 (void)
+static int
+test_du_0 (void)
 {
   if (test_du_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_du_0");
@@ -15486,14 +15846,15 @@ static int test_du_0 (void)
     if (r == -1)
       return -1;
     if (r != 2) {
-      fprintf (stderr, "test_du_0: expected 2 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 2 but got %d\n",               "test_du_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_tail_n_0_skip (void)
+static int
+test_tail_n_0_skip (void)
 {
   const char *str;
 
@@ -15507,7 +15868,8 @@ static int test_tail_n_0_skip (void)
   return 0;
 }
 
-static int test_tail_n_0 (void)
+static int
+test_tail_n_0 (void)
 {
   if (test_tail_n_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tail_n_0");
@@ -15556,43 +15918,43 @@ static int test_tail_n_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_tail_n_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_n_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9997abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_tail_n_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_n_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_tail_n_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_n_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9998abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_tail_n_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_n_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_tail_n_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_n_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9999abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_tail_n_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_n_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_tail_n_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_tail_n_0");
       print_strings (r);
       return -1;
     }
@@ -15603,7 +15965,8 @@ static int test_tail_n_0 (void)
   return 0;
 }
 
-static int test_tail_n_1_skip (void)
+static int
+test_tail_n_1_skip (void)
 {
   const char *str;
 
@@ -15617,7 +15980,8 @@ static int test_tail_n_1_skip (void)
   return 0;
 }
 
-static int test_tail_n_1 (void)
+static int
+test_tail_n_1 (void)
 {
   if (test_tail_n_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tail_n_1");
@@ -15666,43 +16030,43 @@ static int test_tail_n_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_tail_n_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_n_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9997abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_tail_n_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_n_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_tail_n_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_n_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9998abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_tail_n_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_n_1", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_tail_n_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_n_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9999abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_tail_n_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_n_1", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_tail_n_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_tail_n_1");
       print_strings (r);
       return -1;
     }
@@ -15713,7 +16077,8 @@ static int test_tail_n_1 (void)
   return 0;
 }
 
-static int test_tail_n_2_skip (void)
+static int
+test_tail_n_2_skip (void)
 {
   const char *str;
 
@@ -15727,7 +16092,8 @@ static int test_tail_n_2_skip (void)
   return 0;
 }
 
-static int test_tail_n_2 (void)
+static int
+test_tail_n_2 (void)
 {
   if (test_tail_n_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tail_n_2");
@@ -15776,7 +16142,7 @@ static int test_tail_n_2 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_tail_n_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_tail_n_2");
       print_strings (r);
       return -1;
     }
@@ -15787,7 +16153,8 @@ static int test_tail_n_2 (void)
   return 0;
 }
 
-static int test_tail_0_skip (void)
+static int
+test_tail_0_skip (void)
 {
   const char *str;
 
@@ -15801,7 +16168,8 @@ static int test_tail_0_skip (void)
   return 0;
 }
 
-static int test_tail_0 (void)
+static int
+test_tail_0 (void)
 {
   if (test_tail_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tail_0");
@@ -15850,127 +16218,127 @@ static int test_tail_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9990abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9991abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9992abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9993abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[3]);
         return -1;
       }
     }
     if (!r[4]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9994abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[4], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[4]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[4]);
         return -1;
       }
     }
     if (!r[5]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9995abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[5], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[5]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[5]);
         return -1;
       }
     }
     if (!r[6]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9996abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[6], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[6]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[6]);
         return -1;
       }
     }
     if (!r[7]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9997abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[7], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[7]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[7]);
         return -1;
       }
     }
     if (!r[8]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9998abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[8], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[8]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[8]);
         return -1;
       }
     }
     if (!r[9]) {
-      fprintf (stderr, "test_tail_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9999abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[9], expected)) {
-        fprintf (stderr, "test_tail_0: expected \"%s\" but got \"%s\"\n", expected, r[9]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tail_0", expected, r[9]);
         return -1;
       }
     }
     if (r[10] != NULL) {
-      fprintf (stderr, "test_tail_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_tail_0");
       print_strings (r);
       return -1;
     }
@@ -15981,7 +16349,8 @@ static int test_tail_0 (void)
   return 0;
 }
 
-static int test_head_n_0_skip (void)
+static int
+test_head_n_0_skip (void)
 {
   const char *str;
 
@@ -15995,7 +16364,8 @@ static int test_head_n_0_skip (void)
   return 0;
 }
 
-static int test_head_n_0 (void)
+static int
+test_head_n_0 (void)
 {
   if (test_head_n_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_head_n_0");
@@ -16044,43 +16414,43 @@ static int test_head_n_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_head_n_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_n_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "0abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_head_n_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_n_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_head_n_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_n_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "1abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_head_n_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_n_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_head_n_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_n_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "2abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_head_n_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_n_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_head_n_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_head_n_0");
       print_strings (r);
       return -1;
     }
@@ -16091,7 +16461,8 @@ static int test_head_n_0 (void)
   return 0;
 }
 
-static int test_head_n_1_skip (void)
+static int
+test_head_n_1_skip (void)
 {
   const char *str;
 
@@ -16105,7 +16476,8 @@ static int test_head_n_1_skip (void)
   return 0;
 }
 
-static int test_head_n_1 (void)
+static int
+test_head_n_1 (void)
 {
   if (test_head_n_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_head_n_1");
@@ -16154,43 +16526,43 @@ static int test_head_n_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_head_n_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_n_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "0abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_head_n_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_n_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_head_n_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_n_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "1abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_head_n_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_n_1", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_head_n_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_n_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "2abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_head_n_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_n_1", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_head_n_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_head_n_1");
       print_strings (r);
       return -1;
     }
@@ -16201,7 +16573,8 @@ static int test_head_n_1 (void)
   return 0;
 }
 
-static int test_head_n_2_skip (void)
+static int
+test_head_n_2_skip (void)
 {
   const char *str;
 
@@ -16215,7 +16588,8 @@ static int test_head_n_2_skip (void)
   return 0;
 }
 
-static int test_head_n_2 (void)
+static int
+test_head_n_2 (void)
 {
   if (test_head_n_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_head_n_2");
@@ -16264,7 +16638,7 @@ static int test_head_n_2 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_head_n_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_head_n_2");
       print_strings (r);
       return -1;
     }
@@ -16275,7 +16649,8 @@ static int test_head_n_2 (void)
   return 0;
 }
 
-static int test_head_0_skip (void)
+static int
+test_head_0_skip (void)
 {
   const char *str;
 
@@ -16289,7 +16664,8 @@ static int test_head_0_skip (void)
   return 0;
 }
 
-static int test_head_0 (void)
+static int
+test_head_0 (void)
 {
   if (test_head_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_head_0");
@@ -16338,127 +16714,127 @@ static int test_head_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "0abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "1abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "2abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "3abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[3]);
         return -1;
       }
     }
     if (!r[4]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "4abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[4], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[4]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[4]);
         return -1;
       }
     }
     if (!r[5]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "5abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[5], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[5]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[5]);
         return -1;
       }
     }
     if (!r[6]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "6abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[6], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[6]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[6]);
         return -1;
       }
     }
     if (!r[7]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "7abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[7], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[7]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[7]);
         return -1;
       }
     }
     if (!r[8]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "8abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[8], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[8]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[8]);
         return -1;
       }
     }
     if (!r[9]) {
-      fprintf (stderr, "test_head_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[9], expected)) {
-        fprintf (stderr, "test_head_0: expected \"%s\" but got \"%s\"\n", expected, r[9]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_0", expected, r[9]);
         return -1;
       }
     }
     if (r[10] != NULL) {
-      fprintf (stderr, "test_head_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_head_0");
       print_strings (r);
       return -1;
     }
@@ -16469,7 +16845,8 @@ static int test_head_0 (void)
   return 0;
 }
 
-static int test_head_1_skip (void)
+static int
+test_head_1_skip (void)
 {
   const char *str;
 
@@ -16483,7 +16860,8 @@ static int test_head_1_skip (void)
   return 0;
 }
 
-static int test_head_1 (void)
+static int
+test_head_1 (void)
 {
   if (test_head_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_head_1");
@@ -16532,127 +16910,127 @@ static int test_head_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "0abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "1abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "2abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "3abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[3]);
         return -1;
       }
     }
     if (!r[4]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "4abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[4], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[4]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[4]);
         return -1;
       }
     }
     if (!r[5]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "5abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[5], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[5]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[5]);
         return -1;
       }
     }
     if (!r[6]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "6abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[6], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[6]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[6]);
         return -1;
       }
     }
     if (!r[7]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "7abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[7], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[7]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[7]);
         return -1;
       }
     }
     if (!r[8]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "8abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[8], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[8]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[8]);
         return -1;
       }
     }
     if (!r[9]) {
-      fprintf (stderr, "test_head_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "9abcdefghijklmnopqrstuvwxyz";
       if (STRNEQ (r[9], expected)) {
-        fprintf (stderr, "test_head_1: expected \"%s\" but got \"%s\"\n", expected, r[9]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_head_1", expected, r[9]);
         return -1;
       }
     }
     if (r[10] != NULL) {
-      fprintf (stderr, "test_head_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_head_1");
       print_strings (r);
       return -1;
     }
@@ -16663,7 +17041,8 @@ static int test_head_1 (void)
   return 0;
 }
 
-static int test_wc_c_0_skip (void)
+static int
+test_wc_c_0_skip (void)
 {
   const char *str;
 
@@ -16677,7 +17056,8 @@ static int test_wc_c_0_skip (void)
   return 0;
 }
 
-static int test_wc_c_0 (void)
+static int
+test_wc_c_0 (void)
 {
   if (test_wc_c_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_wc_c_0");
@@ -16725,14 +17105,15 @@ static int test_wc_c_0 (void)
     if (r == -1)
       return -1;
     if (r != 102400) {
-      fprintf (stderr, "test_wc_c_0: expected 102400 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 102400 but got %d\n",               "test_wc_c_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_wc_w_0_skip (void)
+static int
+test_wc_w_0_skip (void)
 {
   const char *str;
 
@@ -16746,7 +17127,8 @@ static int test_wc_w_0_skip (void)
   return 0;
 }
 
-static int test_wc_w_0 (void)
+static int
+test_wc_w_0 (void)
 {
   if (test_wc_w_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_wc_w_0");
@@ -16794,14 +17176,15 @@ static int test_wc_w_0 (void)
     if (r == -1)
       return -1;
     if (r != 10000) {
-      fprintf (stderr, "test_wc_w_0: expected 10000 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 10000 but got %d\n",               "test_wc_w_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_wc_l_0_skip (void)
+static int
+test_wc_l_0_skip (void)
 {
   const char *str;
 
@@ -16815,7 +17198,8 @@ static int test_wc_l_0_skip (void)
   return 0;
 }
 
-static int test_wc_l_0 (void)
+static int
+test_wc_l_0 (void)
 {
   if (test_wc_l_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_wc_l_0");
@@ -16863,14 +17247,15 @@ static int test_wc_l_0 (void)
     if (r == -1)
       return -1;
     if (r != 10000) {
-      fprintf (stderr, "test_wc_l_0: expected 10000 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 10000 but got %d\n",               "test_wc_l_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_wc_l_1_skip (void)
+static int
+test_wc_l_1_skip (void)
 {
   const char *str;
 
@@ -16884,7 +17269,8 @@ static int test_wc_l_1_skip (void)
   return 0;
 }
 
-static int test_wc_l_1 (void)
+static int
+test_wc_l_1 (void)
 {
   if (test_wc_l_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_wc_l_1");
@@ -16932,14 +17318,15 @@ static int test_wc_l_1 (void)
     if (r == -1)
       return -1;
     if (r != 10000) {
-      fprintf (stderr, "test_wc_l_1: expected 10000 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 10000 but got %d\n",               "test_wc_l_1", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mkdtemp_0_skip (void)
+static int
+test_mkdtemp_0_skip (void)
 {
   const char *str;
 
@@ -16953,7 +17340,8 @@ static int test_mkdtemp_0_skip (void)
   return 0;
 }
 
-static int test_mkdtemp_0 (void)
+static int
+test_mkdtemp_0 (void)
 {
   if (test_mkdtemp_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdtemp_0");
@@ -17014,7 +17402,8 @@ static int test_mkdtemp_0 (void)
   return 0;
 }
 
-static int test_scrub_file_0_skip (void)
+static int
+test_scrub_file_0_skip (void)
 {
   const char *str;
 
@@ -17028,7 +17417,8 @@ static int test_scrub_file_0_skip (void)
   return 0;
 }
 
-static int test_scrub_file_0 (void)
+static int
+test_scrub_file_0 (void)
 {
   if (test_scrub_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_scrub_file_0");
@@ -17094,7 +17484,8 @@ static int test_scrub_file_0 (void)
   return 0;
 }
 
-static int test_scrub_device_0_skip (void)
+static int
+test_scrub_device_0_skip (void)
 {
   const char *str;
 
@@ -17108,7 +17499,8 @@ static int test_scrub_device_0_skip (void)
   return 0;
 }
 
-static int test_scrub_device_0 (void)
+static int
+test_scrub_device_0 (void)
 {
   if (test_scrub_device_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_scrub_device_0");
@@ -17154,7 +17546,8 @@ static int test_scrub_device_0 (void)
   return 0;
 }
 
-static int test_glob_expand_0_skip (void)
+static int
+test_glob_expand_0_skip (void)
 {
   const char *str;
 
@@ -17168,7 +17561,8 @@ static int test_glob_expand_0_skip (void)
   return 0;
 }
 
-static int test_glob_expand_0 (void)
+static int
+test_glob_expand_0 (void)
 {
   if (test_glob_expand_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_glob_expand_0");
@@ -17242,31 +17636,31 @@ static int test_glob_expand_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_glob_expand_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_glob_expand_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/glob_expand/b/c/d";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_glob_expand_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_glob_expand_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_glob_expand_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_glob_expand_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/glob_expand/b/c/e";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_glob_expand_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_glob_expand_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_glob_expand_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_glob_expand_0");
       print_strings (r);
       return -1;
     }
@@ -17277,7 +17671,8 @@ static int test_glob_expand_0 (void)
   return 0;
 }
 
-static int test_glob_expand_1_skip (void)
+static int
+test_glob_expand_1_skip (void)
 {
   const char *str;
 
@@ -17291,7 +17686,8 @@ static int test_glob_expand_1_skip (void)
   return 0;
 }
 
-static int test_glob_expand_1 (void)
+static int
+test_glob_expand_1 (void)
 {
   if (test_glob_expand_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_glob_expand_1");
@@ -17365,31 +17761,31 @@ static int test_glob_expand_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_glob_expand_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_glob_expand_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/glob_expand2/b/c/d";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_glob_expand_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_glob_expand_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_glob_expand_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_glob_expand_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/glob_expand2/b/c/e";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_glob_expand_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_glob_expand_1", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_glob_expand_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_glob_expand_1");
       print_strings (r);
       return -1;
     }
@@ -17400,7 +17796,8 @@ static int test_glob_expand_1 (void)
   return 0;
 }
 
-static int test_glob_expand_2_skip (void)
+static int
+test_glob_expand_2_skip (void)
 {
   const char *str;
 
@@ -17414,7 +17811,8 @@ static int test_glob_expand_2_skip (void)
   return 0;
 }
 
-static int test_glob_expand_2 (void)
+static int
+test_glob_expand_2 (void)
 {
   if (test_glob_expand_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_glob_expand_2");
@@ -17488,7 +17886,7 @@ static int test_glob_expand_2 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_glob_expand_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_glob_expand_2");
       print_strings (r);
       return -1;
     }
@@ -17499,7 +17897,8 @@ static int test_glob_expand_2 (void)
   return 0;
 }
 
-static int test_ntfs_3g_probe_0_skip (void)
+static int
+test_ntfs_3g_probe_0_skip (void)
 {
   const char *str;
 
@@ -17513,7 +17912,8 @@ static int test_ntfs_3g_probe_0_skip (void)
   return 0;
 }
 
-static int test_ntfs_3g_probe_0 (void)
+static int
+test_ntfs_3g_probe_0 (void)
 {
   if (test_ntfs_3g_probe_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ntfs_3g_probe_0");
@@ -17574,14 +17974,15 @@ static int test_ntfs_3g_probe_0 (void)
     if (r == -1)
       return -1;
     if (r != 0) {
-      fprintf (stderr, "test_ntfs_3g_probe_0: expected 0 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 0 but got %d\n",               "test_ntfs_3g_probe_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_ntfs_3g_probe_1_skip (void)
+static int
+test_ntfs_3g_probe_1_skip (void)
 {
   const char *str;
 
@@ -17595,7 +17996,8 @@ static int test_ntfs_3g_probe_1_skip (void)
   return 0;
 }
 
-static int test_ntfs_3g_probe_1 (void)
+static int
+test_ntfs_3g_probe_1 (void)
 {
   if (test_ntfs_3g_probe_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ntfs_3g_probe_1");
@@ -17656,14 +18058,15 @@ static int test_ntfs_3g_probe_1 (void)
     if (r == -1)
       return -1;
     if (r != 12) {
-      fprintf (stderr, "test_ntfs_3g_probe_1: expected 12 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 12 but got %d\n",               "test_ntfs_3g_probe_1", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_sleep_0_skip (void)
+static int
+test_sleep_0_skip (void)
 {
   const char *str;
 
@@ -17677,7 +18080,8 @@ static int test_sleep_0_skip (void)
   return 0;
 }
 
-static int test_sleep_0 (void)
+static int
+test_sleep_0 (void)
 {
   if (test_sleep_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_sleep_0");
@@ -17718,7 +18122,8 @@ static int test_sleep_0 (void)
   return 0;
 }
 
-static int test_find_0_skip (void)
+static int
+test_find_0_skip (void)
 {
   const char *str;
 
@@ -17732,7 +18137,8 @@ static int test_find_0_skip (void)
   return 0;
 }
 
-static int test_find_0 (void)
+static int
+test_find_0 (void)
 {
   if (test_find_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_find_0");
@@ -17800,19 +18206,19 @@ static int test_find_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_find_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_find_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "lost+found";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_find_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_find_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_find_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_find_0");
       print_strings (r);
       return -1;
     }
@@ -17823,7 +18229,8 @@ static int test_find_0 (void)
   return 0;
 }
 
-static int test_find_1_skip (void)
+static int
+test_find_1_skip (void)
 {
   const char *str;
 
@@ -17837,7 +18244,8 @@ static int test_find_1_skip (void)
   return 0;
 }
 
-static int test_find_1 (void)
+static int
+test_find_1 (void)
 {
   if (test_find_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_find_1");
@@ -17929,55 +18337,55 @@ static int test_find_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_find_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_find_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "a";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_find_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_find_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_find_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_find_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "b";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_find_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_find_1", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_find_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_find_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "b/c";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_find_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_find_1", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_find_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_find_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "lost+found";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_find_1: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_find_1", expected, r[3]);
         return -1;
       }
     }
     if (r[4] != NULL) {
-      fprintf (stderr, "test_find_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_find_1");
       print_strings (r);
       return -1;
     }
@@ -17988,7 +18396,8 @@ static int test_find_1 (void)
   return 0;
 }
 
-static int test_find_2_skip (void)
+static int
+test_find_2_skip (void)
 {
   const char *str;
 
@@ -18002,7 +18411,8 @@ static int test_find_2_skip (void)
   return 0;
 }
 
-static int test_find_2 (void)
+static int
+test_find_2 (void)
 {
   if (test_find_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_find_2");
@@ -18068,31 +18478,31 @@ static int test_find_2 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_find_2: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_find_2");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "c";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_find_2: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_find_2", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_find_2: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_find_2");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "c/d";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_find_2: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_find_2", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_find_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_find_2");
       print_strings (r);
       return -1;
     }
@@ -18103,7 +18513,8 @@ static int test_find_2 (void)
   return 0;
 }
 
-static int test_lvresize_0_skip (void)
+static int
+test_lvresize_0_skip (void)
 {
   const char *str;
 
@@ -18117,7 +18528,8 @@ static int test_lvresize_0_skip (void)
   return 0;
 }
 
-static int test_lvresize_0 (void)
+static int
+test_lvresize_0 (void)
 {
   if (test_lvresize_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvresize_0");
@@ -18295,7 +18707,7 @@ static int test_lvresize_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_lvresize_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvresize_0", expected, r);
       return -1;
     }
     free (r);
@@ -18303,7 +18715,8 @@ static int test_lvresize_0 (void)
   return 0;
 }
 
-static int test_lvresize_1_skip (void)
+static int
+test_lvresize_1_skip (void)
 {
   const char *str;
 
@@ -18317,7 +18730,8 @@ static int test_lvresize_1_skip (void)
   return 0;
 }
 
-static int test_lvresize_1 (void)
+static int
+test_lvresize_1 (void)
 {
   if (test_lvresize_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvresize_1");
@@ -18402,7 +18816,8 @@ static int test_lvresize_1 (void)
   return 0;
 }
 
-static int test_zerofree_0_skip (void)
+static int
+test_zerofree_0_skip (void)
 {
   const char *str;
 
@@ -18416,7 +18831,8 @@ static int test_zerofree_0_skip (void)
   return 0;
 }
 
-static int test_zerofree_0 (void)
+static int
+test_zerofree_0 (void)
 {
   if (test_zerofree_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zerofree_0");
@@ -18524,7 +18940,7 @@ static int test_zerofree_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_zerofree_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_zerofree_0", expected, r);
       return -1;
     }
     free (r);
@@ -18532,7 +18948,8 @@ static int test_zerofree_0 (void)
   return 0;
 }
 
-static int test_hexdump_0_skip (void)
+static int
+test_hexdump_0_skip (void)
 {
   const char *str;
 
@@ -18546,7 +18963,8 @@ static int test_hexdump_0_skip (void)
   return 0;
 }
 
-static int test_hexdump_0 (void)
+static int
+test_hexdump_0 (void)
 {
   if (test_hexdump_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_hexdump_0");
@@ -18595,7 +19013,7 @@ static int test_hexdump_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_hexdump_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_hexdump_0", expected, r);
       return -1;
     }
     free (r);
@@ -18603,7 +19021,8 @@ static int test_hexdump_0 (void)
   return 0;
 }
 
-static int test_hexdump_1_skip (void)
+static int
+test_hexdump_1_skip (void)
 {
   const char *str;
 
@@ -18617,7 +19036,8 @@ static int test_hexdump_1_skip (void)
   return 0;
 }
 
-static int test_hexdump_1 (void)
+static int
+test_hexdump_1 (void)
 {
   if (test_hexdump_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_hexdump_1");
@@ -18669,7 +19089,8 @@ static int test_hexdump_1 (void)
   return 0;
 }
 
-static int test_hexdump_2_skip (void)
+static int
+test_hexdump_2_skip (void)
 {
   const char *str;
 
@@ -18683,7 +19104,8 @@ static int test_hexdump_2_skip (void)
   return 0;
 }
 
-static int test_hexdump_2 (void)
+static int
+test_hexdump_2 (void)
 {
   if (test_hexdump_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_hexdump_2");
@@ -18735,7 +19157,8 @@ static int test_hexdump_2 (void)
   return 0;
 }
 
-static int test_strings_e_0_skip (void)
+static int
+test_strings_e_0_skip (void)
 {
   const char *str;
 
@@ -18749,7 +19172,8 @@ static int test_strings_e_0_skip (void)
   return 0;
 }
 
-static int test_strings_e_0 (void)
+static int
+test_strings_e_0 (void)
 {
   if (test_strings_e_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_strings_e_0");
@@ -18799,7 +19223,7 @@ static int test_strings_e_0 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_strings_e_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_strings_e_0");
       print_strings (r);
       return -1;
     }
@@ -18810,7 +19234,8 @@ static int test_strings_e_0 (void)
   return 0;
 }
 
-static int test_strings_e_1_skip (void)
+static int
+test_strings_e_1_skip (void)
 {
   const char *str;
 
@@ -18824,7 +19249,8 @@ static int test_strings_e_1_skip (void)
   return 0;
 }
 
-static int test_strings_e_1 (void)
+static int
+test_strings_e_1 (void)
 {
   if (test_strings_e_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_strings_e_1");
@@ -18885,31 +19311,31 @@ static int test_strings_e_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_strings_e_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_strings_e_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "hello";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_strings_e_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_strings_e_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_strings_e_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_strings_e_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "world";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_strings_e_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_strings_e_1", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_strings_e_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_strings_e_1");
       print_strings (r);
       return -1;
     }
@@ -18920,7 +19346,8 @@ static int test_strings_e_1 (void)
   return 0;
 }
 
-static int test_strings_0_skip (void)
+static int
+test_strings_0_skip (void)
 {
   const char *str;
 
@@ -18934,7 +19361,8 @@ static int test_strings_0_skip (void)
   return 0;
 }
 
-static int test_strings_0 (void)
+static int
+test_strings_0 (void)
 {
   if (test_strings_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_strings_0");
@@ -18983,31 +19411,31 @@ static int test_strings_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_strings_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_strings_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abcdefghi";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_strings_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_strings_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_strings_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_strings_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "jklmnopqr";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_strings_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_strings_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_strings_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_strings_0");
       print_strings (r);
       return -1;
     }
@@ -19018,7 +19446,8 @@ static int test_strings_0 (void)
   return 0;
 }
 
-static int test_strings_1_skip (void)
+static int
+test_strings_1_skip (void)
 {
   const char *str;
 
@@ -19032,7 +19461,8 @@ static int test_strings_1_skip (void)
   return 0;
 }
 
-static int test_strings_1 (void)
+static int
+test_strings_1 (void)
 {
   if (test_strings_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_strings_1");
@@ -19081,7 +19511,7 @@ static int test_strings_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_strings_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_strings_1");
       print_strings (r);
       return -1;
     }
@@ -19092,7 +19522,8 @@ static int test_strings_1 (void)
   return 0;
 }
 
-static int test_strings_2_skip (void)
+static int
+test_strings_2_skip (void)
 {
   const char *str;
 
@@ -19106,7 +19537,8 @@ static int test_strings_2_skip (void)
   return 0;
 }
 
-static int test_strings_2 (void)
+static int
+test_strings_2 (void)
 {
   if (test_strings_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_strings_2");
@@ -19161,7 +19593,8 @@ static int test_strings_2 (void)
   return 0;
 }
 
-static int test_equal_0_skip (void)
+static int
+test_equal_0_skip (void)
 {
   const char *str;
 
@@ -19175,7 +19608,8 @@ static int test_equal_0_skip (void)
   return 0;
 }
 
-static int test_equal_0 (void)
+static int
+test_equal_0 (void)
 {
   if (test_equal_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_equal_0");
@@ -19252,14 +19686,15 @@ static int test_equal_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_equal_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_equal_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_equal_1_skip (void)
+static int
+test_equal_1_skip (void)
 {
   const char *str;
 
@@ -19273,7 +19708,8 @@ static int test_equal_1_skip (void)
   return 0;
 }
 
-static int test_equal_1 (void)
+static int
+test_equal_1 (void)
 {
   if (test_equal_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_equal_1");
@@ -19351,14 +19787,15 @@ static int test_equal_1 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_equal_1: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_equal_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_equal_2_skip (void)
+static int
+test_equal_2_skip (void)
 {
   const char *str;
 
@@ -19372,7 +19809,8 @@ static int test_equal_2_skip (void)
   return 0;
 }
 
-static int test_equal_2 (void)
+static int
+test_equal_2 (void)
 {
   if (test_equal_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_equal_2");
@@ -19433,7 +19871,8 @@ static int test_equal_2 (void)
   return 0;
 }
 
-static int test_ping_daemon_0_skip (void)
+static int
+test_ping_daemon_0_skip (void)
 {
   const char *str;
 
@@ -19447,7 +19886,8 @@ static int test_ping_daemon_0_skip (void)
   return 0;
 }
 
-static int test_ping_daemon_0 (void)
+static int
+test_ping_daemon_0 (void)
 {
   if (test_ping_daemon_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ping_daemon_0");
@@ -19488,7 +19928,8 @@ static int test_ping_daemon_0 (void)
   return 0;
 }
 
-static int test_dmesg_0_skip (void)
+static int
+test_dmesg_0_skip (void)
 {
   const char *str;
 
@@ -19502,7 +19943,8 @@ static int test_dmesg_0_skip (void)
   return 0;
 }
 
-static int test_dmesg_0 (void)
+static int
+test_dmesg_0 (void)
 {
   if (test_dmesg_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_dmesg_0");
@@ -19544,7 +19986,8 @@ static int test_dmesg_0 (void)
   return 0;
 }
 
-static int test_drop_caches_0_skip (void)
+static int
+test_drop_caches_0_skip (void)
 {
   const char *str;
 
@@ -19558,7 +20001,8 @@ static int test_drop_caches_0_skip (void)
   return 0;
 }
 
-static int test_drop_caches_0 (void)
+static int
+test_drop_caches_0 (void)
 {
   if (test_drop_caches_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_drop_caches_0");
@@ -19599,7 +20043,8 @@ static int test_drop_caches_0 (void)
   return 0;
 }
 
-static int test_mv_0_skip (void)
+static int
+test_mv_0_skip (void)
 {
   const char *str;
 
@@ -19613,7 +20058,8 @@ static int test_mv_0_skip (void)
   return 0;
 }
 
-static int test_mv_0 (void)
+static int
+test_mv_0 (void)
 {
   if (test_mv_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mv_0");
@@ -19690,7 +20136,7 @@ static int test_mv_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mv_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mv_0", expected, r);
       return -1;
     }
     free (r);
@@ -19698,7 +20144,8 @@ static int test_mv_0 (void)
   return 0;
 }
 
-static int test_mv_1_skip (void)
+static int
+test_mv_1_skip (void)
 {
   const char *str;
 
@@ -19712,7 +20159,8 @@ static int test_mv_1_skip (void)
   return 0;
 }
 
-static int test_mv_1 (void)
+static int
+test_mv_1 (void)
 {
   if (test_mv_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mv_1");
@@ -19788,14 +20236,15 @@ static int test_mv_1 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_mv_1: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_mv_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_cp_a_0_skip (void)
+static int
+test_cp_a_0_skip (void)
 {
   const char *str;
 
@@ -19809,7 +20258,8 @@ static int test_cp_a_0_skip (void)
   return 0;
 }
 
-static int test_cp_a_0 (void)
+static int
+test_cp_a_0 (void)
 {
   if (test_cp_a_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_cp_a_0");
@@ -19894,7 +20344,7 @@ static int test_cp_a_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_cp_a_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_cp_a_0", expected, r);
       return -1;
     }
     free (r);
@@ -19902,7 +20352,8 @@ static int test_cp_a_0 (void)
   return 0;
 }
 
-static int test_cp_0_skip (void)
+static int
+test_cp_0_skip (void)
 {
   const char *str;
 
@@ -19916,7 +20367,8 @@ static int test_cp_0_skip (void)
   return 0;
 }
 
-static int test_cp_0 (void)
+static int
+test_cp_0 (void)
 {
   if (test_cp_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_cp_0");
@@ -19993,7 +20445,7 @@ static int test_cp_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_cp_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_cp_0", expected, r);
       return -1;
     }
     free (r);
@@ -20001,7 +20453,8 @@ static int test_cp_0 (void)
   return 0;
 }
 
-static int test_cp_1_skip (void)
+static int
+test_cp_1_skip (void)
 {
   const char *str;
 
@@ -20015,7 +20468,8 @@ static int test_cp_1_skip (void)
   return 0;
 }
 
-static int test_cp_1 (void)
+static int
+test_cp_1 (void)
 {
   if (test_cp_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_cp_1");
@@ -20091,14 +20545,15 @@ static int test_cp_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_cp_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_cp_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_cp_2_skip (void)
+static int
+test_cp_2_skip (void)
 {
   const char *str;
 
@@ -20112,7 +20567,8 @@ static int test_cp_2_skip (void)
   return 0;
 }
 
-static int test_cp_2 (void)
+static int
+test_cp_2 (void)
 {
   if (test_cp_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_cp_2");
@@ -20197,7 +20653,7 @@ static int test_cp_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_cp_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_cp_2", expected, r);
       return -1;
     }
     free (r);
@@ -20205,7 +20661,8 @@ static int test_cp_2 (void)
   return 0;
 }
 
-static int test_grub_install_0_skip (void)
+static int
+test_grub_install_0_skip (void)
 {
   const char *str;
 
@@ -20219,7 +20676,8 @@ static int test_grub_install_0_skip (void)
   return 0;
 }
 
-static int test_grub_install_0 (void)
+static int
+test_grub_install_0 (void)
 {
   if (test_grub_install_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_grub_install_0");
@@ -20317,14 +20775,15 @@ static int test_grub_install_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_grub_install_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_grub_install_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_zero_0_skip (void)
+static int
+test_zero_0_skip (void)
 {
   const char *str;
 
@@ -20338,7 +20797,8 @@ static int test_zero_0_skip (void)
   return 0;
 }
 
-static int test_zero_0 (void)
+static int
+test_zero_0 (void)
 {
   if (test_zero_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_zero_0");
@@ -20416,7 +20876,8 @@ static int test_zero_0 (void)
   return 0;
 }
 
-static int test_fsck_0_skip (void)
+static int
+test_fsck_0_skip (void)
 {
   const char *str;
 
@@ -20430,7 +20891,8 @@ static int test_fsck_0_skip (void)
   return 0;
 }
 
-static int test_fsck_0 (void)
+static int
+test_fsck_0 (void)
 {
   if (test_fsck_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fsck_0");
@@ -20506,14 +20968,15 @@ static int test_fsck_0 (void)
     if (r == -1)
       return -1;
     if (r != 0) {
-      fprintf (stderr, "test_fsck_0: expected 0 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 0 but got %d\n",               "test_fsck_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_fsck_1_skip (void)
+static int
+test_fsck_1_skip (void)
 {
   const char *str;
 
@@ -20527,7 +20990,8 @@ static int test_fsck_1_skip (void)
   return 0;
 }
 
-static int test_fsck_1 (void)
+static int
+test_fsck_1 (void)
 {
   if (test_fsck_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_fsck_1");
@@ -20611,14 +21075,15 @@ static int test_fsck_1 (void)
     if (r == -1)
       return -1;
     if (r != 8) {
-      fprintf (stderr, "test_fsck_1: expected 8 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 8 but got %d\n",               "test_fsck_1", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_get_e2uuid_0_skip (void)
+static int
+test_get_e2uuid_0_skip (void)
 {
   const char *str;
 
@@ -20632,7 +21097,8 @@ static int test_get_e2uuid_0_skip (void)
   return 0;
 }
 
-static int test_get_e2uuid_0 (void)
+static int
+test_get_e2uuid_0 (void)
 {
   if (test_get_e2uuid_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_e2uuid_0");
@@ -20663,7 +21129,7 @@ static int test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+  const char *expected = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -20674,7 +21140,7 @@ static int test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -20689,7 +21155,7 @@ static int test_get_e2uuid_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_get_e2uuid_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_get_e2uuid_0", expected, r);
       return -1;
     }
     free (r);
@@ -20697,7 +21163,8 @@ static int test_get_e2uuid_0 (void)
   return 0;
 }
 
-static int test_set_e2uuid_0_skip (void)
+static int
+test_set_e2uuid_0_skip (void)
 {
   const char *str;
 
@@ -20711,7 +21178,8 @@ static int test_set_e2uuid_0_skip (void)
   return 0;
 }
 
-static int test_set_e2uuid_0 (void)
+static int
+test_set_e2uuid_0 (void)
 {
   if (test_set_e2uuid_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_e2uuid_0");
@@ -20770,10 +21238,10 @@ static int test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+  const char *expected = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "a3be3703-a628-f0b5-4af5-d912fd23833f";
+    const char *uuid = "34085c28-ba30-09d6-d0fd-0262ce721ccf";
     int r;
     suppress_error = 0;
     r = guestfs_set_e2uuid (g, device, uuid);
@@ -20788,7 +21256,7 @@ static int test_set_e2uuid_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_set_e2uuid_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_set_e2uuid_0", expected, r);
       return -1;
     }
     free (r);
@@ -20796,7 +21264,8 @@ static int test_set_e2uuid_0 (void)
   return 0;
 }
 
-static int test_set_e2uuid_1_skip (void)
+static int
+test_set_e2uuid_1_skip (void)
 {
   const char *str;
 
@@ -20810,7 +21279,8 @@ static int test_set_e2uuid_1_skip (void)
   return 0;
 }
 
-static int test_set_e2uuid_1 (void)
+static int
+test_set_e2uuid_1 (void)
 {
   if (test_set_e2uuid_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_e2uuid_1");
@@ -20887,7 +21357,7 @@ static int test_set_e2uuid_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_set_e2uuid_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_set_e2uuid_1", expected, r);
       return -1;
     }
     free (r);
@@ -20895,7 +21365,8 @@ static int test_set_e2uuid_1 (void)
   return 0;
 }
 
-static int test_set_e2uuid_2_skip (void)
+static int
+test_set_e2uuid_2_skip (void)
 {
   const char *str;
 
@@ -20909,7 +21380,8 @@ static int test_set_e2uuid_2_skip (void)
   return 0;
 }
 
-static int test_set_e2uuid_2 (void)
+static int
+test_set_e2uuid_2 (void)
 {
   if (test_set_e2uuid_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_e2uuid_2");
@@ -20980,7 +21452,8 @@ static int test_set_e2uuid_2 (void)
   return 0;
 }
 
-static int test_set_e2uuid_3_skip (void)
+static int
+test_set_e2uuid_3_skip (void)
 {
   const char *str;
 
@@ -20994,7 +21467,8 @@ static int test_set_e2uuid_3_skip (void)
   return 0;
 }
 
-static int test_set_e2uuid_3 (void)
+static int
+test_set_e2uuid_3 (void)
 {
   if (test_set_e2uuid_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_e2uuid_3");
@@ -21065,7 +21539,8 @@ static int test_set_e2uuid_3 (void)
   return 0;
 }
 
-static int test_set_e2label_0_skip (void)
+static int
+test_set_e2label_0_skip (void)
 {
   const char *str;
 
@@ -21079,7 +21554,8 @@ static int test_set_e2label_0_skip (void)
   return 0;
 }
 
-static int test_set_e2label_0 (void)
+static int
+test_set_e2label_0 (void)
 {
   if (test_set_e2label_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_e2label_0");
@@ -21156,7 +21632,7 @@ static int test_set_e2label_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_set_e2label_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_set_e2label_0", expected, r);
       return -1;
     }
     free (r);
@@ -21164,7 +21640,8 @@ static int test_set_e2label_0 (void)
   return 0;
 }
 
-static int test_pvremove_0_skip (void)
+static int
+test_pvremove_0_skip (void)
 {
   const char *str;
 
@@ -21178,7 +21655,8 @@ static int test_pvremove_0_skip (void)
   return 0;
 }
 
-static int test_pvremove_0 (void)
+static int
+test_pvremove_0 (void)
 {
   if (test_pvremove_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pvremove_0");
@@ -21285,7 +21763,7 @@ static int test_pvremove_0 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_pvremove_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_pvremove_0");
       print_strings (r);
       return -1;
     }
@@ -21296,7 +21774,8 @@ static int test_pvremove_0 (void)
   return 0;
 }
 
-static int test_pvremove_1_skip (void)
+static int
+test_pvremove_1_skip (void)
 {
   const char *str;
 
@@ -21310,7 +21789,8 @@ static int test_pvremove_1_skip (void)
   return 0;
 }
 
-static int test_pvremove_1 (void)
+static int
+test_pvremove_1 (void)
 {
   if (test_pvremove_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pvremove_1");
@@ -21417,7 +21897,7 @@ static int test_pvremove_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_pvremove_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_pvremove_1");
       print_strings (r);
       return -1;
     }
@@ -21428,7 +21908,8 @@ static int test_pvremove_1 (void)
   return 0;
 }
 
-static int test_pvremove_2_skip (void)
+static int
+test_pvremove_2_skip (void)
 {
   const char *str;
 
@@ -21442,7 +21923,8 @@ static int test_pvremove_2_skip (void)
   return 0;
 }
 
-static int test_pvremove_2 (void)
+static int
+test_pvremove_2 (void)
 {
   if (test_pvremove_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pvremove_2");
@@ -21549,7 +22031,7 @@ static int test_pvremove_2 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_pvremove_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_pvremove_2");
       print_strings (r);
       return -1;
     }
@@ -21560,7 +22042,8 @@ static int test_pvremove_2 (void)
   return 0;
 }
 
-static int test_vgremove_0_skip (void)
+static int
+test_vgremove_0_skip (void)
 {
   const char *str;
 
@@ -21574,7 +22057,8 @@ static int test_vgremove_0_skip (void)
   return 0;
 }
 
-static int test_vgremove_0 (void)
+static int
+test_vgremove_0 (void)
 {
   if (test_vgremove_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vgremove_0");
@@ -21673,7 +22157,7 @@ static int test_vgremove_0 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_vgremove_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_vgremove_0");
       print_strings (r);
       return -1;
     }
@@ -21684,7 +22168,8 @@ static int test_vgremove_0 (void)
   return 0;
 }
 
-static int test_vgremove_1_skip (void)
+static int
+test_vgremove_1_skip (void)
 {
   const char *str;
 
@@ -21698,7 +22183,8 @@ static int test_vgremove_1_skip (void)
   return 0;
 }
 
-static int test_vgremove_1 (void)
+static int
+test_vgremove_1 (void)
 {
   if (test_vgremove_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vgremove_1");
@@ -21797,7 +22283,7 @@ static int test_vgremove_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_vgremove_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_vgremove_1");
       print_strings (r);
       return -1;
     }
@@ -21808,7 +22294,8 @@ static int test_vgremove_1 (void)
   return 0;
 }
 
-static int test_lvremove_0_skip (void)
+static int
+test_lvremove_0_skip (void)
 {
   const char *str;
 
@@ -21822,7 +22309,8 @@ static int test_lvremove_0_skip (void)
   return 0;
 }
 
-static int test_lvremove_0 (void)
+static int
+test_lvremove_0 (void)
 {
   if (test_lvremove_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvremove_0");
@@ -21921,19 +22409,19 @@ static int test_lvremove_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_lvremove_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvremove_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG/LV2";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_lvremove_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvremove_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_lvremove_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvremove_0");
       print_strings (r);
       return -1;
     }
@@ -21944,7 +22432,8 @@ static int test_lvremove_0 (void)
   return 0;
 }
 
-static int test_lvremove_1_skip (void)
+static int
+test_lvremove_1_skip (void)
 {
   const char *str;
 
@@ -21958,7 +22447,8 @@ static int test_lvremove_1_skip (void)
   return 0;
 }
 
-static int test_lvremove_1 (void)
+static int
+test_lvremove_1 (void)
 {
   if (test_lvremove_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvremove_1");
@@ -22057,7 +22547,7 @@ static int test_lvremove_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_lvremove_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvremove_1");
       print_strings (r);
       return -1;
     }
@@ -22068,7 +22558,8 @@ static int test_lvremove_1 (void)
   return 0;
 }
 
-static int test_lvremove_2_skip (void)
+static int
+test_lvremove_2_skip (void)
 {
   const char *str;
 
@@ -22082,7 +22573,8 @@ static int test_lvremove_2_skip (void)
   return 0;
 }
 
-static int test_lvremove_2 (void)
+static int
+test_lvremove_2 (void)
 {
   if (test_lvremove_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvremove_2");
@@ -22181,19 +22673,19 @@ static int test_lvremove_2 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_lvremove_2: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvremove_2");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "VG";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_lvremove_2: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvremove_2", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_lvremove_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvremove_2");
       print_strings (r);
       return -1;
     }
@@ -22204,7 +22696,8 @@ static int test_lvremove_2 (void)
   return 0;
 }
 
-static int test_mount_ro_0_skip (void)
+static int
+test_mount_ro_0_skip (void)
 {
   const char *str;
 
@@ -22218,7 +22711,8 @@ static int test_mount_ro_0_skip (void)
   return 0;
 }
 
-static int test_mount_ro_0 (void)
+static int
+test_mount_ro_0 (void)
 {
   if (test_mount_ro_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mount_ro_0");
@@ -22305,7 +22799,8 @@ static int test_mount_ro_0 (void)
   return 0;
 }
 
-static int test_mount_ro_1_skip (void)
+static int
+test_mount_ro_1_skip (void)
 {
   const char *str;
 
@@ -22319,7 +22814,8 @@ static int test_mount_ro_1_skip (void)
   return 0;
 }
 
-static int test_mount_ro_1 (void)
+static int
+test_mount_ro_1 (void)
 {
   if (test_mount_ro_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mount_ro_1");
@@ -22414,7 +22910,7 @@ static int test_mount_ro_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mount_ro_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mount_ro_1", expected, r);
       return -1;
     }
     free (r);
@@ -22422,7 +22918,8 @@ static int test_mount_ro_1 (void)
   return 0;
 }
 
-static int test_tgz_in_0_skip (void)
+static int
+test_tgz_in_0_skip (void)
 {
   const char *str;
 
@@ -22436,7 +22933,8 @@ static int test_tgz_in_0_skip (void)
   return 0;
 }
 
-static int test_tgz_in_0 (void)
+static int
+test_tgz_in_0 (void)
 {
   if (test_tgz_in_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tgz_in_0");
@@ -22502,7 +23000,7 @@ static int test_tgz_in_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_tgz_in_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tgz_in_0", expected, r);
       return -1;
     }
     free (r);
@@ -22510,7 +23008,8 @@ static int test_tgz_in_0 (void)
   return 0;
 }
 
-static int test_tar_in_0_skip (void)
+static int
+test_tar_in_0_skip (void)
 {
   const char *str;
 
@@ -22524,7 +23023,8 @@ static int test_tar_in_0_skip (void)
   return 0;
 }
 
-static int test_tar_in_0 (void)
+static int
+test_tar_in_0 (void)
 {
   if (test_tar_in_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tar_in_0");
@@ -22590,7 +23090,7 @@ static int test_tar_in_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_tar_in_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_tar_in_0", expected, r);
       return -1;
     }
     free (r);
@@ -22598,7 +23098,8 @@ static int test_tar_in_0 (void)
   return 0;
 }
 
-static int test_checksum_0_skip (void)
+static int
+test_checksum_0_skip (void)
 {
   const char *str;
 
@@ -22612,7 +23113,8 @@ static int test_checksum_0_skip (void)
   return 0;
 }
 
-static int test_checksum_0 (void)
+static int
+test_checksum_0 (void)
 {
   if (test_checksum_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_0");
@@ -22662,7 +23164,7 @@ static int test_checksum_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_0", expected, r);
       return -1;
     }
     free (r);
@@ -22670,7 +23172,8 @@ static int test_checksum_0 (void)
   return 0;
 }
 
-static int test_checksum_1_skip (void)
+static int
+test_checksum_1_skip (void)
 {
   const char *str;
 
@@ -22684,7 +23187,8 @@ static int test_checksum_1_skip (void)
   return 0;
 }
 
-static int test_checksum_1 (void)
+static int
+test_checksum_1 (void)
 {
   if (test_checksum_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_1");
@@ -22737,7 +23241,8 @@ static int test_checksum_1 (void)
   return 0;
 }
 
-static int test_checksum_2_skip (void)
+static int
+test_checksum_2_skip (void)
 {
   const char *str;
 
@@ -22751,7 +23256,8 @@ static int test_checksum_2_skip (void)
   return 0;
 }
 
-static int test_checksum_2 (void)
+static int
+test_checksum_2 (void)
 {
   if (test_checksum_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_2");
@@ -22801,7 +23307,7 @@ static int test_checksum_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_2", expected, r);
       return -1;
     }
     free (r);
@@ -22809,7 +23315,8 @@ static int test_checksum_2 (void)
   return 0;
 }
 
-static int test_checksum_3_skip (void)
+static int
+test_checksum_3_skip (void)
 {
   const char *str;
 
@@ -22823,7 +23330,8 @@ static int test_checksum_3_skip (void)
   return 0;
 }
 
-static int test_checksum_3 (void)
+static int
+test_checksum_3 (void)
 {
   if (test_checksum_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_3");
@@ -22873,7 +23381,7 @@ static int test_checksum_3 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_3", expected, r);
       return -1;
     }
     free (r);
@@ -22881,7 +23389,8 @@ static int test_checksum_3 (void)
   return 0;
 }
 
-static int test_checksum_4_skip (void)
+static int
+test_checksum_4_skip (void)
 {
   const char *str;
 
@@ -22895,7 +23404,8 @@ static int test_checksum_4_skip (void)
   return 0;
 }
 
-static int test_checksum_4 (void)
+static int
+test_checksum_4 (void)
 {
   if (test_checksum_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_4");
@@ -22945,7 +23455,7 @@ static int test_checksum_4 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_4", expected, r);
       return -1;
     }
     free (r);
@@ -22953,7 +23463,8 @@ static int test_checksum_4 (void)
   return 0;
 }
 
-static int test_checksum_5_skip (void)
+static int
+test_checksum_5_skip (void)
 {
   const char *str;
 
@@ -22967,7 +23478,8 @@ static int test_checksum_5_skip (void)
   return 0;
 }
 
-static int test_checksum_5 (void)
+static int
+test_checksum_5 (void)
 {
   if (test_checksum_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_5");
@@ -23017,7 +23529,7 @@ static int test_checksum_5 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_5: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_5", expected, r);
       return -1;
     }
     free (r);
@@ -23025,7 +23537,8 @@ static int test_checksum_5 (void)
   return 0;
 }
 
-static int test_checksum_6_skip (void)
+static int
+test_checksum_6_skip (void)
 {
   const char *str;
 
@@ -23039,7 +23552,8 @@ static int test_checksum_6_skip (void)
   return 0;
 }
 
-static int test_checksum_6 (void)
+static int
+test_checksum_6 (void)
 {
   if (test_checksum_6_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_6");
@@ -23089,7 +23603,7 @@ static int test_checksum_6 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_6: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_6", expected, r);
       return -1;
     }
     free (r);
@@ -23097,7 +23611,8 @@ static int test_checksum_6 (void)
   return 0;
 }
 
-static int test_checksum_7_skip (void)
+static int
+test_checksum_7_skip (void)
 {
   const char *str;
 
@@ -23111,7 +23626,8 @@ static int test_checksum_7_skip (void)
   return 0;
 }
 
-static int test_checksum_7 (void)
+static int
+test_checksum_7 (void)
 {
   if (test_checksum_7_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_7");
@@ -23161,7 +23677,7 @@ static int test_checksum_7 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_7: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_7", expected, r);
       return -1;
     }
     free (r);
@@ -23169,7 +23685,8 @@ static int test_checksum_7 (void)
   return 0;
 }
 
-static int test_checksum_8_skip (void)
+static int
+test_checksum_8_skip (void)
 {
   const char *str;
 
@@ -23183,7 +23700,8 @@ static int test_checksum_8_skip (void)
   return 0;
 }
 
-static int test_checksum_8 (void)
+static int
+test_checksum_8 (void)
 {
   if (test_checksum_8_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_checksum_8");
@@ -23233,7 +23751,7 @@ static int test_checksum_8 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_checksum_8: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_checksum_8", expected, r);
       return -1;
     }
     free (r);
@@ -23241,7 +23759,8 @@ static int test_checksum_8 (void)
   return 0;
 }
 
-static int test_download_0_skip (void)
+static int
+test_download_0_skip (void)
 {
   const char *str;
 
@@ -23255,7 +23774,8 @@ static int test_download_0_skip (void)
   return 0;
 }
 
-static int test_download_0 (void)
+static int
+test_download_0 (void)
 {
   if (test_download_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_download_0");
@@ -23338,7 +23858,7 @@ static int test_download_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_download_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_download_0", expected, r);
       return -1;
     }
     free (r);
@@ -23346,7 +23866,8 @@ static int test_download_0 (void)
   return 0;
 }
 
-static int test_upload_0_skip (void)
+static int
+test_upload_0_skip (void)
 {
   const char *str;
 
@@ -23360,7 +23881,8 @@ static int test_upload_0_skip (void)
   return 0;
 }
 
-static int test_upload_0 (void)
+static int
+test_upload_0 (void)
 {
   if (test_upload_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_upload_0");
@@ -23427,7 +23949,7 @@ static int test_upload_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_upload_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_upload_0", expected, r);
       return -1;
     }
     free (r);
@@ -23435,7 +23957,8 @@ static int test_upload_0 (void)
   return 0;
 }
 
-static int test_blockdev_rereadpt_0_skip (void)
+static int
+test_blockdev_rereadpt_0_skip (void)
 {
   const char *str;
 
@@ -23449,7 +23972,8 @@ static int test_blockdev_rereadpt_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_rereadpt_0 (void)
+static int
+test_blockdev_rereadpt_0 (void)
 {
   if (test_blockdev_rereadpt_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_rereadpt_0");
@@ -23491,7 +24015,8 @@ static int test_blockdev_rereadpt_0 (void)
   return 0;
 }
 
-static int test_blockdev_flushbufs_0_skip (void)
+static int
+test_blockdev_flushbufs_0_skip (void)
 {
   const char *str;
 
@@ -23505,7 +24030,8 @@ static int test_blockdev_flushbufs_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_flushbufs_0 (void)
+static int
+test_blockdev_flushbufs_0 (void)
 {
   if (test_blockdev_flushbufs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_flushbufs_0");
@@ -23547,7 +24073,8 @@ static int test_blockdev_flushbufs_0 (void)
   return 0;
 }
 
-static int test_blockdev_getsize64_0_skip (void)
+static int
+test_blockdev_getsize64_0_skip (void)
 {
   const char *str;
 
@@ -23561,7 +24088,8 @@ static int test_blockdev_getsize64_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_getsize64_0 (void)
+static int
+test_blockdev_getsize64_0 (void)
 {
   if (test_blockdev_getsize64_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_getsize64_0");
@@ -23600,14 +24128,15 @@ static int test_blockdev_getsize64_0 (void)
     if (r == -1)
       return -1;
     if (r != 524288000) {
-      fprintf (stderr, "test_blockdev_getsize64_0: expected 524288000 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 524288000 but got %d\n",               "test_blockdev_getsize64_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_blockdev_getsz_0_skip (void)
+static int
+test_blockdev_getsz_0_skip (void)
 {
   const char *str;
 
@@ -23621,7 +24150,8 @@ static int test_blockdev_getsz_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_getsz_0 (void)
+static int
+test_blockdev_getsz_0 (void)
 {
   if (test_blockdev_getsz_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_getsz_0");
@@ -23660,14 +24190,15 @@ static int test_blockdev_getsz_0 (void)
     if (r == -1)
       return -1;
     if (r != 1024000) {
-      fprintf (stderr, "test_blockdev_getsz_0: expected 1024000 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 1024000 but got %d\n",               "test_blockdev_getsz_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_blockdev_getss_0_skip (void)
+static int
+test_blockdev_getss_0_skip (void)
 {
   const char *str;
 
@@ -23681,7 +24212,8 @@ static int test_blockdev_getss_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_getss_0 (void)
+static int
+test_blockdev_getss_0 (void)
 {
   if (test_blockdev_getss_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_getss_0");
@@ -23720,14 +24252,15 @@ static int test_blockdev_getss_0 (void)
     if (r == -1)
       return -1;
     if (r != 512) {
-      fprintf (stderr, "test_blockdev_getss_0: expected 512 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected 512 but got %d\n",               "test_blockdev_getss_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_blockdev_getro_0_skip (void)
+static int
+test_blockdev_getro_0_skip (void)
 {
   const char *str;
 
@@ -23741,7 +24274,8 @@ static int test_blockdev_getro_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_getro_0 (void)
+static int
+test_blockdev_getro_0 (void)
 {
   if (test_blockdev_getro_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_getro_0");
@@ -23788,14 +24322,15 @@ static int test_blockdev_getro_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_blockdev_getro_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_blockdev_getro_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_blockdev_setrw_0_skip (void)
+static int
+test_blockdev_setrw_0_skip (void)
 {
   const char *str;
 
@@ -23809,7 +24344,8 @@ static int test_blockdev_setrw_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_setrw_0 (void)
+static int
+test_blockdev_setrw_0 (void)
 {
   if (test_blockdev_setrw_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_setrw_0");
@@ -23856,14 +24392,15 @@ static int test_blockdev_setrw_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_blockdev_setrw_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_blockdev_setrw_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_blockdev_setro_0_skip (void)
+static int
+test_blockdev_setro_0_skip (void)
 {
   const char *str;
 
@@ -23877,7 +24414,8 @@ static int test_blockdev_setro_0_skip (void)
   return 0;
 }
 
-static int test_blockdev_setro_0 (void)
+static int
+test_blockdev_setro_0 (void)
 {
   if (test_blockdev_setro_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_blockdev_setro_0");
@@ -23924,14 +24462,15 @@ static int test_blockdev_setro_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_blockdev_setro_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_blockdev_setro_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_tune2fs_l_0_skip (void)
+static int
+test_tune2fs_l_0_skip (void)
 {
   const char *str;
 
@@ -23945,7 +24484,8 @@ static int test_tune2fs_l_0_skip (void)
   return 0;
 }
 
-static int test_tune2fs_l_0 (void)
+static int
+test_tune2fs_l_0 (void)
 {
   if (test_tune2fs_l_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_tune2fs_l_0");
@@ -23999,22 +24539,22 @@ static int test_tune2fs_l_0 (void)
     expected = "0xEF53";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_l_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_l_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_l_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_l_0", key, expected, value);
       return -1;
     }
     key = "Filesystem OS type";
     expected = "Linux";
     value = get_key (r, key);
     if (value == NULL) {
-      fprintf (stderr, "test_tune2fs_l_0: key \"%s\" not found in hash: expecting \"%s\"\n", key, expected);
+      fprintf (stderr, "%s: key \"%s\" not found in hash: expecting \"%s\"\n", "test_tune2fs_l_0", key, expected);
       return -1;
     }
     if (STRNEQ (value, expected)) {
-      fprintf (stderr, "test_tune2fs_l_0: key \"%s\": expected \"%s\" but got \"%s\"\n", key, expected, value);
+      fprintf (stderr, "%s: key \"%s\": expected \"%s\" but got \"%s\"\n", "test_tune2fs_l_0", key, expected, value);
       return -1;
     }
     for (i = 0; r[i] != NULL; ++i)
@@ -24024,7 +24564,8 @@ static int test_tune2fs_l_0 (void)
   return 0;
 }
 
-static int test_statvfs_0_skip (void)
+static int
+test_statvfs_0_skip (void)
 {
   const char *str;
 
@@ -24038,7 +24579,8 @@ static int test_statvfs_0_skip (void)
   return 0;
 }
 
-static int test_statvfs_0 (void)
+static int
+test_statvfs_0 (void)
 {
   if (test_statvfs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_statvfs_0");
@@ -24086,8 +24628,8 @@ static int test_statvfs_0 (void)
     if (r == NULL)
       return -1;
     if (r->namemax != 255) {
-      fprintf (stderr, "test_statvfs_0: namemax was %d, expected 255\n",
-               (int) r->namemax);
+      fprintf (stderr, "%s: namemax was %d, expected 255\n",
+               "test_statvfs_0", (int) r->namemax);
       return -1;
     }
     guestfs_free_statvfs (r);
@@ -24095,7 +24637,8 @@ static int test_statvfs_0 (void)
   return 0;
 }
 
-static int test_lstat_0_skip (void)
+static int
+test_lstat_0_skip (void)
 {
   const char *str;
 
@@ -24109,7 +24652,8 @@ static int test_lstat_0_skip (void)
   return 0;
 }
 
-static int test_lstat_0 (void)
+static int
+test_lstat_0 (void)
 {
   if (test_lstat_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lstat_0");
@@ -24157,8 +24701,8 @@ static int test_lstat_0 (void)
     if (r == NULL)
       return -1;
     if (r->size != 0) {
-      fprintf (stderr, "test_lstat_0: size was %d, expected 0\n",
-               (int) r->size);
+      fprintf (stderr, "%s: size was %d, expected 0\n",
+               "test_lstat_0", (int) r->size);
       return -1;
     }
     guestfs_free_stat (r);
@@ -24166,7 +24710,8 @@ static int test_lstat_0 (void)
   return 0;
 }
 
-static int test_stat_0_skip (void)
+static int
+test_stat_0_skip (void)
 {
   const char *str;
 
@@ -24180,7 +24725,8 @@ static int test_stat_0_skip (void)
   return 0;
 }
 
-static int test_stat_0 (void)
+static int
+test_stat_0 (void)
 {
   if (test_stat_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_stat_0");
@@ -24228,8 +24774,8 @@ static int test_stat_0 (void)
     if (r == NULL)
       return -1;
     if (r->size != 0) {
-      fprintf (stderr, "test_stat_0: size was %d, expected 0\n",
-               (int) r->size);
+      fprintf (stderr, "%s: size was %d, expected 0\n",
+               "test_stat_0", (int) r->size);
       return -1;
     }
     guestfs_free_stat (r);
@@ -24237,7 +24783,8 @@ static int test_stat_0 (void)
   return 0;
 }
 
-static int test_command_lines_0_skip (void)
+static int
+test_command_lines_0_skip (void)
 {
   const char *str;
 
@@ -24251,7 +24798,8 @@ static int test_command_lines_0_skip (void)
   return 0;
 }
 
-static int test_command_lines_0 (void)
+static int
+test_command_lines_0 (void)
 {
   if (test_command_lines_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_0");
@@ -24331,19 +24879,19 @@ static int test_command_lines_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_command_lines_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_0");
       print_strings (r);
       return -1;
     }
@@ -24354,7 +24902,8 @@ static int test_command_lines_0 (void)
   return 0;
 }
 
-static int test_command_lines_1_skip (void)
+static int
+test_command_lines_1_skip (void)
 {
   const char *str;
 
@@ -24368,7 +24917,8 @@ static int test_command_lines_1_skip (void)
   return 0;
 }
 
-static int test_command_lines_1 (void)
+static int
+test_command_lines_1 (void)
 {
   if (test_command_lines_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_1");
@@ -24448,19 +24998,19 @@ static int test_command_lines_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result2";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_1", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_command_lines_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_1");
       print_strings (r);
       return -1;
     }
@@ -24471,7 +25021,8 @@ static int test_command_lines_1 (void)
   return 0;
 }
 
-static int test_command_lines_2_skip (void)
+static int
+test_command_lines_2_skip (void)
 {
   const char *str;
 
@@ -24485,7 +25036,8 @@ static int test_command_lines_2_skip (void)
   return 0;
 }
 
-static int test_command_lines_2 (void)
+static int
+test_command_lines_2 (void)
 {
   if (test_command_lines_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_2");
@@ -24565,31 +25117,31 @@ static int test_command_lines_2 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_2: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_2");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_2: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_2", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_command_lines_2: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_2");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result3";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_command_lines_2: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_2", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_command_lines_2: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_2");
       print_strings (r);
       return -1;
     }
@@ -24600,7 +25152,8 @@ static int test_command_lines_2 (void)
   return 0;
 }
 
-static int test_command_lines_3_skip (void)
+static int
+test_command_lines_3_skip (void)
 {
   const char *str;
 
@@ -24614,7 +25167,8 @@ static int test_command_lines_3_skip (void)
   return 0;
 }
 
-static int test_command_lines_3 (void)
+static int
+test_command_lines_3 (void)
 {
   if (test_command_lines_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_3");
@@ -24694,31 +25248,31 @@ static int test_command_lines_3 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_3: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_3");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_3: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_3", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_command_lines_3: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_3");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result4";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_command_lines_3: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_3", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_command_lines_3: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_3");
       print_strings (r);
       return -1;
     }
@@ -24729,7 +25283,8 @@ static int test_command_lines_3 (void)
   return 0;
 }
 
-static int test_command_lines_4_skip (void)
+static int
+test_command_lines_4_skip (void)
 {
   const char *str;
 
@@ -24743,7 +25298,8 @@ static int test_command_lines_4_skip (void)
   return 0;
 }
 
-static int test_command_lines_4 (void)
+static int
+test_command_lines_4 (void)
 {
   if (test_command_lines_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_4");
@@ -24823,43 +25379,43 @@ static int test_command_lines_4 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_4: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_4");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_4: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_4", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_command_lines_4: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_4");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result5";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_command_lines_4: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_4", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_command_lines_4: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_4");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_command_lines_4: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_4", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_command_lines_4: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_4");
       print_strings (r);
       return -1;
     }
@@ -24870,7 +25426,8 @@ static int test_command_lines_4 (void)
   return 0;
 }
 
-static int test_command_lines_5_skip (void)
+static int
+test_command_lines_5_skip (void)
 {
   const char *str;
 
@@ -24884,7 +25441,8 @@ static int test_command_lines_5_skip (void)
   return 0;
 }
 
-static int test_command_lines_5 (void)
+static int
+test_command_lines_5 (void)
 {
   if (test_command_lines_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_5");
@@ -24964,55 +25522,55 @@ static int test_command_lines_5 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_5: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_5");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_5: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_5", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_command_lines_5: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_5");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_command_lines_5: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_5", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_command_lines_5: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_5");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result6";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_command_lines_5: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_5", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_command_lines_5: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_5");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_command_lines_5: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_5", expected, r[3]);
         return -1;
       }
     }
     if (r[4] != NULL) {
-      fprintf (stderr, "test_command_lines_5: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_5");
       print_strings (r);
       return -1;
     }
@@ -25023,7 +25581,8 @@ static int test_command_lines_5 (void)
   return 0;
 }
 
-static int test_command_lines_6_skip (void)
+static int
+test_command_lines_6_skip (void)
 {
   const char *str;
 
@@ -25037,7 +25596,8 @@ static int test_command_lines_6_skip (void)
   return 0;
 }
 
-static int test_command_lines_6 (void)
+static int
+test_command_lines_6 (void)
 {
   if (test_command_lines_6_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_6");
@@ -25117,7 +25677,7 @@ static int test_command_lines_6 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_command_lines_6: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_6");
       print_strings (r);
       return -1;
     }
@@ -25128,7 +25688,8 @@ static int test_command_lines_6 (void)
   return 0;
 }
 
-static int test_command_lines_7_skip (void)
+static int
+test_command_lines_7_skip (void)
 {
   const char *str;
 
@@ -25142,7 +25703,8 @@ static int test_command_lines_7_skip (void)
   return 0;
 }
 
-static int test_command_lines_7 (void)
+static int
+test_command_lines_7 (void)
 {
   if (test_command_lines_7_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_7");
@@ -25222,19 +25784,19 @@ static int test_command_lines_7 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_7: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_7");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_7: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_7", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_command_lines_7: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_7");
       print_strings (r);
       return -1;
     }
@@ -25245,7 +25807,8 @@ static int test_command_lines_7 (void)
   return 0;
 }
 
-static int test_command_lines_8_skip (void)
+static int
+test_command_lines_8_skip (void)
 {
   const char *str;
 
@@ -25259,7 +25822,8 @@ static int test_command_lines_8_skip (void)
   return 0;
 }
 
-static int test_command_lines_8 (void)
+static int
+test_command_lines_8 (void)
 {
   if (test_command_lines_8_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_8");
@@ -25339,31 +25903,31 @@ static int test_command_lines_8 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_8: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_8");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_8: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_8", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_command_lines_8: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_8");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_command_lines_8: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_8", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_command_lines_8: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_8");
       print_strings (r);
       return -1;
     }
@@ -25374,7 +25938,8 @@ static int test_command_lines_8 (void)
   return 0;
 }
 
-static int test_command_lines_9_skip (void)
+static int
+test_command_lines_9_skip (void)
 {
   const char *str;
 
@@ -25388,7 +25953,8 @@ static int test_command_lines_9_skip (void)
   return 0;
 }
 
-static int test_command_lines_9 (void)
+static int
+test_command_lines_9 (void)
 {
   if (test_command_lines_9_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_9");
@@ -25468,31 +26034,31 @@ static int test_command_lines_9 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_9: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_9");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result10-1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_9: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_9", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_command_lines_9: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_9");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result10-2";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_command_lines_9: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_9", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_command_lines_9: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_9");
       print_strings (r);
       return -1;
     }
@@ -25503,7 +26069,8 @@ static int test_command_lines_9 (void)
   return 0;
 }
 
-static int test_command_lines_10_skip (void)
+static int
+test_command_lines_10_skip (void)
 {
   const char *str;
 
@@ -25517,7 +26084,8 @@ static int test_command_lines_10_skip (void)
   return 0;
 }
 
-static int test_command_lines_10 (void)
+static int
+test_command_lines_10 (void)
 {
   if (test_command_lines_10_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_lines_10");
@@ -25597,31 +26165,31 @@ static int test_command_lines_10 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_command_lines_10: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_10");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result11-1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_command_lines_10: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_10", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_command_lines_10: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_command_lines_10");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "Result11-2";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_command_lines_10: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_lines_10", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_command_lines_10: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_command_lines_10");
       print_strings (r);
       return -1;
     }
@@ -25632,7 +26200,8 @@ static int test_command_lines_10 (void)
   return 0;
 }
 
-static int test_command_0_skip (void)
+static int
+test_command_0_skip (void)
 {
   const char *str;
 
@@ -25646,7 +26215,8 @@ static int test_command_0_skip (void)
   return 0;
 }
 
-static int test_command_0 (void)
+static int
+test_command_0 (void)
 {
   if (test_command_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_0");
@@ -25726,7 +26296,7 @@ static int test_command_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_0", expected, r);
       return -1;
     }
     free (r);
@@ -25734,7 +26304,8 @@ static int test_command_0 (void)
   return 0;
 }
 
-static int test_command_1_skip (void)
+static int
+test_command_1_skip (void)
 {
   const char *str;
 
@@ -25748,7 +26319,8 @@ static int test_command_1_skip (void)
   return 0;
 }
 
-static int test_command_1 (void)
+static int
+test_command_1 (void)
 {
   if (test_command_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_1");
@@ -25828,7 +26400,7 @@ static int test_command_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_1", expected, r);
       return -1;
     }
     free (r);
@@ -25836,7 +26408,8 @@ static int test_command_1 (void)
   return 0;
 }
 
-static int test_command_2_skip (void)
+static int
+test_command_2_skip (void)
 {
   const char *str;
 
@@ -25850,7 +26423,8 @@ static int test_command_2_skip (void)
   return 0;
 }
 
-static int test_command_2 (void)
+static int
+test_command_2 (void)
 {
   if (test_command_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_2");
@@ -25930,7 +26504,7 @@ static int test_command_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_2", expected, r);
       return -1;
     }
     free (r);
@@ -25938,7 +26512,8 @@ static int test_command_2 (void)
   return 0;
 }
 
-static int test_command_3_skip (void)
+static int
+test_command_3_skip (void)
 {
   const char *str;
 
@@ -25952,7 +26527,8 @@ static int test_command_3_skip (void)
   return 0;
 }
 
-static int test_command_3 (void)
+static int
+test_command_3 (void)
 {
   if (test_command_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_3");
@@ -26032,7 +26608,7 @@ static int test_command_3 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_3", expected, r);
       return -1;
     }
     free (r);
@@ -26040,7 +26616,8 @@ static int test_command_3 (void)
   return 0;
 }
 
-static int test_command_4_skip (void)
+static int
+test_command_4_skip (void)
 {
   const char *str;
 
@@ -26054,7 +26631,8 @@ static int test_command_4_skip (void)
   return 0;
 }
 
-static int test_command_4 (void)
+static int
+test_command_4 (void)
 {
   if (test_command_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_4");
@@ -26134,7 +26712,7 @@ static int test_command_4 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_4", expected, r);
       return -1;
     }
     free (r);
@@ -26142,7 +26720,8 @@ static int test_command_4 (void)
   return 0;
 }
 
-static int test_command_5_skip (void)
+static int
+test_command_5_skip (void)
 {
   const char *str;
 
@@ -26156,7 +26735,8 @@ static int test_command_5_skip (void)
   return 0;
 }
 
-static int test_command_5 (void)
+static int
+test_command_5 (void)
 {
   if (test_command_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_5");
@@ -26236,7 +26816,7 @@ static int test_command_5 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_5: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_5", expected, r);
       return -1;
     }
     free (r);
@@ -26244,7 +26824,8 @@ static int test_command_5 (void)
   return 0;
 }
 
-static int test_command_6_skip (void)
+static int
+test_command_6_skip (void)
 {
   const char *str;
 
@@ -26258,7 +26839,8 @@ static int test_command_6_skip (void)
   return 0;
 }
 
-static int test_command_6 (void)
+static int
+test_command_6 (void)
 {
   if (test_command_6_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_6");
@@ -26338,7 +26920,7 @@ static int test_command_6 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_6: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_6", expected, r);
       return -1;
     }
     free (r);
@@ -26346,7 +26928,8 @@ static int test_command_6 (void)
   return 0;
 }
 
-static int test_command_7_skip (void)
+static int
+test_command_7_skip (void)
 {
   const char *str;
 
@@ -26360,7 +26943,8 @@ static int test_command_7_skip (void)
   return 0;
 }
 
-static int test_command_7 (void)
+static int
+test_command_7 (void)
 {
   if (test_command_7_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_7");
@@ -26440,7 +27024,7 @@ static int test_command_7 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_7: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_7", expected, r);
       return -1;
     }
     free (r);
@@ -26448,7 +27032,8 @@ static int test_command_7 (void)
   return 0;
 }
 
-static int test_command_8_skip (void)
+static int
+test_command_8_skip (void)
 {
   const char *str;
 
@@ -26462,7 +27047,8 @@ static int test_command_8_skip (void)
   return 0;
 }
 
-static int test_command_8 (void)
+static int
+test_command_8 (void)
 {
   if (test_command_8_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_8");
@@ -26542,7 +27128,7 @@ static int test_command_8 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_8: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_8", expected, r);
       return -1;
     }
     free (r);
@@ -26550,7 +27136,8 @@ static int test_command_8 (void)
   return 0;
 }
 
-static int test_command_9_skip (void)
+static int
+test_command_9_skip (void)
 {
   const char *str;
 
@@ -26564,7 +27151,8 @@ static int test_command_9_skip (void)
   return 0;
 }
 
-static int test_command_9 (void)
+static int
+test_command_9 (void)
 {
   if (test_command_9_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_9");
@@ -26644,7 +27232,7 @@ static int test_command_9 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_9: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_9", expected, r);
       return -1;
     }
     free (r);
@@ -26652,7 +27240,8 @@ static int test_command_9 (void)
   return 0;
 }
 
-static int test_command_10_skip (void)
+static int
+test_command_10_skip (void)
 {
   const char *str;
 
@@ -26666,7 +27255,8 @@ static int test_command_10_skip (void)
   return 0;
 }
 
-static int test_command_10 (void)
+static int
+test_command_10 (void)
 {
   if (test_command_10_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_10");
@@ -26746,7 +27336,7 @@ static int test_command_10 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_command_10: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_10", expected, r);
       return -1;
     }
     free (r);
@@ -26754,7 +27344,8 @@ static int test_command_10 (void)
   return 0;
 }
 
-static int test_command_11_skip (void)
+static int
+test_command_11_skip (void)
 {
   const char *str;
 
@@ -26768,7 +27359,8 @@ static int test_command_11_skip (void)
   return 0;
 }
 
-static int test_command_11 (void)
+static int
+test_command_11 (void)
 {
   if (test_command_11_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_command_11");
@@ -26849,7 +27441,8 @@ static int test_command_11 (void)
   return 0;
 }
 
-static int test_file_0_skip (void)
+static int
+test_file_0_skip (void)
 {
   const char *str;
 
@@ -26863,7 +27456,8 @@ static int test_file_0_skip (void)
   return 0;
 }
 
-static int test_file_0 (void)
+static int
+test_file_0 (void)
 {
   if (test_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_0");
@@ -26912,7 +27506,7 @@ static int test_file_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_0", expected, r);
       return -1;
     }
     free (r);
@@ -26920,7 +27514,8 @@ static int test_file_0 (void)
   return 0;
 }
 
-static int test_file_1_skip (void)
+static int
+test_file_1_skip (void)
 {
   const char *str;
 
@@ -26934,7 +27529,8 @@ static int test_file_1_skip (void)
   return 0;
 }
 
-static int test_file_1 (void)
+static int
+test_file_1 (void)
 {
   if (test_file_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_1");
@@ -26983,7 +27579,7 @@ static int test_file_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_1", expected, r);
       return -1;
     }
     free (r);
@@ -26991,7 +27587,8 @@ static int test_file_1 (void)
   return 0;
 }
 
-static int test_file_2_skip (void)
+static int
+test_file_2_skip (void)
 {
   const char *str;
 
@@ -27005,7 +27602,8 @@ static int test_file_2_skip (void)
   return 0;
 }
 
-static int test_file_2 (void)
+static int
+test_file_2 (void)
 {
   if (test_file_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_2");
@@ -27057,7 +27655,8 @@ static int test_file_2 (void)
   return 0;
 }
 
-static int test_file_3_skip (void)
+static int
+test_file_3_skip (void)
 {
   const char *str;
 
@@ -27071,7 +27670,8 @@ static int test_file_3_skip (void)
   return 0;
 }
 
-static int test_file_3 (void)
+static int
+test_file_3 (void)
 {
   if (test_file_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_3");
@@ -27120,7 +27720,7 @@ static int test_file_3 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_3", expected, r);
       return -1;
     }
     free (r);
@@ -27128,7 +27728,8 @@ static int test_file_3 (void)
   return 0;
 }
 
-static int test_file_4_skip (void)
+static int
+test_file_4_skip (void)
 {
   const char *str;
 
@@ -27142,7 +27743,8 @@ static int test_file_4_skip (void)
   return 0;
 }
 
-static int test_file_4 (void)
+static int
+test_file_4 (void)
 {
   if (test_file_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_4");
@@ -27191,7 +27793,7 @@ static int test_file_4 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_4", expected, r);
       return -1;
     }
     free (r);
@@ -27199,7 +27801,8 @@ static int test_file_4 (void)
   return 0;
 }
 
-static int test_umount_all_0_skip (void)
+static int
+test_umount_all_0_skip (void)
 {
   const char *str;
 
@@ -27213,7 +27816,8 @@ static int test_umount_all_0_skip (void)
   return 0;
 }
 
-static int test_umount_all_0 (void)
+static int
+test_umount_all_0 (void)
 {
   if (test_umount_all_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_umount_all_0");
@@ -27269,7 +27873,7 @@ static int test_umount_all_0 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_umount_all_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_umount_all_0");
       print_strings (r);
       return -1;
     }
@@ -27280,7 +27884,8 @@ static int test_umount_all_0 (void)
   return 0;
 }
 
-static int test_umount_all_1_skip (void)
+static int
+test_umount_all_1_skip (void)
 {
   const char *str;
 
@@ -27294,7 +27899,8 @@ static int test_umount_all_1_skip (void)
   return 0;
 }
 
-static int test_umount_all_1 (void)
+static int
+test_umount_all_1 (void)
 {
   if (test_umount_all_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_umount_all_1");
@@ -27457,7 +28063,7 @@ static int test_umount_all_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_umount_all_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_umount_all_1");
       print_strings (r);
       return -1;
     }
@@ -27468,7 +28074,8 @@ static int test_umount_all_1 (void)
   return 0;
 }
 
-static int test_mounts_0_skip (void)
+static int
+test_mounts_0_skip (void)
 {
   const char *str;
 
@@ -27482,7 +28089,8 @@ static int test_mounts_0_skip (void)
   return 0;
 }
 
-static int test_mounts_0 (void)
+static int
+test_mounts_0 (void)
 {
   if (test_mounts_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mounts_0");
@@ -27531,7 +28139,7 @@ static int test_mounts_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_mounts_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_mounts_0");
       print_strings (r);
       return -1;
     }
@@ -27539,12 +28147,12 @@ static int test_mounts_0 (void)
       const char *expected = "/dev/sdb1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_mounts_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mounts_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_mounts_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_mounts_0");
       print_strings (r);
       return -1;
     }
@@ -27555,7 +28163,8 @@ static int test_mounts_0 (void)
   return 0;
 }
 
-static int test_umount_0_skip (void)
+static int
+test_umount_0_skip (void)
 {
   const char *str;
 
@@ -27569,7 +28178,8 @@ static int test_umount_0_skip (void)
   return 0;
 }
 
-static int test_umount_0 (void)
+static int
+test_umount_0 (void)
 {
   if (test_umount_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_umount_0");
@@ -27636,7 +28246,7 @@ static int test_umount_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_umount_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_umount_0");
       print_strings (r);
       return -1;
     }
@@ -27644,12 +28254,12 @@ static int test_umount_0 (void)
       const char *expected = "/dev/sda1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_umount_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_umount_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_umount_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_umount_0");
       print_strings (r);
       return -1;
     }
@@ -27660,7 +28270,8 @@ static int test_umount_0 (void)
   return 0;
 }
 
-static int test_umount_1_skip (void)
+static int
+test_umount_1_skip (void)
 {
   const char *str;
 
@@ -27674,7 +28285,8 @@ static int test_umount_1_skip (void)
   return 0;
 }
 
-static int test_umount_1 (void)
+static int
+test_umount_1 (void)
 {
   if (test_umount_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_umount_1");
@@ -27749,7 +28361,7 @@ static int test_umount_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_umount_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_umount_1");
       print_strings (r);
       return -1;
     }
@@ -27760,7 +28372,8 @@ static int test_umount_1 (void)
   return 0;
 }
 
-static int test_write_file_0_skip (void)
+static int
+test_write_file_0_skip (void)
 {
   const char *str;
 
@@ -27774,7 +28387,8 @@ static int test_write_file_0_skip (void)
   return 0;
 }
 
-static int test_write_file_0 (void)
+static int
+test_write_file_0 (void)
 {
   if (test_write_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_write_file_0");
@@ -27827,7 +28441,8 @@ static int test_write_file_0 (void)
   return 0;
 }
 
-static int test_mkfs_0_skip (void)
+static int
+test_mkfs_0_skip (void)
 {
   const char *str;
 
@@ -27841,7 +28456,8 @@ static int test_mkfs_0_skip (void)
   return 0;
 }
 
-static int test_mkfs_0 (void)
+static int
+test_mkfs_0 (void)
 {
   if (test_mkfs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkfs_0");
@@ -27919,7 +28535,7 @@ static int test_mkfs_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mkfs_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mkfs_0", expected, r);
       return -1;
     }
     free (r);
@@ -27927,7 +28543,8 @@ static int test_mkfs_0 (void)
   return 0;
 }
 
-static int test_lvcreate_0_skip (void)
+static int
+test_lvcreate_0_skip (void)
 {
   const char *str;
 
@@ -27941,7 +28558,8 @@ static int test_lvcreate_0_skip (void)
   return 0;
 }
 
-static int test_lvcreate_0 (void)
+static int
+test_lvcreate_0 (void)
 {
   if (test_lvcreate_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvcreate_0");
@@ -28117,67 +28735,67 @@ static int test_lvcreate_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_lvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG1/LV1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_lvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_lvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG1/LV2";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_lvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_lvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG2/LV3";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_lvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_0", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_lvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG2/LV4";
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_lvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_0", expected, r[3]);
         return -1;
       }
     }
     if (!r[4]) {
-      fprintf (stderr, "test_lvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvcreate_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG2/LV5";
       if (STRNEQ (r[4], expected)) {
-        fprintf (stderr, "test_lvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[4]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvcreate_0", expected, r[4]);
         return -1;
       }
     }
     if (r[5] != NULL) {
-      fprintf (stderr, "test_lvcreate_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvcreate_0");
       print_strings (r);
       return -1;
     }
@@ -28188,7 +28806,8 @@ static int test_lvcreate_0 (void)
   return 0;
 }
 
-static int test_vgcreate_0_skip (void)
+static int
+test_vgcreate_0_skip (void)
 {
   const char *str;
 
@@ -28202,7 +28821,8 @@ static int test_vgcreate_0_skip (void)
   return 0;
 }
 
-static int test_vgcreate_0 (void)
+static int
+test_vgcreate_0 (void)
 {
   if (test_vgcreate_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vgcreate_0");
@@ -28333,31 +28953,31 @@ static int test_vgcreate_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_vgcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_vgcreate_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "VG1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_vgcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vgcreate_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_vgcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_vgcreate_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "VG2";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_vgcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vgcreate_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_vgcreate_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_vgcreate_0");
       print_strings (r);
       return -1;
     }
@@ -28368,7 +28988,8 @@ static int test_vgcreate_0 (void)
   return 0;
 }
 
-static int test_pvcreate_0_skip (void)
+static int
+test_pvcreate_0_skip (void)
 {
   const char *str;
 
@@ -28382,7 +29003,8 @@ static int test_pvcreate_0_skip (void)
   return 0;
 }
 
-static int test_pvcreate_0 (void)
+static int
+test_pvcreate_0 (void)
 {
   if (test_pvcreate_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pvcreate_0");
@@ -28485,7 +29107,7 @@ static int test_pvcreate_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_pvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pvcreate_0");
       print_strings (r);
       return -1;
     }
@@ -28493,12 +29115,12 @@ static int test_pvcreate_0 (void)
       const char *expected = "/dev/sda1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_pvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pvcreate_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_pvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pvcreate_0");
       print_strings (r);
       return -1;
     }
@@ -28506,12 +29128,12 @@ static int test_pvcreate_0 (void)
       const char *expected = "/dev/sda2";
       r[1][5] = 's';
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_pvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pvcreate_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_pvcreate_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pvcreate_0");
       print_strings (r);
       return -1;
     }
@@ -28519,12 +29141,12 @@ static int test_pvcreate_0 (void)
       const char *expected = "/dev/sda3";
       r[2][5] = 's';
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_pvcreate_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pvcreate_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_pvcreate_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_pvcreate_0");
       print_strings (r);
       return -1;
     }
@@ -28535,7 +29157,8 @@ static int test_pvcreate_0 (void)
   return 0;
 }
 
-static int test_is_dir_0_skip (void)
+static int
+test_is_dir_0_skip (void)
 {
   const char *str;
 
@@ -28549,7 +29172,8 @@ static int test_is_dir_0_skip (void)
   return 0;
 }
 
-static int test_is_dir_0 (void)
+static int
+test_is_dir_0 (void)
 {
   if (test_is_dir_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_dir_0");
@@ -28597,14 +29221,15 @@ static int test_is_dir_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_dir_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_dir_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_dir_1_skip (void)
+static int
+test_is_dir_1_skip (void)
 {
   const char *str;
 
@@ -28618,7 +29243,8 @@ static int test_is_dir_1_skip (void)
   return 0;
 }
 
-static int test_is_dir_1 (void)
+static int
+test_is_dir_1 (void)
 {
   if (test_is_dir_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_dir_1");
@@ -28666,14 +29292,15 @@ static int test_is_dir_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_dir_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_dir_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_file_0_skip (void)
+static int
+test_is_file_0_skip (void)
 {
   const char *str;
 
@@ -28687,7 +29314,8 @@ static int test_is_file_0_skip (void)
   return 0;
 }
 
-static int test_is_file_0 (void)
+static int
+test_is_file_0 (void)
 {
   if (test_is_file_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_file_0");
@@ -28735,14 +29363,15 @@ static int test_is_file_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_file_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_file_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_file_1_skip (void)
+static int
+test_is_file_1_skip (void)
 {
   const char *str;
 
@@ -28756,7 +29385,8 @@ static int test_is_file_1_skip (void)
   return 0;
 }
 
-static int test_is_file_1 (void)
+static int
+test_is_file_1 (void)
 {
   if (test_is_file_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_file_1");
@@ -28804,14 +29434,15 @@ static int test_is_file_1 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_file_1: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_file_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_exists_0_skip (void)
+static int
+test_exists_0_skip (void)
 {
   const char *str;
 
@@ -28825,7 +29456,8 @@ static int test_exists_0_skip (void)
   return 0;
 }
 
-static int test_exists_0 (void)
+static int
+test_exists_0 (void)
 {
   if (test_exists_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_exists_0");
@@ -28873,14 +29505,15 @@ static int test_exists_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_exists_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_exists_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_exists_1_skip (void)
+static int
+test_exists_1_skip (void)
 {
   const char *str;
 
@@ -28894,7 +29527,8 @@ static int test_exists_1_skip (void)
   return 0;
 }
 
-static int test_exists_1 (void)
+static int
+test_exists_1 (void)
 {
   if (test_exists_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_exists_1");
@@ -28942,14 +29576,15 @@ static int test_exists_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_exists_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_exists_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mkdir_p_0_skip (void)
+static int
+test_mkdir_p_0_skip (void)
 {
   const char *str;
 
@@ -28963,7 +29598,8 @@ static int test_mkdir_p_0_skip (void)
   return 0;
 }
 
-static int test_mkdir_p_0 (void)
+static int
+test_mkdir_p_0 (void)
 {
   if (test_mkdir_p_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_p_0");
@@ -29020,14 +29656,15 @@ static int test_mkdir_p_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_mkdir_p_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_mkdir_p_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mkdir_p_1_skip (void)
+static int
+test_mkdir_p_1_skip (void)
 {
   const char *str;
 
@@ -29041,7 +29678,8 @@ static int test_mkdir_p_1_skip (void)
   return 0;
 }
 
-static int test_mkdir_p_1 (void)
+static int
+test_mkdir_p_1 (void)
 {
   if (test_mkdir_p_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_p_1");
@@ -29098,14 +29736,15 @@ static int test_mkdir_p_1 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_mkdir_p_1: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_mkdir_p_1");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mkdir_p_2_skip (void)
+static int
+test_mkdir_p_2_skip (void)
 {
   const char *str;
 
@@ -29119,7 +29758,8 @@ static int test_mkdir_p_2_skip (void)
   return 0;
 }
 
-static int test_mkdir_p_2 (void)
+static int
+test_mkdir_p_2 (void)
 {
   if (test_mkdir_p_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_p_2");
@@ -29176,14 +29816,15 @@ static int test_mkdir_p_2 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_mkdir_p_2: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_mkdir_p_2");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mkdir_p_3_skip (void)
+static int
+test_mkdir_p_3_skip (void)
 {
   const char *str;
 
@@ -29197,7 +29838,8 @@ static int test_mkdir_p_3_skip (void)
   return 0;
 }
 
-static int test_mkdir_p_3 (void)
+static int
+test_mkdir_p_3 (void)
 {
   if (test_mkdir_p_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_p_3");
@@ -29257,7 +29899,8 @@ static int test_mkdir_p_3 (void)
   return 0;
 }
 
-static int test_mkdir_p_4_skip (void)
+static int
+test_mkdir_p_4_skip (void)
 {
   const char *str;
 
@@ -29271,7 +29914,8 @@ static int test_mkdir_p_4_skip (void)
   return 0;
 }
 
-static int test_mkdir_p_4 (void)
+static int
+test_mkdir_p_4 (void)
 {
   if (test_mkdir_p_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_p_4");
@@ -29331,7 +29975,8 @@ static int test_mkdir_p_4 (void)
   return 0;
 }
 
-static int test_mkdir_0_skip (void)
+static int
+test_mkdir_0_skip (void)
 {
   const char *str;
 
@@ -29345,7 +29990,8 @@ static int test_mkdir_0_skip (void)
   return 0;
 }
 
-static int test_mkdir_0 (void)
+static int
+test_mkdir_0 (void)
 {
   if (test_mkdir_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_0");
@@ -29402,14 +30048,15 @@ static int test_mkdir_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_mkdir_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_mkdir_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_mkdir_1_skip (void)
+static int
+test_mkdir_1_skip (void)
 {
   const char *str;
 
@@ -29423,7 +30070,8 @@ static int test_mkdir_1_skip (void)
   return 0;
 }
 
-static int test_mkdir_1 (void)
+static int
+test_mkdir_1 (void)
 {
   if (test_mkdir_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mkdir_1");
@@ -29475,7 +30123,8 @@ static int test_mkdir_1 (void)
   return 0;
 }
 
-static int test_rm_rf_0_skip (void)
+static int
+test_rm_rf_0_skip (void)
 {
   const char *str;
 
@@ -29489,7 +30138,8 @@ static int test_rm_rf_0_skip (void)
   return 0;
 }
 
-static int test_rm_rf_0 (void)
+static int
+test_rm_rf_0 (void)
 {
   if (test_rm_rf_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_rm_rf_0");
@@ -29570,14 +30220,15 @@ static int test_rm_rf_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_rm_rf_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_rm_rf_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_rmdir_0_skip (void)
+static int
+test_rmdir_0_skip (void)
 {
   const char *str;
 
@@ -29591,7 +30242,8 @@ static int test_rmdir_0_skip (void)
   return 0;
 }
 
-static int test_rmdir_0 (void)
+static int
+test_rmdir_0 (void)
 {
   if (test_rmdir_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_rmdir_0");
@@ -29651,7 +30303,8 @@ static int test_rmdir_0 (void)
   return 0;
 }
 
-static int test_rmdir_1_skip (void)
+static int
+test_rmdir_1_skip (void)
 {
   const char *str;
 
@@ -29665,7 +30318,8 @@ static int test_rmdir_1_skip (void)
   return 0;
 }
 
-static int test_rmdir_1 (void)
+static int
+test_rmdir_1 (void)
 {
   if (test_rmdir_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_rmdir_1");
@@ -29717,7 +30371,8 @@ static int test_rmdir_1 (void)
   return 0;
 }
 
-static int test_rmdir_2_skip (void)
+static int
+test_rmdir_2_skip (void)
 {
   const char *str;
 
@@ -29731,7 +30386,8 @@ static int test_rmdir_2_skip (void)
   return 0;
 }
 
-static int test_rmdir_2 (void)
+static int
+test_rmdir_2 (void)
 {
   if (test_rmdir_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_rmdir_2");
@@ -29799,7 +30455,8 @@ static int test_rmdir_2 (void)
   return 0;
 }
 
-static int test_rm_0_skip (void)
+static int
+test_rm_0_skip (void)
 {
   const char *str;
 
@@ -29813,7 +30470,8 @@ static int test_rm_0_skip (void)
   return 0;
 }
 
-static int test_rm_0 (void)
+static int
+test_rm_0 (void)
 {
   if (test_rm_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_rm_0");
@@ -29881,7 +30539,8 @@ static int test_rm_0 (void)
   return 0;
 }
 
-static int test_rm_1_skip (void)
+static int
+test_rm_1_skip (void)
 {
   const char *str;
 
@@ -29895,7 +30554,8 @@ static int test_rm_1_skip (void)
   return 0;
 }
 
-static int test_rm_1 (void)
+static int
+test_rm_1 (void)
 {
   if (test_rm_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_rm_1");
@@ -29947,7 +30607,8 @@ static int test_rm_1 (void)
   return 0;
 }
 
-static int test_rm_2_skip (void)
+static int
+test_rm_2_skip (void)
 {
   const char *str;
 
@@ -29961,7 +30622,8 @@ static int test_rm_2_skip (void)
   return 0;
 }
 
-static int test_rm_2 (void)
+static int
+test_rm_2 (void)
 {
   if (test_rm_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_rm_2");
@@ -30021,7 +30683,8 @@ static int test_rm_2 (void)
   return 0;
 }
 
-static int test_read_lines_0_skip (void)
+static int
+test_read_lines_0_skip (void)
 {
   const char *str;
 
@@ -30035,7 +30698,8 @@ static int test_read_lines_0_skip (void)
   return 0;
 }
 
-static int test_read_lines_0 (void)
+static int
+test_read_lines_0 (void)
 {
   if (test_read_lines_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_read_lines_0");
@@ -30084,43 +30748,43 @@ static int test_read_lines_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_read_lines_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_read_lines_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "abc";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_read_lines_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_read_lines_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_read_lines_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_read_lines_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "def";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_read_lines_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_read_lines_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_read_lines_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_read_lines_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "ghi";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_read_lines_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_read_lines_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_read_lines_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_read_lines_0");
       print_strings (r);
       return -1;
     }
@@ -30131,7 +30795,8 @@ static int test_read_lines_0 (void)
   return 0;
 }
 
-static int test_read_lines_1_skip (void)
+static int
+test_read_lines_1_skip (void)
 {
   const char *str;
 
@@ -30145,7 +30810,8 @@ static int test_read_lines_1_skip (void)
   return 0;
 }
 
-static int test_read_lines_1 (void)
+static int
+test_read_lines_1 (void)
 {
   if (test_read_lines_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_read_lines_1");
@@ -30194,7 +30860,7 @@ static int test_read_lines_1 (void)
     if (r == NULL)
       return -1;
     if (r[0] != NULL) {
-      fprintf (stderr, "test_read_lines_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_read_lines_1");
       print_strings (r);
       return -1;
     }
@@ -30205,7 +30871,8 @@ static int test_read_lines_1 (void)
   return 0;
 }
 
-static int test_lvs_0_skip (void)
+static int
+test_lvs_0_skip (void)
 {
   const char *str;
 
@@ -30219,7 +30886,8 @@ static int test_lvs_0_skip (void)
   return 0;
 }
 
-static int test_lvs_0 (void)
+static int
+test_lvs_0 (void)
 {
   if (test_lvs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvs_0");
@@ -30320,19 +30988,19 @@ static int test_lvs_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_lvs_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvs_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG/LV";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_lvs_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvs_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_lvs_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvs_0");
       print_strings (r);
       return -1;
     }
@@ -30343,7 +31011,8 @@ static int test_lvs_0 (void)
   return 0;
 }
 
-static int test_lvs_1_skip (void)
+static int
+test_lvs_1_skip (void)
 {
   const char *str;
 
@@ -30357,7 +31026,8 @@ static int test_lvs_1_skip (void)
   return 0;
 }
 
-static int test_lvs_1 (void)
+static int
+test_lvs_1 (void)
 {
   if (test_lvs_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_lvs_1");
@@ -30515,43 +31185,43 @@ static int test_lvs_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_lvs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvs_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG1/LV1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_lvs_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvs_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_lvs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvs_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG1/LV2";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_lvs_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvs_1", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_lvs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_lvs_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "/dev/VG2/LV3";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_lvs_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_lvs_1", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_lvs_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_lvs_1");
       print_strings (r);
       return -1;
     }
@@ -30562,7 +31232,8 @@ static int test_lvs_1 (void)
   return 0;
 }
 
-static int test_vgs_0_skip (void)
+static int
+test_vgs_0_skip (void)
 {
   const char *str;
 
@@ -30576,7 +31247,8 @@ static int test_vgs_0_skip (void)
   return 0;
 }
 
-static int test_vgs_0 (void)
+static int
+test_vgs_0 (void)
 {
   if (test_vgs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vgs_0");
@@ -30677,19 +31349,19 @@ static int test_vgs_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_vgs_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_vgs_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "VG";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_vgs_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vgs_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_vgs_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_vgs_0");
       print_strings (r);
       return -1;
     }
@@ -30700,7 +31372,8 @@ static int test_vgs_0 (void)
   return 0;
 }
 
-static int test_vgs_1_skip (void)
+static int
+test_vgs_1_skip (void)
 {
   const char *str;
 
@@ -30714,7 +31387,8 @@ static int test_vgs_1_skip (void)
   return 0;
 }
 
-static int test_vgs_1 (void)
+static int
+test_vgs_1 (void)
 {
   if (test_vgs_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_vgs_1");
@@ -30845,31 +31519,31 @@ static int test_vgs_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_vgs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_vgs_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "VG1";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_vgs_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vgs_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_vgs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_vgs_1");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "VG2";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_vgs_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_vgs_1", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_vgs_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_vgs_1");
       print_strings (r);
       return -1;
     }
@@ -30880,7 +31554,8 @@ static int test_vgs_1 (void)
   return 0;
 }
 
-static int test_pvs_0_skip (void)
+static int
+test_pvs_0_skip (void)
 {
   const char *str;
 
@@ -30894,7 +31569,8 @@ static int test_pvs_0_skip (void)
   return 0;
 }
 
-static int test_pvs_0 (void)
+static int
+test_pvs_0 (void)
 {
   if (test_pvs_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pvs_0");
@@ -30995,7 +31671,7 @@ static int test_pvs_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_pvs_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pvs_0");
       print_strings (r);
       return -1;
     }
@@ -31003,12 +31679,12 @@ static int test_pvs_0 (void)
       const char *expected = "/dev/sda1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_pvs_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pvs_0", expected, r[0]);
         return -1;
       }
     }
     if (r[1] != NULL) {
-      fprintf (stderr, "test_pvs_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_pvs_0");
       print_strings (r);
       return -1;
     }
@@ -31019,7 +31695,8 @@ static int test_pvs_0 (void)
   return 0;
 }
 
-static int test_pvs_1_skip (void)
+static int
+test_pvs_1_skip (void)
 {
   const char *str;
 
@@ -31033,7 +31710,8 @@ static int test_pvs_1_skip (void)
   return 0;
 }
 
-static int test_pvs_1 (void)
+static int
+test_pvs_1 (void)
 {
   if (test_pvs_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_pvs_1");
@@ -31136,7 +31814,7 @@ static int test_pvs_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_pvs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pvs_1");
       print_strings (r);
       return -1;
     }
@@ -31144,12 +31822,12 @@ static int test_pvs_1 (void)
       const char *expected = "/dev/sda1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_pvs_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pvs_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_pvs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pvs_1");
       print_strings (r);
       return -1;
     }
@@ -31157,12 +31835,12 @@ static int test_pvs_1 (void)
       const char *expected = "/dev/sda2";
       r[1][5] = 's';
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_pvs_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pvs_1", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_pvs_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_pvs_1");
       print_strings (r);
       return -1;
     }
@@ -31170,12 +31848,12 @@ static int test_pvs_1 (void)
       const char *expected = "/dev/sda3";
       r[2][5] = 's';
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_pvs_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_pvs_1", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_pvs_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_pvs_1");
       print_strings (r);
       return -1;
     }
@@ -31186,7 +31864,8 @@ static int test_pvs_1 (void)
   return 0;
 }
 
-static int test_list_partitions_0_skip (void)
+static int
+test_list_partitions_0_skip (void)
 {
   const char *str;
 
@@ -31200,7 +31879,8 @@ static int test_list_partitions_0_skip (void)
   return 0;
 }
 
-static int test_list_partitions_0 (void)
+static int
+test_list_partitions_0 (void)
 {
   if (test_list_partitions_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_list_partitions_0");
@@ -31267,7 +31947,7 @@ static int test_list_partitions_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_list_partitions_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_partitions_0");
       print_strings (r);
       return -1;
     }
@@ -31275,12 +31955,12 @@ static int test_list_partitions_0 (void)
       const char *expected = "/dev/sda1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_list_partitions_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_partitions_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_list_partitions_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_partitions_0");
       print_strings (r);
       return -1;
     }
@@ -31288,12 +31968,12 @@ static int test_list_partitions_0 (void)
       const char *expected = "/dev/sdb1";
       r[1][5] = 's';
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_list_partitions_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_partitions_0", expected, r[1]);
         return -1;
       }
     }
     if (r[2] != NULL) {
-      fprintf (stderr, "test_list_partitions_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_list_partitions_0");
       print_strings (r);
       return -1;
     }
@@ -31304,7 +31984,8 @@ static int test_list_partitions_0 (void)
   return 0;
 }
 
-static int test_list_partitions_1_skip (void)
+static int
+test_list_partitions_1_skip (void)
 {
   const char *str;
 
@@ -31318,7 +31999,8 @@ static int test_list_partitions_1_skip (void)
   return 0;
 }
 
-static int test_list_partitions_1 (void)
+static int
+test_list_partitions_1 (void)
 {
   if (test_list_partitions_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_list_partitions_1");
@@ -31393,7 +32075,7 @@ static int test_list_partitions_1 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_list_partitions_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_partitions_1");
       print_strings (r);
       return -1;
     }
@@ -31401,12 +32083,12 @@ static int test_list_partitions_1 (void)
       const char *expected = "/dev/sda1";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_list_partitions_1: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_partitions_1", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_list_partitions_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_partitions_1");
       print_strings (r);
       return -1;
     }
@@ -31414,12 +32096,12 @@ static int test_list_partitions_1 (void)
       const char *expected = "/dev/sda2";
       r[1][5] = 's';
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_list_partitions_1: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_partitions_1", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_list_partitions_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_partitions_1");
       print_strings (r);
       return -1;
     }
@@ -31427,12 +32109,12 @@ static int test_list_partitions_1 (void)
       const char *expected = "/dev/sda3";
       r[2][5] = 's';
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_list_partitions_1: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_partitions_1", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_list_partitions_1: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_partitions_1");
       print_strings (r);
       return -1;
     }
@@ -31440,12 +32122,12 @@ static int test_list_partitions_1 (void)
       const char *expected = "/dev/sdb1";
       r[3][5] = 's';
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_list_partitions_1: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_partitions_1", expected, r[3]);
         return -1;
       }
     }
     if (r[4] != NULL) {
-      fprintf (stderr, "test_list_partitions_1: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_list_partitions_1");
       print_strings (r);
       return -1;
     }
@@ -31456,7 +32138,8 @@ static int test_list_partitions_1 (void)
   return 0;
 }
 
-static int test_list_devices_0_skip (void)
+static int
+test_list_devices_0_skip (void)
 {
   const char *str;
 
@@ -31470,7 +32153,8 @@ static int test_list_devices_0_skip (void)
   return 0;
 }
 
-static int test_list_devices_0 (void)
+static int
+test_list_devices_0 (void)
 {
   if (test_list_devices_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_list_devices_0");
@@ -31509,7 +32193,7 @@ static int test_list_devices_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_list_devices_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_devices_0");
       print_strings (r);
       return -1;
     }
@@ -31517,12 +32201,12 @@ static int test_list_devices_0 (void)
       const char *expected = "/dev/sda";
       r[0][5] = 's';
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_list_devices_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_devices_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_list_devices_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_devices_0");
       print_strings (r);
       return -1;
     }
@@ -31530,12 +32214,12 @@ static int test_list_devices_0 (void)
       const char *expected = "/dev/sdb";
       r[1][5] = 's';
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_list_devices_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_devices_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_list_devices_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_devices_0");
       print_strings (r);
       return -1;
     }
@@ -31543,12 +32227,12 @@ static int test_list_devices_0 (void)
       const char *expected = "/dev/sdc";
       r[2][5] = 's';
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_list_devices_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_devices_0", expected, r[2]);
         return -1;
       }
     }
     if (!r[3]) {
-      fprintf (stderr, "test_list_devices_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_list_devices_0");
       print_strings (r);
       return -1;
     }
@@ -31556,12 +32240,12 @@ static int test_list_devices_0 (void)
       const char *expected = "/dev/sdd";
       r[3][5] = 's';
       if (STRNEQ (r[3], expected)) {
-        fprintf (stderr, "test_list_devices_0: expected \"%s\" but got \"%s\"\n", expected, r[3]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_list_devices_0", expected, r[3]);
         return -1;
       }
     }
     if (r[4] != NULL) {
-      fprintf (stderr, "test_list_devices_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_list_devices_0");
       print_strings (r);
       return -1;
     }
@@ -31572,7 +32256,8 @@ static int test_list_devices_0 (void)
   return 0;
 }
 
-static int test_ls_0_skip (void)
+static int
+test_ls_0_skip (void)
 {
   const char *str;
 
@@ -31586,7 +32271,8 @@ static int test_ls_0_skip (void)
   return 0;
 }
 
-static int test_ls_0 (void)
+static int
+test_ls_0 (void)
 {
   if (test_ls_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_ls_0");
@@ -31668,43 +32354,43 @@ static int test_ls_0 (void)
     if (r == NULL)
       return -1;
     if (!r[0]) {
-      fprintf (stderr, "test_ls_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_ls_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "new";
       if (STRNEQ (r[0], expected)) {
-        fprintf (stderr, "test_ls_0: expected \"%s\" but got \"%s\"\n", expected, r[0]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_ls_0", expected, r[0]);
         return -1;
       }
     }
     if (!r[1]) {
-      fprintf (stderr, "test_ls_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_ls_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "newer";
       if (STRNEQ (r[1], expected)) {
-        fprintf (stderr, "test_ls_0: expected \"%s\" but got \"%s\"\n", expected, r[1]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_ls_0", expected, r[1]);
         return -1;
       }
     }
     if (!r[2]) {
-      fprintf (stderr, "test_ls_0: short list returned from command\n");
+      fprintf (stderr, "%s: short list returned from command\n", "test_ls_0");
       print_strings (r);
       return -1;
     }
     {
       const char *expected = "newest";
       if (STRNEQ (r[2], expected)) {
-        fprintf (stderr, "test_ls_0: expected \"%s\" but got \"%s\"\n", expected, r[2]);
+        fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_ls_0", expected, r[2]);
         return -1;
       }
     }
     if (r[3] != NULL) {
-      fprintf (stderr, "test_ls_0: extra elements returned from command\n");
+      fprintf (stderr, "%s: extra elements returned from command\n", "test_ls_0");
       print_strings (r);
       return -1;
     }
@@ -31715,7 +32401,8 @@ static int test_ls_0 (void)
   return 0;
 }
 
-static int test_cat_0_skip (void)
+static int
+test_cat_0_skip (void)
 {
   const char *str;
 
@@ -31729,7 +32416,8 @@ static int test_cat_0_skip (void)
   return 0;
 }
 
-static int test_cat_0 (void)
+static int
+test_cat_0 (void)
 {
   if (test_cat_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_cat_0");
@@ -31778,7 +32466,7 @@ static int test_cat_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_cat_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_cat_0", expected, r);
       return -1;
     }
     free (r);
@@ -31786,7 +32474,8 @@ static int test_cat_0 (void)
   return 0;
 }
 
-static int test_touch_0_skip (void)
+static int
+test_touch_0_skip (void)
 {
   const char *str;
 
@@ -31800,7 +32489,8 @@ static int test_touch_0_skip (void)
   return 0;
 }
 
-static int test_touch_0 (void)
+static int
+test_touch_0 (void)
 {
   if (test_touch_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_touch_0");
@@ -31857,14 +32547,15 @@ static int test_touch_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_touch_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_touch_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_sync_0_skip (void)
+static int
+test_sync_0_skip (void)
 {
   const char *str;
 
@@ -31878,7 +32569,8 @@ static int test_sync_0_skip (void)
   return 0;
 }
 
-static int test_sync_0 (void)
+static int
+test_sync_0 (void)
 {
   if (test_sync_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_sync_0");
@@ -31919,7 +32611,8 @@ static int test_sync_0 (void)
   return 0;
 }
 
-static int test_mount_0_skip (void)
+static int
+test_mount_0_skip (void)
 {
   const char *str;
 
@@ -31933,7 +32626,8 @@ static int test_mount_0_skip (void)
   return 0;
 }
 
-static int test_mount_0 (void)
+static int
+test_mount_0 (void)
 {
   if (test_mount_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_mount_0");
@@ -32010,7 +32704,7 @@ static int test_mount_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_mount_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_mount_0", expected, r);
       return -1;
     }
     free (r);
@@ -32018,7 +32712,8 @@ static int test_mount_0 (void)
   return 0;
 }
 
-static int test_get_attach_method_0_skip (void)
+static int
+test_get_attach_method_0_skip (void)
 {
   const char *str;
 
@@ -32032,7 +32727,8 @@ static int test_get_attach_method_0_skip (void)
   return 0;
 }
 
-static int test_get_attach_method_0 (void)
+static int
+test_get_attach_method_0 (void)
 {
   if (test_get_attach_method_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_attach_method_0");
@@ -32071,7 +32767,7 @@ static int test_get_attach_method_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_get_attach_method_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_get_attach_method_0", expected, r);
       return -1;
     }
     free (r);
@@ -32079,7 +32775,8 @@ static int test_get_attach_method_0 (void)
   return 0;
 }
 
-static int test_file_architecture_0_skip (void)
+static int
+test_file_architecture_0_skip (void)
 {
   const char *str;
 
@@ -32093,7 +32790,8 @@ static int test_file_architecture_0_skip (void)
   return 0;
 }
 
-static int test_file_architecture_0 (void)
+static int
+test_file_architecture_0 (void)
 {
   if (test_file_architecture_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_0");
@@ -32142,7 +32840,7 @@ static int test_file_architecture_0 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_0: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_0", expected, r);
       return -1;
     }
     free (r);
@@ -32150,7 +32848,8 @@ static int test_file_architecture_0 (void)
   return 0;
 }
 
-static int test_file_architecture_1_skip (void)
+static int
+test_file_architecture_1_skip (void)
 {
   const char *str;
 
@@ -32164,7 +32863,8 @@ static int test_file_architecture_1_skip (void)
   return 0;
 }
 
-static int test_file_architecture_1 (void)
+static int
+test_file_architecture_1 (void)
 {
   if (test_file_architecture_1_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_1");
@@ -32213,7 +32913,7 @@ static int test_file_architecture_1 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_1: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_1", expected, r);
       return -1;
     }
     free (r);
@@ -32221,7 +32921,8 @@ static int test_file_architecture_1 (void)
   return 0;
 }
 
-static int test_file_architecture_2_skip (void)
+static int
+test_file_architecture_2_skip (void)
 {
   const char *str;
 
@@ -32235,7 +32936,8 @@ static int test_file_architecture_2_skip (void)
   return 0;
 }
 
-static int test_file_architecture_2 (void)
+static int
+test_file_architecture_2 (void)
 {
   if (test_file_architecture_2_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_2");
@@ -32284,7 +32986,7 @@ static int test_file_architecture_2 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_2: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_2", expected, r);
       return -1;
     }
     free (r);
@@ -32292,7 +32994,8 @@ static int test_file_architecture_2 (void)
   return 0;
 }
 
-static int test_file_architecture_3_skip (void)
+static int
+test_file_architecture_3_skip (void)
 {
   const char *str;
 
@@ -32306,7 +33009,8 @@ static int test_file_architecture_3_skip (void)
   return 0;
 }
 
-static int test_file_architecture_3 (void)
+static int
+test_file_architecture_3 (void)
 {
   if (test_file_architecture_3_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_3");
@@ -32355,7 +33059,7 @@ static int test_file_architecture_3 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_3: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_3", expected, r);
       return -1;
     }
     free (r);
@@ -32363,7 +33067,8 @@ static int test_file_architecture_3 (void)
   return 0;
 }
 
-static int test_file_architecture_4_skip (void)
+static int
+test_file_architecture_4_skip (void)
 {
   const char *str;
 
@@ -32377,7 +33082,8 @@ static int test_file_architecture_4_skip (void)
   return 0;
 }
 
-static int test_file_architecture_4 (void)
+static int
+test_file_architecture_4 (void)
 {
   if (test_file_architecture_4_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_4");
@@ -32426,7 +33132,7 @@ static int test_file_architecture_4 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_4: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_4", expected, r);
       return -1;
     }
     free (r);
@@ -32434,7 +33140,8 @@ static int test_file_architecture_4 (void)
   return 0;
 }
 
-static int test_file_architecture_5_skip (void)
+static int
+test_file_architecture_5_skip (void)
 {
   const char *str;
 
@@ -32448,7 +33155,8 @@ static int test_file_architecture_5_skip (void)
   return 0;
 }
 
-static int test_file_architecture_5 (void)
+static int
+test_file_architecture_5 (void)
 {
   if (test_file_architecture_5_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_5");
@@ -32497,7 +33205,7 @@ static int test_file_architecture_5 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_5: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_5", expected, r);
       return -1;
     }
     free (r);
@@ -32505,7 +33213,8 @@ static int test_file_architecture_5 (void)
   return 0;
 }
 
-static int test_file_architecture_6_skip (void)
+static int
+test_file_architecture_6_skip (void)
 {
   const char *str;
 
@@ -32519,7 +33228,8 @@ static int test_file_architecture_6_skip (void)
   return 0;
 }
 
-static int test_file_architecture_6 (void)
+static int
+test_file_architecture_6 (void)
 {
   if (test_file_architecture_6_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_6");
@@ -32568,7 +33278,7 @@ static int test_file_architecture_6 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_6: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_6", expected, r);
       return -1;
     }
     free (r);
@@ -32576,7 +33286,8 @@ static int test_file_architecture_6 (void)
   return 0;
 }
 
-static int test_file_architecture_7_skip (void)
+static int
+test_file_architecture_7_skip (void)
 {
   const char *str;
 
@@ -32590,7 +33301,8 @@ static int test_file_architecture_7_skip (void)
   return 0;
 }
 
-static int test_file_architecture_7 (void)
+static int
+test_file_architecture_7 (void)
 {
   if (test_file_architecture_7_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_7");
@@ -32639,7 +33351,7 @@ static int test_file_architecture_7 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_7: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_7", expected, r);
       return -1;
     }
     free (r);
@@ -32647,7 +33359,8 @@ static int test_file_architecture_7 (void)
   return 0;
 }
 
-static int test_file_architecture_8_skip (void)
+static int
+test_file_architecture_8_skip (void)
 {
   const char *str;
 
@@ -32661,7 +33374,8 @@ static int test_file_architecture_8_skip (void)
   return 0;
 }
 
-static int test_file_architecture_8 (void)
+static int
+test_file_architecture_8 (void)
 {
   if (test_file_architecture_8_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_8");
@@ -32710,7 +33424,7 @@ static int test_file_architecture_8 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_8: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_8", expected, r);
       return -1;
     }
     free (r);
@@ -32718,7 +33432,8 @@ static int test_file_architecture_8 (void)
   return 0;
 }
 
-static int test_file_architecture_9_skip (void)
+static int
+test_file_architecture_9_skip (void)
 {
   const char *str;
 
@@ -32732,7 +33447,8 @@ static int test_file_architecture_9_skip (void)
   return 0;
 }
 
-static int test_file_architecture_9 (void)
+static int
+test_file_architecture_9 (void)
 {
   if (test_file_architecture_9_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_9");
@@ -32781,7 +33497,7 @@ static int test_file_architecture_9 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_9: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_9", expected, r);
       return -1;
     }
     free (r);
@@ -32789,7 +33505,8 @@ static int test_file_architecture_9 (void)
   return 0;
 }
 
-static int test_file_architecture_10_skip (void)
+static int
+test_file_architecture_10_skip (void)
 {
   const char *str;
 
@@ -32803,7 +33520,8 @@ static int test_file_architecture_10_skip (void)
   return 0;
 }
 
-static int test_file_architecture_10 (void)
+static int
+test_file_architecture_10 (void)
 {
   if (test_file_architecture_10_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_10");
@@ -32852,7 +33570,7 @@ static int test_file_architecture_10 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_10: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_10", expected, r);
       return -1;
     }
     free (r);
@@ -32860,7 +33578,8 @@ static int test_file_architecture_10 (void)
   return 0;
 }
 
-static int test_file_architecture_11_skip (void)
+static int
+test_file_architecture_11_skip (void)
 {
   const char *str;
 
@@ -32874,7 +33593,8 @@ static int test_file_architecture_11_skip (void)
   return 0;
 }
 
-static int test_file_architecture_11 (void)
+static int
+test_file_architecture_11 (void)
 {
   if (test_file_architecture_11_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_file_architecture_11");
@@ -32923,7 +33643,7 @@ static int test_file_architecture_11 (void)
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
-      fprintf (stderr, "test_file_architecture_11: expected \"%s\" but got \"%s\"\n", expected, r);
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_file_architecture_11", expected, r);
       return -1;
     }
     free (r);
@@ -32931,7 +33651,8 @@ static int test_file_architecture_11 (void)
   return 0;
 }
 
-static int test_set_trace_0_skip (void)
+static int
+test_set_trace_0_skip (void)
 {
   const char *str;
 
@@ -32945,7 +33666,8 @@ static int test_set_trace_0_skip (void)
   return 0;
 }
 
-static int test_set_trace_0 (void)
+static int
+test_set_trace_0 (void)
 {
   if (test_set_trace_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_set_trace_0");
@@ -32990,14 +33712,15 @@ static int test_set_trace_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_set_trace_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_set_trace_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_version_0_skip (void)
+static int
+test_version_0_skip (void)
 {
   const char *str;
 
@@ -33011,7 +33734,8 @@ static int test_version_0_skip (void)
   return 0;
 }
 
-static int test_version_0 (void)
+static int
+test_version_0 (void)
 {
   if (test_version_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_version_0");
@@ -33049,8 +33773,8 @@ static int test_version_0 (void)
     if (r == NULL)
       return -1;
     if (r->major != 1) {
-      fprintf (stderr, "test_version_0: major was %d, expected 1\n",
-               (int) r->major);
+      fprintf (stderr, "%s: major was %d, expected 1\n",
+               "test_version_0", (int) r->major);
       return -1;
     }
     guestfs_free_version (r);
@@ -33058,7 +33782,8 @@ static int test_version_0 (void)
   return 0;
 }
 
-static int test_get_pid_0_skip (void)
+static int
+test_get_pid_0_skip (void)
 {
   const char *str;
 
@@ -33072,7 +33797,8 @@ static int test_get_pid_0_skip (void)
   return 0;
 }
 
-static int test_get_pid_0 (void)
+static int
+test_get_pid_0 (void)
 {
   if (test_get_pid_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_pid_0");
@@ -33110,14 +33836,15 @@ static int test_get_pid_0 (void)
     if (r == -1)
       return -1;
     if (! (r >= 1)) {
-      fprintf (stderr, "test_get_pid_0: expected >= 1 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected >= 1 but got %d\n",               "test_get_pid_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_get_memsize_0_skip (void)
+static int
+test_get_memsize_0_skip (void)
 {
   const char *str;
 
@@ -33131,7 +33858,8 @@ static int test_get_memsize_0_skip (void)
   return 0;
 }
 
-static int test_get_memsize_0 (void)
+static int
+test_get_memsize_0 (void)
 {
   if (test_get_memsize_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_memsize_0");
@@ -33169,14 +33897,15 @@ static int test_get_memsize_0 (void)
     if (r == -1)
       return -1;
     if (! (r >= 256)) {
-      fprintf (stderr, "test_get_memsize_0: expected >= 256 but got %d\n",               (int) r);
+      fprintf (stderr, "%s: expected >= 256 but got %d\n",               "test_get_memsize_0", (int) r);
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_busy_0_skip (void)
+static int
+test_is_busy_0_skip (void)
 {
   const char *str;
 
@@ -33190,7 +33919,8 @@ static int test_is_busy_0_skip (void)
   return 0;
 }
 
-static int test_is_busy_0 (void)
+static int
+test_is_busy_0 (void)
 {
   if (test_is_busy_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_busy_0");
@@ -33228,14 +33958,15 @@ static int test_is_busy_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_busy_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_busy_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_launching_0_skip (void)
+static int
+test_is_launching_0_skip (void)
 {
   const char *str;
 
@@ -33249,7 +33980,8 @@ static int test_is_launching_0_skip (void)
   return 0;
 }
 
-static int test_is_launching_0 (void)
+static int
+test_is_launching_0 (void)
 {
   if (test_is_launching_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_launching_0");
@@ -33287,14 +34019,15 @@ static int test_is_launching_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_launching_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_launching_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_config_0_skip (void)
+static int
+test_is_config_0_skip (void)
 {
   const char *str;
 
@@ -33308,7 +34041,8 @@ static int test_is_config_0_skip (void)
   return 0;
 }
 
-static int test_is_config_0 (void)
+static int
+test_is_config_0 (void)
 {
   if (test_is_config_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_config_0");
@@ -33346,14 +34080,15 @@ static int test_is_config_0 (void)
     if (r == -1)
       return -1;
     if (r) {
-      fprintf (stderr, "test_is_config_0: expected false, got true\n");
+      fprintf (stderr, "%s: expected false, got true\n", "test_is_config_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_is_ready_0_skip (void)
+static int
+test_is_ready_0_skip (void)
 {
   const char *str;
 
@@ -33367,7 +34102,8 @@ static int test_is_ready_0_skip (void)
   return 0;
 }
 
-static int test_is_ready_0 (void)
+static int
+test_is_ready_0 (void)
 {
   if (test_is_ready_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_is_ready_0");
@@ -33405,14 +34141,15 @@ static int test_is_ready_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_is_ready_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_is_ready_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_get_autosync_0_skip (void)
+static int
+test_get_autosync_0_skip (void)
 {
   const char *str;
 
@@ -33426,7 +34163,8 @@ static int test_get_autosync_0_skip (void)
   return 0;
 }
 
-static int test_get_autosync_0 (void)
+static int
+test_get_autosync_0 (void)
 {
   if (test_get_autosync_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_autosync_0");
@@ -33464,14 +34202,15 @@ static int test_get_autosync_0 (void)
     if (r == -1)
       return -1;
     if (!r) {
-      fprintf (stderr, "test_get_autosync_0: expected true, got false\n");
+      fprintf (stderr, "%s: expected true, got false\n", "test_get_autosync_0");
       return -1;
     }
   }
   return 0;
 }
 
-static int test_get_path_0_skip (void)
+static int
+test_get_path_0_skip (void)
 {
   const char *str;
 
@@ -33485,7 +34224,8 @@ static int test_get_path_0_skip (void)
   return 0;
 }
 
-static int test_get_path_0 (void)
+static int
+test_get_path_0 (void)
 {
   if (test_get_path_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_path_0");
@@ -33526,7 +34266,8 @@ static int test_get_path_0 (void)
   return 0;
 }
 
-static int test_get_qemu_0_skip (void)
+static int
+test_get_qemu_0_skip (void)
 {
   const char *str;
 
@@ -33540,7 +34281,8 @@ static int test_get_qemu_0_skip (void)
   return 0;
 }
 
-static int test_get_qemu_0 (void)
+static int
+test_get_qemu_0 (void)
 {
   if (test_get_qemu_0_skip ()) {
     printf ("        %s skipped (reason: environment variable set)\n", "test_get_qemu_0");
@@ -33581,12 +34323,14 @@ static int test_get_qemu_0 (void)
   return 0;
 }
 
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
-  unsigned long int n_failed = 0;
   const char *filename;
   int fd;
-  int nr_tests, test_num = 0;
+  const size_t nr_tests = 362;
+  size_t test_num = 0;
+  size_t nr_failed = 0;
 
   setbuf (stdout, NULL);
 
@@ -33692,2903 +34436,2177 @@ int main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  nr_tests = 362;
-
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_nr_devices_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_nr_devices_0");
   if (test_nr_devices_0 () == -1) {
-    printf ("test_nr_devices_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_nr_devices_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_device_index_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_device_index_0");
   if (test_device_index_0 () == -1) {
-    printf ("test_device_index_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_device_index_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_btrfs_fsck_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_btrfs_fsck_0");
   if (test_btrfs_fsck_0 () == -1) {
-    printf ("test_btrfs_fsck_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_btrfs_fsck_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_btrfs_set_seeding_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_btrfs_set_seeding_0");
   if (test_btrfs_set_seeding_0 () == -1) {
-    printf ("test_btrfs_set_seeding_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_btrfs_set_seeding_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_btrfs_filesystem_sync_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_btrfs_filesystem_sync_0");
   if (test_btrfs_filesystem_sync_0 () == -1) {
-    printf ("test_btrfs_filesystem_sync_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_btrfs_filesystem_sync_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_btrfs_subvolume_delete_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_btrfs_subvolume_delete_0");
   if (test_btrfs_subvolume_delete_0 () == -1) {
-    printf ("test_btrfs_subvolume_delete_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_btrfs_subvolume_delete_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_btrfs_subvolume_snapshot_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_btrfs_subvolume_snapshot_0");
   if (test_btrfs_subvolume_snapshot_0 () == -1) {
-    printf ("test_btrfs_subvolume_snapshot_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_btrfs_subvolume_snapshot_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2generation_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2generation_0");
   if (test_get_e2generation_0 () == -1) {
-    printf ("test_get_e2generation_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2generation_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_0");
   if (test_get_e2attrs_0 () == -1) {
-    printf ("test_get_e2attrs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_1");
   if (test_get_e2attrs_1 () == -1) {
-    printf ("test_get_e2attrs_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_2");
   if (test_get_e2attrs_2 () == -1) {
-    printf ("test_get_e2attrs_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_3");
   if (test_get_e2attrs_3 () == -1) {
-    printf ("test_get_e2attrs_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_4");
   if (test_get_e2attrs_4 () == -1) {
-    printf ("test_get_e2attrs_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_5");
   if (test_get_e2attrs_5 () == -1) {
-    printf ("test_get_e2attrs_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_6\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_6");
   if (test_get_e2attrs_6 () == -1) {
-    printf ("test_get_e2attrs_6 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_6");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2attrs_7\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2attrs_7");
   if (test_get_e2attrs_7 () == -1) {
-    printf ("test_get_e2attrs_7 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2attrs_7");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_btrfs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_btrfs_0");
   if (test_mkfs_btrfs_0 () == -1) {
-    printf ("test_mkfs_btrfs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_btrfs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_isoinfo_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_isoinfo_device_0");
   if (test_isoinfo_device_0 () == -1) {
-    printf ("test_isoinfo_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_isoinfo_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvcreate_free_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvcreate_free_0");
   if (test_lvcreate_free_0 () == -1) {
-    printf ("test_lvcreate_free_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvcreate_free_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zero_free_space_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zero_free_space_0");
   if (test_zero_free_space_0 () == -1) {
-    printf ("test_zero_free_space_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zero_free_space_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_label_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_label_0");
   if (test_set_label_0 () == -1) {
-    printf ("test_set_label_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_label_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_label_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_label_1");
   if (test_set_label_1 () == -1) {
-    printf ("test_set_label_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_label_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_label_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_label_2");
   if (test_set_label_2 () == -1) {
-    printf ("test_set_label_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_label_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ntfsfix_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ntfsfix_0");
   if (test_ntfsfix_0 () == -1) {
-    printf ("test_ntfsfix_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ntfsfix_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_wipefs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_wipefs_0");
   if (test_wipefs_0 () == -1) {
-    printf ("test_wipefs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_wipefs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blkid_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blkid_0");
   if (test_blkid_0 () == -1) {
-    printf ("test_blkid_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blkid_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tune2fs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tune2fs_0");
   if (test_tune2fs_0 () == -1) {
-    printf ("test_tune2fs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tune2fs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tune2fs_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tune2fs_1");
   if (test_tune2fs_1 () == -1) {
-    printf ("test_tune2fs_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tune2fs_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tune2fs_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tune2fs_2");
   if (test_tune2fs_2 () == -1) {
-    printf ("test_tune2fs_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tune2fs_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tune2fs_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tune2fs_3");
   if (test_tune2fs_3 () == -1) {
-    printf ("test_tune2fs_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tune2fs_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_copy_file_to_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_copy_file_to_file_0");
   if (test_copy_file_to_file_0 () == -1) {
-    printf ("test_copy_file_to_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_copy_file_to_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_to_partnum_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_to_partnum_0");
   if (test_part_to_partnum_0 () == -1) {
-    printf ("test_part_to_partnum_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_to_partnum_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_to_partnum_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_to_partnum_1");
   if (test_part_to_partnum_1 () == -1) {
-    printf ("test_part_to_partnum_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_to_partnum_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_append_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_append_0");
   if (test_write_append_0 () == -1) {
-    printf ("test_write_append_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_append_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_zero_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_zero_device_0");
   if (test_is_zero_device_0 () == -1) {
-    printf ("test_is_zero_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_zero_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_zero_device_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_zero_device_1");
   if (test_is_zero_device_1 () == -1) {
-    printf ("test_is_zero_device_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_zero_device_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_zero_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_zero_0");
   if (test_is_zero_0 () == -1) {
-    printf ("test_is_zero_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_zero_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_zero_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_zero_1");
   if (test_is_zero_1 () == -1) {
-    printf ("test_is_zero_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_zero_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_opts_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_opts_0");
   if (test_mkfs_opts_0 () == -1) {
-    printf ("test_mkfs_opts_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_opts_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvm_canonical_lv_name_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvm_canonical_lv_name_0");
   if (test_lvm_canonical_lv_name_0 () == -1) {
-    printf ("test_lvm_canonical_lv_name_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvm_canonical_lv_name_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvm_canonical_lv_name_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvm_canonical_lv_name_1");
   if (test_lvm_canonical_lv_name_1 () == -1) {
-    printf ("test_lvm_canonical_lv_name_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvm_canonical_lv_name_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pread_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pread_device_0");
   if (test_pread_device_0 () == -1) {
-    printf ("test_pread_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pread_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pwrite_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pwrite_device_0");
   if (test_pwrite_device_0 () == -1) {
-    printf ("test_pwrite_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pwrite_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_download_offset_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_download_offset_0");
   if (test_download_offset_0 () == -1) {
-    printf ("test_download_offset_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_download_offset_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_upload_offset_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_upload_offset_0");
   if (test_upload_offset_0 () == -1) {
-    printf ("test_upload_offset_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_upload_offset_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_to_dev_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_to_dev_0");
   if (test_part_to_dev_0 () == -1) {
-    printf ("test_part_to_dev_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_to_dev_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_to_dev_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_to_dev_1");
   if (test_part_to_dev_1 () == -1) {
-    printf ("test_part_to_dev_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_to_dev_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_socket_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_socket_0");
   if (test_is_socket_0 () == -1) {
-    printf ("test_is_socket_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_socket_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_symlink_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_symlink_0");
   if (test_is_symlink_0 () == -1) {
-    printf ("test_is_symlink_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_symlink_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_symlink_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_symlink_1");
   if (test_is_symlink_1 () == -1) {
-    printf ("test_is_symlink_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_symlink_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_fifo_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_fifo_0");
   if (test_is_fifo_0 () == -1) {
-    printf ("test_is_fifo_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_fifo_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_fifo_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_fifo_1");
   if (test_is_fifo_1 () == -1) {
-    printf ("test_is_fifo_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_fifo_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_blockdev_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_blockdev_0");
   if (test_is_blockdev_0 () == -1) {
-    printf ("test_is_blockdev_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_blockdev_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_blockdev_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_blockdev_1");
   if (test_is_blockdev_1 () == -1) {
-    printf ("test_is_blockdev_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_blockdev_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_chardev_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_chardev_0");
   if (test_is_chardev_0 () == -1) {
-    printf ("test_is_chardev_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_chardev_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_chardev_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_chardev_1");
   if (test_is_chardev_1 () == -1) {
-    printf ("test_is_chardev_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_chardev_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_lv_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_lv_0");
   if (test_is_lv_0 () == -1) {
-    printf ("test_is_lv_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_lv_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_lv_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_lv_1");
   if (test_is_lv_1 () == -1) {
-    printf ("test_is_lv_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_lv_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vfs_uuid_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vfs_uuid_0");
   if (test_vfs_uuid_0 () == -1) {
-    printf ("test_vfs_uuid_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vfs_uuid_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vfs_label_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vfs_label_0");
   if (test_vfs_label_0 () == -1) {
-    printf ("test_vfs_label_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vfs_label_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fallocate64_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fallocate64_0");
   if (test_fallocate64_0 () == -1) {
-    printf ("test_fallocate64_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fallocate64_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_available_all_groups_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_available_all_groups_0");
   if (test_available_all_groups_0 () == -1) {
-    printf ("test_available_all_groups_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_available_all_groups_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pwrite_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pwrite_0");
   if (test_pwrite_0 () == -1) {
-    printf ("test_pwrite_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pwrite_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pwrite_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pwrite_1");
   if (test_pwrite_1 () == -1) {
-    printf ("test_pwrite_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pwrite_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pwrite_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pwrite_2");
   if (test_pwrite_2 () == -1) {
-    printf ("test_pwrite_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pwrite_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_0");
   if (test_write_0 () == -1) {
-    printf ("test_write_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_1");
   if (test_write_1 () == -1) {
-    printf ("test_write_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_2");
   if (test_write_2 () == -1) {
-    printf ("test_write_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_3");
   if (test_write_3 () == -1) {
-    printf ("test_write_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_4");
   if (test_write_4 () == -1) {
-    printf ("test_write_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_5");
   if (test_write_5 () == -1) {
-    printf ("test_write_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fill_pattern_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fill_pattern_0");
   if (test_fill_pattern_0 () == -1) {
-    printf ("test_fill_pattern_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fill_pattern_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_base64_in_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_base64_in_0");
   if (test_base64_in_0 () == -1) {
-    printf ("test_base64_in_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_base64_in_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_umask_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_umask_0");
   if (test_get_umask_0 () == -1) {
-    printf ("test_get_umask_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_umask_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvresize_free_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvresize_free_0");
   if (test_lvresize_free_0 () == -1) {
-    printf ("test_lvresize_free_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvresize_free_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_device_0");
   if (test_checksum_device_0 () == -1) {
-    printf ("test_checksum_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_get_mbr_id_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_get_mbr_id_0");
   if (test_part_get_mbr_id_0 () == -1) {
-    printf ("test_part_get_mbr_id_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_get_mbr_id_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_get_bootable_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_get_bootable_0");
   if (test_part_get_bootable_0 () == -1) {
-    printf ("test_part_get_bootable_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_get_bootable_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_del_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_del_0");
   if (test_part_del_0 () == -1) {
-    printf ("test_part_del_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_del_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vgscan_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vgscan_0");
   if (test_vgscan_0 () == -1) {
-    printf ("test_vgscan_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vgscan_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_txz_in_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_txz_in_0");
   if (test_txz_in_0 () == -1) {
-    printf ("test_txz_in_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_txz_in_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zero_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zero_device_0");
   if (test_zero_device_0 () == -1) {
-    printf ("test_zero_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zero_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_copy_size_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_copy_size_0");
   if (test_copy_size_0 () == -1) {
-    printf ("test_copy_size_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_copy_size_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_initrd_cat_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_initrd_cat_0");
   if (test_initrd_cat_0 () == -1) {
-    printf ("test_initrd_cat_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_initrd_cat_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vgrename_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vgrename_0");
   if (test_vgrename_0 () == -1) {
-    printf ("test_vgrename_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vgrename_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvrename_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvrename_0");
   if (test_lvrename_0 () == -1) {
-    printf ("test_lvrename_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvrename_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_filesize_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_filesize_0");
   if (test_filesize_0 () == -1) {
-    printf ("test_filesize_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_filesize_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_dd_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_dd_0");
   if (test_dd_0 () == -1) {
-    printf ("test_dd_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_dd_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_available_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_available_0");
   if (test_available_0 () == -1) {
-    printf ("test_available_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_available_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fill_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fill_0");
   if (test_fill_0 () == -1) {
-    printf ("test_fill_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fill_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_get_parttype_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_get_parttype_0");
   if (test_part_get_parttype_0 () == -1) {
-    printf ("test_part_get_parttype_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_get_parttype_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_set_name_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_set_name_0");
   if (test_part_set_name_0 () == -1) {
-    printf ("test_part_set_name_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_set_name_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_set_bootable_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_set_bootable_0");
   if (test_part_set_bootable_0 () == -1) {
-    printf ("test_part_set_bootable_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_set_bootable_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_disk_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_disk_0");
   if (test_part_disk_0 () == -1) {
-    printf ("test_part_disk_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_disk_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_disk_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_disk_1");
   if (test_part_disk_1 () == -1) {
-    printf ("test_part_disk_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_disk_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_add_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_add_0");
   if (test_part_add_0 () == -1) {
-    printf ("test_part_add_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_add_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_add_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_add_1");
   if (test_part_add_1 () == -1) {
-    printf ("test_part_add_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_add_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_add_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_add_2");
   if (test_part_add_2 () == -1) {
-    printf ("test_part_add_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_add_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_part_init_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_part_init_0");
   if (test_part_init_0 () == -1) {
-    printf ("test_part_init_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_part_init_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pread_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pread_0");
   if (test_pread_0 () == -1) {
-    printf ("test_pread_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pread_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pread_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pread_1");
   if (test_pread_1 () == -1) {
-    printf ("test_pread_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pread_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_mode_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_mode_0");
   if (test_mkdir_mode_0 () == -1) {
-    printf ("test_mkdir_mode_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_mode_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_utimens_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_utimens_0");
   if (test_utimens_0 () == -1) {
-    printf ("test_utimens_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_utimens_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_utimens_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_utimens_1");
   if (test_utimens_1 () == -1) {
-    printf ("test_utimens_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_utimens_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_utimens_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_utimens_2");
   if (test_utimens_2 () == -1) {
-    printf ("test_utimens_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_utimens_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_utimens_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_utimens_3");
   if (test_utimens_3 () == -1) {
-    printf ("test_utimens_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_utimens_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_utimens_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_utimens_4");
   if (test_utimens_4 () == -1) {
-    printf ("test_utimens_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_utimens_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_utimens_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_utimens_5");
   if (test_utimens_5 () == -1) {
-    printf ("test_utimens_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_utimens_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_truncate_size_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_truncate_size_0");
   if (test_truncate_size_0 () == -1) {
-    printf ("test_truncate_size_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_truncate_size_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_truncate_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_truncate_0");
   if (test_truncate_0 () == -1) {
-    printf ("test_truncate_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_truncate_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vfs_type_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vfs_type_0");
   if (test_vfs_type_0 () == -1) {
-    printf ("test_vfs_type_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vfs_type_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_0");
   if (test_case_sensitive_path_0 () == -1) {
-    printf ("test_case_sensitive_path_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_1");
   if (test_case_sensitive_path_1 () == -1) {
-    printf ("test_case_sensitive_path_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_2");
   if (test_case_sensitive_path_2 () == -1) {
-    printf ("test_case_sensitive_path_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_3");
   if (test_case_sensitive_path_3 () == -1) {
-    printf ("test_case_sensitive_path_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_4");
   if (test_case_sensitive_path_4 () == -1) {
-    printf ("test_case_sensitive_path_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_5");
   if (test_case_sensitive_path_5 () == -1) {
-    printf ("test_case_sensitive_path_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_6\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_6");
   if (test_case_sensitive_path_6 () == -1) {
-    printf ("test_case_sensitive_path_6 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_6");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_case_sensitive_path_7\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_case_sensitive_path_7");
   if (test_case_sensitive_path_7 () == -1) {
-    printf ("test_case_sensitive_path_7 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_case_sensitive_path_7");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_echo_daemon_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_echo_daemon_0");
   if (test_echo_daemon_0 () == -1) {
-    printf ("test_echo_daemon_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_echo_daemon_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_modprobe_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_modprobe_0");
   if (test_modprobe_0 () == -1) {
-    printf ("test_modprobe_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_modprobe_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mke2journal_U_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mke2journal_U_0");
   if (test_mke2journal_U_0 () == -1) {
-    printf ("test_mke2journal_U_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mke2journal_U_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mke2journal_L_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mke2journal_L_0");
   if (test_mke2journal_L_0 () == -1) {
-    printf ("test_mke2journal_L_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mke2journal_L_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mke2journal_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mke2journal_0");
   if (test_mke2journal_0 () == -1) {
-    printf ("test_mke2journal_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mke2journal_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_b_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_b_0");
   if (test_mkfs_b_0 () == -1) {
-    printf ("test_mkfs_b_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_b_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_b_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_b_1");
   if (test_mkfs_b_1 () == -1) {
-    printf ("test_mkfs_b_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_b_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_b_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_b_2");
   if (test_mkfs_b_2 () == -1) {
-    printf ("test_mkfs_b_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_b_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_b_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_b_3");
   if (test_mkfs_b_3 () == -1) {
-    printf ("test_mkfs_b_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_b_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_b_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_b_4");
   if (test_mkfs_b_4 () == -1) {
-    printf ("test_mkfs_b_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_b_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_inotify_add_watch_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_inotify_add_watch_0");
   if (test_inotify_add_watch_0 () == -1) {
-    printf ("test_inotify_add_watch_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_inotify_add_watch_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_inotify_init_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_inotify_init_0");
   if (test_inotify_init_0 () == -1) {
-    printf ("test_inotify_init_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_inotify_init_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkswap_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkswap_file_0");
   if (test_mkswap_file_0 () == -1) {
-    printf ("test_mkswap_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkswap_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_swapon_uuid_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_swapon_uuid_0");
   if (test_swapon_uuid_0 () == -1) {
-    printf ("test_swapon_uuid_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_swapon_uuid_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_swapon_label_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_swapon_label_0");
   if (test_swapon_label_0 () == -1) {
-    printf ("test_swapon_label_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_swapon_label_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_swapon_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_swapon_file_0");
   if (test_swapon_file_0 () == -1) {
-    printf ("test_swapon_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_swapon_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_swapon_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_swapon_device_0");
   if (test_swapon_device_0 () == -1) {
-    printf ("test_swapon_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_swapon_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fallocate_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fallocate_0");
   if (test_fallocate_0 () == -1) {
-    printf ("test_fallocate_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fallocate_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ln_sf_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ln_sf_0");
   if (test_ln_sf_0 () == -1) {
-    printf ("test_ln_sf_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ln_sf_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ln_s_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ln_s_0");
   if (test_ln_s_0 () == -1) {
-    printf ("test_ln_s_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ln_s_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ln_f_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ln_f_0");
   if (test_ln_f_0 () == -1) {
-    printf ("test_ln_f_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ln_f_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ln_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ln_0");
   if (test_ln_0 () == -1) {
-    printf ("test_ln_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ln_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_realpath_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_realpath_0");
   if (test_realpath_0 () == -1) {
-    printf ("test_realpath_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_realpath_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zfgrepi_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zfgrepi_0");
   if (test_zfgrepi_0 () == -1) {
-    printf ("test_zfgrepi_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zfgrepi_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zegrepi_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zegrepi_0");
   if (test_zegrepi_0 () == -1) {
-    printf ("test_zegrepi_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zegrepi_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zgrepi_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zgrepi_0");
   if (test_zgrepi_0 () == -1) {
-    printf ("test_zgrepi_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zgrepi_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zfgrep_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zfgrep_0");
   if (test_zfgrep_0 () == -1) {
-    printf ("test_zfgrep_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zfgrep_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zegrep_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zegrep_0");
   if (test_zegrep_0 () == -1) {
-    printf ("test_zegrep_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zegrep_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zgrep_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zgrep_0");
   if (test_zgrep_0 () == -1) {
-    printf ("test_zgrep_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zgrep_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fgrepi_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fgrepi_0");
   if (test_fgrepi_0 () == -1) {
-    printf ("test_fgrepi_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fgrepi_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_egrepi_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_egrepi_0");
   if (test_egrepi_0 () == -1) {
-    printf ("test_egrepi_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_egrepi_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_grepi_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_grepi_0");
   if (test_grepi_0 () == -1) {
-    printf ("test_grepi_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_grepi_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fgrep_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fgrep_0");
   if (test_fgrep_0 () == -1) {
-    printf ("test_fgrep_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fgrep_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_egrep_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_egrep_0");
   if (test_egrep_0 () == -1) {
-    printf ("test_egrep_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_egrep_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_grep_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_grep_0");
   if (test_grep_0 () == -1) {
-    printf ("test_grep_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_grep_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_grep_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_grep_1");
   if (test_grep_1 () == -1) {
-    printf ("test_grep_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_grep_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_grep_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_grep_2");
   if (test_grep_2 () == -1) {
-    printf ("test_grep_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_grep_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_read_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_read_file_0");
   if (test_read_file_0 () == -1) {
-    printf ("test_read_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_read_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_read_file_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_read_file_1");
   if (test_read_file_1 () == -1) {
-    printf ("test_read_file_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_read_file_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_read_file_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_read_file_2");
   if (test_read_file_2 () == -1) {
-    printf ("test_read_file_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_read_file_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_read_file_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_read_file_3");
   if (test_read_file_3 () == -1) {
-    printf ("test_read_file_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_read_file_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_umask_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_umask_0");
   if (test_umask_0 () == -1) {
-    printf ("test_umask_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_umask_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mknod_c_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mknod_c_0");
   if (test_mknod_c_0 () == -1) {
-    printf ("test_mknod_c_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mknod_c_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mknod_b_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mknod_b_0");
   if (test_mknod_b_0 () == -1) {
-    printf ("test_mknod_b_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mknod_b_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfifo_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfifo_0");
   if (test_mkfifo_0 () == -1) {
-    printf ("test_mkfifo_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfifo_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mknod_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mknod_0");
   if (test_mknod_0 () == -1) {
-    printf ("test_mknod_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mknod_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mknod_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mknod_1");
   if (test_mknod_1 () == -1) {
-    printf ("test_mknod_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mknod_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkswap_U_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkswap_U_0");
   if (test_mkswap_U_0 () == -1) {
-    printf ("test_mkswap_U_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkswap_U_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkswap_L_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkswap_L_0");
   if (test_mkswap_L_0 () == -1) {
-    printf ("test_mkswap_L_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkswap_L_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkswap_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkswap_0");
   if (test_mkswap_0 () == -1) {
-    printf ("test_mkswap_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkswap_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_initrd_list_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_initrd_list_0");
   if (test_initrd_list_0 () == -1) {
-    printf ("test_initrd_list_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_initrd_list_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_du_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_du_0");
   if (test_du_0 () == -1) {
-    printf ("test_du_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_du_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tail_n_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tail_n_0");
   if (test_tail_n_0 () == -1) {
-    printf ("test_tail_n_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tail_n_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tail_n_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tail_n_1");
   if (test_tail_n_1 () == -1) {
-    printf ("test_tail_n_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tail_n_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tail_n_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tail_n_2");
   if (test_tail_n_2 () == -1) {
-    printf ("test_tail_n_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tail_n_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tail_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tail_0");
   if (test_tail_0 () == -1) {
-    printf ("test_tail_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tail_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_head_n_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_head_n_0");
   if (test_head_n_0 () == -1) {
-    printf ("test_head_n_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_head_n_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_head_n_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_head_n_1");
   if (test_head_n_1 () == -1) {
-    printf ("test_head_n_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_head_n_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_head_n_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_head_n_2");
   if (test_head_n_2 () == -1) {
-    printf ("test_head_n_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_head_n_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_head_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_head_0");
   if (test_head_0 () == -1) {
-    printf ("test_head_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_head_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_head_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_head_1");
   if (test_head_1 () == -1) {
-    printf ("test_head_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_head_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_wc_c_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_wc_c_0");
   if (test_wc_c_0 () == -1) {
-    printf ("test_wc_c_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_wc_c_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_wc_w_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_wc_w_0");
   if (test_wc_w_0 () == -1) {
-    printf ("test_wc_w_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_wc_w_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_wc_l_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_wc_l_0");
   if (test_wc_l_0 () == -1) {
-    printf ("test_wc_l_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_wc_l_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_wc_l_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_wc_l_1");
   if (test_wc_l_1 () == -1) {
-    printf ("test_wc_l_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_wc_l_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdtemp_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdtemp_0");
   if (test_mkdtemp_0 () == -1) {
-    printf ("test_mkdtemp_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdtemp_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_scrub_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_scrub_file_0");
   if (test_scrub_file_0 () == -1) {
-    printf ("test_scrub_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_scrub_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_scrub_device_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_scrub_device_0");
   if (test_scrub_device_0 () == -1) {
-    printf ("test_scrub_device_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_scrub_device_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_glob_expand_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_glob_expand_0");
   if (test_glob_expand_0 () == -1) {
-    printf ("test_glob_expand_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_glob_expand_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_glob_expand_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_glob_expand_1");
   if (test_glob_expand_1 () == -1) {
-    printf ("test_glob_expand_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_glob_expand_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_glob_expand_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_glob_expand_2");
   if (test_glob_expand_2 () == -1) {
-    printf ("test_glob_expand_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_glob_expand_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ntfs_3g_probe_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ntfs_3g_probe_0");
   if (test_ntfs_3g_probe_0 () == -1) {
-    printf ("test_ntfs_3g_probe_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ntfs_3g_probe_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ntfs_3g_probe_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ntfs_3g_probe_1");
   if (test_ntfs_3g_probe_1 () == -1) {
-    printf ("test_ntfs_3g_probe_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ntfs_3g_probe_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_sleep_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_sleep_0");
   if (test_sleep_0 () == -1) {
-    printf ("test_sleep_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_sleep_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_find_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_find_0");
   if (test_find_0 () == -1) {
-    printf ("test_find_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_find_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_find_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_find_1");
   if (test_find_1 () == -1) {
-    printf ("test_find_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_find_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_find_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_find_2");
   if (test_find_2 () == -1) {
-    printf ("test_find_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_find_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvresize_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvresize_0");
   if (test_lvresize_0 () == -1) {
-    printf ("test_lvresize_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvresize_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvresize_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvresize_1");
   if (test_lvresize_1 () == -1) {
-    printf ("test_lvresize_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvresize_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zerofree_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zerofree_0");
   if (test_zerofree_0 () == -1) {
-    printf ("test_zerofree_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zerofree_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_hexdump_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_hexdump_0");
   if (test_hexdump_0 () == -1) {
-    printf ("test_hexdump_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_hexdump_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_hexdump_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_hexdump_1");
   if (test_hexdump_1 () == -1) {
-    printf ("test_hexdump_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_hexdump_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_hexdump_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_hexdump_2");
   if (test_hexdump_2 () == -1) {
-    printf ("test_hexdump_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_hexdump_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_strings_e_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_strings_e_0");
   if (test_strings_e_0 () == -1) {
-    printf ("test_strings_e_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_strings_e_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_strings_e_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_strings_e_1");
   if (test_strings_e_1 () == -1) {
-    printf ("test_strings_e_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_strings_e_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_strings_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_strings_0");
   if (test_strings_0 () == -1) {
-    printf ("test_strings_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_strings_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_strings_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_strings_1");
   if (test_strings_1 () == -1) {
-    printf ("test_strings_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_strings_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_strings_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_strings_2");
   if (test_strings_2 () == -1) {
-    printf ("test_strings_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_strings_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_equal_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_equal_0");
   if (test_equal_0 () == -1) {
-    printf ("test_equal_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_equal_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_equal_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_equal_1");
   if (test_equal_1 () == -1) {
-    printf ("test_equal_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_equal_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_equal_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_equal_2");
   if (test_equal_2 () == -1) {
-    printf ("test_equal_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_equal_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ping_daemon_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ping_daemon_0");
   if (test_ping_daemon_0 () == -1) {
-    printf ("test_ping_daemon_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ping_daemon_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_dmesg_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_dmesg_0");
   if (test_dmesg_0 () == -1) {
-    printf ("test_dmesg_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_dmesg_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_drop_caches_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_drop_caches_0");
   if (test_drop_caches_0 () == -1) {
-    printf ("test_drop_caches_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_drop_caches_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mv_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mv_0");
   if (test_mv_0 () == -1) {
-    printf ("test_mv_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mv_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mv_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mv_1");
   if (test_mv_1 () == -1) {
-    printf ("test_mv_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mv_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_cp_a_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_cp_a_0");
   if (test_cp_a_0 () == -1) {
-    printf ("test_cp_a_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_cp_a_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_cp_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_cp_0");
   if (test_cp_0 () == -1) {
-    printf ("test_cp_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_cp_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_cp_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_cp_1");
   if (test_cp_1 () == -1) {
-    printf ("test_cp_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_cp_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_cp_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_cp_2");
   if (test_cp_2 () == -1) {
-    printf ("test_cp_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_cp_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_grub_install_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_grub_install_0");
   if (test_grub_install_0 () == -1) {
-    printf ("test_grub_install_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_grub_install_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_zero_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_zero_0");
   if (test_zero_0 () == -1) {
-    printf ("test_zero_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_zero_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fsck_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fsck_0");
   if (test_fsck_0 () == -1) {
-    printf ("test_fsck_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fsck_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_fsck_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_fsck_1");
   if (test_fsck_1 () == -1) {
-    printf ("test_fsck_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_fsck_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_e2uuid_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_e2uuid_0");
   if (test_get_e2uuid_0 () == -1) {
-    printf ("test_get_e2uuid_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_e2uuid_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_e2uuid_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_e2uuid_0");
   if (test_set_e2uuid_0 () == -1) {
-    printf ("test_set_e2uuid_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_e2uuid_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_e2uuid_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_e2uuid_1");
   if (test_set_e2uuid_1 () == -1) {
-    printf ("test_set_e2uuid_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_e2uuid_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_e2uuid_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_e2uuid_2");
   if (test_set_e2uuid_2 () == -1) {
-    printf ("test_set_e2uuid_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_e2uuid_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_e2uuid_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_e2uuid_3");
   if (test_set_e2uuid_3 () == -1) {
-    printf ("test_set_e2uuid_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_e2uuid_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_e2label_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_e2label_0");
   if (test_set_e2label_0 () == -1) {
-    printf ("test_set_e2label_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_e2label_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pvremove_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pvremove_0");
   if (test_pvremove_0 () == -1) {
-    printf ("test_pvremove_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pvremove_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pvremove_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pvremove_1");
   if (test_pvremove_1 () == -1) {
-    printf ("test_pvremove_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pvremove_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pvremove_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pvremove_2");
   if (test_pvremove_2 () == -1) {
-    printf ("test_pvremove_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pvremove_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vgremove_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vgremove_0");
   if (test_vgremove_0 () == -1) {
-    printf ("test_vgremove_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vgremove_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vgremove_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vgremove_1");
   if (test_vgremove_1 () == -1) {
-    printf ("test_vgremove_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vgremove_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvremove_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvremove_0");
   if (test_lvremove_0 () == -1) {
-    printf ("test_lvremove_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvremove_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvremove_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvremove_1");
   if (test_lvremove_1 () == -1) {
-    printf ("test_lvremove_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvremove_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvremove_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvremove_2");
   if (test_lvremove_2 () == -1) {
-    printf ("test_lvremove_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvremove_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mount_ro_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mount_ro_0");
   if (test_mount_ro_0 () == -1) {
-    printf ("test_mount_ro_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mount_ro_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mount_ro_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mount_ro_1");
   if (test_mount_ro_1 () == -1) {
-    printf ("test_mount_ro_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mount_ro_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tgz_in_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tgz_in_0");
   if (test_tgz_in_0 () == -1) {
-    printf ("test_tgz_in_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tgz_in_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tar_in_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tar_in_0");
   if (test_tar_in_0 () == -1) {
-    printf ("test_tar_in_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tar_in_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_0");
   if (test_checksum_0 () == -1) {
-    printf ("test_checksum_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_1");
   if (test_checksum_1 () == -1) {
-    printf ("test_checksum_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_2");
   if (test_checksum_2 () == -1) {
-    printf ("test_checksum_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_3");
   if (test_checksum_3 () == -1) {
-    printf ("test_checksum_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_4");
   if (test_checksum_4 () == -1) {
-    printf ("test_checksum_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_5");
   if (test_checksum_5 () == -1) {
-    printf ("test_checksum_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_6\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_6");
   if (test_checksum_6 () == -1) {
-    printf ("test_checksum_6 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_6");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_7\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_7");
   if (test_checksum_7 () == -1) {
-    printf ("test_checksum_7 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_7");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_checksum_8\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_checksum_8");
   if (test_checksum_8 () == -1) {
-    printf ("test_checksum_8 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_checksum_8");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_download_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_download_0");
   if (test_download_0 () == -1) {
-    printf ("test_download_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_download_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_upload_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_upload_0");
   if (test_upload_0 () == -1) {
-    printf ("test_upload_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_upload_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_rereadpt_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_rereadpt_0");
   if (test_blockdev_rereadpt_0 () == -1) {
-    printf ("test_blockdev_rereadpt_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_rereadpt_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_flushbufs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_flushbufs_0");
   if (test_blockdev_flushbufs_0 () == -1) {
-    printf ("test_blockdev_flushbufs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_flushbufs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_getsize64_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_getsize64_0");
   if (test_blockdev_getsize64_0 () == -1) {
-    printf ("test_blockdev_getsize64_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_getsize64_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_getsz_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_getsz_0");
   if (test_blockdev_getsz_0 () == -1) {
-    printf ("test_blockdev_getsz_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_getsz_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_getss_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_getss_0");
   if (test_blockdev_getss_0 () == -1) {
-    printf ("test_blockdev_getss_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_getss_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_getro_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_getro_0");
   if (test_blockdev_getro_0 () == -1) {
-    printf ("test_blockdev_getro_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_getro_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_setrw_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_setrw_0");
   if (test_blockdev_setrw_0 () == -1) {
-    printf ("test_blockdev_setrw_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_setrw_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_blockdev_setro_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_blockdev_setro_0");
   if (test_blockdev_setro_0 () == -1) {
-    printf ("test_blockdev_setro_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_blockdev_setro_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_tune2fs_l_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_tune2fs_l_0");
   if (test_tune2fs_l_0 () == -1) {
-    printf ("test_tune2fs_l_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_tune2fs_l_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_statvfs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_statvfs_0");
   if (test_statvfs_0 () == -1) {
-    printf ("test_statvfs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_statvfs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lstat_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lstat_0");
   if (test_lstat_0 () == -1) {
-    printf ("test_lstat_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lstat_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_stat_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_stat_0");
   if (test_stat_0 () == -1) {
-    printf ("test_stat_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_stat_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_0");
   if (test_command_lines_0 () == -1) {
-    printf ("test_command_lines_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_1");
   if (test_command_lines_1 () == -1) {
-    printf ("test_command_lines_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_2");
   if (test_command_lines_2 () == -1) {
-    printf ("test_command_lines_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_3");
   if (test_command_lines_3 () == -1) {
-    printf ("test_command_lines_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_4");
   if (test_command_lines_4 () == -1) {
-    printf ("test_command_lines_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_5");
   if (test_command_lines_5 () == -1) {
-    printf ("test_command_lines_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_6\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_6");
   if (test_command_lines_6 () == -1) {
-    printf ("test_command_lines_6 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_6");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_7\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_7");
   if (test_command_lines_7 () == -1) {
-    printf ("test_command_lines_7 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_7");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_8\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_8");
   if (test_command_lines_8 () == -1) {
-    printf ("test_command_lines_8 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_8");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_9\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_9");
   if (test_command_lines_9 () == -1) {
-    printf ("test_command_lines_9 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_9");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_lines_10\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_lines_10");
   if (test_command_lines_10 () == -1) {
-    printf ("test_command_lines_10 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_lines_10");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_0");
   if (test_command_0 () == -1) {
-    printf ("test_command_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_1");
   if (test_command_1 () == -1) {
-    printf ("test_command_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_2");
   if (test_command_2 () == -1) {
-    printf ("test_command_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_3");
   if (test_command_3 () == -1) {
-    printf ("test_command_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_4");
   if (test_command_4 () == -1) {
-    printf ("test_command_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_5");
   if (test_command_5 () == -1) {
-    printf ("test_command_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_6\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_6");
   if (test_command_6 () == -1) {
-    printf ("test_command_6 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_6");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_7\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_7");
   if (test_command_7 () == -1) {
-    printf ("test_command_7 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_7");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_8\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_8");
   if (test_command_8 () == -1) {
-    printf ("test_command_8 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_8");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_9\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_9");
   if (test_command_9 () == -1) {
-    printf ("test_command_9 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_9");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_10\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_10");
   if (test_command_10 () == -1) {
-    printf ("test_command_10 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_10");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_command_11\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_command_11");
   if (test_command_11 () == -1) {
-    printf ("test_command_11 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_command_11");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_0");
   if (test_file_0 () == -1) {
-    printf ("test_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_1");
   if (test_file_1 () == -1) {
-    printf ("test_file_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_2");
   if (test_file_2 () == -1) {
-    printf ("test_file_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_3");
   if (test_file_3 () == -1) {
-    printf ("test_file_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_4");
   if (test_file_4 () == -1) {
-    printf ("test_file_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_umount_all_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_umount_all_0");
   if (test_umount_all_0 () == -1) {
-    printf ("test_umount_all_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_umount_all_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_umount_all_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_umount_all_1");
   if (test_umount_all_1 () == -1) {
-    printf ("test_umount_all_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_umount_all_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mounts_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mounts_0");
   if (test_mounts_0 () == -1) {
-    printf ("test_mounts_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mounts_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_umount_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_umount_0");
   if (test_umount_0 () == -1) {
-    printf ("test_umount_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_umount_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_umount_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_umount_1");
   if (test_umount_1 () == -1) {
-    printf ("test_umount_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_umount_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_write_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_write_file_0");
   if (test_write_file_0 () == -1) {
-    printf ("test_write_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_write_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkfs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkfs_0");
   if (test_mkfs_0 () == -1) {
-    printf ("test_mkfs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkfs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvcreate_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvcreate_0");
   if (test_lvcreate_0 () == -1) {
-    printf ("test_lvcreate_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvcreate_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vgcreate_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vgcreate_0");
   if (test_vgcreate_0 () == -1) {
-    printf ("test_vgcreate_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vgcreate_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pvcreate_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pvcreate_0");
   if (test_pvcreate_0 () == -1) {
-    printf ("test_pvcreate_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pvcreate_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_dir_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_dir_0");
   if (test_is_dir_0 () == -1) {
-    printf ("test_is_dir_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_dir_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_dir_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_dir_1");
   if (test_is_dir_1 () == -1) {
-    printf ("test_is_dir_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_dir_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_file_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_file_0");
   if (test_is_file_0 () == -1) {
-    printf ("test_is_file_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_file_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_file_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_file_1");
   if (test_is_file_1 () == -1) {
-    printf ("test_is_file_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_file_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_exists_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_exists_0");
   if (test_exists_0 () == -1) {
-    printf ("test_exists_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_exists_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_exists_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_exists_1");
   if (test_exists_1 () == -1) {
-    printf ("test_exists_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_exists_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_p_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_p_0");
   if (test_mkdir_p_0 () == -1) {
-    printf ("test_mkdir_p_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_p_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_p_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_p_1");
   if (test_mkdir_p_1 () == -1) {
-    printf ("test_mkdir_p_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_p_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_p_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_p_2");
   if (test_mkdir_p_2 () == -1) {
-    printf ("test_mkdir_p_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_p_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_p_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_p_3");
   if (test_mkdir_p_3 () == -1) {
-    printf ("test_mkdir_p_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_p_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_p_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_p_4");
   if (test_mkdir_p_4 () == -1) {
-    printf ("test_mkdir_p_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_p_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_0");
   if (test_mkdir_0 () == -1) {
-    printf ("test_mkdir_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mkdir_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mkdir_1");
   if (test_mkdir_1 () == -1) {
-    printf ("test_mkdir_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mkdir_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_rm_rf_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_rm_rf_0");
   if (test_rm_rf_0 () == -1) {
-    printf ("test_rm_rf_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_rm_rf_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_rmdir_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_rmdir_0");
   if (test_rmdir_0 () == -1) {
-    printf ("test_rmdir_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_rmdir_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_rmdir_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_rmdir_1");
   if (test_rmdir_1 () == -1) {
-    printf ("test_rmdir_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_rmdir_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_rmdir_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_rmdir_2");
   if (test_rmdir_2 () == -1) {
-    printf ("test_rmdir_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_rmdir_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_rm_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_rm_0");
   if (test_rm_0 () == -1) {
-    printf ("test_rm_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_rm_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_rm_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_rm_1");
   if (test_rm_1 () == -1) {
-    printf ("test_rm_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_rm_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_rm_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_rm_2");
   if (test_rm_2 () == -1) {
-    printf ("test_rm_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_rm_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_read_lines_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_read_lines_0");
   if (test_read_lines_0 () == -1) {
-    printf ("test_read_lines_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_read_lines_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_read_lines_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_read_lines_1");
   if (test_read_lines_1 () == -1) {
-    printf ("test_read_lines_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_read_lines_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvs_0");
   if (test_lvs_0 () == -1) {
-    printf ("test_lvs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_lvs_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_lvs_1");
   if (test_lvs_1 () == -1) {
-    printf ("test_lvs_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_lvs_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vgs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vgs_0");
   if (test_vgs_0 () == -1) {
-    printf ("test_vgs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vgs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_vgs_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_vgs_1");
   if (test_vgs_1 () == -1) {
-    printf ("test_vgs_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_vgs_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pvs_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pvs_0");
   if (test_pvs_0 () == -1) {
-    printf ("test_pvs_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pvs_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_pvs_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_pvs_1");
   if (test_pvs_1 () == -1) {
-    printf ("test_pvs_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_pvs_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_list_partitions_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_list_partitions_0");
   if (test_list_partitions_0 () == -1) {
-    printf ("test_list_partitions_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_list_partitions_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_list_partitions_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_list_partitions_1");
   if (test_list_partitions_1 () == -1) {
-    printf ("test_list_partitions_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_list_partitions_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_list_devices_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_list_devices_0");
   if (test_list_devices_0 () == -1) {
-    printf ("test_list_devices_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_list_devices_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_ls_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_ls_0");
   if (test_ls_0 () == -1) {
-    printf ("test_ls_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_ls_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_cat_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_cat_0");
   if (test_cat_0 () == -1) {
-    printf ("test_cat_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_cat_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_touch_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_touch_0");
   if (test_touch_0 () == -1) {
-    printf ("test_touch_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_touch_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_sync_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_sync_0");
   if (test_sync_0 () == -1) {
-    printf ("test_sync_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_sync_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_mount_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_mount_0");
   if (test_mount_0 () == -1) {
-    printf ("test_mount_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_mount_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_attach_method_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_attach_method_0");
   if (test_get_attach_method_0 () == -1) {
-    printf ("test_get_attach_method_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_attach_method_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_0");
   if (test_file_architecture_0 () == -1) {
-    printf ("test_file_architecture_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_1\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_1");
   if (test_file_architecture_1 () == -1) {
-    printf ("test_file_architecture_1 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_1");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_2\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_2");
   if (test_file_architecture_2 () == -1) {
-    printf ("test_file_architecture_2 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_2");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_3\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_3");
   if (test_file_architecture_3 () == -1) {
-    printf ("test_file_architecture_3 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_3");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_4\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_4");
   if (test_file_architecture_4 () == -1) {
-    printf ("test_file_architecture_4 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_4");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_5\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_5");
   if (test_file_architecture_5 () == -1) {
-    printf ("test_file_architecture_5 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_5");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_6\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_6");
   if (test_file_architecture_6 () == -1) {
-    printf ("test_file_architecture_6 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_6");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_7\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_7");
   if (test_file_architecture_7 () == -1) {
-    printf ("test_file_architecture_7 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_7");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_8\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_8");
   if (test_file_architecture_8 () == -1) {
-    printf ("test_file_architecture_8 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_8");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_9\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_9");
   if (test_file_architecture_9 () == -1) {
-    printf ("test_file_architecture_9 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_9");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_10\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_10");
   if (test_file_architecture_10 () == -1) {
-    printf ("test_file_architecture_10 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_10");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_file_architecture_11\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_file_architecture_11");
   if (test_file_architecture_11 () == -1) {
-    printf ("test_file_architecture_11 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_file_architecture_11");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_set_trace_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_set_trace_0");
   if (test_set_trace_0 () == -1) {
-    printf ("test_set_trace_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_set_trace_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_version_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_version_0");
   if (test_version_0 () == -1) {
-    printf ("test_version_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_version_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_pid_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_pid_0");
   if (test_get_pid_0 () == -1) {
-    printf ("test_get_pid_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_pid_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_memsize_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_memsize_0");
   if (test_get_memsize_0 () == -1) {
-    printf ("test_get_memsize_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_memsize_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_busy_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_busy_0");
   if (test_is_busy_0 () == -1) {
-    printf ("test_is_busy_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_busy_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_launching_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_launching_0");
   if (test_is_launching_0 () == -1) {
-    printf ("test_is_launching_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_launching_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_config_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_config_0");
   if (test_is_config_0 () == -1) {
-    printf ("test_is_config_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_config_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_is_ready_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_is_ready_0");
   if (test_is_ready_0 () == -1) {
-    printf ("test_is_ready_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_is_ready_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_autosync_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_autosync_0");
   if (test_get_autosync_0 () == -1) {
-    printf ("test_get_autosync_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_autosync_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_path_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_path_0");
   if (test_get_path_0 () == -1) {
-    printf ("test_get_path_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_path_0");
+    nr_failed++;
   }
   test_num++;
-  if (guestfs_get_verbose (g))
-    printf ("-------------------------------------------------------------------------------\n");
-  printf ("%3d/%3d test_get_qemu_0\n", test_num, nr_tests);
+  next_test (g, test_num, nr_tests, "test_get_qemu_0");
   if (test_get_qemu_0 () == -1) {
-    printf ("test_get_qemu_0 FAILED\n");
-    n_failed++;
+    printf ("%s FAILED\n", "test_get_qemu_0");
+    nr_failed++;
   }
 
   /* Check close callback is called. */
@@ -36606,8 +36624,8 @@ int main (int argc, char *argv[])
   unlink ("test2.img");
   unlink ("test3.img");
 
-  if (n_failed > 0) {
-    printf ("***** %lu / %d tests FAILED *****\n", n_failed, nr_tests);
+  if (nr_failed > 0) {
+    printf ("***** %zu / %zu tests FAILED *****\n", nr_failed, nr_tests);
     exit (EXIT_FAILURE);
   }
 
