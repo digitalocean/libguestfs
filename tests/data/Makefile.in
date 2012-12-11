@@ -1265,6 +1265,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
+	README-binfiles \
 	filesanddirs-10M.tar.xz \
 	filesanddirs-100M.tar.xz \
 	helloworld.tar \

@@ -1,3 +1,97 @@
+2012-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.18.11.
+
+	./run: Ensure all paths are built up cumulatively. (cherry picked from commit d0f89fed85d7f6c07a4d76d2e11f3a6812b63dd4)
+
+2012-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: wipefs: Use --force option if available.
+	See https://bugzilla.redhat.com/show_bug.cgi?id=872831
+	and https://bugzilla.redhat.com/show_bug.cgi?id=865961
+
+	(cherry picked from commit 3454cfb73c74b4fd3fba9d834c13685b166d9d3f)
+
+2012-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Add test of multiple independent handles. (cherry picked from commit d14557d434de5cb1c9754ae0f3e8e820e0a46694)
+
+	perl: Clean up and update the tests. (cherry picked from commit 4a2e8e89577ad4031aba1b2e5afb65ca58c2c39d)
+
+	perl: Small test of create with flags. (cherry picked from commit 3d0e937b84b4d028d80b66afb960903b7bc10b97)
+
+	recipes: Add sections about hexdumping, hexediting sectors. (cherry picked from commit 5d9f10c31297c5f6bfe261717dfc5c841722a4c2)
+
+	recipes: Add recipe for diffing two guests. (cherry picked from commit fd81d3f9b25f9ee8616091c9c3abb7373e185015)
+
+	dist: Add miscellaneous files to the tarball.
+	Lots of these had been omitted over time.
+	(cherry picked from commit e8ad3efbc4e91e4a48654d65981f5906b462fb96)
+
+2012-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/protocol: Add test-qemudir-launchfail.sh to tarball (but don't run it).
+	This file was present in git, but missing from the tarball.
+
+	Don't actually run the test: it depends on details of how the
+	appliance is constructed which would fail for old-style appliances.
+	(cherry picked from commit 2d89aef897e633bffba1dffd600b122eacd88fc8)
+
+2012-11-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Add test for remote events.
+	This test was present in git, but not included in the tarball,
+	nor in the tests that guestfish actually runs.
+
+	This fixes commit 17182af3a6de8e3e94e0a914416c54f09bb74007.
+
+	Cherry picked from commit 715afda3416080ef9ee961f3ebcff7ef16cfc986
+	and commit 784e53287e18c324dda9c4cc93b9aae4790eb909.
+
+	For the stable-1.18 branch the test has been deliberately disabled.
+
+2012-11-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: More efficient use of strings in the object code.
+	No functional change.
+	(cherry picked from commit a74f1681686e534e9c1883e26278cf7e0b74da07)
+
+	tests: Cleanup code that prints each test name.
+	This is just code motion.
+	(cherry picked from commit 2deb235cf4d30e715507f02b02a0391e1d0c3ee9)
+
+	tests: Change code for printing warnings about untested functions.
+	Just code cleanup, no functional change.
+	(cherry picked from commit 56c7967cadbd87ca922e02355f142f70744c1330)
+
+	tests: Remove dead code in generated output. (cherry picked from commit 04a8cffee7d93bd7fc82f7cf9ef16db75933a273)
+
+	tests: Format the generated code properly.
+	This is just whitespace changes in the output.
+	(cherry picked from commit 599a1930b0778fb93dcbb4bd679f9263fe650683)
+
+	lib: Break long line in definition of guestfs_set_error_handler.
+	This is just a whitespace change.
+	(cherry picked from commit 2013e005bd02f5706887c8861f10410ffd82084f)
+
+	examples: Copy-editing instructions printed by the mount-local program. (cherry picked from commit 692701f382f8a1c51be0b798b918f2f34e401b54)
+
+	format: Allow virt-format test to be skipped by setting SKIP_TEST_VIRT_FORMAT_SH=1. (cherry picked from commit 101fd44fc5ce3055da91a5bf8aa0d89a5d2f3a79)
+
+2012-11-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: wipefs: Don't try to wipe mounted filesystem.
+	Previously wipefs (the utility) allowed this, but it's obviously a bad
+	thing to do and the new wipefs gives an error if you try it:
+
+	wipefs: error: /dev/VG/LV: probing initialization failed: Device or resource busy
+
+	(cherry picked from commit 6ac943fbef4fa8386da456048f856a387f941fc2)
+
+2012-11-20  Hilko Bengen  <bengen@hilluzination.de>
+
+	message catalogs don't need to be executable (cherry picked from commit 4c285dd8f6a263ed62802af2c89c4cc75497c1ce)
+
 2012-10-30  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.18.10.

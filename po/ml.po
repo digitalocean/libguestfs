@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2012-10-30 18:16+0000\n"
+"POT-Creation-Date: 2012-11-22 12:06+0000\n"
 "PO-Revision-Date: 2012-05-21 13:19+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Malayalam <discuss@lists.smc.org.in>\n"
@@ -3432,7 +3432,7 @@ msgstr ""
 msgid "libguestfs: error: %s\n"
 msgstr "libguestfs: പിശക്: %s\n"
 
-#: src/guestfs.c:1019
+#: src/guestfs.c:1020
 #, c-format
 msgid "<truncated, original size %zu bytes>"
 msgstr ""
