@@ -15,6 +15,7 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   qemu-kvm (>= 0.13),
   genisoimage, pkg-config,
   erlang-dev,
+  dh-lua,
   dh-ocaml, ocaml-nox, ocaml-findlib, libpcre-ocaml-dev, libgettext-ocaml-dev,
   python (>= 2.6.6-3~), python-all-dev (>= 2.6.6-3~), python3-all-dev,
   default-jdk,
@@ -311,3 +312,16 @@ Description: guest disk image management system - GObject introspection files
  images.
  .
  This package contains the GObject introspection data.
+
+Package: lua-guestfs
+Architecture: i386 amd64
+Multi-Arch: same
+Pre-Depends: multiarch-support
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Provides: ${lua:Provides}
+XB-Lua-Versions: ${lua:Versions}
+Description: guest disk image management system - Lua bindings
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains the Lua bindings.

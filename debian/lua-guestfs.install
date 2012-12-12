@@ -1,0 +1,2 @@
+/usr/lib/*-*/lua/*/*.so
+/usr/share/man/man3/guestfs-lua.3*
