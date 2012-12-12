@@ -10,6 +10,7 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   libreadline-dev, libaugeas-dev, libselinux1-dev, libhivex-dev, libvirt-dev,
   libmagic-dev, libncurses5-dev, libpcre3-dev, libxml2-dev,
   libconfig-dev, libc-dev-bin, systemtap-sdt-dev,
+  libcap-dev, libacl1-dev, libyajl-dev,
   automake, autoconf, libtool,
   gperf, libxml2-utils,
   qemu-kvm (>= 0.13),
@@ -127,7 +128,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
   strace,
   xfsprogs,
   zerofree,
-  netpbm, icoutils
+  netpbm, icoutils,
+  ldmtool,
 Description: guest disk image management system - shared library
  The libguestfs library allows accessing and modifying guest disk
  images. It offers the following features, among many others:
