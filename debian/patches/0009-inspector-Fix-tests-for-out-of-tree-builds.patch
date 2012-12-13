@@ -1,0 +1,19 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sat, 5 Jan 2013 00:26:47 +0100
+Subject: inspector Fix tests for out-of-tree builds
+
+---
+ inspector/test-xmllint.sh.in |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/inspector/test-xmllint.sh.in b/inspector/test-xmllint.sh.in
+index c156bd2..602823f 100755
+--- a/inspector/test-xmllint.sh.in
++++ b/inspector/test-xmllint.sh.in
+@@ -25,5 +25,5 @@ if [ -z "$EXAMPLE_XML" ]; then
+ fi
+ 
+ for f in $EXAMPLE_XML; do
+-    @XMLLINT@ --noout --relaxng $srcdir/virt-inspector.rng $f
++    @XMLLINT@ --noout --relaxng $srcdir/virt-inspector.rng $srcdir/$f
+ done

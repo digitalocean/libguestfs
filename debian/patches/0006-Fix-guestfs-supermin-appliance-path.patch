@@ -9,10 +9,10 @@ The supermin appliance files are not installed to the multiarch lib directory.
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index 6d8b74a..c6a48d9 100644
+index 19f01dc..169ea15 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
-@@ -29,8 +29,8 @@ EXTRA_DIST = \
+@@ -30,8 +30,8 @@ EXTRA_DIST = \
  	make.sh.in \
  	packagelist.in
  
@@ -24,15 +24,15 @@ index 6d8b74a..c6a48d9 100644
  fs_DATA =
  superminfs_DATA = \
 diff --git a/src/Makefile.am b/src/Makefile.am
-index bfd319b..7f4fb4d 100644
+index 1057245..3183ce4 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -161,7 +161,7 @@ noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
+@@ -193,7 +193,7 @@ noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
  libguestfs_la_LIBADD += liberrnostring.la libprotocol.la
  
  libguestfs_la_CFLAGS = \
--  -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
-+  -DGUESTFS_DEFAULT_PATH='"$(prefix)/lib/guestfs"' \
-   -DGUESTFS_WARN_DEPRECATED=1 \
-   $(HIVEX_CFLAGS) $(PCRE_CFLAGS) \
-   $(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) \
+-	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
++	-DGUESTFS_DEFAULT_PATH='"$(prefix)/lib/guestfs"' \
+ 	-DGUESTFS_WARN_DEPRECATED=1 \
+ 	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
+ 	-DLIBOSINFO_DB_PATH='"$(datadir)/libosinfo/db"' \
