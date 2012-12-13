@@ -46,12 +46,13 @@ guestmount_CFLAGS = \
 	-I$(top_srcdir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	$(FUSE_CFLAGS) \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(FUSE_CFLAGS)
 
 guestmount_LDADD = \
-	$(FUSE_LIBS) -lulockmgr \
+	$(FUSE_LIBS) \
 	$(LIBCONFIG_LIBS) \
 	$(top_builddir)/src/libguestfs.la \
 	../gnulib/lib/libgnu.la
@@ -77,6 +78,7 @@ if ENABLE_APPLIANCE
 TESTS = test-fuse.sh test-fuse-umount-race.sh
 endif ENABLE_APPLIANCE
 TESTS_ENVIRONMENT = \
-	top_builddir=..
+	top_builddir=.. \
+	$(top_builddir)/run --test
 
 endif HAVE_FUSE

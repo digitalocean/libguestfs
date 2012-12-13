@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -57,11 +57,11 @@ guestfs_e2fsck_set_property(GObject *object, guint property_id, const GValue *va
 
   switch (property_id) {
     case PROP_GUESTFS_E2FSCK_CORRECT:
-      priv->correct = g_value_get_enum(value);
+      priv->correct = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_E2FSCK_FORCEALL:
-      priv->forceall = g_value_get_enum(value);
+      priv->forceall = g_value_get_enum (value);
       break;
 
     default:

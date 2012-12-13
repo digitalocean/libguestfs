@@ -34,12 +34,9 @@ TESTS = \
 tests_not_run = \
 	rhbz727178.sh
 
-random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-
 TESTS_ENVIRONMENT = \
-	MALLOC_PERTURB_=$(random_val) \
 	NOEXEC_CHECK="$(top_builddir)/src/.libs/libguestfs.so $(top_builddir)/daemon/guestfsd" \
-	$(top_builddir)/run
+	$(top_builddir)/run --test
 
 check_PROGRAMS = \
 	rhbz501893 \
@@ -48,7 +45,8 @@ check_PROGRAMS = \
 rhbz501893_SOURCES = rhbz501893.c
 rhbz501893_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 rhbz501893_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
@@ -56,7 +54,8 @@ rhbz790721_SOURCES = rhbz790721.c
 rhbz790721_CFLAGS = \
 	-pthread \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 rhbz790721_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 

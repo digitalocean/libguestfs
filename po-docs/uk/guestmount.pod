@@ -171,8 +171,9 @@ program.
 
 Add a block device or virtual machine image.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром
+I<--format=..>.
 
 =item B<-c адреса>
 
@@ -314,7 +315,7 @@ the chosen values.
 
 =back
 
-=item B<--pid-file filename>
+=item B<--pid-file назва_файла>
 
 Write the PID of the guestmount worker process to C<filename>.
 

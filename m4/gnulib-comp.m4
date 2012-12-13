@@ -194,7 +194,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module inet_ntop-tests:
   # Code from module inet_pton:
   # Code from module inet_pton-tests:
-  # Code from module inline:
   # Code from module intprops:
   # Code from module intprops-tests:
   # Code from module inttostr:
@@ -265,6 +264,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module perror-tests:
   # Code from module pipe-posix:
   # Code from module pipe-posix-tests:
+  # Code from module pipe2:
+  # Code from module pipe2-tests:
   # Code from module pread:
   # Code from module pread-tests:
   # Code from module progname:
@@ -464,8 +465,6 @@ AC_SUBST([LTALLOCA])
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
   AC_LIBOBJ([openat-proc])
-  AC_REQUIRE([AC_C_INLINE])
-  AC_REQUIRE([AC_C_INLINE])
   gl_BYTESWAP
   gl_UNISTD_MODULE_INDICATOR([chdir])
   gl_FUNC_CHDIR_LONG
@@ -551,7 +550,6 @@ AC_SUBST([LTALLOCA])
   gl_DIRENT_MODULE_INDICATOR([fdopendir])
   gl_MODULE_INDICATOR([fdopendir])
   gl_FILE_NAME_CONCAT_LGPL
-  AC_REQUIRE([AC_C_INLINE])
   gl_FLOAT_H
   if test $REPLACE_FLOAT_LDBL = 1; then
     AC_LIBOBJ([float])
@@ -579,7 +577,6 @@ AC_SUBST([LTALLOCA])
   if test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1; then
     AC_LIBOBJ([fstatat])
   fi
-  AC_REQUIRE([AC_C_INLINE]) dnl because 'inline' is used in lib/openat.h
   gl_MODULE_INDICATOR([fstatat]) dnl for lib/openat.h
   gl_SYS_STAT_MODULE_INDICATOR([fstatat])
   gl_FSUSAGE
@@ -697,7 +694,6 @@ AC_SUBST([LTALLOCA])
     gl_PREREQ_INET_NTOP
   fi
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
-  gl_INLINE
   gl_INTTYPES_INCOMPLETE
   AC_REQUIRE([gl_LARGEFILE])
   gl_LOCALCHARSET
@@ -820,6 +816,8 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([perror])
   fi
   gl_STRING_MODULE_INDICATOR([perror])
+  gl_FUNC_PIPE2
+  gl_UNISTD_MODULE_INDICATOR([pipe2])
   gl_FUNC_PREAD
   if test $HAVE_PREAD = 0 || test $REPLACE_PREAD = 1; then
     AC_LIBOBJ([pread])
@@ -1114,7 +1112,6 @@ changequote([, ])dnl
     gl_PREREQ_FTRUNCATE
   fi
   gl_UNISTD_MODULE_INDICATOR([ftruncate])
-  AC_REQUIRE([AC_C_INLINE])
   gl_FUNC_GETPAGESIZE
   if test $REPLACE_GETPAGESIZE = 1; then
     AC_LIBOBJ([getpagesize])
@@ -1222,7 +1219,6 @@ changequote([, ])dnl
   fi
   gl_UNISTD_MODULE_INDICATOR([usleep])
   gl_UTIMECMP
-  AC_REQUIRE([AC_C_INLINE])
   abs_aux_dir=`cd "$ac_aux_dir"; pwd`
   AC_SUBST([abs_aux_dir])
   gl_FUNC_WCRTOMB
@@ -1359,7 +1355,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/asprintf.c
   lib/at-func.c
   lib/basename-lgpl.c
+  lib/binary-io.c
   lib/binary-io.h
+  lib/bitrotate.c
   lib/bitrotate.h
   lib/byteswap.in.h
   lib/c-ctype.c
@@ -1510,6 +1508,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/pathmax.h
   lib/perror.c
   lib/pipe-safer.c
+  lib/pipe2.c
   lib/pread.c
   lib/printf-args.c
   lib/printf-args.h
@@ -1550,12 +1549,14 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stat-time.c
   lib/stat-time.h
   lib/stat.c
+  lib/statat.c
   lib/stdalign.in.h
   lib/stdarg.in.h
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
   lib/stdio-impl.h
+  lib/stdio.c
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/str-two-way.h
@@ -1582,6 +1583,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/symlink.c
   lib/symlinkat.c
   lib/sys_select.in.h
+  lib/sys_socket.c
   lib/sys_socket.in.h
   lib/sys_stat.in.h
   lib/sys_time.in.h
@@ -1595,6 +1597,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/timespec.h
   lib/unistd--.h
   lib/unistd-safer.h
+  lib/unistd.c
   lib/unistd.in.h
   lib/utimens.c
   lib/utimens.h
@@ -1604,6 +1607,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/verify.h
   lib/w32sock.h
   lib/wchar.in.h
+  lib/wctype-h.c
   lib/wctype.in.h
   lib/write.c
   lib/xalloc-die.c
@@ -1611,6 +1615,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xalloc.h
   lib/xasprintf.c
   lib/xmalloc.c
+  lib/xsize.c
   lib/xsize.h
   lib/xstrtol-error.c
   lib/xstrtol.c
@@ -1694,7 +1699,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/include_next.m4
   m4/inet_ntop.m4
   m4/inet_pton.m4
-  m4/inline.m4
   m4/intlmacosx.m4
   m4/intmax_t.m4
   m4/inttostr.m4
@@ -1749,6 +1753,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/pathmax.m4
   m4/perror.m4
   m4/pipe.m4
+  m4/pipe2.m4
   m4/pread.m4
   m4/printf.m4
   m4/putenv.m4
@@ -1964,6 +1969,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-perror.sh
   tests/test-perror2.c
   tests/test-pipe.c
+  tests/test-pipe2.c
   tests/test-pread.c
   tests/test-pread.sh
   tests/test-quotearg-simple.c

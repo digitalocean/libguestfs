@@ -30,10 +30,13 @@
 
 #define MAX_ARGS 64
 
+GUESTFSD_EXT_CMD(str_mke2fs, mke2fs);
+GUESTFSD_EXT_CMD(str_mkfs, mkfs);
+
 /* Takes optional arguments, consult optargs_bitmask. */
 int
-do_mkfs_opts (const char *fstype, const char *device, int blocksize,
-              const char *features, int inode, int sectorsize)
+do_mkfs (const char *fstype, const char *device, int blocksize,
+         const char *features, int inode, int sectorsize)
 {
   const char *argv[MAX_ARGS];
   size_t i = 0;
@@ -42,7 +45,6 @@ do_mkfs_opts (const char *fstype, const char *device, int blocksize,
   char sectorsize_str[32];
   int r;
   char *err;
-  char mke2fs[] = "mke2fs";
   int extfs = 0;
 
   if (STREQ (fstype, "ext2") || STREQ (fstype, "ext3") ||
@@ -53,13 +55,10 @@ do_mkfs_opts (const char *fstype, const char *device, int blocksize,
    * the mkfs program "eats" some options, in particular the -F
    * option.
    */
-  if (extfs) {
-    if (e2prog (mke2fs) == -1)
-      return -1;
-    ADD_ARG (argv, i, mke2fs);
-  }
+  if (extfs)
+    ADD_ARG (argv, i, str_mke2fs);
   else
-    ADD_ARG (argv, i, "mkfs");
+    ADD_ARG (argv, i, str_mkfs);
 
   ADD_ARG (argv, i, "-t");
   ADD_ARG (argv, i, fstype);
@@ -99,7 +98,7 @@ do_mkfs_opts (const char *fstype, const char *device, int blocksize,
   }
 
   /* Process blocksize parameter if set. */
-  if (optargs_bitmask & GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK) {
+  if (optargs_bitmask & GUESTFS_MKFS_BLOCKSIZE_BITMASK) {
     if (blocksize <= 0 || !is_power_of_2 (blocksize)) {
       reply_with_error ("block size must be > 0 and a power of 2");
       return -1;
@@ -145,12 +144,12 @@ do_mkfs_opts (const char *fstype, const char *device, int blocksize,
     }
   }
 
-  if (optargs_bitmask & GUESTFS_MKFS_OPTS_FEATURES_BITMASK) {
+  if (optargs_bitmask & GUESTFS_MKFS_FEATURES_BITMASK) {
     ADD_ARG (argv, i, "-O");
     ADD_ARG (argv, i, features);
   }
 
-  if (optargs_bitmask & GUESTFS_MKFS_OPTS_INODE_BITMASK) {
+  if (optargs_bitmask & GUESTFS_MKFS_INODE_BITMASK) {
     if (!extfs) {
       reply_with_error ("inode size (-I) can only be set on ext2/3/4 filesystems");
       return -1;
@@ -166,7 +165,7 @@ do_mkfs_opts (const char *fstype, const char *device, int blocksize,
     ADD_ARG (argv, i, inode_str);
   }
 
-  if (optargs_bitmask & GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK) {
+  if (optargs_bitmask & GUESTFS_MKFS_SECTORSIZE_BITMASK) {
     if (!STREQ (fstype, "ufs")) {
       reply_with_error ("sector size (-S) can only be set on ufs filesystems");
       return -1;
@@ -197,15 +196,8 @@ do_mkfs_opts (const char *fstype, const char *device, int blocksize,
 }
 
 int
-do_mkfs (const char *fstype, const char *device)
-{
-  optargs_bitmask = 0;
-  return do_mkfs_opts (fstype, device, 0, 0, 0, 0);
-}
-
-int
 do_mkfs_b (const char *fstype, int blocksize, const char *device)
 {
-  optargs_bitmask = GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
-  return do_mkfs_opts (fstype, device, blocksize, 0, 0, 0);
+  optargs_bitmask = GUESTFS_MKFS_BLOCKSIZE_BITMASK;
+  return do_mkfs (fstype, device, blocksize, 0, 0, 0);
 }

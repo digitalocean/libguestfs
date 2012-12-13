@@ -1,33 +1,69 @@
 =encoding utf8
 
+=head2 acl-delete-def-file
+
+ acl-delete-def-file dir
+
+This function deletes the default POSIX Access Control List (ACL)  attached
+to directory C<dir>.
+
+=head2 acl-get-file
+
+ acl-get-file path acltype
+
+This function returns the POSIX Access Control List (ACL) attached to
+C<path>.  The ACL is returned in "long text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Return the ordinary (access) ACL for any file, directory or other filesystem
+object.
+
+=item C<default>
+
+Return the default ACL.  Normally this only makes sense if C<path> is a
+directory.
+
+=back
+
+=head2 acl-set-file
+
+ acl-set-file path acltype acl
+
+This function sets the POSIX Access Control List (ACL) attached to C<path>.
+The C<acl> parameter is the new ACL in either "long text form" or "short
+text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Set the ordinary (access) ACL for any file, directory or other filesystem
+object.
+
+=item C<default>
+
+Set the default ACL.  Normally this only makes sense if C<path> is a
+directory.
+
+=back
+
 =head2 add-cdrom
 
  add-cdrom filename
 
 This function adds a virtual CD-ROM disk image to the guest.
 
-This is equivalent to the qemu parameter I<-cdrom filename>.
+B<Do not use this function!> ISO files are just ordinary read-only disk
+images.  Use L</add-drive-ro> instead.
 
-Нотатки:
-
-=over 4
-
-=item *
-
-This call checks for the existence of C<filename>.  This stops you from
-specifying other types of drive which are supported by qemu such as C<nbd:>
-and C<http:> URLs.  To specify those, use the general L</config> call
-instead.
-
-=item *
-
-If you just want to add an ISO file (often you use this as an efficient way
-to transfer large files into the guest), then you should probably use
-L</add-drive-ro> instead.
-
-=back
-
-I<This function is deprecated.> In new code, use the L</add-drive-opts> call
+I<This function is deprecated.> In new code, use the L</add-drive> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -98,7 +134,7 @@ If C<readonly> is true:
 
 Disks with the E<lt>readonly/E<gt> flag are added read-only.
 
-=item readonlydisk = "write" (default)
+=item readonlydisk = "write" (типово)
 
 If C<readonly> is false:
 
@@ -124,29 +160,23 @@ ARGUMENTS>.
 
 =head2 add-drive
 
- add-drive назва_файла
-
-This function is the equivalent of calling L</add-drive-opts> with no
-optional parameters, so the disk is added writable, with the format being
-detected automatically.
-
-Automatic detection of the format opens you up to a potential security hole
-when dealing with untrusted raw-format images.  See CVE-2010-3851 and
-RHBZ#642934.  Specifying the format closes this security hole.  Therefore
-you should think about replacing calls to this function with calls to
-L</add-drive-opts>, and specifying the format.
+=head2 add
 
 =head2 add-drive-opts
 
-=head2 add
-
- add-drive-opts filename [readonly:true|false] [format:..] [iface:..] [name:..]
+ add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..]
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
 
-The first time you call this function, the disk appears as C</dev/sda>, the
-second time as C</dev/sdb>, and so on.
+When this function is called before L</launch> (the usual case) then the
+first time you call this function, the disk appears in the API as
+C</dev/sda>, the second time as C</dev/sdb>, and so on.
+
+In libguestfs E<ge> 1.20 you can also call this function after launch (with
+some restrictions).  This is called "hotplugging".  When hotplugging, you
+must specify a C<label> so that the new disk gets a predictable name.  For
+more information see L<guestfs(3)/HOTPLUGGING>.
 
 You don't necessarily need to be root when using libguestfs.  However you
 obviously do need sufficient permissions to access the filename for whatever
@@ -158,7 +188,7 @@ This call checks that C<filename> exists.
 C<filename> may be the special string C<"/dev/null">.  See L<guestfs(3)/NULL
 DISKS>.
 
-The optional arguments are:
+Додатковими аргументами є:
 
 =over 4
 
@@ -188,6 +218,15 @@ L</add-drive-with-if> call (q.v.)
 The name the drive had in the original guest, e.g. C</dev/sdb>.  This is
 used as a hint to the guest inspection process if it is available.
 
+=item C<мітка>
+
+Give the disk a label.  The label should be a unique, short string using
+I<only> ASCII characters C<[a-zA-Z]>.  As well as its usual name in the API
+(such as C</dev/sda>), the drive will also be named
+C</dev/disk/guestfs/I<label>>.
+
+Див. L<guestfs(3)/МІТКИ ДИСКІВ>.
+
 =back
 
 This command has one or more optional arguments.  See L</OPTIONAL
@@ -197,7 +236,7 @@ ARGUMENTS>.
 
 =head2 add-ro
 
- add-drive-ro filename
+ add-drive-ro назва_файла
 
 This function is the equivalent of calling L</add-drive-opts> with the
 optional parameter C<GUESTFS_ADD_DRIVE_OPTS_READONLY> set to 1, so the disk
@@ -210,7 +249,7 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add-drive-opts> call
+I<This function is deprecated.> In new code, use the L</add-drive> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -224,7 +263,7 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add-drive-opts> call
+I<This function is deprecated.> In new code, use the L</add-drive> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -449,6 +488,8 @@ libguestfs all you could do would be to speculatively execute a command to
 find out if the daemon implemented it.  See also L</version>.
 
 =back
+
+Див також L</filesystem-available>.
 
 =head2 available-all-groups
 
@@ -711,6 +752,49 @@ Create a writable snapshot of the btrfs subvolume C<source>.  The C<dest>
 argument is the destination directory and the name of the snapshot, in the
 form C</path/to/dest/name>.
 
+=head2 canonical-device-name
+
+ canonical-device-name device
+
+This utility function is useful when displaying device names to the user.
+It takes a number of irregular device names and returns them in a consistent
+format:
+
+=over 4
+
+=item C</dev/hdX>
+
+=item C</dev/vdX>
+
+These are returned as C</dev/sdX>.  Note this works for device names and
+partition names.  This is approximately the reverse of the algorithm
+described in L<guestfs(3)/BLOCK DEVICE NAMING>.
+
+=item C</dev/mapper/VG-LV>
+
+=item C</dev/dm-N>
+
+Converted to C</dev/VG/LV> form using L</lvm-canonical-lvm-name>.
+
+=back
+
+Other strings are returned unmodified.
+
+=head2 cap-get-file
+
+ cap-get-file path
+
+This function returns the Linux capabilities attached to C<path>.  The
+capabilities set is returned in text form (see L<cap_to_text(3)>).
+
+=head2 cap-set-file
+
+ cap-set-file path cap
+
+This function sets the Linux capabilities attached to C<path>.  The
+capabilities set C<cap> should be passed in text form (see
+L<cap_from_text(3)>).
+
 =head2 case-sensitive-path
 
  case-sensitive-path path
@@ -749,13 +833,9 @@ I<Note>: This function does not handle drive names, backslashes etc.
 
 Return the contents of the file named C<path>.
 
-Note that this function cannot correctly handle binary files (specifically,
-files containing C<\0> character which is treated as end of string).  For
-those you need to use the L</read-file> or L</download> functions which have
-a more complex interface.
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+Because, in C, this function returns a C<char *>, there is no way to
+differentiate between a C<\0> character in a file and end of string.  To
+handle binary files, use the L</read-file> or L</download> functions.
 
 =head2 checksum
 
@@ -937,9 +1017,9 @@ This can be used to add arbitrary qemu command line parameters of the form
 I<-param value>.  Actually it's not quite arbitrary - we prevent you from
 setting some parameters which would interfere with parameters that we use.
 
-The first character of C<param> string must be a C<-> (dash).
+The first character of C<qemuparam> string must be a C<-> (dash).
 
-C<value> can be NULL.
+C<qemuvalue> can be NULL.
 
 =head2 copy-device-to-device
 
@@ -1077,6 +1157,38 @@ This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.  Use L</statvfs> from
 programs.
 
+=head2 disk-format
+
+ disk-format filename
+
+Detect and return the format of the disk image called C<filename>.
+C<filename> can also be a host device, etc.  If the format of the image
+could not be detected, then C<"unknown"> is returned.
+
+Note that detecting the disk format can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
+
+Див. також: L<guestfs(3)/ФОРМАТИ ОБРАЗІВ ДИСКІВ>
+
+=head2 disk-has-backing-file
+
+ disk-has-backing-file filename
+
+Detect and return whether the disk image C<filename> has a backing file.
+
+Note that detecting disk features can be insecure under some circumstances.
+See L<guestfs(3)/CVE-2010-3851>.
+
+=head2 disk-virtual-size
+
+ disk-virtual-size filename
+
+Detect and return the virtual size in bytes of the disk image called
+C<filename>.
+
+Note that detecting disk features can be insecure under some circumstances.
+See L<guestfs(3)/CVE-2010-3851>.
+
 =head2 dmesg
 
  dmesg
@@ -1209,6 +1321,12 @@ This calls the external C<egrep> program and returns the matching lines.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 egrepi
 
  egrepi regex path
@@ -1217,6 +1335,12 @@ This calls the external C<egrep -i> program and returns the matching lines.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 equal
 
@@ -1279,6 +1403,12 @@ This calls the external C<fgrep> program and returns the matching lines.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 fgrepi
 
  fgrepi шаблон шлях
@@ -1287,6 +1417,12 @@ This calls the external C<fgrep -i> program and returns the matching lines.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 file
 
@@ -1423,6 +1559,22 @@ To get other stats about a file, use L</stat>, L</lstat>, L</is-dir>,
 L</is-file> etc.  To get the size of block devices, use
 L</blockdev-getsize64>.
 
+=head2 filesystem-available
+
+ filesystem-available filesystem
+
+Check whether libguestfs supports the named filesystem.  The argument
+C<filesystem> is a filesystem name, such as C<ext3>.
+
+You must call L</launch> before using this command.
+
+This is mainly useful as a negative test.  If this returns true, it doesn't
+mean that a particular filesystem can be mounted, since filesystems can fail
+for other reasons such as it being a later version of the filesystem, or
+having incompatible features.
+
+See also L</available>, L<guestfs(3)/AVAILABILITY>.
+
 =head2 fill
 
  fill c len path
@@ -1434,6 +1586,14 @@ C<[0..255]>.
 To fill a file with zero bytes (sparsely), it is much more efficient to use
 L</truncate-size>.  To create a file with a pattern of repeating bytes use
 L</fill-pattern>.
+
+=head2 fill-dir
+
+ fill-dir dir nr
+
+This function, useful for testing filesystems, creates C<nr> empty files in
+the directory C<dir> with names C<00000000> through C<nr-1> (ie. each file
+name is 8 digits long padded with zeroes).
 
 =head2 fill-pattern
 
@@ -1471,11 +1631,6 @@ If C<directory> is not a directory, then this command returns an error.
 
 The returned list is sorted.
 
-Див. також L</find0>.
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
 =head2 find0
 
  find0 каталог (файли|-)
@@ -1496,10 +1651,6 @@ The resulting list is written to an external file.
 
 Items (filenames) in the result are separated by C<\0> characters.  See
 L<find(1)> option I<-print0>.
-
-=item *
-
-This command is not limited in the number of names that it can return.
 
 =item *
 
@@ -1558,6 +1709,29 @@ Checking or repairing NTFS volumes is not supported (by linux-ntfs).
 
 This command is entirely equivalent to running C<fsck -a -t fstype device>.
 
+=head2 fstrim
+
+ fstrim mountpoint [offset:N] [length:N] [minimumfreeextent:N]
+
+Trim the free space in the filesystem mounted on C<mountpoint>.  The
+filesystem must be mounted read-write.
+
+The filesystem contents are not affected, but any free space in the
+filesystem is "trimmed", that is, given back to the host device, thus making
+disk images more sparse, allowing unused space in qcow2 files to be reused,
+etc.
+
+This operation requires support in libguestfs, the mounted filesystem, the
+host filesystem, qemu and the host kernel.  If this support isn't present it
+may give an error or even appear to run but do nothing.
+
+See also L</zero-free-space>.  That is a slightly different operation that
+turns free space in the filesystem into zeroes.  It is valid to call
+L</fstrim> either instead of, or after calling L</zero-free-space>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 get-append
 
  get-append
@@ -1578,6 +1752,12 @@ Return the current attach method.  See L</set-attach-method>.
  get-autosync
 
 Get the autosync flag.
+
+=head2 get-cachedir
+
+ get-cachedir
+
+Get the directory used by the handle to store the appliance cache.
 
 =head2 get-direct
 
@@ -1734,6 +1914,49 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 get-libvirt-requested-credential-challenge
+
+ get-libvirt-requested-credential-challenge index
+
+Get the challenge (provided by libvirt) for the C<index>'th requested
+credential.  If libvirt did not provide a challenge, this returns the empty
+string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 get-libvirt-requested-credential-defresult
+
+ get-libvirt-requested-credential-defresult index
+
+Get the default result (provided by libvirt) for the C<index>'th requested
+credential.  If libvirt did not provide a default result, this returns the
+empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 get-libvirt-requested-credential-prompt
+
+ get-libvirt-requested-credential-prompt index
+
+Get the prompt (provided by libvirt) for the C<index>'th requested
+credential.  If libvirt did not provide a prompt, this returns the empty
+string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 get-libvirt-requested-credentials
+
+ get-libvirt-requested-credentials
+
+This should only be called during the event callback for events of type
+C<GUESTFS_EVENT_LIBVIRT_AUTH>.
+
+Return the list of credentials requested by libvirt.  Possible values are a
+subset of the strings provided when you called
+L</set-libvirt-supported-credentials>.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
 =head2 get-memsize
 
  get-memsize
@@ -1817,6 +2040,12 @@ for printing debug and internal error messages.
 
 For more information on states, see L<guestfs(3)>.
 
+=head2 get-tmpdir
+
+ get-tmpdir
+
+Get the directory used by the handle to store temporary files.
+
 =head2 get-trace
 
  get-trace
@@ -1892,9 +2121,38 @@ instead.
 
 =head2 grep
 
- grepi формальний_вираз шлях
+=head2 grep-opts
+
+ grep regex path [extended:true|false] [fixed:true|false] [insensitive:true|false] [compressed:true|false]
 
 This calls the external C<grep> program and returns the matching lines.
+
+The optional flags are:
+
+=over 4
+
+=item C<extended>
+
+Use extended regular expressions.  This is the same as using the I<-E> flag.
+
+=item C<fixed>
+
+Match fixed (don't use regular expressions).  This is the same as using the
+I<-F> flag.
+
+=item C<insensitive>
+
+Match case-insensitive.  This is the same as using the I<-i> flag.
+
+=item C<compressed>
+
+Use C<zgrep> instead of C<grep>.  This allows the input to be compress- or
+gzip-compressed.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -1907,6 +2165,12 @@ This calls the external C<grep -i> program and returns the matching lines.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 grub-install
 
@@ -1979,6 +2243,162 @@ human-readable, canonical hex dump of the file.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=head2 hivex-close
+
+ hivex-close
+
+Закрити поточний елемент керування hivex.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-commit
+
+ hivex-commit filename
+
+Commit (write) changes to the hive.
+
+If the optional C<filename> parameter is null, then the changes are written
+back to the same hive that was opened.  If this is not null then they are
+written to the alternate filename given and the original hive is left
+untouched.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-add-child
+
+ hivex-node-add-child parent name
+
+Add a child node to C<parent> named C<name>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-children
+
+ hivex-node-children nodeh
+
+Return the list of nodes which are subkeys of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-delete-child
+
+ hivex-node-delete-child nodeh
+
+Delete C<nodeh>, recursively if necessary.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-get-child
+
+ hivex-node-get-child nodeh name
+
+Return the child of C<nodeh> with the name C<name>, if it exists.  This can
+return C<0> meaning the name was not found.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-get-value
+
+ hivex-node-get-value nodeh key
+
+Return the value attached to C<nodeh> which has the name C<key>, if it
+exists.  This can return C<0> meaning the key was not found.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-name
+
+ hivex-node-name nodeh
+
+Return the name of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-parent
+
+ hivex-node-parent nodeh
+
+Return the parent node of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-set-value
+
+ hivex-node-set-value nodeh key t val
+
+Set or replace a single value under the node C<nodeh>.  The C<key> is the
+name, C<t> is the type, and C<val> is the data.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-node-values
+
+ hivex-node-values nodeh
+
+Return the array of (key, datatype, data) tuples attached to C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-open
+
+ hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]
+
+Open the Windows Registry hive file named C<filename>.  If there was any
+previous hivex handle associated with this guestfs session, then it is
+closed.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 hivex-root
+
+ hivex-root
+
+Повернути кореневий вузол гілки.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-value-key
+
+ hivex-value-key valueh
+
+Return the key (name) field of a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-value-type
+
+ hivex-value-type valueh
+
+Return the data type field from a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=head2 hivex-value-utf8
+
+ hivex-value-utf8 valueh
+
+This calls L</hivex-value-value> (which returns the data field from a hivex
+value tuple).  It then assumes that the field is a UTF-16LE string and
+converts the result to UTF-8 (or if this is not possible, it returns an
+error).
+
+This is useful for reading strings out of the Windows registry.  However it
+is not foolproof because the registry is not strongly-typed and fields can
+contain arbitrary or unexpected data.
+
+=head2 hivex-value-value
+
+ hivex-value-value valueh
+
+Return the data field of a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+Див. також L</hivex-value-utf8>.
 
 =head2 initrd-cat
 
@@ -2160,6 +2580,10 @@ Mandriva.
 
 MeeGo.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "opensuse"
 
 OpenSUSE.
@@ -2183,6 +2607,14 @@ Scientific Linux.
 =item "slackware"
 
 Slackware.
+
+=item "sles"
+
+SuSE Linux Enterprise Server or Desktop.
+
+=item "suse-based"
+
+Some openSuSE-derived distro.
 
 =item "ttylinux"
 
@@ -2524,6 +2956,10 @@ FreeBSD.
 
 NetBSD.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "hurd"
 
 GNU/Hurd.
@@ -2680,6 +3116,109 @@ A short (usually one line) description of the application or package.  If
 unavailable this is returned as an empty string C<"">.
 
 =item C<app_description>
+
+A longer description of the application or package.  If unavailable this is
+returned as an empty string C<"">.
+
+=back
+
+Please read L<guestfs(3)/INSPECTION> for more details.
+
+I<This function is deprecated.> In new code, use the
+L</inspect-list-applications2> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+=head2 inspect-list-applications2
+
+ inspect-list-applications2 root
+
+Return the list of applications installed in the operating system.
+
+I<Note:> This call works differently from other parts of the inspection
+API.  You have to call L</inspect-os>, then L</inspect-get-mountpoints>,
+then mount up the disks, before calling this.  Listing applications is a
+significantly more difficult operation which requires access to the full
+filesystem.  Also note that unlike the other L</inspect-get-*> calls which
+are just returning data cached in the libguestfs handle, this call actually
+reads parts of the mounted filesystems during the call.
+
+This returns an empty list if the inspection code was not able to determine
+the list of applications.
+
+The application structure contains the following fields:
+
+=over 4
+
+=item C<app2_name>
+
+The name of the application.  For Red Hat-derived and Debian-derived Linux
+guests, this is the package name.
+
+=item C<app2_display_name>
+
+The display name of the application, sometimes localized to the install
+language of the guest operating system.
+
+If unavailable this is returned as an empty string C<"">.  Callers needing
+to display something can use C<app2_name> instead.
+
+=item C<app2_epoch>
+
+For package managers which use epochs, this contains the epoch of the
+package (an integer).  If unavailable, this is returned as C<0>.
+
+=item C<app2_version>
+
+The version string of the application or package.  If unavailable this is
+returned as an empty string C<"">.
+
+=item C<app2_release>
+
+The release string of the application or package, for package managers that
+use this.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_arch>
+
+The architecture string of the application or package, for package managers
+that use this.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_install_path>
+
+The installation path of the application (on operating systems such as
+Windows which use installation paths).  This path is in the format used by
+the guest operating system, it is not a libguestfs path.
+
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_trans_path>
+
+The install path translated into a libguestfs path.  If unavailable this is
+returned as an empty string C<"">.
+
+=item C<app2_publisher>
+
+The name of the publisher of the application, for package managers that use
+this.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_url>
+
+The URL (eg. upstream URL) of the application.  If unavailable this is
+returned as an empty string C<"">.
+
+=item C<app2_source_package>
+
+For packaging systems which support this, the name of the source package.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_summary>
+
+A short (usually one line) description of the application or package.  If
+unavailable this is returned as an empty string C<"">.
+
+=item C<app2_description>
 
 A longer description of the application or package.  If unavailable this is
 returned as an empty string C<"">.
@@ -2901,6 +3440,100 @@ Only numeric uid and gid are supported.  If you want to use names, you will
 need to locate and parse the password file yourself (Augeas support makes
 this relatively easy).
 
+=head2 ldmtool-create-all
+
+ ldmtool-create-all
+
+This function scans all block devices looking for Windows dynamic disk
+volumes and partitions, and creates devices for any that were found.
+
+Call L</list-ldm-volumes> and L</list-ldm-partitions> to return all devices.
+
+Note that you B<don't> normally need to call this explicitly, since it is
+done automatically at L</launch> time.  However you might want to call this
+function if you have hotplugged disks or have just created a Windows dynamic
+disk.
+
+=head2 ldmtool-diskgroup-disks
+
+ ldmtool-diskgroup-disks diskgroup
+
+Return the disks in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from the list
+returned by L</ldmtool-scan>.
+
+=head2 ldmtool-diskgroup-name
+
+ ldmtool-diskgroup-name diskgroup
+
+Return the name of a Windows dynamic disk group.  The C<diskgroup> parameter
+should be the GUID of a disk group, one element from the list returned by
+L</ldmtool-scan>.
+
+=head2 ldmtool-diskgroup-volumes
+
+ ldmtool-diskgroup-volumes diskgroup
+
+Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from the list
+returned by L</ldmtool-scan>.
+
+=head2 ldmtool-remove-all
+
+ ldmtool-remove-all
+
+This is essentially the opposite of L</ldmtool-create-all>.  It removes the
+device mapper mappings for all Windows dynamic disk volumes
+
+=head2 ldmtool-scan
+
+ ldmtool-scan
+
+This function scans for Windows dynamic disks.  It returns a list of
+identifiers (GUIDs) for all disk groups that were found.  These identifiers
+can be passed to other L</ldmtool-*> functions.
+
+This function scans all block devices.  To scan a subset of block devices,
+call L</ldmtool-scan-devices> instead.
+
+=head2 ldmtool-scan-devices
+
+ ldmtool-scan-devices 'devices ...'
+
+This function scans for Windows dynamic disks.  It returns a list of
+identifiers (GUIDs) for all disk groups that were found.  These identifiers
+can be passed to other L</ldmtool-*> functions.
+
+The parameter C<devices> is a list of block devices which are scanned.  If
+this list is empty, all block devices are scanned.
+
+=head2 ldmtool-volume-hint
+
+ ldmtool-volume-hint diskgroup volume
+
+Return the hint field of the volume named C<volume> in the disk group with
+GUID <diskgroup>.  This may not be defined, in which case the empty string
+is returned.  The hint field is often, though not always, the name of a
+Windows drive, eg. C<E:>.
+
+=head2 ldmtool-volume-partitions
+
+ ldmtool-volume-partitions diskgroup volume
+
+Return the list of partitions in the volume named C<volume> in the disk
+group with GUID <diskgroup>.
+
+=head2 ldmtool-volume-type
+
+ ldmtool-volume-type diskgroup volume
+
+Return the type of the volume named C<volume> in the disk group with GUID
+<diskgroup>.
+
+Possible volume types that can be returned here include: C<simple>,
+C<spanned>, C<striped>, C<mirrored>, C<raid5>.  Other types may also be
+returned.
+
 =head2 lgetxattr
 
  lgetxattr шлях назва
@@ -2943,6 +3576,18 @@ The full block device names are returned, eg. C</dev/sda>.
 
 Див. також L</list-filesystems>.
 
+=head2 list-disk-labels
+
+ list-disk-labels
+
+If you add drives using the optional C<label> parameter of
+L</add-drive-opts>, you can use this call to map between disk labels, and
+raw block device and partition names (like C</dev/sda> and C</dev/sda1>).
+
+This returns a hashtable, where keys are the disk labels (I<without> the
+C</dev/disk/guestfs> prefix), and the values are the full raw block device
+and partition names (eg. C</dev/sda> and C</dev/sda1>).
+
 =head2 list-dm-devices
 
  list-dm-devices
@@ -2983,6 +3628,20 @@ partitions are returned in the list.  Also this command does not check that
 each filesystem found is valid and mountable, and some filesystems might be
 mountable but require special options.  Filesystems may not all belong to a
 single logical operating system (use L</inspect-os> to look for OSes).
+
+=head2 list-ldm-partitions
+
+ list-ldm-partitions
+
+This function returns all Windows dynamic disk partitions that were found at
+launch time.  It returns a list of device names.
+
+=head2 list-ldm-volumes
+
+ list-ldm-volumes
+
+This function returns all Windows dynamic disk volumes that were found at
+launch time.  It returns a list of device names.
 
 =head2 list-md-devices
 
@@ -3063,8 +3722,19 @@ List the files in C<directory> (relative to the root directory, there is no
 cwd).  The '.' and '..' entries are not returned, but hidden files are
 shown.
 
-This command is mostly useful for interactive sessions.  Programs should
-probably use L</readdir> instead.
+=head2 ls0
+
+ ls0 dir (filenames|-)
+
+This specialized command is used to get a listing of the filenames in the
+directory C<dir>.  The list of filenames is written to the local file
+C<filenames> (on the host).
+
+In the output file, the filenames are separated by C<\0> characters.
+
+C<.> and C<..> are not returned.  The filenames are not sorted.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 lsetxattr
 
@@ -3098,10 +3768,7 @@ then the C<ino> field of that structure is set to C<-1>.
 
 This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also L</lxattrlist> for a
-similarly efficient call for getting extended attributes.  Very long
-directory listings might cause the protocol message size to be exceeded,
-causing this call to fail.  The caller must split up such requests into
-smaller groups of names.
+similarly efficient call for getting extended attributes.
 
 =head2 luks-add-key
 
@@ -3218,7 +3885,7 @@ C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does not refer to a
 logical volume.
 
-See also L</is-lv>.
+See also L</is-lv>, L</canonical-device-name>.
 
 =head2 lvm-clear-filter
 
@@ -3334,10 +4001,20 @@ for the first named file.  This repeats for the second and subsequent files.
 
 This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also L</lstatlist> for a
-similarly efficient call for getting standard stats.  Very long directory
-listings might cause the protocol message size to be exceeded, causing this
-call to fail.  The caller must split up such requests into smaller groups of
-names.
+similarly efficient call for getting standard stats.
+
+=head2 max-disks
+
+ max-disks
+
+Return the maximum number of disks that may be added to a handle (eg. by
+L</add-drive-opts> and similar calls).
+
+This function was added in libguestfs 1.19.7.  In previous versions of
+libguestfs the limit was 25.
+
+See L<guestfs(3)/MAXIMUM NUMBER OF DISKS> for additional information on this
+topic.
 
 =head2 md-create
 
@@ -3534,6 +4211,17 @@ contents after use.
 
 Див. також L<mkdtemp(3)>
 
+=head2 mke2fs
+
+ mke2fs device [blockscount:N] [blocksize:N] [fragsize:N] [blockspergroup:N] [numberofgroups:N] [bytesperinode:N] [inodesize:N] [journalsize:N] [numberofinodes:N] [stridesize:N] [stripewidth:N] [maxonlineresize:N] [reservedblockspercentage:N] [mmpupdateinterval:N] [journaldevice:..] [label:..] [lastmounteddir:..] [creatoros:..] [fstype:..] [usagetype:..] [uuid:..] [forcecreate:true|false] [writesbandgrouponly:true|false] [lazyitableinit:true|false] [lazyjournalinit:true|false] [testfs:true|false] [discard:true|false] [quotatype:true|false] [extent:true|false] [filetype:true|false] [flexbg:true|false] [hasjournal:true|false] [journaldev:true|false] [largefile:true|false] [quota:true|false] [resizeinode:true|false] [sparsesuper:true|false] [uninitbg:true|false]
+
+C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem on C<device>.
+The optional C<blockscount> is the size of the filesystem in blocks.  If
+omitted it defaults to the size of C<device>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 mke2fs-J
 
  mke2fs-J fstype blocksize device journal
@@ -3545,6 +4233,13 @@ C<journal>.  It is equivalent to the command:
 
 Див. також L</mke2journal>.
 
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 mke2fs-JL
 
  mke2fs-JL fstype blocksize device label
@@ -3553,6 +4248,13 @@ This creates an ext2/3/4 filesystem on C<device> with an external journal on
 the journal labeled C<label>.
 
 Див. також L</mke2journal-L>.
+
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mke2fs-JU
 
@@ -3563,6 +4265,13 @@ the journal with UUID C<uuid>.
 
 Див. також L</mke2journal-U>.
 
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 mke2journal
 
  mke2journal blocksize device
@@ -3572,17 +4281,38 @@ command:
 
  mke2fs -O journal_dev -b blocksize device
 
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 mke2journal-L
 
  mke2journal-L blocksize label device
 
 This creates an ext2 external journal on C<device> with label C<label>.
 
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 mke2journal-U
 
  mke2journal-U blocksize uuid device
 
 This creates an ext2 external journal on C<device> with UUID C<uuid>.
+
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mkfifo
 
@@ -3595,52 +4325,14 @@ The mode actually set is affected by the umask.
 
 =head2 mkfs
 
- mkfs тип_файлової_системи пристрій
-
-This creates a filesystem on C<device> (usually a partition or LVM logical
-volume).  The filesystem type is C<fstype>, for example C<ext3>.
-
-=head2 mkfs-b
-
- mkfs-b fstype blocksize device
-
-This call is similar to L</mkfs>, but it allows you to control the block
-size of the resulting filesystem.  Supported block sizes depend on the
-filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
-
-For VFAT and NTFS the C<blocksize> parameter is treated as the requested
-cluster size.
-
-I<This function is deprecated.> In new code, use the L</mkfs-opts> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-
-=head2 mkfs-btrfs
-
- mkfs-btrfs 'devices ...' [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
-
-Create a btrfs filesystem, allowing all configurables to be set.  For more
-information on the optional arguments, see L<mkfs.btrfs(8)>.
-
-Since btrfs filesystems can span multiple devices, this takes a non-empty
-list of devices.
-
-To create general filesystems, use L</mkfs-opts>.
-
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
-
 =head2 mkfs-opts
 
- mkfs-opts fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
+ mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
 
-The optional arguments are:
+Додатковими аргументами є:
 
 =over 4
 
@@ -3679,6 +4371,46 @@ sets sector size for ufs filesystem.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+=head2 mkfs-b
+
+ mkfs-b fstype blocksize device
+
+This call is similar to L</mkfs>, but it allows you to control the block
+size of the resulting filesystem.  Supported block sizes depend on the
+filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
+
+For VFAT and NTFS the C<blocksize> parameter is treated as the requested
+cluster size.
+
+I<This function is deprecated.> In new code, use the L</mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+=head2 mkfs-btrfs
+
+ mkfs-btrfs 'devices ...' [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
+
+Create a btrfs filesystem, allowing all configurables to be set.  For more
+information on the optional arguments, see L<mkfs.btrfs(8)>.
+
+Since btrfs filesystems can span multiple devices, this takes a non-empty
+list of devices.
+
+To create general filesystems, use L</mkfs>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 mklost-and-found
+
+ mklost-and-found mountpoint
+
+Make the C<lost+found> directory, normally in the root directory of an
+ext2/3/4 filesystem.  C<mountpoint> is the directory under which we try to
+create the C<lost+found> directory.
 
 =head2 mkmountpoint
 
@@ -3762,9 +4494,17 @@ The mode actually set is affected by the umask.
 
 =head2 mkswap
 
- mkswap пристрій
+=head2 mkswap-opts
 
-Create a swap partition on C<device>.
+ mkswap device [label:..] [uuid:..]
+
+Create a Linux swap partition on C<device>.
+
+The option arguments C<label> and C<uuid> allow you to set the label and/or
+UUID of the new swap partition.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 mkswap-L
 
@@ -3776,11 +4516,25 @@ Note that you cannot attach a swap label to a block device
 (eg. C</dev/sda>), just to a partition.  This appears to be a limitation of
 the kernel or swap tools.
 
+I<This function is deprecated.> In new code, use the L</mkswap> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 mkswap-U
 
  mkswap-U uuid пристрій
 
 Create a swap partition on C<device> with UUID C<uuid>.
+
+I<This function is deprecated.> In new code, use the L</mkswap> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mkswap-file
 
@@ -3790,6 +4544,31 @@ Create a swap partition on C<device> with UUID C<uuid>.
 
 This command just writes a swap file signature to an existing file.  To
 create the file itself, use something like L</fallocate>.
+
+=head2 mktemp
+
+ mktemp tmpl [suffix:..]
+
+This command creates a temporary file.  The C<tmpl> parameter should be a
+full pathname for the temporary directory name with the final six characters
+being "XXXXXX".
+
+For example: "/tmp/myprogXXXXXX" or "/Temp/myprogXXXXXX", the second one
+being suitable for Windows filesystems.
+
+The name of the temporary file that was created is returned.
+
+The temporary file is created with mode 0600 and is owned by root.
+
+The caller is responsible for deleting the temporary file after use.
+
+If the optional C<suffix> parameter is given, then the suffix (eg. C<.txt>)
+is appended to the temporary name.
+
+See also: L</mkdtemp>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 modprobe
 
@@ -4017,30 +4796,9 @@ ARGUMENTS>.
 
 =head2 ntfsresize
 
- ntfsresize пристрій
-
-This command resizes an NTFS filesystem, expanding or shrinking it to the
-size of the underlying device.
-
-I<Note:> After the resize operation, the filesystem is marked as requiring a
-consistency check (for safety).  You have to boot into Windows to perform
-this check and clear this condition.  Furthermore, ntfsresize refuses to
-resize filesystems which have been marked in this way.  So in effect it is
-not possible to call ntfsresize multiple times on a single filesystem
-without booting into Windows between each resize.
-
-Див. також L<ntfsresize(8)>.
-
-I<This function is deprecated.> In new code, use the L</ntfsresize-opts>
-call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-
 =head2 ntfsresize-opts
 
- ntfsresize-opts device [size:N] [force:true|false]
+ ntfsresize device [size:N] [force:true|false]
 
 This command resizes an NTFS filesystem, expanding or shrinking it to the
 size of the underlying device.
@@ -4062,8 +4820,8 @@ filesystem is marked as requiring a consistency check.
 After the resize operation, the filesystem is always marked as requiring a
 consistency check (for safety).  You have to boot into Windows to perform
 this check and clear this condition.  If you I<don't> set the C<force>
-option then it is not possible to call L</ntfsresize-opts> multiple times on
-a single filesystem without booting into Windows between each resize.
+option then it is not possible to call L</ntfsresize> multiple times on a
+single filesystem without booting into Windows between each resize.
 
 =back
 
@@ -4079,12 +4837,38 @@ ARGUMENTS>.
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
 
-I<This function is deprecated.> In new code, use the L</ntfsresize-opts>
-call instead.
+I<This function is deprecated.> In new code, use the L</ntfsresize> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+=head2 parse-environment
+
+ parse-environment
+
+Parse the program's environment and set flags in the handle accordingly.
+For example if C<LIBGUESTFS_DEBUG=1> then the 'verbose' flag is set in the
+handle.
+
+I<Most programs do not need to call this>.  It is done implicitly when you
+call L</create>.
+
+See L<guestfs(3)/ENVIRONMENT VARIABLES> for a list of environment variables
+that can affect libguestfs handles.  See also
+L<guestfs(3)/guestfs_create_flags>, and L</parse-environment-list>.
+
+=head2 parse-environment-list
+
+ parse-environment-list 'environment ...'
+
+Parse the list of strings in the argument C<environment> and set flags in
+the handle accordingly.  For example if C<LIBGUESTFS_DEBUG=1> is a string in
+the list, then the 'verbose' flag is set in the handle.
+
+This is the same as L</parse-environment> except that it parses an explicit
+list of strings instead of the program's environment.
 
 =head2 part-add
 
@@ -4356,6 +5140,18 @@ L<pread(2)> system call.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+=head2 pvchange-uuid
+
+ pvchange-uuid device
+
+Generate a new random UUID for the physical volume C<device>.
+
+=head2 pvchange-uuid-all
+
+ pvchange-uuid-all
+
+Створити нові випадкові UUID для всіх фізичних томів.
+
 =head2 pvcreate
 
  pvcreate пристрій
@@ -4454,11 +5250,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 This calls returns the contents of the file C<path> as a buffer.
 
 Unlike L</cat>, this function can correctly handle files that contain
-embedded ASCII NUL characters.  However unlike L</download>, this function
-is limited in the total size of file that can be handled.
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+embedded ASCII NUL characters.
 
 =head2 read-lines
 
@@ -4470,9 +5262,9 @@ The file contents are returned as a list of lines.  Trailing C<LF> and
 C<CRLF> character sequences are I<not> returned.
 
 Note that this function cannot correctly handle binary files (specifically,
-files containing C<\0> character which is treated as end of line).  For
-those you need to use the L</read-file> function which has a more complex
-interface.
+files containing C<\0> character which is treated as end of string).  For
+those you need to use the L</read-file> function and split the buffer into
+lines yourself.
 
 =head2 readdir
 
@@ -4531,6 +5323,9 @@ This function is primarily intended for use by programs.  To get a simple
 list of names, use L</ls>.  To get a printable directory for human
 consumption, use L</ll>.
 
+Because of the message protocol, there is a transfer limit of somewhere
+between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
 =head2 readlink
 
  readlink шлях
@@ -4555,9 +5350,7 @@ function with names where you don't know if they are symbolic links already
 (albeit slightly less efficient).
 
 This call is intended for programs that want to efficiently list a directory
-contents without making many round-trips.  Very long directory listings
-might cause the protocol message size to be exceeded, causing this call to
-fail.  The caller must split up such requests into smaller groups of names.
+contents without making many round-trips.
 
 =head2 realpath
 
@@ -4565,6 +5358,23 @@ fail.  The caller must split up such requests into smaller groups of names.
 
 Return the canonicalized absolute pathname of C<path>.  The returned path
 has no C<.>, C<..> or symbolic link path elements.
+
+=head2 remove-drive
+
+ remove-drive label
+
+This function is conceptually the opposite of L</add-drive-opts>.  It
+removes the drive that was previously added with label C<label>.
+
+Note that in order to remove drives, you have to add them with labels (see
+the optional C<label> argument to L</add-drive-opts>).  If you didn't use a
+label, then they cannot be removed.
+
+You can call this function before or after launching the handle.  If called
+after launch, if the attach-method supports it, we try to hot unplug the
+drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use
+(eg. mounted) when you do this.  We try to detect if the disk is in use and
+stop you from doing this.
 
 =head2 removexattr
 
@@ -4613,6 +5423,18 @@ specify the new size (in bytes) explicitly.
 
 Remove the single file C<path>.
 
+=head2 rm-f
+
+ rm-f path
+
+Remove the file C<path>.
+
+If the file doesn't exist, that error is ignored.  (Other errors, eg. I/O
+errors or bad paths, are not ignored)
+
+This call cannot remove directories.  Use L</rmdir> to remove an empty
+directory, or L</rm-rf> to remove directories recursively.
+
 =head2 rm-rf
 
  rm-rf шлях
@@ -4632,6 +5454,83 @@ Remove the single directory C<path>.
 
 This calls removes a mountpoint that was previously created with
 L</mkmountpoint>.  See L</mkmountpoint> for full details.
+
+=head2 rsync
+
+ rsync src dest [archive:true|false] [deletedest:true|false]
+
+This call may be used to copy or synchronize two directories under the same
+libguestfs handle.  This uses the L<rsync(1)> program which uses a fast
+algorithm that avoids copying files unnecessarily.
+
+C<src> and C<dest> are the source and destination directories.  Files are
+copied from C<src> to C<dest>.
+
+Додатковими аргументами є:
+
+=over 4
+
+=item C<archive>
+
+Turns on archive mode.  This is the same as passing the I<--archive> flag to
+C<rsync>.
+
+=item C<deletedest>
+
+Delete files at the destination that do not exist at the source.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 rsync-in
+
+ rsync-in remote dest [archive:true|false] [deletedest:true|false]
+
+This call may be used to copy or synchronize the filesystem on the host or
+on a remote computer with the filesystem within libguestfs.  This uses the
+L<rsync(1)> program which uses a fast algorithm that avoids copying files
+unnecessarily.
+
+This call only works if the network is enabled.  See L</set-network> or the
+I<--network> option to various tools like L<guestfish(1)>.
+
+Files are copied from the remote server and directory specified by C<remote>
+to the destination directory C<dest>.
+
+The format of the remote server string is defined by L<rsync(1)>.  Note that
+there is no way to supply a password or passphrase so the target must be set
+up not to require one.
+
+The optional arguments are the same as those of L</rsync>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 rsync-out
+
+ rsync-out src remote [archive:true|false] [deletedest:true|false]
+
+This call may be used to copy or synchronize the filesystem within
+libguestfs with a filesystem on the host or on a remote computer.  This uses
+the L<rsync(1)> program which uses a fast algorithm that avoids copying
+files unnecessarily.
+
+This call only works if the network is enabled.  See L</set-network> or the
+I<--network> option to various tools like L<guestfish(1)>.
+
+Files are copied from the source directory C<src> to the remote server and
+directory specified by C<remote>.
+
+The format of the remote server string is defined by L<rsync(1)>.  Note that
+there is no way to supply a password or passphrase so the target must be set
+up not to require one.
+
+The optional arguments are the same as those of L</rsync>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 scrub-device
 
@@ -4689,14 +5588,25 @@ Setting C<append> to C<NULL> means I<no> additional options are passed
  set-attach-method attachmethod
 
 Set the method that libguestfs uses to connect to the back end guestfsd
-daemon.  Possible methods are:
+daemon.
+
+Possible attach methods are:
 
 =over 4
 
 =item C<appliance>
 
-Launch an appliance and connect to it.  This is the ordinary method and the
-default.
+Launch an appliance and connect to it.
+
+This is the ordinary method and normally the default, but see the note
+below.
+
+=item C<libvirt>
+
+=item C<libvirt:I<URI>>
+
+Use libvirt to launch the appliance.  The optional I<URI> is the libvirt
+connection URI to use (see L<http://libvirt.org/uri.html>).
 
 =item C<unix:I<шлях>>
 
@@ -4705,6 +5615,27 @@ default.
 This method lets you connect to an existing daemon or (using virtio-serial)
 to a live guest.  For more information, see L<guestfs(3)/ATTACHING TO
 RUNNING DAEMONS>.
+
+=back
+
+C<appliance> is usually the default attach method.  However since libguestfs
+E<ge> 1.19.24 it has been possible to change the default in two ways:
+
+=over 4
+
+=item Setting LIBGUESTFS_ATTACH_METHOD
+
+Users can set this environment variable to change the default.
+
+=item Configuring the default attach method when building libguestfs
+
+Distributors can override the default when libguestfs is built (using
+C<./configure --with-default-attach-method=...>).
+
+To find out if libguestfs was compiled with a different default attach
+method, do:
+
+ guestfish get-attach-method
 
 =back
 
@@ -4720,6 +5651,21 @@ handle is closed (also if the program exits without closing handles).
 
 This is enabled by default (since libguestfs 1.5.24, previously it was
 disabled by default).
+
+=head2 set-cachedir
+
+=head2 cachedir
+
+ set-cachedir cachedir
+
+Set the directory used by the handle to store the appliance cache, when
+using a supermin appliance.  The appliance is cached and shared between all
+handles which have the same effective user ID.
+
+The environment variables C<LIBGUESTFS_CACHEDIR> and C<TMPDIR> control the
+default value: If C<LIBGUESTFS_CACHEDIR> is set, then that is the default.
+Else if C<TMPDIR> is set, then that is the default.  Else C</var/tmp> is the
+default.
 
 =head2 set-direct
 
@@ -4813,6 +5759,52 @@ On ext2/3/4 filesystems, labels are limited to 16 bytes.
 On NTFS filesystems, labels are limited to 128 unicode characters.
 
 To read the label on a filesystem, call L</vfs-label>.
+
+=head2 set-libvirt-requested-credential
+
+ set-libvirt-requested-credential index cred
+
+After requesting the C<index>'th credential from the user, call this
+function to pass the answer back to libvirt.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 set-libvirt-supported-credentials
+
+ set-libvirt-supported-credentials 'creds ...'
+
+Call this function before setting an event handler for
+C<GUESTFS_EVENT_LIBVIRT_AUTH>, to supply the list of credential types that
+the program knows how to process.
+
+The C<creds> list must be a non-empty list of strings.  Possible strings
+are:
+
+=over 4
+
+=item C<username>
+
+=item C<authname>
+
+=item C<language>
+
+=item C<cnonce>
+
+=item C<passphrase>
+
+=item C<echoprompt>
+
+=item C<noechoprompt>
+
+=item C<realm>
+
+=item C<external>
+
+=back
+
+See libvirt documentation for the meaning of these credential types.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 =head2 set-memsize
 
@@ -4937,6 +5929,19 @@ C<1>.  Increasing this may improve performance, though often it has no
 effect.
 
 This function must be called before L</launch>.
+
+=head2 set-tmpdir
+
+=head2 tmpdir
+
+ set-tmpdir tmpdir
+
+Set the directory used by the handle to store temporary files.
+
+The environment variables C<LIBGUESTFS_TMPDIR> and C<TMPDIR> control the
+default value: If C<LIBGUESTFS_TMPDIR> is set, then that is the default.
+Else if C<TMPDIR> is set, then that is the default.  Else C</tmp> is the
+default.
 
 =head2 set-trace
 
@@ -5311,25 +6316,57 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 tar-in
 
- tar-in (файл_tar|-) каталог
+=head2 tar-in-opts
 
-This command uploads and unpacks local file C<tarfile> (an I<uncompressed>
-tar file) into C<directory>.
+ tar-in (tarfile|-) directory [compress:..]
 
-To upload a compressed tarball, use L</tgz-in> or L</txz-in>.
+This command uploads and unpacks local file C<tarfile> into C<directory>.
+
+The optional C<compress> flag controls compression.  If not given, then the
+input should be an uncompressed tar file.  Otherwise one of the following
+strings may be given to select the compression type of the input file:
+C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.  (Note that not all builds
+of libguestfs will support all of these compression types).
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 tar-out
 
- tar-out каталог (файл tar|-)
+=head2 tar-out-opts
+
+ tar-out directory (tarfile|-) [compress:..] [numericowner:true|false] [excludes:..]
 
 This command packs the contents of C<directory> and downloads it to local
 file C<tarfile>.
 
-To download a compressed tarball, use L</tgz-out> or L</txz-out>.
+The optional C<compress> flag controls compression.  If not given, then the
+output will be an uncompressed tar file.  Otherwise one of the following
+strings may be given to select the compression type of the output file:
+C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.  (Note that not all builds
+of libguestfs will support all of these compression types).
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the wildcards.
+
+=item C<numericowner>
+
+If set to true, the output tar file will contain UID/GID numbers instead of
+user/group names.
+
+=back
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 tgz-in
 
@@ -5338,9 +6375,14 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 This command uploads and unpacks local file C<tarball> (a I<gzip compressed>
 tar file) into C<directory>.
 
-To upload an uncompressed tarball, use L</tar-in>.
-
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+I<This function is deprecated.> In new code, use the L</tar-in> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 tgz-out
 
@@ -5349,9 +6391,14 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 This command packs the contents of C<directory> and downloads it to local
 file C<tarball>.
 
-To download an uncompressed tarball, use L</tar-out>.
-
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+I<This function is deprecated.> In new code, use the L</tar-out> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 touch
 
@@ -5479,6 +6526,13 @@ tar file) into C<directory>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
+I<This function is deprecated.> In new code, use the L</tar-in> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 txz-out
 
  txz-out каталог (архів tar|-)
@@ -5487,6 +6541,13 @@ This command packs the contents of C<directory> and downloads it to local
 file C<tarball> (as an xz compressed tar archive).
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+I<This function is deprecated.> In new code, use the L</tar-out> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 umask
 
@@ -5511,10 +6572,15 @@ This call returns the previous umask.
 
 =head2 unmount
 
- umount шлях_або_пристрій
+=head2 umount-opts
+
+ umount pathordevice [force:true|false] [lazyunmount:true|false]
 
 This unmounts the given filesystem.  The filesystem may be specified either
 by its mountpoint (path) or the device which contains the filesystem.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 umount-all
 
@@ -5589,6 +6655,14 @@ ignored in this case).
 If the C<*nsecs> field contains the special value C<-2> then the
 corresponding timestamp is left unchanged.  (The C<*secs> field is ignored
 in this case).
+
+=head2 utsname
+
+ utsname
+
+This returns the kernel version of the appliance, where this is available.
+This information is only useful for debugging.  Nothing in the returned
+structure is defined by the API.
 
 =head2 version
 
@@ -5671,6 +6745,18 @@ This command activates or (if C<activate> is false) deactivates all logical
 volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
+
+=head2 vgchange-uuid
+
+ vgchange-uuid vg
+
+Generate a new random UUID for the volume group C<vg>.
+
+=head2 vgchange-uuid-all
+
+ vgchange-uuid-all
+
+Створити нові випадкові UUID для всіх груп томів.
 
 =head2 vgcreate
 
@@ -5801,9 +6887,6 @@ string C<content> (which can contain any 8 bit data).
 
 Див. також L</write-append>.
 
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
 =head2 write-append
 
  write-append path content
@@ -5812,9 +6895,6 @@ This call appends C<content> to the end of file C<path>.  If C<path> does
 not exist, then a new file is created.
 
 Див. також L</write>.
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 write-file
 
@@ -5838,6 +6918,64 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 xfs-admin
+
+ xfs-admin device [extunwritten:true|false] [imgfile:true|false] [v2log:true|false] [projid32bit:true|false] [lazycounter:true|false] [label:..] [uuid:..]
+
+Change the parameters of the XFS filesystem on C<device>.
+
+Devices that are mounted cannot be modified.  Administrators must unmount
+filesystems before this call can modify parameters.
+
+Some of the parameters of a mounted filesystem can be examined and modified
+using the L</xfs-info> and L</xfs-growfs> calls.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 xfs-growfs
+
+ xfs-growfs path [datasec:true|false] [logsec:true|false] [rtsec:true|false] [datasize:N] [logsize:N] [rtsize:N] [rtextsize:N] [maxpct:N]
+
+Grow the XFS filesystem mounted at C<path>.
+
+The returned struct contains geometry information.  Missing fields are
+returned as C<-1> (for numeric fields) or empty string.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 xfs-info
+
+ xfs-info pathordevice
+
+C<pathordevice> is a mounted XFS filesystem or a device containing an XFS
+filesystem.  This command returns the geometry of the filesystem.
+
+The returned struct contains geometry information.  Missing fields are
+returned as C<-1> (for numeric fields) or empty string.
+
+=head2 xfs-repair
+
+ xfs-repair device [forcelogzero:true|false] [nomodify:true|false] [noprefetch:true|false] [forcegeometry:true|false] [maxmem:N] [ihashsize:N] [bhashsize:N] [agstride:N] [logdev:..] [rtdev:..]
+
+Repair corrupt or damaged XFS filesystem on C<device>.
+
+The filesystem is specified using the C<device> argument which should be the
+device name of the disk partition or volume containing the filesystem.  If
+given the name of a block device, C<xfs_repair> will attempt to find the raw
+device associated with the specified block device and will use the raw
+device instead.
+
+Regardless, the filesystem to be repaired must be unmounted, otherwise, the
+resulting filesystem may be inconsistent or corrupt.
+
+The returned status indicates whether filesystem corruption was detected
+(returns C<1>) or was not detected (returns C<0>).
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 zegrep
 
  zegrep формальний_вираз шлях
@@ -5847,6 +6985,12 @@ This calls the external C<zegrep> program and returns the matching lines.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 zegrepi
 
  zegrepi regex path
@@ -5855,6 +6999,12 @@ This calls the external C<zegrep -i> program and returns the matching lines.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 zero
 
@@ -5893,8 +7043,8 @@ filesystem must be mounted read-write.
 The filesystem contents are not affected, but any free space in the
 filesystem is freed.
 
-In future (but not currently) these zeroed blocks will be "sparsified" -
-that is, given back to the host.
+Free space is not "trimmed".  You may want to call L</fstrim> either as an
+alternative to this, or after calling this, depending on your requirements.
 
 =head2 zerofree
 
@@ -5918,6 +7068,12 @@ This calls the external C<zfgrep> program and returns the matching lines.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 zfgrepi
 
  zfgrepi шаблон шлях
@@ -5926,6 +7082,12 @@ This calls the external C<zfgrep -i> program and returns the matching lines.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 zfile
 
@@ -5952,6 +7114,12 @@ This calls the external C<zgrep> program and returns the matching lines.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 zgrepi
 
  zgrepi формальний_вираз шлях
@@ -5960,4 +7128,10 @@ This calls the external C<zgrep -i> program and returns the matching lines.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.> In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 

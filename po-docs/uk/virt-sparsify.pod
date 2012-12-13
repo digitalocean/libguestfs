@@ -258,6 +258,11 @@ fatal error.
 All versions of virt-sparsify have supported the I<--machine-readable>
 option.
 
+=head1 WINDOWS 8
+
+Windows 8 "fast startup" can prevent virt-sparsify from working.  See
+L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
+
 =head1 СТАН ВИХОДУ
 
 Ця програма повертає значення 0 у разі успішного завершення і ненульове

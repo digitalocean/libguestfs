@@ -71,7 +71,7 @@ and start_test filename mp =
   (* Create a filesystem for the tests. *)
   let g = new Guestfs.guestfs () in
 
-  g#add_drive_opts filename;
+  g#add_drive filename;
   g#launch ();
 
   g#part_disk "/dev/sda" "mbr";

@@ -30,13 +30,16 @@ MANPAGES = \
 	guestfs-examples.3 \
 	guestfs-faq.1 \
 	guestfs-java.3 \
+	guestfs-lua.3 \
 	guestfs-ocaml.3 \
 	guestfs-performance.1 \
 	guestfs-perl.3 \
 	guestfs-python.3 \
 	guestfs-recipes.1 \
+	guestfs-release-notes.1 \
 	guestfs-ruby.3 \
 	guestfs-testing.1 \
+	guestfsd.8 \
 	guestmount.1 \
 	libguestfs-make-fixed-appliance.1 \
 	libguestfs-test-tool.1 \
@@ -113,6 +116,13 @@ virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.po
 	  --no-strict-checks \
 	  --man $@ \
 	  --section 3 \
+	  $<
+
+%.8: %.pod
+	$(PODWRAPPER) \
+	  --no-strict-checks \
+	  --man $@ \
+	  --section 8 \
 	  $<
 
 %.1: %.pl

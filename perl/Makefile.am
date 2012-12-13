@@ -56,8 +56,7 @@ endif
 
 $(TESTS): $(test_prereq)
 
-TESTS_ENVIRONMENT = \
-	$(top_builddir)/run
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 INSTALLDIRS = site
 

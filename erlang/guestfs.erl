@@ -1,6 +1,6 @@
 % libguestfs generated file
 %  WARNING: THIS FILE IS GENERATED FROM:
-%    generator/generator_*.ml
+%    generator/ *.ml
 %  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 % 
 %  Copyright (C) 2009-2012 Red Hat Inc.
@@ -23,9 +23,12 @@
 
 -export([create/0, create/1, close/1, init/1]).
 
+-export([acl_delete_def_file/2]).
+-export([acl_get_file/3]).
+-export([acl_set_file/4]).
 -export([add_cdrom/2]).
 -export([add_domain/2, add_domain/3]).
--export([add_drive/2]).
+-export([add_drive/2, add_drive/3]).
 -export([add_drive_opts/2, add_drive_opts/3]).
 -export([add_drive_ro/2]).
 -export([add_drive_ro_with_if/3]).
@@ -71,6 +74,9 @@
 -export([btrfs_subvolume_list/2]).
 -export([btrfs_subvolume_set_default/3]).
 -export([btrfs_subvolume_snapshot/3]).
+-export([canonical_device_name/2]).
+-export([cap_get_file/2]).
+-export([cap_set_file/3]).
 -export([case_sensitive_path/2]).
 -export([cat/2]).
 -export([checksum/3]).
@@ -92,12 +98,14 @@
 -export([cp_a/3]).
 -export([dd/3]).
 -export([debug/3]).
--export([debug_cmdline/1]).
 -export([debug_drives/1]).
 -export([debug_upload/4]).
 -export([device_index/2]).
 -export([df/1]).
 -export([df_h/1]).
+-export([disk_format/2]).
+-export([disk_has_backing_file/2]).
+-export([disk_virtual_size/2]).
 -export([dmesg/1]).
 -export([download/3]).
 -export([download_offset/5]).
@@ -117,21 +125,29 @@
 -export([file/2]).
 -export([file_architecture/2]).
 -export([filesize/2]).
+-export([filesystem_available/2]).
 -export([fill/4]).
+-export([fill_dir/3]).
 -export([fill_pattern/4]).
 -export([find/2]).
 -export([find0/3]).
 -export([findfs_label/2]).
 -export([findfs_uuid/2]).
 -export([fsck/3]).
+-export([fstrim/2, fstrim/3]).
 -export([get_append/1]).
 -export([get_attach_method/1]).
 -export([get_autosync/1]).
+-export([get_cachedir/1]).
 -export([get_direct/1]).
 -export([get_e2attrs/2]).
 -export([get_e2generation/2]).
 -export([get_e2label/2]).
 -export([get_e2uuid/2]).
+-export([get_libvirt_requested_credential_challenge/2]).
+-export([get_libvirt_requested_credential_defresult/2]).
+-export([get_libvirt_requested_credential_prompt/2]).
+-export([get_libvirt_requested_credentials/1]).
 -export([get_memsize/1]).
 -export([get_network/1]).
 -export([get_path/1]).
@@ -142,6 +158,7 @@
 -export([get_selinux/1]).
 -export([get_smp/1]).
 -export([get_state/1]).
+-export([get_tmpdir/1]).
 -export([get_trace/1]).
 -export([get_umask/1]).
 -export([get_verbose/1]).
@@ -149,12 +166,30 @@
 -export([getxattr/3]).
 -export([getxattrs/2]).
 -export([glob_expand/2]).
--export([grep/3]).
+-export([grep/3, grep/4]).
+-export([grep_opts/3, grep_opts/4]).
 -export([grepi/3]).
 -export([grub_install/3]).
 -export([head/2]).
 -export([head_n/3]).
 -export([hexdump/2]).
+-export([hivex_close/1]).
+-export([hivex_commit/2]).
+-export([hivex_node_add_child/3]).
+-export([hivex_node_children/2]).
+-export([hivex_node_delete_child/2]).
+-export([hivex_node_get_child/3]).
+-export([hivex_node_get_value/3]).
+-export([hivex_node_name/2]).
+-export([hivex_node_parent/2]).
+-export([hivex_node_set_value/5]).
+-export([hivex_node_values/2]).
+-export([hivex_open/2, hivex_open/3]).
+-export([hivex_root/1]).
+-export([hivex_value_key/2]).
+-export([hivex_value_type/2]).
+-export([hivex_value_utf8/2]).
+-export([hivex_value_value/2]).
 -export([initrd_cat/3]).
 -export([initrd_list/2]).
 -export([inotify_add_watch/3]).
@@ -185,8 +220,44 @@
 -export([inspect_is_multipart/2]).
 -export([inspect_is_netinst/2]).
 -export([inspect_list_applications/2]).
+-export([inspect_list_applications2/2]).
 -export([inspect_os/1]).
 -export([internal_autosync/1]).
+-export([internal_hot_add_drive/2]).
+-export([internal_hot_remove_drive/2]).
+-export([internal_hot_remove_drive_precheck/2]).
+-export([internal_lstatlist/3]).
+-export([internal_lxattrlist/3]).
+-export([internal_readlinklist/3]).
+-export([internal_test/10, internal_test/11]).
+-export([internal_test_63_optargs/1, internal_test_63_optargs/2]).
+-export([internal_test_close_output/1]).
+-export([internal_test_only_optargs/1, internal_test_only_optargs/2]).
+-export([internal_test_rbool/2]).
+-export([internal_test_rboolerr/1]).
+-export([internal_test_rbufferout/2]).
+-export([internal_test_rbufferouterr/1]).
+-export([internal_test_rconstoptstring/2]).
+-export([internal_test_rconstoptstringerr/1]).
+-export([internal_test_rconststring/2]).
+-export([internal_test_rconststringerr/1]).
+-export([internal_test_rhashtable/2]).
+-export([internal_test_rhashtableerr/1]).
+-export([internal_test_rint/2]).
+-export([internal_test_rint64/2]).
+-export([internal_test_rint64err/1]).
+-export([internal_test_rinterr/1]).
+-export([internal_test_rstring/2]).
+-export([internal_test_rstringerr/1]).
+-export([internal_test_rstringlist/2]).
+-export([internal_test_rstringlisterr/1]).
+-export([internal_test_rstruct/2]).
+-export([internal_test_rstructerr/1]).
+-export([internal_test_rstructlist/2]).
+-export([internal_test_rstructlisterr/1]).
+-export([internal_test_set_output/2]).
+-export([internal_write/3]).
+-export([internal_write_append/3]).
 -export([is_blockdev/2]).
 -export([is_busy/1]).
 -export([is_chardev/2]).
@@ -206,12 +277,25 @@
 -export([kill_subprocess/1]).
 -export([launch/1]).
 -export([lchown/4]).
+-export([ldmtool_create_all/1]).
+-export([ldmtool_diskgroup_disks/2]).
+-export([ldmtool_diskgroup_name/2]).
+-export([ldmtool_diskgroup_volumes/2]).
+-export([ldmtool_remove_all/1]).
+-export([ldmtool_scan/1]).
+-export([ldmtool_scan_devices/2]).
+-export([ldmtool_volume_hint/3]).
+-export([ldmtool_volume_partitions/3]).
+-export([ldmtool_volume_type/3]).
 -export([lgetxattr/3]).
 -export([lgetxattrs/2]).
 -export([list_9p/1]).
 -export([list_devices/1]).
+-export([list_disk_labels/1]).
 -export([list_dm_devices/1]).
 -export([list_filesystems/1]).
+-export([list_ldm_partitions/1]).
+-export([list_ldm_volumes/1]).
 -export([list_md_devices/1]).
 -export([list_partitions/1]).
 -export([ll/2]).
@@ -222,6 +306,7 @@
 -export([ln_sf/3]).
 -export([lremovexattr/3]).
 -export([ls/2]).
+-export([ls0/3]).
 -export([lsetxattr/5]).
 -export([lstat/2]).
 -export([lstatlist/3]).
@@ -246,6 +331,7 @@
 -export([lvs_full/1]).
 -export([lvuuid/2]).
 -export([lxattrlist/3]).
+-export([max_disks/1]).
 -export([md_create/3, md_create/4]).
 -export([md_detail/2]).
 -export([md_stat/2]).
@@ -254,6 +340,7 @@
 -export([mkdir_mode/3]).
 -export([mkdir_p/2]).
 -export([mkdtemp/2]).
+-export([mke2fs/2, mke2fs/3]).
 -export([mke2fs_J/5]).
 -export([mke2fs_JL/5]).
 -export([mke2fs_JU/5]).
@@ -261,18 +348,21 @@
 -export([mke2journal_L/4]).
 -export([mke2journal_U/4]).
 -export([mkfifo/3]).
--export([mkfs/3]).
+-export([mkfs/3, mkfs/4]).
+-export([mkfs_opts/3, mkfs_opts/4]).
 -export([mkfs_b/4]).
 -export([mkfs_btrfs/2, mkfs_btrfs/3]).
--export([mkfs_opts/3, mkfs_opts/4]).
+-export([mklost_and_found/2]).
 -export([mkmountpoint/2]).
 -export([mknod/5]).
 -export([mknod_b/5]).
 -export([mknod_c/5]).
--export([mkswap/2]).
+-export([mkswap/2, mkswap/3]).
+-export([mkswap_opts/2, mkswap_opts/3]).
 -export([mkswap_L/3]).
 -export([mkswap_U/3]).
 -export([mkswap_file/2]).
+-export([mktemp/2, mktemp/3]).
 -export([modprobe/2]).
 -export([mount/3]).
 -export([mount_9p/3, mount_9p/4]).
@@ -290,9 +380,11 @@
 -export([ntfsclone_in/3]).
 -export([ntfsclone_out/3, ntfsclone_out/4]).
 -export([ntfsfix/2, ntfsfix/3]).
--export([ntfsresize/2]).
+-export([ntfsresize/2, ntfsresize/3]).
 -export([ntfsresize_opts/2, ntfsresize_opts/3]).
 -export([ntfsresize_size/3]).
+-export([parse_environment/1]).
+-export([parse_environment_list/2]).
 -export([part_add/5]).
 -export([part_del/3]).
 -export([part_disk/3]).
@@ -309,6 +401,8 @@
 -export([ping_daemon/1]).
 -export([pread/4]).
 -export([pread_device/4]).
+-export([pvchange_uuid/2]).
+-export([pvchange_uuid_all/1]).
 -export([pvcreate/2]).
 -export([pvremove/2]).
 -export([pvresize/2]).
@@ -324,26 +418,34 @@
 -export([readlink/2]).
 -export([readlinklist/3]).
 -export([realpath/2]).
+-export([remove_drive/2]).
 -export([removexattr/3]).
 -export([resize2fs/2]).
 -export([resize2fs_M/2]).
 -export([resize2fs_size/3]).
 -export([rm/2]).
+-export([rm_f/2]).
 -export([rm_rf/2]).
 -export([rmdir/2]).
 -export([rmmountpoint/2]).
+-export([rsync/3, rsync/4]).
+-export([rsync_in/3, rsync_in/4]).
+-export([rsync_out/3, rsync_out/4]).
 -export([scrub_device/2]).
 -export([scrub_file/2]).
 -export([scrub_freespace/2]).
 -export([set_append/2]).
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
+-export([set_cachedir/2]).
 -export([set_direct/2]).
 -export([set_e2attrs/3, set_e2attrs/4]).
 -export([set_e2generation/3]).
 -export([set_e2label/3]).
 -export([set_e2uuid/3]).
 -export([set_label/3]).
+-export([set_libvirt_requested_credential/3]).
+-export([set_libvirt_supported_credentials/2]).
 -export([set_memsize/2]).
 -export([set_network/2]).
 -export([set_path/2]).
@@ -352,6 +454,7 @@
 -export([set_recovery_proc/2]).
 -export([set_selinux/2]).
 -export([set_smp/2]).
+-export([set_tmpdir/2]).
 -export([set_trace/2]).
 -export([set_verbose/2]).
 -export([setcon/2]).
@@ -381,31 +484,10 @@
 -export([sync/1]).
 -export([tail/2]).
 -export([tail_n/3]).
--export([tar_in/3]).
--export([tar_out/3]).
--export([test0/10, test0/11]).
--export([test0rbool/2]).
--export([test0rboolerr/1]).
--export([test0rbufferout/2]).
--export([test0rbufferouterr/1]).
--export([test0rconstoptstring/2]).
--export([test0rconstoptstringerr/1]).
--export([test0rconststring/2]).
--export([test0rconststringerr/1]).
--export([test0rhashtable/2]).
--export([test0rhashtableerr/1]).
--export([test0rint/2]).
--export([test0rint64/2]).
--export([test0rint64err/1]).
--export([test0rinterr/1]).
--export([test0rstring/2]).
--export([test0rstringerr/1]).
--export([test0rstringlist/2]).
--export([test0rstringlisterr/1]).
--export([test0rstruct/2]).
--export([test0rstructerr/1]).
--export([test0rstructlist/2]).
--export([test0rstructlisterr/1]).
+-export([tar_in/3, tar_in/4]).
+-export([tar_in_opts/3, tar_in_opts/4]).
+-export([tar_out/3, tar_out/4]).
+-export([tar_out_opts/3, tar_out_opts/4]).
 -export([tgz_in/3]).
 -export([tgz_out/3]).
 -export([touch/2]).
@@ -416,18 +498,22 @@
 -export([txz_in/3]).
 -export([txz_out/3]).
 -export([umask/2]).
--export([umount/2]).
+-export([umount/2, umount/3]).
+-export([umount_opts/2, umount_opts/3]).
 -export([umount_all/1]).
 -export([umount_local/1, umount_local/2]).
 -export([upload/3]).
 -export([upload_offset/4]).
 -export([utimens/6]).
+-export([utsname/1]).
 -export([version/1]).
 -export([vfs_label/2]).
 -export([vfs_type/2]).
 -export([vfs_uuid/2]).
 -export([vg_activate/3]).
 -export([vg_activate_all/2]).
+-export([vgchange_uuid/2]).
+-export([vgchange_uuid_all/1]).
 -export([vgcreate/3]).
 -export([vglvuuids/2]).
 -export([vgmeta/2]).
@@ -446,6 +532,10 @@
 -export([write/3]).
 -export([write_append/3]).
 -export([write_file/4]).
+-export([xfs_admin/2, xfs_admin/3]).
+-export([xfs_growfs/2, xfs_growfs/3]).
+-export([xfs_info/2]).
+-export([xfs_repair/2, xfs_repair/3]).
 -export([zegrep/3]).
 -export([zegrepi/3]).
 -export([zero/2]).
@@ -496,6 +586,15 @@ loop(Port) ->
       exit(port_terminated)
   end.
 
+acl_delete_def_file(G, Dir) ->
+  call_port(G, {acl_delete_def_file, Dir}).
+
+acl_get_file(G, Path, Acltype) ->
+  call_port(G, {acl_get_file, Path, Acltype}).
+
+acl_set_file(G, Path, Acltype, Acl) ->
+  call_port(G, {acl_set_file, Path, Acltype, Acl}).
+
 add_cdrom(G, Filename) ->
   call_port(G, {add_cdrom, Filename}).
 
@@ -504,13 +603,14 @@ add_domain(G, Dom, Optargs) ->
 add_domain(G, Dom) ->
   add_domain(G, Dom, []).
 
+add_drive(G, Filename, Optargs) ->
+  call_port(G, {add_drive, Filename, Optargs}).
 add_drive(G, Filename) ->
-  call_port(G, {add_drive, Filename}).
-
+  add_drive(G, Filename, []).
 add_drive_opts(G, Filename, Optargs) ->
-  call_port(G, {add_drive_opts, Filename, Optargs}).
+  add_drive(G, Filename, Optargs).
 add_drive_opts(G, Filename) ->
-  add_drive_opts(G, Filename, []).
+  add_drive(G, Filename).
 
 add_drive_ro(G, Filename) ->
   call_port(G, {add_drive_ro, Filename}).
@@ -648,6 +748,15 @@ btrfs_subvolume_set_default(G, Id, Fs) ->
 btrfs_subvolume_snapshot(G, Source, Dest) ->
   call_port(G, {btrfs_subvolume_snapshot, Source, Dest}).
 
+canonical_device_name(G, Device) ->
+  call_port(G, {canonical_device_name, Device}).
+
+cap_get_file(G, Path) ->
+  call_port(G, {cap_get_file, Path}).
+
+cap_set_file(G, Path, Cap) ->
+  call_port(G, {cap_set_file, Path, Cap}).
+
 case_sensitive_path(G, Path) ->
   call_port(G, {case_sensitive_path, Path}).
 
@@ -723,9 +832,6 @@ dd(G, Src, Dest) ->
 debug(G, Subcmd, Extraargs) ->
   call_port(G, {debug, Subcmd, Extraargs}).
 
-debug_cmdline(G) ->
-  call_port(G, {debug_cmdline}).
-
 debug_drives(G) ->
   call_port(G, {debug_drives}).
 
@@ -740,6 +846,15 @@ df(G) ->
 
 df_h(G) ->
   call_port(G, {df_h}).
+
+disk_format(G, Filename) ->
+  call_port(G, {disk_format, Filename}).
+
+disk_has_backing_file(G, Filename) ->
+  call_port(G, {disk_has_backing_file, Filename}).
+
+disk_virtual_size(G, Filename) ->
+  call_port(G, {disk_virtual_size, Filename}).
 
 dmesg(G) ->
   call_port(G, {dmesg}).
@@ -800,8 +915,14 @@ file_architecture(G, Filename) ->
 filesize(G, File) ->
   call_port(G, {filesize, File}).
 
+filesystem_available(G, Filesystem) ->
+  call_port(G, {filesystem_available, Filesystem}).
+
 fill(G, C, Len, Path) ->
   call_port(G, {fill, C, Len, Path}).
+
+fill_dir(G, Dir, Nr) ->
+  call_port(G, {fill_dir, Dir, Nr}).
 
 fill_pattern(G, Pattern, Len, Path) ->
   call_port(G, {fill_pattern, Pattern, Len, Path}).
@@ -821,6 +942,11 @@ findfs_uuid(G, Uuid) ->
 fsck(G, Fstype, Device) ->
   call_port(G, {fsck, Fstype, Device}).
 
+fstrim(G, Mountpoint, Optargs) ->
+  call_port(G, {fstrim, Mountpoint, Optargs}).
+fstrim(G, Mountpoint) ->
+  fstrim(G, Mountpoint, []).
+
 get_append(G) ->
   call_port(G, {get_append}).
 
@@ -829,6 +955,9 @@ get_attach_method(G) ->
 
 get_autosync(G) ->
   call_port(G, {get_autosync}).
+
+get_cachedir(G) ->
+  call_port(G, {get_cachedir}).
 
 get_direct(G) ->
   call_port(G, {get_direct}).
@@ -844,6 +973,18 @@ get_e2label(G, Device) ->
 
 get_e2uuid(G, Device) ->
   call_port(G, {get_e2uuid, Device}).
+
+get_libvirt_requested_credential_challenge(G, Index) ->
+  call_port(G, {get_libvirt_requested_credential_challenge, Index}).
+
+get_libvirt_requested_credential_defresult(G, Index) ->
+  call_port(G, {get_libvirt_requested_credential_defresult, Index}).
+
+get_libvirt_requested_credential_prompt(G, Index) ->
+  call_port(G, {get_libvirt_requested_credential_prompt, Index}).
+
+get_libvirt_requested_credentials(G) ->
+  call_port(G, {get_libvirt_requested_credentials}).
 
 get_memsize(G) ->
   call_port(G, {get_memsize}).
@@ -875,6 +1016,9 @@ get_smp(G) ->
 get_state(G) ->
   call_port(G, {get_state}).
 
+get_tmpdir(G) ->
+  call_port(G, {get_tmpdir}).
+
 get_trace(G) ->
   call_port(G, {get_trace}).
 
@@ -896,8 +1040,14 @@ getxattrs(G, Path) ->
 glob_expand(G, Pattern) ->
   call_port(G, {glob_expand, Pattern}).
 
+grep(G, Regex, Path, Optargs) ->
+  call_port(G, {grep, Regex, Path, Optargs}).
 grep(G, Regex, Path) ->
-  call_port(G, {grep, Regex, Path}).
+  grep(G, Regex, Path, []).
+grep_opts(G, Regex, Path, Optargs) ->
+  grep(G, Regex, Path, Optargs).
+grep_opts(G, Regex, Path) ->
+  grep(G, Regex, Path).
 
 grepi(G, Regex, Path) ->
   call_port(G, {grepi, Regex, Path}).
@@ -913,6 +1063,59 @@ head_n(G, Nrlines, Path) ->
 
 hexdump(G, Path) ->
   call_port(G, {hexdump, Path}).
+
+hivex_close(G) ->
+  call_port(G, {hivex_close}).
+
+hivex_commit(G, Filename) ->
+  call_port(G, {hivex_commit, Filename}).
+
+hivex_node_add_child(G, Parent, Name) ->
+  call_port(G, {hivex_node_add_child, Parent, Name}).
+
+hivex_node_children(G, Nodeh) ->
+  call_port(G, {hivex_node_children, Nodeh}).
+
+hivex_node_delete_child(G, Nodeh) ->
+  call_port(G, {hivex_node_delete_child, Nodeh}).
+
+hivex_node_get_child(G, Nodeh, Name) ->
+  call_port(G, {hivex_node_get_child, Nodeh, Name}).
+
+hivex_node_get_value(G, Nodeh, Key) ->
+  call_port(G, {hivex_node_get_value, Nodeh, Key}).
+
+hivex_node_name(G, Nodeh) ->
+  call_port(G, {hivex_node_name, Nodeh}).
+
+hivex_node_parent(G, Nodeh) ->
+  call_port(G, {hivex_node_parent, Nodeh}).
+
+hivex_node_set_value(G, Nodeh, Key, T, Val) ->
+  call_port(G, {hivex_node_set_value, Nodeh, Key, T, Val}).
+
+hivex_node_values(G, Nodeh) ->
+  call_port(G, {hivex_node_values, Nodeh}).
+
+hivex_open(G, Filename, Optargs) ->
+  call_port(G, {hivex_open, Filename, Optargs}).
+hivex_open(G, Filename) ->
+  hivex_open(G, Filename, []).
+
+hivex_root(G) ->
+  call_port(G, {hivex_root}).
+
+hivex_value_key(G, Valueh) ->
+  call_port(G, {hivex_value_key, Valueh}).
+
+hivex_value_type(G, Valueh) ->
+  call_port(G, {hivex_value_type, Valueh}).
+
+hivex_value_utf8(G, Valueh) ->
+  call_port(G, {hivex_value_utf8, Valueh}).
+
+hivex_value_value(G, Valueh) ->
+  call_port(G, {hivex_value_value, Valueh}).
 
 initrd_cat(G, Initrdpath, Filename) ->
   call_port(G, {initrd_cat, Initrdpath, Filename}).
@@ -1006,11 +1209,125 @@ inspect_is_netinst(G, Root) ->
 inspect_list_applications(G, Root) ->
   call_port(G, {inspect_list_applications, Root}).
 
+inspect_list_applications2(G, Root) ->
+  call_port(G, {inspect_list_applications2, Root}).
+
 inspect_os(G) ->
   call_port(G, {inspect_os}).
 
 internal_autosync(G) ->
   call_port(G, {internal_autosync}).
+
+internal_hot_add_drive(G, Label) ->
+  call_port(G, {internal_hot_add_drive, Label}).
+
+internal_hot_remove_drive(G, Label) ->
+  call_port(G, {internal_hot_remove_drive, Label}).
+
+internal_hot_remove_drive_precheck(G, Label) ->
+  call_port(G, {internal_hot_remove_drive_precheck, Label}).
+
+internal_lstatlist(G, Path, Names) ->
+  call_port(G, {internal_lstatlist, Path, Names}).
+
+internal_lxattrlist(G, Path, Names) ->
+  call_port(G, {internal_lxattrlist, Path, Names}).
+
+internal_readlinklist(G, Path, Names) ->
+  call_port(G, {internal_readlinklist, Path, Names}).
+
+internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs) ->
+  call_port(G, {internal_test, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs}).
+internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin) ->
+  internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, []).
+
+internal_test_63_optargs(G, Optargs) ->
+  call_port(G, {internal_test_63_optargs, Optargs}).
+internal_test_63_optargs(G) ->
+  internal_test_63_optargs(G, []).
+
+internal_test_close_output(G) ->
+  call_port(G, {internal_test_close_output}).
+
+internal_test_only_optargs(G, Optargs) ->
+  call_port(G, {internal_test_only_optargs, Optargs}).
+internal_test_only_optargs(G) ->
+  internal_test_only_optargs(G, []).
+
+internal_test_rbool(G, Val) ->
+  call_port(G, {internal_test_rbool, Val}).
+
+internal_test_rboolerr(G) ->
+  call_port(G, {internal_test_rboolerr}).
+
+internal_test_rbufferout(G, Val) ->
+  call_port(G, {internal_test_rbufferout, Val}).
+
+internal_test_rbufferouterr(G) ->
+  call_port(G, {internal_test_rbufferouterr}).
+
+internal_test_rconstoptstring(G, Val) ->
+  call_port(G, {internal_test_rconstoptstring, Val}).
+
+internal_test_rconstoptstringerr(G) ->
+  call_port(G, {internal_test_rconstoptstringerr}).
+
+internal_test_rconststring(G, Val) ->
+  call_port(G, {internal_test_rconststring, Val}).
+
+internal_test_rconststringerr(G) ->
+  call_port(G, {internal_test_rconststringerr}).
+
+internal_test_rhashtable(G, Val) ->
+  call_port(G, {internal_test_rhashtable, Val}).
+
+internal_test_rhashtableerr(G) ->
+  call_port(G, {internal_test_rhashtableerr}).
+
+internal_test_rint(G, Val) ->
+  call_port(G, {internal_test_rint, Val}).
+
+internal_test_rint64(G, Val) ->
+  call_port(G, {internal_test_rint64, Val}).
+
+internal_test_rint64err(G) ->
+  call_port(G, {internal_test_rint64err}).
+
+internal_test_rinterr(G) ->
+  call_port(G, {internal_test_rinterr}).
+
+internal_test_rstring(G, Val) ->
+  call_port(G, {internal_test_rstring, Val}).
+
+internal_test_rstringerr(G) ->
+  call_port(G, {internal_test_rstringerr}).
+
+internal_test_rstringlist(G, Val) ->
+  call_port(G, {internal_test_rstringlist, Val}).
+
+internal_test_rstringlisterr(G) ->
+  call_port(G, {internal_test_rstringlisterr}).
+
+internal_test_rstruct(G, Val) ->
+  call_port(G, {internal_test_rstruct, Val}).
+
+internal_test_rstructerr(G) ->
+  call_port(G, {internal_test_rstructerr}).
+
+internal_test_rstructlist(G, Val) ->
+  call_port(G, {internal_test_rstructlist, Val}).
+
+internal_test_rstructlisterr(G) ->
+  call_port(G, {internal_test_rstructlisterr}).
+
+internal_test_set_output(G, Filename) ->
+  call_port(G, {internal_test_set_output, Filename}).
+
+internal_write(G, Path, Content) ->
+  call_port(G, {internal_write, Path, Content}).
+
+internal_write_append(G, Path, Content) ->
+  call_port(G, {internal_write_append, Path, Content}).
 
 is_blockdev(G, Path) ->
   call_port(G, {is_blockdev, Path}).
@@ -1069,6 +1386,36 @@ launch(G) ->
 lchown(G, Owner, Group, Path) ->
   call_port(G, {lchown, Owner, Group, Path}).
 
+ldmtool_create_all(G) ->
+  call_port(G, {ldmtool_create_all}).
+
+ldmtool_diskgroup_disks(G, Diskgroup) ->
+  call_port(G, {ldmtool_diskgroup_disks, Diskgroup}).
+
+ldmtool_diskgroup_name(G, Diskgroup) ->
+  call_port(G, {ldmtool_diskgroup_name, Diskgroup}).
+
+ldmtool_diskgroup_volumes(G, Diskgroup) ->
+  call_port(G, {ldmtool_diskgroup_volumes, Diskgroup}).
+
+ldmtool_remove_all(G) ->
+  call_port(G, {ldmtool_remove_all}).
+
+ldmtool_scan(G) ->
+  call_port(G, {ldmtool_scan}).
+
+ldmtool_scan_devices(G, Devices) ->
+  call_port(G, {ldmtool_scan_devices, Devices}).
+
+ldmtool_volume_hint(G, Diskgroup, Volume) ->
+  call_port(G, {ldmtool_volume_hint, Diskgroup, Volume}).
+
+ldmtool_volume_partitions(G, Diskgroup, Volume) ->
+  call_port(G, {ldmtool_volume_partitions, Diskgroup, Volume}).
+
+ldmtool_volume_type(G, Diskgroup, Volume) ->
+  call_port(G, {ldmtool_volume_type, Diskgroup, Volume}).
+
 lgetxattr(G, Path, Name) ->
   call_port(G, {lgetxattr, Path, Name}).
 
@@ -1081,11 +1428,20 @@ list_9p(G) ->
 list_devices(G) ->
   call_port(G, {list_devices}).
 
+list_disk_labels(G) ->
+  call_port(G, {list_disk_labels}).
+
 list_dm_devices(G) ->
   call_port(G, {list_dm_devices}).
 
 list_filesystems(G) ->
   call_port(G, {list_filesystems}).
+
+list_ldm_partitions(G) ->
+  call_port(G, {list_ldm_partitions}).
+
+list_ldm_volumes(G) ->
+  call_port(G, {list_ldm_volumes}).
 
 list_md_devices(G) ->
   call_port(G, {list_md_devices}).
@@ -1116,6 +1472,9 @@ lremovexattr(G, Xattr, Path) ->
 
 ls(G, Directory) ->
   call_port(G, {ls, Directory}).
+
+ls0(G, Dir, Filenames) ->
+  call_port(G, {ls0, Dir, Filenames}).
 
 lsetxattr(G, Xattr, Val, Vallen, Path) ->
   call_port(G, {lsetxattr, Xattr, Val, Vallen, Path}).
@@ -1189,6 +1548,9 @@ lvuuid(G, Device) ->
 lxattrlist(G, Path, Names) ->
   call_port(G, {lxattrlist, Path, Names}).
 
+max_disks(G) ->
+  call_port(G, {max_disks}).
+
 md_create(G, Name, Devices, Optargs) ->
   call_port(G, {md_create, Name, Devices, Optargs}).
 md_create(G, Name, Devices) ->
@@ -1215,6 +1577,11 @@ mkdir_p(G, Path) ->
 mkdtemp(G, Tmpl) ->
   call_port(G, {mkdtemp, Tmpl}).
 
+mke2fs(G, Device, Optargs) ->
+  call_port(G, {mke2fs, Device, Optargs}).
+mke2fs(G, Device) ->
+  mke2fs(G, Device, []).
+
 mke2fs_J(G, Fstype, Blocksize, Device, Journal) ->
   call_port(G, {mke2fs_J, Fstype, Blocksize, Device, Journal}).
 
@@ -1236,8 +1603,14 @@ mke2journal_U(G, Blocksize, Uuid, Device) ->
 mkfifo(G, Mode, Path) ->
   call_port(G, {mkfifo, Mode, Path}).
 
+mkfs(G, Fstype, Device, Optargs) ->
+  call_port(G, {mkfs, Fstype, Device, Optargs}).
 mkfs(G, Fstype, Device) ->
-  call_port(G, {mkfs, Fstype, Device}).
+  mkfs(G, Fstype, Device, []).
+mkfs_opts(G, Fstype, Device, Optargs) ->
+  mkfs(G, Fstype, Device, Optargs).
+mkfs_opts(G, Fstype, Device) ->
+  mkfs(G, Fstype, Device).
 
 mkfs_b(G, Fstype, Blocksize, Device) ->
   call_port(G, {mkfs_b, Fstype, Blocksize, Device}).
@@ -1247,10 +1620,8 @@ mkfs_btrfs(G, Devices, Optargs) ->
 mkfs_btrfs(G, Devices) ->
   mkfs_btrfs(G, Devices, []).
 
-mkfs_opts(G, Fstype, Device, Optargs) ->
-  call_port(G, {mkfs_opts, Fstype, Device, Optargs}).
-mkfs_opts(G, Fstype, Device) ->
-  mkfs_opts(G, Fstype, Device, []).
+mklost_and_found(G, Mountpoint) ->
+  call_port(G, {mklost_and_found, Mountpoint}).
 
 mkmountpoint(G, Exemptpath) ->
   call_port(G, {mkmountpoint, Exemptpath}).
@@ -1264,8 +1635,14 @@ mknod_b(G, Mode, Devmajor, Devminor, Path) ->
 mknod_c(G, Mode, Devmajor, Devminor, Path) ->
   call_port(G, {mknod_c, Mode, Devmajor, Devminor, Path}).
 
+mkswap(G, Device, Optargs) ->
+  call_port(G, {mkswap, Device, Optargs}).
 mkswap(G, Device) ->
-  call_port(G, {mkswap, Device}).
+  mkswap(G, Device, []).
+mkswap_opts(G, Device, Optargs) ->
+  mkswap(G, Device, Optargs).
+mkswap_opts(G, Device) ->
+  mkswap(G, Device).
 
 mkswap_L(G, Label, Device) ->
   call_port(G, {mkswap_L, Label, Device}).
@@ -1275,6 +1652,11 @@ mkswap_U(G, Uuid, Device) ->
 
 mkswap_file(G, Path) ->
   call_port(G, {mkswap_file, Path}).
+
+mktemp(G, Tmpl, Optargs) ->
+  call_port(G, {mktemp, Tmpl, Optargs}).
+mktemp(G, Tmpl) ->
+  mktemp(G, Tmpl, []).
 
 modprobe(G, Modulename) ->
   call_port(G, {modprobe, Modulename}).
@@ -1335,16 +1717,23 @@ ntfsfix(G, Device, Optargs) ->
 ntfsfix(G, Device) ->
   ntfsfix(G, Device, []).
 
+ntfsresize(G, Device, Optargs) ->
+  call_port(G, {ntfsresize, Device, Optargs}).
 ntfsresize(G, Device) ->
-  call_port(G, {ntfsresize, Device}).
-
+  ntfsresize(G, Device, []).
 ntfsresize_opts(G, Device, Optargs) ->
-  call_port(G, {ntfsresize_opts, Device, Optargs}).
+  ntfsresize(G, Device, Optargs).
 ntfsresize_opts(G, Device) ->
-  ntfsresize_opts(G, Device, []).
+  ntfsresize(G, Device).
 
 ntfsresize_size(G, Device, Size) ->
   call_port(G, {ntfsresize_size, Device, Size}).
+
+parse_environment(G) ->
+  call_port(G, {parse_environment}).
+
+parse_environment_list(G, Environment) ->
+  call_port(G, {parse_environment_list, Environment}).
 
 part_add(G, Device, Prlogex, Startsect, Endsect) ->
   call_port(G, {part_add, Device, Prlogex, Startsect, Endsect}).
@@ -1394,6 +1783,12 @@ pread(G, Path, Count, Offset) ->
 pread_device(G, Device, Count, Offset) ->
   call_port(G, {pread_device, Device, Count, Offset}).
 
+pvchange_uuid(G, Device) ->
+  call_port(G, {pvchange_uuid, Device}).
+
+pvchange_uuid_all(G) ->
+  call_port(G, {pvchange_uuid_all}).
+
 pvcreate(G, Device) ->
   call_port(G, {pvcreate, Device}).
 
@@ -1439,6 +1834,9 @@ readlinklist(G, Path, Names) ->
 realpath(G, Path) ->
   call_port(G, {realpath, Path}).
 
+remove_drive(G, Label) ->
+  call_port(G, {remove_drive, Label}).
+
 removexattr(G, Xattr, Path) ->
   call_port(G, {removexattr, Xattr, Path}).
 
@@ -1454,6 +1852,9 @@ resize2fs_size(G, Device, Size) ->
 rm(G, Path) ->
   call_port(G, {rm, Path}).
 
+rm_f(G, Path) ->
+  call_port(G, {rm_f, Path}).
+
 rm_rf(G, Path) ->
   call_port(G, {rm_rf, Path}).
 
@@ -1462,6 +1863,21 @@ rmdir(G, Path) ->
 
 rmmountpoint(G, Exemptpath) ->
   call_port(G, {rmmountpoint, Exemptpath}).
+
+rsync(G, Src, Dest, Optargs) ->
+  call_port(G, {rsync, Src, Dest, Optargs}).
+rsync(G, Src, Dest) ->
+  rsync(G, Src, Dest, []).
+
+rsync_in(G, Remote, Dest, Optargs) ->
+  call_port(G, {rsync_in, Remote, Dest, Optargs}).
+rsync_in(G, Remote, Dest) ->
+  rsync_in(G, Remote, Dest, []).
+
+rsync_out(G, Src, Remote, Optargs) ->
+  call_port(G, {rsync_out, Src, Remote, Optargs}).
+rsync_out(G, Src, Remote) ->
+  rsync_out(G, Src, Remote, []).
 
 scrub_device(G, Device) ->
   call_port(G, {scrub_device, Device}).
@@ -1480,6 +1896,9 @@ set_attach_method(G, Attachmethod) ->
 
 set_autosync(G, Autosync) ->
   call_port(G, {set_autosync, Autosync}).
+
+set_cachedir(G, Cachedir) ->
+  call_port(G, {set_cachedir, Cachedir}).
 
 set_direct(G, Direct) ->
   call_port(G, {set_direct, Direct}).
@@ -1500,6 +1919,12 @@ set_e2uuid(G, Device, Uuid) ->
 
 set_label(G, Device, Label) ->
   call_port(G, {set_label, Device, Label}).
+
+set_libvirt_requested_credential(G, Index, Cred) ->
+  call_port(G, {set_libvirt_requested_credential, Index, Cred}).
+
+set_libvirt_supported_credentials(G, Creds) ->
+  call_port(G, {set_libvirt_supported_credentials, Creds}).
 
 set_memsize(G, Memsize) ->
   call_port(G, {set_memsize, Memsize}).
@@ -1524,6 +1949,9 @@ set_selinux(G, Selinux) ->
 
 set_smp(G, Smp) ->
   call_port(G, {set_smp, Smp}).
+
+set_tmpdir(G, Tmpdir) ->
+  call_port(G, {set_tmpdir, Tmpdir}).
 
 set_trace(G, Trace) ->
   call_port(G, {set_trace, Trace}).
@@ -1612,82 +2040,23 @@ tail(G, Path) ->
 tail_n(G, Nrlines, Path) ->
   call_port(G, {tail_n, Nrlines, Path}).
 
+tar_in(G, Tarfile, Directory, Optargs) ->
+  call_port(G, {tar_in, Tarfile, Directory, Optargs}).
 tar_in(G, Tarfile, Directory) ->
-  call_port(G, {tar_in, Tarfile, Directory}).
+  tar_in(G, Tarfile, Directory, []).
+tar_in_opts(G, Tarfile, Directory, Optargs) ->
+  tar_in(G, Tarfile, Directory, Optargs).
+tar_in_opts(G, Tarfile, Directory) ->
+  tar_in(G, Tarfile, Directory).
 
+tar_out(G, Directory, Tarfile, Optargs) ->
+  call_port(G, {tar_out, Directory, Tarfile, Optargs}).
 tar_out(G, Directory, Tarfile) ->
-  call_port(G, {tar_out, Directory, Tarfile}).
-
-test0(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs) ->
-  call_port(G, {test0, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs}).
-test0(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin) ->
-  test0(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, []).
-
-test0rbool(G, Val) ->
-  call_port(G, {test0rbool, Val}).
-
-test0rboolerr(G) ->
-  call_port(G, {test0rboolerr}).
-
-test0rbufferout(G, Val) ->
-  call_port(G, {test0rbufferout, Val}).
-
-test0rbufferouterr(G) ->
-  call_port(G, {test0rbufferouterr}).
-
-test0rconstoptstring(G, Val) ->
-  call_port(G, {test0rconstoptstring, Val}).
-
-test0rconstoptstringerr(G) ->
-  call_port(G, {test0rconstoptstringerr}).
-
-test0rconststring(G, Val) ->
-  call_port(G, {test0rconststring, Val}).
-
-test0rconststringerr(G) ->
-  call_port(G, {test0rconststringerr}).
-
-test0rhashtable(G, Val) ->
-  call_port(G, {test0rhashtable, Val}).
-
-test0rhashtableerr(G) ->
-  call_port(G, {test0rhashtableerr}).
-
-test0rint(G, Val) ->
-  call_port(G, {test0rint, Val}).
-
-test0rint64(G, Val) ->
-  call_port(G, {test0rint64, Val}).
-
-test0rint64err(G) ->
-  call_port(G, {test0rint64err}).
-
-test0rinterr(G) ->
-  call_port(G, {test0rinterr}).
-
-test0rstring(G, Val) ->
-  call_port(G, {test0rstring, Val}).
-
-test0rstringerr(G) ->
-  call_port(G, {test0rstringerr}).
-
-test0rstringlist(G, Val) ->
-  call_port(G, {test0rstringlist, Val}).
-
-test0rstringlisterr(G) ->
-  call_port(G, {test0rstringlisterr}).
-
-test0rstruct(G, Val) ->
-  call_port(G, {test0rstruct, Val}).
-
-test0rstructerr(G) ->
-  call_port(G, {test0rstructerr}).
-
-test0rstructlist(G, Val) ->
-  call_port(G, {test0rstructlist, Val}).
-
-test0rstructlisterr(G) ->
-  call_port(G, {test0rstructlisterr}).
+  tar_out(G, Directory, Tarfile, []).
+tar_out_opts(G, Directory, Tarfile, Optargs) ->
+  tar_out(G, Directory, Tarfile, Optargs).
+tar_out_opts(G, Directory, Tarfile) ->
+  tar_out(G, Directory, Tarfile).
 
 tgz_in(G, Tarball, Directory) ->
   call_port(G, {tgz_in, Tarball, Directory}).
@@ -1721,8 +2090,14 @@ txz_out(G, Directory, Tarball) ->
 umask(G, Mask) ->
   call_port(G, {umask, Mask}).
 
+umount(G, Pathordevice, Optargs) ->
+  call_port(G, {umount, Pathordevice, Optargs}).
 umount(G, Pathordevice) ->
-  call_port(G, {umount, Pathordevice}).
+  umount(G, Pathordevice, []).
+umount_opts(G, Pathordevice, Optargs) ->
+  umount(G, Pathordevice, Optargs).
+umount_opts(G, Pathordevice) ->
+  umount(G, Pathordevice).
 
 umount_all(G) ->
   call_port(G, {umount_all}).
@@ -1741,6 +2116,9 @@ upload_offset(G, Filename, Remotefilename, Offset) ->
 utimens(G, Path, Atsecs, Atnsecs, Mtsecs, Mtnsecs) ->
   call_port(G, {utimens, Path, Atsecs, Atnsecs, Mtsecs, Mtnsecs}).
 
+utsname(G) ->
+  call_port(G, {utsname}).
+
 version(G) ->
   call_port(G, {version}).
 
@@ -1758,6 +2136,12 @@ vg_activate(G, Activate, Volgroups) ->
 
 vg_activate_all(G, Activate) ->
   call_port(G, {vg_activate_all, Activate}).
+
+vgchange_uuid(G, Vg) ->
+  call_port(G, {vgchange_uuid, Vg}).
+
+vgchange_uuid_all(G) ->
+  call_port(G, {vgchange_uuid_all}).
 
 vgcreate(G, Volgroup, Physvols) ->
   call_port(G, {vgcreate, Volgroup, Physvols}).
@@ -1812,6 +2196,24 @@ write_append(G, Path, Content) ->
 
 write_file(G, Path, Content, Size) ->
   call_port(G, {write_file, Path, Content, Size}).
+
+xfs_admin(G, Device, Optargs) ->
+  call_port(G, {xfs_admin, Device, Optargs}).
+xfs_admin(G, Device) ->
+  xfs_admin(G, Device, []).
+
+xfs_growfs(G, Path, Optargs) ->
+  call_port(G, {xfs_growfs, Path, Optargs}).
+xfs_growfs(G, Path) ->
+  xfs_growfs(G, Path, []).
+
+xfs_info(G, Pathordevice) ->
+  call_port(G, {xfs_info, Pathordevice}).
+
+xfs_repair(G, Device, Optargs) ->
+  call_port(G, {xfs_repair, Device, Optargs}).
+xfs_repair(G, Device) ->
+  xfs_repair(G, Device, []).
 
 zegrep(G, Regex, Path) ->
   call_port(G, {zegrep, Regex, Path}).

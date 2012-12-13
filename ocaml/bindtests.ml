@@ -1,6 +1,6 @@
 (* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -22,17 +22,21 @@
 
 let () =
   let g = Guestfs.create () in
-  Guestfs.test0 g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~obool:true ~oint:(1);
-  Guestfs.test0 g "abc" None [||] false 0 0L "123" "456" "abc\000abc" ~oint64:(1L) ~ostring:"string";
-  Guestfs.test0 g "" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~obool:false;
-  Guestfs.test0 g "" (Some "") [||] false 0 0L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1";"2"|] false 0 0L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] true 0 0L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-1) (-1L) "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false (-2) (-2L) "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 1 1L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 2 2L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 4095 4095L "123" "456" "abc\000abc";
-  Guestfs.test0 g "abc" (Some "def") [|"1"|] false 0 0L "" "" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~obool:true ~oint:(1) ~oint64:(9223372036854775807L);
+  Guestfs.internal_test g "abc" None [||] false 0 0L "123" "456" "abc\000abc" ~oint64:(1L) ~ostring:"string";
+  Guestfs.internal_test g "" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~obool:false ~oint64:(-9223372036854775808L);
+  Guestfs.internal_test g "" (Some "") [||] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1";"2"|] false 0 0L "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] true 0 0L "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] false (-1) (-1L) "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] false (-2) (-2L) "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] false 1 1L "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] false 2 2L "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] false 4095 9223372036854775807L "123" "456" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [|"1"|] false 0 (-9223372036854775808L) "" "" "abc\000abc";
+  Guestfs.internal_test g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~ostringlist:[||];
+  Guestfs.internal_test g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~ostringlist:[|"optelem1"|];
+  Guestfs.internal_test g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~ostringlist:[|"optelem1";"optelem2"|];
+  Guestfs.internal_test g "abc" (Some "def") [||] false 0 0L "123" "456" "abc\000abc" ~ostringlist:[|"optelem1";"optelem2";"optelem3"|];
 print_endline "EOF"

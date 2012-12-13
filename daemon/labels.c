@@ -27,15 +27,14 @@
 #include "actions.h"
 #include "optgroups.h"
 
+GUESTFSD_EXT_CMD(str_e2label, e2label);
+GUESTFSD_EXT_CMD(str_ntfslabel, ntfslabel);
+
 static int
 e2label (const char *device, const char *label)
 {
   int r;
   char *err;
-
-  char prog[] = "e2label";
-  if (e2prog (prog) == -1)
-    return -1;
 
   if (strlen (label) > EXT2_LABEL_MAX) {
     reply_with_error ("%s: ext2 labels are limited to %d bytes",
@@ -43,7 +42,7 @@ e2label (const char *device, const char *label)
     return -1;
   }
 
-  r = command (NULL, &err, prog, device, label, NULL);
+  r = command (NULL, &err, str_e2label, device, label, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -64,7 +63,7 @@ ntfslabel (const char *device, const char *label)
    * characters and return an error.  This is not so easy since we
    * don't have the required libraries.
    */
-  r = command (NULL, &err, "ntfslabel", device, label, NULL);
+  r = command (NULL, &err, str_ntfslabel, device, label, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);

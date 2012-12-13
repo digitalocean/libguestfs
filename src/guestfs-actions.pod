@@ -1,3 +1,79 @@
+=head2 guestfs_acl_delete_def_file
+
+ int
+ guestfs_acl_delete_def_file (guestfs_h *g,
+                              const char *dir);
+
+This function deletes the default POSIX Access Control List (ACL)
+attached to directory C<dir>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.63)
+
+=head2 guestfs_acl_get_file
+
+ char *
+ guestfs_acl_get_file (guestfs_h *g,
+                       const char *path,
+                       const char *acltype);
+
+This function returns the POSIX Access Control List (ACL) attached
+to C<path>.  The ACL is returned in "long text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Return the ordinary (access) ACL for any file, directory or
+other filesystem object.
+
+=item C<default>
+
+Return the default ACL.  Normally this only makes sense if
+C<path> is a directory.
+
+=back
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.63)
+
+=head2 guestfs_acl_set_file
+
+ int
+ guestfs_acl_set_file (guestfs_h *g,
+                       const char *path,
+                       const char *acltype,
+                       const char *acl);
+
+This function sets the POSIX Access Control List (ACL) attached
+to C<path>.  The C<acl> parameter is the new ACL in either
+"long text form" or "short text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Set the ordinary (access) ACL for any file, directory or
+other filesystem object.
+
+=item C<default>
+
+Set the default ACL.  Normally this only makes sense if
+C<path> is a directory.
+
+=back
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.63)
+
 =head2 guestfs_add_cdrom
 
  int
@@ -5,7 +81,7 @@
                     const char *filename);
 
 I<This function is deprecated.>
-In new code, use the L</guestfs_add_drive_opts> call instead.
+In new code, use the L</guestfs_add_drive> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -13,26 +89,8 @@ with correct use of these functions.
 
 This function adds a virtual CD-ROM disk image to the guest.
 
-This is equivalent to the qemu parameter I<-cdrom filename>.
-
-Notes:
-
-=over 4
-
-=item *
-
-This call checks for the existence of C<filename>.  This
-stops you from specifying other types of drive which are supported
-by qemu such as C<nbd:> and C<http:> URLs.  To specify those, use
-the general C<guestfs_config> call instead.
-
-=item *
-
-If you just want to add an ISO file (often you use this as an
-efficient way to transfer large files into the guest), then you
-should probably use C<guestfs_add_drive_ro> instead.
-
-=back
+B<Do not use this function!>  ISO files are just ordinary
+read-only disk images.  Use C<guestfs_add_drive_ro> instead.
 
 This function returns 0 on success or -1 on error.
 
@@ -173,20 +231,12 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  guestfs_add_drive (guestfs_h *g,
                     const char *filename);
 
-This function is the equivalent of calling C<guestfs_add_drive_opts>
-with no optional parameters, so the disk is added writable, with
-the format being detected automatically.
-
-Automatic detection of the format opens you up to a potential
-security hole when dealing with untrusted raw-format images.
-See CVE-2010-3851 and RHBZ#642934.  Specifying the format closes
-this security hole.  Therefore you should think about replacing
-calls to this function with calls to C<guestfs_add_drive_opts>,
-and specifying the format.
-
-This function returns 0 on success or -1 on error.
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_add_drive_opts> with no optional arguments.
 
 (Added in 0.3)
+
 
 =head2 guestfs_add_drive_opts
 
@@ -204,12 +254,21 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_FORMAT, const char *format,
  GUESTFS_ADD_DRIVE_OPTS_IFACE, const char *iface,
  GUESTFS_ADD_DRIVE_OPTS_NAME, const char *name,
+ GUESTFS_ADD_DRIVE_OPTS_LABEL, const char *label,
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
 
-The first time you call this function, the disk appears as
-C</dev/sda>, the second time as C</dev/sdb>, and so on.
+When this function is called before C<guestfs_launch> (the
+usual case) then the first time you call this function,
+the disk appears in the API as C</dev/sda>, the second time
+as C</dev/sdb>, and so on.
+
+In libguestfs E<ge> 1.20 you can also call this function
+after launch (with some restrictions).  This is called
+"hotplugging".  When hotplugging, you must specify a
+C<label> so that the new disk gets a predictable name.
+For more information see L<guestfs(3)/HOTPLUGGING>.
 
 You don't necessarily need to be root when using libguestfs.  However
 you obviously do need sufficient permissions to access the filename
@@ -253,6 +312,15 @@ deprecated C<guestfs_add_drive_with_if> call (q.v.)
 The name the drive had in the original guest, e.g. C</dev/sdb>.
 This is used as a hint to the guest inspection process if
 it is available.
+
+=item C<label>
+
+Give the disk a label.  The label should be a unique, short
+string using I<only> ASCII characters C<[a-zA-Z]>.
+As well as its usual name in the API (such as C</dev/sda>),
+the drive will also be named C</dev/disk/guestfs/I<label>>.
+
+See L<guestfs(3)/DISK LABELS>.
 
 =back
 
@@ -305,7 +373,7 @@ This function returns 0 on success or -1 on error.
                                const char *iface);
 
 I<This function is deprecated.>
-In new code, use the L</guestfs_add_drive_opts> call instead.
+In new code, use the L</guestfs_add_drive> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -326,7 +394,7 @@ This function returns 0 on success or -1 on error.
                             const char *iface);
 
 I<This function is deprecated.>
-In new code, use the L</guestfs_add_drive_opts> call instead.
+In new code, use the L</guestfs_add_drive> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -673,6 +741,8 @@ execute a command to find out if the daemon implemented it.
 See also C<guestfs_version>.
 
 =back
+
+See also C<guestfs_filesystem_available>.
 
 This function returns 0 on success or -1 on error.
 
@@ -1166,6 +1236,70 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.17.35)
 
+=head2 guestfs_canonical_device_name
+
+ char *
+ guestfs_canonical_device_name (guestfs_h *g,
+                                const char *device);
+
+This utility function is useful when displaying device names to
+the user.  It takes a number of irregular device names and
+returns them in a consistent format:
+
+=over 4
+
+=item C</dev/hdX>
+
+=item C</dev/vdX>
+
+These are returned as C</dev/sdX>.  Note this works for device
+names and partition names.  This is approximately the reverse of
+the algorithm described in L<guestfs(3)/BLOCK DEVICE NAMING>.
+
+=item C</dev/mapper/VG-LV>
+
+=item C</dev/dm-N>
+
+Converted to C</dev/VG/LV> form using C<guestfs_lvm_canonical_lvm_name>.
+
+=back
+
+Other strings are returned unmodified.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.7)
+
+=head2 guestfs_cap_get_file
+
+ char *
+ guestfs_cap_get_file (guestfs_h *g,
+                       const char *path);
+
+This function returns the Linux capabilities attached to C<path>.
+The capabilities set is returned in text form (see L<cap_to_text(3)>).
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.63)
+
+=head2 guestfs_cap_set_file
+
+ int
+ guestfs_cap_set_file (guestfs_h *g,
+                       const char *path,
+                       const char *cap);
+
+This function sets the Linux capabilities attached to C<path>.
+The capabilities set C<cap> should be passed in text form
+(see L<cap_from_text(3)>).
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.63)
+
 =head2 guestfs_case_sensitive_path
 
  char *
@@ -1217,16 +1351,13 @@ I<The caller must free the returned string after use>.
 
 Return the contents of the file named C<path>.
 
-Note that this function cannot correctly handle binary files
-(specifically, files containing C<\0> character which is treated
-as end of string).  For those you need to use the C<guestfs_read_file>
-or C<guestfs_download> functions which have a more complex interface.
+Because, in C, this function returns a C<char *>, there is no
+way to differentiate between a C<\0> character in a file and
+end of string.  To handle binary files, use the C<guestfs_read_file>
+or C<guestfs_download> functions.
 
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 0.4)
 
@@ -1552,9 +1683,9 @@ of the form I<-param value>.  Actually it's not quite arbitrary - we
 prevent you from setting some parameters which would interfere with
 parameters that we use.
 
-The first character of C<param> string must be a C<-> (dash).
+The first character of C<qemuparam> string must be a C<-> (dash).
 
-C<value> can be NULL.
+C<qemuvalue> can be NULL.
 
 This function returns 0 on success or -1 on error.
 
@@ -1895,6 +2026,8 @@ See also C<guestfs_list_devices>, C<guestfs_part_to_dev>.
 
 On error this function returns -1.
 
+(Added in 1.19.7)
+
 =head2 guestfs_df
 
  char *
@@ -1927,6 +2060,58 @@ This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
 (Added in 1.0.54)
+
+=head2 guestfs_disk_format
+
+ char *
+ guestfs_disk_format (guestfs_h *g,
+                      const char *filename);
+
+Detect and return the format of the disk image called C<filename>.
+C<filename> can also be a host device, etc.  If the format of the
+image could not be detected, then C<"unknown"> is returned.
+
+Note that detecting the disk format can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
+
+See also: L<guestfs(3)/DISK IMAGE FORMATS>
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.38)
+
+=head2 guestfs_disk_has_backing_file
+
+ int
+ guestfs_disk_has_backing_file (guestfs_h *g,
+                                const char *filename);
+
+Detect and return whether the disk image C<filename> has a
+backing file.
+
+Note that detecting disk features can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.19.39)
+
+=head2 guestfs_disk_virtual_size
+
+ int64_t
+ guestfs_disk_virtual_size (guestfs_h *g,
+                            const char *filename);
+
+Detect and return the virtual size in bytes of the disk image
+called C<filename>.
+
+Note that detecting disk features can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
+
+On error this function returns -1.
+
+(Added in 1.19.39)
 
 =head2 guestfs_dmesg
 
@@ -2155,6 +2340,13 @@ I<The caller must free the returned string after use>.
                 const char *regex,
                 const char *path);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This calls the external C<egrep> program and returns the
 matching lines.
 
@@ -2173,6 +2365,13 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
  guestfs_egrepi (guestfs_h *g,
                  const char *regex,
                  const char *path);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This calls the external C<egrep -i> program and returns the
 matching lines.
@@ -2277,6 +2476,13 @@ This function returns 0 on success or -1 on error.
                 const char *pattern,
                 const char *path);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This calls the external C<fgrep> program and returns the
 matching lines.
 
@@ -2295,6 +2501,13 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
  guestfs_fgrepi (guestfs_h *g,
                  const char *pattern,
                  const char *path);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This calls the external C<fgrep -i> program and returns the
 matching lines.
@@ -2464,6 +2677,29 @@ On error this function returns -1.
 
 (Added in 1.0.82)
 
+=head2 guestfs_filesystem_available
+
+ int
+ guestfs_filesystem_available (guestfs_h *g,
+                               const char *filesystem);
+
+Check whether libguestfs supports the named filesystem.
+The argument C<filesystem> is a filesystem name, such as
+C<ext3>.
+
+You must call C<guestfs_launch> before using this command.
+
+This is mainly useful as a negative test.  If this returns true,
+it doesn't mean that a particular filesystem can be mounted,
+since filesystems can fail for other reasons such as it being
+a later version of the filesystem, or having incompatible features.
+
+See also C<guestfs_available>, L<guestfs(3)/AVAILABILITY>.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.19.5)
+
 =head2 guestfs_fill
 
  int
@@ -2489,6 +2725,22 @@ To receive these messages, the caller must register a progress
 event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
 (Added in 1.0.79)
+
+=head2 guestfs_fill_dir
+
+ int
+ guestfs_fill_dir (guestfs_h *g,
+                   const char *dir,
+                   int nr);
+
+This function, useful for testing filesystems, creates C<nr>
+empty files in the directory C<dir> with names C<00000000>
+through C<nr-1> (ie. each file name is 8 digits long padded
+with zeroes).
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.32)
 
 =head2 guestfs_fill_pattern
 
@@ -2543,14 +2795,9 @@ an error.
 
 The returned list is sorted.
 
-See also C<guestfs_find0>.
-
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 1.0.27)
 
@@ -2578,11 +2825,6 @@ The resulting list is written to an external file.
 
 Items (filenames) in the result are separated
 by C<\0> characters.  See L<find(1)> option I<-print0>.
-
-=item *
-
-This command is not limited in the number of names that it
-can return.
 
 =item *
 
@@ -2667,6 +2909,66 @@ On error this function returns -1.
 
 (Added in 1.0.16)
 
+=head2 guestfs_fstrim
+
+ int
+ guestfs_fstrim (guestfs_h *g,
+                 const char *mountpoint,
+                 ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_FSTRIM_OFFSET, int64_t offset,
+ GUESTFS_FSTRIM_LENGTH, int64_t length,
+ GUESTFS_FSTRIM_MINIMUMFREEEXTENT, int64_t minimumfreeextent,
+
+Trim the free space in the filesystem mounted on C<mountpoint>.
+The filesystem must be mounted read-write.
+
+The filesystem contents are not affected, but any free space
+in the filesystem is "trimmed", that is, given back to the host
+device, thus making disk images more sparse, allowing unused space
+in qcow2 files to be reused, etc.
+
+This operation requires support in libguestfs, the mounted
+filesystem, the host filesystem, qemu and the host kernel.
+If this support isn't present it may give an error or even
+appear to run but do nothing.
+
+See also C<guestfs_zero_free_space>.  That is a slightly
+different operation that turns free space in the filesystem
+into zeroes.  It is valid to call C<guestfs_fstrim> either
+instead of, or after calling C<guestfs_zero_free_space>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.6)
+
+=head2 guestfs_fstrim_va
+
+ int
+ guestfs_fstrim_va (guestfs_h *g,
+                    const char *mountpoint,
+                    va_list args);
+
+This is the "va_list variant" of L</guestfs_fstrim>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_fstrim_argv
+
+ int
+ guestfs_fstrim_argv (guestfs_h *g,
+                      const char *mountpoint,
+                      const struct guestfs_fstrim_argv *optargs);
+
+This is the "argv variant" of L</guestfs_fstrim>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_get_append
 
  const char *
@@ -2705,6 +3007,18 @@ Get the autosync flag.
 This function returns a C truth value on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_get_cachedir
+
+ char *
+ guestfs_get_cachedir (guestfs_h *g);
+
+Get the directory used by the handle to store the appliance cache.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.58)
 
 =head2 guestfs_get_direct
 
@@ -2898,6 +3212,77 @@ I<The caller must free the returned string after use>.
 
 (Added in 1.0.15)
 
+=head2 guestfs_get_libvirt_requested_credential_challenge
+
+ char *
+ guestfs_get_libvirt_requested_credential_challenge (guestfs_h *g,
+                                                     int index);
+
+Get the challenge (provided by libvirt) for the C<index>'th
+requested credential.  If libvirt did not provide a challenge,
+this returns the empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.52)
+
+=head2 guestfs_get_libvirt_requested_credential_defresult
+
+ char *
+ guestfs_get_libvirt_requested_credential_defresult (guestfs_h *g,
+                                                     int index);
+
+Get the default result (provided by libvirt) for the C<index>'th
+requested credential.  If libvirt did not provide a default result,
+this returns the empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.52)
+
+=head2 guestfs_get_libvirt_requested_credential_prompt
+
+ char *
+ guestfs_get_libvirt_requested_credential_prompt (guestfs_h *g,
+                                                  int index);
+
+Get the prompt (provided by libvirt) for the C<index>'th
+requested credential.  If libvirt did not provide a prompt,
+this returns the empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.52)
+
+=head2 guestfs_get_libvirt_requested_credentials
+
+ char **
+ guestfs_get_libvirt_requested_credentials (guestfs_h *g);
+
+This should only be called during the event callback
+for events of type C<GUESTFS_EVENT_LIBVIRT_AUTH>.
+
+Return the list of credentials requested by libvirt.  Possible
+values are a subset of the strings provided when you called
+C<guestfs_set_libvirt_supported_credentials>.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+(Added in 1.19.52)
+
 =head2 guestfs_get_memsize
 
  int
@@ -3034,6 +3419,18 @@ On error this function returns -1.
 
 (Added in 1.0.2)
 
+=head2 guestfs_get_tmpdir
+
+ char *
+ guestfs_get_tmpdir (guestfs_h *g);
+
+Get the directory used by the handle to store temporary files.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.58)
+
 =head2 guestfs_get_trace
 
  int
@@ -3167,8 +3564,58 @@ I<The caller must free the strings and the array after use>.
                const char *regex,
                const char *path);
 
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_grep_opts> with no optional arguments.
+
+(Added in 1.0.66)
+
+
+=head2 guestfs_grep_opts
+
+ char **
+ guestfs_grep_opts (guestfs_h *g,
+                    const char *regex,
+                    const char *path,
+                    ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_GREP_OPTS_EXTENDED, int extended,
+ GUESTFS_GREP_OPTS_FIXED, int fixed,
+ GUESTFS_GREP_OPTS_INSENSITIVE, int insensitive,
+ GUESTFS_GREP_OPTS_COMPRESSED, int compressed,
+
 This calls the external C<grep> program and returns the
 matching lines.
+
+The optional flags are:
+
+=over 4
+
+=item C<extended>
+
+Use extended regular expressions.
+This is the same as using the I<-E> flag.
+
+=item C<fixed>
+
+Match fixed (don't use regular expressions).
+This is the same as using the I<-F> flag.
+
+=item C<insensitive>
+
+Match case-insensitive.  This is the same as using the I<-i> flag.
+
+=item C<compressed>
+
+Use C<zgrep> instead of C<grep>.  This allows the input to be
+compress- or gzip-compressed.
+
+=back
 
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
@@ -3177,7 +3624,31 @@ I<The caller must free the strings and the array after use>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-(Added in 1.0.66)
+(Added in 1.19.28)
+
+=head2 guestfs_grep_opts_va
+
+ char **
+ guestfs_grep_opts_va (guestfs_h *g,
+                       const char *regex,
+                       const char *path,
+                       va_list args);
+
+This is the "va_list variant" of L</guestfs_grep_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_grep_opts_argv
+
+ char **
+ guestfs_grep_opts_argv (guestfs_h *g,
+                         const char *regex,
+                         const char *path,
+                         const struct guestfs_grep_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_grep_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_grepi
 
@@ -3185,6 +3656,13 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
  guestfs_grepi (guestfs_h *g,
                 const char *regex,
                 const char *path);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This calls the external C<grep -i> program and returns the
 matching lines.
@@ -3303,6 +3781,310 @@ Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 1.0.22)
+
+=head2 guestfs_hivex_close
+
+ int
+ guestfs_hivex_close (guestfs_h *g);
+
+Close the current hivex handle.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_commit
+
+ int
+ guestfs_hivex_commit (guestfs_h *g,
+                       const char *filename);
+
+Commit (write) changes to the hive.
+
+If the optional C<filename> parameter is null, then the changes
+are written back to the same hive that was opened.  If this is
+not null then they are written to the alternate filename given
+and the original hive is left untouched.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_add_child
+
+ int64_t
+ guestfs_hivex_node_add_child (guestfs_h *g,
+                               int64_t parent,
+                               const char *name);
+
+Add a child node to C<parent> named C<name>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+On error this function returns -1.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_children
+
+ struct guestfs_hivex_node_list *
+ guestfs_hivex_node_children (guestfs_h *g,
+                              int64_t nodeh);
+
+Return the list of nodes which are subkeys of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns a C<struct guestfs_hivex_node_list *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_hivex_node_list> after use>.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_delete_child
+
+ int
+ guestfs_hivex_node_delete_child (guestfs_h *g,
+                                  int64_t nodeh);
+
+Delete C<nodeh>, recursively if necessary.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_get_child
+
+ int64_t
+ guestfs_hivex_node_get_child (guestfs_h *g,
+                               int64_t nodeh,
+                               const char *name);
+
+Return the child of C<nodeh> with the name C<name>, if it exists.
+This can return C<0> meaning the name was not found.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+On error this function returns -1.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_get_value
+
+ int64_t
+ guestfs_hivex_node_get_value (guestfs_h *g,
+                               int64_t nodeh,
+                               const char *key);
+
+Return the value attached to C<nodeh> which has the
+name C<key>, if it exists.  This can return C<0> meaning
+the key was not found.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+On error this function returns -1.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_name
+
+ char *
+ guestfs_hivex_node_name (guestfs_h *g,
+                          int64_t nodeh);
+
+Return the name of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_parent
+
+ int64_t
+ guestfs_hivex_node_parent (guestfs_h *g,
+                            int64_t nodeh);
+
+Return the parent node of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+On error this function returns -1.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_set_value
+
+ int
+ guestfs_hivex_node_set_value (guestfs_h *g,
+                               int64_t nodeh,
+                               const char *key,
+                               int64_t t,
+                               const char *val,
+                               size_t val_size);
+
+Set or replace a single value under the node C<nodeh>.  The
+C<key> is the name, C<t> is the type, and C<val> is the data.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_node_values
+
+ struct guestfs_hivex_value_list *
+ guestfs_hivex_node_values (guestfs_h *g,
+                            int64_t nodeh);
+
+Return the array of (key, datatype, data) tuples attached to C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns a C<struct guestfs_hivex_value_list *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_hivex_value_list> after use>.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_open
+
+ int
+ guestfs_hivex_open (guestfs_h *g,
+                     const char *filename,
+                     ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_HIVEX_OPEN_VERBOSE, int verbose,
+ GUESTFS_HIVEX_OPEN_DEBUG, int debug,
+ GUESTFS_HIVEX_OPEN_WRITE, int write,
+
+Open the Windows Registry hive file named C<filename>.
+If there was any previous hivex handle associated with this
+guestfs session, then it is closed.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_open_va
+
+ int
+ guestfs_hivex_open_va (guestfs_h *g,
+                        const char *filename,
+                        va_list args);
+
+This is the "va_list variant" of L</guestfs_hivex_open>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_hivex_open_argv
+
+ int
+ guestfs_hivex_open_argv (guestfs_h *g,
+                          const char *filename,
+                          const struct guestfs_hivex_open_argv *optargs);
+
+This is the "argv variant" of L</guestfs_hivex_open>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_hivex_root
+
+ int64_t
+ guestfs_hivex_root (guestfs_h *g);
+
+Return the root node of the hive.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+On error this function returns -1.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_value_key
+
+ char *
+ guestfs_hivex_value_key (guestfs_h *g,
+                          int64_t valueh);
+
+Return the key (name) field of a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_value_type
+
+ int64_t
+ guestfs_hivex_value_type (guestfs_h *g,
+                           int64_t valueh);
+
+Return the data type field from a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+On error this function returns -1.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_value_utf8
+
+ char *
+ guestfs_hivex_value_utf8 (guestfs_h *g,
+                           int64_t valueh);
+
+This calls C<guestfs_hivex_value_value> (which returns the
+data field from a hivex value tuple).  It then assumes that
+the field is a UTF-16LE string and converts the result to
+UTF-8 (or if this is not possible, it returns an error).
+
+This is useful for reading strings out of the Windows registry.
+However it is not foolproof because the registry is not
+strongly-typed and fields can contain arbitrary or unexpected
+data.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.35)
+
+=head2 guestfs_hivex_value_value
+
+ char *
+ guestfs_hivex_value_value (guestfs_h *g,
+                            int64_t valueh,
+                            size_t *size_r);
+
+Return the data field of a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+See also: C<guestfs_hivex_value_utf8>.
+
+This function returns a buffer, or NULL on error.
+The size of the returned buffer is written to C<*size_r>.
+I<The caller must free the returned buffer after use>.
+
+(Added in 1.19.35)
 
 =head2 guestfs_initrd_cat
 
@@ -3564,6 +4346,10 @@ Mandriva.
 
 MeeGo.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "opensuse"
 
 OpenSUSE.
@@ -3587,6 +4373,14 @@ Scientific Linux.
 =item "slackware"
 
 Slackware.
+
+=item "sles"
+
+SuSE Linux Enterprise Server or Desktop.
+
+=item "suse-based"
+
+Some openSuSE-derived distro.
 
 =item "ttylinux"
 
@@ -4085,6 +4879,10 @@ FreeBSD.
 
 NetBSD.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "hurd"
 
 GNU/Hurd.
@@ -4205,6 +5003,13 @@ This function returns a C truth value on success or -1 on error.
  guestfs_inspect_list_applications (guestfs_h *g,
                                     const char *root);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_inspect_list_applications2> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 Return the list of applications installed in the operating system.
 
 I<Note:> This call works differently from other parts of the
@@ -4302,6 +5107,116 @@ or NULL if there was an error.
 I<The caller must call C<guestfs_free_application_list> after use>.
 
 (Added in 1.7.8)
+
+=head2 guestfs_inspect_list_applications2
+
+ struct guestfs_application2_list *
+ guestfs_inspect_list_applications2 (guestfs_h *g,
+                                     const char *root);
+
+Return the list of applications installed in the operating system.
+
+I<Note:> This call works differently from other parts of the
+inspection API.  You have to call C<guestfs_inspect_os>, then
+C<guestfs_inspect_get_mountpoints>, then mount up the disks,
+before calling this.  Listing applications is a significantly
+more difficult operation which requires access to the full
+filesystem.  Also note that unlike the other
+C<guestfs_inspect_get_*> calls which are just returning
+data cached in the libguestfs handle, this call actually reads
+parts of the mounted filesystems during the call.
+
+This returns an empty list if the inspection code was not able
+to determine the list of applications.
+
+The application structure contains the following fields:
+
+=over 4
+
+=item C<app2_name>
+
+The name of the application.  For Red Hat-derived and Debian-derived
+Linux guests, this is the package name.
+
+=item C<app2_display_name>
+
+The display name of the application, sometimes localized to the
+install language of the guest operating system.
+
+If unavailable this is returned as an empty string C<"">.
+Callers needing to display something can use C<app2_name> instead.
+
+=item C<app2_epoch>
+
+For package managers which use epochs, this contains the epoch of
+the package (an integer).  If unavailable, this is returned as C<0>.
+
+=item C<app2_version>
+
+The version string of the application or package.  If unavailable
+this is returned as an empty string C<"">.
+
+=item C<app2_release>
+
+The release string of the application or package, for package
+managers that use this.  If unavailable this is returned as an
+empty string C<"">.
+
+=item C<app2_arch>
+
+The architecture string of the application or package, for package
+managers that use this.  If unavailable this is returned as an empty
+string C<"">.
+
+=item C<app2_install_path>
+
+The installation path of the application (on operating systems
+such as Windows which use installation paths).  This path is
+in the format used by the guest operating system, it is not
+a libguestfs path.
+
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_trans_path>
+
+The install path translated into a libguestfs path.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_publisher>
+
+The name of the publisher of the application, for package
+managers that use this.  If unavailable this is returned
+as an empty string C<"">.
+
+=item C<app2_url>
+
+The URL (eg. upstream URL) of the application.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_source_package>
+
+For packaging systems which support this, the name of the source
+package.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_summary>
+
+A short (usually one line) description of the application or package.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_description>
+
+A longer description of the application or package.
+If unavailable this is returned as an empty string C<"">.
+
+=back
+
+Please read L<guestfs(3)/INSPECTION> for more details.
+
+This function returns a C<struct guestfs_application2_list *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_application2_list> after use>.
+
+(Added in 1.19.56)
 
 =head2 guestfs_inspect_os
 
@@ -4641,6 +5556,156 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.0.77)
 
+=head2 guestfs_ldmtool_create_all
+
+ int
+ guestfs_ldmtool_create_all (guestfs_h *g);
+
+This function scans all block devices looking for Windows
+dynamic disk volumes and partitions, and creates devices
+for any that were found.
+
+Call C<guestfs_list_ldm_volumes> and C<guestfs_list_ldm_partitions>
+to return all devices.
+
+Note that you B<don't> normally need to call this explicitly,
+since it is done automatically at C<guestfs_launch> time.
+However you might want to call this function if you have
+hotplugged disks or have just created a Windows dynamic disk.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_ldmtool_diskgroup_disks
+
+ char **
+ guestfs_ldmtool_diskgroup_disks (guestfs_h *g,
+                                  const char *diskgroup);
+
+Return the disks in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from
+the list returned by C<guestfs_ldmtool_scan>.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+=head2 guestfs_ldmtool_diskgroup_name
+
+ char *
+ guestfs_ldmtool_diskgroup_name (guestfs_h *g,
+                                 const char *diskgroup);
+
+Return the name of a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from
+the list returned by C<guestfs_ldmtool_scan>.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+=head2 guestfs_ldmtool_diskgroup_volumes
+
+ char **
+ guestfs_ldmtool_diskgroup_volumes (guestfs_h *g,
+                                    const char *diskgroup);
+
+Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from
+the list returned by C<guestfs_ldmtool_scan>.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+=head2 guestfs_ldmtool_remove_all
+
+ int
+ guestfs_ldmtool_remove_all (guestfs_h *g);
+
+This is essentially the opposite of C<guestfs_ldmtool_create_all>.
+It removes the device mapper mappings for all Windows dynamic disk
+volumes
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_ldmtool_scan
+
+ char **
+ guestfs_ldmtool_scan (guestfs_h *g);
+
+This function scans for Windows dynamic disks.  It returns a list
+of identifiers (GUIDs) for all disk groups that were found.  These
+identifiers can be passed to other C<guestfs_ldmtool_*> functions.
+
+This function scans all block devices.  To scan a subset of
+block devices, call C<guestfs_ldmtool_scan_devices> instead.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+=head2 guestfs_ldmtool_scan_devices
+
+ char **
+ guestfs_ldmtool_scan_devices (guestfs_h *g,
+                               char *const *devices);
+
+This function scans for Windows dynamic disks.  It returns a list
+of identifiers (GUIDs) for all disk groups that were found.  These
+identifiers can be passed to other C<guestfs_ldmtool_*> functions.
+
+The parameter C<devices> is a list of block devices which are
+scanned.  If this list is empty, all block devices are scanned.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+=head2 guestfs_ldmtool_volume_hint
+
+ char *
+ guestfs_ldmtool_volume_hint (guestfs_h *g,
+                              const char *diskgroup,
+                              const char *volume);
+
+Return the hint field of the volume named C<volume> in the disk
+group with GUID <diskgroup>.  This may not be defined, in which
+case the empty string is returned.  The hint field is often, though
+not always, the name of a Windows drive, eg. C<E:>.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+=head2 guestfs_ldmtool_volume_partitions
+
+ char **
+ guestfs_ldmtool_volume_partitions (guestfs_h *g,
+                                    const char *diskgroup,
+                                    const char *volume);
+
+Return the list of partitions in the volume named C<volume> in the disk
+group with GUID <diskgroup>.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+=head2 guestfs_ldmtool_volume_type
+
+ char *
+ guestfs_ldmtool_volume_type (guestfs_h *g,
+                              const char *diskgroup,
+                              const char *volume);
+
+Return the type of the volume named C<volume> in the disk
+group with GUID <diskgroup>.
+
+Possible volume types that can be returned here include:
+C<simple>, C<spanned>, C<striped>, C<mirrored>, C<raid5>.
+Other types may also be returned.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
 =head2 guestfs_lgetxattr
 
  char *
@@ -4718,6 +5783,29 @@ I<The caller must free the strings and the array after use>.
 
 (Added in 0.4)
 
+=head2 guestfs_list_disk_labels
+
+ char **
+ guestfs_list_disk_labels (guestfs_h *g);
+
+If you add drives using the optional C<label> parameter
+of C<guestfs_add_drive_opts>, you can use this call to
+map between disk labels, and raw block device and partition
+names (like C</dev/sda> and C</dev/sda1>).
+
+This returns a hashtable, where keys are the disk labels
+(I<without> the C</dev/disk/guestfs> prefix), and the values
+are the full raw block device and partition names
+(eg. C</dev/sda> and C</dev/sda1>).
+
+This function returns a NULL-terminated array of
+strings, or NULL if there was an error.
+The array of strings will always have length C<2n+1>, where
+C<n> keys and values alternate, followed by the trailing NULL entry.
+I<The caller must free the strings and the array after use>.
+
+(Added in 1.19.49)
+
 =head2 guestfs_list_dm_devices
 
  char **
@@ -4779,6 +5867,32 @@ C<n> keys and values alternate, followed by the trailing NULL entry.
 I<The caller must free the strings and the array after use>.
 
 (Added in 1.5.15)
+
+=head2 guestfs_list_ldm_partitions
+
+ char **
+ guestfs_list_ldm_partitions (guestfs_h *g);
+
+This function returns all Windows dynamic disk partitions
+that were found at launch time.  It returns a list of
+device names.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
+
+=head2 guestfs_list_ldm_volumes
+
+ char **
+ guestfs_list_ldm_volumes (guestfs_h *g);
+
+This function returns all Windows dynamic disk volumes
+that were found at launch time.  It returns a list of
+device names.
+
+This function returns a NULL-terminated array of strings
+(like L<environ(3)>), or NULL if there was an error.
+I<The caller must free the strings and the array after use>.
 
 =head2 guestfs_list_md_devices
 
@@ -4925,14 +6039,30 @@ List the files in C<directory> (relative to the root directory,
 there is no cwd).  The '.' and '..' entries are not returned, but
 hidden files are shown.
 
-This command is mostly useful for interactive sessions.  Programs
-should probably use C<guestfs_readdir> instead.
-
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
 (Added in 0.4)
+
+=head2 guestfs_ls0
+
+ int
+ guestfs_ls0 (guestfs_h *g,
+              const char *dir,
+              const char *filenames);
+
+This specialized command is used to get a listing of
+the filenames in the directory C<dir>.  The list of filenames
+is written to the local file C<filenames> (on the host).
+
+In the output file, the filenames are separated by C<\0> characters.
+
+C<.> and C<..> are not returned.  The filenames are not sorted.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.32)
 
 =head2 guestfs_lsetxattr
 
@@ -4990,10 +6120,7 @@ is set to C<-1>.
 This call is intended for programs that want to efficiently
 list a directory contents without making many round-trips.
 See also C<guestfs_lxattrlist> for a similarly efficient call
-for getting extended attributes.  Very long directory listings
-might cause the protocol message size to be exceeded, causing
-this call to fail.  The caller must split up such requests
-into smaller groups of names.
+for getting extended attributes.
 
 This function returns a C<struct guestfs_stat_list *>,
 or NULL if there was an error.
@@ -5203,7 +6330,7 @@ is converted to C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does
 not refer to a logical volume.
 
-See also C<guestfs_is_lv>.
+See also C<guestfs_is_lv>, C<guestfs_canonical_device_name>.
 
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
@@ -5401,16 +6528,31 @@ This repeats for the second and subsequent files.
 This call is intended for programs that want to efficiently
 list a directory contents without making many round-trips.
 See also C<guestfs_lstatlist> for a similarly efficient call
-for getting standard stats.  Very long directory listings
-might cause the protocol message size to be exceeded, causing
-this call to fail.  The caller must split up such requests
-into smaller groups of names.
+for getting standard stats.
 
 This function returns a C<struct guestfs_xattr_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_xattr_list> after use>.
 
 (Added in 1.0.77)
+
+=head2 guestfs_max_disks
+
+ int
+ guestfs_max_disks (guestfs_h *g);
+
+Return the maximum number of disks that may be added to a
+handle (eg. by C<guestfs_add_drive_opts> and similar calls).
+
+This function was added in libguestfs 1.19.7.  In previous
+versions of libguestfs the limit was 25.
+
+See L<guestfs(3)/MAXIMUM NUMBER OF DISKS> for additional
+information on this topic.
+
+On error this function returns -1.
+
+(Added in 1.19.7)
 
 =head2 guestfs_md_create
 
@@ -5700,6 +6842,88 @@ I<The caller must free the returned string after use>.
 
 (Added in 1.0.54)
 
+=head2 guestfs_mke2fs
+
+ int
+ guestfs_mke2fs (guestfs_h *g,
+                 const char *device,
+                 ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MKE2FS_BLOCKSCOUNT, int64_t blockscount,
+ GUESTFS_MKE2FS_BLOCKSIZE, int64_t blocksize,
+ GUESTFS_MKE2FS_FRAGSIZE, int64_t fragsize,
+ GUESTFS_MKE2FS_BLOCKSPERGROUP, int64_t blockspergroup,
+ GUESTFS_MKE2FS_NUMBEROFGROUPS, int64_t numberofgroups,
+ GUESTFS_MKE2FS_BYTESPERINODE, int64_t bytesperinode,
+ GUESTFS_MKE2FS_INODESIZE, int64_t inodesize,
+ GUESTFS_MKE2FS_JOURNALSIZE, int64_t journalsize,
+ GUESTFS_MKE2FS_NUMBEROFINODES, int64_t numberofinodes,
+ GUESTFS_MKE2FS_STRIDESIZE, int64_t stridesize,
+ GUESTFS_MKE2FS_STRIPEWIDTH, int64_t stripewidth,
+ GUESTFS_MKE2FS_MAXONLINERESIZE, int64_t maxonlineresize,
+ GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE, int reservedblockspercentage,
+ GUESTFS_MKE2FS_MMPUPDATEINTERVAL, int mmpupdateinterval,
+ GUESTFS_MKE2FS_JOURNALDEVICE, const char *journaldevice,
+ GUESTFS_MKE2FS_LABEL, const char *label,
+ GUESTFS_MKE2FS_LASTMOUNTEDDIR, const char *lastmounteddir,
+ GUESTFS_MKE2FS_CREATOROS, const char *creatoros,
+ GUESTFS_MKE2FS_FSTYPE, const char *fstype,
+ GUESTFS_MKE2FS_USAGETYPE, const char *usagetype,
+ GUESTFS_MKE2FS_UUID, const char *uuid,
+ GUESTFS_MKE2FS_FORCECREATE, int forcecreate,
+ GUESTFS_MKE2FS_WRITESBANDGROUPONLY, int writesbandgrouponly,
+ GUESTFS_MKE2FS_LAZYITABLEINIT, int lazyitableinit,
+ GUESTFS_MKE2FS_LAZYJOURNALINIT, int lazyjournalinit,
+ GUESTFS_MKE2FS_TESTFS, int testfs,
+ GUESTFS_MKE2FS_DISCARD, int discard,
+ GUESTFS_MKE2FS_QUOTATYPE, int quotatype,
+ GUESTFS_MKE2FS_EXTENT, int extent,
+ GUESTFS_MKE2FS_FILETYPE, int filetype,
+ GUESTFS_MKE2FS_FLEXBG, int flexbg,
+ GUESTFS_MKE2FS_HASJOURNAL, int hasjournal,
+ GUESTFS_MKE2FS_JOURNALDEV, int journaldev,
+ GUESTFS_MKE2FS_LARGEFILE, int largefile,
+ GUESTFS_MKE2FS_QUOTA, int quota,
+ GUESTFS_MKE2FS_RESIZEINODE, int resizeinode,
+ GUESTFS_MKE2FS_SPARSESUPER, int sparsesuper,
+ GUESTFS_MKE2FS_UNINITBG, int uninitbg,
+
+C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem
+on C<device>.  The optional C<blockscount> is the size of the
+filesystem in blocks.  If omitted it defaults to the size of
+C<device>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.44)
+
+=head2 guestfs_mke2fs_va
+
+ int
+ guestfs_mke2fs_va (guestfs_h *g,
+                    const char *device,
+                    va_list args);
+
+This is the "va_list variant" of L</guestfs_mke2fs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mke2fs_argv
+
+ int
+ guestfs_mke2fs_argv (guestfs_h *g,
+                      const char *device,
+                      const struct guestfs_mke2fs_argv *optargs);
+
+This is the "argv variant" of L</guestfs_mke2fs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_mke2fs_J
 
  int
@@ -5708,6 +6932,13 @@ I<The caller must free the returned string after use>.
                    int blocksize,
                    const char *device,
                    const char *journal);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This creates an ext2/3/4 filesystem on C<device> with
 an external journal on C<journal>.  It is equivalent
@@ -5730,6 +6961,13 @@ This function returns 0 on success or -1 on error.
                     const char *device,
                     const char *label);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This creates an ext2/3/4 filesystem on C<device> with
 an external journal on the journal labeled C<label>.
 
@@ -5748,6 +6986,13 @@ This function returns 0 on success or -1 on error.
                     const char *device,
                     const char *uuid);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This creates an ext2/3/4 filesystem on C<device> with
 an external journal on the journal with UUID C<uuid>.
 
@@ -5763,6 +7008,13 @@ This function returns 0 on success or -1 on error.
  guestfs_mke2journal (guestfs_h *g,
                       int blocksize,
                       const char *device);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This creates an ext2 external journal on C<device>.  It is equivalent
 to the command:
@@ -5781,6 +7033,13 @@ This function returns 0 on success or -1 on error.
                         const char *label,
                         const char *device);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This creates an ext2 external journal on C<device> with label C<label>.
 
 This function returns 0 on success or -1 on error.
@@ -5794,6 +7053,13 @@ This function returns 0 on success or -1 on error.
                         int blocksize,
                         const char *uuid,
                         const char *device);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This creates an ext2 external journal on C<device> with UUID C<uuid>.
 
@@ -5825,95 +7091,12 @@ This function returns 0 on success or -1 on error.
                const char *fstype,
                const char *device);
 
-This creates a filesystem on C<device> (usually a partition
-or LVM logical volume).  The filesystem type is C<fstype>, for
-example C<ext3>.
-
-This function returns 0 on success or -1 on error.
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_mkfs_opts> with no optional arguments.
 
 (Added in 0.8)
 
-=head2 guestfs_mkfs_b
-
- int
- guestfs_mkfs_b (guestfs_h *g,
-                 const char *fstype,
-                 int blocksize,
-                 const char *device);
-
-I<This function is deprecated.>
-In new code, use the L</guestfs_mkfs_opts> call instead.
-
-Deprecated functions will not be removed from the API, but the
-fact that they are deprecated indicates that there are problems
-with correct use of these functions.
-
-This call is similar to C<guestfs_mkfs>, but it allows you to
-control the block size of the resulting filesystem.  Supported
-block sizes depend on the filesystem type, but typically they
-are C<1024>, C<2048> or C<4096> only.
-
-For VFAT and NTFS the C<blocksize> parameter is treated as
-the requested cluster size.
-
-This function returns 0 on success or -1 on error.
-
-(Added in 1.0.68)
-
-=head2 guestfs_mkfs_btrfs
-
- int
- guestfs_mkfs_btrfs (guestfs_h *g,
-                     char *const *devices,
-                     ...);
-
-You may supply a list of optional arguments to this call.
-Use zero or more of the following pairs of parameters,
-and terminate the list with C<-1> on its own.
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
-
- GUESTFS_MKFS_BTRFS_ALLOCSTART, int64_t allocstart,
- GUESTFS_MKFS_BTRFS_BYTECOUNT, int64_t bytecount,
- GUESTFS_MKFS_BTRFS_DATATYPE, const char *datatype,
- GUESTFS_MKFS_BTRFS_LEAFSIZE, int leafsize,
- GUESTFS_MKFS_BTRFS_LABEL, const char *label,
- GUESTFS_MKFS_BTRFS_METADATA, const char *metadata,
- GUESTFS_MKFS_BTRFS_NODESIZE, int nodesize,
- GUESTFS_MKFS_BTRFS_SECTORSIZE, int sectorsize,
-
-Create a btrfs filesystem, allowing all configurables to be set.
-For more information on the optional arguments, see L<mkfs.btrfs(8)>.
-
-Since btrfs filesystems can span multiple devices, this takes a
-non-empty list of devices.
-
-To create general filesystems, use C<guestfs_mkfs_opts>.
-
-This function returns 0 on success or -1 on error.
-
-(Added in 1.17.25)
-
-=head2 guestfs_mkfs_btrfs_va
-
- int
- guestfs_mkfs_btrfs_va (guestfs_h *g,
-                        char *const *devices,
-                        va_list args);
-
-This is the "va_list variant" of L</guestfs_mkfs_btrfs>.
-
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
-
-=head2 guestfs_mkfs_btrfs_argv
-
- int
- guestfs_mkfs_btrfs_argv (guestfs_h *g,
-                          char *const *devices,
-                          const struct guestfs_mkfs_btrfs_argv *optargs);
-
-This is the "argv variant" of L</guestfs_mkfs_btrfs>.
-
-See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_mkfs_opts
 
@@ -6001,6 +7184,102 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
 This is the "argv variant" of L</guestfs_mkfs_opts>.
 
 See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mkfs_b
+
+ int
+ guestfs_mkfs_b (guestfs_h *g,
+                 const char *fstype,
+                 int blocksize,
+                 const char *device);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+This call is similar to C<guestfs_mkfs>, but it allows you to
+control the block size of the resulting filesystem.  Supported
+block sizes depend on the filesystem type, but typically they
+are C<1024>, C<2048> or C<4096> only.
+
+For VFAT and NTFS the C<blocksize> parameter is treated as
+the requested cluster size.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.0.68)
+
+=head2 guestfs_mkfs_btrfs
+
+ int
+ guestfs_mkfs_btrfs (guestfs_h *g,
+                     char *const *devices,
+                     ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MKFS_BTRFS_ALLOCSTART, int64_t allocstart,
+ GUESTFS_MKFS_BTRFS_BYTECOUNT, int64_t bytecount,
+ GUESTFS_MKFS_BTRFS_DATATYPE, const char *datatype,
+ GUESTFS_MKFS_BTRFS_LEAFSIZE, int leafsize,
+ GUESTFS_MKFS_BTRFS_LABEL, const char *label,
+ GUESTFS_MKFS_BTRFS_METADATA, const char *metadata,
+ GUESTFS_MKFS_BTRFS_NODESIZE, int nodesize,
+ GUESTFS_MKFS_BTRFS_SECTORSIZE, int sectorsize,
+
+Create a btrfs filesystem, allowing all configurables to be set.
+For more information on the optional arguments, see L<mkfs.btrfs(8)>.
+
+Since btrfs filesystems can span multiple devices, this takes a
+non-empty list of devices.
+
+To create general filesystems, use C<guestfs_mkfs>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.17.25)
+
+=head2 guestfs_mkfs_btrfs_va
+
+ int
+ guestfs_mkfs_btrfs_va (guestfs_h *g,
+                        char *const *devices,
+                        va_list args);
+
+This is the "va_list variant" of L</guestfs_mkfs_btrfs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mkfs_btrfs_argv
+
+ int
+ guestfs_mkfs_btrfs_argv (guestfs_h *g,
+                          char *const *devices,
+                          const struct guestfs_mkfs_btrfs_argv *optargs);
+
+This is the "argv variant" of L</guestfs_mkfs_btrfs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mklost_and_found
+
+ int
+ guestfs_mklost_and_found (guestfs_h *g,
+                           const char *mountpoint);
+
+Make the C<lost+found> directory, normally in the root directory
+of an ext2/3/4 filesystem.  C<mountpoint> is the directory under
+which we try to create the C<lost+found> directory.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.56)
 
 =head2 guestfs_mkmountpoint
 
@@ -6126,11 +7405,58 @@ This function returns 0 on success or -1 on error.
  guestfs_mkswap (guestfs_h *g,
                  const char *device);
 
-Create a swap partition on C<device>.
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_mkswap_opts> with no optional arguments.
+
+(Added in 1.0.55)
+
+
+=head2 guestfs_mkswap_opts
+
+ int
+ guestfs_mkswap_opts (guestfs_h *g,
+                      const char *device,
+                      ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MKSWAP_OPTS_LABEL, const char *label,
+ GUESTFS_MKSWAP_OPTS_UUID, const char *uuid,
+
+Create a Linux swap partition on C<device>.
+
+The option arguments C<label> and C<uuid> allow you to set the
+label and/or UUID of the new swap partition.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.55)
+(Added in 1.19.34)
+
+=head2 guestfs_mkswap_opts_va
+
+ int
+ guestfs_mkswap_opts_va (guestfs_h *g,
+                         const char *device,
+                         va_list args);
+
+This is the "va_list variant" of L</guestfs_mkswap_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mkswap_opts_argv
+
+ int
+ guestfs_mkswap_opts_argv (guestfs_h *g,
+                           const char *device,
+                           const struct guestfs_mkswap_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_mkswap_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_mkswap_L
 
@@ -6138,6 +7464,13 @@ This function returns 0 on success or -1 on error.
  guestfs_mkswap_L (guestfs_h *g,
                    const char *label,
                    const char *device);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_mkswap> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 Create a swap partition on C<device> with label C<label>.
 
@@ -6155,6 +7488,13 @@ This function returns 0 on success or -1 on error.
  guestfs_mkswap_U (guestfs_h *g,
                    const char *uuid,
                    const char *device);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_mkswap> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 Create a swap partition on C<device> with UUID C<uuid>.
 
@@ -6176,6 +7516,69 @@ file.  To create the file itself, use something like C<guestfs_fallocate>.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.0.66)
+
+=head2 guestfs_mktemp
+
+ char *
+ guestfs_mktemp (guestfs_h *g,
+                 const char *tmpl,
+                 ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_MKTEMP_SUFFIX, const char *suffix,
+
+This command creates a temporary file.  The
+C<tmpl> parameter should be a full pathname for the
+temporary directory name with the final six characters being
+"XXXXXX".
+
+For example: "/tmp/myprogXXXXXX" or "/Temp/myprogXXXXXX",
+the second one being suitable for Windows filesystems.
+
+The name of the temporary file that was created
+is returned.
+
+The temporary file is created with mode 0600
+and is owned by root.
+
+The caller is responsible for deleting the temporary
+file after use.
+
+If the optional C<suffix> parameter is given, then the suffix
+(eg. C<.txt>) is appended to the temporary name.
+
+See also: C<guestfs_mkdtemp>.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.19.53)
+
+=head2 guestfs_mktemp_va
+
+ char *
+ guestfs_mktemp_va (guestfs_h *g,
+                    const char *tmpl,
+                    va_list args);
+
+This is the "va_list variant" of L</guestfs_mktemp>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_mktemp_argv
+
+ char *
+ guestfs_mktemp_argv (guestfs_h *g,
+                      const char *tmpl,
+                      const struct guestfs_mktemp_argv *optargs);
+
+This is the "argv variant" of L</guestfs_mktemp>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_modprobe
 
@@ -6497,6 +7900,8 @@ call C<guestfs_max_disks>.
 
 On error this function returns -1.
 
+(Added in 1.19.15)
+
 =head2 guestfs_ntfs_3g_probe
 
  int
@@ -6653,29 +8058,12 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  guestfs_ntfsresize (guestfs_h *g,
                      const char *device);
 
-I<This function is deprecated.>
-In new code, use the L</guestfs_ntfsresize_opts> call instead.
-
-Deprecated functions will not be removed from the API, but the
-fact that they are deprecated indicates that there are problems
-with correct use of these functions.
-
-This command resizes an NTFS filesystem, expanding or
-shrinking it to the size of the underlying device.
-
-I<Note:> After the resize operation, the filesystem is marked
-as requiring a consistency check (for safety).  You have to boot
-into Windows to perform this check and clear this condition.
-Furthermore, ntfsresize refuses to resize filesystems
-which have been marked in this way.  So in effect it is
-not possible to call ntfsresize multiple times on a single
-filesystem without booting into Windows between each resize.
-
-See also L<ntfsresize(8)>.
-
-This function returns 0 on success or -1 on error.
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_ntfsresize_opts> with no optional arguments.
 
 (Added in 1.3.2)
+
 
 =head2 guestfs_ntfsresize_opts
 
@@ -6713,7 +8101,7 @@ After the resize operation, the filesystem is always marked
 as requiring a consistency check (for safety).  You have to boot
 into Windows to perform this check and clear this condition.
 If you I<don't> set the C<force> option then it is not
-possible to call C<guestfs_ntfsresize_opts> multiple times on a
+possible to call C<guestfs_ntfsresize> multiple times on a
 single filesystem without booting into Windows between each resize.
 
 =back
@@ -6754,7 +8142,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
                           int64_t size);
 
 I<This function is deprecated.>
-In new code, use the L</guestfs_ntfsresize_opts> call instead.
+In new code, use the L</guestfs_ntfsresize> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -6766,6 +8154,46 @@ allows you to specify the new size (in bytes) explicitly.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.3.14)
+
+=head2 guestfs_parse_environment
+
+ int
+ guestfs_parse_environment (guestfs_h *g);
+
+Parse the program's environment and set flags in the handle
+accordingly.  For example if C<LIBGUESTFS_DEBUG=1> then the
+'verbose' flag is set in the handle.
+
+I<Most programs do not need to call this>.  It is done implicitly
+when you call C<guestfs_create>.
+
+See L<guestfs(3)/ENVIRONMENT VARIABLES> for a list of environment
+variables that can affect libguestfs handles.  See also
+L<guestfs(3)/guestfs_create_flags>, and
+C<guestfs_parse_environment_list>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.53)
+
+=head2 guestfs_parse_environment_list
+
+ int
+ guestfs_parse_environment_list (guestfs_h *g,
+                                 char *const *environment);
+
+Parse the list of strings in the argument C<environment>
+and set flags in the handle accordingly.
+For example if C<LIBGUESTFS_DEBUG=1> is a string in the list,
+then the 'verbose' flag is set in the handle.
+
+This is the same as C<guestfs_parse_environment> except that
+it parses an explicit list of strings instead of the program's
+environment.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.53)
 
 =head2 guestfs_part_add
 
@@ -7168,6 +8596,29 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 1.5.21)
 
+=head2 guestfs_pvchange_uuid
+
+ int
+ guestfs_pvchange_uuid (guestfs_h *g,
+                        const char *device);
+
+Generate a new random UUID for the physical volume C<device>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.26)
+
+=head2 guestfs_pvchange_uuid_all
+
+ int
+ guestfs_pvchange_uuid_all (guestfs_h *g);
+
+Generate new random UUIDs for all physical volumes.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.26)
+
 =head2 guestfs_pvcreate
 
  int
@@ -7337,15 +8788,10 @@ buffer.
 
 Unlike C<guestfs_cat>, this function can correctly
 handle files that contain embedded ASCII NUL characters.
-However unlike C<guestfs_download>, this function is limited
-in the total size of file that can be handled.
 
 This function returns a buffer, or NULL on error.
 The size of the returned buffer is written to C<*size_r>.
 I<The caller must free the returned buffer after use>.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 1.0.63)
 
@@ -7362,8 +8808,8 @@ C<LF> and C<CRLF> character sequences are I<not> returned.
 
 Note that this function cannot correctly handle binary files
 (specifically, files containing C<\0> character which is treated
-as end of line).  For those you need to use the C<guestfs_read_file>
-function which has a more complex interface.
+as end of string).  For those you need to use the C<guestfs_read_file>
+function and split the buffer into lines yourself.
 
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
@@ -7435,6 +8881,9 @@ This function returns a C<struct guestfs_dirent_list *>,
 or NULL if there was an error.
 I<The caller must call C<guestfs_free_dirent_list> after use>.
 
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
 (Added in 1.0.55)
 
 =head2 guestfs_readlink
@@ -7474,10 +8923,6 @@ symbolic links already (albeit slightly less efficient).
 
 This call is intended for programs that want to efficiently
 list a directory contents without making many round-trips.
-Very long directory listings might cause the protocol
-message size to be exceeded, causing
-this call to fail.  The caller must split up such requests
-into smaller groups of names.
 
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
@@ -7498,6 +8943,29 @@ This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
 (Added in 1.0.66)
+
+=head2 guestfs_remove_drive
+
+ int
+ guestfs_remove_drive (guestfs_h *g,
+                       const char *label);
+
+This function is conceptually the opposite of C<guestfs_add_drive_opts>.
+It removes the drive that was previously added with label C<label>.
+
+Note that in order to remove drives, you have to add them with
+labels (see the optional C<label> argument to C<guestfs_add_drive_opts>).
+If you didn't use a label, then they cannot be removed.
+
+You can call this function before or after launching the handle.
+If called after launch, if the attach-method supports it, we try to hot
+unplug the drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not>
+be in use (eg. mounted) when you do this.  We try to detect if the
+disk is in use and stop you from doing this.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.49)
 
 =head2 guestfs_removexattr
 
@@ -7579,6 +9047,25 @@ This function returns 0 on success or -1 on error.
 
 (Added in 0.8)
 
+=head2 guestfs_rm_f
+
+ int
+ guestfs_rm_f (guestfs_h *g,
+               const char *path);
+
+Remove the file C<path>.
+
+If the file doesn't exist, that error is ignored.  (Other errors,
+eg. I/O errors or bad paths, are not ignored)
+
+This call cannot remove directories.
+Use C<guestfs_rmdir> to remove an empty directory,
+or C<guestfs_rm_rf> to remove directories recursively.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.42)
+
 =head2 guestfs_rm_rf
 
  int
@@ -7618,6 +9105,197 @@ for full details.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.0.62)
+
+=head2 guestfs_rsync
+
+ int
+ guestfs_rsync (guestfs_h *g,
+                const char *src,
+                const char *dest,
+                ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_RSYNC_ARCHIVE, int archive,
+ GUESTFS_RSYNC_DELETEDEST, int deletedest,
+
+This call may be used to copy or synchronize two directories
+under the same libguestfs handle.  This uses the L<rsync(1)>
+program which uses a fast algorithm that avoids copying files
+unnecessarily.
+
+C<src> and C<dest> are the source and destination directories.
+Files are copied from C<src> to C<dest>.
+
+The optional arguments are:
+
+=over 4
+
+=item C<archive>
+
+Turns on archive mode.  This is the same as passing the
+I<--archive> flag to C<rsync>.
+
+=item C<deletedest>
+
+Delete files at the destination that do not exist at the source.
+
+=back
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.29)
+
+=head2 guestfs_rsync_va
+
+ int
+ guestfs_rsync_va (guestfs_h *g,
+                   const char *src,
+                   const char *dest,
+                   va_list args);
+
+This is the "va_list variant" of L</guestfs_rsync>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_rsync_argv
+
+ int
+ guestfs_rsync_argv (guestfs_h *g,
+                     const char *src,
+                     const char *dest,
+                     const struct guestfs_rsync_argv *optargs);
+
+This is the "argv variant" of L</guestfs_rsync>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_rsync_in
+
+ int
+ guestfs_rsync_in (guestfs_h *g,
+                   const char *remote,
+                   const char *dest,
+                   ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_RSYNC_IN_ARCHIVE, int archive,
+ GUESTFS_RSYNC_IN_DELETEDEST, int deletedest,
+
+This call may be used to copy or synchronize the filesystem
+on the host or on a remote computer with the filesystem
+within libguestfs.  This uses the L<rsync(1)> program
+which uses a fast algorithm that avoids copying files unnecessarily.
+
+This call only works if the network is enabled.  See
+C<guestfs_set_network> or the I<--network> option to
+various tools like L<guestfish(1)>.
+
+Files are copied from the remote server and directory
+specified by C<remote> to the destination directory C<dest>.
+
+The format of the remote server string is defined by L<rsync(1)>.
+Note that there is no way to supply a password or passphrase
+so the target must be set up not to require one.
+
+The optional arguments are the same as those of C<guestfs_rsync>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.29)
+
+=head2 guestfs_rsync_in_va
+
+ int
+ guestfs_rsync_in_va (guestfs_h *g,
+                      const char *remote,
+                      const char *dest,
+                      va_list args);
+
+This is the "va_list variant" of L</guestfs_rsync_in>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_rsync_in_argv
+
+ int
+ guestfs_rsync_in_argv (guestfs_h *g,
+                        const char *remote,
+                        const char *dest,
+                        const struct guestfs_rsync_in_argv *optargs);
+
+This is the "argv variant" of L</guestfs_rsync_in>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_rsync_out
+
+ int
+ guestfs_rsync_out (guestfs_h *g,
+                    const char *src,
+                    const char *remote,
+                    ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_RSYNC_OUT_ARCHIVE, int archive,
+ GUESTFS_RSYNC_OUT_DELETEDEST, int deletedest,
+
+This call may be used to copy or synchronize the filesystem within
+libguestfs with a filesystem on the host or on a remote computer.
+This uses the L<rsync(1)> program which uses a fast algorithm that
+avoids copying files unnecessarily.
+
+This call only works if the network is enabled.  See
+C<guestfs_set_network> or the I<--network> option to
+various tools like L<guestfish(1)>.
+
+Files are copied from the source directory C<src> to the
+remote server and directory specified by C<remote>.
+
+The format of the remote server string is defined by L<rsync(1)>.
+Note that there is no way to supply a password or passphrase
+so the target must be set up not to require one.
+
+The optional arguments are the same as those of C<guestfs_rsync>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.29)
+
+=head2 guestfs_rsync_out_va
+
+ int
+ guestfs_rsync_out_va (guestfs_h *g,
+                       const char *src,
+                       const char *remote,
+                       va_list args);
+
+This is the "va_list variant" of L</guestfs_rsync_out>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_rsync_out_argv
+
+ int
+ guestfs_rsync_out_argv (guestfs_h *g,
+                         const char *src,
+                         const char *remote,
+                         const struct guestfs_rsync_out_argv *optargs);
+
+This is the "argv variant" of L</guestfs_rsync_out>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_scrub_device
 
@@ -7698,14 +9376,25 @@ This function returns 0 on success or -1 on error.
                             const char *attachmethod);
 
 Set the method that libguestfs uses to connect to the back end
-guestfsd daemon.  Possible methods are:
+guestfsd daemon.
+
+Possible attach methods are:
 
 =over 4
 
 =item C<appliance>
 
-Launch an appliance and connect to it.  This is the ordinary method
-and the default.
+Launch an appliance and connect to it.
+
+This is the ordinary method and normally the default, but see the
+note below.
+
+=item C<libvirt>
+
+=item C<libvirt:I<URI>>
+
+Use libvirt to launch the appliance.  The optional I<URI> is the
+libvirt connection URI to use (see L<http://libvirt.org/uri.html>).
 
 =item C<unix:I<path>>
 
@@ -7714,6 +9403,28 @@ Connect to the Unix domain socket I<path>.
 This method lets you connect to an existing daemon or (using
 virtio-serial) to a live guest.  For more information, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>.
+
+=back
+
+C<appliance> is usually the default attach method.  However since
+libguestfs E<ge> 1.19.24 it has been possible to change the default
+in two ways:
+
+=over 4
+
+=item Setting LIBGUESTFS_ATTACH_METHOD
+
+Users can set this environment variable to change the default.
+
+=item Configuring the default attach method when building libguestfs
+
+Distributors can override the default when libguestfs is built
+(using C<./configure --with-default-attach-method=...>).
+
+To find out if libguestfs was compiled with a different default
+attach method, do:
+
+ guestfish get-attach-method
 
 =back
 
@@ -7738,6 +9449,26 @@ disabled by default).
 This function returns 0 on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_set_cachedir
+
+ int
+ guestfs_set_cachedir (guestfs_h *g,
+                       const char *cachedir);
+
+Set the directory used by the handle to store the appliance
+cache, when using a supermin appliance.  The appliance is
+cached and shared between all handles which have the same
+effective user ID.
+
+The environment variables C<LIBGUESTFS_CACHEDIR> and C<TMPDIR>
+control the default value: If C<LIBGUESTFS_CACHEDIR> is set, then
+that is the default.  Else if C<TMPDIR> is set, then that is
+the default.  Else C</var/tmp> is the default.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.58)
 
 =head2 guestfs_set_direct
 
@@ -7906,6 +9637,66 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.17.9)
 
+=head2 guestfs_set_libvirt_requested_credential
+
+ int
+ guestfs_set_libvirt_requested_credential (guestfs_h *g,
+                                           int index,
+                                           const char *cred,
+                                           size_t cred_size);
+
+After requesting the C<index>'th credential from the user,
+call this function to pass the answer back to libvirt.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.52)
+
+=head2 guestfs_set_libvirt_supported_credentials
+
+ int
+ guestfs_set_libvirt_supported_credentials (guestfs_h *g,
+                                            char *const *creds);
+
+Call this function before setting an event handler for
+C<GUESTFS_EVENT_LIBVIRT_AUTH>, to supply the list of credential types
+that the program knows how to process.
+
+The C<creds> list must be a non-empty list of strings.
+Possible strings are:
+
+=over 4
+
+=item C<username>
+
+=item C<authname>
+
+=item C<language>
+
+=item C<cnonce>
+
+=item C<passphrase>
+
+=item C<echoprompt>
+
+=item C<noechoprompt>
+
+=item C<realm>
+
+=item C<external>
+
+=back
+
+See libvirt documentation for the meaning of these credential types.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.52)
+
 =head2 guestfs_set_memsize
 
  int
@@ -8070,6 +9861,23 @@ This function must be called before C<guestfs_launch>.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.13.15)
+
+=head2 guestfs_set_tmpdir
+
+ int
+ guestfs_set_tmpdir (guestfs_h *g,
+                     const char *tmpdir);
+
+Set the directory used by the handle to store temporary files.
+
+The environment variables C<LIBGUESTFS_TMPDIR> and C<TMPDIR>
+control the default value: If C<LIBGUESTFS_TMPDIR> is set, then
+that is the default.  Else if C<TMPDIR> is set, then that is
+the default.  Else C</tmp> is the default.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.58)
 
 =head2 guestfs_set_trace
 
@@ -8372,6 +10180,8 @@ but note that any errors are ignored in that case.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.19.16)
+
 =head2 guestfs_sleep
 
  int
@@ -8668,15 +10478,64 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
                  const char *tarfile,
                  const char *directory);
 
-This command uploads and unpacks local file C<tarfile> (an
-I<uncompressed> tar file) into C<directory>.
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_tar_in_opts> with no optional arguments.
 
-To upload a compressed tarball, use C<guestfs_tgz_in>
-or C<guestfs_txz_in>.
+(Added in 1.0.3)
+
+
+=head2 guestfs_tar_in_opts
+
+ int
+ guestfs_tar_in_opts (guestfs_h *g,
+                      const char *tarfile,
+                      const char *directory,
+                      ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_TAR_IN_OPTS_COMPRESS, const char *compress,
+
+This command uploads and unpacks local file C<tarfile> into C<directory>.
+
+The optional C<compress> flag controls compression.  If not given,
+then the input should be an uncompressed tar file.  Otherwise one
+of the following strings may be given to select the compression
+type of the input file: C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.
+(Note that not all builds of libguestfs will support all of these
+compression types).
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.3)
+(Added in 1.19.30)
+
+=head2 guestfs_tar_in_opts_va
+
+ int
+ guestfs_tar_in_opts_va (guestfs_h *g,
+                         const char *tarfile,
+                         const char *directory,
+                         va_list args);
+
+This is the "va_list variant" of L</guestfs_tar_in_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_tar_in_opts_argv
+
+ int
+ guestfs_tar_in_opts_argv (guestfs_h *g,
+                           const char *tarfile,
+                           const char *directory,
+                           const struct guestfs_tar_in_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_tar_in_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_tar_out
 
@@ -8685,15 +10544,83 @@ This function returns 0 on success or -1 on error.
                   const char *directory,
                   const char *tarfile);
 
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_tar_out_opts> with no optional arguments.
+
+(Added in 1.0.3)
+
+
+=head2 guestfs_tar_out_opts
+
+ int
+ guestfs_tar_out_opts (guestfs_h *g,
+                       const char *directory,
+                       const char *tarfile,
+                       ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_TAR_OUT_OPTS_COMPRESS, const char *compress,
+ GUESTFS_TAR_OUT_OPTS_NUMERICOWNER, int numericowner,
+ GUESTFS_TAR_OUT_OPTS_EXCLUDES, char *const *excludes,
+
 This command packs the contents of C<directory> and downloads
 it to local file C<tarfile>.
 
-To download a compressed tarball, use C<guestfs_tgz_out>
-or C<guestfs_txz_out>.
+The optional C<compress> flag controls compression.  If not given,
+then the output will be an uncompressed tar file.  Otherwise one
+of the following strings may be given to select the compression
+type of the output file: C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.
+(Note that not all builds of libguestfs will support all of these
+compression types).
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the
+wildcards.
+
+=item C<numericowner>
+
+If set to true, the output tar file will contain UID/GID numbers
+instead of user/group names.
+
+=back
 
 This function returns 0 on success or -1 on error.
 
-(Added in 1.0.3)
+(Added in 1.19.30)
+
+=head2 guestfs_tar_out_opts_va
+
+ int
+ guestfs_tar_out_opts_va (guestfs_h *g,
+                          const char *directory,
+                          const char *tarfile,
+                          va_list args);
+
+This is the "va_list variant" of L</guestfs_tar_out_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_tar_out_opts_argv
+
+ int
+ guestfs_tar_out_opts_argv (guestfs_h *g,
+                            const char *directory,
+                            const char *tarfile,
+                            const struct guestfs_tar_out_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_tar_out_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_tgz_in
 
@@ -8702,10 +10629,15 @@ This function returns 0 on success or -1 on error.
                  const char *tarball,
                  const char *directory);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_tar_in> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This command uploads and unpacks local file C<tarball> (a
 I<gzip compressed> tar file) into C<directory>.
-
-To upload an uncompressed tarball, use C<guestfs_tar_in>.
 
 This function returns 0 on success or -1 on error.
 
@@ -8718,10 +10650,15 @@ This function returns 0 on success or -1 on error.
                   const char *directory,
                   const char *tarball);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_tar_out> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This command packs the contents of C<directory> and downloads
 it to local file C<tarball>.
-
-To download an uncompressed tarball, use C<guestfs_tar_out>.
 
 This function returns 0 on success or -1 on error.
 
@@ -8928,6 +10865,13 @@ I<The caller must free the strings and the array after use>.
                  const char *tarball,
                  const char *directory);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_tar_in> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This command uploads and unpacks local file C<tarball> (an
 I<xz compressed> tar file) into C<directory>.
 
@@ -8941,6 +10885,13 @@ This function returns 0 on success or -1 on error.
  guestfs_txz_out (guestfs_h *g,
                   const char *directory,
                   const char *tarball);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_tar_out> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This command packs the contents of C<directory> and downloads
 it to local file C<tarball> (as an xz compressed tar archive).
@@ -8982,13 +10933,57 @@ On error this function returns -1.
  guestfs_umount (guestfs_h *g,
                  const char *pathordevice);
 
+This function is provided for backwards compatibility
+with earlier versions of libguestfs.  It simply calls
+L</guestfs_umount_opts> with no optional arguments.
+
+(Added in 0.8)
+
+
+=head2 guestfs_umount_opts
+
+ int
+ guestfs_umount_opts (guestfs_h *g,
+                      const char *pathordevice,
+                      ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_UMOUNT_OPTS_FORCE, int force,
+ GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT, int lazyunmount,
+
 This unmounts the given filesystem.  The filesystem may be
 specified either by its mountpoint (path) or the device which
 contains the filesystem.
 
 This function returns 0 on success or -1 on error.
 
-(Added in 0.8)
+(Added in 1.19.25)
+
+=head2 guestfs_umount_opts_va
+
+ int
+ guestfs_umount_opts_va (guestfs_h *g,
+                         const char *pathordevice,
+                         va_list args);
+
+This is the "va_list variant" of L</guestfs_umount_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_umount_opts_argv
+
+ int
+ guestfs_umount_opts_argv (guestfs_h *g,
+                           const char *pathordevice,
+                           const struct guestfs_umount_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_umount_opts>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_umount_all
 
@@ -9133,6 +11128,21 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.0.77)
 
+=head2 guestfs_utsname
+
+ struct guestfs_utsname *
+ guestfs_utsname (guestfs_h *g);
+
+This returns the kernel version of the appliance, where this is
+available.  This information is only useful for debugging.  Nothing
+in the returned structure is defined by the API.
+
+This function returns a C<struct guestfs_utsname *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_utsname> after use>.
+
+(Added in 1.19.27)
+
 =head2 guestfs_version
 
  struct guestfs_version *
@@ -9263,6 +11273,29 @@ This command is the same as running C<vgchange -a y|n>
 This function returns 0 on success or -1 on error.
 
 (Added in 1.0.26)
+
+=head2 guestfs_vgchange_uuid
+
+ int
+ guestfs_vgchange_uuid (guestfs_h *g,
+                        const char *vg);
+
+Generate a new random UUID for the volume group C<vg>.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.26)
+
+=head2 guestfs_vgchange_uuid_all
+
+ int
+ guestfs_vgchange_uuid_all (guestfs_h *g);
+
+Generate new random UUIDs for all volume groups.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.26)
 
 =head2 guestfs_vgcreate
 
@@ -9523,9 +11556,6 @@ See also C<guestfs_write_append>.
 
 This function returns 0 on success or -1 on error.
 
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
 (Added in 1.3.14)
 
 =head2 guestfs_write_append
@@ -9542,9 +11572,6 @@ C<path> does not exist, then a new file is created.
 See also C<guestfs_write>.
 
 This function returns 0 on success or -1 on error.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 1.11.18)
 
@@ -9581,12 +11608,210 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 (Added in 0.8)
 
+=head2 guestfs_xfs_admin
+
+ int
+ guestfs_xfs_admin (guestfs_h *g,
+                    const char *device,
+                    ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_XFS_ADMIN_EXTUNWRITTEN, int extunwritten,
+ GUESTFS_XFS_ADMIN_IMGFILE, int imgfile,
+ GUESTFS_XFS_ADMIN_V2LOG, int v2log,
+ GUESTFS_XFS_ADMIN_PROJID32BIT, int projid32bit,
+ GUESTFS_XFS_ADMIN_LAZYCOUNTER, int lazycounter,
+ GUESTFS_XFS_ADMIN_LABEL, const char *label,
+ GUESTFS_XFS_ADMIN_UUID, const char *uuid,
+
+Change the parameters of the XFS filesystem on C<device>.
+
+Devices that are mounted cannot be modified.
+Administrators must unmount filesystems before this call
+can modify parameters.
+
+Some of the parameters of a mounted filesystem can be examined
+and modified using the C<guestfs_xfs_info> and
+C<guestfs_xfs_growfs> calls.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.33)
+
+=head2 guestfs_xfs_admin_va
+
+ int
+ guestfs_xfs_admin_va (guestfs_h *g,
+                       const char *device,
+                       va_list args);
+
+This is the "va_list variant" of L</guestfs_xfs_admin>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_xfs_admin_argv
+
+ int
+ guestfs_xfs_admin_argv (guestfs_h *g,
+                         const char *device,
+                         const struct guestfs_xfs_admin_argv *optargs);
+
+This is the "argv variant" of L</guestfs_xfs_admin>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_xfs_growfs
+
+ int
+ guestfs_xfs_growfs (guestfs_h *g,
+                     const char *path,
+                     ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_XFS_GROWFS_DATASEC, int datasec,
+ GUESTFS_XFS_GROWFS_LOGSEC, int logsec,
+ GUESTFS_XFS_GROWFS_RTSEC, int rtsec,
+ GUESTFS_XFS_GROWFS_DATASIZE, int64_t datasize,
+ GUESTFS_XFS_GROWFS_LOGSIZE, int64_t logsize,
+ GUESTFS_XFS_GROWFS_RTSIZE, int64_t rtsize,
+ GUESTFS_XFS_GROWFS_RTEXTSIZE, int64_t rtextsize,
+ GUESTFS_XFS_GROWFS_MAXPCT, int maxpct,
+
+Grow the XFS filesystem mounted at C<path>.
+
+The returned struct contains geometry information.  Missing
+fields are returned as C<-1> (for numeric fields) or empty
+string.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.19.28)
+
+=head2 guestfs_xfs_growfs_va
+
+ int
+ guestfs_xfs_growfs_va (guestfs_h *g,
+                        const char *path,
+                        va_list args);
+
+This is the "va_list variant" of L</guestfs_xfs_growfs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_xfs_growfs_argv
+
+ int
+ guestfs_xfs_growfs_argv (guestfs_h *g,
+                          const char *path,
+                          const struct guestfs_xfs_growfs_argv *optargs);
+
+This is the "argv variant" of L</guestfs_xfs_growfs>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_xfs_info
+
+ struct guestfs_xfsinfo *
+ guestfs_xfs_info (guestfs_h *g,
+                   const char *pathordevice);
+
+C<pathordevice> is a mounted XFS filesystem or a device containing
+an XFS filesystem.  This command returns the geometry of the filesystem.
+
+The returned struct contains geometry information.  Missing
+fields are returned as C<-1> (for numeric fields) or empty
+string.
+
+This function returns a C<struct guestfs_xfsinfo *>,
+or NULL if there was an error.
+I<The caller must call C<guestfs_free_xfsinfo> after use>.
+
+(Added in 1.19.21)
+
+=head2 guestfs_xfs_repair
+
+ int
+ guestfs_xfs_repair (guestfs_h *g,
+                     const char *device,
+                     ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_XFS_REPAIR_FORCELOGZERO, int forcelogzero,
+ GUESTFS_XFS_REPAIR_NOMODIFY, int nomodify,
+ GUESTFS_XFS_REPAIR_NOPREFETCH, int noprefetch,
+ GUESTFS_XFS_REPAIR_FORCEGEOMETRY, int forcegeometry,
+ GUESTFS_XFS_REPAIR_MAXMEM, int64_t maxmem,
+ GUESTFS_XFS_REPAIR_IHASHSIZE, int64_t ihashsize,
+ GUESTFS_XFS_REPAIR_BHASHSIZE, int64_t bhashsize,
+ GUESTFS_XFS_REPAIR_AGSTRIDE, int64_t agstride,
+ GUESTFS_XFS_REPAIR_LOGDEV, const char *logdev,
+ GUESTFS_XFS_REPAIR_RTDEV, const char *rtdev,
+
+Repair corrupt or damaged XFS filesystem on C<device>.
+
+The filesystem is specified using the C<device> argument which should be
+the device name of the disk partition or volume containing the filesystem.
+If given the name of a block device, C<xfs_repair> will attempt to find
+the raw device associated with the specified block device and will use
+the raw device instead.
+
+Regardless, the filesystem to be repaired must be unmounted, otherwise,
+the resulting filesystem may be inconsistent or corrupt.
+
+The returned status indicates whether filesystem corruption was
+detected (returns C<1>) or was not detected (returns C<0>).
+
+On error this function returns -1.
+
+(Added in 1.19.36)
+
+=head2 guestfs_xfs_repair_va
+
+ int
+ guestfs_xfs_repair_va (guestfs_h *g,
+                        const char *device,
+                        va_list args);
+
+This is the "va_list variant" of L</guestfs_xfs_repair>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_xfs_repair_argv
+
+ int
+ guestfs_xfs_repair_argv (guestfs_h *g,
+                          const char *device,
+                          const struct guestfs_xfs_repair_argv *optargs);
+
+This is the "argv variant" of L</guestfs_xfs_repair>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_zegrep
 
  char **
  guestfs_zegrep (guestfs_h *g,
                  const char *regex,
                  const char *path);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This calls the external C<zegrep> program and returns the
 matching lines.
@@ -9606,6 +11831,13 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
  guestfs_zegrepi (guestfs_h *g,
                   const char *regex,
                   const char *path);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This calls the external C<zegrep -i> program and returns the
 matching lines.
@@ -9682,8 +11914,9 @@ The filesystem must be mounted read-write.
 The filesystem contents are not affected, but any free space
 in the filesystem is freed.
 
-In future (but not currently) these zeroed blocks will be
-"sparsified" - that is, given back to the host.
+Free space is not "trimmed".  You may want to call
+C<guestfs_fstrim> either as an alternative to this,
+or after calling this, depending on your requirements.
 
 This function returns 0 on success or -1 on error.
 
@@ -9722,6 +11955,13 @@ This function returns 0 on success or -1 on error.
                  const char *pattern,
                  const char *path);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This calls the external C<zfgrep> program and returns the
 matching lines.
 
@@ -9740,6 +11980,13 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
  guestfs_zfgrepi (guestfs_h *g,
                   const char *pattern,
                   const char *path);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This calls the external C<zfgrep -i> program and returns the
 matching lines.
@@ -9787,6 +12034,13 @@ I<The caller must free the returned string after use>.
                 const char *regex,
                 const char *path);
 
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 This calls the external C<zgrep> program and returns the
 matching lines.
 
@@ -9805,6 +12059,13 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
  guestfs_zgrepi (guestfs_h *g,
                  const char *regex,
                  const char *path);
+
+I<This function is deprecated.>
+In new code, use the L</guestfs_grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 This calls the external C<zgrep -i> program and returns the
 matching lines.

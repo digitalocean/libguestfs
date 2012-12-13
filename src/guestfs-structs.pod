@@ -265,6 +265,36 @@
  void guestfs_free_application (struct guestfs_free_application *);
  void guestfs_free_application_list (struct guestfs_free_application_list *);
 
+=head2 guestfs_application2
+
+ struct guestfs_application2 {
+   char *app2_name;
+   char *app2_display_name;
+   int32_t app2_epoch;
+   char *app2_version;
+   char *app2_release;
+   char *app2_arch;
+   char *app2_install_path;
+   char *app2_trans_path;
+   char *app2_publisher;
+   char *app2_url;
+   char *app2_source_package;
+   char *app2_summary;
+   char *app2_description;
+   char *app2_spare1;
+   char *app2_spare2;
+   char *app2_spare3;
+   char *app2_spare4;
+ };
+ 
+ struct guestfs_application2_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_application2 *val; /* Elements. */
+ };
+ 
+ void guestfs_free_application2 (struct guestfs_free_application2 *);
+ void guestfs_free_application2_list (struct guestfs_free_application2_list *);
+
 =head2 guestfs_isoinfo
 
  struct guestfs_isoinfo {
@@ -326,4 +356,87 @@
  
  void guestfs_free_btrfssubvolume (struct guestfs_free_btrfssubvolume *);
  void guestfs_free_btrfssubvolume_list (struct guestfs_free_btrfssubvolume_list *);
+
+=head2 guestfs_xfsinfo
+
+ struct guestfs_xfsinfo {
+   char *xfs_mntpoint;
+   uint32_t xfs_inodesize;
+   uint32_t xfs_agcount;
+   uint32_t xfs_agsize;
+   uint32_t xfs_sectsize;
+   uint32_t xfs_attr;
+   uint32_t xfs_blocksize;
+   uint64_t xfs_datablocks;
+   uint32_t xfs_imaxpct;
+   uint32_t xfs_sunit;
+   uint32_t xfs_swidth;
+   uint32_t xfs_dirversion;
+   uint32_t xfs_dirblocksize;
+   uint32_t xfs_cimode;
+   char *xfs_logname;
+   uint32_t xfs_logblocksize;
+   uint32_t xfs_logblocks;
+   uint32_t xfs_logversion;
+   uint32_t xfs_logsectsize;
+   uint32_t xfs_logsunit;
+   uint32_t xfs_lazycount;
+   char *xfs_rtname;
+   uint32_t xfs_rtextsize;
+   uint64_t xfs_rtblocks;
+   uint64_t xfs_rtextents;
+ };
+ 
+ struct guestfs_xfsinfo_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_xfsinfo *val; /* Elements. */
+ };
+ 
+ void guestfs_free_xfsinfo (struct guestfs_free_xfsinfo *);
+ void guestfs_free_xfsinfo_list (struct guestfs_free_xfsinfo_list *);
+
+=head2 guestfs_utsname
+
+ struct guestfs_utsname {
+   char *uts_sysname;
+   char *uts_release;
+   char *uts_version;
+   char *uts_machine;
+ };
+ 
+ struct guestfs_utsname_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_utsname *val; /* Elements. */
+ };
+ 
+ void guestfs_free_utsname (struct guestfs_free_utsname *);
+ void guestfs_free_utsname_list (struct guestfs_free_utsname_list *);
+
+=head2 guestfs_hivex_node
+
+ struct guestfs_hivex_node {
+   int64_t hivex_node_h;
+ };
+ 
+ struct guestfs_hivex_node_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_hivex_node *val; /* Elements. */
+ };
+ 
+ void guestfs_free_hivex_node (struct guestfs_free_hivex_node *);
+ void guestfs_free_hivex_node_list (struct guestfs_free_hivex_node_list *);
+
+=head2 guestfs_hivex_value
+
+ struct guestfs_hivex_value {
+   int64_t hivex_value_h;
+ };
+ 
+ struct guestfs_hivex_value_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_hivex_value *val; /* Elements. */
+ };
+ 
+ void guestfs_free_hivex_value (struct guestfs_free_hivex_value *);
+ void guestfs_free_hivex_value_list (struct guestfs_free_hivex_value_list *);
 

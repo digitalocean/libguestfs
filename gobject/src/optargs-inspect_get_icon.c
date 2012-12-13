@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -57,11 +57,11 @@ guestfs_inspect_get_icon_set_property(GObject *object, guint property_id, const 
 
   switch (property_id) {
     case PROP_GUESTFS_INSPECT_GET_ICON_FAVICON:
-      priv->favicon = g_value_get_enum(value);
+      priv->favicon = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_INSPECT_GET_ICON_HIGHQUALITY:
-      priv->highquality = g_value_get_enum(value);
+      priv->highquality = g_value_get_enum (value);
       break;
 
     default:

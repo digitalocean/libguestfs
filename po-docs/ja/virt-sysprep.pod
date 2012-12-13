@@ -2,7 +2,7 @@
 
 =head1 名前
 
-virt-sysprep - 仮想マシンをクローンできるようリセットまたは設定解除
+virt-sysprep - 仮想マシンをクローンできるよう、再設定、設定解除またはカスタマイズします
 
 =head1 書式
 
@@ -12,14 +12,15 @@ virt-sysprep - 仮想マシンをクローンできるようリセットまた�
 
 =head1 説明
 
-Virt-sysprep "resets" or "unconfigures" a virtual machine so that clones can
+Virt-sysprep can reset or unconfigure a virtual machine so that clones can
 be made from it.  Steps in this process include removing SSH host keys,
 removing persistent network MAC configuration, and removing user accounts.
-Each step can be enabled or disabled as required.
+Virt-sysprep can also customize a virtual machine, for instance by adding
+SSH keys, users or logos.  Each step can be enabled or disabled as required.
 
 Virt-sysprep modifies the guest or disk image I<in place>.  The guest must
 be shut down.  If you want to preserve the existing contents of the guest,
-you I<must snapshot, copy or clone the disk first>.  See L</COPYING AND
+I<you must snapshot, copy or clone the disk first>.  See L</COPYING AND
 CLONING> below.
 
 You do I<not> need to run virt-sysprep as root.  In fact we'd generally
@@ -48,8 +49,7 @@ Windows sysprepping in a future version, and we already have code to do it.
 
 仮想マシンからディスクイメージの I<file> を追加します。
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format> option.
+ディスクイメージの形式は自動的に検出されます。強制的に特定の形式を使用するには I<--format> オプションを使用します。
 
 =item B<-c> URI
 
@@ -295,6 +295,16 @@ with the template, you will want to make many clones from it.
                              \-----> 済みゲスト
                               \---->
 
+You may want to run virt-sysprep twice, once to reset the guest (to make a
+template) and a second time to customize the guest for a specific user:
+
+                    virt-sysprep        virt-sysprep
+                      (reset)      (add user, keys, logos)
+                         |                   |
+                 dd      v          dd       v
+ original guest ----> template ---------> copied ------> custom
+                                          template       guest
+
 =over 4
 
 =item *
@@ -311,7 +321,7 @@ it is not possible: you will corrupt the guests.
 
 =item *
 
-Create a snapshot using C<lvcreate --snapshot>.
+C<lvcreate --snapshot> を使用してスナップショットを作成します。
 
 =item *
 
@@ -366,6 +376,31 @@ disk space), then instead of copying the template, you can run
 L<virt-resize(1)>.  Virt-resize performs a copy and resize, and thus is
 ideal for cloning guests from a template.
 
+=head1 FIRSTBOOT VS SCRIPT
+
+The two options I<--firstboot> and I<--script> both supply shell scripts
+that are run against the guest.  However these two options are significantly
+different.
+
+I<--firstboot script> uploads the file C<script> into the guest and arranges
+that it will run, in the guest, when the guest is next booted.  (The script
+will only run once, at the "first boot").
+
+I<--script script> runs the shell C<script> I<on the host>, with its current
+directory inside the guest filesystem.
+
+If you needed, for example, to C<yum install> new packages, then you I<must
+not> use I<--script> for this, since that would (a) run the C<yum> command
+on the host and (b) wouldn't have access to the same resources
+(repositories, keys, etc.) as the guest.  Any command that needs to run on
+the guest I<must> be run via I<--firstboot>.
+
+On the other hand if you need to make adjustments to the guest filesystem
+(eg. copying in files), then I<--script> is ideal since (a)  it has access
+to the host filesystem and (b) you will get immediate feedback on errors.
+
+Either or both options can be used multiple times on the command line.
+
 =head1 セキュリティ
 
 Although virt-sysprep removes some sensitive information from the guest, it
@@ -408,6 +443,11 @@ some time.
 I<--selinux-relabel> オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
 
 I<--no-selinux-relabel> オプションを指定することにより、すべての仮想マシンに対して強制的に再ラベルできます。
+
+=head1 WINDOWS 8
+
+Windows 8 "fast startup" can prevent virt-sysprep from working.  See
+L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
 =head1 SHELL QUOTING
 

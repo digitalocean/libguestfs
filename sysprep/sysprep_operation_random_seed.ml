@@ -27,6 +27,7 @@ let random_seed_perform g root =
     let files = [
       "/var/lib/random-seed"; (* Fedora *)
       "/var/lib/urandom/random-seed"; (* Debian *)
+      "/var/lib/misc/random-seed"; (* SuSE *)
     ] in
     List.iter (
       fun file ->
@@ -54,7 +55,8 @@ guest.
 
 See L</RANDOM SEED> below.");
   extra_args = [];
-  perform = random_seed_perform;
+  perform_on_filesystems = Some random_seed_perform;
+  perform_on_devices = None;
 }
 
 let () = register_operation random_seed_op

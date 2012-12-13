@@ -9,12 +9,10 @@ GuestfsSession
 
 </para>
 
-
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
-
 
 <!-- ##### SECTION Stability_Level ##### -->
 
@@ -68,6 +66,14 @@ GuestfsSession
 @guestfssession: the object which received the signal.
 @arg1: 
 
+<!-- ##### SIGNAL GuestfsSession::libvirt-auth ##### -->
+<para>
+
+</para>
+
+@guestfssession: the object which received the signal.
+@arg1: 
+
 <!-- ##### SIGNAL GuestfsSession::progress ##### -->
 <para>
 
@@ -112,11 +118,48 @@ GuestfsSession
 @GUESTFS_SESSION_EVENT_LIBRARY: 
 @GUESTFS_SESSION_EVENT_TRACE: 
 @GUESTFS_SESSION_EVENT_ENTER: 
+@GUESTFS_SESSION_EVENT_LIBVIRT_AUTH: 
 
 <!-- ##### STRUCT GuestfsSessionEventParams ##### -->
 <para>
 
 </para>
+
+
+<!-- ##### FUNCTION guestfs_session_acl_delete_def_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@dir: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_acl_get_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@acltype: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_acl_set_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@acltype: 
+@acl: 
+@err: 
+@Returns: 
 
 
 <!-- ##### FUNCTION guestfs_session_add_cdrom ##### -->
@@ -143,17 +186,6 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_add_drive ##### -->
-<para>
-
-</para>
-
-@session: 
-@filename: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_add_drive_opts ##### -->
 <para>
 
 </para>
@@ -667,6 +699,40 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_canonical_device_name ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_cap_get_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_cap_set_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@cap: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_case_sensitive_path ##### -->
 <para>
 
@@ -939,16 +1005,6 @@ GuestfsSession
 @Returns: 
 
 
-<!-- ##### FUNCTION guestfs_session_debug_cmdline ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
 <!-- ##### FUNCTION guestfs_session_debug_drives ##### -->
 <para>
 
@@ -1000,6 +1056,39 @@ GuestfsSession
 </para>
 
 @session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_disk_format ##### -->
+<para>
+
+</para>
+
+@session: 
+@filename: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_disk_has_backing_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@filename: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_disk_virtual_size ##### -->
+<para>
+
+</para>
+
+@session: 
+@filename: 
 @err: 
 @Returns: 
 
@@ -1226,6 +1315,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_filesystem_available ##### -->
+<para>
+
+</para>
+
+@session: 
+@filesystem: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_fill ##### -->
 <para>
 
@@ -1235,6 +1335,18 @@ GuestfsSession
 @c: 
 @len: 
 @path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_fill_dir ##### -->
+<para>
+
+</para>
+
+@session: 
+@dir: 
+@nr: 
 @err: 
 @Returns: 
 
@@ -1310,6 +1422,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_fstrim ##### -->
+<para>
+
+</para>
+
+@session: 
+@mountpoint: 
+@optargs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_get_append ##### -->
 <para>
 
@@ -1331,6 +1455,16 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_get_autosync ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_cachedir ##### -->
 <para>
 
 </para>
@@ -1390,6 +1524,49 @@ GuestfsSession
 
 @session: 
 @device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_libvirt_requested_credential_challenge ##### -->
+<para>
+
+</para>
+
+@session: 
+@index: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_libvirt_requested_credential_defresult ##### -->
+<para>
+
+</para>
+
+@session: 
+@index: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_libvirt_requested_credential_prompt ##### -->
+<para>
+
+</para>
+
+@session: 
+@index: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_libvirt_requested_credentials ##### -->
+<para>
+
+</para>
+
+@session: 
 @err: 
 @Returns: 
 
@@ -1494,6 +1671,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_get_tmpdir ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_get_trace ##### -->
 <para>
 
@@ -1577,6 +1764,7 @@ GuestfsSession
 @session: 
 @regex: 
 @path: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -1635,6 +1823,200 @@ GuestfsSession
 
 @session: 
 @path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_close ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_commit ##### -->
+<para>
+
+</para>
+
+@session: 
+@filename: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_add_child ##### -->
+<para>
+
+</para>
+
+@session: 
+@parent: 
+@name: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_children ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_delete_child ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_get_child ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@name: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_get_value ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@key: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_name ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_parent ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_set_value ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@key: 
+@t: 
+@val: 
+@val_size: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_node_values ##### -->
+<para>
+
+</para>
+
+@session: 
+@nodeh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_open ##### -->
+<para>
+
+</para>
+
+@session: 
+@filename: 
+@optargs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_root ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_value_key ##### -->
+<para>
+
+</para>
+
+@session: 
+@valueh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_value_type ##### -->
+<para>
+
+</para>
+
+@session: 
+@valueh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_value_utf8 ##### -->
+<para>
+
+</para>
+
+@session: 
+@valueh: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_hivex_value_value ##### -->
+<para>
+
+</para>
+
+@session: 
+@valueh: 
+@size_r: 
 @err: 
 @Returns: 
 
@@ -1959,6 +2341,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_inspect_list_applications2 ##### -->
+<para>
+
+</para>
+
+@session: 
+@root: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_inspect_os ##### -->
 <para>
 
@@ -1975,6 +2368,401 @@ GuestfsSession
 </para>
 
 @session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_hot_add_drive ##### -->
+<para>
+
+</para>
+
+@session: 
+@label: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_hot_remove_drive ##### -->
+<para>
+
+</para>
+
+@session: 
+@label: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_hot_remove_drive_precheck ##### -->
+<para>
+
+</para>
+
+@session: 
+@label: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_lstatlist ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@names: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_lxattrlist ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@names: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_readlinklist ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@names: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test ##### -->
+<para>
+
+</para>
+
+@session: 
+@str: 
+@optstr: 
+@strlist: 
+@b: 
+@integer: 
+@integer64: 
+@filein: 
+@fileout: 
+@bufferin: 
+@bufferin_size: 
+@optargs: 
+@cancellable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_63_optargs ##### -->
+<para>
+
+</para>
+
+@session: 
+@optargs: 
+@cancellable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_close_output ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_only_optargs ##### -->
+<para>
+
+</para>
+
+@session: 
+@optargs: 
+@cancellable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rbool ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rboolerr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rbufferout ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@size_r: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rbufferouterr ##### -->
+<para>
+
+</para>
+
+@session: 
+@size_r: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rconstoptstring ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rconstoptstringerr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rconststring ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rconststringerr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rhashtable ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rhashtableerr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rint ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rint64 ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rint64err ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rinterr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstring ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstringerr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstringlist ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstringlisterr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstruct ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstructerr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstructlist ##### -->
+<para>
+
+</para>
+
+@session: 
+@val: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_rstructlisterr ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_test_set_output ##### -->
+<para>
+
+</para>
+
+@session: 
+@filename: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_write ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@content: 
+@content_size: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_internal_write_append ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@content: 
+@content_size: 
 @err: 
 @Returns: 
 
@@ -2184,6 +2972,116 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_ldmtool_create_all ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_diskgroup_disks ##### -->
+<para>
+
+</para>
+
+@session: 
+@diskgroup: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_diskgroup_name ##### -->
+<para>
+
+</para>
+
+@session: 
+@diskgroup: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_diskgroup_volumes ##### -->
+<para>
+
+</para>
+
+@session: 
+@diskgroup: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_remove_all ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_scan ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_scan_devices ##### -->
+<para>
+
+</para>
+
+@session: 
+@devices: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_volume_hint ##### -->
+<para>
+
+</para>
+
+@session: 
+@diskgroup: 
+@volume: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_volume_partitions ##### -->
+<para>
+
+</para>
+
+@session: 
+@diskgroup: 
+@volume: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ldmtool_volume_type ##### -->
+<para>
+
+</para>
+
+@session: 
+@diskgroup: 
+@volume: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_lgetxattr ##### -->
 <para>
 
@@ -2228,6 +3126,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_list_disk_labels ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_list_dm_devices ##### -->
 <para>
 
@@ -2239,6 +3147,26 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_list_filesystems ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_list_ldm_partitions ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_list_ldm_volumes ##### -->
 <para>
 
 </para>
@@ -2357,6 +3285,18 @@ GuestfsSession
 
 @session: 
 @directory: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_ls0 ##### -->
+<para>
+
+</para>
+
+@session: 
+@dir: 
+@filenames: 
 @err: 
 @Returns: 
 
@@ -2647,6 +3587,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_max_disks ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_md_create ##### -->
 <para>
 
@@ -2734,6 +3684,18 @@ GuestfsSession
 
 @session: 
 @tmpl: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_mke2fs ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -2838,6 +3800,7 @@ GuestfsSession
 @session: 
 @fstype: 
 @device: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -2867,15 +3830,13 @@ GuestfsSession
 @Returns: 
 
 
-<!-- ##### FUNCTION guestfs_session_mkfs_opts ##### -->
+<!-- ##### FUNCTION guestfs_session_mklost_and_found ##### -->
 <para>
 
 </para>
 
 @session: 
-@fstype: 
-@device: 
-@optargs: 
+@mountpoint: 
 @err: 
 @Returns: 
 
@@ -2940,6 +3901,7 @@ GuestfsSession
 
 @session: 
 @device: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -2975,6 +3937,18 @@ GuestfsSession
 
 @session: 
 @path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_mktemp ##### -->
+<para>
+
+</para>
+
+@session: 
+@tmpl: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -3198,17 +4172,6 @@ GuestfsSession
 
 @session: 
 @device: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_ntfsresize_opts ##### -->
-<para>
-
-</para>
-
-@session: 
-@device: 
 @optargs: 
 @err: 
 @Returns: 
@@ -3222,6 +4185,27 @@ GuestfsSession
 @session: 
 @device: 
 @size: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_parse_environment ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_parse_environment_list ##### -->
+<para>
+
+</para>
+
+@session: 
+@environment: 
 @err: 
 @Returns: 
 
@@ -3421,6 +4405,27 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_pvchange_uuid ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_pvchange_uuid_all ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_pvcreate ##### -->
 <para>
 
@@ -3593,6 +4598,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_remove_drive ##### -->
+<para>
+
+</para>
+
+@session: 
+@label: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_removexattr ##### -->
 <para>
 
@@ -3650,6 +4666,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_rm_f ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_rm_rf ##### -->
 <para>
 
@@ -3679,6 +4706,45 @@ GuestfsSession
 
 @session: 
 @exemptpath: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_rsync ##### -->
+<para>
+
+</para>
+
+@session: 
+@src: 
+@dest: 
+@optargs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_rsync_in ##### -->
+<para>
+
+</para>
+
+@session: 
+@remote: 
+@dest: 
+@optargs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_rsync_out ##### -->
+<para>
+
+</para>
+
+@session: 
+@src: 
+@remote: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -3745,6 +4811,17 @@ GuestfsSession
 
 @session: 
 @autosync: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_cachedir ##### -->
+<para>
+
+</para>
+
+@session: 
+@cachedir: 
 @err: 
 @Returns: 
 
@@ -3817,6 +4894,30 @@ GuestfsSession
 @session: 
 @device: 
 @label: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_libvirt_requested_credential ##### -->
+<para>
+
+</para>
+
+@session: 
+@index: 
+@cred: 
+@cred_size: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_libvirt_supported_credentials ##### -->
+<para>
+
+</para>
+
+@session: 
+@creds: 
 @err: 
 @Returns: 
 
@@ -3905,6 +5006,17 @@ GuestfsSession
 
 @session: 
 @smp: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_tmpdir ##### -->
+<para>
+
+</para>
+
+@session: 
+@tmpdir: 
 @err: 
 @Returns: 
 
@@ -4249,6 +5361,7 @@ GuestfsSession
 @session: 
 @tarfile: 
 @directory: 
+@optargs: 
 @cancellable: 
 @err: 
 @Returns: 
@@ -4262,262 +5375,8 @@ GuestfsSession
 @session: 
 @directory: 
 @tarfile: 
-@cancellable: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0 ##### -->
-<para>
-
-</para>
-
-@session: 
-@str: 
-@optstr: 
-@strlist: 
-@b: 
-@integer: 
-@integer64: 
-@filein: 
-@fileout: 
-@bufferin: 
-@bufferin_size: 
 @optargs: 
 @cancellable: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rbool ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rboolerr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rbufferout ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@size_r: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rbufferouterr ##### -->
-<para>
-
-</para>
-
-@session: 
-@size_r: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rconstoptstring ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rconstoptstringerr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rconststring ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rconststringerr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rhashtable ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rhashtableerr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rint ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rint64 ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rint64err ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rinterr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstring ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstringerr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstringlist ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstringlisterr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstruct ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstructerr ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstructlist ##### -->
-<para>
-
-</para>
-
-@session: 
-@val: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_test0rstructlisterr ##### -->
-<para>
-
-</para>
-
-@session: 
 @err: 
 @Returns: 
 
@@ -4649,6 +5508,7 @@ GuestfsSession
 
 @session: 
 @pathordevice: 
+@optargs: 
 @err: 
 @Returns: 
 
@@ -4716,6 +5576,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_utsname ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_version ##### -->
 <para>
 
@@ -4778,6 +5648,27 @@ GuestfsSession
 
 @session: 
 @activate: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_vgchange_uuid ##### -->
+<para>
+
+</para>
+
+@session: 
+@vg: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_vgchange_uuid_all ##### -->
+<para>
+
+</para>
+
+@session: 
 @err: 
 @Returns: 
 
@@ -4981,6 +5872,53 @@ GuestfsSession
 @path: 
 @content: 
 @size: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_xfs_admin ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@optargs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_xfs_growfs ##### -->
+<para>
+
+</para>
+
+@session: 
+@path: 
+@optargs: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_xfs_info ##### -->
+<para>
+
+</para>
+
+@session: 
+@pathordevice: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_xfs_repair ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@optargs: 
 @err: 
 @Returns: 
 

@@ -74,8 +74,9 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром
+I<--format=..>.
 
 =item B<-b> суфікс
 
@@ -95,8 +96,8 @@ By default, no backup file is made.
 
 =item B<--connect адреса>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 If you specify guest block devices directly, then libvirt is not used at
 all.
@@ -141,12 +142,13 @@ auto-detection for subsequent I<-a> options.
 
  virt-edit --format=raw -a disk.img file
 
-forces raw format (no auto-detection) for C<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img>.
 
  virt-edit --format=raw -a disk.img --format -a another.img file
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
@@ -298,7 +300,7 @@ C<virt-edit> doesn't work.
 
 Using C<virt-edit> is approximately equivalent to doing:
 
- guestfish --rw -i -d domname edit /file
+ guestfish --rw -i -d назва_домену edit /файл
 
 where C<domname> is the name of the libvirt guest, and C</file> is the full
 path to the file.
@@ -308,7 +310,7 @@ work on guests that libguestfs cannot inspect, or on things like arbitrary
 disk images that don't contain guests.  To edit a file on a disk image
 directly, use:
 
- guestfish --rw -a disk.img -m /dev/sda1 edit /file
+ guestfish --rw -a диск.img -m /dev/sda1 edit /файл
 
 where C<disk.img> is the disk image, C</dev/sda1> is the filesystem within
 the disk image to edit, and C</file> is the full path to the file.
@@ -316,9 +318,9 @@ the disk image to edit, and C</file> is the full path to the file.
 C<virt-edit> cannot create new files.  Use the guestfish commands C<touch>,
 C<write> or C<upload> instead:
 
- guestfish --rw -i -d domname touch /newfile
+ guestfish --rw -i -d назва_домену touch /новий_файл
 
- guestfish --rw -i -d domname write /newfile "new content"
+ guestfish --rw -i -d назва_домену write /новий_файл "новий вміст"
 
  guestfish --rw -i -d domname upload localfile /newfile
 

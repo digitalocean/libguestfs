@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -55,7 +55,7 @@ guestfs_compress_out_set_property(GObject *object, guint property_id, const GVal
 
   switch (property_id) {
     case PROP_GUESTFS_COMPRESS_OUT_LEVEL:
-      priv->level = g_value_get_int(value);
+      priv->level = g_value_get_int (value);
       break;
 
     default:

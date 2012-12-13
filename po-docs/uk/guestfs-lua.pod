@@ -1,0 +1,152 @@
+=encoding utf8
+
+=head1 НАЗВА
+
+guestfs-lua - How to use libguestfs from Lua
+
+=head1 КОРОТКИЙ ОПИС
+
+ local G = require "guestfs"
+ g = G.create ()
+ g:add_drive ("test.img", { format = "raw", readonly = true })
+ g:launch ()
+ devices = g:list_devices ()
+ g:close ()
+
+=head1 ОПИС
+
+This manual page documents how to call libguestfs from the Lua programming
+language.  This page just documents the differences from the C API and gives
+some examples.  If you are not familiar with using libguestfs, you also need
+to read L<guestfs(3)>.
+
+=head2 REQUIRING THE MODULE
+
+C<require "guestfs"> returns the module, so you have to assign it to a local
+variable.  Typical usage is:
+
+ local G = require "guestfs"
+
+(you can use any name you want instead of C<G>, but in the examples in this
+man page we always use C<G>).
+
+=head2 OPENING AND CLOSING THE HANDLE
+
+To create a new handle, call:
+
+ g = G.create ()
+
+You can also use the optional arguments:
+
+ g = G.create { environment = 0, close_on_exit = 0 }
+
+to set the flags C<GUESTFS_CREATE_NO_ENVIRONMENT> and/or
+C<GUESTFS_CREATE_NO_CLOSE_ON_EXIT>.
+
+The handle will be closed by the garbage collector, but you can also close
+it explicitly by doing:
+
+ g:close ()
+
+=head2 ЯК ВИКЛИКАТИ МЕТОДИ
+
+Use the ordinary Lua convention for calling methods on the handle.  For
+example:
+
+ g:set_verbose (true)
+
+=head2 FUNCTIONS WITH OPTIONAL ARGUMENTS
+
+For functions that take optional arguments, the first arguments are the
+non-optional ones.  The optional final argument is a table supplying the
+optional arguments.
+
+ g:add_drive ("test.img")
+
+або:
+
+ g:add_drive ("test.img", { format = "raw", readonly = true })
+
+=head2 64-БІТОВІ ЗНАЧЕННЯ
+
+Currently 64 bit values must be passed as strings, and are returned as
+strings.  This is because 32 bit Lua cannot handle 64 bit integers
+properly.  We hope to come up with a better solution later.
+
+=head2 ПОМИЛКИ
+
+Most (but not all) errors are converted into objects (ie. tables)
+containing the following fields:
+
+=over 4
+
+=item msg
+
+The error message (corresponding to L<guestfs(3)/guestfs_last_error>).
+
+=item code
+
+The C<errno> (corresponding to L<guestfs(3)/guestfs_last_errno>).
+
+=back
+
+These objects also have C<__tostring> functions attached to them so you can
+use C<tostring> (or implicit conversion) to convert them into printable
+strings.
+
+Note that the library also throws some errors as plain strings.  You may
+need to check the type.
+
+=head2 ПОДІЇ
+
+Реєструвати події можна за допомогою викликів C<set_event_callback>:
+
+ eh = g:set_event_callback (cb, "close")
+
+or to register a single callback for multiple events make the second
+argument a list:
+
+ eh = g:set_event_callback (cb, { "appliance", "library", "trace" })
+
+A list of all valid event types (strings) is in the global variable
+C<G.event_all>.
+
+The callback (C<cb>) is called with the following parameters:
+
+ function cb (g, event, eh, flags, buf, array)
+   -- g is the guestfs handle
+   -- event is a string which is the name of the event that fired
+   -- flags is always zero
+   -- buf is the data buffer (eg. log message etc)
+   -- array is the array of 64 bit ints (eg. progress bar status etc)
+   ...
+ end
+
+You can also remove a callback using the event handle (C<eh>) that was
+returned when you registered the callback:
+
+ g:delete_event_callback (eh)
+
+=head1 ПРИКЛАД 1. СТВОРЕННЯ ОБРАЗУ ДИСКА
+
+@EXAMPLE1@
+
+=head1 ПРИКЛАД 2. ПЕРЕВІРКА ОБРАЗУ ДИСКА ВІРТУАЛЬНОЇ МАШИНИ
+
+@EXAMPLE2@
+
+=head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
+
+L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-erlang(3)>,
+L<guestfs-java(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
+L<guestfs-python(3)>, L<guestfs-recipes(1)>, L<guestfs-ruby(3)>,
+L<http://www.lua.org/>, L<http://libguestfs.org/>.
+
+=head1 АВТОРИ
+
+Richard W.M. Jones (C<rjones at redhat dot com>)
+
+=head1 АВТОРСЬКІ ПРАВА
+
+© Red Hat Inc., 2012
+

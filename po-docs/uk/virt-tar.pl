@@ -86,8 +86,8 @@ the L<libguestfs(3)> API).
 
 =item B<--connect адреса>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 If you specify guest block devices directly, then libvirt is not used at
 all.

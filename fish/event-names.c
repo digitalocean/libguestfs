@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -49,6 +49,8 @@ event_name_of_event_bitmask (uint64_t ev)
     return "trace";
   case GUESTFS_EVENT_ENTER:
     return "enter";
+  case GUESTFS_EVENT_LIBVIRT_AUTH:
+    return "libvirt_auth";
   default:
     abort (); /* should not happen */
   }
@@ -103,6 +105,11 @@ print_event_set (uint64_t event_bitmask, FILE *fp)
     comma = 1;
     fputs ("enter", fp);
   }
+  if (event_bitmask & GUESTFS_EVENT_LIBVIRT_AUTH) {
+    if (comma) fputc (',', fp);
+    comma = 1;
+    fputs ("libvirt_auth", fp);
+  }
 }
 
 int
@@ -136,6 +143,8 @@ event_bitmask_of_event_set (const char *arg, uint64_t *eventset_r)
       *eventset_r |= GUESTFS_EVENT_TRACE;
     else if (STREQLEN (arg, "enter", n))
       *eventset_r |= GUESTFS_EVENT_ENTER;
+    else if (STREQLEN (arg, "libvirt_auth", n))
+      *eventset_r |= GUESTFS_EVENT_LIBVIRT_AUTH;
     else {
       fprintf (stderr, _("unknown event name: %s\n"), arg);
       return -1;

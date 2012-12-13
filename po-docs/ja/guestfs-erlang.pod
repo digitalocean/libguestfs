@@ -20,7 +20,7 @@ programming language.  This page just documents the differences from the C
 API and gives some examples.  If you are not familiar with using libguestfs,
 you also need to read L<guestfs(3)>.
 
-=head2 OPENING AND CLOSING THE HANDLE
+=head2 ハンドルのオープン方法およびクローズ方法
 
 The Erlang bindings are implemented using an external program called
 C<erl-guestfs>.  This program must be on the current PATH, or else you
@@ -30,13 +30,13 @@ should specify the full path to the program:
 
  {ok, G} = guestfs:create("/path/to/erl-guestfs").
 
-C<G> is the libguestfs handle which you should pass to other functions.
+C<G> は他の関数に渡す libguestfs ハンドルです。
 
 ハンドルを閉じるには:
 
  ok = guestfs:close(G).
 
-=head2 FUNCTIONS WITH OPTIONAL ARGUMENTS
+=head2 オプション引数を用いた機能
 
 For functions that take optional arguments, the first arguments are the
 non-optional ones.  The last argument is a list of tuples supplying the
@@ -80,7 +80,7 @@ C<Function> は未知の関数の名前です。
 This indicates that you called a function with optional arguments, with an
 unknown argument name.
 
-C<Arg> is the name of the unknown argument.
+C<Arg> は未知の引数の名前です。
 
 =back
 
@@ -95,9 +95,9 @@ C<Arg> is the name of the unknown argument.
 =head1 関連項目
 
 L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-java(3)>,
-L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
-L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://www.erlang.org/>.
-L<http://libguestfs.org/>。
+L<guestfs-lua(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
+L<guestfs-python(3)>, L<guestfs-recipes(1)>, L<guestfs-ruby(3)>,
+L<http://www.erlang.org/>.  L<http://libguestfs.org/>.
 
 =head1 著者
 

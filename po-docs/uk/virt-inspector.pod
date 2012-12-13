@@ -7,15 +7,15 @@ about a virtual machine
 
 =head1 КОРОТКИЙ ОПИС
 
- virt-inspector [--options] -d domname
+ virt-inspector [--параметри] -d назва_домену
 
- virt-inspector [--options] -a disk.img [-a disk.img ...]
+ virt-inspector [--параметри] -a диск.img [-a диск.img ...]
 
 Застарілий стиль:
 
- virt-inspector domname
+ virt-inspector назва_домену
 
- virt-inspector disk.img [disk.img ...]
+ virt-inspector диск.img [диск.img ...]
 
 =head1 ОПИС
 
@@ -66,15 +66,16 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром
+I<--format=..>.
 
 =item B<-c адреса>
 
 =item B<--connect адреса>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 Libvirt is only used if you specify a C<domname> on the command line.  If
 you specify guest block devices directly (I<-a>), then libvirt is not used
@@ -141,11 +142,11 @@ functions are disabled.  See L</XPATH QUERIES> below for some examples.
 
 Previous versions of virt-inspector allowed you to write either:
 
- virt-inspector disk.img [disk.img ...]
+ virt-inspector диск.img [диск.img ...]
 
 або
 
- virt-inspector guestname
+ virt-inspector назва_гостьової_системи
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
@@ -219,7 +220,7 @@ filesystems belonging to the guest, including swap and empty partitions.
 (In the rare case of a multi-boot guest, it covers filesystems belonging to
 this OS or shared with this OS and other OSes).
 
-You might see something like this:
+Ви побачите щось таке:
 
  <operatingsystems>
    <operatingsystem>
@@ -294,7 +295,7 @@ very large and high quality.
      ...
      <icon>
        iVBORw0KGgoAAAANSUhEUgAAAGAAAABg[.......]
-       [... many lines of base64 data ...]
+       [... багато рядків даних base64 ...]
      </icon>
 
 To display the icon, you have to extract it and convert the base64 data back
@@ -302,7 +303,7 @@ to a binary file.  Use an XPath query or simply an editor to extract the
 data, then use the coreutils L<base64(1)> program to do the conversion back
 to a PNG file:
 
- base64 -i -d < icon.data > icon.png
+ base64 -i -d < дані.піктограми > icon.png
 
 =head2 INSPECTING INSTALL DISKS, LIVE CDs
 
@@ -465,7 +466,7 @@ as above.  You can then do:
 
  ><fs> inspect-get-icon /dev/vg_f15x32/lv_root | display -
 
-=head1 OLD VERSIONS OF VIRT-INSPECTOR
+=head1 ПОПЕРЕДНІ ВЕРСІЇ VIRT-INSPECTOR
 
 As described above, early versions of libguestfs shipped with a different
 virt-inspector program written in Perl (the current version is written in

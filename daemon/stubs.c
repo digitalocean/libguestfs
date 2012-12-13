@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -127,43 +127,6 @@ done_no_free:
 }
 
 static void
-cat_stub (XDR *xdr_in)
-{
-  char *r;
-  struct guestfs_cat_args args;
-  char *path;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_cat_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  path = args.path;
-  ABS_PATH (path, , goto done);
-
-  NEED_ROOT (, goto done);
-  r = do_cat (path);
-  if (r == NULL)
-    /* do_cat has already called reply_with_error */
-    goto done;
-
-  struct guestfs_cat_ret ret;
-  ret.content = r;
-  reply ((xdrproc_t) &xdr_guestfs_cat_ret, (char *) &ret);
-  free (r);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_cat_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
 ll_stub (XDR *xdr_in)
 {
   char *r;
@@ -196,44 +159,6 @@ ll_stub (XDR *xdr_in)
   free (r);
 done:
   xdr_free ((xdrproc_t) xdr_guestfs_ll_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
-ls_stub (XDR *xdr_in)
-{
-  char **r;
-  struct guestfs_ls_args args;
-  char *directory;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_ls_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  directory = args.directory;
-  ABS_PATH (directory, , goto done);
-
-  NEED_ROOT (, goto done);
-  r = do_ls (directory);
-  if (r == NULL)
-    /* do_ls has already called reply_with_error */
-    goto done;
-
-  struct guestfs_ls_ret ret;
-  ret.listing.listing_len = count_strings (r);
-  ret.listing.listing_val = r;
-  reply ((xdrproc_t) &xdr_guestfs_ls_ret, (char *) &ret);
-  free_strings (r);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_ls_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -494,44 +419,6 @@ lvs_full_stub (XDR *xdr_in)
   reply ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
   xdr_free ((xdrproc_t) xdr_guestfs_lvs_full_ret, (char *) &ret);
 done:
-done_no_free:
-  return;
-}
-
-static void
-read_lines_stub (XDR *xdr_in)
-{
-  char **r;
-  struct guestfs_read_lines_args args;
-  char *path;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_read_lines_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  path = args.path;
-  ABS_PATH (path, , goto done);
-
-  NEED_ROOT (, goto done);
-  r = do_read_lines (path);
-  if (r == NULL)
-    /* do_read_lines has already called reply_with_error */
-    goto done;
-
-  struct guestfs_read_lines_ret ret;
-  ret.lines.lines_len = count_strings (r);
-  ret.lines.lines_val = r;
-  reply ((xdrproc_t) &xdr_guestfs_read_lines_ret, (char *) &ret);
-  free_strings (r);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_read_lines_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -1587,41 +1474,6 @@ done_no_free:
 }
 
 static void
-mkfs_stub (XDR *xdr_in)
-{
-  int r;
-  struct guestfs_mkfs_args args;
-  char *fstype;
-  char *device;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_mkfs_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  fstype = args.fstype;
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
-
-  r = do_mkfs (fstype, device);
-  if (r == -1)
-    /* do_mkfs has already called reply_with_error */
-    goto done;
-
-  reply (NULL, NULL);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_mkfs_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
 sfdisk_stub (XDR *xdr_in)
 {
   int r;
@@ -1713,9 +1565,11 @@ umount_stub (XDR *xdr_in)
   int r;
   struct guestfs_umount_args args;
   char *pathordevice;
+  int force;
+  int lazyunmount;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -1726,8 +1580,11 @@ umount_stub (XDR *xdr_in)
     goto done;
   }
   pathordevice = args.pathordevice;
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (pathordevice, , goto done);
+  force = args.force;
+  lazyunmount = args.lazyunmount;
 
-  r = do_umount (pathordevice);
+  r = do_umount (pathordevice, force, lazyunmount);
   if (r == -1)
     /* do_umount has already called reply_with_error */
     goto done;
@@ -2543,10 +2400,11 @@ tar_in_stub (XDR *xdr_in)
   int r;
   struct guestfs_tar_in_args args;
   char *directory;
+  char *compress;
 
-  if (optargs_bitmask != 0) {
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
     cancel_receive ();
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -2559,9 +2417,10 @@ tar_in_stub (XDR *xdr_in)
   }
   directory = args.directory;
   ABS_PATH (directory, cancel_receive (), goto done);
+  compress = args.compress;
 
   NEED_ROOT (cancel_receive (), goto done);
-  r = do_tar_in (directory);
+  r = do_tar_in (directory, compress);
   if (r == -1)
     /* do_tar_in has already called reply_with_error */
     goto done;
@@ -2579,9 +2438,12 @@ tar_out_stub (XDR *xdr_in)
   int r;
   struct guestfs_tar_out_args args;
   char *directory;
+  char *compress;
+  int numericowner;
+  char **excludes;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -2592,8 +2454,18 @@ tar_out_stub (XDR *xdr_in)
     goto done;
   }
   directory = args.directory;
+  compress = args.compress;
+  numericowner = args.numericowner;
+  excludes = realloc (args.excludes.excludes_val,
+                sizeof (char *) * (args.excludes.excludes_len+1));
+  if (excludes == NULL) {
+    reply_with_perror ("realloc");
+    goto done;
+  }
+  excludes[args.excludes.excludes_len] = NULL;
+  args.excludes.excludes_val = excludes;
 
-  r = do_tar_out (directory);
+  r = do_tar_out (directory, compress, numericowner, excludes);
   if (r == -1)
     /* do_tar_out has already called reply_with_error */
     goto done;
@@ -3968,44 +3840,6 @@ done_no_free:
 }
 
 static void
-find_stub (XDR *xdr_in)
-{
-  char **r;
-  struct guestfs_find_args args;
-  char *directory;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_find_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  directory = args.directory;
-  ABS_PATH (directory, , goto done);
-
-  NEED_ROOT (, goto done);
-  r = do_find (directory);
-  if (r == NULL)
-    /* do_find has already called reply_with_error */
-    goto done;
-
-  struct guestfs_find_ret ret;
-  ret.names.names_len = count_strings (r);
-  ret.names.names_val = r;
-  reply ((xdrproc_t) &xdr_guestfs_find_ret, (char *) &ret);
-  free_strings (r);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_find_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
 e2fsck_f_stub (XDR *xdr_in)
 {
   int r;
@@ -4823,9 +4657,11 @@ mkswap_stub (XDR *xdr_in)
   int r;
   struct guestfs_mkswap_args args;
   char *device;
+  char *label;
+  char *uuid;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -4837,8 +4673,10 @@ mkswap_stub (XDR *xdr_in)
   }
   device = args.device;
   RESOLVE_DEVICE (device, , goto done);
+  label = args.label;
+  uuid = args.uuid;
 
-  r = do_mkswap (device);
+  r = do_mkswap (device, label, uuid);
   if (r == -1)
     /* do_mkswap has already called reply_with_error */
     goto done;
@@ -5657,57 +5495,19 @@ done_no_free:
 }
 
 static void
-read_file_stub (XDR *xdr_in)
-{
-  size_t size = 1;
-  char *r;
-  struct guestfs_read_file_args args;
-  char *path;
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_read_file_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  path = args.path;
-  ABS_PATH (path, , goto done);
-
-  NEED_ROOT (, goto done);
-  r = do_read_file (path, &size);
-  /* size == 0 && r == NULL could be a non-error case (just
-   * an ordinary zero-length buffer), so be careful ...
-   */
-  if (size == 1 && r == NULL)
-    /* do_read_file has already called reply_with_error */
-    goto done;
-
-  struct guestfs_read_file_ret ret;
-  ret.content.content_val = r;
-  ret.content.content_len = size;
-  reply ((xdrproc_t) &xdr_guestfs_read_file_ret, (char *) &ret);
-  free (r);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_read_file_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
 grep_stub (XDR *xdr_in)
 {
   char **r;
   struct guestfs_grep_args args;
   char *regex;
   char *path;
+  int extended;
+  int fixed;
+  int insensitive;
+  int compressed;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -5720,9 +5520,13 @@ grep_stub (XDR *xdr_in)
   regex = args.regex;
   path = args.path;
   ABS_PATH (path, , goto done);
+  extended = args.extended;
+  fixed = args.fixed;
+  insensitive = args.insensitive;
+  compressed = args.compressed;
 
   NEED_ROOT (, goto done);
-  r = do_grep (regex, path);
+  r = do_grep (regex, path, extended, fixed, insensitive, compressed);
   if (r == NULL)
     /* do_grep has already called reply_with_error */
     goto done;
@@ -7729,10 +7533,10 @@ done_no_free:
 }
 
 static void
-lstatlist_stub (XDR *xdr_in)
+internal_lstatlist_stub (XDR *xdr_in)
 {
   guestfs_int_stat_list *r;
-  struct guestfs_lstatlist_args args;
+  struct guestfs_internal_lstatlist_args args;
   char *path;
   char **names;
 
@@ -7743,7 +7547,7 @@ lstatlist_stub (XDR *xdr_in)
 
   memset (&args, 0, sizeof args);
 
-  if (!xdr_guestfs_lstatlist_args (xdr_in, &args)) {
+  if (!xdr_guestfs_internal_lstatlist_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
@@ -7759,27 +7563,27 @@ lstatlist_stub (XDR *xdr_in)
   args.names.names_val = names;
 
   NEED_ROOT (, goto done);
-  r = do_lstatlist (path, names);
+  r = do_internal_lstatlist (path, names);
   if (r == NULL)
-    /* do_lstatlist has already called reply_with_error */
+    /* do_internal_lstatlist has already called reply_with_error */
     goto done;
 
-  struct guestfs_lstatlist_ret ret;
+  struct guestfs_internal_lstatlist_ret ret;
   ret.statbufs = *r;
   free (r);
-  reply ((xdrproc_t) xdr_guestfs_lstatlist_ret, (char *) &ret);
-  xdr_free ((xdrproc_t) xdr_guestfs_lstatlist_ret, (char *) &ret);
+  reply ((xdrproc_t) xdr_guestfs_internal_lstatlist_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_lstatlist_ret, (char *) &ret);
 done:
-  xdr_free ((xdrproc_t) xdr_guestfs_lstatlist_args, (char *) &args);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_lstatlist_args, (char *) &args);
 done_no_free:
   return;
 }
 
 static void
-lxattrlist_stub (XDR *xdr_in)
+internal_lxattrlist_stub (XDR *xdr_in)
 {
   guestfs_int_xattr_list *r;
-  struct guestfs_lxattrlist_args args;
+  struct guestfs_internal_lxattrlist_args args;
   char *path;
   char **names;
 
@@ -7800,7 +7604,7 @@ lxattrlist_stub (XDR *xdr_in)
 
   memset (&args, 0, sizeof args);
 
-  if (!xdr_guestfs_lxattrlist_args (xdr_in, &args)) {
+  if (!xdr_guestfs_internal_lxattrlist_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
@@ -7816,27 +7620,27 @@ lxattrlist_stub (XDR *xdr_in)
   args.names.names_val = names;
 
   NEED_ROOT (, goto done);
-  r = do_lxattrlist (path, names);
+  r = do_internal_lxattrlist (path, names);
   if (r == NULL)
-    /* do_lxattrlist has already called reply_with_error */
+    /* do_internal_lxattrlist has already called reply_with_error */
     goto done;
 
-  struct guestfs_lxattrlist_ret ret;
+  struct guestfs_internal_lxattrlist_ret ret;
   ret.xattrs = *r;
   free (r);
-  reply ((xdrproc_t) xdr_guestfs_lxattrlist_ret, (char *) &ret);
-  xdr_free ((xdrproc_t) xdr_guestfs_lxattrlist_ret, (char *) &ret);
+  reply ((xdrproc_t) xdr_guestfs_internal_lxattrlist_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_lxattrlist_ret, (char *) &ret);
 done:
-  xdr_free ((xdrproc_t) xdr_guestfs_lxattrlist_args, (char *) &args);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_lxattrlist_args, (char *) &args);
 done_no_free:
   return;
 }
 
 static void
-readlinklist_stub (XDR *xdr_in)
+internal_readlinklist_stub (XDR *xdr_in)
 {
   char **r;
-  struct guestfs_readlinklist_args args;
+  struct guestfs_internal_readlinklist_args args;
   char *path;
   char **names;
 
@@ -7847,7 +7651,7 @@ readlinklist_stub (XDR *xdr_in)
 
   memset (&args, 0, sizeof args);
 
-  if (!xdr_guestfs_readlinklist_args (xdr_in, &args)) {
+  if (!xdr_guestfs_internal_readlinklist_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
@@ -7863,18 +7667,18 @@ readlinklist_stub (XDR *xdr_in)
   args.names.names_val = names;
 
   NEED_ROOT (, goto done);
-  r = do_readlinklist (path, names);
+  r = do_internal_readlinklist (path, names);
   if (r == NULL)
-    /* do_readlinklist has already called reply_with_error */
+    /* do_internal_readlinklist has already called reply_with_error */
     goto done;
 
-  struct guestfs_readlinklist_ret ret;
+  struct guestfs_internal_readlinklist_ret ret;
   ret.links.links_len = count_strings (r);
   ret.links.links_val = r;
-  reply ((xdrproc_t) &xdr_guestfs_readlinklist_ret, (char *) &ret);
+  reply ((xdrproc_t) &xdr_guestfs_internal_readlinklist_ret, (char *) &ret);
   free_strings (r);
 done:
-  xdr_free ((xdrproc_t) xdr_guestfs_readlinklist_args, (char *) &args);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_readlinklist_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -8784,49 +8588,6 @@ done_no_free:
 }
 
 static void
-ntfsresize_stub (XDR *xdr_in)
-{
-  int r;
-  struct guestfs_ntfsresize_args args;
-  char *device;
-
-  /* The caller should have checked before calling this. */
-  if (! optgroup_ntfsprogs_available ()) {
-    reply_with_error_errno (ENOTSUP,
-       "feature '%s' is not available in this\n"
-       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
-       "how to check for the availability of features.",
-       "ntfsprogs");
-    goto done_no_free;
-  }
-
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
-    goto done_no_free;
-  }
-
-  memset (&args, 0, sizeof args);
-
-  if (!xdr_guestfs_ntfsresize_args (xdr_in, &args)) {
-    reply_with_error ("daemon failed to decode procedure arguments");
-    goto done;
-  }
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
-
-  r = do_ntfsresize (device);
-  if (r == -1)
-    /* do_ntfsresize has already called reply_with_error */
-    goto done;
-
-  reply (NULL, NULL);
-done:
-  xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_args, (char *) &args);
-done_no_free:
-  return;
-}
-
-static void
 vgscan_stub (XDR *xdr_in)
 {
   int r;
@@ -9322,10 +9083,10 @@ done_no_free:
 }
 
 static void
-write_stub (XDR *xdr_in)
+internal_write_stub (XDR *xdr_in)
 {
   int r;
-  struct guestfs_write_args args;
+  struct guestfs_internal_write_args args;
   char *path;
   const char *content;
   size_t content_size;
@@ -9337,7 +9098,7 @@ write_stub (XDR *xdr_in)
 
   memset (&args, 0, sizeof args);
 
-  if (!xdr_guestfs_write_args (xdr_in, &args)) {
+  if (!xdr_guestfs_internal_write_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
@@ -9347,14 +9108,14 @@ write_stub (XDR *xdr_in)
   content_size = args.content.content_len;
 
   NEED_ROOT (, goto done);
-  r = do_write (path, content, content_size);
+  r = do_internal_write (path, content, content_size);
   if (r == -1)
-    /* do_write has already called reply_with_error */
+    /* do_internal_write has already called reply_with_error */
     goto done;
 
   reply (NULL, NULL);
 done:
-  xdr_free ((xdrproc_t) xdr_guestfs_write_args, (char *) &args);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_write_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -10594,10 +10355,10 @@ done_no_free:
 }
 
 static void
-mkfs_opts_stub (XDR *xdr_in)
+mkfs_stub (XDR *xdr_in)
 {
   int r;
-  struct guestfs_mkfs_opts_args args;
+  struct guestfs_mkfs_args args;
   char *fstype;
   char *device;
   int blocksize;
@@ -10612,7 +10373,7 @@ mkfs_opts_stub (XDR *xdr_in)
 
   memset (&args, 0, sizeof args);
 
-  if (!xdr_guestfs_mkfs_opts_args (xdr_in, &args)) {
+  if (!xdr_guestfs_mkfs_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
@@ -10624,14 +10385,14 @@ mkfs_opts_stub (XDR *xdr_in)
   inode = args.inode;
   sectorsize = args.sectorsize;
 
-  r = do_mkfs_opts (fstype, device, blocksize, features, inode, sectorsize);
+  r = do_mkfs (fstype, device, blocksize, features, inode, sectorsize);
   if (r == -1)
-    /* do_mkfs_opts has already called reply_with_error */
+    /* do_mkfs has already called reply_with_error */
     goto done;
 
   reply (NULL, NULL);
 done:
-  xdr_free ((xdrproc_t) xdr_guestfs_mkfs_opts_args, (char *) &args);
+  xdr_free ((xdrproc_t) xdr_guestfs_mkfs_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -10956,10 +10717,10 @@ done_no_free:
 }
 
 static void
-ntfsresize_opts_stub (XDR *xdr_in)
+ntfsresize_stub (XDR *xdr_in)
 {
   int r;
-  struct guestfs_ntfsresize_opts_args args;
+  struct guestfs_ntfsresize_args args;
   char *device;
   int64_t size;
   int force;
@@ -10981,7 +10742,7 @@ ntfsresize_opts_stub (XDR *xdr_in)
 
   memset (&args, 0, sizeof args);
 
-  if (!xdr_guestfs_ntfsresize_opts_args (xdr_in, &args)) {
+  if (!xdr_guestfs_ntfsresize_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
@@ -10990,14 +10751,14 @@ ntfsresize_opts_stub (XDR *xdr_in)
   size = args.size;
   force = args.force;
 
-  r = do_ntfsresize_opts (device, size, force);
+  r = do_ntfsresize (device, size, force);
   if (r == -1)
-    /* do_ntfsresize_opts has already called reply_with_error */
+    /* do_ntfsresize has already called reply_with_error */
     goto done;
 
   reply (NULL, NULL);
 done:
-  xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_opts_args, (char *) &args);
+  xdr_free ((xdrproc_t) xdr_guestfs_ntfsresize_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -11049,10 +10810,10 @@ done_no_free:
 }
 
 static void
-write_append_stub (XDR *xdr_in)
+internal_write_append_stub (XDR *xdr_in)
 {
   int r;
-  struct guestfs_write_append_args args;
+  struct guestfs_internal_write_append_args args;
   char *path;
   const char *content;
   size_t content_size;
@@ -11064,7 +10825,7 @@ write_append_stub (XDR *xdr_in)
 
   memset (&args, 0, sizeof args);
 
-  if (!xdr_guestfs_write_append_args (xdr_in, &args)) {
+  if (!xdr_guestfs_internal_write_append_args (xdr_in, &args)) {
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
@@ -11074,14 +10835,14 @@ write_append_stub (XDR *xdr_in)
   content_size = args.content.content_len;
 
   NEED_ROOT (, goto done);
-  r = do_write_append (path, content, content_size);
+  r = do_internal_write_append (path, content, content_size);
   if (r == -1)
-    /* do_write_append has already called reply_with_error */
+    /* do_internal_write_append has already called reply_with_error */
     goto done;
 
   reply (NULL, NULL);
 done:
-  xdr_free ((xdrproc_t) xdr_guestfs_write_append_args, (char *) &args);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_write_append_args, (char *) &args);
 done_no_free:
   return;
 }
@@ -12941,6 +12702,90 @@ done_no_free:
 }
 
 static void
+filesystem_available_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_filesystem_available_args args;
+  char *filesystem;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_filesystem_available_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  filesystem = args.filesystem;
+
+  r = do_filesystem_available (filesystem);
+  if (r == -1)
+    /* do_filesystem_available has already called reply_with_error */
+    goto done;
+
+  struct guestfs_filesystem_available_ret ret;
+  ret.fsavail = r;
+  reply ((xdrproc_t) &xdr_guestfs_filesystem_available_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_filesystem_available_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+fstrim_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_fstrim_args args;
+  char *mountpoint;
+  int64_t offset;
+  int64_t length;
+  int64_t minimumfreeextent;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_fstrim_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "fstrim");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_fstrim_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  mountpoint = args.mountpoint;
+  ABS_PATH (mountpoint, , goto done);
+  offset = args.offset;
+  length = args.length;
+  minimumfreeextent = args.minimumfreeextent;
+
+  NEED_ROOT (, goto done);
+  r = do_fstrim (mountpoint, offset, length, minimumfreeextent);
+  if (r == -1)
+    /* do_fstrim has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_fstrim_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
 device_index_stub (XDR *xdr_in)
 {
   int r;
@@ -12998,6 +12843,2412 @@ done_no_free:
   return;
 }
 
+static void
+xfs_info_stub (XDR *xdr_in)
+{
+  guestfs_int_xfsinfo *r;
+  struct guestfs_xfs_info_args args;
+  char *pathordevice;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_xfs_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "xfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_xfs_info_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  pathordevice = args.pathordevice;
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (pathordevice, , goto done);
+
+  r = do_xfs_info (pathordevice);
+  if (r == NULL)
+    /* do_xfs_info has already called reply_with_error */
+    goto done;
+
+  struct guestfs_xfs_info_ret ret;
+  ret.info = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_xfs_info_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_xfs_info_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_xfs_info_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+pvchange_uuid_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_pvchange_uuid_args args;
+  char *device;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "lvm2");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_pvchange_uuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+
+  r = do_pvchange_uuid (device);
+  if (r == -1)
+    /* do_pvchange_uuid has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_pvchange_uuid_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+pvchange_uuid_all_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "lvm2");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_pvchange_uuid_all ();
+  if (r == -1)
+    /* do_pvchange_uuid_all has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+done_no_free:
+  return;
+}
+
+static void
+vgchange_uuid_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_vgchange_uuid_args args;
+  char *vg;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "lvm2");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_vgchange_uuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  vg = args.vg;
+
+  r = do_vgchange_uuid (vg);
+  if (r == -1)
+    /* do_vgchange_uuid has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_vgchange_uuid_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+vgchange_uuid_all_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_lvm2_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "lvm2");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_vgchange_uuid_all ();
+  if (r == -1)
+    /* do_vgchange_uuid_all has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+done_no_free:
+  return;
+}
+
+static void
+utsname_stub (XDR *xdr_in)
+{
+  guestfs_int_utsname *r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_utsname ();
+  if (r == NULL)
+    /* do_utsname has already called reply_with_error */
+    goto done;
+
+  struct guestfs_utsname_ret ret;
+  ret.uts = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_utsname_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_utsname_ret, (char *) &ret);
+done:
+done_no_free:
+  return;
+}
+
+static void
+xfs_growfs_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_xfs_growfs_args args;
+  char *path;
+  int datasec;
+  int logsec;
+  int rtsec;
+  int64_t datasize;
+  int64_t logsize;
+  int64_t rtsize;
+  int64_t rtextsize;
+  int maxpct;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_xfs_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "xfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xffffffffffffff00)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_xfs_growfs_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+  datasec = args.datasec;
+  logsec = args.logsec;
+  rtsec = args.rtsec;
+  datasize = args.datasize;
+  logsize = args.logsize;
+  rtsize = args.rtsize;
+  rtextsize = args.rtextsize;
+  maxpct = args.maxpct;
+
+  NEED_ROOT (, goto done);
+  r = do_xfs_growfs (path, datasec, logsec, rtsec, datasize, logsize, rtsize, rtextsize, maxpct);
+  if (r == -1)
+    /* do_xfs_growfs has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_xfs_growfs_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+rsync_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_rsync_args args;
+  char *src;
+  char *dest;
+  int archive;
+  int deletedest;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_rsync_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "rsync");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_rsync_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  src = args.src;
+  ABS_PATH (src, , goto done);
+  dest = args.dest;
+  ABS_PATH (dest, , goto done);
+  archive = args.archive;
+  deletedest = args.deletedest;
+
+  NEED_ROOT (, goto done);
+  r = do_rsync (src, dest, archive, deletedest);
+  if (r == -1)
+    /* do_rsync has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_rsync_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+rsync_in_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_rsync_in_args args;
+  char *remote;
+  char *dest;
+  int archive;
+  int deletedest;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_rsync_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "rsync");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_rsync_in_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  remote = args.remote;
+  dest = args.dest;
+  ABS_PATH (dest, , goto done);
+  archive = args.archive;
+  deletedest = args.deletedest;
+
+  NEED_ROOT (, goto done);
+  r = do_rsync_in (remote, dest, archive, deletedest);
+  if (r == -1)
+    /* do_rsync_in has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_rsync_in_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+rsync_out_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_rsync_out_args args;
+  char *src;
+  char *remote;
+  int archive;
+  int deletedest;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_rsync_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "rsync");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffc)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_rsync_out_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  src = args.src;
+  ABS_PATH (src, , goto done);
+  remote = args.remote;
+  archive = args.archive;
+  deletedest = args.deletedest;
+
+  NEED_ROOT (, goto done);
+  r = do_rsync_out (src, remote, archive, deletedest);
+  if (r == -1)
+    /* do_rsync_out has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_rsync_out_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ls0_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_ls0_args args;
+  char *dir;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ls0_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  dir = args.dir;
+  ABS_PATH (dir, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_ls0 (dir);
+  if (r == -1)
+    /* do_ls0 has already called reply_with_error */
+    goto done;
+
+  /* do_ls0 has already sent a reply */
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ls0_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+fill_dir_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_fill_dir_args args;
+  char *dir;
+  int nr;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_fill_dir_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  dir = args.dir;
+  ABS_PATH (dir, , goto done);
+  nr = args.nr;
+
+  NEED_ROOT (, goto done);
+  r = do_fill_dir (dir, nr);
+  if (r == -1)
+    /* do_fill_dir has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_fill_dir_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+xfs_admin_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_xfs_admin_args args;
+  char *device;
+  int extunwritten;
+  int imgfile;
+  int v2log;
+  int projid32bit;
+  int lazycounter;
+  char *label;
+  char *uuid;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_xfs_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "xfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xffffffffffffff80)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_xfs_admin_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  extunwritten = args.extunwritten;
+  imgfile = args.imgfile;
+  v2log = args.v2log;
+  projid32bit = args.projid32bit;
+  lazycounter = args.lazycounter;
+  label = args.label;
+  uuid = args.uuid;
+
+  r = do_xfs_admin (device, extunwritten, imgfile, v2log, projid32bit, lazycounter, label, uuid);
+  if (r == -1)
+    /* do_xfs_admin has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_xfs_admin_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_open_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_hivex_open_args args;
+  char *filename;
+  int verbose;
+  int debug;
+  int write;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_open_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  filename = args.filename;
+  ABS_PATH (filename, , goto done);
+  verbose = args.verbose;
+  debug = args.debug;
+  write = args.write;
+
+  NEED_ROOT (, goto done);
+  r = do_hivex_open (filename, verbose, debug, write);
+  if (r == -1)
+    /* do_hivex_open has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_open_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_close_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_hivex_close ();
+  if (r == -1)
+    /* do_hivex_close has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+done_no_free:
+  return;
+}
+
+static void
+hivex_root_stub (XDR *xdr_in)
+{
+  int64_t r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_hivex_root ();
+  if (r == -1)
+    /* do_hivex_root has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_root_ret ret;
+  ret.nodeh = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_root_ret, (char *) &ret);
+done:
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_name_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_hivex_node_name_args args;
+  int64_t nodeh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_name_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+
+  r = do_hivex_node_name (nodeh);
+  if (r == NULL)
+    /* do_hivex_node_name has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_node_name_ret ret;
+  ret.name = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_node_name_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_name_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_children_stub (XDR *xdr_in)
+{
+  guestfs_int_hivex_node_list *r;
+  struct guestfs_hivex_node_children_args args;
+  int64_t nodeh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_children_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+
+  r = do_hivex_node_children (nodeh);
+  if (r == NULL)
+    /* do_hivex_node_children has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_node_children_ret ret;
+  ret.nodehs = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_hivex_node_children_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_children_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_children_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_get_child_stub (XDR *xdr_in)
+{
+  int64_t r;
+  struct guestfs_hivex_node_get_child_args args;
+  int64_t nodeh;
+  char *name;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_get_child_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+  name = args.name;
+
+  r = do_hivex_node_get_child (nodeh, name);
+  if (r == -1)
+    /* do_hivex_node_get_child has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_node_get_child_ret ret;
+  ret.child = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_node_get_child_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_get_child_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_parent_stub (XDR *xdr_in)
+{
+  int64_t r;
+  struct guestfs_hivex_node_parent_args args;
+  int64_t nodeh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_parent_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+
+  r = do_hivex_node_parent (nodeh);
+  if (r == -1)
+    /* do_hivex_node_parent has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_node_parent_ret ret;
+  ret.parent = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_node_parent_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_parent_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_values_stub (XDR *xdr_in)
+{
+  guestfs_int_hivex_value_list *r;
+  struct guestfs_hivex_node_values_args args;
+  int64_t nodeh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_values_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+
+  r = do_hivex_node_values (nodeh);
+  if (r == NULL)
+    /* do_hivex_node_values has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_node_values_ret ret;
+  ret.valuehs = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_hivex_node_values_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_values_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_values_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_get_value_stub (XDR *xdr_in)
+{
+  int64_t r;
+  struct guestfs_hivex_node_get_value_args args;
+  int64_t nodeh;
+  char *key;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_get_value_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+  key = args.key;
+
+  r = do_hivex_node_get_value (nodeh, key);
+  if (r == -1)
+    /* do_hivex_node_get_value has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_node_get_value_ret ret;
+  ret.valueh = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_node_get_value_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_get_value_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_value_key_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_hivex_value_key_args args;
+  int64_t valueh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_value_key_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  valueh = args.valueh;
+
+  r = do_hivex_value_key (valueh);
+  if (r == NULL)
+    /* do_hivex_value_key has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_value_key_ret ret;
+  ret.key = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_value_key_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_value_key_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_value_type_stub (XDR *xdr_in)
+{
+  int64_t r;
+  struct guestfs_hivex_value_type_args args;
+  int64_t valueh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_value_type_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  valueh = args.valueh;
+
+  r = do_hivex_value_type (valueh);
+  if (r == -1)
+    /* do_hivex_value_type has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_value_type_ret ret;
+  ret.datatype = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_value_type_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_value_type_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_value_value_stub (XDR *xdr_in)
+{
+  size_t size = 1;
+  char *r;
+  struct guestfs_hivex_value_value_args args;
+  int64_t valueh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_value_value_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  valueh = args.valueh;
+
+  r = do_hivex_value_value (valueh, &size);
+  /* size == 0 && r == NULL could be a non-error case (just
+   * an ordinary zero-length buffer), so be careful ...
+   */
+  if (size == 1 && r == NULL)
+    /* do_hivex_value_value has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_value_value_ret ret;
+  ret.databuf.databuf_val = r;
+  ret.databuf.databuf_len = size;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_value_value_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_value_value_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_commit_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_hivex_commit_args args;
+  char *filename;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_commit_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  filename = args.filename ? *args.filename : NULL;
+
+  r = do_hivex_commit (filename);
+  if (r == -1)
+    /* do_hivex_commit has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_commit_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_add_child_stub (XDR *xdr_in)
+{
+  int64_t r;
+  struct guestfs_hivex_node_add_child_args args;
+  int64_t parent;
+  char *name;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_add_child_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  parent = args.parent;
+  name = args.name;
+
+  r = do_hivex_node_add_child (parent, name);
+  if (r == -1)
+    /* do_hivex_node_add_child has already called reply_with_error */
+    goto done;
+
+  struct guestfs_hivex_node_add_child_ret ret;
+  ret.nodeh = r;
+  reply ((xdrproc_t) &xdr_guestfs_hivex_node_add_child_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_add_child_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_delete_child_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_hivex_node_delete_child_args args;
+  int64_t nodeh;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_delete_child_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+
+  r = do_hivex_node_delete_child (nodeh);
+  if (r == -1)
+    /* do_hivex_node_delete_child has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_delete_child_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+hivex_node_set_value_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_hivex_node_set_value_args args;
+  int64_t nodeh;
+  char *key;
+  int64_t t;
+  const char *val;
+  size_t val_size;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_hivex_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "hivex");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_hivex_node_set_value_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  nodeh = args.nodeh;
+  key = args.key;
+  t = args.t;
+  val = args.val.val_val;
+  val_size = args.val.val_len;
+
+  r = do_hivex_node_set_value (nodeh, key, t, val, val_size);
+  if (r == -1)
+    /* do_hivex_node_set_value has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_hivex_node_set_value_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+xfs_repair_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_xfs_repair_args args;
+  char *device;
+  int forcelogzero;
+  int nomodify;
+  int noprefetch;
+  int forcegeometry;
+  int64_t maxmem;
+  int64_t ihashsize;
+  int64_t bhashsize;
+  int64_t agstride;
+  char *logdev;
+  char *rtdev;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_xfs_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "xfs");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffc00)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_xfs_repair_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  device = args.device;
+  REQUIRE_ROOT_OR_RESOLVE_DEVICE (device, , goto done);
+  forcelogzero = args.forcelogzero;
+  nomodify = args.nomodify;
+  noprefetch = args.noprefetch;
+  forcegeometry = args.forcegeometry;
+  maxmem = args.maxmem;
+  ihashsize = args.ihashsize;
+  bhashsize = args.bhashsize;
+  agstride = args.agstride;
+  logdev = args.logdev;
+  rtdev = args.rtdev;
+
+  r = do_xfs_repair (device, forcelogzero, nomodify, noprefetch, forcegeometry, maxmem, ihashsize, bhashsize, agstride, logdev, rtdev);
+  if (r == -1)
+    /* do_xfs_repair has already called reply_with_error */
+    goto done;
+
+  struct guestfs_xfs_repair_ret ret;
+  ret.status = r;
+  reply ((xdrproc_t) &xdr_guestfs_xfs_repair_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_xfs_repair_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+rm_f_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_rm_f_args args;
+  char *path;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_rm_f_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_rm_f (path);
+  if (r == -1)
+    /* do_rm_f has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_rm_f_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+mke2fs_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_mke2fs_args args;
+  char *device;
+  int64_t blockscount;
+  int64_t blocksize;
+  int64_t fragsize;
+  int64_t blockspergroup;
+  int64_t numberofgroups;
+  int64_t bytesperinode;
+  int64_t inodesize;
+  int64_t journalsize;
+  int64_t numberofinodes;
+  int64_t stridesize;
+  int64_t stripewidth;
+  int64_t maxonlineresize;
+  int reservedblockspercentage;
+  int mmpupdateinterval;
+  char *journaldevice;
+  char *label;
+  char *lastmounteddir;
+  char *creatoros;
+  char *fstype;
+  char *usagetype;
+  char *uuid;
+  int forcecreate;
+  int writesbandgrouponly;
+  int lazyitableinit;
+  int lazyjournalinit;
+  int testfs;
+  int discard;
+  int quotatype;
+  int extent;
+  int filetype;
+  int flexbg;
+  int hasjournal;
+  int journaldev;
+  int largefile;
+  int quota;
+  int resizeinode;
+  int sparsesuper;
+  int uninitbg;
+
+  if (optargs_bitmask & UINT64_C(0xffffffc000000000)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_mke2fs_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  blockscount = args.blockscount;
+  blocksize = args.blocksize;
+  fragsize = args.fragsize;
+  blockspergroup = args.blockspergroup;
+  numberofgroups = args.numberofgroups;
+  bytesperinode = args.bytesperinode;
+  inodesize = args.inodesize;
+  journalsize = args.journalsize;
+  numberofinodes = args.numberofinodes;
+  stridesize = args.stridesize;
+  stripewidth = args.stripewidth;
+  maxonlineresize = args.maxonlineresize;
+  reservedblockspercentage = args.reservedblockspercentage;
+  mmpupdateinterval = args.mmpupdateinterval;
+  journaldevice = args.journaldevice;
+  label = args.label;
+  lastmounteddir = args.lastmounteddir;
+  creatoros = args.creatoros;
+  fstype = args.fstype;
+  usagetype = args.usagetype;
+  uuid = args.uuid;
+  forcecreate = args.forcecreate;
+  writesbandgrouponly = args.writesbandgrouponly;
+  lazyitableinit = args.lazyitableinit;
+  lazyjournalinit = args.lazyjournalinit;
+  testfs = args.testfs;
+  discard = args.discard;
+  quotatype = args.quotatype;
+  extent = args.extent;
+  filetype = args.filetype;
+  flexbg = args.flexbg;
+  hasjournal = args.hasjournal;
+  journaldev = args.journaldev;
+  largefile = args.largefile;
+  quota = args.quota;
+  resizeinode = args.resizeinode;
+  sparsesuper = args.sparsesuper;
+  uninitbg = args.uninitbg;
+
+  r = do_mke2fs (device, blockscount, blocksize, fragsize, blockspergroup, numberofgroups, bytesperinode, inodesize, journalsize, numberofinodes, stridesize, stripewidth, maxonlineresize, reservedblockspercentage, mmpupdateinterval, journaldevice, label, lastmounteddir, creatoros, fstype, usagetype, uuid, forcecreate, writesbandgrouponly, lazyitableinit, lazyjournalinit, testfs, discard, quotatype, extent, filetype, flexbg, hasjournal, journaldev, largefile, quota, resizeinode, sparsesuper, uninitbg);
+  if (r == -1)
+    /* do_mke2fs has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_mke2fs_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+list_disk_labels_stub (XDR *xdr_in)
+{
+  char **r;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_list_disk_labels ();
+  if (r == NULL)
+    /* do_list_disk_labels has already called reply_with_error */
+    goto done;
+
+  struct guestfs_list_disk_labels_ret ret;
+  ret.labels.labels_len = count_strings (r);
+  ret.labels.labels_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_list_disk_labels_ret, (char *) &ret);
+  free_strings (r);
+done:
+done_no_free:
+  return;
+}
+
+static void
+internal_hot_add_drive_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_internal_hot_add_drive_args args;
+  char *label;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_internal_hot_add_drive_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  label = args.label;
+
+  r = do_internal_hot_add_drive (label);
+  if (r == -1)
+    /* do_internal_hot_add_drive has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_hot_add_drive_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+internal_hot_remove_drive_precheck_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_internal_hot_remove_drive_precheck_args args;
+  char *label;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_internal_hot_remove_drive_precheck_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  label = args.label;
+
+  r = do_internal_hot_remove_drive_precheck (label);
+  if (r == -1)
+    /* do_internal_hot_remove_drive_precheck has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_hot_remove_drive_precheck_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+internal_hot_remove_drive_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_internal_hot_remove_drive_args args;
+  char *label;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_internal_hot_remove_drive_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  label = args.label;
+
+  r = do_internal_hot_remove_drive (label);
+  if (r == -1)
+    /* do_internal_hot_remove_drive has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_hot_remove_drive_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+mktemp_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_mktemp_args args;
+  char *tmpl;
+  char *suffix;
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_mktemp_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  tmpl = args.tmpl;
+  ABS_PATH (tmpl, , goto done);
+  suffix = args.suffix;
+
+  NEED_ROOT (, goto done);
+  r = do_mktemp (tmpl, suffix);
+  if (r == NULL)
+    /* do_mktemp has already called reply_with_error */
+    goto done;
+
+  struct guestfs_mktemp_ret ret;
+  ret.path = r;
+  reply ((xdrproc_t) &xdr_guestfs_mktemp_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_mktemp_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+mklost_and_found_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_mklost_and_found_args args;
+  char *mountpoint;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_mklost_and_found_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  mountpoint = args.mountpoint;
+  ABS_PATH (mountpoint, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_mklost_and_found (mountpoint);
+  if (r == -1)
+    /* do_mklost_and_found has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_mklost_and_found_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+acl_get_file_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_acl_get_file_args args;
+  char *path;
+  char *acltype;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_acl_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "acl");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_acl_get_file_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+  acltype = args.acltype;
+
+  NEED_ROOT (, goto done);
+  r = do_acl_get_file (path, acltype);
+  if (r == NULL)
+    /* do_acl_get_file has already called reply_with_error */
+    goto done;
+
+  struct guestfs_acl_get_file_ret ret;
+  ret.acl = r;
+  reply ((xdrproc_t) &xdr_guestfs_acl_get_file_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_acl_get_file_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+acl_set_file_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_acl_set_file_args args;
+  char *path;
+  char *acltype;
+  char *acl;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_acl_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "acl");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_acl_set_file_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+  acltype = args.acltype;
+  acl = args.acl;
+
+  NEED_ROOT (, goto done);
+  r = do_acl_set_file (path, acltype, acl);
+  if (r == -1)
+    /* do_acl_set_file has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_acl_set_file_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+acl_delete_def_file_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_acl_delete_def_file_args args;
+  char *dir;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_acl_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "acl");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_acl_delete_def_file_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  dir = args.dir;
+  ABS_PATH (dir, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_acl_delete_def_file (dir);
+  if (r == -1)
+    /* do_acl_delete_def_file has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_acl_delete_def_file_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+cap_get_file_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_cap_get_file_args args;
+  char *path;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxcaps_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "linuxcaps");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_cap_get_file_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_cap_get_file (path);
+  if (r == NULL)
+    /* do_cap_get_file has already called reply_with_error */
+    goto done;
+
+  struct guestfs_cap_get_file_ret ret;
+  ret.cap = r;
+  reply ((xdrproc_t) &xdr_guestfs_cap_get_file_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_cap_get_file_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+cap_set_file_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_cap_set_file_args args;
+  char *path;
+  char *cap;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_linuxcaps_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "linuxcaps");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_cap_set_file_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  path = args.path;
+  ABS_PATH (path, , goto done);
+  cap = args.cap;
+
+  NEED_ROOT (, goto done);
+  r = do_cap_set_file (path, cap);
+  if (r == -1)
+    /* do_cap_set_file has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_cap_set_file_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+list_ldm_volumes_stub (XDR *xdr_in)
+{
+  char **r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_list_ldm_volumes ();
+  if (r == NULL)
+    /* do_list_ldm_volumes has already called reply_with_error */
+    goto done;
+
+  struct guestfs_list_ldm_volumes_ret ret;
+  ret.devices.devices_len = count_strings (r);
+  ret.devices.devices_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_list_ldm_volumes_ret, (char *) &ret);
+  free_strings (r);
+done:
+done_no_free:
+  return;
+}
+
+static void
+list_ldm_partitions_stub (XDR *xdr_in)
+{
+  char **r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_list_ldm_partitions ();
+  if (r == NULL)
+    /* do_list_ldm_partitions has already called reply_with_error */
+    goto done;
+
+  struct guestfs_list_ldm_partitions_ret ret;
+  ret.devices.devices_len = count_strings (r);
+  ret.devices.devices_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_list_ldm_partitions_ret, (char *) &ret);
+  free_strings (r);
+done:
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_create_all_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_ldmtool_create_all ();
+  if (r == -1)
+    /* do_ldmtool_create_all has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_remove_all_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_ldmtool_remove_all ();
+  if (r == -1)
+    /* do_ldmtool_remove_all has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_scan_stub (XDR *xdr_in)
+{
+  char **r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_ldmtool_scan ();
+  if (r == NULL)
+    /* do_ldmtool_scan has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_scan_ret ret;
+  ret.guids.guids_len = count_strings (r);
+  ret.guids.guids_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_scan_ret, (char *) &ret);
+  free_strings (r);
+done:
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_scan_devices_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_ldmtool_scan_devices_args args;
+  char **devices;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ldmtool_scan_devices_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  devices = realloc (args.devices.devices_val,
+                sizeof (char *) * (args.devices.devices_len+1));
+  if (devices == NULL) {
+    reply_with_perror ("realloc");
+    goto done;
+  }
+  devices[args.devices.devices_len] = NULL;
+  args.devices.devices_val = devices;
+  /* Ensure that each is a device,
+   * and perform device name translation.
+   */
+  {
+    size_t i;
+    for (i = 0; devices[i] != NULL; ++i)
+      RESOLVE_DEVICE (devices[i], , goto done);
+  }
+
+  r = do_ldmtool_scan_devices (devices);
+  if (r == NULL)
+    /* do_ldmtool_scan_devices has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_scan_devices_ret ret;
+  ret.guids.guids_len = count_strings (r);
+  ret.guids.guids_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_scan_devices_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ldmtool_scan_devices_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_diskgroup_name_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_ldmtool_diskgroup_name_args args;
+  char *diskgroup;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ldmtool_diskgroup_name_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  diskgroup = args.diskgroup;
+
+  r = do_ldmtool_diskgroup_name (diskgroup);
+  if (r == NULL)
+    /* do_ldmtool_diskgroup_name has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_diskgroup_name_ret ret;
+  ret.name = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_diskgroup_name_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ldmtool_diskgroup_name_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_diskgroup_volumes_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_ldmtool_diskgroup_volumes_args args;
+  char *diskgroup;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ldmtool_diskgroup_volumes_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  diskgroup = args.diskgroup;
+
+  r = do_ldmtool_diskgroup_volumes (diskgroup);
+  if (r == NULL)
+    /* do_ldmtool_diskgroup_volumes has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_diskgroup_volumes_ret ret;
+  ret.volumes.volumes_len = count_strings (r);
+  ret.volumes.volumes_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_diskgroup_volumes_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ldmtool_diskgroup_volumes_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_diskgroup_disks_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_ldmtool_diskgroup_disks_args args;
+  char *diskgroup;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ldmtool_diskgroup_disks_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  diskgroup = args.diskgroup;
+
+  r = do_ldmtool_diskgroup_disks (diskgroup);
+  if (r == NULL)
+    /* do_ldmtool_diskgroup_disks has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_diskgroup_disks_ret ret;
+  ret.disks.disks_len = count_strings (r);
+  ret.disks.disks_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_diskgroup_disks_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ldmtool_diskgroup_disks_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_volume_type_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_ldmtool_volume_type_args args;
+  char *diskgroup;
+  char *volume;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ldmtool_volume_type_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  diskgroup = args.diskgroup;
+  volume = args.volume;
+
+  r = do_ldmtool_volume_type (diskgroup, volume);
+  if (r == NULL)
+    /* do_ldmtool_volume_type has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_volume_type_ret ret;
+  ret.voltype = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_volume_type_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ldmtool_volume_type_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_volume_hint_stub (XDR *xdr_in)
+{
+  char *r;
+  struct guestfs_ldmtool_volume_hint_args args;
+  char *diskgroup;
+  char *volume;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ldmtool_volume_hint_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  diskgroup = args.diskgroup;
+  volume = args.volume;
+
+  r = do_ldmtool_volume_hint (diskgroup, volume);
+  if (r == NULL)
+    /* do_ldmtool_volume_hint has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_volume_hint_ret ret;
+  ret.hint = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_volume_hint_ret, (char *) &ret);
+  free (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ldmtool_volume_hint_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+ldmtool_volume_partitions_stub (XDR *xdr_in)
+{
+  char **r;
+  struct guestfs_ldmtool_volume_partitions_args args;
+  char *diskgroup;
+  char *volume;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_ldm_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "ldm");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_ldmtool_volume_partitions_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  diskgroup = args.diskgroup;
+  volume = args.volume;
+
+  r = do_ldmtool_volume_partitions (diskgroup, volume);
+  if (r == NULL)
+    /* do_ldmtool_volume_partitions has already called reply_with_error */
+    goto done;
+
+  struct guestfs_ldmtool_volume_partitions_ret ret;
+  ret.partitions.partitions_len = count_strings (r);
+  ret.partitions.partitions_val = r;
+  reply ((xdrproc_t) &xdr_guestfs_ldmtool_volume_partitions_ret, (char *) &ret);
+  free_strings (r);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_ldmtool_volume_partitions_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -13010,14 +15261,8 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_TOUCH:
       touch_stub (xdr_in);
       break;
-    case GUESTFS_PROC_CAT:
-      cat_stub (xdr_in);
-      break;
     case GUESTFS_PROC_LL:
       ll_stub (xdr_in);
-      break;
-    case GUESTFS_PROC_LS:
-      ls_stub (xdr_in);
       break;
     case GUESTFS_PROC_LIST_DEVICES:
       list_devices_stub (xdr_in);
@@ -13042,9 +15287,6 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_LVS_FULL:
       lvs_full_stub (xdr_in);
-      break;
-    case GUESTFS_PROC_READ_LINES:
-      read_lines_stub (xdr_in);
       break;
     case GUESTFS_PROC_AUG_INIT:
       aug_init_stub (xdr_in);
@@ -13123,9 +15365,6 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_LVCREATE:
       lvcreate_stub (xdr_in);
-      break;
-    case GUESTFS_PROC_MKFS:
-      mkfs_stub (xdr_in);
       break;
     case GUESTFS_PROC_SFDISK:
       sfdisk_stub (xdr_in);
@@ -13319,9 +15558,6 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_RESIZE2FS:
       resize2fs_stub (xdr_in);
       break;
-    case GUESTFS_PROC_FIND:
-      find_stub (xdr_in);
-      break;
     case GUESTFS_PROC_E2FSCK_F:
       e2fsck_f_stub (xdr_in);
       break;
@@ -13447,9 +15683,6 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_RMMOUNTPOINT:
       rmmountpoint_stub (xdr_in);
-      break;
-    case GUESTFS_PROC_READ_FILE:
-      read_file_stub (xdr_in);
       break;
     case GUESTFS_PROC_GREP:
       grep_stub (xdr_in);
@@ -13610,14 +15843,14 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_LCHOWN:
       lchown_stub (xdr_in);
       break;
-    case GUESTFS_PROC_LSTATLIST:
-      lstatlist_stub (xdr_in);
+    case GUESTFS_PROC_INTERNAL_LSTATLIST:
+      internal_lstatlist_stub (xdr_in);
       break;
-    case GUESTFS_PROC_LXATTRLIST:
-      lxattrlist_stub (xdr_in);
+    case GUESTFS_PROC_INTERNAL_LXATTRLIST:
+      internal_lxattrlist_stub (xdr_in);
       break;
-    case GUESTFS_PROC_READLINKLIST:
-      readlinklist_stub (xdr_in);
+    case GUESTFS_PROC_INTERNAL_READLINKLIST:
+      internal_readlinklist_stub (xdr_in);
       break;
     case GUESTFS_PROC_PREAD:
       pread_stub (xdr_in);
@@ -13691,9 +15924,6 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_TXZ_OUT:
       txz_out_stub (xdr_in);
       break;
-    case GUESTFS_PROC_NTFSRESIZE:
-      ntfsresize_stub (xdr_in);
-      break;
     case GUESTFS_PROC_VGSCAN:
       vgscan_stub (xdr_in);
       break;
@@ -13736,8 +15966,8 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_FILL_PATTERN:
       fill_pattern_stub (xdr_in);
       break;
-    case GUESTFS_PROC_WRITE:
-      write_stub (xdr_in);
+    case GUESTFS_PROC_INTERNAL_WRITE:
+      internal_write_stub (xdr_in);
       break;
     case GUESTFS_PROC_PWRITE:
       pwrite_stub (xdr_in);
@@ -13832,8 +16062,8 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_LVM_CANONICAL_LV_NAME:
       lvm_canonical_lv_name_stub (xdr_in);
       break;
-    case GUESTFS_PROC_MKFS_OPTS:
-      mkfs_opts_stub (xdr_in);
+    case GUESTFS_PROC_MKFS:
+      mkfs_stub (xdr_in);
       break;
     case GUESTFS_PROC_GETXATTR:
       getxattr_stub (xdr_in);
@@ -13862,14 +16092,14 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_LIST_DM_DEVICES:
       list_dm_devices_stub (xdr_in);
       break;
-    case GUESTFS_PROC_NTFSRESIZE_OPTS:
-      ntfsresize_opts_stub (xdr_in);
+    case GUESTFS_PROC_NTFSRESIZE:
+      ntfsresize_stub (xdr_in);
       break;
     case GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE:
       btrfs_filesystem_resize_stub (xdr_in);
       break;
-    case GUESTFS_PROC_WRITE_APPEND:
-      write_append_stub (xdr_in);
+    case GUESTFS_PROC_INTERNAL_WRITE_APPEND:
+      internal_write_append_stub (xdr_in);
       break;
     case GUESTFS_PROC_COMPRESS_OUT:
       compress_out_stub (xdr_in);
@@ -13997,11 +16227,182 @@ void dispatch_incoming_message (XDR *xdr_in)
     case GUESTFS_PROC_BTRFS_FSCK:
       btrfs_fsck_stub (xdr_in);
       break;
+    case GUESTFS_PROC_FILESYSTEM_AVAILABLE:
+      filesystem_available_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_FSTRIM:
+      fstrim_stub (xdr_in);
+      break;
     case GUESTFS_PROC_DEVICE_INDEX:
       device_index_stub (xdr_in);
       break;
     case GUESTFS_PROC_NR_DEVICES:
       nr_devices_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_XFS_INFO:
+      xfs_info_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PVCHANGE_UUID:
+      pvchange_uuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_PVCHANGE_UUID_ALL:
+      pvchange_uuid_all_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VGCHANGE_UUID:
+      vgchange_uuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_VGCHANGE_UUID_ALL:
+      vgchange_uuid_all_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_UTSNAME:
+      utsname_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_XFS_GROWFS:
+      xfs_growfs_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_RSYNC:
+      rsync_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_RSYNC_IN:
+      rsync_in_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_RSYNC_OUT:
+      rsync_out_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LS0:
+      ls0_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_FILL_DIR:
+      fill_dir_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_XFS_ADMIN:
+      xfs_admin_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_OPEN:
+      hivex_open_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_CLOSE:
+      hivex_close_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_ROOT:
+      hivex_root_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_NAME:
+      hivex_node_name_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_CHILDREN:
+      hivex_node_children_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_GET_CHILD:
+      hivex_node_get_child_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_PARENT:
+      hivex_node_parent_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_VALUES:
+      hivex_node_values_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_GET_VALUE:
+      hivex_node_get_value_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_VALUE_KEY:
+      hivex_value_key_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_VALUE_TYPE:
+      hivex_value_type_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_VALUE_VALUE:
+      hivex_value_value_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_COMMIT:
+      hivex_commit_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_ADD_CHILD:
+      hivex_node_add_child_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_DELETE_CHILD:
+      hivex_node_delete_child_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_HIVEX_NODE_SET_VALUE:
+      hivex_node_set_value_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_XFS_REPAIR:
+      xfs_repair_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_RM_F:
+      rm_f_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MKE2FS:
+      mke2fs_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LIST_DISK_LABELS:
+      list_disk_labels_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_HOT_ADD_DRIVE:
+      internal_hot_add_drive_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK:
+      internal_hot_remove_drive_precheck_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_HOT_REMOVE_DRIVE:
+      internal_hot_remove_drive_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MKTEMP:
+      mktemp_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_MKLOST_AND_FOUND:
+      mklost_and_found_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_ACL_GET_FILE:
+      acl_get_file_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_ACL_SET_FILE:
+      acl_set_file_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_ACL_DELETE_DEF_FILE:
+      acl_delete_def_file_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_CAP_GET_FILE:
+      cap_get_file_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_CAP_SET_FILE:
+      cap_set_file_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LIST_LDM_VOLUMES:
+      list_ldm_volumes_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LIST_LDM_PARTITIONS:
+      list_ldm_partitions_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_CREATE_ALL:
+      ldmtool_create_all_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_REMOVE_ALL:
+      ldmtool_remove_all_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_SCAN:
+      ldmtool_scan_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_SCAN_DEVICES:
+      ldmtool_scan_devices_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_DISKGROUP_NAME:
+      ldmtool_diskgroup_name_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_DISKGROUP_VOLUMES:
+      ldmtool_diskgroup_volumes_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_DISKGROUP_DISKS:
+      ldmtool_diskgroup_disks_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_VOLUME_TYPE:
+      ldmtool_volume_type_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_VOLUME_HINT:
+      ldmtool_volume_hint_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS:
+      ldmtool_volume_partitions_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

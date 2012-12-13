@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsXfsAdmin</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsRsyncOut.html" title="GuestfsRsyncOut">
+<link rel="next" href="GuestfsHivexOpen.html" title="GuestfsHivexOpen">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsRsyncOut.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsHivexOpen.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsXfsAdmin.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsXfsAdmin.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsXfsAdmin.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsXfsAdmin.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsXfsAdmin"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsXfsAdmin.top_of_page"></a>GuestfsXfsAdmin</span></h2>
+<p>GuestfsXfsAdmin — An object encapsulating optional arguments for guestfs_session_xfs_admin</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsXfsAdmin.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin-struct" title="struct GuestfsXfsAdmin">GuestfsXfsAdmin</a>;
+struct              <a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdminClass" title="struct GuestfsXfsAdminClass">GuestfsXfsAdminClass</a>;
+<a class="link" href="GuestfsXfsAdmin.html" title="GuestfsXfsAdmin"><span class="returnvalue">GuestfsXfsAdmin</span></a> *   <a class="link" href="GuestfsXfsAdmin.html#guestfs-xfs-admin-new" title="guestfs_xfs_admin_new ()">guestfs_xfs_admin_new</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsAdmin.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsXfsAdmin
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsAdmin.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin--extunwritten" title='The "extunwritten" property'>extunwritten</a>"             <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin--imgfile" title='The "imgfile" property'>imgfile</a>"                  <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin--label" title='The "label" property'>label</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin--lazycounter" title='The "lazycounter" property'>lazycounter</a>"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin--projid32bit" title='The "projid32bit" property'>projid32bit</a>"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin--uuid" title='The "uuid" property'>uuid</a>"                     <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsAdmin.html#GuestfsXfsAdmin--v2log" title='The "v2log" property'>v2log</a>"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsAdmin.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_xfs_admin
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsAdmin.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin-struct"></a><h3>struct GuestfsXfsAdmin</h3>
+<pre class="programlisting">struct GuestfsXfsAdmin;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_xfs_admin.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsAdminClass"></a><h3>struct GuestfsXfsAdminClass</h3>
+<pre class="programlisting">struct GuestfsXfsAdminClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsXfsAdmin.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsXfsAdminClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsXfsAdminClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-xfs-admin-new"></a><h3>guestfs_xfs_admin_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsXfsAdmin.html" title="GuestfsXfsAdmin"><span class="returnvalue">GuestfsXfsAdmin</span></a> *   guestfs_xfs_admin_new               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsXfsAdmin object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsXfsAdmin object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsAdmin.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin--extunwritten"></a><h3>The <code class="literal">"extunwritten"</code> property</h3>
+<pre class="programlisting">  "extunwritten"             <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin--imgfile"></a><h3>The <code class="literal">"imgfile"</code> property</h3>
+<pre class="programlisting">  "imgfile"                  <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin--label"></a><h3>The <code class="literal">"label"</code> property</h3>
+<pre class="programlisting">  "label"                    <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin--lazycounter"></a><h3>The <code class="literal">"lazycounter"</code> property</h3>
+<pre class="programlisting">  "lazycounter"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin--projid32bit"></a><h3>The <code class="literal">"projid32bit"</code> property</h3>
+<pre class="programlisting">  "projid32bit"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin--uuid"></a><h3>The <code class="literal">"uuid"</code> property</h3>
+<pre class="programlisting">  "uuid"                     <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsAdmin--v2log"></a><h3>The <code class="literal">"v2log"</code> property</h3>
+<pre class="programlisting">  "v2log"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

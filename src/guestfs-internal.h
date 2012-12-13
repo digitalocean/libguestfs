@@ -19,12 +19,18 @@
 #ifndef GUESTFS_INTERNAL_H_
 #define GUESTFS_INTERNAL_H_
 
+#include <stdbool.h>
+
 #include <libintl.h>
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
 #include <pcre.h>
+
+#ifdef HAVE_LIBVIRT
+#include <libvirt/libvirt.h>
+#endif
 
 #include "hash.h"
 
@@ -41,6 +47,7 @@
 #define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
 #define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
 #define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
+#define STRSUFFIX(a,b) (strlen((a)) >= strlen((b)) && STREQ((a)+strlen((a))-strlen((b)),(b)))
 
 #define _(str) dgettext(PACKAGE, (str))
 #define N_(str) dgettext(PACKAGE, (str))
@@ -65,10 +72,11 @@
 #define TRACE4(name, arg1, arg2, arg3, arg4)
 #endif
 
-#define TMP_TEMPLATE_ON_STACK(var)                        \
-  const char *ttos_tmpdir = guestfs_tmpdir ();            \
+#define TMP_TEMPLATE_ON_STACK(g,var)                      \
+  char *ttos_tmpdir = guestfs_get_tmpdir (g);             \
   char var[strlen (ttos_tmpdir) + 32];                    \
-  sprintf (var, "%s/libguestfsXXXXXX", ttos_tmpdir)       \
+  sprintf (var, "%s/libguestfsXXXXXX", ttos_tmpdir);      \
+  free (ttos_tmpdir)
 
 #ifdef __APPLE__
 #define UNIX_PATH_MAX 104
@@ -101,11 +109,6 @@
 #define MAX_SMALL_FILE_SIZE    (2 * 1000 * 1000)
 #define MAX_AUGEAS_FILE_SIZE        (100 * 1000)
 
-/* Maximum Windows Registry hive that we will download to /tmp.  Some
- * registries can be legitimately very large.
- */
-#define MAX_REGISTRY_SIZE    (100 * 1000 * 1000)
-
 /* Maximum RPM or dpkg database we will download to /tmp.  RPM
  * 'Packages' database can get very large: 70 MB is roughly the
  * standard size for a new Fedora install, and after lots of package
@@ -120,7 +123,11 @@
 enum state { CONFIG, LAUNCHING, READY, NO_HANDLE };
 
 /* Attach method. */
-enum attach_method { ATTACH_METHOD_APPLIANCE = 0, ATTACH_METHOD_UNIX };
+enum attach_method {
+  ATTACH_METHOD_APPLIANCE,
+  ATTACH_METHOD_LIBVIRT,
+  ATTACH_METHOD_UNIX,
+};
 
 /* Event. */
 struct event {
@@ -134,77 +141,132 @@ struct event {
   void *opaque2;
 };
 
-/* Linked list of drives added to the handle. */
+/* Drives added to the handle. */
 struct drive {
-  struct drive *next;
-
   char *path;
 
   int readonly;
   char *format;
   char *iface;
   char *name;
-  int use_cache_none;
+  char *disk_label;
+  bool use_cache_none;
+
+  void *priv;                   /* Data used by attach method. */
+  void (*free_priv) (void *);
+};
+
+/* Extra qemu parameters (from guestfs_config). */
+struct qemu_param {
+  struct qemu_param *next;
+
+  char *qemu_param;
+  char *qemu_value;             /* May be NULL. */
+};
+
+/* Backend (attach-method) operations. */
+struct attach_ops {
+  int (*launch) (guestfs_h *g, const char *arg); /* Initialize and launch. */
+                                /* Shutdown and cleanup. */
+  int (*shutdown) (guestfs_h *g, int check_for_errors);
+
+  int (*get_pid) (guestfs_h *g);         /* get-pid API. */
+  int (*max_disks) (guestfs_h *g);       /* max-disks API. */
+
+  /* Hotplugging drives. */
+  int (*hot_add_drive) (guestfs_h *g, struct drive *drv, size_t drv_index);
+  int (*hot_remove_drive) (guestfs_h *g, struct drive *drv, size_t drv_index);
+};
+extern struct attach_ops attach_ops_appliance;
+extern struct attach_ops attach_ops_libvirt;
+extern struct attach_ops attach_ops_unix;
+
+/* Stack of old error handlers. */
+struct error_cb_stack {
+  struct error_cb_stack   *next;
+  guestfs_error_handler_cb error_cb;
+  void *                   error_cb_data;
 };
 
 struct guestfs_h
 {
   struct guestfs_h *next;	/* Linked list of open handles. */
+  enum state state;             /* See the state machine diagram in guestfs(3)*/
 
-  /* State: see the state machine diagram in the man page guestfs(3). */
-  enum state state;
+  /**** Configuration of the handle. ****/
+  bool verbose;                 /* Debugging. */
+  bool trace;                   /* Trace calls. */
+  bool autosync;                /* Autosync. */
+  bool direct;                  /* Direct mode. */
+  bool recovery_proc;           /* Create a recovery process. */
+  bool enable_network;          /* Enable the network. */
+  bool selinux;                 /* selinux enabled? */
+  bool pgroup;                  /* Create process group for children? */
+  bool close_on_exit;           /* Is this handle on the atexit list? */
 
-  struct drive *drives;         /* Drives added by add-drive* APIs. */
+  int smp;                      /* If > 1, -smp flag passed to qemu. */
+  int memsize;			/* Size of RAM (megabytes). */
 
-  int fd[2];			/* Stdin/stdout of qemu. */
-  int sock;			/* Daemon communications socket. */
-  pid_t pid;			/* Qemu PID. */
-  pid_t recoverypid;		/* Recovery process PID. */
-
-  struct timeval launch_t;      /* The time that we called guestfs_launch. */
-
-  char *tmpdir;			/* Temporary directory containing socket. */
-
-  char *qemu_help, *qemu_version; /* Output of qemu -help, qemu -version. */
-
-  char **cmdline;		/* Qemu command line. */
-  size_t cmdline_size;
-
-  int verbose;
-  int trace;
-  int autosync;
-  int direct;
-  int recovery_proc;
-  int enable_network;
-
-  char *path;			/* Path to kernel, initrd. */
+  char *path;			/* Path to the appliance. */
   char *qemu;			/* Qemu binary. */
   char *append;			/* Append to kernel command line. */
 
+  struct qemu_param *qemu_params; /* Extra qemu parameters. */
+
+  /* Array of drives added by add-drive* APIs.
+   *
+   * Before launch this list can be empty or contain some drives.
+   *
+   * During launch, a dummy slot may be added which represents the
+   * slot taken up by the appliance drive.
+   *
+   * When hotplugging is supported by the attach method, drives can be
+   * added to the end of this list after launch.  Also hot-removing a
+   * drive causes a NULL slot to appear in the list.
+   *
+   * During shutdown, this list is deleted, so that each launch gets a
+   * fresh set of drives (however callers: don't do this, create a new
+   * handle each time).
+   *
+   * Always use ITER_DRIVES macro to iterate over this list!
+   */
+  struct drive **drives;
+  size_t nr_drives;
+
+#define ITER_DRIVES(g,i,drv)              \
+  for (i = 0; i < (g)->nr_drives; ++i)    \
+    if (((drv) = (g)->drives[i]) != NULL)
+
+  /* Attach method, and associated backend operations. */
   enum attach_method attach_method;
   char *attach_method_arg;
+  const struct attach_ops *attach_ops;
 
-  int memsize;			/* Size of RAM (megabytes). */
-
-  int selinux;                  /* selinux enabled? */
-
-  int pgroup;                   /* Create process group for children? */
-
-  int smp;                      /* If > 1, -smp flag passed to qemu. */
-
-  char *last_error;
+  /**** Runtime information. ****/
+  char *last_error;             /* Last error on handle. */
   int last_errnum;              /* errno, or 0 if there was no errno */
 
-  /* Callbacks. */
-  guestfs_abort_cb           abort_cb;
+  /* Temporary and cache directories. */
+  /* The actual temporary directory - this is not created with the
+   * handle, you have to call guestfs___lazy_make_tmpdir.
+   */
+  char *tmpdir;
+  /* Environment variables that affect tmpdir/cachedir locations. */
+  char *env_tmpdir;             /* $TMPDIR (NULL if not set) */
+  char *int_tmpdir;   /* $LIBGUESTFS_TMPDIR or guestfs_set_tmpdir or NULL */
+  char *int_cachedir; /* $LIBGUESTFS_CACHEDIR or guestfs_set_cachedir or NULL */
+
+  /* Error handler, plus stack of old error handlers. */
   guestfs_error_handler_cb   error_cb;
   void *                     error_cb_data;
+  struct error_cb_stack     *error_cb_stack;
+
+  /* Out of memory error handler. */
+  guestfs_abort_cb           abort_cb;
 
   /* Events. */
   struct event *events;
   size_t nr_events;
-
-  int msg_next_serial;
 
   /* Information gathered by inspect_os.  Must be freed by calling
    * guestfs___free_inspect_info.
@@ -226,14 +288,24 @@ struct guestfs_h
    */
   int user_cancel;
 
+  struct timeval launch_t;      /* The time that we called guestfs_launch. */
+
+  /* Used by bindtests. */
+  FILE *test_fp;
+
   /* Used to generate unique numbers, eg for temp files.  To use this,
    * '++g->unique'.  Note these are only unique per-handle, not
    * globally unique.
    */
   int unique;
 
+  /*** Protocol. ***/
+  int fd[2];			/* Stdin/stdout of qemu. */
+  int sock;			/* Daemon communications socket. */
+  int msg_next_serial;
+
 #if HAVE_FUSE
-  /* These fields are used by guestfs_mount_local. */
+  /**** Used by the mount-local APIs. ****/
   const char *localmountpoint;
   struct fuse *fuse;                    /* FUSE handle. */
   int ml_dir_cache_timeout;             /* Directory cache timeout. */
@@ -241,26 +313,50 @@ struct guestfs_h
   int ml_read_only;                     /* If mounted read-only. */
   int ml_debug_calls;        /* Extra debug info on each FUSE call. */
 #endif
+
+#ifdef HAVE_LIBVIRT
+  /* Used by src/libvirt-auth.c. */
+#define NR_CREDENTIAL_TYPES 9
+  unsigned int nr_supported_credentials;
+  int supported_credentials[NR_CREDENTIAL_TYPES];
+  const char *saved_libvirt_uri; /* Doesn't need to be freed. */
+  unsigned int nr_requested_credentials;
+  virConnectCredentialPtr requested_credentials;
+#endif
+
+  /**** Private data for attach-methods. ****/
+  /* NB: This cannot be a union because of a pathological case where
+   * the user changes attach-method while reusing the handle to launch
+   * multiple times (not a recommended thing to do).  Some fields here
+   * cache things across launches so that would break if we used a
+   * union.
+   */
+  struct {                      /* Used only by src/launch-appliance.c. */
+    pid_t pid;                  /* Qemu PID. */
+    pid_t recoverypid;          /* Recovery process PID. */
+
+    char *qemu_help;            /* Output of qemu -help. */
+    char *qemu_version;         /* Output of qemu -version. */
+    char *qemu_devices;         /* Output of qemu -device ? */
+
+    /* qemu version (0, 0 if unable to parse). */
+    int qemu_version_major, qemu_version_minor;
+
+    char **cmdline;   /* Only used in child, does not need freeing. */
+    size_t cmdline_size;
+
+    int virtio_scsi;      /* See function qemu_supports_virtio_scsi */
+  } app;
+
+#ifdef HAVE_LIBVIRT
+  struct {                      /* Used only by src/launch-libvirt.c. */
+    virConnectPtr conn;         /* libvirt connection */
+    virDomainPtr dom;           /* libvirt domain */
+  } virt;
+#endif
 };
 
 /* Per-filesystem data stored for inspect_os. */
-enum inspect_fs_content {
-  FS_CONTENT_UNKNOWN = 0,
-  FS_CONTENT_LINUX_ROOT,
-  FS_CONTENT_WINDOWS_ROOT,
-  FS_CONTENT_WINDOWS_VOLUME_WITH_APPS,
-  FS_CONTENT_WINDOWS_VOLUME,
-  FS_CONTENT_LINUX_BOOT,
-  FS_CONTENT_LINUX_USR,
-  FS_CONTENT_LINUX_USR_LOCAL,
-  FS_CONTENT_LINUX_VAR,
-  FS_CONTENT_FREEBSD_ROOT,
-  FS_CONTENT_NETBSD_ROOT,
-  FS_CONTENT_INSTALLER,
-  FS_CONTENT_HURD_ROOT,
-  FS_CONTENT_FREEDOS_ROOT,
-};
-
 enum inspect_os_format {
   OS_FORMAT_UNKNOWN = 0,
   OS_FORMAT_INSTALLED,
@@ -276,6 +372,7 @@ enum inspect_os_type {
   OS_TYPE_NETBSD,
   OS_TYPE_HURD,
   OS_TYPE_DOS,
+  OS_TYPE_OPENBSD,
 };
 
 enum inspect_os_distro {
@@ -301,6 +398,9 @@ enum inspect_os_distro {
   OS_DISTRO_BUILDROOT,
   OS_DISTRO_CIRROS,
   OS_DISTRO_FREEDOS,
+  OS_DISTRO_SUSE_BASED,
+  OS_DISTRO_SLES,
+  OS_DISTRO_OPENBSD,
 };
 
 enum inspect_os_package_format {
@@ -328,9 +428,6 @@ enum inspect_os_package_management {
 struct inspect_fs {
   int is_root;
   char *device;
-  int is_mountable;
-  int is_swap;
-  enum inspect_fs_content content;
   enum inspect_os_type type;
   enum inspect_os_distro distro;
   enum inspect_os_package_format package_format;
@@ -361,33 +458,76 @@ struct guestfs_message_header;
 struct guestfs_message_error;
 struct guestfs_progress;
 
-extern void guestfs_error (guestfs_h *g, const char *fs, ...)
-  __attribute__((format (printf,2,3)));
-extern void guestfs_error_errno (guestfs_h *g, int errnum, const char *fs, ...)
-  __attribute__((format (printf,3,4)));
-extern void guestfs_perrorf (guestfs_h *g, const char *fs, ...)
-  __attribute__((format (printf,2,3)));
+/* alloc.c */
 extern void *guestfs_safe_realloc (guestfs_h *g, void *ptr, size_t nbytes);
 extern char *guestfs_safe_strdup (guestfs_h *g, const char *str);
 extern char *guestfs_safe_strndup (guestfs_h *g, const char *str, size_t n);
 extern void *guestfs_safe_memdup (guestfs_h *g, const void *ptr, size_t size);
 extern char *guestfs_safe_asprintf (guestfs_h *g, const char *fs, ...)
   __attribute__((format (printf,2,3)));
+
+#define safe_calloc guestfs_safe_calloc
+#define safe_malloc guestfs_safe_malloc
+#define safe_realloc guestfs_safe_realloc
+#define safe_strdup guestfs_safe_strdup
+#define safe_strndup guestfs_safe_strndup
+#define safe_memdup guestfs_safe_memdup
+#define safe_asprintf guestfs_safe_asprintf
+
+/* errors.c */
+extern void guestfs___init_error_handler (guestfs_h *g);
+
+extern void guestfs_error (guestfs_h *g, const char *fs, ...)
+  __attribute__((format (printf,2,3)));
+extern void guestfs_error_errno (guestfs_h *g, int errnum, const char *fs, ...)
+  __attribute__((format (printf,3,4)));
+extern void guestfs_perrorf (guestfs_h *g, const char *fs, ...)
+  __attribute__((format (printf,2,3)));
+
 extern void guestfs___warning (guestfs_h *g, const char *fs, ...)
   __attribute__((format (printf,2,3)));
 extern void guestfs___debug (guestfs_h *g, const char *fs, ...)
   __attribute__((format (printf,2,3)));
 extern void guestfs___trace (guestfs_h *g, const char *fs, ...)
   __attribute__((format (printf,2,3)));
-extern const char *guestfs___persistent_tmpdir (void);
-extern int guestfs___lazy_make_tmpdir (guestfs_h *g);
-extern void guestfs___remove_tmpdir (const char *dir);
-extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...);
-#if HAVE_FUSE
-extern void guestfs___free_fuse (guestfs_h *g);
-#endif
-extern void guestfs___free_inspect_info (guestfs_h *g);
-extern void guestfs___free_drives (struct drive **drives);
+
+extern void guestfs___print_BufferIn (FILE *out, const char *buf, size_t buf_size);
+extern void guestfs___print_BufferOut (FILE *out, const char *buf, size_t buf_size);
+
+#define error(g,...) guestfs_error_errno((g),0,__VA_ARGS__)
+#define perrorf guestfs_perrorf
+#define warning(g,...) guestfs___warning((g),__VA_ARGS__)
+#define debug(g,...) \
+  do { if ((g)->verbose) guestfs___debug ((g),__VA_ARGS__); } while (0)
+
+#define NOT_SUPPORTED(g,errcode,...)                     \
+  do {                                                   \
+    guestfs_error_errno ((g), ENOTSUP, __VA_ARGS__);     \
+    return (errcode);                                    \
+  }                                                      \
+  while (0)
+
+/* utils.c */
+extern void guestfs___free_string_list (char **);
+
+/* actions-support.c */
+extern int guestfs___check_reply_header (guestfs_h *g, const struct guestfs_message_header *hdr, unsigned int proc_nr, unsigned int serial);
+extern int guestfs___check_appliance_up (guestfs_h *g, const char *caller);
+extern FILE *guestfs___trace_open (guestfs_h *g);
+extern void guestfs___trace_send_line (guestfs_h *g);
+
+/* match.c */
+extern int guestfs___match (guestfs_h *g, const char *str, const pcre *re);
+extern char *guestfs___match1 (guestfs_h *g, const char *str, const pcre *re);
+extern int guestfs___match2 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2);
+extern int guestfs___match3 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3);
+
+#define match guestfs___match
+#define match1 guestfs___match1
+#define match2 guestfs___match2
+#define match3 guestfs___match3
+
+/* proto.c */
 extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
 extern int guestfs___recv (guestfs_h *g, const char *fn, struct guestfs_message_header *hdr, struct guestfs_message_error *err, xdrproc_t xdrp, char *ret);
 extern int guestfs___recv_discard (guestfs_h *g, const char *fn);
@@ -397,61 +537,128 @@ extern int guestfs___send_to_daemon (guestfs_h *g, const void *v_buf, size_t n);
 extern int guestfs___recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn);
 extern int guestfs___accept_from_daemon (guestfs_h *g);
 extern void guestfs___progress_message_callback (guestfs_h *g, const struct guestfs_progress *message);
-extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd, char **appliance);
-extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
-extern void guestfs___print_BufferIn (FILE *out, const char *buf, size_t buf_size);
-extern void guestfs___print_BufferOut (FILE *out, const char *buf, size_t buf_size);
-extern int guestfs___match (guestfs_h *g, const char *str, const pcre *re);
-extern char *guestfs___match1 (guestfs_h *g, const char *str, const pcre *re);
-extern int guestfs___match2 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2);
-extern int guestfs___match3 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3);
-extern int guestfs___feature_available (guestfs_h *g, const char *feature);
-extern void guestfs___free_string_list (char **);
-extern struct drive ** guestfs___checkpoint_drives (guestfs_h *g);
-extern void guestfs___rollback_drives (guestfs_h *g, struct drive **i);
+
+/* events.c */
 extern void guestfs___call_callbacks_void (guestfs_h *g, uint64_t event);
 extern void guestfs___call_callbacks_message (guestfs_h *g, uint64_t event, const char *buf, size_t buf_len);
 extern void guestfs___call_callbacks_array (guestfs_h *g, uint64_t event, const uint64_t *array, size_t array_len);
-extern int guestfs___is_file_nocase (guestfs_h *g, const char *);
-extern int guestfs___is_dir_nocase (guestfs_h *g, const char *);
+
+/* tmpdirs.c */
+extern int guestfs___set_env_tmpdir (guestfs_h *g, const char *tmpdir);
+extern int guestfs___lazy_make_tmpdir (guestfs_h *g);
+extern void guestfs___remove_tmpdir (guestfs_h *g);
+extern void guestfs___recursive_remove_dir (guestfs_h *g, const char *dir);
+
+/* appliance.c */
+extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd, char **appliance);
+
+/* launch.c */
+extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);
+extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...);
+extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
+extern size_t guestfs___checkpoint_drives (guestfs_h *g);
+extern void guestfs___rollback_drives (guestfs_h *g, size_t);
 extern void guestfs___launch_failed_error (guestfs_h *g);
+extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
+extern void guestfs___free_drives (guestfs_h *g);
+extern char *guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev, int flags);
+#define APPLIANCE_COMMAND_LINE_IS_TCG 1
+
+/* launch-appliance.c */
+extern char *guestfs___drive_name (size_t index, char *ret);
+
+/* inspect.c */
+extern void guestfs___free_inspect_info (guestfs_h *g);
+extern int guestfs___feature_available (guestfs_h *g, const char *feature);
 extern char *guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, uint64_t max_size);
-extern char *guestfs___case_sensitive_path_silently (guestfs_h *g, const char *);
 extern struct inspect_fs *guestfs___search_for_root (guestfs_h *g, const char *root);
 
-#if defined(HAVE_HIVEX)
+/* inspect-fs.c */
+extern int guestfs___is_file_nocase (guestfs_h *g, const char *);
+extern int guestfs___is_dir_nocase (guestfs_h *g, const char *);
 extern int guestfs___check_for_filesystem_on (guestfs_h *g, const char *device, int is_block, int is_partnum);
 extern int guestfs___parse_unsigned_int (guestfs_h *g, const char *str);
 extern int guestfs___parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
 extern int guestfs___parse_major_minor (guestfs_h *g, struct inspect_fs *fs);
 extern char *guestfs___first_line_of_file (guestfs_h *g, const char *filename);
 extern int guestfs___first_egrep_of_file (guestfs_h *g, const char *filename, const char *eregex, int iflag, char **ret);
-typedef int (*guestfs___db_dump_callback) (guestfs_h *g, const unsigned char *key, size_t keylen, const unsigned char *value, size_t valuelen, void *opaque);
-extern int guestfs___read_db_dump (guestfs_h *g, const char *dumpfile, void *opaque, guestfs___db_dump_callback callback);
-extern int guestfs___check_installer_root (guestfs_h *g, struct inspect_fs *fs);
+extern void guestfs___check_package_format (guestfs_h *g, struct inspect_fs *fs);
+extern void guestfs___check_package_management (guestfs_h *g, struct inspect_fs *fs);
+
+/* inspect-fs-unix.c */
 extern int guestfs___check_linux_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_freebsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_netbsd_root (guestfs_h *g, struct inspect_fs *fs);
 extern int guestfs___check_hurd_root (guestfs_h *g, struct inspect_fs *fs);
+
+/* inspect-fs-windows.c */
+extern char *guestfs___case_sensitive_path_silently (guestfs_h *g, const char *);
 extern int guestfs___has_windows_systemroot (guestfs_h *g);
 extern int guestfs___check_windows_root (guestfs_h *g, struct inspect_fs *fs);
+
+/* inspect-fs-cd.c */
+extern int guestfs___check_installer_root (guestfs_h *g, struct inspect_fs *fs);
+extern int guestfs___check_installer_iso (guestfs_h *g, struct inspect_fs *fs, const char *device);
+
+/* dbdump.c */
+typedef int (*guestfs___db_dump_callback) (guestfs_h *g, const unsigned char *key, size_t keylen, const unsigned char *value, size_t valuelen, void *opaque);
+extern int guestfs___read_db_dump (guestfs_h *g, const char *dumpfile, void *opaque, guestfs___db_dump_callback callback);
+
+/* lpj.c */
+extern int guestfs___get_lpj (guestfs_h *g);
+
+/* fuse.c */
+#if HAVE_FUSE
+extern void guestfs___free_fuse (guestfs_h *g);
 #endif
 
-#define error(g,...) guestfs_error_errno((g),0,__VA_ARGS__)
-#define perrorf guestfs_perrorf
-#define warning(g,...) guestfs___warning((g),__VA_ARGS__)
-#define debug(g,...) \
-  do { if ((g)->verbose) guestfs___debug ((g),__VA_ARGS__); } while (0)
-#define safe_calloc guestfs_safe_calloc
-#define safe_malloc guestfs_safe_malloc
-#define safe_realloc guestfs_safe_realloc
-#define safe_strdup guestfs_safe_strdup
-#define safe_strndup guestfs_safe_strndup
-#define safe_memdup guestfs_safe_memdup
-#define safe_asprintf guestfs_safe_asprintf
-#define match guestfs___match
-#define match1 guestfs___match1
-#define match2 guestfs___match2
-#define match3 guestfs___match3
+/* libvirt-auth.c */
+#ifdef HAVE_LIBVIRT
+extern virConnectPtr guestfs___open_libvirt_connection (guestfs_h *g, const char *uri, unsigned int flags);
+#endif
+
+/* osinfo.c */
+struct osinfo {
+  /* Data provided by libosinfo database. */
+  enum inspect_os_type type;
+  enum inspect_os_distro distro;
+  char *product_name;
+  int major_version;
+  int minor_version;
+  char *arch;
+  int is_live_disk;
+
+#if 0
+  /* Not yet available in libosinfo database. */
+  char *product_variant;
+  int is_netinst_disk;
+  int is_multipart_disk;
+#endif
+
+  /* The regular expressions used to match ISOs. */
+  pcre *re_system_id;
+  pcre *re_volume_id;
+  pcre *re_publisher_id;
+  pcre *re_application_id;
+};
+extern int guestfs___osinfo_map (guestfs_h *g, const struct guestfs_isoinfo *isoinfo, const struct osinfo **osinfo_ret);
+
+/* command.c */
+struct command;
+typedef void (*cmd_stdout_callback) (guestfs_h *g, void *data, const char *line, size_t len);
+extern struct command *guestfs___new_command (guestfs_h *g);
+extern void guestfs___cmd_add_arg (struct command *, const char *arg);
+extern void guestfs___cmd_add_arg_format (struct command *, const char *fs, ...)
+  __attribute__((format (printf,2,3)));
+extern void guestfs___cmd_add_string_unquoted (struct command *, const char *str);
+extern void guestfs___cmd_add_string_quoted (struct command *, const char *str);
+extern void guestfs___cmd_set_stdout_callback (struct command *, cmd_stdout_callback stdout_callback, void *data, unsigned flags);
+#define CMD_STDOUT_FLAG_LINE_BUFFER    0
+#define CMD_STDOUT_FLAG_UNBUFFERED      1
+#define CMD_STDOUT_FLAG_WHOLE_BUFFER    2
+extern void guestfs___cmd_set_stderr_to_stdout (struct command *);
+extern void guestfs___cmd_clear_capture_errors (struct command *);
+extern int guestfs___cmd_run (struct command *);
+extern void guestfs___cmd_close (struct command *);
 
 #endif /* GUESTFS_INTERNAL_H_ */

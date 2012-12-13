@@ -29,6 +29,10 @@
 #include "daemon.h"
 #include "actions.h"
 
+GUESTFSD_EXT_CMD(str_file, file);
+GUESTFSD_EXT_CMD(str_zcat, zcat);
+GUESTFSD_EXT_CMD(str_bzcat, bzcat);
+
 int
 do_touch (const char *path)
 {
@@ -85,123 +89,6 @@ do_touch (const char *path)
   return 0;
 }
 
-char *
-do_cat (const char *path)
-{
-  int fd;
-  size_t alloc, size, max;
-  ssize_t r;
-  char *buf, *buf2;
-
-  CHROOT_IN;
-  fd = open (path, O_RDONLY|O_CLOEXEC);
-  CHROOT_OUT;
-
-  if (fd == -1) {
-    reply_with_perror ("open: %s", path);
-    return NULL;
-  }
-
-  /* Read up to GUESTFS_MESSAGE_MAX - <overhead> bytes.  If it's
-   * larger than that, we need to return an error instead (for
-   * correctness).
-   */
-  max = GUESTFS_MESSAGE_MAX - 1000;
-  buf = NULL;
-  size = alloc = 0;
-
-  for (;;) {
-    if (size >= alloc) {
-      alloc += 8192;
-      if (alloc > max) {
-        reply_with_error ("%s: file is too large for message buffer",
-                          path);
-        free (buf);
-        close (fd);
-        return NULL;
-      }
-      buf2 = realloc (buf, alloc);
-      if (buf2 == NULL) {
-        reply_with_perror ("realloc");
-        free (buf);
-        close (fd);
-        return NULL;
-      }
-      buf = buf2;
-    }
-
-    r = read (fd, buf + size, alloc - size);
-    if (r == -1) {
-      reply_with_perror ("read: %s", path);
-      free (buf);
-      close (fd);
-      return NULL;
-    }
-    if (r == 0) {
-      buf[size] = '\0';
-      break;
-    }
-    if (r > 0)
-      size += r;
-  }
-
-  if (close (fd) == -1) {
-    reply_with_perror ("close: %s", path);
-    free (buf);
-    return NULL;
-  }
-
-  return buf;			/* caller will free */
-}
-
-char **
-do_read_lines (const char *path)
-{
-  DECLARE_STRINGSBUF (r);
-  FILE *fp;
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t n;
-
-  CHROOT_IN;
-  fp = fopen (path, "r");
-  CHROOT_OUT;
-
-  if (!fp) {
-    reply_with_perror ("fopen: %s", path);
-    return NULL;
-  }
-
-  while ((n = getline (&line, &len, fp)) != -1) {
-    /* Remove either LF or CRLF. */
-    if (n >= 2 && line[n-2] == '\r' && line[n-1] == '\n')
-      line[n-2] = '\0';
-    else if (n >= 1 && line[n-1] == '\n')
-      line[n-1] = '\0';
-
-    if (add_string (&r, line) == -1) {
-      free (line);
-      fclose (fp);
-      return NULL;
-    }
-  }
-
-  free (line);
-
-  if (end_stringsbuf (&r) == -1) {
-    fclose (fp);
-    return NULL;
-  }
-
-  if (fclose (fp) == EOF) {
-    reply_with_perror ("fclose: %s", path);
-    free_stringslen (r.argv, r.size);
-    return NULL;
-  }
-
-  return r.argv;
-}
-
 int
 do_rm (const char *path)
 {
@@ -212,6 +99,24 @@ do_rm (const char *path)
   CHROOT_OUT;
 
   if (r == -1) {
+    reply_with_perror ("%s", path);
+    return -1;
+  }
+
+  return 0;
+}
+
+int
+do_rm_f (const char *path)
+{
+  int r;
+
+  CHROOT_IN;
+  r = unlink (path);
+  CHROOT_OUT;
+
+  /* Ignore ENOENT. */
+  if (r == -1 && errno != ENOENT) {
     reply_with_perror ("%s", path);
     return -1;
   }
@@ -328,7 +233,7 @@ do_write_file (const char *path, const char *content, int size)
 }
 
 int
-do_write (const char *path, const char *content, size_t size)
+do_internal_write (const char *path, const char *content, size_t size)
 {
   int fd;
 
@@ -356,7 +261,7 @@ do_write (const char *path, const char *content, size_t size)
 }
 
 int
-do_write_append (const char *path, const char *content, size_t size)
+do_internal_write_append (const char *path, const char *content, size_t size)
 {
   int fd;
 
@@ -381,65 +286,6 @@ do_write_append (const char *path, const char *content, size_t size)
   }
 
   return 0;
-}
-
-char *
-do_read_file (const char *path, size_t *size_r)
-{
-  int fd;
-  struct stat statbuf;
-  char *r;
-
-  CHROOT_IN;
-  fd = open (path, O_RDONLY|O_CLOEXEC);
-  CHROOT_OUT;
-
-  if (fd == -1) {
-    reply_with_perror ("open: %s", path);
-    return NULL;
-  }
-
-  if (fstat (fd, &statbuf) == -1) {
-    reply_with_perror ("fstat: %s", path);
-    close (fd);
-    return NULL;
-  }
-
-  /* The actual limit on messages is smaller than this.  This
-   * check just limits the amount of memory we'll try and allocate
-   * here.  If the message is larger than the real limit, that will
-   * be caught later when we try to serialize the message.
-   */
-  if (statbuf.st_size >= GUESTFS_MESSAGE_MAX) {
-    reply_with_error ("%s: file is too large for the protocol, use guestfs_download instead", path);
-    close (fd);
-    return NULL;
-  }
-  r = malloc (statbuf.st_size);
-  if (r == NULL) {
-    reply_with_perror ("malloc");
-    close (fd);
-    return NULL;
-  }
-
-  if (xread (fd, r, statbuf.st_size) == -1) {
-    reply_with_perror ("read: %s", path);
-    close (fd);
-    free (r);
-    return NULL;
-  }
-
-  if (close (fd) == -1) {
-    reply_with_perror ("close: %s", path);
-    free (r);
-    return NULL;
-  }
-
-  /* Mustn't touch *size_r until we are sure that we won't return any
-   * error (RHBZ#589039).
-   */
-  *size_r = statbuf.st_size;
-  return r;
 }
 
 static char *
@@ -649,7 +495,7 @@ do_file (const char *path)
   const char *flags = is_dev ? "-zbsL" : "-zb";
 
   char *out, *err;
-  int r = command (&out, &err, "file", flags, path, NULL);
+  int r = command (&out, &err, str_file, flags, path, NULL);
   free (buf);
 
   if (r == -1) {
@@ -679,9 +525,9 @@ do_zfile (const char *method, const char *path)
   char line[256];
 
   if (STREQ (method, "gzip") || STREQ (method, "compress"))
-    zcat = "zcat";
+    zcat = str_zcat;
   else if (STREQ (method, "bzip2"))
-    zcat = "bzcat";
+    zcat = str_bzcat;
   else {
     reply_with_error ("unknown method");
     return NULL;

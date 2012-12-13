@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -20,15 +20,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifndef GUESTFSD_ACTIONS_H
+#define GUESTFSD_ACTIONS_H
+
 #include "guestfs_protocol.h"
 
-#define GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK (UINT64_C(1)<<0)
-#define GUESTFS_MKFS_OPTS_FEATURES_BITMASK (UINT64_C(1)<<1)
-#define GUESTFS_MKFS_OPTS_INODE_BITMASK (UINT64_C(1)<<2)
-#define GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_UMOUNT_FORCE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_UMOUNT_LAZYUNMOUNT_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_TAR_IN_COMPRESS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_TAR_OUT_COMPRESS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_TAR_OUT_NUMERICOWNER_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_TAR_OUT_EXCLUDES_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_MKSWAP_LABEL_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_MKSWAP_UUID_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_GREP_EXTENDED_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_GREP_FIXED_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_GREP_INSENSITIVE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_GREP_COMPRESSED_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_MKFS_BLOCKSIZE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_MKFS_FEATURES_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_MKFS_INODE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_MKFS_SECTORSIZE_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_MOUNT_9P_OPTIONS_BITMASK (UINT64_C(1)<<0)
-#define GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK (UINT64_C(1)<<0)
-#define GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_NTFSRESIZE_SIZE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_NTFSRESIZE_FORCE_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_COMPRESS_OUT_LEVEL_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK (UINT64_C(1)<<0)
@@ -78,12 +93,86 @@
 #define GUESTFS_SET_E2ATTRS_CLEAR_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_BTRFS_FSCK_REPAIR_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_FSTRIM_OFFSET_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_FSTRIM_LENGTH_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_XFS_GROWFS_DATASEC_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_XFS_GROWFS_LOGSEC_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_XFS_GROWFS_RTSEC_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_XFS_GROWFS_DATASIZE_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_XFS_GROWFS_RTSIZE_BITMASK (UINT64_C(1)<<5)
+#define GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK (UINT64_C(1)<<6)
+#define GUESTFS_XFS_GROWFS_MAXPCT_BITMASK (UINT64_C(1)<<7)
+#define GUESTFS_RSYNC_ARCHIVE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_RSYNC_DELETEDEST_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_RSYNC_IN_ARCHIVE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_RSYNC_IN_DELETEDEST_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_XFS_ADMIN_IMGFILE_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_XFS_ADMIN_V2LOG_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_XFS_ADMIN_LABEL_BITMASK (UINT64_C(1)<<5)
+#define GUESTFS_XFS_ADMIN_UUID_BITMASK (UINT64_C(1)<<6)
+#define GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_HIVEX_OPEN_DEBUG_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_HIVEX_OPEN_WRITE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_XFS_REPAIR_MAXMEM_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK (UINT64_C(1)<<5)
+#define GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK (UINT64_C(1)<<6)
+#define GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK (UINT64_C(1)<<7)
+#define GUESTFS_XFS_REPAIR_LOGDEV_BITMASK (UINT64_C(1)<<8)
+#define GUESTFS_XFS_REPAIR_RTDEV_BITMASK (UINT64_C(1)<<9)
+#define GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_MKE2FS_BLOCKSIZE_BITMASK (UINT64_C(1)<<1)
+#define GUESTFS_MKE2FS_FRAGSIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK (UINT64_C(1)<<4)
+#define GUESTFS_MKE2FS_BYTESPERINODE_BITMASK (UINT64_C(1)<<5)
+#define GUESTFS_MKE2FS_INODESIZE_BITMASK (UINT64_C(1)<<6)
+#define GUESTFS_MKE2FS_JOURNALSIZE_BITMASK (UINT64_C(1)<<7)
+#define GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK (UINT64_C(1)<<8)
+#define GUESTFS_MKE2FS_STRIDESIZE_BITMASK (UINT64_C(1)<<9)
+#define GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK (UINT64_C(1)<<10)
+#define GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK (UINT64_C(1)<<11)
+#define GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK (UINT64_C(1)<<12)
+#define GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK (UINT64_C(1)<<13)
+#define GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK (UINT64_C(1)<<14)
+#define GUESTFS_MKE2FS_LABEL_BITMASK (UINT64_C(1)<<15)
+#define GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK (UINT64_C(1)<<16)
+#define GUESTFS_MKE2FS_CREATOROS_BITMASK (UINT64_C(1)<<17)
+#define GUESTFS_MKE2FS_FSTYPE_BITMASK (UINT64_C(1)<<18)
+#define GUESTFS_MKE2FS_USAGETYPE_BITMASK (UINT64_C(1)<<19)
+#define GUESTFS_MKE2FS_UUID_BITMASK (UINT64_C(1)<<20)
+#define GUESTFS_MKE2FS_FORCECREATE_BITMASK (UINT64_C(1)<<21)
+#define GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK (UINT64_C(1)<<22)
+#define GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK (UINT64_C(1)<<23)
+#define GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK (UINT64_C(1)<<24)
+#define GUESTFS_MKE2FS_TESTFS_BITMASK (UINT64_C(1)<<25)
+#define GUESTFS_MKE2FS_DISCARD_BITMASK (UINT64_C(1)<<26)
+#define GUESTFS_MKE2FS_QUOTATYPE_BITMASK (UINT64_C(1)<<27)
+#define GUESTFS_MKE2FS_EXTENT_BITMASK (UINT64_C(1)<<28)
+#define GUESTFS_MKE2FS_FILETYPE_BITMASK (UINT64_C(1)<<29)
+#define GUESTFS_MKE2FS_FLEXBG_BITMASK (UINT64_C(1)<<30)
+#define GUESTFS_MKE2FS_HASJOURNAL_BITMASK (UINT64_C(1)<<31)
+#define GUESTFS_MKE2FS_JOURNALDEV_BITMASK (UINT64_C(1)<<32)
+#define GUESTFS_MKE2FS_LARGEFILE_BITMASK (UINT64_C(1)<<33)
+#define GUESTFS_MKE2FS_QUOTA_BITMASK (UINT64_C(1)<<34)
+#define GUESTFS_MKE2FS_RESIZEINODE_BITMASK (UINT64_C(1)<<35)
+#define GUESTFS_MKE2FS_SPARSESUPER_BITMASK (UINT64_C(1)<<36)
+#define GUESTFS_MKE2FS_UNINITBG_BITMASK (UINT64_C(1)<<37)
+#define GUESTFS_MKTEMP_SUFFIX_BITMASK (UINT64_C(1)<<0)
 extern int do_mount (const char *device, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
-extern char *do_cat (const char *path);
 extern char *do_ll (const char *directory);
-extern char **do_ls (const char *directory);
 extern char **do_list_devices (void);
 extern char **do_list_partitions (void);
 extern char **do_pvs (void);
@@ -92,7 +181,6 @@ extern char **do_lvs (void);
 extern guestfs_int_lvm_pv_list *do_pvs_full (void);
 extern guestfs_int_lvm_vg_list *do_vgs_full (void);
 extern guestfs_int_lvm_lv_list *do_lvs_full (void);
-extern char **do_read_lines (const char *path);
 extern int do_aug_init (const char *root, int flags);
 extern int do_aug_close (void);
 extern int do_aug_defvar (const char *name, const char *expr);
@@ -119,10 +207,9 @@ extern int do_is_dir (const char *path);
 extern int do_pvcreate (const char *device);
 extern int do_vgcreate (const char *volgroup, char *const *physvols);
 extern int do_lvcreate (const char *logvol, const char *volgroup, int mbytes);
-extern int do_mkfs (const char *fstype, const char *device);
 extern int do_sfdisk (const char *device, int cyls, int heads, int sectors, char *const *lines);
 extern int do_write_file (const char *path, const char *content, int size);
-extern int do_umount (const char *pathordevice);
+extern int do_umount (const char *pathordevice, int force, int lazyunmount);
 extern char **do_mounts (void);
 extern int do_umount_all (void);
 extern int do_lvm_remove_all (void);
@@ -146,8 +233,8 @@ extern int do_blockdev_rereadpt (const char *device);
 extern int do_upload (const char *remotefilename);
 extern int do_download (const char *remotefilename);
 extern char *do_checksum (const char *csumtype, const char *path);
-extern int do_tar_in (const char *directory);
-extern int do_tar_out (const char *directory);
+extern int do_tar_in (const char *directory, const char *compress);
+extern int do_tar_out (const char *directory, const char *compress, int numericowner, char *const *excludes);
 extern int do_tgz_in (const char *directory);
 extern int do_tgz_out (const char *directory);
 extern int do_mount_ro (const char *device, const char *mountpoint);
@@ -184,7 +271,6 @@ extern int do_vg_activate_all (int activate);
 extern int do_vg_activate (int activate, char *const *volgroups);
 extern int do_lvresize (const char *device, int mbytes);
 extern int do_resize2fs (const char *device);
-extern char **do_find (const char *directory);
 extern int do_e2fsck_f (const char *device);
 extern int do_sleep (int secs);
 extern int do_ntfs_3g_probe (int rw, const char *device);
@@ -207,7 +293,7 @@ extern char *do_df_h (void);
 extern int64_t do_du (const char *path);
 extern char **do_initrd_list (const char *path);
 extern int do_mount_loop (const char *file, const char *mountpoint);
-extern int do_mkswap (const char *device);
+extern int do_mkswap (const char *device, const char *label, const char *uuid);
 extern int do_mkswap_L (const char *label, const char *device);
 extern int do_mkswap_U (const char *uuid, const char *device);
 extern int do_mknod (int mode, int devmajor, int devminor, const char *path);
@@ -227,8 +313,7 @@ extern int do_lremovexattr (const char *xattr, const char *path);
 extern char **do_mountpoints (void);
 extern int do_mkmountpoint (const char *exemptpath);
 extern int do_rmmountpoint (const char *exemptpath);
-extern char *do_read_file (const char *path, size_t *size_r);
-extern char **do_grep (const char *regex, const char *path);
+extern char **do_grep (const char *regex, const char *path, int extended, int fixed, int insensitive, int compressed);
 extern char **do_egrep (const char *regex, const char *path);
 extern char **do_fgrep (const char *pattern, const char *path);
 extern char **do_grepi (const char *regex, const char *path);
@@ -281,9 +366,9 @@ extern int do_truncate_size (const char *path, int64_t size);
 extern int do_utimens (const char *path, int64_t atsecs, int64_t atnsecs, int64_t mtsecs, int64_t mtnsecs);
 extern int do_mkdir_mode (const char *path, int mode);
 extern int do_lchown (int owner, int group, const char *path);
-extern guestfs_int_stat_list *do_lstatlist (const char *path, char *const *names);
-extern guestfs_int_xattr_list *do_lxattrlist (const char *path, char *const *names);
-extern char **do_readlinklist (const char *path, char *const *names);
+extern guestfs_int_stat_list *do_internal_lstatlist (const char *path, char *const *names);
+extern guestfs_int_xattr_list *do_internal_lxattrlist (const char *path, char *const *names);
+extern char **do_internal_readlinklist (const char *path, char *const *names);
 extern char *do_pread (const char *path, int count, int64_t offset, size_t *size_r);
 extern int do_part_init (const char *device, const char *parttype);
 extern int do_part_add (const char *device, const char *prlogex, int64_t startsect, int64_t endsect);
@@ -308,7 +393,6 @@ extern int do_copy_size (const char *src, const char *dest, int64_t size);
 extern int do_zero_device (const char *device);
 extern int do_txz_in (const char *directory);
 extern int do_txz_out (const char *directory);
-extern int do_ntfsresize (const char *device);
 extern int do_vgscan (void);
 extern int do_part_del (const char *device, int partnum);
 extern int do_part_get_bootable (const char *device, int partnum);
@@ -323,7 +407,7 @@ extern int do_base64_in (const char *filename);
 extern int do_base64_out (const char *filename);
 extern int do_checksums_out (const char *csumtype, const char *directory);
 extern int do_fill_pattern (const char *pattern, int len, const char *path);
-extern int do_write (const char *path, const char *content, size_t content_size);
+extern int do_internal_write (const char *path, const char *content, size_t content_size);
 extern int do_pwrite (const char *path, const char *content, size_t content_size, int64_t offset);
 extern int do_resize2fs_size (const char *device, int64_t size);
 extern int do_pvresize_size (const char *device, int64_t size);
@@ -355,7 +439,7 @@ extern int do_download_offset (const char *remotefilename, int64_t offset, int64
 extern int do_pwrite_device (const char *device, const char *content, size_t content_size, int64_t offset);
 extern char *do_pread_device (const char *device, int count, int64_t offset, size_t *size_r);
 extern char *do_lvm_canonical_lv_name (const char *lvname);
-extern int do_mkfs_opts (const char *fstype, const char *device, int blocksize, const char *features, int inode, int sectorsize);
+extern int do_mkfs (const char *fstype, const char *device, int blocksize, const char *features, int inode, int sectorsize);
 extern char *do_getxattr (const char *path, const char *name, size_t *size_r);
 extern char *do_lgetxattr (const char *path, const char *name, size_t *size_r);
 extern int do_resize2fs_M (const char *device);
@@ -365,9 +449,9 @@ extern int do_is_zero_device (const char *device);
 extern char **do_list_9p (void);
 extern int do_mount_9p (const char *mounttag, const char *mountpoint, const char *options);
 extern char **do_list_dm_devices (void);
-extern int do_ntfsresize_opts (const char *device, int64_t size, int force);
+extern int do_ntfsresize (const char *device, int64_t size, int force);
 extern int do_btrfs_filesystem_resize (const char *mountpoint, int64_t size);
-extern int do_write_append (const char *path, const char *content, size_t content_size);
+extern int do_internal_write_append (const char *path, const char *content, size_t content_size);
 extern int do_compress_out (const char *ctype, const char *file, int level);
 extern int do_compress_device_out (const char *ctype, const char *device, int level);
 extern int do_part_to_partnum (const char *partition);
@@ -410,5 +494,64 @@ extern int do_btrfs_device_add (char *const *devices, const char *fs);
 extern int do_btrfs_device_delete (char *const *devices, const char *fs);
 extern int do_btrfs_set_seeding (const char *device, int seeding);
 extern int do_btrfs_fsck (const char *device, int64_t superblock, int repair);
+extern int do_filesystem_available (const char *filesystem);
+extern int do_fstrim (const char *mountpoint, int64_t offset, int64_t length, int64_t minimumfreeextent);
 extern int do_device_index (const char *device);
 extern int do_nr_devices (void);
+extern guestfs_int_xfsinfo *do_xfs_info (const char *pathordevice);
+extern int do_pvchange_uuid (const char *device);
+extern int do_pvchange_uuid_all (void);
+extern int do_vgchange_uuid (const char *vg);
+extern int do_vgchange_uuid_all (void);
+extern guestfs_int_utsname *do_utsname (void);
+extern int do_xfs_growfs (const char *path, int datasec, int logsec, int rtsec, int64_t datasize, int64_t logsize, int64_t rtsize, int64_t rtextsize, int maxpct);
+extern int do_rsync (const char *src, const char *dest, int archive, int deletedest);
+extern int do_rsync_in (const char *remote, const char *dest, int archive, int deletedest);
+extern int do_rsync_out (const char *src, const char *remote, int archive, int deletedest);
+extern int do_ls0 (const char *dir);
+extern int do_fill_dir (const char *dir, int nr);
+extern int do_xfs_admin (const char *device, int extunwritten, int imgfile, int v2log, int projid32bit, int lazycounter, const char *label, const char *uuid);
+extern int do_hivex_open (const char *filename, int verbose, int debug, int write);
+extern int do_hivex_close (void);
+extern int64_t do_hivex_root (void);
+extern char *do_hivex_node_name (int64_t nodeh);
+extern guestfs_int_hivex_node_list *do_hivex_node_children (int64_t nodeh);
+extern int64_t do_hivex_node_get_child (int64_t nodeh, const char *name);
+extern int64_t do_hivex_node_parent (int64_t nodeh);
+extern guestfs_int_hivex_value_list *do_hivex_node_values (int64_t nodeh);
+extern int64_t do_hivex_node_get_value (int64_t nodeh, const char *key);
+extern char *do_hivex_value_key (int64_t valueh);
+extern int64_t do_hivex_value_type (int64_t valueh);
+extern char *do_hivex_value_value (int64_t valueh, size_t *size_r);
+extern int do_hivex_commit (const char *filename);
+extern int64_t do_hivex_node_add_child (int64_t parent, const char *name);
+extern int do_hivex_node_delete_child (int64_t nodeh);
+extern int do_hivex_node_set_value (int64_t nodeh, const char *key, int64_t t, const char *val, size_t val_size);
+extern int do_xfs_repair (const char *device, int forcelogzero, int nomodify, int noprefetch, int forcegeometry, int64_t maxmem, int64_t ihashsize, int64_t bhashsize, int64_t agstride, const char *logdev, const char *rtdev);
+extern int do_rm_f (const char *path);
+extern int do_mke2fs (const char *device, int64_t blockscount, int64_t blocksize, int64_t fragsize, int64_t blockspergroup, int64_t numberofgroups, int64_t bytesperinode, int64_t inodesize, int64_t journalsize, int64_t numberofinodes, int64_t stridesize, int64_t stripewidth, int64_t maxonlineresize, int reservedblockspercentage, int mmpupdateinterval, const char *journaldevice, const char *label, const char *lastmounteddir, const char *creatoros, const char *fstype, const char *usagetype, const char *uuid, int forcecreate, int writesbandgrouponly, int lazyitableinit, int lazyjournalinit, int testfs, int discard, int quotatype, int extent, int filetype, int flexbg, int hasjournal, int journaldev, int largefile, int quota, int resizeinode, int sparsesuper, int uninitbg);
+extern char **do_list_disk_labels (void);
+extern int do_internal_hot_add_drive (const char *label);
+extern int do_internal_hot_remove_drive_precheck (const char *label);
+extern int do_internal_hot_remove_drive (const char *label);
+extern char *do_mktemp (const char *tmpl, const char *suffix);
+extern int do_mklost_and_found (const char *mountpoint);
+extern char *do_acl_get_file (const char *path, const char *acltype);
+extern int do_acl_set_file (const char *path, const char *acltype, const char *acl);
+extern int do_acl_delete_def_file (const char *dir);
+extern char *do_cap_get_file (const char *path);
+extern int do_cap_set_file (const char *path, const char *cap);
+extern char **do_list_ldm_volumes (void);
+extern char **do_list_ldm_partitions (void);
+extern int do_ldmtool_create_all (void);
+extern int do_ldmtool_remove_all (void);
+extern char **do_ldmtool_scan (void);
+extern char **do_ldmtool_scan_devices (char *const *devices);
+extern char *do_ldmtool_diskgroup_name (const char *diskgroup);
+extern char **do_ldmtool_diskgroup_volumes (const char *diskgroup);
+extern char **do_ldmtool_diskgroup_disks (const char *diskgroup);
+extern char *do_ldmtool_volume_type (const char *diskgroup, const char *volume);
+extern char *do_ldmtool_volume_hint (const char *diskgroup, const char *volume);
+extern char **do_ldmtool_volume_partitions (const char *diskgroup, const char *volume);
+
+#endif /* GUESTFSD_ACTIONS_H */

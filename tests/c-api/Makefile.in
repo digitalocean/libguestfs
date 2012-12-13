@@ -89,12 +89,13 @@ check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 	test-config$(EXEEXT) test-add-drive-opts$(EXEEXT) \
 	test-last-errno$(EXEEXT) test-private-data$(EXEEXT) \
 	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
-	$(am__EXEEXT_1)
+	test-environment$(EXEEXT) $(am__EXEEXT_1)
 TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
 	test-create-handle$(EXEEXT) test-config$(EXEEXT) \
 	test-add-drive-opts$(EXEEXT) test-last-errno$(EXEEXT) \
 	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
-	test-debug-to-file$(EXEEXT) $(am__EXEEXT_1)
+	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
+	$(am__EXEEXT_1)
 @HAVE_CXX_TRUE@am__append_1 = test-just-header-cxx
 @HAVE_CXX_TRUE@am__append_2 = test-just-header-cxx
 subdir = tests/c-api
@@ -138,30 +139,29 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
-	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
-	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
+	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
+	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -169,32 +169,32 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
 	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
 	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
-	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
-	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
-	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
-	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/signal_h.m4 \
-	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
-	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
-	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
-	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
-	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
-	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
-	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
-	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
-	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
-	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
-	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
-	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
-	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
-	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
-	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
-	$(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/pread.m4 \
+	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/putenv.m4 \
+	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
+	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
+	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
+	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/signal_h.m4 $(top_srcdir)/m4/size_max.m4 \
+	$(top_srcdir)/m4/sleep.m4 $(top_srcdir)/m4/snprintf.m4 \
+	$(top_srcdir)/m4/socketlib.m4 $(top_srcdir)/m4/sockets.m4 \
+	$(top_srcdir)/m4/socklen.m4 $(top_srcdir)/m4/sockpfaf.m4 \
+	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
+	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
+	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
+	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
+	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
+	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
+	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
+	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
+	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
+	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
+	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
+	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -263,6 +263,15 @@ test_debug_to_file_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_debug_to_file_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_test_environment_OBJECTS =  \
+	test_environment-test-environment.$(OBJEXT)
+test_environment_OBJECTS = $(am_test_environment_OBJECTS)
+test_environment_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+test_environment_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_environment_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_test_just_header_OBJECTS =  \
 	test_just_header-test-just-header.$(OBJEXT)
 test_just_header_OBJECTS = $(am_test_just_header_OBJECTS)
@@ -364,13 +373,14 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
-	$(test_debug_to_file_SOURCES) $(test_just_header_SOURCES) \
-	$(test_just_header_cxx_SOURCES) $(test_last_errno_SOURCES) \
-	$(test_private_data_SOURCES) $(test_user_cancel_SOURCES) \
-	$(tests_SOURCES)
+	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
+	$(test_just_header_SOURCES) $(test_just_header_cxx_SOURCES) \
+	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
+	$(test_user_cancel_SOURCES) $(tests_SOURCES)
 DIST_SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
-	$(test_debug_to_file_SOURCES) $(test_just_header_SOURCES) \
+	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
+	$(test_just_header_SOURCES) \
 	$(am__test_just_header_cxx_SOURCES_DIST) \
 	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
 	$(test_user_cancel_SOURCES) $(tests_SOURCES)
@@ -388,6 +398,7 @@ am__tty_colors = $(am__tty_colors_dummy)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
+ACL_LIBS = @ACL_LIBS@
 ALLOCA = @ALLOCA@
 ALLOCA_H = @ALLOCA_H@
 AMTAR = @AMTAR@
@@ -408,6 +419,7 @@ BITSIZEOF_WCHAR_T = @BITSIZEOF_WCHAR_T@
 BITSIZEOF_WINT_T = @BITSIZEOF_WINT_T@
 BMPTOPNM = @BMPTOPNM@
 BYTESWAP_H = @BYTESWAP_H@
+CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -456,6 +468,7 @@ FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
+GCOV_CFLAGS = @GCOV_CFLAGS@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
@@ -747,6 +760,7 @@ GNULIB__EXIT = @GNULIB__EXIT@
 GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
+GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
@@ -1058,6 +1072,8 @@ LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBPTH = @LTLIBPTH@
 LTLIBTHREAD = @LTLIBTHREAD@
+LUA = @LUA@
+LUA_VERSION = @LUA_VERSION@
 MAGIC_LIBS = @MAGIC_LIBS@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -1142,6 +1158,7 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_GCOV_LDFLAGS = @OCAML_GCOV_LDFLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
@@ -1260,6 +1277,7 @@ REPLACE_PREAD = @REPLACE_PREAD@
 REPLACE_PRINTF = @REPLACE_PRINTF@
 REPLACE_PSELECT = @REPLACE_PSELECT@
 REPLACE_PTHREAD_SIGMASK = @REPLACE_PTHREAD_SIGMASK@
+REPLACE_PTSNAME = @REPLACE_PTSNAME@
 REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
 REPLACE_PUTENV = @REPLACE_PUTENV@
 REPLACE_PWRITE = @REPLACE_PWRITE@
@@ -1359,6 +1377,8 @@ WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
+YAJL_CFLAGS = @YAJL_CFLAGS@
+YAJL_LIBS = @YAJL_LIBS@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
@@ -1402,6 +1422,7 @@ infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+libvirt_ro_uri = @libvirt_ro_uri@
 lispdir = @lispdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -1432,15 +1453,15 @@ EXTRA_DIST = $(BUILT_SOURCES) test-add-libvirt-dom.c
 TESTS_ENVIRONMENT = \
 	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
 	SKIP_TEST_COMMAND_LINES=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	TMPDIR=$(top_builddir) \
-	$(VG)
+	$(top_builddir)/run --test $(VG)
 
 
 #SKIP_TEST_CHECKSUM_8=$(shell if test `find ../initramfs -name squashfs.ko | wc -l` -eq 0; then echo 1; fi)
 tests_SOURCES = tests.c
-tests_CFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src \
-  $(WARN_CFLAGS) $(WERROR_CFLAGS)
+tests_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 tests_LDADD = $(top_builddir)/src/libguestfs.la
 
@@ -1453,7 +1474,8 @@ test_command_LDFLAGS = -all-static
 test_just_header_SOURCES = test-just-header.c
 test_just_header_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_just_header_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1461,7 +1483,8 @@ test_just_header_LDADD = \
 @HAVE_CXX_TRUE@test_just_header_cxx_SOURCES = test-just-header-cxx.cpp
 @HAVE_CXX_TRUE@test_just_header_cxx_CXXFLAGS = \
 @HAVE_CXX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
-@HAVE_CXX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+@HAVE_CXX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_CXX_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 @HAVE_CXX_TRUE@test_just_header_cxx_LDADD = \
 @HAVE_CXX_TRUE@	$(top_builddir)/src/libguestfs.la
@@ -1469,7 +1492,8 @@ test_just_header_LDADD = \
 test_create_handle_SOURCES = test-create-handle.c
 test_create_handle_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_create_handle_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1477,7 +1501,8 @@ test_create_handle_LDADD = \
 test_config_SOURCES = test-config.c
 test_config_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_config_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1485,7 +1510,8 @@ test_config_LDADD = \
 test_add_drive_opts_SOURCES = test-add-drive-opts.c
 test_add_drive_opts_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_add_drive_opts_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1493,7 +1519,8 @@ test_add_drive_opts_LDADD = \
 test_last_errno_SOURCES = test-last-errno.c
 test_last_errno_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_last_errno_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1501,7 +1528,8 @@ test_last_errno_LDADD = \
 test_private_data_SOURCES = test-private-data.c
 test_private_data_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_private_data_LDADD = \
 	$(top_builddir)/src/libguestfs.la
@@ -1510,7 +1538,8 @@ test_user_cancel_SOURCES = test-user-cancel.c
 test_user_cancel_CFLAGS = \
 	-pthread \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_user_cancel_LDADD = \
 	$(top_builddir)/src/libguestfs.la -lm
@@ -1520,9 +1549,22 @@ test_debug_to_file_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_debug_to_file_LDADD = \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+
+test_environment_SOURCES = test-environment.c
+test_environment_CFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+
+test_environment_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
@@ -1586,6 +1628,9 @@ test-create-handle$(EXEEXT): $(test_create_handle_OBJECTS) $(test_create_handle_
 test-debug-to-file$(EXEEXT): $(test_debug_to_file_OBJECTS) $(test_debug_to_file_DEPENDENCIES) $(EXTRA_test_debug_to_file_DEPENDENCIES) 
 	@rm -f test-debug-to-file$(EXEEXT)
 	$(AM_V_CCLD)$(test_debug_to_file_LINK) $(test_debug_to_file_OBJECTS) $(test_debug_to_file_LDADD) $(LIBS)
+test-environment$(EXEEXT): $(test_environment_OBJECTS) $(test_environment_DEPENDENCIES) $(EXTRA_test_environment_DEPENDENCIES) 
+	@rm -f test-environment$(EXEEXT)
+	$(AM_V_CCLD)$(test_environment_LINK) $(test_environment_OBJECTS) $(test_environment_LDADD) $(LIBS)
 test-just-header$(EXEEXT): $(test_just_header_OBJECTS) $(test_just_header_DEPENDENCIES) $(EXTRA_test_just_header_DEPENDENCIES) 
 	@rm -f test-just-header$(EXEEXT)
 	$(AM_V_CCLD)$(test_just_header_LINK) $(test_just_header_OBJECTS) $(test_just_header_LDADD) $(LIBS)
@@ -1616,6 +1661,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_config-test-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_create_handle-test-create-handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_debug_to_file-test-debug-to-file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_environment-test-environment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_just_header-test-just-header.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_last_errno-test-last-errno.Po@am__quote@
@@ -1699,6 +1745,20 @@ test_debug_to_file-test-debug-to-file.obj: test-debug-to-file.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-debug-to-file.c' object='test_debug_to_file-test-debug-to-file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -c -o test_debug_to_file-test-debug-to-file.obj `if test -f 'test-debug-to-file.c'; then $(CYGPATH_W) 'test-debug-to-file.c'; else $(CYGPATH_W) '$(srcdir)/test-debug-to-file.c'; fi`
+
+test_environment-test-environment.o: test-environment.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -MT test_environment-test-environment.o -MD -MP -MF $(DEPDIR)/test_environment-test-environment.Tpo -c -o test_environment-test-environment.o `test -f 'test-environment.c' || echo '$(srcdir)/'`test-environment.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_environment-test-environment.Tpo $(DEPDIR)/test_environment-test-environment.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-environment.c' object='test_environment-test-environment.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.o `test -f 'test-environment.c' || echo '$(srcdir)/'`test-environment.c
+
+test_environment-test-environment.obj: test-environment.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -MT test_environment-test-environment.obj -MD -MP -MF $(DEPDIR)/test_environment-test-environment.Tpo -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_environment-test-environment.Tpo $(DEPDIR)/test_environment-test-environment.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-environment.c' object='test_environment-test-environment.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
 
 test_just_header-test-just-header.o: test-just-header.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -MT test_just_header-test-just-header.o -MD -MP -MF $(DEPDIR)/test_just_header-test-just-header.Tpo -c -o test_just_header-test-just-header.o `test -f 'test-just-header.c' || echo '$(srcdir)/'`test-just-header.c
@@ -2146,11 +2206,15 @@ appliance: force
 #test_add_libvirt_dom_CFLAGS = \
 #	-I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_srcdir)/gnulib/lib \
 #	$(LIBVIRT_CFLAGS) \
-#	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+#	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+#	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 #test_add_libvirt_dom_LDADD = \
 #	$(top_builddir)/src/libguestfs.la $(LIBVIRT_LIBS) \
 #	$(LTLIBTHREAD) $(top_builddir)/gnulib/lib/libgnu.la
 #endif
+
+check-valgrind:
+	$(MAKE) VG="$(top_builddir)/run @VG@" check
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

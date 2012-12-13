@@ -1,0 +1,100 @@
+=encoding utf8
+
+=head1 名前
+
+guestfsd - guestfs デーモン
+
+=head1 書式
+
+ guestfsd [-r] [-v|--verbose]
+
+=head1 説明
+
+C<guestfsd> は libguestfs
+デーモンです。一般ユーザーはこのプログラムを明示的に実行する必要がありません。このマニュアルページは、C<guestfsd> が libguestfs
+アプライアンスにおいて、および libguestfs ライブにおいて実行することを説明しています。
+
+=head2 libguestfs アプライアンス
+
+libguestfs アプライアンスのアーキテクチャーは L<guestfs(3)/アーキテクチャー> を参照してください。
+
+After the appliance boots, the C</init> script in the appliance starts
+C<guestfsd> with no arguments.  C<guestfsd> opens the virtio-serial port on
+a known path (see L</FILES>).  It initiates the protocol (see
+L<guestfs(3)/COMMUNICATION PROTOCOL>) and processes requests one at a time
+from the library until the appliance is destroyed.
+
+Filesystems are mounted under C</sysroot> and all filesystem operations
+happen relative to this directory.
+
+=head2 LIBGUESTFS LIVE
+
+In the libguestfs live case, C<guestfsd -r> is started from the rc-scripts,
+systemd, etc.
+
+The C<-r> option causes the daemon to operate on the root filesystem instead
+of C</sysroot>.
+
+Currently (because of limitations in virtio-serial) only one client can
+connect at a time, and C<guestfsd> must be restarted after each client
+disconnects.  If libguestfs live were changed to use a different transport
+such as TCP/IP then this limitation could be removed.
+
+=head1 オプション
+
+=over 4
+
+=item B<-?>
+
+=item B<--help>
+
+簡単なヘルプを表示します。
+
+=item B<-r>
+
+Set the root filesystem to be C</> (instead of the default which is
+C</sysroot>).  Also do not unmount filesystems when the daemon exits.
+
+This option is used to enable libguestfs live.
+
+=item B<-v>
+
+=item B<--verbose>
+
+デバッグ用の冗長なメッセージを有効にします。
+
+The verbose flag is also set if the Linux command line contains the
+substring C<guestfs_verbose=1>.
+
+=back
+
+=head1 終了ステータス
+
+このプログラムは、成功すると 0 を、エラーがあると 0 以外を返します。
+
+=head1 ファイル
+
+=over 4
+
+=item C</dev/virtio-ports/org.libguestfs.channel.0>
+
+C<guestfsd> が接続する virtio シリアルポート。
+
+=item C</proc/cmdline>
+
+Linux コマンドラインが C<guestfs_*> フラグを検索するために構文解析されます。
+
+=back
+
+=head1 関連項目
+
+L<guestfs(3)>, L<http://libguestfs.org/>.
+
+=head1 著者
+
+Richard W.M. Jones L<http://people.redhat.com/~rjones/>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2009-2012 Red Hat Inc.
+

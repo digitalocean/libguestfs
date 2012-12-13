@@ -79,10 +79,7 @@ html/index.html: $(srcdir)/guestfs*.mli $(srcdir)/guestfs*.ml
 	-$(OCAMLDOC) -d html -html $^
 endif
 
-TESTS_ENVIRONMENT = \
-	CAML_LD_LIBRARY_PATH=. \
-	$(top_builddir)/run \
-	$(VG)
+TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
 
 test_progs = \
 	t/guestfs_005_load \
@@ -186,6 +183,10 @@ t/guestfs_070_threads.cmo: t/guestfs_070_threads.ml mlguestfs.cma
 t/guestfs_070_threads.cmx: t/guestfs_070_threads.ml mlguestfs.cmxa
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package unix,threads -thread -linkpkg -c $< -o $@
 
+check-valgrind:
+	$(MAKE) VG="$(top_builddir)/run @VG@" check
+
+# Dependencies.
 %.cmi: %.mli
 	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -package unix -c $< -o $(builddir)/$@
 %.cmo: %.ml mlguestfs.cma

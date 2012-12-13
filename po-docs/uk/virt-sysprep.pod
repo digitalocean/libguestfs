@@ -2,7 +2,8 @@
 
 =head1 НАЗВА
 
-virt-sysprep - Reset or unconfigure a virtual machine so clones can be made
+virt-sysprep - Reset, unconfigure or customize a virtual machine so clones
+can be made
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -12,14 +13,15 @@ virt-sysprep - Reset or unconfigure a virtual machine so clones can be made
 
 =head1 ОПИС
 
-Virt-sysprep "resets" or "unconfigures" a virtual machine so that clones can
+Virt-sysprep can reset or unconfigure a virtual machine so that clones can
 be made from it.  Steps in this process include removing SSH host keys,
 removing persistent network MAC configuration, and removing user accounts.
-Each step can be enabled or disabled as required.
+Virt-sysprep can also customize a virtual machine, for instance by adding
+SSH keys, users or logos.  Each step can be enabled or disabled as required.
 
 Virt-sysprep modifies the guest or disk image I<in place>.  The guest must
 be shut down.  If you want to preserve the existing contents of the guest,
-you I<must snapshot, copy or clone the disk first>.  See L</COPYING AND
+I<you must snapshot, copy or clone the disk first>.  See L</COPYING AND
 CLONING> below.
 
 You do I<not> need to run virt-sysprep as root.  In fact we'd generally
@@ -48,15 +50,15 @@ Windows sysprepping in a future version, and we already have code to do it.
 
 Додати I<файл>, який має бути образом диска з віртуальної машини.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром I<--format>.
 
 =item B<-c> адреса
 
 =item B<--connect> адреса
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
 libvirt не буде використовуватися взагалі.
@@ -108,12 +110,13 @@ for subsequent I<-a> options.
 
  virt-sysprep --format raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img>.
 
  virt-sysprep --format raw -a disk.img --format auto -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
@@ -305,6 +308,16 @@ There are some smarter (and faster) ways too:
                              \-----> guests
                               \---->
 
+You may want to run virt-sysprep twice, once to reset the guest (to make a
+template) and a second time to customize the guest for a specific user:
+
+                    virt-sysprep        virt-sysprep
+                      (reset)      (add user, keys, logos)
+                         |                   |
+                 dd      v          dd       v
+ original guest ----> template ---------> copied ------> custom
+                                          template       guest
+
 =over 4
 
 =item *
@@ -376,6 +389,31 @@ disk space), then instead of copying the template, you can run
 L<virt-resize(1)>.  Virt-resize performs a copy and resize, and thus is
 ideal for cloning guests from a template.
 
+=head1 FIRSTBOOT VS SCRIPT
+
+The two options I<--firstboot> and I<--script> both supply shell scripts
+that are run against the guest.  However these two options are significantly
+different.
+
+I<--firstboot script> uploads the file C<script> into the guest and arranges
+that it will run, in the guest, when the guest is next booted.  (The script
+will only run once, at the "first boot").
+
+I<--script script> runs the shell C<script> I<on the host>, with its current
+directory inside the guest filesystem.
+
+If you needed, for example, to C<yum install> new packages, then you I<must
+not> use I<--script> for this, since that would (a) run the C<yum> command
+on the host and (b) wouldn't have access to the same resources
+(repositories, keys, etc.) as the guest.  Any command that needs to run on
+the guest I<must> be run via I<--firstboot>.
+
+On the other hand if you need to make adjustments to the guest filesystem
+(eg. copying in files), then I<--script> is ideal since (a)  it has access
+to the host filesystem and (b) you will get immediate feedback on errors.
+
+Either or both options can be used multiple times on the command line.
+
 =head1 БЕЗПЕКА
 
 Although virt-sysprep removes some sensitive information from the guest, it
@@ -421,6 +459,11 @@ I<--selinux-relabel> option.
 
 You can disable relabelling entirely by supplying the
 I<--no-selinux-relabel> option.
+
+=head1 WINDOWS 8
+
+Windows 8 "fast startup" can prevent virt-sysprep from working.  See
+L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
 =head1 ЕКРАНУВАННЯ СИМВОЛІВ У ОБОЛОНЦІ
 

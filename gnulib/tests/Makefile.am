@@ -897,6 +897,15 @@ EXTRA_DIST += test-pipe.c signature.h macros.h
 
 ## end   gnulib module pipe-posix-tests
 
+## begin gnulib module pipe2-tests
+
+TESTS += test-pipe2
+check_PROGRAMS += test-pipe2
+test_pipe2_LDADD = $(LDADD) $(LIBSOCKET)
+EXTRA_DIST += test-pipe2.c signature.h macros.h
+
+## end   gnulib module pipe2-tests
+
 ## begin gnulib module pread-tests
 
 TESTS += test-pread.sh

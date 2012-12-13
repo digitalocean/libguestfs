@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsApplication2</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsApplication.html" title="GuestfsApplication">
+<link rel="next" href="GuestfsISOInfo.html" title="GuestfsISOInfo">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsApplication.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsISOInfo.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsApplication2.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsApplication2.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsApplication2.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsApplication2"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsApplication2.top_of_page"></a>GuestfsApplication2</span></h2>
+<p>GuestfsApplication2</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsApplication2.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsApplication2.html#GuestfsApplication2-struct" title="struct GuestfsApplication2">GuestfsApplication2</a>;
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsApplication2.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GBoxed
+   +----GuestfsApplication2
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsApplication2.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsApplication2.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsApplication2-struct"></a><h3>struct GuestfsApplication2</h3>
+<pre class="programlisting">struct GuestfsApplication2 {
+  gchar *app2_name;
+  gchar *app2_display_name;
+  gint32 app2_epoch;
+  gchar *app2_version;
+  gchar *app2_release;
+  gchar *app2_arch;
+  gchar *app2_install_path;
+  gchar *app2_trans_path;
+  gchar *app2_publisher;
+  gchar *app2_url;
+  gchar *app2_source_package;
+  gchar *app2_summary;
+  gchar *app2_description;
+  gchar *app2_spare1;
+  gchar *app2_spare2;
+  gchar *app2_spare3;
+  gchar *app2_spare4;
+};
+</pre>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-name"></a>app2_name</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-display-name"></a>app2_display_name</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gint32</span> <em class="structfield"><code><a name="GuestfsApplication2-struct.app2-epoch"></a>app2_epoch</code></em>;</span></p></td>
+<td>A signed 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-version"></a>app2_version</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-release"></a>app2_release</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-arch"></a>app2_arch</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-install-path"></a>app2_install_path</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-trans-path"></a>app2_trans_path</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-publisher"></a>app2_publisher</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-url"></a>app2_url</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-source-package"></a>app2_source_package</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-summary"></a>app2_summary</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-description"></a>app2_description</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-spare1"></a>app2_spare1</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-spare2"></a>app2_spare2</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-spare3"></a>app2_spare3</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsApplication2-struct.app2-spare4"></a>app2_spare4</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -16,7 +16,7 @@ guestfs-recipes - libguestfs, guestfish および仮想化ツールのレシピ
 
 =head1 仮想マシンの setuid ファイルを監査します
 
-See: L<virt-ls(1)/EXAMPLES>.
+関連項目: L<virt-ls(1)/例>。
 
 =head1 Windows XP 仮想マシンの背景画像を変更します
 
@@ -26,34 +26,33 @@ See: L<virt-ls(1)/EXAMPLES>.
 L<https://lists.fedoraproject.org/pipermail/virt/2011-May/002655.html>
 L<https://lists.fedoraproject.org/pipermail/virt/2011-May/002658.html>
 
-=head1 Checksum a file or device within a disk image
+=head1 ディスクイメージの中にあるファイルまたはデバイスのチェックサム
 
-To checksum a whole device, or a partition, LV etc within a disk image:
+デバイス全体、またはディスクイメージの中にあるパーティションや論理ボリュームなどについてチェックサムを確認するには:
 
  guestfish --ro -a disk.img run : checksum-device md5 /dev/sda1
 
 Replace C<md5> with the type of checksum you want.  See
 L<guestfs(3)/guestfs_checksum_device> for a list of supported types.
 
-C</dev/sda1> means "the first partition".  You could use C</dev/sda> to
-checksum the whole disk image, or the name of a logical volume or RAID
-device.
+C</dev/sda1> は "最初のパーティション" を意味します。ディスクイメージ全体、または論理ボリュームや RAID
+デバイスの名前についてチェックサムを確認するには C</dev/sda> を使用できます。
 
-To checksum a single file:
+単一サポートをチェックサムするには:
 
  guestfish --ro -a disk.img -i checksum sha256 /etc/passwd
 
-or for a Windows guest:
+または、Windows ゲストには:
 
  guestfish --ro -a disk.img -i \
    checksum sha256 'win:\windows\system32\config\SOFTWARE'
 
-=head1 Cloning a virtual machine
+=head1 仮想マシンのクローン方法
 
-Use a combination of tools like L<cp(1)>, L<dd(1)>, and virt tools like
-L<virt-sysprep(1)>, L<virt-sparsify(1)> and L<virt-resize(1)>.
+L<cp(1)>, L<dd(1)>, and virt tools like L<virt-sysprep(1)>,
+L<virt-sparsify(1)> および L<virt-resize(1)> のようなツールの組み合わせを使用します。
 
-For more details, see: L<virt-sysprep(1)/COPYING AND CLONING>.
+詳細は次を参照してください: L<virt-sysprep(1)/コピー方法およびクローン方法>。
 
 =head1 CD-ROM / DVD / ISO を tar ファイルに変換します
 
@@ -67,23 +66,23 @@ For more details, see: L<virt-sysprep(1)/COPYING AND CLONING>.
 
 =head1 空のディスクイメージを作成します
 
-The L<virt-format(1)> tool can do this directly.
+L<virt-format(1)> ツールは直接これを実行できます。
 
-Use L<virt-make-fs(1)> to create a disk image with content.  This can also
-create some standard disk images such as virtual floppy devices (VFDs).
+中身のあるディスクイメージを作成するには L<virt-make-fs(1)> を使用します。仮想フロッピーディスク (VFD)
+のような、いくつかの標準的なディスクイメージを作成することもできます。
 
-You can also use the L<guestfish(1)> I<-N> option to create empty disk
-images.  The useful guide below explains the options available.
+空のディスクイメージを作成するには L<guestfish(1)> の I<-N>
+オプションを使用することもできます。以下の有用なガイドが利用可能なオプションを説明しています。
 
 L<https://rwmj.wordpress.com/2010/09/08/new-guestfish-n-options-in-1-5-9/#content>
 
-=head1 Delete a file (or other simple file operations)
+=head1 ファイルを削除します (または、他の簡単なファイル操作)
 
-Use guestfish.  To delete a file:
+guestfish を使用します。ファイルを削除するには:
 
  guestfish -a disk.img -i rm /file/to/delete
 
-To touch a file (bring it up to date or create it):
+ファイルをタッチする (ファイルの日付を更新する、または作成する) には:
 
  guestfish -a disk.img -i touch /file/to/touch
 
@@ -115,7 +114,7 @@ which is encrypted or buried inside an LV or RAID device):
 
  guestfish --ro -d Guest run : download /dev/vg_guest/lv_root lv.img
 
-To download to stdout, replace the filename with a C<-> character:
+標準出力にダウンロードするには、ファイル名を C<-> 文字に置き換えます:
 
  guestfish --ro -a disk.img run : download /dev/sda1 - | gzip > sda1.gz
 
@@ -281,13 +280,13 @@ or unresponsive:
 
 =item 1.
 
-Read the log files using virt-cat:
+virt-cat を使用してログファイルを読むには:
 
  virt-cat Guest /var/log/messages | less
 
 =item 2.
 
-Read the Windows Event Log (Windows Vista or later only):
+Windows イベントログ (Windows Vista またはそれ以降) を読むには:
 
 L<https://rwmj.wordpress.com/2011/04/17/decoding-the-windows-event-log-using-guestfish/#content>
 
@@ -321,6 +320,9 @@ Hex-edit the first sector (boot partition):
 がアップロードされます。停止中の仮想マシンにおいて致命的なセキュリティ更新をインストールするためにこのテクニックを使用できます。
 
 L<https://rwmj.wordpress.com/2010/12/01/tip-install-rpms-in-a-guest/#content>
+
+libguestfs 1.20 以降、L<virt-sysprep(1)> は Linux 仮想マシンにおける firstboot
+スクリプトをインストールするためのオプションがあります。
 
 =head1 仮想マシンにインストールされているアプリケーションを一覧表示します
 
@@ -370,7 +372,7 @@ L<https://rwmj.wordpress.com/2010/12/01/tip-install-rpms-in-a-guest/#content>
 
 =head1 仮想マシンのファイルおよびディレクトリを一覧表示します
 
-Use L<virt-ls(1)>.
+L<virt-ls(1)> を使用します。
 
 =head1 Windows 仮想マシンのサービスを一覧表示します
 
@@ -381,7 +383,7 @@ L<https://rwmj.wordpress.com/2010/12/10/tip-list-services-in-a-windows-guest/#co
 
 =head1 ディスクイメージをスパースにします
 
-Use L<virt-sparsify(1)>.
+L<virt-sparsify(1)> を使用します。
 
 =head1 ディスク使用量を時系列に監視します
 
@@ -410,7 +412,7 @@ L<virt-edit(1)> I<-e> を使用することにより、ファイルの内容を�
 
 L<https://mdbooth.wordpress.com/2010/10/18/resetting-a-windows-guests-administrator-password-with-guestfish/>
 
-=head1 Sysprepping a virtual machine (Windows)
+=head1 仮想マシンの sysprep 方法 (Windows)
 
 It is possible to do a "sysprep" using libguestfs alone, although not
 straightforward.  Currently there is code in the Aeolus Oz project which
@@ -465,9 +467,9 @@ L<https://rwmj.wordpress.com/2011/05/10/tip-use-libguestfs-on-vmware-esx-guests/
 =head1 関連項目
 
 L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>,
-L<guestfs-erlang(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>,
-L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
-L<http://libguestfs.org/>.
+L<guestfs-erlang(3)>, L<guestfs-java(3)>, L<guestfs-lua(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

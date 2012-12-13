@@ -1,6 +1,6 @@
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   generator/generator_*.ml
+#   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
 # Copyright (C) 2009-2012 Red Hat Inc.
@@ -35,18 +35,30 @@ guestfs_gobject_headers= \
   include/guestfs-gobject/struct-inotify_event.h \
   include/guestfs-gobject/struct-partition.h \
   include/guestfs-gobject/struct-application.h \
+  include/guestfs-gobject/struct-application2.h \
   include/guestfs-gobject/struct-isoinfo.h \
   include/guestfs-gobject/struct-mdstat.h \
   include/guestfs-gobject/struct-btrfssubvolume.h \
-  include/guestfs-gobject/optargs-test0.h \
-  include/guestfs-gobject/optargs-add_drive_opts.h \
+  include/guestfs-gobject/struct-xfsinfo.h \
+  include/guestfs-gobject/struct-utsname.h \
+  include/guestfs-gobject/struct-hivex_node.h \
+  include/guestfs-gobject/struct-hivex_value.h \
+  include/guestfs-gobject/optargs-internal_test.h \
+  include/guestfs-gobject/optargs-internal_test_only_optargs.h \
+  include/guestfs-gobject/optargs-internal_test_63_optargs.h \
+  include/guestfs-gobject/optargs-add_drive.h \
   include/guestfs-gobject/optargs-add_domain.h \
   include/guestfs-gobject/optargs-inspect_get_icon.h \
   include/guestfs-gobject/optargs-mount_local.h \
   include/guestfs-gobject/optargs-umount_local.h \
-  include/guestfs-gobject/optargs-mkfs_opts.h \
+  include/guestfs-gobject/optargs-umount.h \
+  include/guestfs-gobject/optargs-tar_in.h \
+  include/guestfs-gobject/optargs-tar_out.h \
+  include/guestfs-gobject/optargs-mkswap.h \
+  include/guestfs-gobject/optargs-grep.h \
+  include/guestfs-gobject/optargs-mkfs.h \
   include/guestfs-gobject/optargs-mount_9p.h \
-  include/guestfs-gobject/optargs-ntfsresize_opts.h \
+  include/guestfs-gobject/optargs-ntfsresize.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_resize.h \
   include/guestfs-gobject/optargs-compress_out.h \
   include/guestfs-gobject/optargs-compress_device_out.h \
@@ -61,7 +73,17 @@ guestfs_gobject_headers= \
   include/guestfs-gobject/optargs-ntfsclone_out.h \
   include/guestfs-gobject/optargs-mkfs_btrfs.h \
   include/guestfs-gobject/optargs-set_e2attrs.h \
-  include/guestfs-gobject/optargs-btrfs_fsck.h
+  include/guestfs-gobject/optargs-btrfs_fsck.h \
+  include/guestfs-gobject/optargs-fstrim.h \
+  include/guestfs-gobject/optargs-xfs_growfs.h \
+  include/guestfs-gobject/optargs-rsync.h \
+  include/guestfs-gobject/optargs-rsync_in.h \
+  include/guestfs-gobject/optargs-rsync_out.h \
+  include/guestfs-gobject/optargs-xfs_admin.h \
+  include/guestfs-gobject/optargs-hivex_open.h \
+  include/guestfs-gobject/optargs-xfs_repair.h \
+  include/guestfs-gobject/optargs-mke2fs.h \
+  include/guestfs-gobject/optargs-mktemp.h
 
 guestfs_gobject_sources= \
   src/session.c \
@@ -78,18 +100,30 @@ guestfs_gobject_sources= \
   src/struct-inotify_event.c \
   src/struct-partition.c \
   src/struct-application.c \
+  src/struct-application2.c \
   src/struct-isoinfo.c \
   src/struct-mdstat.c \
   src/struct-btrfssubvolume.c \
-  src/optargs-test0.c \
-  src/optargs-add_drive_opts.c \
+  src/struct-xfsinfo.c \
+  src/struct-utsname.c \
+  src/struct-hivex_node.c \
+  src/struct-hivex_value.c \
+  src/optargs-internal_test.c \
+  src/optargs-internal_test_only_optargs.c \
+  src/optargs-internal_test_63_optargs.c \
+  src/optargs-add_drive.c \
   src/optargs-add_domain.c \
   src/optargs-inspect_get_icon.c \
   src/optargs-mount_local.c \
   src/optargs-umount_local.c \
-  src/optargs-mkfs_opts.c \
+  src/optargs-umount.c \
+  src/optargs-tar_in.c \
+  src/optargs-tar_out.c \
+  src/optargs-mkswap.c \
+  src/optargs-grep.c \
+  src/optargs-mkfs.c \
   src/optargs-mount_9p.c \
-  src/optargs-ntfsresize_opts.c \
+  src/optargs-ntfsresize.c \
   src/optargs-btrfs_filesystem_resize.c \
   src/optargs-compress_out.c \
   src/optargs-compress_device_out.c \
@@ -104,4 +138,14 @@ guestfs_gobject_sources= \
   src/optargs-ntfsclone_out.c \
   src/optargs-mkfs_btrfs.c \
   src/optargs-set_e2attrs.c \
-  src/optargs-btrfs_fsck.c
+  src/optargs-btrfs_fsck.c \
+  src/optargs-fstrim.c \
+  src/optargs-xfs_growfs.c \
+  src/optargs-rsync.c \
+  src/optargs-rsync_in.c \
+  src/optargs-rsync_out.c \
+  src/optargs-xfs_admin.c \
+  src/optargs-hivex_open.c \
+  src/optargs-xfs_repair.c \
+  src/optargs-mke2fs.c \
+  src/optargs-mktemp.c

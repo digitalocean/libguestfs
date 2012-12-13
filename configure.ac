@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [18])
-m4_define([libguestfs_release], [11])
+m4_define([libguestfs_minor],   [20])
+m4_define([libguestfs_release], [0])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -62,6 +62,17 @@ AC_DEFINE([PACKAGE_VERSION_MAJOR],[libguestfs_major],[Major version number.])
 AC_DEFINE([PACKAGE_VERSION_MINOR],[libguestfs_minor],[Minor version number.])
 AC_DEFINE([PACKAGE_VERSION_RELEASE],[libguestfs_release],[Release number.])
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_EXTRA],["$libguestfs_extra"],[Extra version string.])
+
+dnl Default attach method.
+AC_MSG_CHECKING([if the user specified a default attach method])
+AC_ARG_WITH([default-attach-method],
+    [AS_HELP_STRING([--with-default-attach-method="appliance|libvirt|..."],
+        [set default attach method @<:@default=appliance@:>@])],
+    [DEFAULT_ATTACH_METHOD="$withval"],
+    [DEFAULT_ATTACH_METHOD=appliance])
+AC_MSG_RESULT([$DEFAULT_ATTACH_METHOD])
+AC_DEFINE_UNQUOTED([DEFAULT_ATTACH_METHOD],["$DEFAULT_ATTACH_METHOD"],
+                   [Default attach method.])
 
 dnl Early gnulib initialization.
 gl_EARLY
@@ -125,7 +136,6 @@ if test "$gl_gcc_warnings" = yes; then
   nw="$nw -Wsuggest-attribute=pure" # Don't suggest pure functions.
   nw="$nw -Wsuggest-attribute=const" # Don't suggest const functions.
   nw="$nw -Wunsuffixed-float-constants" # Don't care about these.
-  nw="$nw -Wjump-misses-init"
 
   gl_MANYWARN_ALL_GCC([ws])
   gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])
@@ -133,11 +143,13 @@ if test "$gl_gcc_warnings" = yes; then
     gl_WARN_ADD([$w])
   done
 
-  # Normally we disable warnings in $nw above.  However for some
-  # unknown reason that doesn't always work, and we need to explicitly
-  # list a few disabled warnings below.
+  # Normally we disable warnings in $nw above.  However $nw only
+  # filters out exact matching warning strings from a list inside
+  # gnulib (see m4/manywarnings.m4).  So we need to explicitly list a
+  # few disabled warnings below.
 
-  gl_WARN_ADD([-Wno-unused-parameter]) # Unused parameters are not a bug.
+  # Unused parameters are not a bug.
+  gl_WARN_ADD([-Wno-unused-parameter])
 
   # Missing field initializers is not a bug in C.
   gl_WARN_ADD([-Wno-missing-field-initializers])
@@ -579,55 +591,37 @@ working.
 ])
     fi
 
-    AS_IF([test "x$QEMU_OPTIONS" = "x"],[
-        dnl qemu 0.15 was released with broken support for '-machine',
-        dnl requiring you to add the machine type: '-machine pc,[...]'.
-        dnl The problem is that 'pc' is only applicable for PC-like
-        dnl hardware, so we cannot do this as a general solution.  Since
-        dnl qemu 0.15, this problem has been fixed so now the default
-        dnl machine type is chosen (qemu commit 2645c6dcaf6ea2a51a).
-        dnl
-        dnl We need to work out if this qemu is the broken version, so we
-        dnl can add 'pc' just for this broken version.
-        dnl
-        dnl Note that old qemu didn't support the '-machine' option at all.
-        dnl
-        dnl We use the -kernel option for testing this, because this option
-        dnl is processed very late, after qemu has set up the machine.
-        AC_MSG_CHECKING([for broken '-machine accel=tcg' option in $QEMU])
-        LC_ALL=C $QEMU -nographic -machine accel=tcg -kernel /NO_SUCH_FILE \
-             > config1.tmp 2>&1
-        LC_ALL=C $QEMU -nographic -machine pc,accel=tcg -kernel /NO_SUCH_FILE \
-             > config2.tmp 2>&1
-        if cmp -s config1.tmp config2.tmp; then
-            AC_MSG_RESULT([no])
-        else
-            AC_MSG_RESULT([yes])
-            AC_DEFINE([QEMU_MACHINE_TYPE_IS_BROKEN],[1],[qemu -machine accel=tcg option is broken (in qemu 0.15 only)])
-        fi
-        rm config1.tmp config2.tmp
+    AC_MSG_CHECKING([that $QEMU -version works])
+    if $QEMU -version >&AS_MESSAGE_LOG_FD 2>&1; then
+        AC_MSG_RESULT([yes])
+    else
+        AC_MSG_RESULT([no])
+        AC_MSG_FAILURE(
+[$QEMU -version: command failed.
 
-        dnl See if the '-machine [pc,]accel=tcg' option is required in
-        dnl order to run the virtio-serial test below.  This happens when
-        dnl we run qemu-kvm inside a VM without forcing TCG:
-        dnl
-        dnl   Could not access KVM kernel module: No such file or directory
-        dnl   failed to initialize KVM: No such file or directory
-        dnl   No accelerator found!
-        AC_MSG_CHECKING([if -machine @<:@pc,@:>@accel=tcg option is required to test virtio-serial feature])
-        if $QEMU -nographic -device \? >/dev/null 2>&1; then
-            :
-        elif $QEMU -machine accel=tcg -nographic -device \? >/dev/null 2>&1; then
-            QEMU_OPTIONS_FOR_TEST="-machine accel=tcg"
-        elif $QEMU -machine pc,accel=tcg -nographic -device \? >/dev/null 2>&1; then
-            QEMU_OPTIONS_FOR_TEST="-machine pc,accel=tcg"
-        # else nothing ... it'll fail below.
-        fi
-        AC_MSG_RESULT([$QEMU_OPTIONS_FOR_TEST])
-    ])
+This could be a very old version of qemu, or qemu might not be
+working.
+])
+    fi
+
+    AC_MSG_CHECKING([for $QEMU version >= 1])
+    if $QEMU -version | grep -sq 'version @<:@1-@:>@'; then
+        AC_MSG_RESULT([yes])
+    else
+        AC_MSG_RESULT([no])
+        AC_MSG_FAILURE([$QEMU version must be >= 1.0.])
+    fi
+
+    AC_MSG_CHECKING([that $QEMU -nographic -machine accel=kvm:tcg -device ? works])
+    if $QEMU -nographic -machine accel=kvm:tcg -device \? >&AS_MESSAGE_LOG_FD 2>&1; then
+        AC_MSG_RESULT([yes])
+    else
+        AC_MSG_RESULT([no])
+        AC_MSG_FAILURE([$QEMU -nographic -machine accel=kvm:tcg -device ? doesn't work.])
+    fi
 
     AC_MSG_CHECKING([for virtio-serial support in $QEMU])
-    if $QEMU $QEMU_OPTIONS $QEMU_OPTIONS_FOR_TEST -nographic -device \? 2>&1 | grep -sq virtio-serial; then
+    if $QEMU $QEMU_OPTIONS -nographic -machine accel=kvm:tcg -device \? 2>&1 | grep -sq virtio-serial; then
         AC_MSG_RESULT([yes])
     else
         AC_MSG_RESULT([no])
@@ -654,29 +648,6 @@ the --with-qemu option.
 ])
     fi
 fi
-
-dnl Set default drive interface used by the guestfs_add_drive_opts call
-dnl ('-drive ...,if=...' option to qemu).
-dnl
-dnl If you encounter performance problems with virtio (RHBZ#509383)
-dnl then try '--with-drive-if=ide'.
-AC_ARG_WITH([drive-if],
-        [AS_HELP_STRING([--with-drive-if],
-          [set default driver (ide|scsi|virtio) @<:@default=virtio@:>@])],
-        [],
-        [with_drive_if=virtio])
-AC_DEFINE_UNQUOTED([DRIVE_IF],["$with_drive_if"],[Default drive interface.])
-
-dnl Set interface used by the network.  Normally you should
-dnl leave this at the default (virtio-net-pci) but you can use the
-dnl alternative (ne2k_pci) because of bugs in virtio networking
-dnl eg. https://bugzilla.redhat.com/show_bug.cgi?id=516022
-AC_ARG_WITH([net-if],
-        [AS_HELP_STRING([--with-net-if],
-          [set default net driver (virtio-net-pci|ne2k_pci) @<:@default=virtio-net-pci@:>@])],
-        [],
-        [with_net_if=virtio-net-pci])
-AC_DEFINE_UNQUOTED([NET_IF],["$with_net_if"],[Default network interface.])
 
 dnl Enable packet dumps when in verbose mode.  This generates lots
 dnl of debug info, only useful for people debugging the RPC mechanism.
@@ -723,20 +694,52 @@ AC_CHECK_LIB([magic],[magic_file],
         ],
         [AC_MSG_WARN([libmagic not found, some core features will be disabled])])
 
+dnl POSIX acl library (highly recommended)
+AC_CHECK_LIB([acl],[acl_from_text],
+    [AC_CHECK_HEADER([sys/acl.h],
+        [AC_SUBST([ACL_LIBS], [-lacl])
+         AC_DEFINE([HAVE_ACL], [1], [Define to 1 if the POSIX acl library is available.])
+        ], [])
+    ],
+    [AC_MSG_WARN([POSIX acl library not found])])
+
+dnl Linux capabilities library (libcap) (highly recommended)
+AC_CHECK_LIB([cap],[cap_from_text],
+    [AC_CHECK_HEADER([sys/capability.h],
+        [AC_SUBST([CAP_LIBS], [-lcap])
+         AC_DEFINE([HAVE_CAP], [1], [Define to 1 if the Linux capabilities library (libcap) is available.])
+        ], [])
+    ],
+    [AC_MSG_WARN([Linux capabilities library (libcap) not found])])
+
 dnl libvirt (highly recommended)
-PKG_CHECK_MODULES([LIBVIRT], [libvirt],
+AC_ARG_WITH([libvirt],
+    [AS_HELP_STRING([--without-libvirt],
+                    [disable libvirt support @<:@default=check@:>@])],
+    [],
+    [with_libvirt=check])
+AS_IF([test "$with_libvirt" != "no"],[
+    PKG_CHECK_MODULES([LIBVIRT], [libvirt],
         [AC_SUBST([LIBVIRT_CFLAGS])
          AC_SUBST([LIBVIRT_LIBS])
          AC_DEFINE([HAVE_LIBVIRT],[1],[libvirt found at compile time.])
         ],
         [AC_MSG_WARN([libvirt not found, some core features will be disabled])])
+])
 AM_CONDITIONAL([HAVE_LIBVIRT],[test "x$LIBVIRT_LIBS" != "x"])
+
+libvirt_ro_uri='qemu+unix:///system?socket=/var/run/libvirt/libvirt-sock-ro'
+AC_SUBST([libvirt_ro_uri])
 
 dnl libxml2 (highly recommended)
 PKG_CHECK_MODULES([LIBXML2], [libxml-2.0],
         [AC_SUBST([LIBXML2_CFLAGS])
          AC_SUBST([LIBXML2_LIBS])
          AC_DEFINE([HAVE_LIBXML2],[1],[libxml2 found at compile time.])
+         old_LIBS="$LIBS"
+         LIBS="$LIBS $LIBXML2_LIBS"
+         AC_CHECK_FUNCS([xmlBufferDetach])
+         LIBS="$old_LIBS"
         ],
         [AC_MSG_WARN([libxml2 not found, some core features will be disabled])])
 AM_CONDITIONAL([HAVE_LIBXML2],[test "x$LIBXML2_LIBS" != "x"])
@@ -782,6 +785,13 @@ AS_IF([test "x$enable_fuse" != "xno"],
         ])
 AM_CONDITIONAL([HAVE_FUSE],[test "x$enable_fuse" != "xno"])
 
+dnl Check for yajl JSON library (optional).
+PKG_CHECK_MODULES([YAJL], [yajl >= 2], [
+    AC_SUBST([YAJL_CFLAGS])
+    AC_SUBST([YAJL_LIBS])
+    AC_DEFINE([HAVE_YAJL],[1],[Define to 1 if you have yajl.])
+    ],[AC_MSG_WARN([yajl not found, some features will be disabled])])
+
 dnl Check for C++ (optional, we just use this to test the header works).
 AC_PROG_CXX
 
@@ -804,6 +814,38 @@ AS_IF([test "x$VALGRIND" != "xno"],[
         AC_MSG_RESULT([no])
         AC_SUBST([VALGRIND_NO_VGDB],[])
     fi
+
+    # Substitute the whole valgrind command.
+    VG='$(VALGRIND) $(VALGRIND_NO_VGDB) --log-file=$(abs_top_builddir)/valgrind.log --leak-check=full --error-exitcode=119 --suppressions=$(abs_top_srcdir)/valgrind-suppressions'
+    ],[
+    # No valgrind, so substitute VG with something that will break.
+    VG=VALGRIND_IS_NOT_INSTALLED
+])
+AC_SUBST([VG])
+AM_SUBST_NOTMAKE([VG])
+
+dnl Enable profiling?
+AC_ARG_ENABLE([code-profiling],
+    AS_HELP_STRING([--enable-code-profiling], [enable code profiling]),
+    [],
+    [enable_code_profiling=no])
+AS_IF([test "x$enable_code_profiling" != "xno"],[
+    GPROF_CFLAGS="-pg"
+    AC_SUBST([GPROF_CFLAGS])
+])
+
+dnl Enable code coverage?
+AC_ARG_ENABLE([code-coverage],
+    AS_HELP_STRING([--enable-code-coverage], [enable code coverage]),
+    [],
+    [enable_code_coverage=no])
+AS_IF([test "x$enable_code_coverage" != "xno"],[
+    GCOV_CFLAGS="-fprofile-arcs -ftest-coverage"
+    AC_SUBST([GCOV_CFLAGS])
+    dnl This is a hack to make OCaml programs work when they
+    dnl link to C code that is compiled with gcov flags.
+    OCAML_GCOV_LDFLAGS="-cclib -lgcov"
+    AC_SUBST([OCAML_GCOV_LDFLAGS])
 ])
 
 dnl Check for OCaml (optional, for OCaml bindings and OCaml tools).
@@ -1252,6 +1294,28 @@ if test "x$enable_erlang" != "xno"; then
 fi
 AM_CONDITIONAL([HAVE_ERLANG], [test "x$ERLANG" != "xno" && test "x$ERLC" != "xno"])
 
+dnl Lua
+LUA=no
+AC_ARG_ENABLE([lua],
+    AS_HELP_STRING([--disable-lua], [disable Lua language bindings]),
+        [],
+        [enable_lua=yes])
+AS_IF([test "x$enable_lua" != "xno"],[
+        LUA=
+        AC_CHECK_PROG([LUA],[lua],[lua],[no])
+        AC_CHECK_HEADER([lua.h],[have_lua_h=yes])
+        AC_CHECK_HEADER([lauxlib.h],[have_lauxlib_h=yes])
+        AC_CHECK_LIB([lua],[lua_checkstack],[have_lua_lib=yes])
+
+        AS_IF([test "x$LUA" != "xno"],[
+            AC_MSG_CHECKING([for Lua version])
+            LUA_VERSION=`$LUA -e 'print(_VERSION)' | awk '{print $2}'`
+            AC_MSG_RESULT([$LUA_VERSION])
+            AC_SUBST([LUA_VERSION])
+        ])
+])
+AM_CONDITIONAL([HAVE_LUA], [test "x$LUA" != "xno" && test "x$have_lua_h" = "xyes" && test "x$have_lauxlib_h" = "xyes" && test "x$have_lua_lib" = "xyes"])
+
 dnl Check for Perl modules needed by Perl virt tools (virt-df, etc.)
 AS_IF([test "x$PERL" != "xno"],
         [
@@ -1348,6 +1412,10 @@ AC_CONFIG_HEADERS([config.h])
 dnl http://www.mail-archive.com/automake@gnu.org/msg10204.html
 AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
+AC_CONFIG_FILES([inspector/test-xmllint.sh],
+                [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([pick-guests.pl],
+                [chmod +x,-w pick-guests.pl])
 AC_CONFIG_FILES([podwrapper.pl],
                 [chmod +x,-w podwrapper.pl])
 AC_CONFIG_FILES([run],
@@ -1376,6 +1444,8 @@ AC_CONFIG_FILES([Makefile
                  inspector/Makefile
                  java/Makefile
                  java/examples/Makefile
+                 lua/Makefile
+                 lua/examples/Makefile
                  ocaml/META
                  ocaml/Makefile
                  ocaml/examples/Makefile
@@ -1399,19 +1469,28 @@ AC_CONFIG_FILES([Makefile
                  src/libguestfs.pc
                  sysprep/Makefile
                  test-tool/Makefile
+                 tests/9p/Makefile
+                 tests/bigdirs/Makefile
                  tests/btrfs/Makefile
                  tests/c-api/Makefile
                  tests/charsets/Makefile
                  tests/data/Makefile
-                 tests/extra/Makefile
+                 tests/disks/Makefile
+                 tests/disk-labels/Makefile
                  tests/guests/Makefile
+                 tests/hotplug/Makefile
                  tests/luks/Makefile
                  tests/lvm/Makefile
                  tests/md/Makefile
+                 tests/mount-local/Makefile
                  tests/ntfsclone/Makefile
+                 tests/parallel/Makefile
                  tests/protocol/Makefile
                  tests/qemu/Makefile
                  tests/regressions/Makefile
+                 tests/rsync/Makefile
+                 tests/selinux/Makefile
+                 tests/tmpdirs/Makefile
                  tests/xml/Makefile
                  tools/Makefile])
 AC_OUTPUT
@@ -1451,6 +1530,8 @@ AS_ECHO_N(["PHP bindings ........................ "])
 if test "x$HAVE_PHP_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["Erlang bindings ..................... "])
 if test "x$HAVE_ERLANG_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+AS_ECHO_N(["Lua bindings ........................ "])
+if test "x$HAVE_LUA_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["gobject bindings .................... "])
 if test "x$HAVE_GOBJECT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["gobject introspection ............... "])
@@ -1464,4 +1545,6 @@ echo "http://www.redhat.com/mailman/listinfo/libguestfs"
 echo
 echo "Next you should type 'make' to build the package,"
 echo "then 'make check' to run the tests."
+echo
+echo "Or run 'make help' to list some common targets."
 echo "------------------------------------------------------------"

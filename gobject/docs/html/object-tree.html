@@ -6,14 +6,14 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
-<link rel="prev" href="GuestfsBtrfsFsck.html" title="GuestfsBtrfsFsck">
+<link rel="prev" href="GuestfsMktemp.html" title="GuestfsMktemp">
 <link rel="next" href="api-index-full.html" title="API Index">
 <meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="GuestfsBtrfsFsck.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="GuestfsMktemp.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td> </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
@@ -25,7 +25,7 @@
 <pre class="screen">
     GObject
         <a class="link" href="GuestfsAddDomain.html" title="GuestfsAddDomain">GuestfsAddDomain</a>
-        <a class="link" href="GuestfsAddDriveOpts.html" title="GuestfsAddDriveOpts">GuestfsAddDriveOpts</a>
+        <a class="link" href="GuestfsAddDrive.html" title="GuestfsAddDrive">GuestfsAddDrive</a>
         <a class="link" href="GuestfsBTRFSFilesystemResize.html" title="GuestfsBTRFSFilesystemResize">GuestfsBTRFSFilesystemResize</a>
         <a class="link" href="GuestfsBtrfsFsck.html" title="GuestfsBtrfsFsck">GuestfsBtrfsFsck</a>
         <a class="link" href="GuestfsCompressDeviceOut.html" title="GuestfsCompressDeviceOut">GuestfsCompressDeviceOut</a>
@@ -35,24 +35,44 @@
         <a class="link" href="GuestfsCopyFileToDevice.html" title="GuestfsCopyFileToDevice">GuestfsCopyFileToDevice</a>
         <a class="link" href="GuestfsCopyFileToFile.html" title="GuestfsCopyFileToFile">GuestfsCopyFileToFile</a>
         <a class="link" href="GuestfsE2fsck.html" title="GuestfsE2fsck">GuestfsE2fsck</a>
+        <a class="link" href="GuestfsFstrim.html" title="GuestfsFstrim">GuestfsFstrim</a>
+        <a class="link" href="GuestfsGrep.html" title="GuestfsGrep">GuestfsGrep</a>
+        <a class="link" href="GuestfsHivexOpen.html" title="GuestfsHivexOpen">GuestfsHivexOpen</a>
         <a class="link" href="GuestfsInspectGetIcon.html" title="GuestfsInspectGetIcon">GuestfsInspectGetIcon</a>
+        <a class="link" href="GuestfsInternalTest63Optargs.html" title="GuestfsInternalTest63Optargs">GuestfsInternalTest63Optargs</a>
+        <a class="link" href="GuestfsInternalTest.html" title="GuestfsInternalTest">GuestfsInternalTest</a>
+        <a class="link" href="GuestfsInternalTestOnlyOptargs.html" title="GuestfsInternalTestOnlyOptargs">GuestfsInternalTestOnlyOptargs</a>
         <a class="link" href="GuestfsMDCreate.html" title="GuestfsMDCreate">GuestfsMDCreate</a>
+        <a class="link" href="GuestfsMke2fs.html" title="GuestfsMke2fs">GuestfsMke2fs</a>
         <a class="link" href="GuestfsMkfsBtrfs.html" title="GuestfsMkfsBtrfs">GuestfsMkfsBtrfs</a>
-        <a class="link" href="GuestfsMkfsOpts.html" title="GuestfsMkfsOpts">GuestfsMkfsOpts</a>
+        <a class="link" href="GuestfsMkfs.html" title="GuestfsMkfs">GuestfsMkfs</a>
+        <a class="link" href="GuestfsMkswap.html" title="GuestfsMkswap">GuestfsMkswap</a>
+        <a class="link" href="GuestfsMktemp.html" title="GuestfsMktemp">GuestfsMktemp</a>
         <a class="link" href="GuestfsMount9P.html" title="GuestfsMount9P">GuestfsMount9P</a>
         <a class="link" href="GuestfsMountLocal.html" title="GuestfsMountLocal">GuestfsMountLocal</a>
         <a class="link" href="GuestfsNtfscloneOut.html" title="GuestfsNtfscloneOut">GuestfsNtfscloneOut</a>
         <a class="link" href="GuestfsNtfsfix.html" title="GuestfsNtfsfix">GuestfsNtfsfix</a>
         <a class="link" href="GuestfsNTFSResizeOpts.html" title="GuestfsNTFSResizeOpts">GuestfsNTFSResizeOpts</a>
-        <a class="link" href="GuestfsSession.html" title="GuestfsSession">GuestfsSession</a>
+        <a class="link" href="GuestfsRsync.html" title="GuestfsRsync">GuestfsRsync</a>
+        <a class="link" href="GuestfsRsyncIn.html" title="GuestfsRsyncIn">GuestfsRsyncIn</a>
+        <a class="link" href="GuestfsRsyncOut.html" title="GuestfsRsyncOut">GuestfsRsyncOut</a>
+        GuestfsSession
         <a class="link" href="GuestfsSetE2attrs.html" title="GuestfsSetE2attrs">GuestfsSetE2attrs</a>
-        <a class="link" href="GuestfsTest0.html" title="GuestfsTest0">GuestfsTest0</a>
+        <a class="link" href="GuestfsTarIn.html" title="GuestfsTarIn">GuestfsTarIn</a>
+        <a class="link" href="GuestfsTarOut.html" title="GuestfsTarOut">GuestfsTarOut</a>
         <a class="link" href="GuestfsTune2FS.html" title="GuestfsTune2FS">GuestfsTune2FS</a>
+        <a class="link" href="GuestfsUmount.html" title="GuestfsUmount">GuestfsUmount</a>
         <a class="link" href="GuestfsUmountLocal.html" title="GuestfsUmountLocal">GuestfsUmountLocal</a>
+        <a class="link" href="GuestfsXfsAdmin.html" title="GuestfsXfsAdmin">GuestfsXfsAdmin</a>
+        <a class="link" href="GuestfsXfsGrowfs.html" title="GuestfsXfsGrowfs">GuestfsXfsGrowfs</a>
+        <a class="link" href="GuestfsXfsRepair.html" title="GuestfsXfsRepair">GuestfsXfsRepair</a>
     GBoxed
+        <a class="link" href="GuestfsApplication2.html" title="GuestfsApplication2">GuestfsApplication2</a>
         <a class="link" href="GuestfsApplication.html" title="GuestfsApplication">GuestfsApplication</a>
         <a class="link" href="GuestfsBTRFSSubvolume.html" title="GuestfsBTRFSSubvolume">GuestfsBTRFSSubvolume</a>
         <a class="link" href="GuestfsDirent.html" title="GuestfsDirent">GuestfsDirent</a>
+        <a class="link" href="GuestfsHivexNode.html" title="GuestfsHivexNode">GuestfsHivexNode</a>
+        <a class="link" href="GuestfsHivexValue.html" title="GuestfsHivexValue">GuestfsHivexValue</a>
         <a class="link" href="GuestfsINotifyEvent.html" title="GuestfsINotifyEvent">GuestfsINotifyEvent</a>
         <a class="link" href="GuestfsIntBool.html" title="GuestfsIntBool">GuestfsIntBool</a>
         <a class="link" href="GuestfsISOInfo.html" title="GuestfsISOInfo">GuestfsISOInfo</a>
@@ -61,13 +81,15 @@
         <a class="link" href="GuestfsVG.html" title="GuestfsVG">GuestfsVG</a>
         <a class="link" href="GuestfsMDStat.html" title="GuestfsMDStat">GuestfsMDStat</a>
         <a class="link" href="GuestfsPartition.html" title="GuestfsPartition">GuestfsPartition</a>
-        <a class="link" href="GuestfsSession.html#GuestfsSessionEventParams">GuestfsSessionEventParams</a>
+        GuestfsSessionEventParams
         <a class="link" href="GuestfsStat.html" title="GuestfsStat">GuestfsStat</a>
         <a class="link" href="GuestfsStatVFS.html" title="GuestfsStatVFS">GuestfsStatVFS</a>
+        <a class="link" href="GuestfsUTSName.html" title="GuestfsUTSName">GuestfsUTSName</a>
         <a class="link" href="GuestfsVersion.html" title="GuestfsVersion">GuestfsVersion</a>
         <a class="link" href="GuestfsXAttr.html" title="GuestfsXAttr">GuestfsXAttr</a>
+        <a class="link" href="GuestfsXFSInfo.html" title="GuestfsXFSInfo">GuestfsXFSInfo</a>
     GEnum
-        <a class="link" href="GuestfsSession.html#GuestfsSessionEvent">GuestfsSessionEvent</a>
+        GuestfsSessionEvent
         <a class="link" href="GuestfsTristate.html" title="GuestfsTristate">GuestfsTristate</a>
 </pre>
 </div>

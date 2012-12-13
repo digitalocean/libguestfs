@@ -43,6 +43,7 @@ virt_format_CFLAGS = \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
 	$(LIBVIRT_CFLAGS)
 
@@ -68,14 +69,13 @@ stamp-virt-format.pod: virt-format.pod
 
 # Tests.
 
-random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-
-TESTS_ENVIRONMENT = \
-	MALLOC_PERTURB_=$(random_val) \
-	$(top_builddir)/run
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 if ENABLE_APPLIANCE
 TESTS = test-virt-format.sh
 endif ENABLE_APPLIANCE
+
+check-valgrind:
+	$(MAKE) VG="$(top_builddir)/run @VG@" check
 
 EXTRA_DIST += test-virt-format.sh

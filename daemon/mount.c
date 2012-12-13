@@ -29,6 +29,11 @@
 #include "daemon.h"
 #include "actions.h"
 
+#define MAX_ARGS 64
+
+GUESTFSD_EXT_CMD(str_mount, mount);
+GUESTFSD_EXT_CMD(str_umount, umount);
+
 /* You must mount something on "/" first before many operations.
  * Hence we have an internal function which can test if something is
  * mounted on *or under* the sysroot directory.  (It has to be *or
@@ -148,10 +153,10 @@ do_mount_vfs (const char *options, const char *vfstype,
 
   if (vfstype)
     r = command (NULL, &error,
-                 "mount", "-o", options, "-t", vfstype, device, mp, NULL);
+                 str_mount, "-o", options, "-t", vfstype, device, mp, NULL);
   else
     r = command (NULL, &error,
-                 "mount", "-o", options, device, mp, NULL);
+                 str_mount, "-o", options, device, mp, NULL);
   free (mp);
   if (r == -1) {
     reply_with_error ("%s on %s (options: '%s'): %s",
@@ -183,16 +188,17 @@ do_mount_options (const char *options, const char *device,
   return do_mount_vfs (options, NULL, device, mountpoint);
 }
 
-/* Again, use the external /bin/umount program, so that /etc/mtab
- * is kept updated.
- */
+/* Takes optional arguments, consult optargs_bitmask. */
 int
-do_umount (const char *pathordevice)
+do_umount (const char *pathordevice,
+           int force, int lazyunmount)
 {
   int r;
   char *err;
   char *buf;
   int is_dev;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
 
   is_dev = STREQLEN (pathordevice, "/dev/", 5);
   buf = is_dev ? strdup (pathordevice)
@@ -202,10 +208,25 @@ do_umount (const char *pathordevice)
     return -1;
   }
 
-  if (is_dev)
-    RESOLVE_DEVICE (buf, , { free (buf); return -1; });
+  if (!(optargs_bitmask & GUESTFS_UMOUNT_FORCE_BITMASK))
+    force = 0;
+  if (!(optargs_bitmask & GUESTFS_UMOUNT_LAZYUNMOUNT_BITMASK))
+    lazyunmount = 0;
 
-  r = command (NULL, &err, "umount", buf, NULL);
+  /* Use the external /bin/umount program, so that /etc/mtab is kept
+   * updated.
+   */
+  ADD_ARG (argv, i, str_umount);
+
+  if (force)
+    ADD_ARG (argv, i, "-f");
+  if (lazyunmount)
+    ADD_ARG (argv, i, "-l");
+
+  ADD_ARG (argv, i, buf);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (NULL, &err, argv);
   free (buf);
 
   if (r == -1) {
@@ -364,7 +385,7 @@ do_umount_all (void)
 
   /* Unmount them. */
   for (i = 0; i < mounts.size; ++i) {
-    r = command (NULL, &err, "umount", mounts.argv[i], NULL);
+    r = command (NULL, &err, str_umount, mounts.argv[i], NULL);
     if (r == -1) {
       reply_with_error ("umount: %s: %s", mounts.argv[i], err);
       free (err);
@@ -404,7 +425,7 @@ do_mount_loop (const char *file, const char *mountpoint)
     return -1;
   }
 
-  r = command (NULL, &error, "mount", "-o", "loop", buf, mp, NULL);
+  r = command (NULL, &error, str_mount, "-o", "loop", buf, mp, NULL);
   free (mp);
   free (buf);
   if (r == -1) {

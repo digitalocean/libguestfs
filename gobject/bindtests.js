@@ -1,6 +1,6 @@
 // libguestfs generated file
 // WARNING: THIS FILE IS GENERATED FROM:
-//   generator/generator_*.ml
+//   generator/ *.ml
 // ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 //
 // Copyright (C) 2009-2012 Red Hat Inc.
@@ -24,31 +24,39 @@ const Guestfs = imports.gi.Guestfs;
 var g = new Guestfs.Session();
 var o;
 
-o = new Guestfs.Test0({obool: true, oint: 1});
-g.test0("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
-o = new Guestfs.Test0({oint64: 1, ostring: "string"});
-g.test0("abc", null, [], false, 0, 0, "123", "456", "abc\0abc", o, null);
-o = new Guestfs.Test0({obool: false});
-g.test0("", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
-o = new Guestfs.Test0({});
-g.test0("", "", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({obool: true, oint: 1, oint64: 9223372036854775807});
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({oint64: 1, ostring: "string"});
+g.internal_test("abc", null, [], false, 0, 0, "123", "456", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({obool: false, oint64: -9223372036854775808});
+g.internal_test("", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({});
+g.internal_test("", "", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], false, 0, 0, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], false, 0, 0, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1","2"], false, 0, 0, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1","2"], false, 0, 0, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], true, 0, 0, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], true, 0, 0, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], false, -1, -1, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], false, -1, -1, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], false, -2, -2, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], false, -2, -2, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], false, 1, 1, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], false, 1, 1, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], false, 2, 2, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], false, 2, 2, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], false, 4095, 4095, "123", "456", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], false, 4095, 9223372036854775807, "123", "456", "abc\0abc", o, null);
 o = null;
-g.test0("abc", "def", ["1"], false, 0, 0, "", "", "abc\0abc", o, null);
+g.internal_test("abc", "def", ["1"], false, 0, -9223372036854775808, "", "", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({});
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({});
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({});
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
+o = new Guestfs.InternalTest({});
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", o, null);
 
 print("EOF");

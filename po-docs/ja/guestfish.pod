@@ -22,21 +22,17 @@ guestfish - libguestfs ファイルシステム対話式シェル
 
 =head1 警告
 
-Using guestfish in read/write mode on live virtual machines can be
-dangerous, potentially causing disk corruption.  Use the I<--ro> (read-only)
-option to use guestfish safely if the disk image or virtual machine might be
-live.
+guestfish
+を読み書きモードで動作中の仮想マシンにおいて使用することは、ディスク破損を引き起こす可能性があり、非常に危険です。ディスクイメージまたは仮想マシンが稼働中であるならば、安全に
+guestfish を使用するために I<--ro> (読み込み専用) オプションを使用してください。
 
 =head1 説明
 
-Guestfish is a shell and command-line tool for examining and modifying
-virtual machine filesystems.  It uses libguestfs and exposes all of the
-functionality of the guestfs API, see L<guestfs(3)>.
+guestfish は仮想マシンのファイルシステムを検査および変更するためのシェルおよびコマンドラインツールです。libguestfs
+を使用し、guestfs API の機能のすべてを利用します。L<guestfs(3)> を参照してください。
 
-Guestfish gives you structured access to the libguestfs API, from shell
-scripts or the command line or interactively.  If you want to rescue a
-broken virtual machine image, you should look at the L<virt-rescue(1)>
-command.
+guestfish はシェルスクリプトまたはコマンドラインから対話的に libguestfs API
+への構造的なアクセスを提供します。壊れた仮想マシンイメージを救出したいならば、 L<virt-rescue(1)> コマンドを参照してください。
 
 =head1 例
 
@@ -67,7 +63,7 @@ command.
 
 =head2 シェルスクリプトから
 
-Create a new C</etc/motd> file in a guest or disk image:
+仮想マシンまたはディスクイメージに新しい C</etc/motd> ファイルを作成します:
 
  guestfish <<_EOF_
  add disk.img
@@ -90,7 +86,7 @@ Create a new C</etc/motd> file in a guest or disk image:
  list-filesystems
  _EOF_
 
-=head2 On one command line
+=head2 コマンドライン 1 行において
 
 仮想マシンの C</etc/resolv.conf> を更新します:
 
@@ -107,8 +103,7 @@ C</boot/grub/grub.conf> を対話的に編集します:
 
 =head2 ディスクを自動的にマウントします
 
-Use the I<-i> option to automatically mount the disks from a virtual
-machine:
+仮想マシンからディスクを自動的にマウントするには I<-i> オプションを使用します:
 
  guestfish --ro -a disk.img -i cat /etc/group
 
@@ -128,14 +123,13 @@ ext2 フォーマット済みパーティションを含む 100MB ディスク�
  part-disk /dev/sda mbr
  mkfs ext2 /dev/sda1
 
-=head2 準備済みディスクを用いて起動します
+=head2 準備済みディスクを用いた起動
 
-An alternate way to create a 100MB disk called C<test1.img> containing a
-single ext2-formatted partition:
+一つの ext2 フォーマット済みパーティションを含む C<test1.img> という 100MB ディスクを作成するもう一つの方法です:
 
  guestfish -N fs
 
-To list what is available do:
+利用可能なものを一覧表示するには:
 
  guestfish -N help | less
 
@@ -248,7 +242,7 @@ C<disk.img> に対してロー形式（自動検知なし）を強制し、C<ano
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).  See also L</add-drive-opts>.
+with malicious guests (CVE-2010-3851).  See also L</add>.
 
 =item B<-i>
 
@@ -282,8 +276,8 @@ then using other commands to mount the filesystems that were found.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
+を開いているユーザーからパスフレーズを読み込もうとします。
 
 =item B<--listen>
 
@@ -323,12 +317,9 @@ and/or extended attributes if the filesystem can support them:
 
 Using this flag is equivalent to using the C<mount-options> command.
 
-=item B<-n>
+=item B<--network>
 
-=item B<--no-sync>
-
-Disable autosync.  This is enabled by default.  See the discussion of
-autosync in the L<guestfs(3)> manpage.
+Enable QEMU user networking in the guest.
 
 =item B<-N type>
 
@@ -340,6 +331,13 @@ Prepare a fresh disk image formatted as "type".  This is an alternative to
 the I<-a> option: whereas I<-a> adds an existing disk, I<-N> creates a
 preformatted disk with a filesystem and adds it.  See L</PREPARED DISK
 IMAGES> below.
+
+=item B<-n>
+
+=item B<--no-sync>
+
+Disable autosync.  This is enabled by default.  See the discussion of
+autosync in the L<guestfs(3)> manpage.
 
 =item B<--pipe-error>
 
@@ -573,11 +571,11 @@ In the current implementation C<\000> and C<\x00> cannot be used in strings.
 Some commands take optional arguments.  These arguments appear in this
 documentation as C<[argname:..]>.  You can use them as in these examples:
 
- add-drive-opts filename
+ add filename
 
- add-drive-opts filename readonly:true
+ add filename readonly:true
 
- add-drive-opts filename format:qcow2 readonly:false
+ add filename format:qcow2 readonly:false
 
 Each optional argument can appear at most once.  All optional arguments must
 appear after the required ones.
@@ -1062,6 +1060,75 @@ Progress bars are enabled by default when guestfish is used interactively.
 You can enable them even for non-interactive modes using I<--progress-bars>,
 and you can disable them completely using I<--no-progress-bars>.
 
+=head1 PROMPT
+
+You can change or add colours to the default prompt (C<E<gt>E<lt>fsE<gt>>)
+by setting the C<GUESTFISH_PS1> environment variable.  A simple prompt can
+be set by setting this to an alternate string:
+
+ $ GUESTFISH_PS1='(type a command) '
+ $ export GUESTFISH_PS1
+ $ guestfish
+ [...]
+ (type a command) ▂
+
+You can also use special escape sequences, as described in the table below:
+
+=over 4
+
+=item \\
+
+文字としてのバックスラッシュ文字。
+
+=item \[
+
+=item \]
+
+Place non-printing characters (eg. terminal control codes for colours)
+between C<\[...\]>.  What this does it to tell the L<readline(3)> library
+that it should treat this subsequence as zero-width, so that command-line
+redisplay, editing etc works.
+
+=item \a
+
+A bell character.
+
+=item \e
+
+An ASCII ESC (escape) character.
+
+=item \n
+
+A newline.
+
+=item \r
+
+A carriage return.
+
+=item \NNN
+
+The ASCII character whose code is the octal value NNN.
+
+=item \xNN
+
+The ASCII character whose code is the hex value NN.
+
+=back
+
+=head2 EXAMPLES OF PROMPTS
+
+Note these these require a terminal that supports ANSI escape codes.
+
+ GUESTFISH_PS1='\[\e[1;30m\]><fs>\[\e[0;30m\] '
+
+A bold black version of the ordinary prompt.
+
+=head1 WINDOWS 8
+
+Windows 8 "fast startup" can prevent guestfish from mounting NTFS
+partitions.  See L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST
+STARTUP>.
+
 =head1 guestfish コマンド
 
 The commands in this section are guestfish convenience commands, in other
@@ -1076,7 +1143,9 @@ Without any parameter, this provides general help.
 
 With a C<cmd> parameter, this displays detailed help for that command.
 
-=head2 quit | exit
+=head2 exit
+
+=head2 quit
 
 これは guestfish を終了します。C<^D> キーを使用することもできます。
 
@@ -1118,6 +1187,10 @@ If not set, it uses L<display(1)>.
 Used with the I<--remote> option to specify the remote guestfish process to
 control.  See section L</REMOTE CONTROL GUESTFISH OVER A SOCKET>.
 
+=item GUESTFISH_PS1
+
+Set the command prompt.  See L</PROMPT>.
+
 =item HEXEDITOR
 
 The L</hexedit> command uses C<$HEXEDITOR> as the external hex editor.  If
@@ -1130,6 +1203,22 @@ GNU readline のサポート付きでコンパイルしていると、ホーム�
 =item LIBGUESTFS_APPEND
 
 仮想マシンのカーネルに追加のオプションを渡します。
+
+=item LIBGUESTFS_ATTACH_METHOD
+
+Choose the default way to create the appliance.  See
+L<guestfs(3)/guestfs_set_attach_method>.
+
+=item LIBGUESTFS_CACHEDIR
+
+The location where libguestfs will cache its appliance, when using a
+supermin appliance.  The appliance is cached and shared between all handles
+which have the same effective user ID.
+
+If C<LIBGUESTFS_CACHEDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR>
+is not set, then C</var/tmp> is used.
+
+See also L</LIBGUESTFS_TMPDIR>, L</set-cachedir>.
 
 =item LIBGUESTFS_DEBUG
 
@@ -1152,6 +1241,16 @@ the discussion of paths in L<guestfs(3)>.
 Set the default qemu binary that libguestfs uses.  If not set, then the qemu
 which was found at compile time by the configure script is used.
 
+=item LIBGUESTFS_TMPDIR
+
+The location where libguestfs will store temporary files used by each
+handle.
+
+If C<LIBGUESTFS_TMPDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR> is
+not set, then C</tmp> is used.
+
+See also L</LIBGUESTFS_CACHEDIR>, L</set-tmpdir>.
+
 =item LIBGUESTFS_TRACE
 
 コマンドトレースを有効にするには C<LIBGUESTFS_TRACE=1> を設定してください。
@@ -1163,13 +1262,7 @@ C<more>.
 
 =item TMPDIR
 
-一時ディレクトリーの場所です。初期値は C</tmp> です。初期値が C</var/tmp> であるキャッシュされた supermin
-アプライアンスは除きます。
-
-libguestfs が supermin
-アプライアンスを使用するようコンパイルされていると、本当のアプライアンスがこのディレクトリーにキャッシュされ、同じ EUID
-に属するすべてのハンドル間で共有されます。 C</var/tmp> が十分に大きくない場合に使用する他のディレクトリーを設定するために
-C<$TMPDIR> を使用できます。
+See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 
 =back
 

@@ -39,16 +39,45 @@ CLEANFILES = \
 
 # Filenames sysprep_operation_<name>.ml in alphabetical order.
 operations = \
-	bash_history blkid_tab ca_certificates cron_spool \
-	dhcp_client_state dhcp_server_state dovecot_data flag_reconfiguration \
-	hostname kerberos_data logfiles mail_spool net_hwaddr \
-	package_manager_cache pam_data random_seed \
-	rhn_systemid samba_db_log script smolt_uuid ssh_hostkeys \
-	ssh_userdir sssd_db_log udev_persistent_net user_account \
+	abrt_data \
+	bash_history \
+	blkid_tab \
+	ca_certificates \
+	crash_data \
+	cron_spool \
+	dhcp_client_state \
+	dhcp_server_state \
+	dovecot_data \
+	flag_reconfiguration \
+	firstboot \
+	hostname \
+	kerberos_data \
+	lvm_uuids \
+	logfiles \
+	machine_id \
+	mail_spool \
+	net_hostname \
+	net_hwaddr \
+	pacct_log \
+	package_manager_cache \
+	pam_data \
+	puppet_data_log \
+	random_seed \
+	rhn_systemid \
+	samba_db_log \
+	script \
+	smolt_uuid \
+	ssh_hostkeys \
+	ssh_userdir \
+	sssd_db_log \
+	udev_persistent_net \
+	user_account \
 	utmp yum_uuid
 
 # Alphabetical order.
 SOURCES = \
+	firstboot.ml \
+	firstboot.mli \
 	main.ml \
 	sysprep_gettext.ml \
 	sysprep_operation.ml \
@@ -63,6 +92,7 @@ if HAVE_OCAML
 OBJECTS = \
 	sysprep_gettext.cmx \
 	utils.cmx \
+	firstboot.cmx \
 	sysprep_operation.cmx \
 	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
 	main.cmx
@@ -82,7 +112,10 @@ OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 virt-sysprep: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
+	  mlguestfs.cmxa -linkpkg $^ \
+	  -cclib -lncurses \
+	  $(OCAML_GCOV_LDFLAGS) \
+	  -o $@
 
 .mli.cmi:
 	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
@@ -119,19 +152,24 @@ sysprep-operations.pod: virt-sysprep
 
 # Tests.
 
-random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-
 TESTS_ENVIRONMENT = \
-	MALLOC_PERTURB_=$(random_val) \
 	abs_builddir=$(abs_builddir) \
 	abs_srcdir=$(abs_srcdir) \
-	$(top_builddir)/run
+	$(top_builddir)/run --test
 
 if ENABLE_APPLIANCE
 TESTS = \
 	test-virt-sysprep.sh \
 	test-virt-sysprep-script.sh
 endif ENABLE_APPLIANCE
+
+check-valgrind:
+	$(MAKE) TESTS="test-virt-sysprep.sh" VG="$(top_builddir)/run @VG@" check
+
+check-valgrind-local-guests:
+	for g in $(GUESTS); do \
+	  $(top_builddir)/run --test @VG@ ./virt-sysprep -n -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
+	done
 
 # Dependencies.
 depend: .depend

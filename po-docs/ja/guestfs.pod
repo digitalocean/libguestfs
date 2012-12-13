@@ -84,10 +84,10 @@ libguestfs を使用しているすべてのプログラムの一般的な構造
   */
  guestfs_touch (g, "/hello");
  
- /* Synchronize the disk.  This is the opposite of guestfs_launch. */
+ /* ディスクを同期します。これは guestfs_launch の反対です。 */
  guestfs_shutdown (g);
  
- /* Close and free the handle 'g'. */
+ /* ハンドル 'g' を閉じて開放します。 */
  guestfs_close (g);
 
 上のコードは何もエラーチェックを含めていません。実際のコードにおいては、エラーに対して返り値を注意深く確認すべきです。一般的に、整数を返すすべての関数はエラーのときに
@@ -116,8 +116,8 @@ L<guestfs-examples(3)> を参照してください。
                          GUESTFS_ADD_DRIVE_OPTS_READONLY, 1,
                          -1);
 
-または、古い関数 L</guestfs_add_drive_ro> を呼び出すことによりできます。どちらの場合も libguestfs
-はファイルを変更できません。
+or by calling the older function L</guestfs_add_drive_ro>.  In either case
+libguestfs won't modify the file.  (See also L</DISK IMAGE FORMATS> below).
 
 ディスクイメージが使用中ならば、たとえば仮想マシンにより使用されているならば、特に注意してください。読み書き可能で追加することにより、ほぼ確実にディスク破損を引き起こします。一方、読み込み専用で追加することは安全です。
 
@@ -128,14 +128,18 @@ C</dev/sda> （最初に追加したもの）、C</dev/sdb> （2 番目に追加
 が呼び出されると、これ以上イメージを追加することはできません。それらを追加するためには、デバイス名の一覧を取得するために
 L</guestfs_list_devices> を呼び出せます。以下の L</ブロックデバイス命名法> を参照してください。
 
+There are slightly different rules when hotplugging disks (in libguestfs
+E<ge> 1.20).  See L</HOTPLUGGING> below.
+
 =head2 マウント
 
-ファイルシステムを含むディスクイメージにおいて、ファイルを読み込みまたは書き込みできる、ディレクトリーを作成できるなどの前に、
-L</guestfs_mount_options> または L</guestfs_mount_ro>
-を使用してそれらのファイルシステムをマウントする必要があります。ディスクイメージが（たとえば）そのパーティションにおいてファイルシステムを持つ 1
-つのパーティションを含むことをすでにわかっているならば、それを直接マウントできます:
+Before you can read or write files, create directories and so on in a disk
+image that contains filesystems, you have to mount those filesystems using
+L</guestfs_mount> or L</guestfs_mount_ro>.  If you already know that a disk
+image contains (for example) one partition with a filesystem on that
+partition, then you can mount it directly:
 
- guestfs_mount_options (g, "", "/dev/sda1", "/");
+ guestfs_mount (g, "/dev/sda1", "/");
 
 ここで C</dev/sda1> は文字どおり追加した最初のディスクイメージ (C</dev/sda>) の最初のパーティション (C<1>)
 を意味します。ディスクが Linux LVM2 論理ボリュームを含んでいると、代わりにそれら (例: C</dev/VG/LV>)
@@ -213,14 +217,15 @@ API にアクセスできます。物理ボリューム、ボリュームグル�
 
 =head2 ダウンロード
 
-小さなテキストのみのファイルをダウンロードするには L</guestfs_cat> を使用します。この呼び出しは 2 MB 未満かつ ASCII
-NULL (C<\0>) 文字を含まないファイルに制限されます。しかしながら、API は非常に簡単に使用できます。
+Use L</guestfs_cat> to download small, text only files.  This call cannot
+handle files contain any ASCII NUL (C<\0>) characters.  However the API is
+very simple to use.
 
-L</guestfs_read_file> は、（ポインター、容量）の組を返すので、任意の 8
-ビットデータを含むファイルを読み込むために使用できます。しかしながら、今のところ 2 MB 未満の「小さな」ファイルに制限されています。
+L</guestfs_read_file> can be used to read files which contain arbitrary 8
+bit data, since it returns a (pointer, size) pair.
 
-L</guestfs_download> 内容やファイルサイズに制限はありません (例えば、4 GB 以上のファイルでも可能)
-任意のファイルをダウンロードするために使用することができます。
+L</guestfs_download> can be used to download any file, with no limits on
+content or size.
 
 複数のファイルをダウンロードするには L</guestfs_tar_out> および L</guestfs_tgz_out> を参照してください。
 
@@ -233,8 +238,8 @@ L</guestfs_download> 内容やファイルサイズに制限はありません (
 (すべてのブロックを割り当て済み) を使用します。テストファイルを作成するためのさまざまな他の関数があります。たとえば、
 L</guestfs_fill> や L</guestfs_fill_pattern> があります。
 
-単一のファイルをアップロードするには、L</guestfs_upload> を使用します。この呼び出しは、ファイルの内容や容量（4 GB
-より大きいファイルさえ）における制限がありません。
+To upload a single file, use L</guestfs_upload>.  This call has no limits on
+file content or size.
 
 複数のファイルをアップロードするには、L</guestfs_tar_in> および L</guestfs_tgz_in> を参照してください。
 
@@ -529,6 +534,39 @@ Libguestfs on top of FUSE performs quite poorly.  For best performance do
 not use it.  Use ordinary libguestfs filesystem calls, upload, download
 etc. instead.
 
+=head2 HOTPLUGGING
+
+In libguestfs E<ge> 1.20, you may add drives and remove after calling
+L</guestfs_launch>.  There are some restrictions, see below.  This is called
+I<hotplugging>.
+
+Only a subset of the attach-method backends support hotplugging (currently
+only the libvirt attach-method has support).  It also requires that you use
+libvirt E<ge> 0.10.3 and qemu E<ge> 1.2.
+
+To hot-add a disk, simply call L</guestfs_add_drive_opts> after
+L</guestfs_launch>.  It is mandatory to specify the C<label> parameter so
+that the newly added disk has a predictable name.  For example:
+
+ if (guestfs_launch (g) == -1)
+   error ("launch failed");
+ 
+ if (guestfs_add_drive_opts (g, filename,
+                             GUESTFS_ADD_DRIVE_OPTS_LABEL, "newdisk",
+                             -1) == -1)
+   error ("hot-add of disk failed");
+ 
+ if (guestfs_part_disk ("/dev/disk/guestfs/newdisk", "mbr") == -1)
+   error ("partitioning of hot-added disk failed");
+
+To hot-remove a disk, call L</guestfs_remove_drive>.  You can call this
+before or after L</guestfs_launch>.  You can only remove disks that were
+previously added with a label.
+
+Backends that support hotplugging do not require that you add E<ge> 1 disk
+before calling launch.  When hotplugging is supported you don't need to add
+any disks.
+
 =head2 INSPECTION
 
 Libguestfs has APIs for inspecting an unknown disk image to find out if it
@@ -565,8 +603,8 @@ hash table like this example:
  /     => /dev/vg_guest/lv_root
  /usr  => /dev/vg_guest/lv_usr
 
-The caller can then make calls to L</guestfs_mount_options> to mount the
-filesystems as suggested.
+The caller can then make calls to L</guestfs_mount> to mount the filesystems
+as suggested.
 
 Be careful to mount filesystems in the right order (eg. C</> before
 C</usr>).  Sorting the keys of the hash by length, shortest first, should
@@ -579,7 +617,14 @@ currently cannot detect.
 暗号化ディスクは検査の前に開く必要があります。詳細はL</暗号化ディスク>を参照してください。L</guestfs_inspect_os>
 関数はすべての暗号化デバイスを単に無視します。
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</add_drive_opts> を使用してください。
+A note on the implementation: The call L</guestfs_inspect_os> performs
+inspection and caches the results in the guest handle.  Subsequent calls to
+C<guestfs_inspect_get_*> return this cached information, but I<do not>
+re-read the disks.  If you change the content of the guest disks, you can
+redo inspection by calling L</guestfs_inspect_os> again.
+(L</guestfs_inspect_list_applications2> works a little differently from the
+other calls and does read the disks.  See documentation for that function
+for details).
 
 =head3 インストールディスクの検査方法
 
@@ -644,7 +689,16 @@ filenames, keep the files in a tarball.
 
 =head3 Windows レジストリのアクセス方法
 
-I<この関数は推奨されません。> 新しいコードでは、代わりに L</mkfs_opts> を使用してください。
+Libguestfs also provides some help for decoding Windows Registry "hive"
+files, through a separate C library called L<hivex(3)>.
+
+Before libguestfs 1.19.35 you had to download the hive file, operate on it
+locally using hivex, and upload it again.  Since this version, we have
+included the major hivex APIs directly in the libguestfs API (see
+L</guestfs_hivex_open>).  This means that if you have opened a Windows
+guest, you can read and write the registry directly.
+
+L<virt-win-reg(1)> 参照。
 
 =head3 NTFS-3G ファイルシステムにおけるシンボリックリンク
 
@@ -671,6 +725,44 @@ There are other useful extended attributes that can be read from ntfs-3g
 filesystems (using L</guestfs_getxattr>).  See:
 
 L<http://www.tuxera.com/community/ntfs-3g-advanced/extended-attributes/>
+
+=head3 WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP
+
+Windows guests which have been hibernated (instead of fully shut down)
+cannot be mounted.  This is a limitation of ntfs-3g.  You will see an error
+like this:
+
+ The disk contains an unclean file system (0, 0).
+ Metadata kept in Windows cache, refused to mount.
+ Failed to mount '/dev/sda2': Operation not permitted
+ The NTFS partition is in an unsafe state. Please resume
+ and shutdown Windows fully (no hibernation or fast
+ restarting), or mount the volume read-only with the
+ 'ro' mount option.
+
+In Windows 8, the shutdown button does not shut down the guest at all.
+Instead it usually hibernates the guest.  This is known as "fast startup".
+
+Some suggested workarounds are:
+
+=over 4
+
+=item *
+
+Mount read-only (eg. L</guestfs_mount_ro>).
+
+=item *
+
+On Windows 8, turn off fast startup.  It is in the Control Panel → Power
+Options → Choose what the power buttons do → Change settings that are
+currently unavailable → Turn on fast startup.
+
+=item *
+
+On Windows 7 and earlier, shut the guest off properly instead of hibernating
+it.
+
+=back
 
 =head2 RESIZE2FS ERRORS
 
@@ -745,6 +837,10 @@ looking for help to complete this binding.
 
 Full documentation is contained in the Javadoc which is distributed with
 libguestfs.  For examples, see L<guestfs-java(3)>.
+
+=item B<Lua>
+
+See L<guestfs-lua(3)>.
 
 =item B<OCaml>
 
@@ -821,8 +917,7 @@ If you use L</guestfs_mount>, then C<-o sync,noatime> are added implicitly.
 However C<-o sync> does not add any reliability benefit, but does have a
 very large performance impact.
 
-The work around is to use L</guestfs_mount_options> and set the mount
-options that you actually want to use.
+回避策は L</guestfs_mount_options> を使用し、実際に使用したいマウントオプションを設定することです。
 
 =item 初期値は読み込み専用です。
 
@@ -997,7 +1092,8 @@ connects to the C<guestfsd> daemon in L</guestfs_launch> (read
 L</ARCHITECTURE> for some background).
 
 The normal attach method is C<appliance>, where a small appliance is created
-containing the daemon, and then the library connects to this.
+containing the daemon, and then the library connects to this.  C<libvirt> or
+C<libvirt:I<URI>> are alternatives that use libvirt to start the appliance.
 
 Setting attach method to C<unix:I<path>> (where I<path> is the path of a
 Unix domain socket) causes L</guestfs_launch> to connect to an existing
@@ -1069,7 +1165,26 @@ device parameter C</dev/sda2> is translated to C</dev/hda2> transparently.
 
 Note that this I<only> applies to parameters.  The L</guestfs_list_devices>,
 L</guestfs_list_partitions> and similar calls return the true names of the
-devices and partitions as known to the appliance.
+devices and partitions as known to the appliance, but see
+L</guestfs_canonical_device_name>.
+
+=head3 ディスクラベル
+
+In libguestfs E<ge> 1.20, you can give a label to a disk when you add it,
+using the optional C<label> parameter to L</guestfs_add_drive_opts>.  (Note
+that disk labels are different from and not related to filesystem labels).
+
+Not all versions of libguestfs support setting a disk label, and when it is
+supported, it is limited to 20 ASCII characters C<[a-zA-Z]>.
+
+When you add a disk with a label, it can either be addressed using
+C</dev/sd*>, or using C</dev/disk/guestfs/I<label>>.  Partitions on the disk
+can be addressed using C</dev/disk/guestfs/I<label>I<partnum>>.
+
+Listing devices (L</guestfs_list_devices>) and partitions
+(L</guestfs_list_partitions>) returns the raw block device name.  However
+you can use L</guestfs_list_disk_labels> to map disk labels to raw block
+device and partition names.
 
 =head3 ALGORITHM FOR BLOCK DEVICE NAME TRANSLATION
 
@@ -1181,7 +1296,7 @@ If you want to use libguestfs APIs that don't refer to disks, since
 libguestfs requires that at least one disk is added, you should add a null
 disk.
 
-For example, to test if a feature is available, use code like this:
+たとえば、機能が利用可能であるかを確認するために、このようなコードを使用します:
 
  guestfs_h *g;
  char **groups = [ "btrfs", NULL ];
@@ -1197,6 +1312,87 @@ For example, to test if a feature is available, use code like this:
  guestfs_close (g);
 
 =back
+
+=head2 DISK IMAGE FORMATS
+
+Virtual disks come in a variety of formats.  Some common formats are listed
+below.
+
+Note that libguestfs itself is not responsible for handling the disk format:
+this is done using L<qemu(1)>.  If support for a particular format is
+missing or broken, this has to be fixed in qemu.
+
+=head3 COMMON VIRTUAL DISK IMAGE FORMATS
+
+=over 4
+
+=item I<raw>
+
+Raw format is simply a dump of the sequential bytes of the virtual hard
+disk.  There is no header, container, compression or processing of any sort.
+
+Since raw format requires no translation to read or write, it is both fast
+and very well supported by qemu and all other hypervisors.  You can consider
+it to be a universal format that any hypervisor can access.
+
+Raw format files are not compressed and so take up the full space of the
+original disk image even when they are empty.  A variation (on Linux/Unix at
+least) is to not store ranges of all-zero bytes by storing the file as a
+sparse file.  This "variant format" is sometimes called I<raw sparse>.  Many
+utilities, including L<virt-sparsify(1)>, can make raw disk images sparse.
+
+=item I<qcow2>
+
+Qcow2 is the native disk image format used by qemu.  Internally it uses a
+two-level directory structure so that only blocks containing data are stored
+in the file.  It also has many other features such as compression, snapshots
+and backing files.
+
+There are at least two distinct variants of this format, although qemu (and
+hence libguestfs) handles both transparently to the user.
+
+=item I<vmdk>
+
+VMDK is VMware's native disk image format.  There are many variations.
+Modern qemu (hence libguestfs) supports most variations, but you should be
+aware that older versions of qemu had some very bad data-corrupting bugs in
+this area.
+
+Note that VMware ESX exposes files with the name C<guest-flat.vmdk>.  These
+are not VMDK.  They are raw format files which happen to have a C<.vmdk>
+extension.
+
+=item I<vdi>
+
+VDI は VirtualBox のネイティブなディスクイメージ形式です。QEMU (つまり libguestfs)
+は全体的にこれをよくサポートしています。
+
+=item I<vpc>
+
+=item I<vhd>
+
+VPC (旧) と VHD (新) は Microsoft (および、以前の Connectix) Virtual PC および Hyper-V
+のネイティブなディスクイメージ形式です。
+
+=item 推奨されない形式
+
+The following formats are obsolete and should not be used: I<qcow> (aka
+I<qcow1>), I<cow>, I<bochs>.
+
+=back
+
+=head3 DETECTING THE FORMAT OF A DISK IMAGE
+
+Firstly note there is a security issue with auto-detecting the format of a
+disk image.  It may or may not apply in your use case.  Read
+L</CVE-2010-3851> below.
+
+Libguestfs offers an API to get the format of a disk image
+(L</guestfs_disk_format>, and it is safest to use this.
+
+I<Don't> be tempted to try parsing the text / human-readable output of
+C<qemu-img> since it cannot be parsed reliably and securely.  Also do not
+use the C<file> command since the output of that changes over time.
 
 =head1 セキュリティ
 
@@ -1342,7 +1538,7 @@ COMMANDS>).
 The way to avoid this is to specify the expected disk format when adding
 disks (the optional C<format> option to L</guestfs_add_drive_opts>).  You
 should always do this if the disk is raw format, and it's a good idea for
-other cases too.
+other cases too.  (See also L</DISK IMAGE FORMATS>).
 
 For disks added from libvirt using calls like L</guestfs_add_domain>, the
 format is fetched from libvirt and passed through.
@@ -1355,8 +1551,8 @@ appropriate.
 =head2 guestfs_h *
 
 C<guestfs_h> is the opaque type representing a connection handle.  Create a
-handle by calling L</guestfs_create>.  Call L</guestfs_close> to free the
-handle and release all resources used.
+handle by calling L</guestfs_create> or L</guestfs_create_flags>.  Call
+L</guestfs_close> to free the handle and release all resources used.
 
 For information on using multiple handles and threads, see the section
 L</MULTIPLE HANDLES AND MULTIPLE THREADS> above.
@@ -1379,6 +1575,69 @@ least once.
 You may also want to configure error handling for the handle.  See the
 L</ERROR HANDLING> section below.
 
+=head2 guestfs_create_flags
+
+ guestfs_h *guestfs_create_flags (unsigned flags [, ...]);
+
+Create a connection handle, supplying extra flags and extra arguments to
+control how the handle is created.
+
+On success this returns a non-NULL pointer to a handle.  On error it returns
+NULL.
+
+L</guestfs_create> is equivalent to calling C<guestfs_create_flags(0)>.
+
+The following flags may be logically ORed together.  (Currently no extra
+arguments are used).
+
+=over 4
+
+=item C<GUESTFS_CREATE_NO_ENVIRONMENT>
+
+Don't parse any environment variables (such as C<LIBGUESTFS_DEBUG> etc).
+
+You can call L</guestfs_parse_environment> or
+L</guestfs_parse_environment_list> afterwards to parse environment
+variables.  Alternately, I<don't> call these functions if you want the
+handle to be unaffected by environment variables.  See the example below.
+
+The default (if this flag is not given) is to implicitly call
+L</guestfs_parse_environment>.
+
+=item C<GUESTFS_CREATE_NO_CLOSE_ON_EXIT>
+
+Don't try to close the handle in an L<atexit(3)> handler if the program
+exits without explicitly closing the handle.
+
+The default (if this flag is not given) is to install such an atexit
+handler.
+
+=back
+
+=head3 USING C<GUESTFS_CREATE_NO_ENVIRONMENT>
+
+You might use C<GUESTFS_CREATE_NO_ENVIRONMENT> and an explicit call to
+L</guestfs_parse_environment> like this:
+
+ guestfs_h *g;
+ int r;
+ 
+ g = guestfs_create_flags (GUESTFS_CREATE_NO_ENVIRONMENT);
+ if (!g) {
+   perror ("guestfs_create_flags");
+   exit (EXIT_FAILURE);
+ }
+ r = guestfs_parse_environment (g);
+ if (r == -1)
+   exit (EXIT_FAILURE);
+
+Or to create a handle which is unaffected by environment variables, omit the
+call to C<guestfs_parse_environment> from the above code.
+
+The above code has another advantage which is that any errors from parsing
+the environment are passed through the error handler, whereas
+C<guestfs_create> prints errors on stderr and ignores them.
+
 =head2 guestfs_close
 
  void guestfs_close (guestfs_h *g);
@@ -1386,28 +1645,28 @@ L</ERROR HANDLING> section below.
 This closes the connection handle and frees up all resources used.  If a
 close callback was set on the handle, then it is called.
 
-The correct way to close the handle is:
+ハンドルを閉じる正しい方法は次のとおりです:
 
  if (guestfs_shutdown (g) == -1) {
-   /* handle write errors here */
+   /* ここで書き込みエラーを処理する */
  }
  guestfs_close (g);
 
-L</guestfs_shutdown> is only needed if B<all> of the following are true:
+L</guestfs_shutdown> は以下の B<すべて> が成り立つ場合のみ必要です:
 
 =over 4
 
 =item 1
 
-one or more disks were added in read-write mode, I<and>
+一つ以上のディスクを読み書きモードで追加した、I<かつ>
 
 =item 2
 
-guestfs_launch was called, I<and>
+guestfs_launch が呼び出された、I<かつ>
 
 =item 3
 
-you made some changes, I<and>
+何か変更を実施した、I<かつ>
 
 =item 4
 
@@ -1464,9 +1723,10 @@ errors into exceptions using code similar to this:
 
 L</guestfs_create> returns C<NULL> if the handle cannot be created, and
 because there is no handle if this happens there is no way to get additional
-error information.  However L</guestfs_create> is supposed to be a
-lightweight operation which can only fail because of insufficient memory (it
-returns NULL in this case).
+error information.  Since libguestfs E<ge> 1.20, you can use
+L</guestfs_create_flags> to properly deal with errors during handle
+creation, although the vast majority of programs can continue to use
+L</guestfs_create> and not worry about this situation.
 
 Out of memory errors are handled differently.  The default action is to call
 L<abort(3)>.  If this is undesirable, then you can set a handler using
@@ -1556,6 +1816,31 @@ C<cb> を C<NULL> に設定すると、 I<no> ハンドラーが呼び出され�
 
 現在のエラーハンドラのコールバックを返します。
 
+=head2 guestfs_push_error_handler
+
+ void guestfs_push_error_handler (guestfs_h *g,
+                                  guestfs_error_handler_cb cb,
+                                  void *opaque);
+
+This is the same as L</guestfs_set_error_handler>, except that the old error
+handler is stashed away in a stack inside the handle.  You can restore the
+previous error handler by calling L</guestfs_pop_error_handler>.
+
+Use the following code to temporarily disable errors around a function:
+
+ guestfs_push_error_handler (g, NULL, NULL);
+ guestfs_mkdir (g, "/foo"); /* We don't care if this fails. */
+ guestfs_pop_error_handler (g);
+
+=head2 guestfs_pop_error_handler
+
+ void guestfs_pop_error_handler (guestfs_h *g);
+
+Restore the previous error handler (see L</guestfs_push_error_handler>).
+
+If you pop the stack too many times, then the default error handler is
+restored.
+
 =head2 guestfs_set_out_of_memory_handler
 
  typedef void (*guestfs_abort_cb) (void);
@@ -1589,6 +1874,16 @@ __STRUCTS__
 I<この関数は推奨されません。> 新しいコードでは、代わりに L</part_add> を使用してください。
 
 __AVAILABILITY__
+
+=head2 利用可能なファイルシステム
+
+The L</guestfs_filesystem_available> call tests whether a filesystem type is
+supported by the appliance kernel.
+
+This is mainly useful as a negative test.  If this returns true, it doesn't
+mean that a particular filesystem can be mounted, since filesystems can fail
+for other reasons such as it being a later version of the filesystem, or
+having incompatible features.
 
 =head2 guestfish がサポートするコマンド
 
@@ -1917,6 +2212,15 @@ event.
 
 If no callback is registered: the event is ignored.
 
+=item GUESTFS_EVENT_LIBVIRT_AUTH (payload type: libvirt URI)
+
+For any API function that opens a libvirt connection, this event may be
+generated to indicate that libvirt demands authentication information.  See
+L</LIBVIRT AUTHENTICATION> below.
+
+If no callback is registered: C<virConnectAuthPtrDefault> is used (suitable
+for command-line programs only).
+
 =back
 
 =head2 EVENT API
@@ -2033,6 +2337,128 @@ example, messages are directed to syslog:
      syslog (priority, "event 0x%lx: %s", event, buf);
  }
 
+=head2 LIBVIRT AUTHENTICATION
+
+Some libguestfs API calls can open libvirt connections.  Currently the only
+ones are L</guestfs_add_domain>; and L</guestfs_launch> if the libvirt
+attach-method has been selected.  Libvirt connections may require
+authentication, for example if they need to access a remote server or to
+access root services from non-root.  Libvirt authentication happens via a
+callback mechanism, see
+L<http://libvirt.org/guide/html/Application_Development_Guide-Connections.html>
+
+You may provide libvirt authentication data by registering a callback for
+events of type C<GUESTFS_EVENT_LIBVIRT_AUTH>.
+
+If no such event is registered, then libguestfs uses a libvirt function that
+provides command-line prompts (C<virConnectAuthPtrDefault>).  This is only
+suitable for command-line libguestfs programs.
+
+To provide authentication, first call
+L</guestfs_set_libvirt_supported_credentials> with the list of credentials
+your program knows how to provide.  Second, register a callback for the
+C<GUESTFS_EVENT_LIBVIRT_AUTH> event.  The event handler will be called when
+libvirt is requesting authentication information.
+
+In the event handler, call L</guestfs_get_libvirt_requested_credentials> to
+get a list of the credentials that libvirt is asking for.  You then need to
+ask (eg. the user) for each credential, and call
+L</guestfs_set_libvirt_requested_credential> with the answer.  Note that for
+each credential, additional information may be available via the calls
+L</guestfs_get_libvirt_requested_credential_prompt>,
+L</guestfs_get_libvirt_requested_credential_challenge> or
+L</guestfs_get_libvirt_requested_credential_defresult>.
+
+The example program below should make this clearer.
+
+There is also a more substantial working example program supplied with the
+libguestfs sources, called C<libvirt_auth.c>.
+
+ main ()
+ {
+   guestfs_h *g;
+   char *creds[] = { "authname", "passphrase", NULL };
+   int r, eh;
+ 
+   g = guestfs_create ();
+   if (!g) exit (EXIT_FAILURE);
+ 
+   /* Tell libvirt what credentials the program supports. */
+   r = guestfs_set_libvirt_supported_credentials (g, creds);
+   if (r == -1)
+     exit (EXIT_FAILURE);
+ 
+   /* Set up the event handler. */
+   eh = guestfs_set_event_callback (
+       g, do_auth,
+       GUESTFS_EVENT_LIBVIRT_AUTH, 0, NULL);
+   if (eh == -1)
+     exit (EXIT_FAILURE);
+ 
+   /* An example of a call that may ask for credentials. */
+   r = guestfs_add_domain (
+       g, "dom",
+       GUESTFS_ADD_DOMAIN_LIBVIRTURI, "qemu:///system",
+       -1);
+   if (r == -1)
+     exit (EXIT_FAILURE);
+ 
+   exit (EXIT_SUCCESS);
+ }
+ 
+ static void
+ do_auth (guestfs_h *g,
+          void *opaque,
+          uint64_t event,
+          int event_handle,
+          int flags,
+          const char *buf, size_t buf_len,
+          const uint64_t *array, size_t array_len)
+ {
+   char **creds;
+   size_t i;
+   char *prompt;
+   char *reply;
+   size_t replylen;
+   int r;
+ 
+   // buf will be the libvirt URI.  buf_len may be ignored.
+   printf ("Authentication required for libvirt conn '%s'\n",
+           buf);
+ 
+   // Ask libguestfs what credentials libvirt is demanding.
+   creds = guestfs_get_libvirt_requested_credentials (g);
+   if (creds == NULL)
+     exit (EXIT_FAILURE);
+ 
+   // Now ask the user for answers.
+   for (i = 0; creds[i] != NULL; ++i)
+   {
+     if (strcmp (creds[i], "authname") == 0 ||
+         strcmp (creds[i], "passphrase") == 0)
+     {
+       prompt =
+         guestfs_get_libvirt_requested_credential_prompt (g, i);
+       if (prompt && strcmp (prompt, "") != 0)
+         printf ("%s: ", prompt);
+       free (prompt);
+ 
+       // Some code here to ask for the credential.
+       // ...
+       // Put the reply in 'reply', length 'replylen' (bytes).
+ 
+      r = guestfs_set_libvirt_requested_credential (g, i,
+          reply, replylen);
+      if (r == -1)
+        exit (EXIT_FAILURE);
+     }
+ 
+     free (creds[i]);
+   }
+ 
+   free (creds);
+ }
+
 =head1 CANCELLING LONG TRANSFERS
 
 Some operations can be cancelled by the caller while they are in progress.
@@ -2083,11 +2509,10 @@ C<key> is the name to associate with this data, and C<data> is an arbitrary
 pointer (which can be C<NULL>).  Any previous item with the same key is
 overwritten.
 
-You can use any C<key> you want, but your key should I<not> start with an
-underscore character.  Keys beginning with an underscore character are
-reserved for internal libguestfs purposes (eg. for implementing language
-bindings).  It is recommended that you prefix the key with some unique
-string to avoid collisions with other users.
+You can use any C<key> string you want, but avoid keys beginning with an
+underscore character (libguestfs uses those for its own internal purposes,
+such as implementing language bindings).  It is recommended that you prefix
+the key with some unique string to avoid collisions with other users.
 
 ポインターを取り出すには、次を使用します:
 
@@ -2115,8 +2540,7 @@ corresponding data pointer is returned from the function.  C<NULL> is
 returned if there are no keys stored in the handle.
 
 C<guestfs_next_private> returns the next key, pointer pair.  The return
-value of this function is also C<NULL> is there are no further entries to
-return.
+value of this function is C<NULL> if there are no further entries to return.
 
 Notes about walking over entries:
 
@@ -2321,7 +2745,7 @@ massive disk corruption).
 libguestfs は子プロセスをモデル化するために状態マシンを使用します:
 
                          |
-                    guestfs_create
+          guestfs_create / guestfs_create_flags
                          |
                          |
                      ____V_____
@@ -2351,7 +2775,8 @@ out by, the child process.
 により強制停止されるかもしれません。または、いつでも非同期的に停止するかもしれません（例: いくつかの内部エラーのため）、状態を設定 (CONFIG)
 に切り戻します。
 
-L</guestfs_add_drive> のような QEMU に対する設定コマンドは、設定 (CONFIG) 状態にあるときのみ発行できます。
+Configuration commands for qemu such as L</guestfs_set_path> can only be
+issued when in the CONFIG state.
 
 The API offers one call that goes from CONFIG through LAUNCHING to READY.
 L</guestfs_launch> blocks until the child process is READY to accept
@@ -2367,7 +2792,7 @@ Finally, the child process sends asynchronous messages back to the main
 program, such as kernel log messages.  You can register a callback to
 receive these messages.
 
-=head1 INTERNALS
+=head1 内部構造
 
 =head2 アプライアンスの起動プロセス
 
@@ -2382,8 +2807,8 @@ receive these messages.
 
 C<febootstrap-supermin-helper> はカーネル、小さな initrd およびアプライアンスを作成するために呼び出されます。
 
-アプライアンスは C</var/tmp/.guestfs-E<lt>UIDE<gt>> にキャッシュされます（または C<TMPDIR>
-を設定していると他の場所です）。
+The appliance is cached in C</var/tmp/.guestfs-E<lt>UIDE<gt>> (or in another
+directory if C<LIBGUESTFS_CACHEDIR> or C<TMPDIR> are set).
 
 アプライアンスがどのように作成されキャッシュされるかに関する完全な説明は、L<febootstrap(8)> および
 L<febootstrap-supermin-helper(8)> マニュアルページを参照してください。
@@ -2744,7 +3169,7 @@ To add a new API action there are two changes:
 =item 1.
 
 You need to add a description of the call (name, parameters, return type,
-tests, documentation) to C<generator/generator_actions.ml>.
+tests, documentation) to C<generator/actions.ml>.
 
 There are two sorts of API action, depending on whether the call goes
 through to the daemon in the appliance, or is serviced entirely by the
@@ -2779,7 +3204,7 @@ In either case, use another function as an example of what to do.
 
 =back
 
-After making these changes, use C<make> to compile.
+これらの変更をした後、コンパイルするために C<make> を使用してください。
 
 Note that you don't need to implement the RPC, language bindings, manual
 pages or anything else.  It's all automatically generated from the OCaml
@@ -2789,12 +3214,12 @@ description.
 
 You can supply zero or as many tests as you want per API call.  The tests
 can either be added as part of the API description
-(C<generator/generator_actions.ml>), or in some rarer cases you may want to
-drop a script into C<tests/*/>.  Note that adding a script to C<tests/*/> is
+(C<generator/actions.ml>), or in some rarer cases you may want to drop a
+script into C<tests/*/>.  Note that adding a script to C<tests/*/> is
 slower, so if possible use the first method.
 
 The following describes the test environment used when you add an API test
-in C<generator_actions.ml>.
+in C<actions.ml>.
 
 テスト環境は 4 個のブロックデバイスを持ちます:
 
@@ -2823,10 +3248,10 @@ appliance and block devices are reused between tests.  So don't try testing
 L</guestfs_kill_subprocess> :-x
 
 Each test starts with an initial scenario, selected using one of the
-C<Init*> expressions, described in C<generator/generator_types.ml>.  These
-initialize the disks mentioned above in a particular way as documented in
-C<generator_types.ml>.  You should not assume anything about the previous
-contents of other disks that are not initialized.
+C<Init*> expressions, described in C<generator/types.ml>.  These initialize
+the disks mentioned above in a particular way as documented in C<types.ml>.
+You should not assume anything about the previous contents of other disks
+that are not initialized.
 
 You can add a prerequisite clause to any individual test.  This is a
 run-time check, which, if it fails, causes the test to be skipped.  Useful
@@ -2863,7 +3288,7 @@ Debugging the daemon is a problem because it runs inside a minimal
 environment.  However you can fprintf messages in the daemon to stderr, and
 they will show up if you use C<guestfish -v>.
 
-=head2 FORMATTING CODE AND OTHER CONVENTIONS
+=head2 FORMATTING CODE
 
 Our C source code generally adheres to some basic code-formatting
 conventions.  The existing code base is not totally consistent on this
@@ -2896,19 +3321,67 @@ If you use Emacs, add the following to one of one of your start-up files
                                (buffer-file-name))
                            (libguestfs-c-mode))))
 
+=head2 TESTING YOUR CHANGES
+
 コンパイル時に警告を有効にします（そして、これは見つけた問題をすべて修正します）:
 
  ./configure --enable-gcc-warnings
 
 有用なターゲットは次のとおりです:
 
- make syntax-check -j1 -k # checks for various syntax and
-                          # style problems
- 
- make check               # runs the test suite
- 
- make extra-tests         # in-depth testing using valgrind
-                          # and real guests
+=over 4
+
+=item C<make check>
+
+Runs the regular test suite.
+
+=item C<make syntax-check -j1 -k>
+
+Checks for various syntax and style problems in the code.
+
+=item C<make check-valgrind>
+
+Runs a subset of the test suite under valgrind.
+
+=item C<make check-valgrind-local-guests>
+
+Runs a subset of the test suite under valgrind using locally installed
+libvirt guests (read-only).
+
+=item C<make check-with-appliance>
+
+Runs all tests using default appliance back-end.  This only has any effect
+if a non-default attach-method was selected using C<./configure
+--with-default-attach-method=...>
+
+=item C<make check-with-upstream-qemu>
+
+Runs all tests using a local qemu binary.  It looks for the qemu binary in
+QEMUDIR (defaults to C<$HOME/d/qemu>), but you can set this to another
+directory on the command line, eg:
+
+ make check-with-upstream-qemu QEMUDIR=/usr/src/qemu
+
+=item C<make check-with-upstream-libvirt>
+
+Runs all tests using a local libvirt.  This only has any effect if the
+libvirt attach-method was selected using C<./configure
+--with-default-attach-method=libvirt>
+
+It looks for libvirt in LIBVIRTDIR (defaults to C<$HOME/d/libvirt>), but you
+can set this to another directory on the command line, eg:
+
+ make check-with-upstream-libvirt LIBVIRTDIR=/usr/src/libvirt
+
+=item C<make check-slow>
+
+Runs some slow/long-running tests which are not run by default.
+
+=item C<make extra-tests>
+
+Equivalent to running all C<make check-*> rules (but not C<make check>).
+
+=back
 
 =head2 DAEMON CUSTOM PRINTF FORMATTERS
 
@@ -2970,7 +3443,7 @@ libguestfs アプライアンス、スクリプトなどを構築します。
 
 =item C<build-aux>
 
-Various build scripts used by autotools.
+autotools により使用されるさまざまなビルドスクリプト。
 
 =item C<cat>
 
@@ -2982,8 +3455,7 @@ L<virt-cat(1)>, L<virt-filesystems(1)> および L<virt-ls(1)> のコマンド�
 
 =item C<daemon>
 
-The daemon that runs inside the libguestfs appliance and carries out
-actions.
+libguestfs アプライアンスの中で実行され、アクションを実行しているデーモン。
 
 =item C<df>
 
@@ -2999,9 +3471,8 @@ C API のコード例。
 
 =item C<fish>
 
-L<guestfish(1)>, the command-line shell, and various shell scripts built on
-top such as L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>.
+L<guestfish(1)> コマンドラインシェル、および L<virt-copy-in(1)>, L<virt-copy-out(1)>,
+L<virt-tar-in(1)>, L<virt-tar-out(1)> のようなさまざまなシェルスクリプト。
 
 =item C<format>
 
@@ -3009,7 +3480,7 @@ L<virt-format(1)> のコマンドおよびドキュメント。
 
 =item C<fuse>
 
-L<guestmount(1)>, FUSE (userspace filesystem) built on top of libguestfs.
+L<guestmount(1)>, libguestfs の上に組み立てられた FUSE (ユーザー空間ファイルシステム)。
 
 =item C<generator>
 
@@ -3018,12 +3489,11 @@ amounts of boilerplate C code for things like RPC and bindings.
 
 =item C<gnulib>
 
-Gnulib is used as a portability library.  A copy of gnulib is included under
-here.
+gnulib はポートブルなライブラリとして使用されます。gnulib のコピーがこの下に含まれます。
 
 =item C<html>
 
-Generated HTML manual pages.
+生成された HTML マニュアルページ。
 
 =item C<inspector>
 
@@ -3039,7 +3509,7 @@ autoconf により使用される M4 マクロ。
 
 =item C<po>
 
-Translations of simple gettext strings.
+シンプルな gettext 文字列の翻訳。
 
 =item C<po-docs>
 
@@ -3073,16 +3543,18 @@ L<virt-sysprep(1)> コマンドおよびドキュメント。
 
 =item C<test-tool>
 
-Test tool for end users to test if their qemu/kernel combination will work
-with libguestfs.
+エンドユーザーが QEMU/カーネルの組み合わせが libguestfs で動作するかどうかを確認するためのテストツールです。
 
-=item C<tests>
+=item C<tmp>
 
-テストします。
+Used for temporary files when running the tests (instead of C</tmp> etc).
+The reason is so that you can run multiple parallel tests of libguestfs
+without having one set of tests overwriting the appliance created by
+another.
 
 =item C<tools>
 
-Command line tools written in Perl (L<virt-win-reg(1)> and many others).
+Perl で書かれたコマンドラインツール (L<virt-win-reg(1)> および他の多くのもの)。
 
 =item C<csharp>
 
@@ -3093,6 +3565,8 @@ Command line tools written in Perl (L<virt-win-reg(1)> and many others).
 =item C<haskell>
 
 =item C<java>
+
+=item C<lua>
 
 =item C<ocaml>
 
@@ -3122,7 +3596,7 @@ Check C<make && make check> works on at least Fedora, Debian and Ubuntu.
 
 =item *
 
-Finalize RELEASE-NOTES.
+Finalize C<guestfs-release-notes.pod>
 
 =item *
 
@@ -3148,7 +3622,15 @@ Transifex からのプッシュおよびプル。
 
 =item *
 
+Consider updating gnulib to latest upstream version.
+
+=item *
+
 L<http://libguestfs.org/download> の下に新しい安定版および開発版のディレクトリーを作成します。
+
+=item *
+
+Edit C<index.html.in> on website.
 
 =item *
 
@@ -3172,32 +3654,52 @@ protocol is slightly less than 4 MB.  For some API calls you may need to be
 aware of this limit.  The API calls which may be affected are individually
 documented, with a link back to this section of the documentation.
 
-A simple call such as L</guestfs_cat> returns its result (the file data) in
-a simple string.  Because this string is at some point internally encoded as
-a message, the maximum size that it can return is slightly under 4 MB.  If
-the requested file is larger than this then you will get an error.
+In libguestfs E<lt> 1.19.32, several calls had to encode either their entire
+argument list or their entire return value (or sometimes both)  in a single
+protocol message, and this gave them an arbitrary limitation on how much
+data they could handle.  For example, L</guestfs_cat> could only download a
+file if it was less than around 4 MB in size.  In later versions of
+libguestfs, some of these limits have been removed.  The APIs which were
+previously limited but are now unlimited (except perhaps by available
+memory) are listed below.  To find out if a specific API is subject to
+protocol limits, check for the warning in the API documentation which links
+to this section, and remember to check the version of the documentation that
+matches the version of libguestfs you are using.
 
-In order to transfer large files into and out of the guest filesystem, you
-need to use particular calls that support this.  The sections L</UPLOADING>
-and L</DOWNLOADING> document how to do this.
+L</guestfs_cat>, L</guestfs_find>, L</guestfs_read_file>,
+L</guestfs_read_lines>, L</guestfs_write>, L</guestfs_write_append>,
+L</guestfs_lstatlist>, L</guestfs_lxattrlist>, L</guestfs_readlinklist>,
+L</guestfs_ls>.
 
-FUSE ファイルシステムサポート (L<guestmount(1)>) を使用してディスクイメージをマウントすることも検討できます。
+See also L</UPLOADING> and L</DOWNLOADING> for further information about
+copying large amounts of data into or out of a filesystem.
 
-=head2 MAXIMUM NUMBER OF DISKS
+=head2 ディスクの最大数
 
-When using virtio disks (the default) the current limit is B<25> disks.
+In libguestfs E<ge> 1.19.7, you can query the maximum number of disks that
+may be added by calling L</guestfs_max_disks>.  In earlier versions of
+libguestfs (ie. where this call is not available) you should assume the
+maximum is 25.
 
-Virtio itself consumes 1 virtual PCI slot per disk, and PCI is limited to 31
-slots.  However febootstrap only understands disks with names C</dev/vda>
-through C</dev/vdz> (26 letters) and it reserves one disk for its own
-purposes.
+The rest of this section covers implementation details, which could change
+in future.
 
-We are working to substantially raise this limit in future versions but it
-requires complex changes to qemu.
+virtio-scsi ディスク (QEMU において利用可能ならば初期値) を使用しているとき、現在の制限は B<255>
+個のディスクです。virtio-blk (古い初期値) を使用しているとき、約 B<27>
+個のディスクです。しかし、実装の詳細やネットワークが有効化されているかどうかにより、変化する可能性があります。
 
-In future versions of libguestfs it should also be possible to "hot plug"
-disks (add and remove disks after calling L</guestfs_launch>).  This also
-requires changes to qemu.
+libguestfs により使用される virtio-scsi はディスクあたり一つのターゲットを使用するよう設定されます。256
+個のターゲットが利用可能です。
+
+virtio-blk はディスクあたり 1 仮想 PCI を消費します。PCI は 31
+スロットに制限されます。これらのいくつかは他の目的のために使用されます。
+
+一つの仮想ディスクが libguestfs により内部的に使用されます。
+
+libguestfs 1.19.7 以前、ディスク名は 1 文字である必要がありました (例: C</dev/sda> から
+C</dev/sdz>)。そして、一つのディスクが予約されるので、その制限は 25 でした。これはそれ以降のバージョンにおいて修正されました。
+
+libguestfs E<ge> 1.20 はディスクの活性挿入をできます。 L</HOTPLUGGING> 参照。
 
 =head2 ディスクあたりの最大パーティション数
 
@@ -3241,13 +3743,12 @@ This depends on the filesystem type.  libguestfs itself does not impose any
 known limit.  Consult Wikipedia or the filesystem documentation to find out
 what these limits are.
 
-=head2 MAXIMUM UPLOAD AND DOWNLOAD
+=head2 最大アップロード数およびダウンロード数
 
-The API functions L</guestfs_upload>, L</guestfs_download>,
-L</guestfs_tar_in>, L</guestfs_tar_out> and the like allow unlimited sized
-uploads and downloads.
+API 関数 L</guestfs_upload>, L</guestfs_download>, L</guestfs_tar_in>,
+L</guestfs_tar_out> および類似のものは、アップロードとダウンロードの数量に制限がありません。
 
-=head2 INSPECTION LIMITS
+=head2 検査の制限
 
 The inspection code has several arbitrary limits on things like the size of
 Windows Registry hive it will read, and the length of product name.  These
@@ -3273,6 +3774,22 @@ available in febootstrap E<ge> 3.8.
 
 仮想マシンのカーネルに追加のオプションを渡します。
 
+=item LIBGUESTFS_ATTACH_METHOD
+
+Choose the default way to create the appliance.  See
+L</guestfs_set_attach_method>.
+
+=item LIBGUESTFS_CACHEDIR
+
+The location where libguestfs will cache its appliance, when using a
+supermin appliance.  The appliance is cached and shared between all handles
+which have the same effective user ID.
+
+If C<LIBGUESTFS_CACHEDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR>
+is not set, then C</var/tmp> is used.
+
+See also L</LIBGUESTFS_TMPDIR>, L</guestfs_set_cachedir>.
+
 =item LIBGUESTFS_DEBUG
 
 Set C<LIBGUESTFS_DEBUG=1> to enable verbose messages.  This has the same
@@ -3296,6 +3813,16 @@ which was found at compile time by the configure script is used.
 
 上の L</QEMU WRAPPERS> 参照。
 
+=item LIBGUESTFS_TMPDIR
+
+The location where libguestfs will store temporary files used by each
+handle.
+
+If C<LIBGUESTFS_TMPDIR> is not set, then C<TMPDIR> is used.  If C<TMPDIR> is
+not set, then C</tmp> is used.
+
+See also L</LIBGUESTFS_CACHEDIR>, L</guestfs_set_tmpdir>.
+
 =item LIBGUESTFS_TRACE
 
 コマンドトレースを有効にするには C<LIBGUESTFS_TRACE=1> を設定します。これは C<guestfs_set_trace (g,
@@ -3303,21 +3830,15 @@ which was found at compile time by the configure script is used.
 
 =item TMPDIR
 
-一時ディレクトリーの場所です。初期値は C</tmp> です。初期値が C</var/tmp> であるキャッシュされた supermin
-アプライアンスは除きます。
-
-libguestfs が supermin
-アプライアンスを使用するようコンパイルされていると、本当のアプライアンスがこのディレクトリーにキャッシュされ、同じ EUID
-に属するすべてのハンドル間で共有されます。 C</var/tmp> が十分に大きくない場合に使用する他のディレクトリーを設定するために
-C<$TMPDIR> を使用できます。
+See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 
 =back
 
 =head1 関連項目
 
 L<guestfs-examples(3)>, L<guestfs-erlang(3)>, L<guestfs-java(3)>,
-L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
-L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
+L<guestfs-lua(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
+L<guestfs-python(3)>, L<guestfs-ruby(3)>, L<guestfish(1)>, L<guestmount(1)>,
 L<virt-alignment-scan(1)>, L<virt-cat(1)>, L<virt-copy-in(1)>,
 L<virt-copy-out(1)>, L<virt-df(1)>, L<virt-edit(1)>, L<virt-filesystems(1)>,
 L<virt-format(1)>, L<virt-inspector(1)>, L<virt-list-filesystems(1)>,
@@ -3325,10 +3846,10 @@ L<virt-list-partitions(1)>, L<virt-ls(1)>, L<virt-make-fs(1)>,
 L<virt-rescue(1)>, L<virt-resize(1)>, L<virt-sparsify(1)>,
 L<virt-sysprep(1)>, L<virt-tar(1)>, L<virt-tar-in(1)>, L<virt-tar-out(1)>,
 L<virt-win-reg(1)>, L<guestfs-faq(1)>, L<guestfs-performance(1)>,
-L<guestfs-testing(1)>, L<libguestfs-test-tool(1)>,
-L<libguestfs-make-fixed-appliance(1)>, L<febootstrap(8)>,
-L<febootstrap-supermin-helper(8)>, L<qemu(1)>, L<hivex(3)>, L<stap(1)>,
-L<http://libguestfs.org/>.
+L<guestfs-release-notes(1)>, L<guestfs-testing(1)>,
+L<libguestfs-test-tool(1)>, L<libguestfs-make-fixed-appliance(1)>,
+L<febootstrap(8)>, L<febootstrap-supermin-helper(8)>, L<qemu(1)>,
+L<hivex(3)>, L<stap(1)>, L<http://libguestfs.org/>.
 
 同じ目的を持つツール: L<fdisk(8)>, L<parted(8)>, L<kpartx(8)>, L<lvm(8)>,
 L<disktype(1)>.

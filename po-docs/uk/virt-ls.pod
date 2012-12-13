@@ -8,7 +8,7 @@ virt-ls — програма для показу списку файлів у в
 
  virt-ls [--параметри] -d назва_домену каталог [каталог ...]
 
- virt-ls [--options] -a disk.img [-a disk.img ...] directory [directory ...]
+ virt-ls [--параметри] -a диск.img [-a диск.img ...] каталог [каталог ...]
 
 Старий стиль:
 
@@ -33,35 +33,38 @@ L<guestfs(3)> API.
 
 =head1 ПРИКЛАДИ
 
-Get a list of all files and directories in a virtual machine:
+Отримати список всіх файлів і каталогів у віртуальній машині:
 
  virt-ls -R -d guest /
 
-List all setuid or setgid programs in a Linux virtual machine:
+Показати список всіх програм з setuid або setgid у віртуальній машині Linux:
 
  virt-ls -lR -d guest / | grep '^- [42]'
 
-List all public-writable directories in a Linux virtual machine:
+Показати список всіх каталогів з відкритим для всіх доступом на запис у
+віртуальній машині Linux:
 
  virt-ls -lR -d guest / | grep '^d ...7'
 
-List all Unix domain sockets in a Linux virtual machine:
+Показати список всіх сокетів доменів Unix у віртуальній машині Linux:
 
  virt-ls -lR -d guest / | grep '^s'
 
-List all regular files with filenames ending in '.png':
+Показати список всіх звичайних файлів, назви яких завершуються на «.png»:
 
  virt-ls -lR -d guest / | grep -i '^-.*\.png$'
 
-To display files larger than 10MB in home directories:
+Щоб переглянути список файлів у домашніх каталогах, розмір яких перевищує 10
+МБ:
 
  virt-ls -lR -d guest /home | awk '$3 > 10*1024*1024'
 
-Find everything modified in the last 7 days:
+Знайти всі об’єкти, які було змінено протягом попередніх 7 днів:
 
  virt-ls -lR -d guest --time-days / | awk '$6 <= 7'
 
-Find regular files modified in the last 24 hours:
+Знайти звичайні файли, зміни до яких було внесено протягом попередніх 24
+годин:
 
  virt-ls -lR -d guest --time-days / | grep '^-' | awk '$6 < 1'
 
@@ -87,7 +90,7 @@ the I<-l> and I<-R> options.
 
 =head2 ПРОСТИЙ СПИСОК
 
-A simple listing is like the ordinary L<ls(1)> command:
+Простий список, подібний до списку звичайної команди L<ls(1)>:
 
  $ virt-ls -d guest /
  bin
@@ -151,7 +154,7 @@ command.
  - 0755     943360 /bin/bash
  [тощо]
 
-These basic fields are always shown:
+Ці основні поля буде показано завжди:
 
 =over 4
 
@@ -173,11 +176,11 @@ human-readable number.
 
 =item шлях
 
-The full path of the file or directory.
+Шлях до файла або каталогу повністю.
 
 =item посилання
 
-For symbolic links only, the link target.
+Лише для символічних посилань, призначення посилання.
 
 =back
 
@@ -242,7 +245,7 @@ For block and char special files, the device (displayed as major:minor).
 
 =item блоки
 
-The number of 512 byte blocks allocated to the file.
+Кількість 512-байтових блоків, виділених під файл.
 
 =back
 
@@ -266,8 +269,9 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром
+I<--format=..>.
 
 =item B<--checksum>
 
@@ -284,8 +288,8 @@ LISTING> above.
 
 =item B<--connect> адреса
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
 libvirt не буде використовуватися взагалі.
@@ -328,14 +332,15 @@ auto-detection for subsequent I<-a> options.
 
 Приклад:
 
- virt-ls --format=raw -a disk.img /dir
+ virt-ls --format=raw -a диск.img /каталог
 
-forces raw format (no auto-detection) for C<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img>.
 
  virt-ls --format=raw -a диск.img --format -a інший_диск.img /каталог
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem

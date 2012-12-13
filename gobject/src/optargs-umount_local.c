@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -55,7 +55,7 @@ guestfs_umount_local_set_property(GObject *object, guint property_id, const GVal
 
   switch (property_id) {
     case PROP_GUESTFS_UMOUNT_LOCAL_RETRY:
-      priv->retry = g_value_get_enum(value);
+      priv->retry = g_value_get_enum (value);
       break;
 
     default:

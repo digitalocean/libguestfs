@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsGrep</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsMkswap.html" title="GuestfsMkswap">
+<link rel="next" href="GuestfsMkfs.html" title="GuestfsMkfs">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsMkswap.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsMkfs.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsGrep.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsGrep.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsGrep.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsGrep.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsGrep"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsGrep.top_of_page"></a>GuestfsGrep</span></h2>
+<p>GuestfsGrep — An object encapsulating optional arguments for guestfs_session_grep</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsGrep.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsGrep.html#GuestfsGrep-struct" title="struct GuestfsGrep">GuestfsGrep</a>;
+struct              <a class="link" href="GuestfsGrep.html#GuestfsGrepClass" title="struct GuestfsGrepClass">GuestfsGrepClass</a>;
+<a class="link" href="GuestfsGrep.html" title="GuestfsGrep"><span class="returnvalue">GuestfsGrep</span></a> *       <a class="link" href="GuestfsGrep.html#guestfs-grep-new" title="guestfs_grep_new ()">guestfs_grep_new</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsGrep.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsGrep
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsGrep.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsGrep.html#GuestfsGrep--compressed" title='The "compressed" property'>compressed</a>"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsGrep.html#GuestfsGrep--extended" title='The "extended" property'>extended</a>"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsGrep.html#GuestfsGrep--fixed" title='The "fixed" property'>fixed</a>"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsGrep.html#GuestfsGrep--insensitive" title='The "insensitive" property'>insensitive</a>"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsGrep.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_grep
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsGrep.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsGrep-struct"></a><h3>struct GuestfsGrep</h3>
+<pre class="programlisting">struct GuestfsGrep;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_grep.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsGrepClass"></a><h3>struct GuestfsGrepClass</h3>
+<pre class="programlisting">struct GuestfsGrepClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsGrep.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsGrepClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsGrepClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-grep-new"></a><h3>guestfs_grep_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsGrep.html" title="GuestfsGrep"><span class="returnvalue">GuestfsGrep</span></a> *       guestfs_grep_new                    (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsGrep object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsGrep object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsGrep.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsGrep--compressed"></a><h3>The <code class="literal">"compressed"</code> property</h3>
+<pre class="programlisting">  "compressed"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsGrep--extended"></a><h3>The <code class="literal">"extended"</code> property</h3>
+<pre class="programlisting">  "extended"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsGrep--fixed"></a><h3>The <code class="literal">"fixed"</code> property</h3>
+<pre class="programlisting">  "fixed"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsGrep--insensitive"></a><h3>The <code class="literal">"insensitive"</code> property</h3>
+<pre class="programlisting">  "insensitive"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

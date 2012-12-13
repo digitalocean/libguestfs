@@ -1,0 +1,54 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsRsyncOut
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsRsyncOut ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsRsyncOut:archive ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsRsyncOut:deletedest ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsRsyncOutClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_rsync_out_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

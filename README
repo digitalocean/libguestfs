@@ -46,8 +46,7 @@ For basic functionality and the C tools:
 - look at appliance/packagelist.in and install as many of the packages
   that apply to your distro as possible
 
-- QEMU >= 1.1.0 is *highly* recommended.  In particular earlier
-  versions contain a bug that can cause data corruption.
+- QEMU >= 1.1.0.
 
 - kernel >= 2.6.34 with virtio-serial support enabled.
 
@@ -56,11 +55,12 @@ For basic functionality and the C tools:
   to make complex changes to the ./configure command line to get it
   to work if you don't have virtio)
 
-- febootstrap >= 3.3 (it is best to use the latest version)
+- febootstrap >= 3.20
 
   Notes: (1) febootstrap 2.x WILL NOT WORK
          (2) febootstrap 3.x is distro-independent, and is required on
              Debian and other distros as well as Fedora
+         (3) that is the minimum version, but later versions are better
 
 - XDR, rpcgen (on Linux these are provided by glibc)
 
@@ -76,7 +76,7 @@ For basic functionality and the C tools:
 
 - libmagic (the library that corresponds to the 'file' command) (optional)
 
-- libvirt (optional)
+- libvirt (optional, >= 0.10.2 to use the libvirt launch method)
 
 - libxml2 (optional)
 
@@ -99,8 +99,8 @@ For basic functionality and the C tools:
 - xmllint (part of libxml2) to validate virt-inspector
   RELAX NG schema (optional)
 
-- OCaml if you want to rebuild the generated files, and
-  also to build the OCaml bindings (optional)
+- OCaml compiler.  Optional when compiling from the tarball, but
+  mandatory if you compile from git.
 
 - ocaml-gettext if you want to translate OCaml tools (optional)
 
@@ -110,14 +110,27 @@ For basic functionality and the C tools:
 
 - getfacl, getfattr libraries and programs (optional)
 
+- Linux capabilities library (libcap) (optional)
+
+- libldm and ldmtool (optional)
+  This is used to handle Windows dynamic disks.
+
+- yajl >= 2 (optional)
+  JSON parser, needed to handle the output of ldmtool.
+
 - netpbm, icoutils (optional)
   These programs are used to render icons from guests.
 
-To build FUSE support (guestmount):
+- Perl Expect module (optional)
+  This is used to test virt-rescue.
+
+To build FUSE support in the core library, and guestmount:
 
 - FUSE libraries and kernel module (optional)
 
 To build language bindings:
+
+- OCaml compiler to build the OCaml bindings (optional, but see above)
 
 - Perl if you want to build the perl bindings (optional)
 
@@ -146,10 +159,6 @@ To build the Perl tools:
 
 - perl-libintl for translating perl code (optional)
 
-To run virt-sysprep:
-
-- virt-sysprep requires FUSE support since it uses guestmount
-
 
 Building
 ----------------------------------------------------------------------
@@ -163,13 +172,19 @@ Finally run the tests:
 
   make check
 
-There are some extra tests, but these require that you have some
-libvirt guests installed, that these guests' disks are accessible by
-the current user, and these tests may fail for other reasons which are
-not necessarily because of real problems.  If you want to run these
-extra tests do:
+Also:
 
-  make extra-tests
+ make check-valgrind
+
+runs a subset of the test suite under valgrind (requires valgrind to
+be installed obviously).
+
+ make extra-tests
+
+runs check-valgrind + even more tests, but these require that you have
+some libvirt guests installed, that these guests' disks are accessible
+by the current user, and these tests may fail for other reasons which
+are not necessarily because of real problems.
 
 If everything works, you can install the library and tools by running
 this command as root:
@@ -177,8 +192,8 @@ this command as root:
   make install
 
 You can run guestfish, guestmount and the virt tools without needing
-to install, using the "run" script in the top directory.  This script
-sets up some environment variables.  For example:
+to install, using the "./run" script in the top directory.  This
+script sets up some environment variables.  For example:
 
   ./run ./fish/guestfish [usual guestfish args ...]
 
@@ -200,6 +215,10 @@ the run script, eg:
 You can also run the C programs under valgrind like this:
 
   ./run valgrind [valgrind opts...] ./cat/virt-cat [virt-cat opts...]
+
+or under gdb:
+
+  ./run gdb --args ./cat/virt-cat [virt-cat opts...]
 
 This also works with sudo (eg. if you need root access for libvirt or
 to access a block device):
@@ -236,7 +255,7 @@ these instructions:
 
 On some systems, this will work too:
 
-  chmod o+rw /dev/kvm
+  chmod 0666 /dev/kvm
 
 On some systems, the chmod will not survive a reboot, and you will
 need to make edits to the udev configuration.
@@ -295,10 +314,10 @@ In theory libguestfs should work on non-x86 architectures.  Usually if
 it doesn't it's because qemu isn't available or cannot boot the
 kernel.
 
-Nevertheless we've had some success on arm.  For arm you will need to
-specify the exact machine type and CPU variant that is required to
-boot the Linux kernel (there's no way to know this except by looking
-at how the Linux kernel was configured).  For example:
+For ARM you will need to specify the exact machine type and CPU
+variant that is required to boot the Linux kernel (there's no way to
+know this except by looking at how the Linux kernel was configured).
+For example:
 
   ./configure \
         --with-qemu="qemu-system-arm" \
@@ -311,8 +330,14 @@ Note that since virtio is required by libguestfs, and virtio is a
 PCI-based architecture, whatever architecture qemu emulates must
 support PCI also.
 
+For PPC64 you will need to specify the IBM pSeries machine type:
+
+  ./configure \
+        --with-qemu="qemu-system-ppc64" \
+        --with-qemu-options="-M pseries"
+
 After building libguestfs, run 'make quickcheck' and pay close
-attention to the qemu command line.
+attention to the qemu command line and kernel output.
 
 
 Copyright and license information
@@ -323,3 +348,5 @@ Copyright (C) 2009-2012 Red Hat Inc.
 The library is distributed under the LGPLv2+.  The programs are
 distributed under the GPLv2+.  Please see the files COPYING and
 COPYING.LIB for full license information.
+
+The examples are under a very liberal license.

@@ -48,6 +48,7 @@ virt_cat_CFLAGS = \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS)
 
 virt_cat_LDADD = \
@@ -66,6 +67,7 @@ virt_filesystems_CFLAGS = \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS)
 
 virt_filesystems_LDADD = \
@@ -84,6 +86,7 @@ virt_ls_CFLAGS = \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS)
 
 virt_ls_LDADD = \
@@ -131,12 +134,19 @@ stamp-virt-filesystems.pod: virt-filesystems.pod
 
 # Tests.
 
-random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-
-TESTS_ENVIRONMENT = \
-	MALLOC_PERTURB_=$(random_val) \
-	$(top_builddir)/run
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 if ENABLE_APPLIANCE
-TESTS = test-virt-cat.sh test-virt-filesystems.sh test-virt-ls.sh
+TESTS = \
+	test-virt-cat.sh \
+	test-virt-filesystems.sh \
+	test-virt-ls.sh
 endif ENABLE_APPLIANCE
+
+check-valgrind:
+	$(MAKE) VG="$(top_builddir)/run @VG@" check
+
+check-valgrind-local-guests:
+	for g in $(GUESTS); do \
+	  $(top_builddir)/run --test @VG@ ./virt-filesystems -c "$(libvirt_ro_uri)" -d "$$g" --all --long -h --uuid || exit $$?; \
+	done

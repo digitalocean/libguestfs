@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -24,11 +24,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 
 #include <erl_interface.h>
-#include <ei.h>
+/* We should switch over to using
+  #include <ei.h>
+instead of erl_interface.
+*/
 
 #include "guestfs.h"
 
@@ -44,6 +48,8 @@ extern ETERM *make_table (char **r);
 extern ETERM *make_bool (int r);
 extern char **get_string_list (ETERM *term);
 extern int get_bool (ETERM *term);
+extern int get_int (ETERM *term);
+extern int64_t get_int64 (ETERM *term);
 extern void free_strings (char **r);
 
 #define ARG(i) (ERL_TUPLE_ELEMENT(message,(i)+1))
@@ -267,6 +273,32 @@ make_application (const struct guestfs_application *application)
 }
 
 static ETERM *
+make_application2 (const struct guestfs_application2 *application2)
+{
+  ETERM *t[17];
+
+  t[0] = erl_mk_string (application2->app2_name);
+  t[1] = erl_mk_string (application2->app2_display_name);
+  t[2] = erl_mk_int (application2->app2_epoch);
+  t[3] = erl_mk_string (application2->app2_version);
+  t[4] = erl_mk_string (application2->app2_release);
+  t[5] = erl_mk_string (application2->app2_arch);
+  t[6] = erl_mk_string (application2->app2_install_path);
+  t[7] = erl_mk_string (application2->app2_trans_path);
+  t[8] = erl_mk_string (application2->app2_publisher);
+  t[9] = erl_mk_string (application2->app2_url);
+  t[10] = erl_mk_string (application2->app2_source_package);
+  t[11] = erl_mk_string (application2->app2_summary);
+  t[12] = erl_mk_string (application2->app2_description);
+  t[13] = erl_mk_string (application2->app2_spare1);
+  t[14] = erl_mk_string (application2->app2_spare2);
+  t[15] = erl_mk_string (application2->app2_spare3);
+  t[16] = erl_mk_string (application2->app2_spare4);
+
+  return erl_mk_list (t, 17);
+}
+
+static ETERM *
 make_isoinfo (const struct guestfs_isoinfo *isoinfo)
 {
   ETERM *t[17];
@@ -317,6 +349,73 @@ make_btrfssubvolume (const struct guestfs_btrfssubvolume *btrfssubvolume)
 }
 
 static ETERM *
+make_xfsinfo (const struct guestfs_xfsinfo *xfsinfo)
+{
+  ETERM *t[25];
+
+  t[0] = erl_mk_string (xfsinfo->xfs_mntpoint);
+  t[1] = erl_mk_int (xfsinfo->xfs_inodesize);
+  t[2] = erl_mk_int (xfsinfo->xfs_agcount);
+  t[3] = erl_mk_int (xfsinfo->xfs_agsize);
+  t[4] = erl_mk_int (xfsinfo->xfs_sectsize);
+  t[5] = erl_mk_int (xfsinfo->xfs_attr);
+  t[6] = erl_mk_int (xfsinfo->xfs_blocksize);
+  t[7] = erl_mk_longlong (xfsinfo->xfs_datablocks);
+  t[8] = erl_mk_int (xfsinfo->xfs_imaxpct);
+  t[9] = erl_mk_int (xfsinfo->xfs_sunit);
+  t[10] = erl_mk_int (xfsinfo->xfs_swidth);
+  t[11] = erl_mk_int (xfsinfo->xfs_dirversion);
+  t[12] = erl_mk_int (xfsinfo->xfs_dirblocksize);
+  t[13] = erl_mk_int (xfsinfo->xfs_cimode);
+  t[14] = erl_mk_string (xfsinfo->xfs_logname);
+  t[15] = erl_mk_int (xfsinfo->xfs_logblocksize);
+  t[16] = erl_mk_int (xfsinfo->xfs_logblocks);
+  t[17] = erl_mk_int (xfsinfo->xfs_logversion);
+  t[18] = erl_mk_int (xfsinfo->xfs_logsectsize);
+  t[19] = erl_mk_int (xfsinfo->xfs_logsunit);
+  t[20] = erl_mk_int (xfsinfo->xfs_lazycount);
+  t[21] = erl_mk_string (xfsinfo->xfs_rtname);
+  t[22] = erl_mk_int (xfsinfo->xfs_rtextsize);
+  t[23] = erl_mk_longlong (xfsinfo->xfs_rtblocks);
+  t[24] = erl_mk_longlong (xfsinfo->xfs_rtextents);
+
+  return erl_mk_list (t, 25);
+}
+
+static ETERM *
+make_utsname (const struct guestfs_utsname *utsname)
+{
+  ETERM *t[4];
+
+  t[0] = erl_mk_string (utsname->uts_sysname);
+  t[1] = erl_mk_string (utsname->uts_release);
+  t[2] = erl_mk_string (utsname->uts_version);
+  t[3] = erl_mk_string (utsname->uts_machine);
+
+  return erl_mk_list (t, 4);
+}
+
+static ETERM *
+make_hivex_node (const struct guestfs_hivex_node *hivex_node)
+{
+  ETERM *t[1];
+
+  t[0] = erl_mk_longlong (hivex_node->hivex_node_h);
+
+  return erl_mk_list (t, 1);
+}
+
+static ETERM *
+make_hivex_value (const struct guestfs_hivex_value *hivex_value)
+{
+  ETERM *t[1];
+
+  t[0] = erl_mk_longlong (hivex_value->hivex_value_h);
+
+  return erl_mk_list (t, 1);
+}
+
+static ETERM *
 make_lvm_lv_list (const struct guestfs_lvm_lv_list *lvm_lvs)
 {
   ETERM *t[lvm_lvs->len];
@@ -353,6 +452,18 @@ make_partition_list (const struct guestfs_partition_list *partitions)
 }
 
 static ETERM *
+make_application2_list (const struct guestfs_application2_list *application2s)
+{
+  ETERM *t[application2s->len];
+  size_t i;
+
+  for (i = 0; i < application2s->len; ++i)
+    t[i] = make_application2 (&application2s->val[i]);
+
+  return erl_mk_list (t, application2s->len);
+}
+
+static ETERM *
 make_inotify_event_list (const struct guestfs_inotify_event_list *inotify_events)
 {
   ETERM *t[inotify_events->len];
@@ -374,6 +485,18 @@ make_application_list (const struct guestfs_application_list *applications)
     t[i] = make_application (&applications->val[i]);
 
   return erl_mk_list (t, applications->len);
+}
+
+static ETERM *
+make_hivex_value_list (const struct guestfs_hivex_value_list *hivex_values)
+{
+  ETERM *t[hivex_values->len];
+  size_t i;
+
+  for (i = 0; i < hivex_values->len; ++i)
+    t[i] = make_hivex_value (&hivex_values->val[i]);
+
+  return erl_mk_list (t, hivex_values->len);
 }
 
 static ETERM *
@@ -437,6 +560,18 @@ make_mdstat_list (const struct guestfs_mdstat_list *mdstats)
 }
 
 static ETERM *
+make_hivex_node_list (const struct guestfs_hivex_node_list *hivex_nodes)
+{
+  ETERM *t[hivex_nodes->len];
+  size_t i;
+
+  for (i = 0; i < hivex_nodes->len; ++i)
+    t[i] = make_hivex_node (&hivex_nodes->val[i]);
+
+  return erl_mk_list (t, hivex_nodes->len);
+}
+
+static ETERM *
 make_stat_list (const struct guestfs_stat_list *stats)
 {
   ETERM *t[stats->len];
@@ -446,6 +581,56 @@ make_stat_list (const struct guestfs_stat_list *stats)
     t[i] = make_stat (&stats->val[i]);
 
   return erl_mk_list (t, stats->len);
+}
+
+static ETERM *
+run_acl_delete_def_file (ETERM *message)
+{
+  char *dir = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_acl_delete_def_file (g, dir);
+  free (dir);
+  if (r == -1)
+    return make_error ("acl_delete_def_file");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_acl_get_file (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  char *acltype = erl_iolist_to_string (ARG (1));
+  char *r;
+
+  r = guestfs_acl_get_file (g, path, acltype);
+  free (path);
+  free (acltype);
+  if (r == NULL)
+    return make_error ("acl_get_file");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_acl_set_file (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  char *acltype = erl_iolist_to_string (ARG (1));
+  char *acl = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_acl_set_file (g, path, acltype, acl);
+  free (path);
+  free (acltype);
+  free (acl);
+  if (r == -1)
+    return make_error ("acl_set_file");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -529,20 +714,6 @@ static ETERM *
 run_add_drive (ETERM *message)
 {
   char *filename = erl_iolist_to_string (ARG (0));
-  int r;
-
-  r = guestfs_add_drive (g, filename);
-  free (filename);
-  if (r == -1)
-    return make_error ("add_drive");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_add_drive_opts (ETERM *message)
-{
-  char *filename = erl_iolist_to_string (ARG (0));
 
   struct guestfs_add_drive_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
@@ -572,7 +743,12 @@ run_add_drive_opts (ETERM *message)
       optargs_s.name = erl_iolist_to_string (hd_value);
     }
     else
-      return unknown_optarg ("add_drive_opts", hd_name);
+    if (atom_equals (hd_name, "label")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
+      optargs_s.label = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("add_drive", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
 
@@ -586,8 +762,10 @@ run_add_drive_opts (ETERM *message)
     free ((char *) optargs_s.iface);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK))
     free ((char *) optargs_s.name);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK))
+    free ((char *) optargs_s.label);
   if (r == -1)
-    return make_error ("add_drive_opts");
+    return make_error ("add_drive");
 
   return erl_mk_atom ("ok");
 }
@@ -724,7 +902,7 @@ static ETERM *
 run_aug_init (ETERM *message)
 {
   char *root = erl_iolist_to_string (ARG (0));
-  int flags = ERL_INT_VALUE (ARG (1));
+  int flags = get_int (ARG (1));
   int r;
 
   r = guestfs_aug_init (g, root, flags);
@@ -1035,7 +1213,7 @@ static ETERM *
 run_blockdev_setbsz (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int blocksize = ERL_INT_VALUE (ARG (1));
+  int blocksize = get_int (ARG (1));
   int r;
 
   r = guestfs_blockdev_setbsz (g, device, blocksize);
@@ -1135,7 +1313,7 @@ run_btrfs_filesystem_resize (ETERM *message)
 
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK;
-      optargs_s.size = ERL_LL_VALUE (hd_value);
+      optargs_s.size = get_int64 (hd_value);
     }
     else
       return unknown_optarg ("btrfs_filesystem_resize", hd_name);
@@ -1181,7 +1359,7 @@ run_btrfs_fsck (ETERM *message)
 
     if (atom_equals (hd_name, "superblock")) {
       optargs_s.bitmask |= GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK;
-      optargs_s.superblock = ERL_LL_VALUE (hd_value);
+      optargs_s.superblock = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "repair")) {
@@ -1265,7 +1443,7 @@ run_btrfs_subvolume_list (ETERM *message)
 static ETERM *
 run_btrfs_subvolume_set_default (ETERM *message)
 {
-  int64_t id = ERL_LL_VALUE (ARG (0));
+  int64_t id = get_int64 (ARG (0));
   char *fs = erl_iolist_to_string (ARG (1));
   int r;
 
@@ -1289,6 +1467,54 @@ run_btrfs_subvolume_snapshot (ETERM *message)
   free (dest);
   if (r == -1)
     return make_error ("btrfs_subvolume_snapshot");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_canonical_device_name (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_canonical_device_name (g, device);
+  free (device);
+  if (r == NULL)
+    return make_error ("canonical_device_name");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_cap_get_file (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_cap_get_file (g, path);
+  free (path);
+  if (r == NULL)
+    return make_error ("cap_get_file");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_cap_set_file (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  char *cap = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_cap_set_file (g, path, cap);
+  free (path);
+  free (cap);
+  if (r == -1)
+    return make_error ("cap_set_file");
 
   return erl_mk_atom ("ok");
 }
@@ -1382,7 +1608,7 @@ run_checksums_out (ETERM *message)
 static ETERM *
 run_chmod (ETERM *message)
 {
-  int mode = ERL_INT_VALUE (ARG (0));
+  int mode = get_int (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
   int r;
 
@@ -1397,8 +1623,8 @@ run_chmod (ETERM *message)
 static ETERM *
 run_chown (ETERM *message)
 {
-  int owner = ERL_INT_VALUE (ARG (0));
-  int group = ERL_INT_VALUE (ARG (1));
+  int owner = get_int (ARG (0));
+  int group = get_int (ARG (1));
   char *path = erl_iolist_to_string (ARG (2));
   int r;
 
@@ -1460,7 +1686,7 @@ run_compress_device_out (ETERM *message)
 
     if (atom_equals (hd_name, "level")) {
       optargs_s.bitmask |= GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK;
-      optargs_s.level = ERL_INT_VALUE (hd_value);
+      optargs_s.level = get_int (hd_value);
     }
     else
       return unknown_optarg ("compress_device_out", hd_name);
@@ -1496,7 +1722,7 @@ run_compress_out (ETERM *message)
 
     if (atom_equals (hd_name, "level")) {
       optargs_s.bitmask |= GUESTFS_COMPRESS_OUT_LEVEL_BITMASK;
-      optargs_s.level = ERL_INT_VALUE (hd_value);
+      optargs_s.level = get_int (hd_value);
     }
     else
       return unknown_optarg ("compress_out", hd_name);
@@ -1551,17 +1777,17 @@ run_copy_device_to_device (ETERM *message)
 
     if (atom_equals (hd_name, "srcoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK;
-      optargs_s.srcoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.srcoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "destoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK;
-      optargs_s.destoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.destoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
-      optargs_s.size = ERL_LL_VALUE (hd_value);
+      optargs_s.size = get_int64 (hd_value);
     }
     else
       return unknown_optarg ("copy_device_to_device", hd_name);
@@ -1595,17 +1821,17 @@ run_copy_device_to_file (ETERM *message)
 
     if (atom_equals (hd_name, "srcoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK;
-      optargs_s.srcoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.srcoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "destoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK;
-      optargs_s.destoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.destoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
-      optargs_s.size = ERL_LL_VALUE (hd_value);
+      optargs_s.size = get_int64 (hd_value);
     }
     else
       return unknown_optarg ("copy_device_to_file", hd_name);
@@ -1639,17 +1865,17 @@ run_copy_file_to_device (ETERM *message)
 
     if (atom_equals (hd_name, "srcoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK;
-      optargs_s.srcoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.srcoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "destoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK;
-      optargs_s.destoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.destoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
-      optargs_s.size = ERL_LL_VALUE (hd_value);
+      optargs_s.size = get_int64 (hd_value);
     }
     else
       return unknown_optarg ("copy_file_to_device", hd_name);
@@ -1683,17 +1909,17 @@ run_copy_file_to_file (ETERM *message)
 
     if (atom_equals (hd_name, "srcoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK;
-      optargs_s.srcoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.srcoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "destoffset")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK;
-      optargs_s.destoffset = ERL_LL_VALUE (hd_value);
+      optargs_s.destoffset = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
-      optargs_s.size = ERL_LL_VALUE (hd_value);
+      optargs_s.size = get_int64 (hd_value);
     }
     else
       return unknown_optarg ("copy_file_to_file", hd_name);
@@ -1716,7 +1942,7 @@ run_copy_size (ETERM *message)
 {
   char *src = erl_iolist_to_string (ARG (0));
   char *dest = erl_iolist_to_string (ARG (1));
-  int64_t size = ERL_LL_VALUE (ARG (2));
+  int64_t size = get_int64 (ARG (2));
   int r;
 
   r = guestfs_copy_size (g, src, dest, size);
@@ -1795,21 +2021,6 @@ run_debug (ETERM *message)
 }
 
 static ETERM *
-run_debug_cmdline (ETERM *message)
-{
-  char **r;
-
-  r = guestfs_debug_cmdline (g);
-  if (r == NULL)
-    return make_error ("debug_cmdline");
-
-  ETERM *rt = make_string_list (r);
-  free_strings (r);
-
-  return rt;
-}
-
-static ETERM *
 run_debug_drives (ETERM *message)
 {
   char **r;
@@ -1829,7 +2040,7 @@ run_debug_upload (ETERM *message)
 {
   char *filename = erl_iolist_to_string (ARG (0));
   char *tmpname = erl_iolist_to_string (ARG (1));
-  int mode = ERL_INT_VALUE (ARG (2));
+  int mode = get_int (ARG (2));
   int r;
 
   r = guestfs_debug_upload (g, filename, tmpname, mode);
@@ -1884,6 +2095,50 @@ run_df_h (ETERM *message)
 }
 
 static ETERM *
+run_disk_format (ETERM *message)
+{
+  char *filename = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_disk_format (g, filename);
+  free (filename);
+  if (r == NULL)
+    return make_error ("disk_format");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_disk_has_backing_file (ETERM *message)
+{
+  char *filename = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_disk_has_backing_file (g, filename);
+  free (filename);
+  if (r == -1)
+    return make_error ("disk_has_backing_file");
+
+  return make_bool (r);
+}
+
+static ETERM *
+run_disk_virtual_size (ETERM *message)
+{
+  char *filename = erl_iolist_to_string (ARG (0));
+  int64_t r;
+
+  r = guestfs_disk_virtual_size (g, filename);
+  free (filename);
+  if (r == -1)
+    return make_error ("disk_virtual_size");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
 run_dmesg (ETERM *message)
 {
   char *r;
@@ -1918,8 +2173,8 @@ run_download_offset (ETERM *message)
 {
   char *remotefilename = erl_iolist_to_string (ARG (0));
   char *filename = erl_iolist_to_string (ARG (1));
-  int64_t offset = ERL_LL_VALUE (ARG (2));
-  int64_t size = ERL_LL_VALUE (ARG (3));
+  int64_t offset = get_int64 (ARG (2));
+  int64_t size = get_int64 (ARG (3));
   int r;
 
   r = guestfs_download_offset (g, remotefilename, filename, offset, size);
@@ -1934,7 +2189,7 @@ run_download_offset (ETERM *message)
 static ETERM *
 run_drop_caches (ETERM *message)
 {
-  int whattodrop = ERL_INT_VALUE (ARG (0));
+  int whattodrop = get_int (ARG (0));
   int r;
 
   r = guestfs_drop_caches (g, whattodrop);
@@ -2097,7 +2352,7 @@ static ETERM *
 run_fallocate (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  int len = ERL_INT_VALUE (ARG (1));
+  int len = get_int (ARG (1));
   int r;
 
   r = guestfs_fallocate (g, path, len);
@@ -2112,7 +2367,7 @@ static ETERM *
 run_fallocate64 (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  int64_t len = ERL_LL_VALUE (ARG (1));
+  int64_t len = get_int64 (ARG (1));
   int r;
 
   r = guestfs_fallocate64 (g, path, len);
@@ -2208,10 +2463,24 @@ run_filesize (ETERM *message)
 }
 
 static ETERM *
+run_filesystem_available (ETERM *message)
+{
+  char *filesystem = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_filesystem_available (g, filesystem);
+  free (filesystem);
+  if (r == -1)
+    return make_error ("filesystem_available");
+
+  return make_bool (r);
+}
+
+static ETERM *
 run_fill (ETERM *message)
 {
-  int c = ERL_INT_VALUE (ARG (0));
-  int len = ERL_INT_VALUE (ARG (1));
+  int c = get_int (ARG (0));
+  int len = get_int (ARG (1));
   char *path = erl_iolist_to_string (ARG (2));
   int r;
 
@@ -2224,10 +2493,25 @@ run_fill (ETERM *message)
 }
 
 static ETERM *
+run_fill_dir (ETERM *message)
+{
+  char *dir = erl_iolist_to_string (ARG (0));
+  int nr = get_int (ARG (1));
+  int r;
+
+  r = guestfs_fill_dir (g, dir, nr);
+  free (dir);
+  if (r == -1)
+    return make_error ("fill_dir");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_fill_pattern (ETERM *message)
 {
   char *pattern = erl_iolist_to_string (ARG (0));
-  int len = ERL_INT_VALUE (ARG (1));
+  int len = get_int (ARG (1));
   char *path = erl_iolist_to_string (ARG (2));
   int r;
 
@@ -2322,6 +2606,48 @@ run_fsck (ETERM *message)
 }
 
 static ETERM *
+run_fstrim (ETERM *message)
+{
+  char *mountpoint = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_fstrim_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_fstrim_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "offset")) {
+      optargs_s.bitmask |= GUESTFS_FSTRIM_OFFSET_BITMASK;
+      optargs_s.offset = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "length")) {
+      optargs_s.bitmask |= GUESTFS_FSTRIM_LENGTH_BITMASK;
+      optargs_s.length = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "minimumfreeextent")) {
+      optargs_s.bitmask |= GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK;
+      optargs_s.minimumfreeextent = get_int64 (hd_value);
+    }
+    else
+      return unknown_optarg ("fstrim", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_fstrim_argv (g, mountpoint, optargs);
+  free (mountpoint);
+  if (r == -1)
+    return make_error ("fstrim");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_get_append (ETERM *message)
 {
   const char *r;
@@ -2360,6 +2686,20 @@ run_get_autosync (ETERM *message)
     return make_error ("get_autosync");
 
   return make_bool (r);
+}
+
+static ETERM *
+run_get_cachedir (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_get_cachedir (g);
+  if (r == NULL)
+    return make_error ("get_cachedir");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
 }
 
 static ETERM *
@@ -2433,6 +2773,66 @@ run_get_e2uuid (ETERM *message)
 
   ETERM *rt = erl_mk_string (r);
   free (r);
+  return rt;
+}
+
+static ETERM *
+run_get_libvirt_requested_credential_challenge (ETERM *message)
+{
+  int index = get_int (ARG (0));
+  char *r;
+
+  r = guestfs_get_libvirt_requested_credential_challenge (g, index);
+  if (r == NULL)
+    return make_error ("get_libvirt_requested_credential_challenge");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_get_libvirt_requested_credential_defresult (ETERM *message)
+{
+  int index = get_int (ARG (0));
+  char *r;
+
+  r = guestfs_get_libvirt_requested_credential_defresult (g, index);
+  if (r == NULL)
+    return make_error ("get_libvirt_requested_credential_defresult");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_get_libvirt_requested_credential_prompt (ETERM *message)
+{
+  int index = get_int (ARG (0));
+  char *r;
+
+  r = guestfs_get_libvirt_requested_credential_prompt (g, index);
+  if (r == NULL)
+    return make_error ("get_libvirt_requested_credential_prompt");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_get_libvirt_requested_credentials (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_get_libvirt_requested_credentials (g);
+  if (r == NULL)
+    return make_error ("get_libvirt_requested_credentials");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
   return rt;
 }
 
@@ -2557,6 +2957,20 @@ run_get_state (ETERM *message)
 }
 
 static ETERM *
+run_get_tmpdir (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_get_tmpdir (g);
+  if (r == NULL)
+    return make_error ("get_tmpdir");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_get_trace (ETERM *message)
 {
   int r;
@@ -2663,9 +3077,42 @@ run_grep (ETERM *message)
 {
   char *regex = erl_iolist_to_string (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_grep_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_grep_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "extended")) {
+      optargs_s.bitmask |= GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
+      optargs_s.extended = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "fixed")) {
+      optargs_s.bitmask |= GUESTFS_GREP_OPTS_FIXED_BITMASK;
+      optargs_s.fixed = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "insensitive")) {
+      optargs_s.bitmask |= GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
+      optargs_s.insensitive = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "compressed")) {
+      optargs_s.bitmask |= GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
+      optargs_s.compressed = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("grep", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   char **r;
 
-  r = guestfs_grep (g, regex, path);
+  r = guestfs_grep_opts_argv (g, regex, path, optargs);
   free (regex);
   free (path);
   if (r == NULL)
@@ -2732,7 +3179,7 @@ run_head (ETERM *message)
 static ETERM *
 run_head_n (ETERM *message)
 {
-  int nrlines = ERL_INT_VALUE (ARG (0));
+  int nrlines = get_int (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
@@ -2759,6 +3206,284 @@ run_hexdump (ETERM *message)
     return make_error ("hexdump");
 
   ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_hivex_close (ETERM *message)
+{
+  int r;
+
+  r = guestfs_hivex_close (g);
+  if (r == -1)
+    return make_error ("hivex_close");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_hivex_commit (ETERM *message)
+{
+  char *filename;
+  if (atom_equals (ARG (0), "undefined"))
+    filename = NULL;
+  else
+    filename = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_hivex_commit (g, filename);
+  free (filename);
+  if (r == -1)
+    return make_error ("hivex_commit");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_hivex_node_add_child (ETERM *message)
+{
+  int64_t parent = get_int64 (ARG (0));
+  char *name = erl_iolist_to_string (ARG (1));
+  int64_t r;
+
+  r = guestfs_hivex_node_add_child (g, parent, name);
+  free (name);
+  if (r == -1)
+    return make_error ("hivex_node_add_child");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_hivex_node_children (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  struct guestfs_hivex_node_list *r;
+
+  r = guestfs_hivex_node_children (g, nodeh);
+  if (r == NULL)
+    return make_error ("hivex_node_children");
+
+  ETERM *rt = make_hivex_node_list (r);
+  guestfs_free_hivex_node_list (r);
+  return rt;
+}
+
+static ETERM *
+run_hivex_node_delete_child (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  int r;
+
+  r = guestfs_hivex_node_delete_child (g, nodeh);
+  if (r == -1)
+    return make_error ("hivex_node_delete_child");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_hivex_node_get_child (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  char *name = erl_iolist_to_string (ARG (1));
+  int64_t r;
+
+  r = guestfs_hivex_node_get_child (g, nodeh, name);
+  free (name);
+  if (r == -1)
+    return make_error ("hivex_node_get_child");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_hivex_node_get_value (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  char *key = erl_iolist_to_string (ARG (1));
+  int64_t r;
+
+  r = guestfs_hivex_node_get_value (g, nodeh, key);
+  free (key);
+  if (r == -1)
+    return make_error ("hivex_node_get_value");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_hivex_node_name (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  char *r;
+
+  r = guestfs_hivex_node_name (g, nodeh);
+  if (r == NULL)
+    return make_error ("hivex_node_name");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_hivex_node_parent (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  int64_t r;
+
+  r = guestfs_hivex_node_parent (g, nodeh);
+  if (r == -1)
+    return make_error ("hivex_node_parent");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_hivex_node_set_value (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  char *key = erl_iolist_to_string (ARG (1));
+  int64_t t = get_int64 (ARG (2));
+  ETERM *val_bin = erl_iolist_to_binary (ARG (3));
+  const void *val = ERL_BIN_PTR (val_bin);
+  size_t val_size = ERL_BIN_SIZE (val_bin);
+  int r;
+
+  r = guestfs_hivex_node_set_value (g, nodeh, key, t, val, val_size);
+  free (key);
+  if (r == -1)
+    return make_error ("hivex_node_set_value");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_hivex_node_values (ETERM *message)
+{
+  int64_t nodeh = get_int64 (ARG (0));
+  struct guestfs_hivex_value_list *r;
+
+  r = guestfs_hivex_node_values (g, nodeh);
+  if (r == NULL)
+    return make_error ("hivex_node_values");
+
+  ETERM *rt = make_hivex_value_list (r);
+  guestfs_free_hivex_value_list (r);
+  return rt;
+}
+
+static ETERM *
+run_hivex_open (ETERM *message)
+{
+  char *filename = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_hivex_open_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_hivex_open_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "verbose")) {
+      optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
+      optargs_s.verbose = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "debug")) {
+      optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
+      optargs_s.debug = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "write")) {
+      optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
+      optargs_s.write = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("hivex_open", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_hivex_open_argv (g, filename, optargs);
+  free (filename);
+  if (r == -1)
+    return make_error ("hivex_open");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_hivex_root (ETERM *message)
+{
+  int64_t r;
+
+  r = guestfs_hivex_root (g);
+  if (r == -1)
+    return make_error ("hivex_root");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_hivex_value_key (ETERM *message)
+{
+  int64_t valueh = get_int64 (ARG (0));
+  char *r;
+
+  r = guestfs_hivex_value_key (g, valueh);
+  if (r == NULL)
+    return make_error ("hivex_value_key");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_hivex_value_type (ETERM *message)
+{
+  int64_t valueh = get_int64 (ARG (0));
+  int64_t r;
+
+  r = guestfs_hivex_value_type (g, valueh);
+  if (r == -1)
+    return make_error ("hivex_value_type");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_hivex_value_utf8 (ETERM *message)
+{
+  int64_t valueh = get_int64 (ARG (0));
+  char *r;
+
+  r = guestfs_hivex_value_utf8 (g, valueh);
+  if (r == NULL)
+    return make_error ("hivex_value_utf8");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_hivex_value_value (ETERM *message)
+{
+  int64_t valueh = get_int64 (ARG (0));
+  char *r;
+  size_t size;
+
+  r = guestfs_hivex_value_value (g, valueh, &size);
+  if (r == NULL)
+    return make_error ("hivex_value_value");
+
+  ETERM *rt = erl_mk_estring (r, size);
   free (r);
   return rt;
 }
@@ -2803,7 +3528,7 @@ static ETERM *
 run_inotify_add_watch (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  int mask = ERL_INT_VALUE (ARG (1));
+  int mask = get_int (ARG (1));
   int64_t r;
 
   r = guestfs_inotify_add_watch (g, path, mask);
@@ -2844,7 +3569,7 @@ run_inotify_files (ETERM *message)
 static ETERM *
 run_inotify_init (ETERM *message)
 {
-  int maxevents = ERL_INT_VALUE (ARG (0));
+  int maxevents = get_int (ARG (0));
   int r;
 
   r = guestfs_inotify_init (g, maxevents);
@@ -2871,7 +3596,7 @@ run_inotify_read (ETERM *message)
 static ETERM *
 run_inotify_rm_watch (ETERM *message)
 {
-  int wd = ERL_INT_VALUE (ARG (0));
+  int wd = get_int (ARG (0));
   int r;
 
   r = guestfs_inotify_rm_watch (g, wd);
@@ -3248,6 +3973,22 @@ run_inspect_list_applications (ETERM *message)
 }
 
 static ETERM *
+run_inspect_list_applications2 (ETERM *message)
+{
+  char *root = erl_iolist_to_string (ARG (0));
+  struct guestfs_application2_list *r;
+
+  r = guestfs_inspect_list_applications2 (g, root);
+  free (root);
+  if (r == NULL)
+    return make_error ("inspect_list_applications2");
+
+  ETERM *rt = make_application2_list (r);
+  guestfs_free_application2_list (r);
+  return rt;
+}
+
+static ETERM *
 run_inspect_os (ETERM *message)
 {
   char **r;
@@ -3270,6 +4011,927 @@ run_internal_autosync (ETERM *message)
   r = guestfs_internal_autosync (g);
   if (r == -1)
     return make_error ("internal_autosync");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_hot_add_drive (ETERM *message)
+{
+  char *label = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_internal_hot_add_drive (g, label);
+  free (label);
+  if (r == -1)
+    return make_error ("internal_hot_add_drive");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_hot_remove_drive (ETERM *message)
+{
+  char *label = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_internal_hot_remove_drive (g, label);
+  free (label);
+  if (r == -1)
+    return make_error ("internal_hot_remove_drive");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_hot_remove_drive_precheck (ETERM *message)
+{
+  char *label = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_internal_hot_remove_drive_precheck (g, label);
+  free (label);
+  if (r == -1)
+    return make_error ("internal_hot_remove_drive_precheck");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_lstatlist (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  char **names = get_string_list (ARG (1));
+  struct guestfs_stat_list *r;
+
+  r = guestfs_internal_lstatlist (g, path, names);
+  free (path);
+  free_strings (names);
+  if (r == NULL)
+    return make_error ("internal_lstatlist");
+
+  ETERM *rt = make_stat_list (r);
+  guestfs_free_stat_list (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_lxattrlist (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  char **names = get_string_list (ARG (1));
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_internal_lxattrlist (g, path, names);
+  free (path);
+  free_strings (names);
+  if (r == NULL)
+    return make_error ("internal_lxattrlist");
+
+  ETERM *rt = make_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_readlinklist (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  char **names = get_string_list (ARG (1));
+  char **r;
+
+  r = guestfs_internal_readlinklist (g, path, names);
+  free (path);
+  free_strings (names);
+  if (r == NULL)
+    return make_error ("internal_readlinklist");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_internal_test (ETERM *message)
+{
+  char *str = erl_iolist_to_string (ARG (0));
+  char *optstr;
+  if (atom_equals (ARG (1), "undefined"))
+    optstr = NULL;
+  else
+    optstr = erl_iolist_to_string (ARG (1));
+  char **strlist = get_string_list (ARG (2));
+  int b = get_bool (ARG (3));
+  int integer = get_int (ARG (4));
+  int64_t integer64 = get_int64 (ARG (5));
+  char *filein = erl_iolist_to_string (ARG (6));
+  char *fileout = erl_iolist_to_string (ARG (7));
+  ETERM *bufferin_bin = erl_iolist_to_binary (ARG (8));
+  const void *bufferin = ERL_BIN_PTR (bufferin_bin);
+  size_t bufferin_size = ERL_BIN_SIZE (bufferin_bin);
+
+  struct guestfs_internal_test_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_internal_test_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (9);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "obool")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OBOOL_BITMASK;
+      optargs_s.obool = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "oint")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OINT_BITMASK;
+      optargs_s.oint = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "oint64")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OINT64_BITMASK;
+      optargs_s.oint64 = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "ostring")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
+      optargs_s.ostring = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "ostringlist")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK;
+      optargs_s.ostringlist = get_string_list (hd_value);
+    }
+    else
+      return unknown_optarg ("internal_test", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
+  free (str);
+  free (optstr);
+  free_strings (strlist);
+  free (filein);
+  free (fileout);
+  if ((optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRING_BITMASK))
+    free ((char *) optargs_s.ostring);
+  if ((optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK))
+    free_strings ((char **) optargs_s.ostringlist);
+  if (r == -1)
+    return make_error ("internal_test");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_test_63_optargs (ETERM *message)
+{
+
+  struct guestfs_internal_test_63_optargs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_internal_test_63_optargs_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (0);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "opt1")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK;
+      optargs_s.opt1 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt2")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK;
+      optargs_s.opt2 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt3")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK;
+      optargs_s.opt3 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt4")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK;
+      optargs_s.opt4 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt5")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK;
+      optargs_s.opt5 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt6")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK;
+      optargs_s.opt6 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt7")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK;
+      optargs_s.opt7 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt8")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK;
+      optargs_s.opt8 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt9")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK;
+      optargs_s.opt9 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt10")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK;
+      optargs_s.opt10 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt11")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK;
+      optargs_s.opt11 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt12")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK;
+      optargs_s.opt12 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt13")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK;
+      optargs_s.opt13 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt14")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK;
+      optargs_s.opt14 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt15")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK;
+      optargs_s.opt15 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt16")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK;
+      optargs_s.opt16 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt17")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK;
+      optargs_s.opt17 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt18")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK;
+      optargs_s.opt18 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt19")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK;
+      optargs_s.opt19 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt20")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK;
+      optargs_s.opt20 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt21")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK;
+      optargs_s.opt21 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt22")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK;
+      optargs_s.opt22 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt23")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK;
+      optargs_s.opt23 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt24")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK;
+      optargs_s.opt24 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt25")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK;
+      optargs_s.opt25 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt26")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK;
+      optargs_s.opt26 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt27")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK;
+      optargs_s.opt27 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt28")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK;
+      optargs_s.opt28 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt29")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK;
+      optargs_s.opt29 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt30")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK;
+      optargs_s.opt30 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt31")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK;
+      optargs_s.opt31 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt32")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK;
+      optargs_s.opt32 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt33")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK;
+      optargs_s.opt33 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt34")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK;
+      optargs_s.opt34 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt35")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK;
+      optargs_s.opt35 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt36")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK;
+      optargs_s.opt36 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt37")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK;
+      optargs_s.opt37 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt38")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK;
+      optargs_s.opt38 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt39")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK;
+      optargs_s.opt39 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt40")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK;
+      optargs_s.opt40 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt41")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK;
+      optargs_s.opt41 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt42")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK;
+      optargs_s.opt42 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt43")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK;
+      optargs_s.opt43 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt44")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK;
+      optargs_s.opt44 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt45")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK;
+      optargs_s.opt45 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt46")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK;
+      optargs_s.opt46 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt47")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK;
+      optargs_s.opt47 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt48")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK;
+      optargs_s.opt48 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt49")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK;
+      optargs_s.opt49 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt50")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK;
+      optargs_s.opt50 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt51")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK;
+      optargs_s.opt51 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt52")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK;
+      optargs_s.opt52 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt53")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK;
+      optargs_s.opt53 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt54")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK;
+      optargs_s.opt54 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt55")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK;
+      optargs_s.opt55 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt56")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK;
+      optargs_s.opt56 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt57")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK;
+      optargs_s.opt57 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt58")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK;
+      optargs_s.opt58 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt59")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK;
+      optargs_s.opt59 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt60")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK;
+      optargs_s.opt60 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt61")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK;
+      optargs_s.opt61 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt62")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK;
+      optargs_s.opt62 = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "opt63")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK;
+      optargs_s.opt63 = get_int (hd_value);
+    }
+    else
+      return unknown_optarg ("internal_test_63_optargs", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_internal_test_63_optargs_argv (g, optargs);
+  if (r == -1)
+    return make_error ("internal_test_63_optargs");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_test_close_output (ETERM *message)
+{
+  int r;
+
+  r = guestfs_internal_test_close_output (g);
+  if (r == -1)
+    return make_error ("internal_test_close_output");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_test_only_optargs (ETERM *message)
+{
+
+  struct guestfs_internal_test_only_optargs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_internal_test_only_optargs_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (0);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "test")) {
+      optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK;
+      optargs_s.test = get_int (hd_value);
+    }
+    else
+      return unknown_optarg ("internal_test_only_optargs", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_internal_test_only_optargs_argv (g, optargs);
+  if (r == -1)
+    return make_error ("internal_test_only_optargs");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_test_rbool (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_internal_test_rbool (g, val);
+  free (val);
+  if (r == -1)
+    return make_error ("internal_test_rbool");
+
+  return make_bool (r);
+}
+
+static ETERM *
+run_internal_test_rboolerr (ETERM *message)
+{
+  int r;
+
+  r = guestfs_internal_test_rboolerr (g);
+  if (r == -1)
+    return make_error ("internal_test_rboolerr");
+
+  return make_bool (r);
+}
+
+static ETERM *
+run_internal_test_rbufferout (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  char *r;
+  size_t size;
+
+  r = guestfs_internal_test_rbufferout (g, val, &size);
+  free (val);
+  if (r == NULL)
+    return make_error ("internal_test_rbufferout");
+
+  ETERM *rt = erl_mk_estring (r, size);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rbufferouterr (ETERM *message)
+{
+  char *r;
+  size_t size;
+
+  r = guestfs_internal_test_rbufferouterr (g, &size);
+  if (r == NULL)
+    return make_error ("internal_test_rbufferouterr");
+
+  ETERM *rt = erl_mk_estring (r, size);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rconstoptstring (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  const char *r;
+
+  r = guestfs_internal_test_rconstoptstring (g, val);
+  free (val);
+
+  ETERM *rt;
+  if (r)
+    rt = erl_mk_string (r);
+  else
+    rt = erl_mk_atom ("undefined");
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rconstoptstringerr (ETERM *message)
+{
+  const char *r;
+
+  r = guestfs_internal_test_rconstoptstringerr (g);
+
+  ETERM *rt;
+  if (r)
+    rt = erl_mk_string (r);
+  else
+    rt = erl_mk_atom ("undefined");
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rconststring (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  const char *r;
+
+  r = guestfs_internal_test_rconststring (g, val);
+  free (val);
+  if (r == NULL)
+    return make_error ("internal_test_rconststring");
+
+  return erl_mk_string (r);
+}
+
+static ETERM *
+run_internal_test_rconststringerr (ETERM *message)
+{
+  const char *r;
+
+  r = guestfs_internal_test_rconststringerr (g);
+  if (r == NULL)
+    return make_error ("internal_test_rconststringerr");
+
+  return erl_mk_string (r);
+}
+
+static ETERM *
+run_internal_test_rhashtable (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  char **r;
+
+  r = guestfs_internal_test_rhashtable (g, val);
+  free (val);
+  if (r == NULL)
+    return make_error ("internal_test_rhashtable");
+
+  ETERM *rt = make_table (r);
+  free_strings (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rhashtableerr (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_internal_test_rhashtableerr (g);
+  if (r == NULL)
+    return make_error ("internal_test_rhashtableerr");
+
+  ETERM *rt = make_table (r);
+  free_strings (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rint (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_internal_test_rint (g, val);
+  free (val);
+  if (r == -1)
+    return make_error ("internal_test_rint");
+
+  return erl_mk_int (r);
+}
+
+static ETERM *
+run_internal_test_rint64 (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  int64_t r;
+
+  r = guestfs_internal_test_rint64 (g, val);
+  free (val);
+  if (r == -1)
+    return make_error ("internal_test_rint64");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_internal_test_rint64err (ETERM *message)
+{
+  int64_t r;
+
+  r = guestfs_internal_test_rint64err (g);
+  if (r == -1)
+    return make_error ("internal_test_rint64err");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_internal_test_rinterr (ETERM *message)
+{
+  int r;
+
+  r = guestfs_internal_test_rinterr (g);
+  if (r == -1)
+    return make_error ("internal_test_rinterr");
+
+  return erl_mk_int (r);
+}
+
+static ETERM *
+run_internal_test_rstring (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_internal_test_rstring (g, val);
+  free (val);
+  if (r == NULL)
+    return make_error ("internal_test_rstring");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rstringerr (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_internal_test_rstringerr (g);
+  if (r == NULL)
+    return make_error ("internal_test_rstringerr");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rstringlist (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  char **r;
+
+  r = guestfs_internal_test_rstringlist (g, val);
+  free (val);
+  if (r == NULL)
+    return make_error ("internal_test_rstringlist");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rstringlisterr (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_internal_test_rstringlisterr (g);
+  if (r == NULL)
+    return make_error ("internal_test_rstringlisterr");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rstruct (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  struct guestfs_lvm_pv *r;
+
+  r = guestfs_internal_test_rstruct (g, val);
+  free (val);
+  if (r == NULL)
+    return make_error ("internal_test_rstruct");
+
+  ETERM *rt = make_lvm_pv (r);
+  guestfs_free_lvm_pv (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rstructerr (ETERM *message)
+{
+  struct guestfs_lvm_pv *r;
+
+  r = guestfs_internal_test_rstructerr (g);
+  if (r == NULL)
+    return make_error ("internal_test_rstructerr");
+
+  ETERM *rt = make_lvm_pv (r);
+  guestfs_free_lvm_pv (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rstructlist (ETERM *message)
+{
+  char *val = erl_iolist_to_string (ARG (0));
+  struct guestfs_lvm_pv_list *r;
+
+  r = guestfs_internal_test_rstructlist (g, val);
+  free (val);
+  if (r == NULL)
+    return make_error ("internal_test_rstructlist");
+
+  ETERM *rt = make_lvm_pv_list (r);
+  guestfs_free_lvm_pv_list (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_rstructlisterr (ETERM *message)
+{
+  struct guestfs_lvm_pv_list *r;
+
+  r = guestfs_internal_test_rstructlisterr (g);
+  if (r == NULL)
+    return make_error ("internal_test_rstructlisterr");
+
+  ETERM *rt = make_lvm_pv_list (r);
+  guestfs_free_lvm_pv_list (r);
+  return rt;
+}
+
+static ETERM *
+run_internal_test_set_output (ETERM *message)
+{
+  char *filename = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_internal_test_set_output (g, filename);
+  free (filename);
+  if (r == -1)
+    return make_error ("internal_test_set_output");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_write (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
+  const void *content = ERL_BIN_PTR (content_bin);
+  size_t content_size = ERL_BIN_SIZE (content_bin);
+  int r;
+
+  r = guestfs_internal_write (g, path, content, content_size);
+  free (path);
+  if (r == -1)
+    return make_error ("internal_write");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_internal_write_append (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
+  const void *content = ERL_BIN_PTR (content_bin);
+  size_t content_size = ERL_BIN_SIZE (content_bin);
+  int r;
+
+  r = guestfs_internal_write_append (g, path, content, content_size);
+  free (path);
+  if (r == -1)
+    return make_error ("internal_write_append");
 
   return erl_mk_atom ("ok");
 }
@@ -3521,8 +5183,8 @@ run_launch (ETERM *message)
 static ETERM *
 run_lchown (ETERM *message)
 {
-  int owner = ERL_INT_VALUE (ARG (0));
-  int group = ERL_INT_VALUE (ARG (1));
+  int owner = get_int (ARG (0));
+  int group = get_int (ARG (1));
   char *path = erl_iolist_to_string (ARG (2));
   int r;
 
@@ -3532,6 +5194,167 @@ run_lchown (ETERM *message)
     return make_error ("lchown");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_ldmtool_create_all (ETERM *message)
+{
+  int r;
+
+  r = guestfs_ldmtool_create_all (g);
+  if (r == -1)
+    return make_error ("ldmtool_create_all");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_ldmtool_diskgroup_disks (ETERM *message)
+{
+  char *diskgroup = erl_iolist_to_string (ARG (0));
+  char **r;
+
+  r = guestfs_ldmtool_diskgroup_disks (g, diskgroup);
+  free (diskgroup);
+  if (r == NULL)
+    return make_error ("ldmtool_diskgroup_disks");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_ldmtool_diskgroup_name (ETERM *message)
+{
+  char *diskgroup = erl_iolist_to_string (ARG (0));
+  char *r;
+
+  r = guestfs_ldmtool_diskgroup_name (g, diskgroup);
+  free (diskgroup);
+  if (r == NULL)
+    return make_error ("ldmtool_diskgroup_name");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_ldmtool_diskgroup_volumes (ETERM *message)
+{
+  char *diskgroup = erl_iolist_to_string (ARG (0));
+  char **r;
+
+  r = guestfs_ldmtool_diskgroup_volumes (g, diskgroup);
+  free (diskgroup);
+  if (r == NULL)
+    return make_error ("ldmtool_diskgroup_volumes");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_ldmtool_remove_all (ETERM *message)
+{
+  int r;
+
+  r = guestfs_ldmtool_remove_all (g);
+  if (r == -1)
+    return make_error ("ldmtool_remove_all");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_ldmtool_scan (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_ldmtool_scan (g);
+  if (r == NULL)
+    return make_error ("ldmtool_scan");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_ldmtool_scan_devices (ETERM *message)
+{
+  char **devices = get_string_list (ARG (0));
+  char **r;
+
+  r = guestfs_ldmtool_scan_devices (g, devices);
+  free_strings (devices);
+  if (r == NULL)
+    return make_error ("ldmtool_scan_devices");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_ldmtool_volume_hint (ETERM *message)
+{
+  char *diskgroup = erl_iolist_to_string (ARG (0));
+  char *volume = erl_iolist_to_string (ARG (1));
+  char *r;
+
+  r = guestfs_ldmtool_volume_hint (g, diskgroup, volume);
+  free (diskgroup);
+  free (volume);
+  if (r == NULL)
+    return make_error ("ldmtool_volume_hint");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_ldmtool_volume_partitions (ETERM *message)
+{
+  char *diskgroup = erl_iolist_to_string (ARG (0));
+  char *volume = erl_iolist_to_string (ARG (1));
+  char **r;
+
+  r = guestfs_ldmtool_volume_partitions (g, diskgroup, volume);
+  free (diskgroup);
+  free (volume);
+  if (r == NULL)
+    return make_error ("ldmtool_volume_partitions");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_ldmtool_volume_type (ETERM *message)
+{
+  char *diskgroup = erl_iolist_to_string (ARG (0));
+  char *volume = erl_iolist_to_string (ARG (1));
+  char *r;
+
+  r = guestfs_ldmtool_volume_type (g, diskgroup, volume);
+  free (diskgroup);
+  free (volume);
+  if (r == NULL)
+    return make_error ("ldmtool_volume_type");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
 }
 
 static ETERM *
@@ -3600,6 +5423,20 @@ run_list_devices (ETERM *message)
 }
 
 static ETERM *
+run_list_disk_labels (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_list_disk_labels (g);
+  if (r == NULL)
+    return make_error ("list_disk_labels");
+
+  ETERM *rt = make_table (r);
+  free_strings (r);
+  return rt;
+}
+
+static ETERM *
 run_list_dm_devices (ETERM *message)
 {
   char **r;
@@ -3625,6 +5462,36 @@ run_list_filesystems (ETERM *message)
 
   ETERM *rt = make_table (r);
   free_strings (r);
+  return rt;
+}
+
+static ETERM *
+run_list_ldm_partitions (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_list_ldm_partitions (g);
+  if (r == NULL)
+    return make_error ("list_ldm_partitions");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
+  return rt;
+}
+
+static ETERM *
+run_list_ldm_volumes (ETERM *message)
+{
+  char **r;
+
+  r = guestfs_list_ldm_volumes (g);
+  if (r == NULL)
+    return make_error ("list_ldm_volumes");
+
+  ETERM *rt = make_string_list (r);
+  free_strings (r);
+
   return rt;
 }
 
@@ -3788,11 +5655,27 @@ run_ls (ETERM *message)
 }
 
 static ETERM *
+run_ls0 (ETERM *message)
+{
+  char *dir = erl_iolist_to_string (ARG (0));
+  char *filenames = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_ls0 (g, dir, filenames);
+  free (dir);
+  free (filenames);
+  if (r == -1)
+    return make_error ("ls0");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_lsetxattr (ETERM *message)
 {
   char *xattr = erl_iolist_to_string (ARG (0));
   char *val = erl_iolist_to_string (ARG (1));
-  int vallen = ERL_INT_VALUE (ARG (2));
+  int vallen = get_int (ARG (2));
   char *path = erl_iolist_to_string (ARG (3));
   int r;
 
@@ -3846,7 +5729,7 @@ run_luks_add_key (ETERM *message)
   char *device = erl_iolist_to_string (ARG (0));
   char *key = erl_iolist_to_string (ARG (1));
   char *newkey = erl_iolist_to_string (ARG (2));
-  int keyslot = ERL_INT_VALUE (ARG (3));
+  int keyslot = get_int (ARG (3));
   int r;
 
   r = guestfs_luks_add_key (g, device, key, newkey, keyslot);
@@ -3878,7 +5761,7 @@ run_luks_format (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
   char *key = erl_iolist_to_string (ARG (1));
-  int keyslot = ERL_INT_VALUE (ARG (2));
+  int keyslot = get_int (ARG (2));
   int r;
 
   r = guestfs_luks_format (g, device, key, keyslot);
@@ -3895,7 +5778,7 @@ run_luks_format_cipher (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
   char *key = erl_iolist_to_string (ARG (1));
-  int keyslot = ERL_INT_VALUE (ARG (2));
+  int keyslot = get_int (ARG (2));
   char *cipher = erl_iolist_to_string (ARG (3));
   int r;
 
@@ -3914,7 +5797,7 @@ run_luks_kill_slot (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
   char *key = erl_iolist_to_string (ARG (1));
-  int keyslot = ERL_INT_VALUE (ARG (2));
+  int keyslot = get_int (ARG (2));
   int r;
 
   r = guestfs_luks_kill_slot (g, device, key, keyslot);
@@ -3967,7 +5850,7 @@ run_lvcreate (ETERM *message)
 {
   char *logvol = erl_iolist_to_string (ARG (0));
   char *volgroup = erl_iolist_to_string (ARG (1));
-  int mbytes = ERL_INT_VALUE (ARG (2));
+  int mbytes = get_int (ARG (2));
   int r;
 
   r = guestfs_lvcreate (g, logvol, volgroup, mbytes);
@@ -3984,7 +5867,7 @@ run_lvcreate_free (ETERM *message)
 {
   char *logvol = erl_iolist_to_string (ARG (0));
   char *volgroup = erl_iolist_to_string (ARG (1));
-  int percent = ERL_INT_VALUE (ARG (2));
+  int percent = get_int (ARG (2));
   int r;
 
   r = guestfs_lvcreate_free (g, logvol, volgroup, percent);
@@ -4084,7 +5967,7 @@ static ETERM *
 run_lvresize (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int mbytes = ERL_INT_VALUE (ARG (1));
+  int mbytes = get_int (ARG (1));
   int r;
 
   r = guestfs_lvresize (g, device, mbytes);
@@ -4099,7 +5982,7 @@ static ETERM *
 run_lvresize_free (ETERM *message)
 {
   char *lv = erl_iolist_to_string (ARG (0));
-  int percent = ERL_INT_VALUE (ARG (1));
+  int percent = get_int (ARG (1));
   int r;
 
   r = guestfs_lvresize_free (g, lv, percent);
@@ -4174,6 +6057,18 @@ run_lxattrlist (ETERM *message)
 }
 
 static ETERM *
+run_max_disks (ETERM *message)
+{
+  int r;
+
+  r = guestfs_max_disks (g);
+  if (r == -1)
+    return make_error ("max_disks");
+
+  return erl_mk_int (r);
+}
+
+static ETERM *
 run_md_create (ETERM *message)
 {
   char *name = erl_iolist_to_string (ARG (0));
@@ -4189,22 +6084,22 @@ run_md_create (ETERM *message)
 
     if (atom_equals (hd_name, "missingbitmap")) {
       optargs_s.bitmask |= GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK;
-      optargs_s.missingbitmap = ERL_LL_VALUE (hd_value);
+      optargs_s.missingbitmap = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "nrdevices")) {
       optargs_s.bitmask |= GUESTFS_MD_CREATE_NRDEVICES_BITMASK;
-      optargs_s.nrdevices = ERL_INT_VALUE (hd_value);
+      optargs_s.nrdevices = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "spare")) {
       optargs_s.bitmask |= GUESTFS_MD_CREATE_SPARE_BITMASK;
-      optargs_s.spare = ERL_INT_VALUE (hd_value);
+      optargs_s.spare = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "chunk")) {
       optargs_s.bitmask |= GUESTFS_MD_CREATE_CHUNK_BITMASK;
-      optargs_s.chunk = ERL_LL_VALUE (hd_value);
+      optargs_s.chunk = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "level")) {
@@ -4293,7 +6188,7 @@ static ETERM *
 run_mkdir_mode (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  int mode = ERL_INT_VALUE (ARG (1));
+  int mode = get_int (ARG (1));
   int r;
 
   r = guestfs_mkdir_mode (g, path, mode);
@@ -4335,10 +6230,241 @@ run_mkdtemp (ETERM *message)
 }
 
 static ETERM *
+run_mke2fs (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_mke2fs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mke2fs_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "blockscount")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK;
+      optargs_s.blockscount = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "blocksize")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSIZE_BITMASK;
+      optargs_s.blocksize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "fragsize")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_FRAGSIZE_BITMASK;
+      optargs_s.fragsize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "blockspergroup")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK;
+      optargs_s.blockspergroup = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "numberofgroups")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK;
+      optargs_s.numberofgroups = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "bytesperinode")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_BYTESPERINODE_BITMASK;
+      optargs_s.bytesperinode = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "inodesize")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_INODESIZE_BITMASK;
+      optargs_s.inodesize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "journalsize")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALSIZE_BITMASK;
+      optargs_s.journalsize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "numberofinodes")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK;
+      optargs_s.numberofinodes = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "stridesize")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_STRIDESIZE_BITMASK;
+      optargs_s.stridesize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "stripewidth")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK;
+      optargs_s.stripewidth = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "maxonlineresize")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK;
+      optargs_s.maxonlineresize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "reservedblockspercentage")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+      optargs_s.reservedblockspercentage = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "mmpupdateinterval")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK;
+      optargs_s.mmpupdateinterval = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "journaldevice")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK;
+      optargs_s.journaldevice = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "label")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_LABEL_BITMASK;
+      optargs_s.label = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "lastmounteddir")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK;
+      optargs_s.lastmounteddir = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "creatoros")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_CREATOROS_BITMASK;
+      optargs_s.creatoros = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "fstype")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_FSTYPE_BITMASK;
+      optargs_s.fstype = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "usagetype")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_USAGETYPE_BITMASK;
+      optargs_s.usagetype = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "uuid")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_UUID_BITMASK;
+      optargs_s.uuid = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "forcecreate")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_FORCECREATE_BITMASK;
+      optargs_s.forcecreate = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "writesbandgrouponly")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
+      optargs_s.writesbandgrouponly = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "lazyitableinit")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
+      optargs_s.lazyitableinit = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "lazyjournalinit")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
+      optargs_s.lazyjournalinit = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "testfs")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_TESTFS_BITMASK;
+      optargs_s.testfs = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "discard")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_DISCARD_BITMASK;
+      optargs_s.discard = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "quotatype")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
+      optargs_s.quotatype = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "extent")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_EXTENT_BITMASK;
+      optargs_s.extent = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "filetype")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_FILETYPE_BITMASK;
+      optargs_s.filetype = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "flexbg")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_FLEXBG_BITMASK;
+      optargs_s.flexbg = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "hasjournal")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
+      optargs_s.hasjournal = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "journaldev")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
+      optargs_s.journaldev = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "largefile")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_LARGEFILE_BITMASK;
+      optargs_s.largefile = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "quota")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_QUOTA_BITMASK;
+      optargs_s.quota = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "resizeinode")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
+      optargs_s.resizeinode = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "sparsesuper")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
+      optargs_s.sparsesuper = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "uninitbg")) {
+      optargs_s.bitmask |= GUESTFS_MKE2FS_UNINITBG_BITMASK;
+      optargs_s.uninitbg = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("mke2fs", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_mke2fs_argv (g, device, optargs);
+  free (device);
+  if ((optargs_s.bitmask & GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK))
+    free ((char *) optargs_s.journaldevice);
+  if ((optargs_s.bitmask & GUESTFS_MKE2FS_LABEL_BITMASK))
+    free ((char *) optargs_s.label);
+  if ((optargs_s.bitmask & GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK))
+    free ((char *) optargs_s.lastmounteddir);
+  if ((optargs_s.bitmask & GUESTFS_MKE2FS_CREATOROS_BITMASK))
+    free ((char *) optargs_s.creatoros);
+  if ((optargs_s.bitmask & GUESTFS_MKE2FS_FSTYPE_BITMASK))
+    free ((char *) optargs_s.fstype);
+  if ((optargs_s.bitmask & GUESTFS_MKE2FS_USAGETYPE_BITMASK))
+    free ((char *) optargs_s.usagetype);
+  if ((optargs_s.bitmask & GUESTFS_MKE2FS_UUID_BITMASK))
+    free ((char *) optargs_s.uuid);
+  if (r == -1)
+    return make_error ("mke2fs");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_mke2fs_J (ETERM *message)
 {
   char *fstype = erl_iolist_to_string (ARG (0));
-  int blocksize = ERL_INT_VALUE (ARG (1));
+  int blocksize = get_int (ARG (1));
   char *device = erl_iolist_to_string (ARG (2));
   char *journal = erl_iolist_to_string (ARG (3));
   int r;
@@ -4357,7 +6483,7 @@ static ETERM *
 run_mke2fs_JL (ETERM *message)
 {
   char *fstype = erl_iolist_to_string (ARG (0));
-  int blocksize = ERL_INT_VALUE (ARG (1));
+  int blocksize = get_int (ARG (1));
   char *device = erl_iolist_to_string (ARG (2));
   char *label = erl_iolist_to_string (ARG (3));
   int r;
@@ -4376,7 +6502,7 @@ static ETERM *
 run_mke2fs_JU (ETERM *message)
 {
   char *fstype = erl_iolist_to_string (ARG (0));
-  int blocksize = ERL_INT_VALUE (ARG (1));
+  int blocksize = get_int (ARG (1));
   char *device = erl_iolist_to_string (ARG (2));
   char *uuid = erl_iolist_to_string (ARG (3));
   int r;
@@ -4394,7 +6520,7 @@ run_mke2fs_JU (ETERM *message)
 static ETERM *
 run_mke2journal (ETERM *message)
 {
-  int blocksize = ERL_INT_VALUE (ARG (0));
+  int blocksize = get_int (ARG (0));
   char *device = erl_iolist_to_string (ARG (1));
   int r;
 
@@ -4409,7 +6535,7 @@ run_mke2journal (ETERM *message)
 static ETERM *
 run_mke2journal_L (ETERM *message)
 {
-  int blocksize = ERL_INT_VALUE (ARG (0));
+  int blocksize = get_int (ARG (0));
   char *label = erl_iolist_to_string (ARG (1));
   char *device = erl_iolist_to_string (ARG (2));
   int r;
@@ -4426,7 +6552,7 @@ run_mke2journal_L (ETERM *message)
 static ETERM *
 run_mke2journal_U (ETERM *message)
 {
-  int blocksize = ERL_INT_VALUE (ARG (0));
+  int blocksize = get_int (ARG (0));
   char *uuid = erl_iolist_to_string (ARG (1));
   char *device = erl_iolist_to_string (ARG (2));
   int r;
@@ -4443,7 +6569,7 @@ run_mke2journal_U (ETERM *message)
 static ETERM *
 run_mkfifo (ETERM *message)
 {
-  int mode = ERL_INT_VALUE (ARG (0));
+  int mode = get_int (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
   int r;
 
@@ -4460,11 +6586,46 @@ run_mkfs (ETERM *message)
 {
   char *fstype = erl_iolist_to_string (ARG (0));
   char *device = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_mkfs_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "blocksize")) {
+      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
+      optargs_s.blocksize = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "features")) {
+      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
+      optargs_s.features = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "inode")) {
+      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_INODE_BITMASK;
+      optargs_s.inode = get_int (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "sectorsize")) {
+      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
+      optargs_s.sectorsize = get_int (hd_value);
+    }
+    else
+      return unknown_optarg ("mkfs", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_mkfs (g, fstype, device);
+  r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
   free (fstype);
   free (device);
+  if ((optargs_s.bitmask & GUESTFS_MKFS_OPTS_FEATURES_BITMASK))
+    free ((char *) optargs_s.features);
   if (r == -1)
     return make_error ("mkfs");
 
@@ -4475,7 +6636,7 @@ static ETERM *
 run_mkfs_b (ETERM *message)
 {
   char *fstype = erl_iolist_to_string (ARG (0));
-  int blocksize = ERL_INT_VALUE (ARG (1));
+  int blocksize = get_int (ARG (1));
   char *device = erl_iolist_to_string (ARG (2));
   int r;
 
@@ -4503,12 +6664,12 @@ run_mkfs_btrfs (ETERM *message)
 
     if (atom_equals (hd_name, "allocstart")) {
       optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK;
-      optargs_s.allocstart = ERL_LL_VALUE (hd_value);
+      optargs_s.allocstart = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "bytecount")) {
       optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK;
-      optargs_s.bytecount = ERL_LL_VALUE (hd_value);
+      optargs_s.bytecount = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "datatype")) {
@@ -4518,7 +6679,7 @@ run_mkfs_btrfs (ETERM *message)
     else
     if (atom_equals (hd_name, "leafsize")) {
       optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK;
-      optargs_s.leafsize = ERL_INT_VALUE (hd_value);
+      optargs_s.leafsize = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "label")) {
@@ -4533,12 +6694,12 @@ run_mkfs_btrfs (ETERM *message)
     else
     if (atom_equals (hd_name, "nodesize")) {
       optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK;
-      optargs_s.nodesize = ERL_INT_VALUE (hd_value);
+      optargs_s.nodesize = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "sectorsize")) {
       optargs_s.bitmask |= GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK;
-      optargs_s.sectorsize = ERL_INT_VALUE (hd_value);
+      optargs_s.sectorsize = get_int (hd_value);
     }
     else
       return unknown_optarg ("mkfs_btrfs", hd_name);
@@ -4562,52 +6723,15 @@ run_mkfs_btrfs (ETERM *message)
 }
 
 static ETERM *
-run_mkfs_opts (ETERM *message)
+run_mklost_and_found (ETERM *message)
 {
-  char *fstype = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
-
-  struct guestfs_mkfs_opts_argv optargs_s = { .bitmask = 0 };
-  struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
-  ETERM *optargst = ARG (2);
-  while (!ERL_IS_EMPTY_LIST (optargst)) {
-    ETERM *hd = ERL_CONS_HEAD (optargst);
-    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
-    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
-
-    if (atom_equals (hd_name, "blocksize")) {
-      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK;
-      optargs_s.blocksize = ERL_INT_VALUE (hd_value);
-    }
-    else
-    if (atom_equals (hd_name, "features")) {
-      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_FEATURES_BITMASK;
-      optargs_s.features = erl_iolist_to_string (hd_value);
-    }
-    else
-    if (atom_equals (hd_name, "inode")) {
-      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_INODE_BITMASK;
-      optargs_s.inode = ERL_INT_VALUE (hd_value);
-    }
-    else
-    if (atom_equals (hd_name, "sectorsize")) {
-      optargs_s.bitmask |= GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK;
-      optargs_s.sectorsize = ERL_INT_VALUE (hd_value);
-    }
-    else
-      return unknown_optarg ("mkfs_opts", hd_name);
-    optargst = ERL_CONS_TAIL (optargst);
-  }
-
+  char *mountpoint = erl_iolist_to_string (ARG (0));
   int r;
 
-  r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
-  free (fstype);
-  free (device);
-  if ((optargs_s.bitmask & GUESTFS_MKFS_OPTS_FEATURES_BITMASK))
-    free ((char *) optargs_s.features);
+  r = guestfs_mklost_and_found (g, mountpoint);
+  free (mountpoint);
   if (r == -1)
-    return make_error ("mkfs_opts");
+    return make_error ("mklost_and_found");
 
   return erl_mk_atom ("ok");
 }
@@ -4629,9 +6753,9 @@ run_mkmountpoint (ETERM *message)
 static ETERM *
 run_mknod (ETERM *message)
 {
-  int mode = ERL_INT_VALUE (ARG (0));
-  int devmajor = ERL_INT_VALUE (ARG (1));
-  int devminor = ERL_INT_VALUE (ARG (2));
+  int mode = get_int (ARG (0));
+  int devmajor = get_int (ARG (1));
+  int devminor = get_int (ARG (2));
   char *path = erl_iolist_to_string (ARG (3));
   int r;
 
@@ -4646,9 +6770,9 @@ run_mknod (ETERM *message)
 static ETERM *
 run_mknod_b (ETERM *message)
 {
-  int mode = ERL_INT_VALUE (ARG (0));
-  int devmajor = ERL_INT_VALUE (ARG (1));
-  int devminor = ERL_INT_VALUE (ARG (2));
+  int mode = get_int (ARG (0));
+  int devmajor = get_int (ARG (1));
+  int devminor = get_int (ARG (2));
   char *path = erl_iolist_to_string (ARG (3));
   int r;
 
@@ -4663,9 +6787,9 @@ run_mknod_b (ETERM *message)
 static ETERM *
 run_mknod_c (ETERM *message)
 {
-  int mode = ERL_INT_VALUE (ARG (0));
-  int devmajor = ERL_INT_VALUE (ARG (1));
-  int devminor = ERL_INT_VALUE (ARG (2));
+  int mode = get_int (ARG (0));
+  int devmajor = get_int (ARG (1));
+  int devminor = get_int (ARG (2));
   char *path = erl_iolist_to_string (ARG (3));
   int r;
 
@@ -4681,10 +6805,37 @@ static ETERM *
 run_mkswap (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_mkswap_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "label")) {
+      optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_LABEL_BITMASK;
+      optargs_s.label = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "uuid")) {
+      optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_UUID_BITMASK;
+      optargs_s.uuid = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("mkswap", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_mkswap (g, device);
+  r = guestfs_mkswap_opts_argv (g, device, optargs);
   free (device);
+  if ((optargs_s.bitmask & GUESTFS_MKSWAP_OPTS_LABEL_BITMASK))
+    free ((char *) optargs_s.label);
+  if ((optargs_s.bitmask & GUESTFS_MKSWAP_OPTS_UUID_BITMASK))
+    free ((char *) optargs_s.uuid);
   if (r == -1)
     return make_error ("mkswap");
 
@@ -4735,6 +6886,42 @@ run_mkswap_file (ETERM *message)
     return make_error ("mkswap_file");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_mktemp (ETERM *message)
+{
+  char *tmpl = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_mktemp_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mktemp_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "suffix")) {
+      optargs_s.bitmask |= GUESTFS_MKTEMP_SUFFIX_BITMASK;
+      optargs_s.suffix = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("mktemp", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  char *r;
+
+  r = guestfs_mktemp_argv (g, tmpl, optargs);
+  free (tmpl);
+  if ((optargs_s.bitmask & GUESTFS_MKTEMP_SUFFIX_BITMASK))
+    free ((char *) optargs_s.suffix);
+  if (r == NULL)
+    return make_error ("mktemp");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
 }
 
 static ETERM *
@@ -4828,7 +7015,7 @@ run_mount_local (ETERM *message)
     else
     if (atom_equals (hd_name, "cachetimeout")) {
       optargs_s.bitmask |= GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK;
-      optargs_s.cachetimeout = ERL_INT_VALUE (hd_value);
+      optargs_s.cachetimeout = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "debugcalls")) {
@@ -5112,20 +7299,6 @@ static ETERM *
 run_ntfsresize (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int r;
-
-  r = guestfs_ntfsresize (g, device);
-  free (device);
-  if (r == -1)
-    return make_error ("ntfsresize");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_ntfsresize_opts (ETERM *message)
-{
-  char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
@@ -5137,7 +7310,7 @@ run_ntfsresize_opts (ETERM *message)
 
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK;
-      optargs_s.size = ERL_LL_VALUE (hd_value);
+      optargs_s.size = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "force")) {
@@ -5145,7 +7318,7 @@ run_ntfsresize_opts (ETERM *message)
       optargs_s.force = get_bool (hd_value);
     }
     else
-      return unknown_optarg ("ntfsresize_opts", hd_name);
+      return unknown_optarg ("ntfsresize", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
 
@@ -5154,7 +7327,7 @@ run_ntfsresize_opts (ETERM *message)
   r = guestfs_ntfsresize_opts_argv (g, device, optargs);
   free (device);
   if (r == -1)
-    return make_error ("ntfsresize_opts");
+    return make_error ("ntfsresize");
 
   return erl_mk_atom ("ok");
 }
@@ -5163,7 +7336,7 @@ static ETERM *
 run_ntfsresize_size (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int64_t size = ERL_LL_VALUE (ARG (1));
+  int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_ntfsresize_size (g, device, size);
@@ -5175,12 +7348,38 @@ run_ntfsresize_size (ETERM *message)
 }
 
 static ETERM *
+run_parse_environment (ETERM *message)
+{
+  int r;
+
+  r = guestfs_parse_environment (g);
+  if (r == -1)
+    return make_error ("parse_environment");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_parse_environment_list (ETERM *message)
+{
+  char **environment = get_string_list (ARG (0));
+  int r;
+
+  r = guestfs_parse_environment_list (g, environment);
+  free_strings (environment);
+  if (r == -1)
+    return make_error ("parse_environment_list");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_part_add (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
   char *prlogex = erl_iolist_to_string (ARG (1));
-  int64_t startsect = ERL_LL_VALUE (ARG (2));
-  int64_t endsect = ERL_LL_VALUE (ARG (3));
+  int64_t startsect = get_int64 (ARG (2));
+  int64_t endsect = get_int64 (ARG (3));
   int r;
 
   r = guestfs_part_add (g, device, prlogex, startsect, endsect);
@@ -5196,7 +7395,7 @@ static ETERM *
 run_part_del (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int partnum = ERL_INT_VALUE (ARG (1));
+  int partnum = get_int (ARG (1));
   int r;
 
   r = guestfs_part_del (g, device, partnum);
@@ -5227,7 +7426,7 @@ static ETERM *
 run_part_get_bootable (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int partnum = ERL_INT_VALUE (ARG (1));
+  int partnum = get_int (ARG (1));
   int r;
 
   r = guestfs_part_get_bootable (g, device, partnum);
@@ -5242,7 +7441,7 @@ static ETERM *
 run_part_get_mbr_id (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int partnum = ERL_INT_VALUE (ARG (1));
+  int partnum = get_int (ARG (1));
   int r;
 
   r = guestfs_part_get_mbr_id (g, device, partnum);
@@ -5305,7 +7504,7 @@ static ETERM *
 run_part_set_bootable (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int partnum = ERL_INT_VALUE (ARG (1));
+  int partnum = get_int (ARG (1));
   int bootable = get_bool (ARG (2));
   int r;
 
@@ -5321,8 +7520,8 @@ static ETERM *
 run_part_set_mbr_id (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int partnum = ERL_INT_VALUE (ARG (1));
-  int idbyte = ERL_INT_VALUE (ARG (2));
+  int partnum = get_int (ARG (1));
+  int idbyte = get_int (ARG (2));
   int r;
 
   r = guestfs_part_set_mbr_id (g, device, partnum, idbyte);
@@ -5337,7 +7536,7 @@ static ETERM *
 run_part_set_name (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int partnum = ERL_INT_VALUE (ARG (1));
+  int partnum = get_int (ARG (1));
   char *name = erl_iolist_to_string (ARG (2));
   int r;
 
@@ -5396,8 +7595,8 @@ static ETERM *
 run_pread (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  int count = ERL_INT_VALUE (ARG (1));
-  int64_t offset = ERL_LL_VALUE (ARG (2));
+  int count = get_int (ARG (1));
+  int64_t offset = get_int64 (ARG (2));
   char *r;
   size_t size;
 
@@ -5415,8 +7614,8 @@ static ETERM *
 run_pread_device (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int count = ERL_INT_VALUE (ARG (1));
-  int64_t offset = ERL_LL_VALUE (ARG (2));
+  int count = get_int (ARG (1));
+  int64_t offset = get_int64 (ARG (2));
   char *r;
   size_t size;
 
@@ -5428,6 +7627,32 @@ run_pread_device (ETERM *message)
   ETERM *rt = erl_mk_estring (r, size);
   free (r);
   return rt;
+}
+
+static ETERM *
+run_pvchange_uuid (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_pvchange_uuid (g, device);
+  free (device);
+  if (r == -1)
+    return make_error ("pvchange_uuid");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_pvchange_uuid_all (ETERM *message)
+{
+  int r;
+
+  r = guestfs_pvchange_uuid_all (g);
+  if (r == -1)
+    return make_error ("pvchange_uuid_all");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -5476,7 +7701,7 @@ static ETERM *
 run_pvresize_size (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int64_t size = ERL_LL_VALUE (ARG (1));
+  int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_pvresize_size (g, device, size);
@@ -5536,14 +7761,14 @@ static ETERM *
 run_pwrite (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t content_size = erl_iolist_length (ARG (1));
-  char *content = erl_iolist_to_string (ARG (1));
-  int64_t offset = ERL_LL_VALUE (ARG (2));
+  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
+  const void *content = ERL_BIN_PTR (content_bin);
+  size_t content_size = ERL_BIN_SIZE (content_bin);
+  int64_t offset = get_int64 (ARG (2));
   int r;
 
   r = guestfs_pwrite (g, path, content, content_size, offset);
   free (path);
-  free (content);
   if (r == -1)
     return make_error ("pwrite");
 
@@ -5554,14 +7779,14 @@ static ETERM *
 run_pwrite_device (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  size_t content_size = erl_iolist_length (ARG (1));
-  char *content = erl_iolist_to_string (ARG (1));
-  int64_t offset = ERL_LL_VALUE (ARG (2));
+  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
+  const void *content = ERL_BIN_PTR (content_bin);
+  size_t content_size = ERL_BIN_SIZE (content_bin);
+  int64_t offset = get_int64 (ARG (2));
   int r;
 
   r = guestfs_pwrite_device (g, device, content, content_size, offset);
   free (device);
-  free (content);
   if (r == -1)
     return make_error ("pwrite_device");
 
@@ -5670,6 +7895,20 @@ run_realpath (ETERM *message)
 }
 
 static ETERM *
+run_remove_drive (ETERM *message)
+{
+  char *label = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_remove_drive (g, label);
+  free (label);
+  if (r == -1)
+    return make_error ("remove_drive");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_removexattr (ETERM *message)
 {
   char *xattr = erl_iolist_to_string (ARG (0));
@@ -5717,7 +7956,7 @@ static ETERM *
 run_resize2fs_size (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int64_t size = ERL_LL_VALUE (ARG (1));
+  int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_resize2fs_size (g, device, size);
@@ -5738,6 +7977,20 @@ run_rm (ETERM *message)
   free (path);
   if (r == -1)
     return make_error ("rm");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_rm_f (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_rm_f (g, path);
+  free (path);
+  if (r == -1)
+    return make_error ("rm_f");
 
   return erl_mk_atom ("ok");
 }
@@ -5780,6 +8033,123 @@ run_rmmountpoint (ETERM *message)
   free (exemptpath);
   if (r == -1)
     return make_error ("rmmountpoint");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_rsync (ETERM *message)
+{
+  char *src = erl_iolist_to_string (ARG (0));
+  char *dest = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_rsync_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "archive")) {
+      optargs_s.bitmask |= GUESTFS_RSYNC_ARCHIVE_BITMASK;
+      optargs_s.archive = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "deletedest")) {
+      optargs_s.bitmask |= GUESTFS_RSYNC_DELETEDEST_BITMASK;
+      optargs_s.deletedest = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("rsync", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_rsync_argv (g, src, dest, optargs);
+  free (src);
+  free (dest);
+  if (r == -1)
+    return make_error ("rsync");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_rsync_in (ETERM *message)
+{
+  char *remote = erl_iolist_to_string (ARG (0));
+  char *dest = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_rsync_in_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_in_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "archive")) {
+      optargs_s.bitmask |= GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
+      optargs_s.archive = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "deletedest")) {
+      optargs_s.bitmask |= GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
+      optargs_s.deletedest = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("rsync_in", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_rsync_in_argv (g, remote, dest, optargs);
+  free (remote);
+  free (dest);
+  if (r == -1)
+    return make_error ("rsync_in");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_rsync_out (ETERM *message)
+{
+  char *src = erl_iolist_to_string (ARG (0));
+  char *remote = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_rsync_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_out_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "archive")) {
+      optargs_s.bitmask |= GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
+      optargs_s.archive = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "deletedest")) {
+      optargs_s.bitmask |= GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
+      optargs_s.deletedest = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("rsync_out", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_rsync_out_argv (g, src, remote, optargs);
+  free (src);
+  free (remote);
+  if (r == -1)
+    return make_error ("rsync_out");
 
   return erl_mk_atom ("ok");
 }
@@ -5872,6 +8242,24 @@ run_set_autosync (ETERM *message)
 }
 
 static ETERM *
+run_set_cachedir (ETERM *message)
+{
+  char *cachedir;
+  if (atom_equals (ARG (0), "undefined"))
+    cachedir = NULL;
+  else
+    cachedir = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_cachedir (g, cachedir);
+  free (cachedir);
+  if (r == -1)
+    return make_error ("set_cachedir");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_direct (ETERM *message)
 {
   int direct = get_bool (ARG (0));
@@ -5922,7 +8310,7 @@ static ETERM *
 run_set_e2generation (ETERM *message)
 {
   char *file = erl_iolist_to_string (ARG (0));
-  int64_t generation = ERL_LL_VALUE (ARG (1));
+  int64_t generation = get_int64 (ARG (1));
   int r;
 
   r = guestfs_set_e2generation (g, file, generation);
@@ -5982,9 +8370,39 @@ run_set_label (ETERM *message)
 }
 
 static ETERM *
+run_set_libvirt_requested_credential (ETERM *message)
+{
+  int index = get_int (ARG (0));
+  ETERM *cred_bin = erl_iolist_to_binary (ARG (1));
+  const void *cred = ERL_BIN_PTR (cred_bin);
+  size_t cred_size = ERL_BIN_SIZE (cred_bin);
+  int r;
+
+  r = guestfs_set_libvirt_requested_credential (g, index, cred, cred_size);
+  if (r == -1)
+    return make_error ("set_libvirt_requested_credential");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_set_libvirt_supported_credentials (ETERM *message)
+{
+  char **creds = get_string_list (ARG (0));
+  int r;
+
+  r = guestfs_set_libvirt_supported_credentials (g, creds);
+  free_strings (creds);
+  if (r == -1)
+    return make_error ("set_libvirt_supported_credentials");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_memsize (ETERM *message)
 {
-  int memsize = ERL_INT_VALUE (ARG (0));
+  int memsize = get_int (ARG (0));
   int r;
 
   r = guestfs_set_memsize (g, memsize);
@@ -6085,12 +8503,30 @@ run_set_selinux (ETERM *message)
 static ETERM *
 run_set_smp (ETERM *message)
 {
-  int smp = ERL_INT_VALUE (ARG (0));
+  int smp = get_int (ARG (0));
   int r;
 
   r = guestfs_set_smp (g, smp);
   if (r == -1)
     return make_error ("set_smp");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_set_tmpdir (ETERM *message)
+{
+  char *tmpdir;
+  if (atom_equals (ARG (0), "undefined"))
+    tmpdir = NULL;
+  else
+    tmpdir = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_tmpdir (g, tmpdir);
+  free (tmpdir);
+  if (r == -1)
+    return make_error ("set_tmpdir");
 
   return erl_mk_atom ("ok");
 }
@@ -6140,7 +8576,7 @@ run_setxattr (ETERM *message)
 {
   char *xattr = erl_iolist_to_string (ARG (0));
   char *val = erl_iolist_to_string (ARG (1));
-  int vallen = ERL_INT_VALUE (ARG (2));
+  int vallen = get_int (ARG (2));
   char *path = erl_iolist_to_string (ARG (3));
   int r;
 
@@ -6158,9 +8594,9 @@ static ETERM *
 run_sfdisk (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int cyls = ERL_INT_VALUE (ARG (1));
-  int heads = ERL_INT_VALUE (ARG (2));
-  int sectors = ERL_INT_VALUE (ARG (3));
+  int cyls = get_int (ARG (1));
+  int heads = get_int (ARG (2));
+  int sectors = get_int (ARG (3));
   char **lines = get_string_list (ARG (4));
   int r;
 
@@ -6193,10 +8629,10 @@ static ETERM *
 run_sfdisk_N (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
-  int partnum = ERL_INT_VALUE (ARG (1));
-  int cyls = ERL_INT_VALUE (ARG (2));
-  int heads = ERL_INT_VALUE (ARG (3));
-  int sectors = ERL_INT_VALUE (ARG (4));
+  int partnum = get_int (ARG (1));
+  int cyls = get_int (ARG (2));
+  int heads = get_int (ARG (3));
+  int sectors = get_int (ARG (4));
   char *line = erl_iolist_to_string (ARG (5));
   int r;
 
@@ -6305,7 +8741,7 @@ run_shutdown (ETERM *message)
 static ETERM *
 run_sleep (ETERM *message)
 {
-  int secs = ERL_INT_VALUE (ARG (0));
+  int secs = get_int (ARG (0));
   int r;
 
   r = guestfs_sleep (g, secs);
@@ -6527,7 +8963,7 @@ run_tail (ETERM *message)
 static ETERM *
 run_tail_n (ETERM *message)
 {
-  int nrlines = ERL_INT_VALUE (ARG (0));
+  int nrlines = get_int (ARG (0));
   char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
@@ -6547,11 +8983,31 @@ run_tar_in (ETERM *message)
 {
   char *tarfile = erl_iolist_to_string (ARG (0));
   char *directory = erl_iolist_to_string (ARG (1));
+
+  struct guestfs_tar_in_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "compress")) {
+      optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
+      optargs_s.compress = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("tar_in", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_tar_in (g, tarfile, directory);
+  r = guestfs_tar_in_opts_argv (g, tarfile, directory, optargs);
   free (tarfile);
   free (directory);
+  if ((optargs_s.bitmask & GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK))
+    free ((char *) optargs_s.compress);
   if (r == -1)
     return make_error ("tar_in");
 
@@ -6563,402 +9019,47 @@ run_tar_out (ETERM *message)
 {
   char *directory = erl_iolist_to_string (ARG (0));
   char *tarfile = erl_iolist_to_string (ARG (1));
-  int r;
 
-  r = guestfs_tar_out (g, directory, tarfile);
-  free (directory);
-  free (tarfile);
-  if (r == -1)
-    return make_error ("tar_out");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_test0 (ETERM *message)
-{
-  char *str = erl_iolist_to_string (ARG (0));
-  char *optstr;
-  if (atom_equals (ARG (1), "undefined"))
-    optstr = NULL;
-  else
-    optstr = erl_iolist_to_string (ARG (1));
-  char **strlist = get_string_list (ARG (2));
-  int b = get_bool (ARG (3));
-  int integer = ERL_INT_VALUE (ARG (4));
-  int64_t integer64 = ERL_LL_VALUE (ARG (5));
-  char *filein = erl_iolist_to_string (ARG (6));
-  char *fileout = erl_iolist_to_string (ARG (7));
-  size_t bufferin_size = erl_iolist_length (ARG (8));
-  char *bufferin = erl_iolist_to_string (ARG (8));
-
-  struct guestfs_test0_argv optargs_s = { .bitmask = 0 };
-  struct guestfs_test0_argv *optargs = &optargs_s;
-  ETERM *optargst = ARG (9);
+  struct guestfs_tar_out_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (2);
   while (!ERL_IS_EMPTY_LIST (optargst)) {
     ETERM *hd = ERL_CONS_HEAD (optargst);
     ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
     ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
 
-    if (atom_equals (hd_name, "obool")) {
-      optargs_s.bitmask |= GUESTFS_TEST0_OBOOL_BITMASK;
-      optargs_s.obool = get_bool (hd_value);
+    if (atom_equals (hd_name, "compress")) {
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK;
+      optargs_s.compress = erl_iolist_to_string (hd_value);
     }
     else
-    if (atom_equals (hd_name, "oint")) {
-      optargs_s.bitmask |= GUESTFS_TEST0_OINT_BITMASK;
-      optargs_s.oint = ERL_INT_VALUE (hd_value);
+    if (atom_equals (hd_name, "numericowner")) {
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
+      optargs_s.numericowner = get_bool (hd_value);
     }
     else
-    if (atom_equals (hd_name, "oint64")) {
-      optargs_s.bitmask |= GUESTFS_TEST0_OINT64_BITMASK;
-      optargs_s.oint64 = ERL_LL_VALUE (hd_value);
+    if (atom_equals (hd_name, "excludes")) {
+      optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
+      optargs_s.excludes = get_string_list (hd_value);
     }
     else
-    if (atom_equals (hd_name, "ostring")) {
-      optargs_s.bitmask |= GUESTFS_TEST0_OSTRING_BITMASK;
-      optargs_s.ostring = erl_iolist_to_string (hd_value);
-    }
-    else
-      return unknown_optarg ("test0", hd_name);
+      return unknown_optarg ("tar_out", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
 
   int r;
 
-  r = guestfs_test0_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
-  free (str);
-  free (optstr);
-  free_strings (strlist);
-  free (filein);
-  free (fileout);
-  free (bufferin);
-  if ((optargs_s.bitmask & GUESTFS_TEST0_OSTRING_BITMASK))
-    free ((char *) optargs_s.ostring);
+  r = guestfs_tar_out_opts_argv (g, directory, tarfile, optargs);
+  free (directory);
+  free (tarfile);
+  if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK))
+    free ((char *) optargs_s.compress);
+  if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK))
+    free_strings ((char **) optargs_s.excludes);
   if (r == -1)
-    return make_error ("test0");
+    return make_error ("tar_out");
 
   return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_test0rbool (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  int r;
-
-  r = guestfs_test0rbool (g, val);
-  free (val);
-  if (r == -1)
-    return make_error ("test0rbool");
-
-  return make_bool (r);
-}
-
-static ETERM *
-run_test0rboolerr (ETERM *message)
-{
-  int r;
-
-  r = guestfs_test0rboolerr (g);
-  if (r == -1)
-    return make_error ("test0rboolerr");
-
-  return make_bool (r);
-}
-
-static ETERM *
-run_test0rbufferout (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  char *r;
-  size_t size;
-
-  r = guestfs_test0rbufferout (g, val, &size);
-  free (val);
-  if (r == NULL)
-    return make_error ("test0rbufferout");
-
-  ETERM *rt = erl_mk_estring (r, size);
-  free (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rbufferouterr (ETERM *message)
-{
-  char *r;
-  size_t size;
-
-  r = guestfs_test0rbufferouterr (g, &size);
-  if (r == NULL)
-    return make_error ("test0rbufferouterr");
-
-  ETERM *rt = erl_mk_estring (r, size);
-  free (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rconstoptstring (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  const char *r;
-
-  r = guestfs_test0rconstoptstring (g, val);
-  free (val);
-
-  ETERM *rt;
-  if (r)
-    rt = erl_mk_string (r);
-  else
-    rt = erl_mk_atom ("undefined");
-  return rt;
-}
-
-static ETERM *
-run_test0rconstoptstringerr (ETERM *message)
-{
-  const char *r;
-
-  r = guestfs_test0rconstoptstringerr (g);
-
-  ETERM *rt;
-  if (r)
-    rt = erl_mk_string (r);
-  else
-    rt = erl_mk_atom ("undefined");
-  return rt;
-}
-
-static ETERM *
-run_test0rconststring (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  const char *r;
-
-  r = guestfs_test0rconststring (g, val);
-  free (val);
-  if (r == NULL)
-    return make_error ("test0rconststring");
-
-  return erl_mk_string (r);
-}
-
-static ETERM *
-run_test0rconststringerr (ETERM *message)
-{
-  const char *r;
-
-  r = guestfs_test0rconststringerr (g);
-  if (r == NULL)
-    return make_error ("test0rconststringerr");
-
-  return erl_mk_string (r);
-}
-
-static ETERM *
-run_test0rhashtable (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  char **r;
-
-  r = guestfs_test0rhashtable (g, val);
-  free (val);
-  if (r == NULL)
-    return make_error ("test0rhashtable");
-
-  ETERM *rt = make_table (r);
-  free_strings (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rhashtableerr (ETERM *message)
-{
-  char **r;
-
-  r = guestfs_test0rhashtableerr (g);
-  if (r == NULL)
-    return make_error ("test0rhashtableerr");
-
-  ETERM *rt = make_table (r);
-  free_strings (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rint (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  int r;
-
-  r = guestfs_test0rint (g, val);
-  free (val);
-  if (r == -1)
-    return make_error ("test0rint");
-
-  return erl_mk_int (r);
-}
-
-static ETERM *
-run_test0rint64 (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  int64_t r;
-
-  r = guestfs_test0rint64 (g, val);
-  free (val);
-  if (r == -1)
-    return make_error ("test0rint64");
-
-  return erl_mk_longlong (r);
-}
-
-static ETERM *
-run_test0rint64err (ETERM *message)
-{
-  int64_t r;
-
-  r = guestfs_test0rint64err (g);
-  if (r == -1)
-    return make_error ("test0rint64err");
-
-  return erl_mk_longlong (r);
-}
-
-static ETERM *
-run_test0rinterr (ETERM *message)
-{
-  int r;
-
-  r = guestfs_test0rinterr (g);
-  if (r == -1)
-    return make_error ("test0rinterr");
-
-  return erl_mk_int (r);
-}
-
-static ETERM *
-run_test0rstring (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  char *r;
-
-  r = guestfs_test0rstring (g, val);
-  free (val);
-  if (r == NULL)
-    return make_error ("test0rstring");
-
-  ETERM *rt = erl_mk_string (r);
-  free (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rstringerr (ETERM *message)
-{
-  char *r;
-
-  r = guestfs_test0rstringerr (g);
-  if (r == NULL)
-    return make_error ("test0rstringerr");
-
-  ETERM *rt = erl_mk_string (r);
-  free (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rstringlist (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  char **r;
-
-  r = guestfs_test0rstringlist (g, val);
-  free (val);
-  if (r == NULL)
-    return make_error ("test0rstringlist");
-
-  ETERM *rt = make_string_list (r);
-  free_strings (r);
-
-  return rt;
-}
-
-static ETERM *
-run_test0rstringlisterr (ETERM *message)
-{
-  char **r;
-
-  r = guestfs_test0rstringlisterr (g);
-  if (r == NULL)
-    return make_error ("test0rstringlisterr");
-
-  ETERM *rt = make_string_list (r);
-  free_strings (r);
-
-  return rt;
-}
-
-static ETERM *
-run_test0rstruct (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  struct guestfs_lvm_pv *r;
-
-  r = guestfs_test0rstruct (g, val);
-  free (val);
-  if (r == NULL)
-    return make_error ("test0rstruct");
-
-  ETERM *rt = make_lvm_pv (r);
-  guestfs_free_lvm_pv (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rstructerr (ETERM *message)
-{
-  struct guestfs_lvm_pv *r;
-
-  r = guestfs_test0rstructerr (g);
-  if (r == NULL)
-    return make_error ("test0rstructerr");
-
-  ETERM *rt = make_lvm_pv (r);
-  guestfs_free_lvm_pv (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rstructlist (ETERM *message)
-{
-  char *val = erl_iolist_to_string (ARG (0));
-  struct guestfs_lvm_pv_list *r;
-
-  r = guestfs_test0rstructlist (g, val);
-  free (val);
-  if (r == NULL)
-    return make_error ("test0rstructlist");
-
-  ETERM *rt = make_lvm_pv_list (r);
-  guestfs_free_lvm_pv_list (r);
-  return rt;
-}
-
-static ETERM *
-run_test0rstructlisterr (ETERM *message)
-{
-  struct guestfs_lvm_pv_list *r;
-
-  r = guestfs_test0rstructlisterr (g);
-  if (r == NULL)
-    return make_error ("test0rstructlisterr");
-
-  ETERM *rt = make_lvm_pv_list (r);
-  guestfs_free_lvm_pv_list (r);
-  return rt;
 }
 
 static ETERM *
@@ -7025,7 +9126,7 @@ static ETERM *
 run_truncate_size (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  int64_t size = ERL_LL_VALUE (ARG (1));
+  int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_truncate_size (g, path, size);
@@ -7056,12 +9157,12 @@ run_tune2fs (ETERM *message)
     else
     if (atom_equals (hd_name, "maxmountcount")) {
       optargs_s.bitmask |= GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK;
-      optargs_s.maxmountcount = ERL_INT_VALUE (hd_value);
+      optargs_s.maxmountcount = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "mountcount")) {
       optargs_s.bitmask |= GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK;
-      optargs_s.mountcount = ERL_INT_VALUE (hd_value);
+      optargs_s.mountcount = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "errorbehavior")) {
@@ -7071,17 +9172,17 @@ run_tune2fs (ETERM *message)
     else
     if (atom_equals (hd_name, "group")) {
       optargs_s.bitmask |= GUESTFS_TUNE2FS_GROUP_BITMASK;
-      optargs_s.group = ERL_LL_VALUE (hd_value);
+      optargs_s.group = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "intervalbetweenchecks")) {
       optargs_s.bitmask |= GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK;
-      optargs_s.intervalbetweenchecks = ERL_INT_VALUE (hd_value);
+      optargs_s.intervalbetweenchecks = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "reservedblockspercentage")) {
       optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
-      optargs_s.reservedblockspercentage = ERL_INT_VALUE (hd_value);
+      optargs_s.reservedblockspercentage = get_int (hd_value);
     }
     else
     if (atom_equals (hd_name, "lastmounteddirectory")) {
@@ -7091,12 +9192,12 @@ run_tune2fs (ETERM *message)
     else
     if (atom_equals (hd_name, "reservedblockscount")) {
       optargs_s.bitmask |= GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK;
-      optargs_s.reservedblockscount = ERL_LL_VALUE (hd_value);
+      optargs_s.reservedblockscount = get_int64 (hd_value);
     }
     else
     if (atom_equals (hd_name, "user")) {
       optargs_s.bitmask |= GUESTFS_TUNE2FS_USER_BITMASK;
-      optargs_s.user = ERL_LL_VALUE (hd_value);
+      optargs_s.user = get_int64 (hd_value);
     }
     else
       return unknown_optarg ("tune2fs", hd_name);
@@ -7168,7 +9269,7 @@ run_txz_out (ETERM *message)
 static ETERM *
 run_umask (ETERM *message)
 {
-  int mask = ERL_INT_VALUE (ARG (0));
+  int mask = get_int (ARG (0));
   int r;
 
   r = guestfs_umask (g, mask);
@@ -7182,9 +9283,32 @@ static ETERM *
 run_umount (ETERM *message)
 {
   char *pathordevice = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_umount_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_umount_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "force")) {
+      optargs_s.bitmask |= GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
+      optargs_s.force = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "lazyunmount")) {
+      optargs_s.bitmask |= GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
+      optargs_s.lazyunmount = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("umount", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_umount (g, pathordevice);
+  r = guestfs_umount_opts_argv (g, pathordevice, optargs);
   free (pathordevice);
   if (r == -1)
     return make_error ("umount");
@@ -7255,7 +9379,7 @@ run_upload_offset (ETERM *message)
 {
   char *filename = erl_iolist_to_string (ARG (0));
   char *remotefilename = erl_iolist_to_string (ARG (1));
-  int64_t offset = ERL_LL_VALUE (ARG (2));
+  int64_t offset = get_int64 (ARG (2));
   int r;
 
   r = guestfs_upload_offset (g, filename, remotefilename, offset);
@@ -7271,10 +9395,10 @@ static ETERM *
 run_utimens (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  int64_t atsecs = ERL_LL_VALUE (ARG (1));
-  int64_t atnsecs = ERL_LL_VALUE (ARG (2));
-  int64_t mtsecs = ERL_LL_VALUE (ARG (3));
-  int64_t mtnsecs = ERL_LL_VALUE (ARG (4));
+  int64_t atsecs = get_int64 (ARG (1));
+  int64_t atnsecs = get_int64 (ARG (2));
+  int64_t mtsecs = get_int64 (ARG (3));
+  int64_t mtnsecs = get_int64 (ARG (4));
   int r;
 
   r = guestfs_utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
@@ -7283,6 +9407,20 @@ run_utimens (ETERM *message)
     return make_error ("utimens");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_utsname (ETERM *message)
+{
+  struct guestfs_utsname *r;
+
+  r = guestfs_utsname (g);
+  if (r == NULL)
+    return make_error ("utsname");
+
+  ETERM *rt = make_utsname (r);
+  guestfs_free_utsname (r);
+  return rt;
 }
 
 static ETERM *
@@ -7371,6 +9509,32 @@ run_vg_activate_all (ETERM *message)
   r = guestfs_vg_activate_all (g, activate);
   if (r == -1)
     return make_error ("vg_activate_all");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_vgchange_uuid (ETERM *message)
+{
+  char *vg = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_vgchange_uuid (g, vg);
+  free (vg);
+  if (r == -1)
+    return make_error ("vgchange_uuid");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_vgchange_uuid_all (ETERM *message)
+{
+  int r;
+
+  r = guestfs_vgchange_uuid_all (g);
+  if (r == -1)
+    return make_error ("vgchange_uuid_all");
 
   return erl_mk_atom ("ok");
 }
@@ -7601,13 +9765,13 @@ static ETERM *
 run_write (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t content_size = erl_iolist_length (ARG (1));
-  char *content = erl_iolist_to_string (ARG (1));
+  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
+  const void *content = ERL_BIN_PTR (content_bin);
+  size_t content_size = ERL_BIN_SIZE (content_bin);
   int r;
 
   r = guestfs_write (g, path, content, content_size);
   free (path);
-  free (content);
   if (r == -1)
     return make_error ("write");
 
@@ -7618,13 +9782,13 @@ static ETERM *
 run_write_append (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
-  size_t content_size = erl_iolist_length (ARG (1));
-  char *content = erl_iolist_to_string (ARG (1));
+  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
+  const void *content = ERL_BIN_PTR (content_bin);
+  size_t content_size = ERL_BIN_SIZE (content_bin);
   int r;
 
   r = guestfs_write_append (g, path, content, content_size);
   free (path);
-  free (content);
   if (r == -1)
     return make_error ("write_append");
 
@@ -7636,7 +9800,7 @@ run_write_file (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
   char *content = erl_iolist_to_string (ARG (1));
-  int size = ERL_INT_VALUE (ARG (2));
+  int size = get_int (ARG (2));
   int r;
 
   r = guestfs_write_file (g, path, content, size);
@@ -7646,6 +9810,236 @@ run_write_file (ETERM *message)
     return make_error ("write_file");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_xfs_admin (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_xfs_admin_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_admin_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "extunwritten")) {
+      optargs_s.bitmask |= GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
+      optargs_s.extunwritten = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "imgfile")) {
+      optargs_s.bitmask |= GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
+      optargs_s.imgfile = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "v2log")) {
+      optargs_s.bitmask |= GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
+      optargs_s.v2log = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "projid32bit")) {
+      optargs_s.bitmask |= GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
+      optargs_s.projid32bit = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "lazycounter")) {
+      optargs_s.bitmask |= GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
+      optargs_s.lazycounter = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "label")) {
+      optargs_s.bitmask |= GUESTFS_XFS_ADMIN_LABEL_BITMASK;
+      optargs_s.label = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "uuid")) {
+      optargs_s.bitmask |= GUESTFS_XFS_ADMIN_UUID_BITMASK;
+      optargs_s.uuid = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("xfs_admin", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_xfs_admin_argv (g, device, optargs);
+  free (device);
+  if ((optargs_s.bitmask & GUESTFS_XFS_ADMIN_LABEL_BITMASK))
+    free ((char *) optargs_s.label);
+  if ((optargs_s.bitmask & GUESTFS_XFS_ADMIN_UUID_BITMASK))
+    free ((char *) optargs_s.uuid);
+  if (r == -1)
+    return make_error ("xfs_admin");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_xfs_growfs (ETERM *message)
+{
+  char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_xfs_growfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "datasec")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
+      optargs_s.datasec = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "logsec")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
+      optargs_s.logsec = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "rtsec")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
+      optargs_s.rtsec = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "datasize")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_DATASIZE_BITMASK;
+      optargs_s.datasize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "logsize")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK;
+      optargs_s.logsize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "rtsize")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTSIZE_BITMASK;
+      optargs_s.rtsize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "rtextsize")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK;
+      optargs_s.rtextsize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "maxpct")) {
+      optargs_s.bitmask |= GUESTFS_XFS_GROWFS_MAXPCT_BITMASK;
+      optargs_s.maxpct = get_int (hd_value);
+    }
+    else
+      return unknown_optarg ("xfs_growfs", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_xfs_growfs_argv (g, path, optargs);
+  free (path);
+  if (r == -1)
+    return make_error ("xfs_growfs");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_xfs_info (ETERM *message)
+{
+  char *pathordevice = erl_iolist_to_string (ARG (0));
+  struct guestfs_xfsinfo *r;
+
+  r = guestfs_xfs_info (g, pathordevice);
+  free (pathordevice);
+  if (r == NULL)
+    return make_error ("xfs_info");
+
+  ETERM *rt = make_xfsinfo (r);
+  guestfs_free_xfsinfo (r);
+  return rt;
+}
+
+static ETERM *
+run_xfs_repair (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_xfs_repair_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_repair_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "forcelogzero")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
+      optargs_s.forcelogzero = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "nomodify")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
+      optargs_s.nomodify = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "noprefetch")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
+      optargs_s.noprefetch = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "forcegeometry")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
+      optargs_s.forcegeometry = get_bool (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "maxmem")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_MAXMEM_BITMASK;
+      optargs_s.maxmem = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "ihashsize")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK;
+      optargs_s.ihashsize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "bhashsize")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK;
+      optargs_s.bhashsize = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "agstride")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK;
+      optargs_s.agstride = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "logdev")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
+      optargs_s.logdev = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "rtdev")) {
+      optargs_s.bitmask |= GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
+      optargs_s.rtdev = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("xfs_repair", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_xfs_repair_argv (g, device, optargs);
+  free (device);
+  if ((optargs_s.bitmask & GUESTFS_XFS_REPAIR_LOGDEV_BITMASK))
+    free ((char *) optargs_s.logdev);
+  if ((optargs_s.bitmask & GUESTFS_XFS_REPAIR_RTDEV_BITMASK))
+    free ((char *) optargs_s.rtdev);
+  if (r == -1)
+    return make_error ("xfs_repair");
+
+  return erl_mk_int (r);
 }
 
 static ETERM *
@@ -7845,14 +10239,18 @@ dispatch (ETERM *message)
   fun = ERL_TUPLE_ELEMENT (message, 0);
 
   /* XXX We should use gperf here. */
-  if (atom_equals (fun, "add_cdrom"))
+  if (atom_equals (fun, "acl_delete_def_file"))
+    return run_acl_delete_def_file (message);
+  else if (atom_equals (fun, "acl_get_file"))
+    return run_acl_get_file (message);
+  else if (atom_equals (fun, "acl_set_file"))
+    return run_acl_set_file (message);
+  else if (atom_equals (fun, "add_cdrom"))
     return run_add_cdrom (message);
   else if (atom_equals (fun, "add_domain"))
     return run_add_domain (message);
   else if (atom_equals (fun, "add_drive"))
     return run_add_drive (message);
-  else if (atom_equals (fun, "add_drive_opts"))
-    return run_add_drive_opts (message);
   else if (atom_equals (fun, "add_drive_ro"))
     return run_add_drive_ro (message);
   else if (atom_equals (fun, "add_drive_ro_with_if"))
@@ -7941,6 +10339,12 @@ dispatch (ETERM *message)
     return run_btrfs_subvolume_set_default (message);
   else if (atom_equals (fun, "btrfs_subvolume_snapshot"))
     return run_btrfs_subvolume_snapshot (message);
+  else if (atom_equals (fun, "canonical_device_name"))
+    return run_canonical_device_name (message);
+  else if (atom_equals (fun, "cap_get_file"))
+    return run_cap_get_file (message);
+  else if (atom_equals (fun, "cap_set_file"))
+    return run_cap_set_file (message);
   else if (atom_equals (fun, "case_sensitive_path"))
     return run_case_sensitive_path (message);
   else if (atom_equals (fun, "cat"))
@@ -7983,8 +10387,6 @@ dispatch (ETERM *message)
     return run_dd (message);
   else if (atom_equals (fun, "debug"))
     return run_debug (message);
-  else if (atom_equals (fun, "debug_cmdline"))
-    return run_debug_cmdline (message);
   else if (atom_equals (fun, "debug_drives"))
     return run_debug_drives (message);
   else if (atom_equals (fun, "debug_upload"))
@@ -7995,6 +10397,12 @@ dispatch (ETERM *message)
     return run_df (message);
   else if (atom_equals (fun, "df_h"))
     return run_df_h (message);
+  else if (atom_equals (fun, "disk_format"))
+    return run_disk_format (message);
+  else if (atom_equals (fun, "disk_has_backing_file"))
+    return run_disk_has_backing_file (message);
+  else if (atom_equals (fun, "disk_virtual_size"))
+    return run_disk_virtual_size (message);
   else if (atom_equals (fun, "dmesg"))
     return run_dmesg (message);
   else if (atom_equals (fun, "download"))
@@ -8033,8 +10441,12 @@ dispatch (ETERM *message)
     return run_file_architecture (message);
   else if (atom_equals (fun, "filesize"))
     return run_filesize (message);
+  else if (atom_equals (fun, "filesystem_available"))
+    return run_filesystem_available (message);
   else if (atom_equals (fun, "fill"))
     return run_fill (message);
+  else if (atom_equals (fun, "fill_dir"))
+    return run_fill_dir (message);
   else if (atom_equals (fun, "fill_pattern"))
     return run_fill_pattern (message);
   else if (atom_equals (fun, "find"))
@@ -8047,12 +10459,16 @@ dispatch (ETERM *message)
     return run_findfs_uuid (message);
   else if (atom_equals (fun, "fsck"))
     return run_fsck (message);
+  else if (atom_equals (fun, "fstrim"))
+    return run_fstrim (message);
   else if (atom_equals (fun, "get_append"))
     return run_get_append (message);
   else if (atom_equals (fun, "get_attach_method"))
     return run_get_attach_method (message);
   else if (atom_equals (fun, "get_autosync"))
     return run_get_autosync (message);
+  else if (atom_equals (fun, "get_cachedir"))
+    return run_get_cachedir (message);
   else if (atom_equals (fun, "get_direct"))
     return run_get_direct (message);
   else if (atom_equals (fun, "get_e2attrs"))
@@ -8063,6 +10479,14 @@ dispatch (ETERM *message)
     return run_get_e2label (message);
   else if (atom_equals (fun, "get_e2uuid"))
     return run_get_e2uuid (message);
+  else if (atom_equals (fun, "get_libvirt_requested_credential_challenge"))
+    return run_get_libvirt_requested_credential_challenge (message);
+  else if (atom_equals (fun, "get_libvirt_requested_credential_defresult"))
+    return run_get_libvirt_requested_credential_defresult (message);
+  else if (atom_equals (fun, "get_libvirt_requested_credential_prompt"))
+    return run_get_libvirt_requested_credential_prompt (message);
+  else if (atom_equals (fun, "get_libvirt_requested_credentials"))
+    return run_get_libvirt_requested_credentials (message);
   else if (atom_equals (fun, "get_memsize"))
     return run_get_memsize (message);
   else if (atom_equals (fun, "get_network"))
@@ -8083,6 +10507,8 @@ dispatch (ETERM *message)
     return run_get_smp (message);
   else if (atom_equals (fun, "get_state"))
     return run_get_state (message);
+  else if (atom_equals (fun, "get_tmpdir"))
+    return run_get_tmpdir (message);
   else if (atom_equals (fun, "get_trace"))
     return run_get_trace (message);
   else if (atom_equals (fun, "get_umask"))
@@ -8109,6 +10535,40 @@ dispatch (ETERM *message)
     return run_head_n (message);
   else if (atom_equals (fun, "hexdump"))
     return run_hexdump (message);
+  else if (atom_equals (fun, "hivex_close"))
+    return run_hivex_close (message);
+  else if (atom_equals (fun, "hivex_commit"))
+    return run_hivex_commit (message);
+  else if (atom_equals (fun, "hivex_node_add_child"))
+    return run_hivex_node_add_child (message);
+  else if (atom_equals (fun, "hivex_node_children"))
+    return run_hivex_node_children (message);
+  else if (atom_equals (fun, "hivex_node_delete_child"))
+    return run_hivex_node_delete_child (message);
+  else if (atom_equals (fun, "hivex_node_get_child"))
+    return run_hivex_node_get_child (message);
+  else if (atom_equals (fun, "hivex_node_get_value"))
+    return run_hivex_node_get_value (message);
+  else if (atom_equals (fun, "hivex_node_name"))
+    return run_hivex_node_name (message);
+  else if (atom_equals (fun, "hivex_node_parent"))
+    return run_hivex_node_parent (message);
+  else if (atom_equals (fun, "hivex_node_set_value"))
+    return run_hivex_node_set_value (message);
+  else if (atom_equals (fun, "hivex_node_values"))
+    return run_hivex_node_values (message);
+  else if (atom_equals (fun, "hivex_open"))
+    return run_hivex_open (message);
+  else if (atom_equals (fun, "hivex_root"))
+    return run_hivex_root (message);
+  else if (atom_equals (fun, "hivex_value_key"))
+    return run_hivex_value_key (message);
+  else if (atom_equals (fun, "hivex_value_type"))
+    return run_hivex_value_type (message);
+  else if (atom_equals (fun, "hivex_value_utf8"))
+    return run_hivex_value_utf8 (message);
+  else if (atom_equals (fun, "hivex_value_value"))
+    return run_hivex_value_value (message);
   else if (atom_equals (fun, "initrd_cat"))
     return run_initrd_cat (message);
   else if (atom_equals (fun, "initrd_list"))
@@ -8169,10 +10629,82 @@ dispatch (ETERM *message)
     return run_inspect_is_netinst (message);
   else if (atom_equals (fun, "inspect_list_applications"))
     return run_inspect_list_applications (message);
+  else if (atom_equals (fun, "inspect_list_applications2"))
+    return run_inspect_list_applications2 (message);
   else if (atom_equals (fun, "inspect_os"))
     return run_inspect_os (message);
   else if (atom_equals (fun, "internal_autosync"))
     return run_internal_autosync (message);
+  else if (atom_equals (fun, "internal_hot_add_drive"))
+    return run_internal_hot_add_drive (message);
+  else if (atom_equals (fun, "internal_hot_remove_drive"))
+    return run_internal_hot_remove_drive (message);
+  else if (atom_equals (fun, "internal_hot_remove_drive_precheck"))
+    return run_internal_hot_remove_drive_precheck (message);
+  else if (atom_equals (fun, "internal_lstatlist"))
+    return run_internal_lstatlist (message);
+  else if (atom_equals (fun, "internal_lxattrlist"))
+    return run_internal_lxattrlist (message);
+  else if (atom_equals (fun, "internal_readlinklist"))
+    return run_internal_readlinklist (message);
+  else if (atom_equals (fun, "internal_test"))
+    return run_internal_test (message);
+  else if (atom_equals (fun, "internal_test_63_optargs"))
+    return run_internal_test_63_optargs (message);
+  else if (atom_equals (fun, "internal_test_close_output"))
+    return run_internal_test_close_output (message);
+  else if (atom_equals (fun, "internal_test_only_optargs"))
+    return run_internal_test_only_optargs (message);
+  else if (atom_equals (fun, "internal_test_rbool"))
+    return run_internal_test_rbool (message);
+  else if (atom_equals (fun, "internal_test_rboolerr"))
+    return run_internal_test_rboolerr (message);
+  else if (atom_equals (fun, "internal_test_rbufferout"))
+    return run_internal_test_rbufferout (message);
+  else if (atom_equals (fun, "internal_test_rbufferouterr"))
+    return run_internal_test_rbufferouterr (message);
+  else if (atom_equals (fun, "internal_test_rconstoptstring"))
+    return run_internal_test_rconstoptstring (message);
+  else if (atom_equals (fun, "internal_test_rconstoptstringerr"))
+    return run_internal_test_rconstoptstringerr (message);
+  else if (atom_equals (fun, "internal_test_rconststring"))
+    return run_internal_test_rconststring (message);
+  else if (atom_equals (fun, "internal_test_rconststringerr"))
+    return run_internal_test_rconststringerr (message);
+  else if (atom_equals (fun, "internal_test_rhashtable"))
+    return run_internal_test_rhashtable (message);
+  else if (atom_equals (fun, "internal_test_rhashtableerr"))
+    return run_internal_test_rhashtableerr (message);
+  else if (atom_equals (fun, "internal_test_rint"))
+    return run_internal_test_rint (message);
+  else if (atom_equals (fun, "internal_test_rint64"))
+    return run_internal_test_rint64 (message);
+  else if (atom_equals (fun, "internal_test_rint64err"))
+    return run_internal_test_rint64err (message);
+  else if (atom_equals (fun, "internal_test_rinterr"))
+    return run_internal_test_rinterr (message);
+  else if (atom_equals (fun, "internal_test_rstring"))
+    return run_internal_test_rstring (message);
+  else if (atom_equals (fun, "internal_test_rstringerr"))
+    return run_internal_test_rstringerr (message);
+  else if (atom_equals (fun, "internal_test_rstringlist"))
+    return run_internal_test_rstringlist (message);
+  else if (atom_equals (fun, "internal_test_rstringlisterr"))
+    return run_internal_test_rstringlisterr (message);
+  else if (atom_equals (fun, "internal_test_rstruct"))
+    return run_internal_test_rstruct (message);
+  else if (atom_equals (fun, "internal_test_rstructerr"))
+    return run_internal_test_rstructerr (message);
+  else if (atom_equals (fun, "internal_test_rstructlist"))
+    return run_internal_test_rstructlist (message);
+  else if (atom_equals (fun, "internal_test_rstructlisterr"))
+    return run_internal_test_rstructlisterr (message);
+  else if (atom_equals (fun, "internal_test_set_output"))
+    return run_internal_test_set_output (message);
+  else if (atom_equals (fun, "internal_write"))
+    return run_internal_write (message);
+  else if (atom_equals (fun, "internal_write_append"))
+    return run_internal_write_append (message);
   else if (atom_equals (fun, "is_blockdev"))
     return run_is_blockdev (message);
   else if (atom_equals (fun, "is_busy"))
@@ -8211,6 +10743,26 @@ dispatch (ETERM *message)
     return run_launch (message);
   else if (atom_equals (fun, "lchown"))
     return run_lchown (message);
+  else if (atom_equals (fun, "ldmtool_create_all"))
+    return run_ldmtool_create_all (message);
+  else if (atom_equals (fun, "ldmtool_diskgroup_disks"))
+    return run_ldmtool_diskgroup_disks (message);
+  else if (atom_equals (fun, "ldmtool_diskgroup_name"))
+    return run_ldmtool_diskgroup_name (message);
+  else if (atom_equals (fun, "ldmtool_diskgroup_volumes"))
+    return run_ldmtool_diskgroup_volumes (message);
+  else if (atom_equals (fun, "ldmtool_remove_all"))
+    return run_ldmtool_remove_all (message);
+  else if (atom_equals (fun, "ldmtool_scan"))
+    return run_ldmtool_scan (message);
+  else if (atom_equals (fun, "ldmtool_scan_devices"))
+    return run_ldmtool_scan_devices (message);
+  else if (atom_equals (fun, "ldmtool_volume_hint"))
+    return run_ldmtool_volume_hint (message);
+  else if (atom_equals (fun, "ldmtool_volume_partitions"))
+    return run_ldmtool_volume_partitions (message);
+  else if (atom_equals (fun, "ldmtool_volume_type"))
+    return run_ldmtool_volume_type (message);
   else if (atom_equals (fun, "lgetxattr"))
     return run_lgetxattr (message);
   else if (atom_equals (fun, "lgetxattrs"))
@@ -8219,10 +10771,16 @@ dispatch (ETERM *message)
     return run_list_9p (message);
   else if (atom_equals (fun, "list_devices"))
     return run_list_devices (message);
+  else if (atom_equals (fun, "list_disk_labels"))
+    return run_list_disk_labels (message);
   else if (atom_equals (fun, "list_dm_devices"))
     return run_list_dm_devices (message);
   else if (atom_equals (fun, "list_filesystems"))
     return run_list_filesystems (message);
+  else if (atom_equals (fun, "list_ldm_partitions"))
+    return run_list_ldm_partitions (message);
+  else if (atom_equals (fun, "list_ldm_volumes"))
+    return run_list_ldm_volumes (message);
   else if (atom_equals (fun, "list_md_devices"))
     return run_list_md_devices (message);
   else if (atom_equals (fun, "list_partitions"))
@@ -8243,6 +10801,8 @@ dispatch (ETERM *message)
     return run_lremovexattr (message);
   else if (atom_equals (fun, "ls"))
     return run_ls (message);
+  else if (atom_equals (fun, "ls0"))
+    return run_ls0 (message);
   else if (atom_equals (fun, "lsetxattr"))
     return run_lsetxattr (message);
   else if (atom_equals (fun, "lstat"))
@@ -8291,6 +10851,8 @@ dispatch (ETERM *message)
     return run_lvuuid (message);
   else if (atom_equals (fun, "lxattrlist"))
     return run_lxattrlist (message);
+  else if (atom_equals (fun, "max_disks"))
+    return run_max_disks (message);
   else if (atom_equals (fun, "md_create"))
     return run_md_create (message);
   else if (atom_equals (fun, "md_detail"))
@@ -8307,6 +10869,8 @@ dispatch (ETERM *message)
     return run_mkdir_p (message);
   else if (atom_equals (fun, "mkdtemp"))
     return run_mkdtemp (message);
+  else if (atom_equals (fun, "mke2fs"))
+    return run_mke2fs (message);
   else if (atom_equals (fun, "mke2fs_J"))
     return run_mke2fs_J (message);
   else if (atom_equals (fun, "mke2fs_JL"))
@@ -8327,8 +10891,8 @@ dispatch (ETERM *message)
     return run_mkfs_b (message);
   else if (atom_equals (fun, "mkfs_btrfs"))
     return run_mkfs_btrfs (message);
-  else if (atom_equals (fun, "mkfs_opts"))
-    return run_mkfs_opts (message);
+  else if (atom_equals (fun, "mklost_and_found"))
+    return run_mklost_and_found (message);
   else if (atom_equals (fun, "mkmountpoint"))
     return run_mkmountpoint (message);
   else if (atom_equals (fun, "mknod"))
@@ -8345,6 +10909,8 @@ dispatch (ETERM *message)
     return run_mkswap_U (message);
   else if (atom_equals (fun, "mkswap_file"))
     return run_mkswap_file (message);
+  else if (atom_equals (fun, "mktemp"))
+    return run_mktemp (message);
   else if (atom_equals (fun, "modprobe"))
     return run_modprobe (message);
   else if (atom_equals (fun, "mount"))
@@ -8381,10 +10947,12 @@ dispatch (ETERM *message)
     return run_ntfsfix (message);
   else if (atom_equals (fun, "ntfsresize"))
     return run_ntfsresize (message);
-  else if (atom_equals (fun, "ntfsresize_opts"))
-    return run_ntfsresize_opts (message);
   else if (atom_equals (fun, "ntfsresize_size"))
     return run_ntfsresize_size (message);
+  else if (atom_equals (fun, "parse_environment"))
+    return run_parse_environment (message);
+  else if (atom_equals (fun, "parse_environment_list"))
+    return run_parse_environment_list (message);
   else if (atom_equals (fun, "part_add"))
     return run_part_add (message);
   else if (atom_equals (fun, "part_del"))
@@ -8417,6 +10985,10 @@ dispatch (ETERM *message)
     return run_pread (message);
   else if (atom_equals (fun, "pread_device"))
     return run_pread_device (message);
+  else if (atom_equals (fun, "pvchange_uuid"))
+    return run_pvchange_uuid (message);
+  else if (atom_equals (fun, "pvchange_uuid_all"))
+    return run_pvchange_uuid_all (message);
   else if (atom_equals (fun, "pvcreate"))
     return run_pvcreate (message);
   else if (atom_equals (fun, "pvremove"))
@@ -8447,6 +11019,8 @@ dispatch (ETERM *message)
     return run_readlinklist (message);
   else if (atom_equals (fun, "realpath"))
     return run_realpath (message);
+  else if (atom_equals (fun, "remove_drive"))
+    return run_remove_drive (message);
   else if (atom_equals (fun, "removexattr"))
     return run_removexattr (message);
   else if (atom_equals (fun, "resize2fs"))
@@ -8457,12 +11031,20 @@ dispatch (ETERM *message)
     return run_resize2fs_size (message);
   else if (atom_equals (fun, "rm"))
     return run_rm (message);
+  else if (atom_equals (fun, "rm_f"))
+    return run_rm_f (message);
   else if (atom_equals (fun, "rm_rf"))
     return run_rm_rf (message);
   else if (atom_equals (fun, "rmdir"))
     return run_rmdir (message);
   else if (atom_equals (fun, "rmmountpoint"))
     return run_rmmountpoint (message);
+  else if (atom_equals (fun, "rsync"))
+    return run_rsync (message);
+  else if (atom_equals (fun, "rsync_in"))
+    return run_rsync_in (message);
+  else if (atom_equals (fun, "rsync_out"))
+    return run_rsync_out (message);
   else if (atom_equals (fun, "scrub_device"))
     return run_scrub_device (message);
   else if (atom_equals (fun, "scrub_file"))
@@ -8475,6 +11057,8 @@ dispatch (ETERM *message)
     return run_set_attach_method (message);
   else if (atom_equals (fun, "set_autosync"))
     return run_set_autosync (message);
+  else if (atom_equals (fun, "set_cachedir"))
+    return run_set_cachedir (message);
   else if (atom_equals (fun, "set_direct"))
     return run_set_direct (message);
   else if (atom_equals (fun, "set_e2attrs"))
@@ -8487,6 +11071,10 @@ dispatch (ETERM *message)
     return run_set_e2uuid (message);
   else if (atom_equals (fun, "set_label"))
     return run_set_label (message);
+  else if (atom_equals (fun, "set_libvirt_requested_credential"))
+    return run_set_libvirt_requested_credential (message);
+  else if (atom_equals (fun, "set_libvirt_supported_credentials"))
+    return run_set_libvirt_supported_credentials (message);
   else if (atom_equals (fun, "set_memsize"))
     return run_set_memsize (message);
   else if (atom_equals (fun, "set_network"))
@@ -8503,6 +11091,8 @@ dispatch (ETERM *message)
     return run_set_selinux (message);
   else if (atom_equals (fun, "set_smp"))
     return run_set_smp (message);
+  else if (atom_equals (fun, "set_tmpdir"))
+    return run_set_tmpdir (message);
   else if (atom_equals (fun, "set_trace"))
     return run_set_trace (message);
   else if (atom_equals (fun, "set_verbose"))
@@ -8565,52 +11155,6 @@ dispatch (ETERM *message)
     return run_tar_in (message);
   else if (atom_equals (fun, "tar_out"))
     return run_tar_out (message);
-  else if (atom_equals (fun, "test0"))
-    return run_test0 (message);
-  else if (atom_equals (fun, "test0rbool"))
-    return run_test0rbool (message);
-  else if (atom_equals (fun, "test0rboolerr"))
-    return run_test0rboolerr (message);
-  else if (atom_equals (fun, "test0rbufferout"))
-    return run_test0rbufferout (message);
-  else if (atom_equals (fun, "test0rbufferouterr"))
-    return run_test0rbufferouterr (message);
-  else if (atom_equals (fun, "test0rconstoptstring"))
-    return run_test0rconstoptstring (message);
-  else if (atom_equals (fun, "test0rconstoptstringerr"))
-    return run_test0rconstoptstringerr (message);
-  else if (atom_equals (fun, "test0rconststring"))
-    return run_test0rconststring (message);
-  else if (atom_equals (fun, "test0rconststringerr"))
-    return run_test0rconststringerr (message);
-  else if (atom_equals (fun, "test0rhashtable"))
-    return run_test0rhashtable (message);
-  else if (atom_equals (fun, "test0rhashtableerr"))
-    return run_test0rhashtableerr (message);
-  else if (atom_equals (fun, "test0rint"))
-    return run_test0rint (message);
-  else if (atom_equals (fun, "test0rint64"))
-    return run_test0rint64 (message);
-  else if (atom_equals (fun, "test0rint64err"))
-    return run_test0rint64err (message);
-  else if (atom_equals (fun, "test0rinterr"))
-    return run_test0rinterr (message);
-  else if (atom_equals (fun, "test0rstring"))
-    return run_test0rstring (message);
-  else if (atom_equals (fun, "test0rstringerr"))
-    return run_test0rstringerr (message);
-  else if (atom_equals (fun, "test0rstringlist"))
-    return run_test0rstringlist (message);
-  else if (atom_equals (fun, "test0rstringlisterr"))
-    return run_test0rstringlisterr (message);
-  else if (atom_equals (fun, "test0rstruct"))
-    return run_test0rstruct (message);
-  else if (atom_equals (fun, "test0rstructerr"))
-    return run_test0rstructerr (message);
-  else if (atom_equals (fun, "test0rstructlist"))
-    return run_test0rstructlist (message);
-  else if (atom_equals (fun, "test0rstructlisterr"))
-    return run_test0rstructlisterr (message);
   else if (atom_equals (fun, "tgz_in"))
     return run_tgz_in (message);
   else if (atom_equals (fun, "tgz_out"))
@@ -8643,6 +11187,8 @@ dispatch (ETERM *message)
     return run_upload_offset (message);
   else if (atom_equals (fun, "utimens"))
     return run_utimens (message);
+  else if (atom_equals (fun, "utsname"))
+    return run_utsname (message);
   else if (atom_equals (fun, "version"))
     return run_version (message);
   else if (atom_equals (fun, "vfs_label"))
@@ -8655,6 +11201,10 @@ dispatch (ETERM *message)
     return run_vg_activate (message);
   else if (atom_equals (fun, "vg_activate_all"))
     return run_vg_activate_all (message);
+  else if (atom_equals (fun, "vgchange_uuid"))
+    return run_vgchange_uuid (message);
+  else if (atom_equals (fun, "vgchange_uuid_all"))
+    return run_vgchange_uuid_all (message);
   else if (atom_equals (fun, "vgcreate"))
     return run_vgcreate (message);
   else if (atom_equals (fun, "vglvuuids"))
@@ -8691,6 +11241,14 @@ dispatch (ETERM *message)
     return run_write_append (message);
   else if (atom_equals (fun, "write_file"))
     return run_write_file (message);
+  else if (atom_equals (fun, "xfs_admin"))
+    return run_xfs_admin (message);
+  else if (atom_equals (fun, "xfs_growfs"))
+    return run_xfs_growfs (message);
+  else if (atom_equals (fun, "xfs_info"))
+    return run_xfs_info (message);
+  else if (atom_equals (fun, "xfs_repair"))
+    return run_xfs_repair (message);
   else if (atom_equals (fun, "zegrep"))
     return run_zegrep (message);
   else if (atom_equals (fun, "zegrepi"))

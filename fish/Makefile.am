@@ -120,12 +120,14 @@ cmds-gperf.c: cmds-gperf.gperf
 	mv $@-t $@
 
 guestfish_CFLAGS = \
+	-DCOMPILING_GUESTFISH=1 \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(top_srcdir)/fish -I$(top_builddir)/fish \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS)
 
 guestfish_LDADD = \
@@ -243,11 +245,7 @@ bashcompletion_DATA = guestfish-bash-completion.sh
 
 # Tests.
 
-random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-
-TESTS_ENVIRONMENT = \
-	MALLOC_PERTURB_=$(random_val) \
-	$(top_builddir)/run
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = \
 	test-a.sh \
@@ -262,15 +260,21 @@ TESTS += \
 	test-copy.sh \
 	test-edit.sh \
 	test-find0.sh \
+	test-inspect.sh \
 	test-glob.sh \
 	test-mount-local.sh \
+	test-prep.sh \
 	test-read-file.sh \
 	test-remote.sh \
 	test-remote-events.sh \
 	test-reopen.sh \
+	test-run.sh \
 	test-stringlist.sh \
 	test-upload-to-dir.sh
 endif
+
+check-valgrind:
+	$(MAKE) TESTS="test-inspect.sh test-prep.sh test-run.sh" VG="$(top_builddir)/run @VG@" check
 
 EXTRA_DIST += \
 	test-a.sh \
@@ -282,11 +286,14 @@ EXTRA_DIST += \
 	test-events.sh \
 	test-find0.sh \
 	test-glob.sh \
+	test-inspect.sh \
 	test-mount-local.sh \
+	test-prep.sh \
 	test-read-file.sh \
 	test-remote.sh \
 	test-remote-events.sh \
 	test-reopen.sh \
+	test-run.sh \
 	test-stringlist.sh \
 	test-tilde.sh \
 	test-upload-to-dir.sh

@@ -6,13 +6,13 @@ guestfs-ocaml - How to use libguestfs from OCaml
 
 =head1 КОРОТКИЙ ОПИС
 
-Module style:
+Стиль Module:
 
  let g = Guestfs.create () in
  Guestfs.add_drive_opts g ~format:"raw" ~readonly:true "disk.img";
  Guestfs.launch g;
 
-Object-oriented style:
+Об’єктно-орієнтований стиль:
 
  let g = new Guestfs.guestfs () in
  g#add_drive_opts ~format:"raw" ~readonly:true "disk.img";
@@ -29,7 +29,7 @@ language.  This page just documents the differences from the C API and gives
 some examples.  If you are not familiar with using libguestfs, you also need
 to read L<guestfs(3)>.
 
-=head2 PROGRAMMING STYLES
+=head2 СТИЛІ ПРОГРАМУВАННЯ
 
 There are two different programming styles supported by the OCaml bindings.
 You can use a module style, with each C function mapped to an OCaml
@@ -37,7 +37,7 @@ function:
 
  int guestfs_set_verbose (guestfs_h *g, int flag);
 
-becomes:
+перетворюється на:
 
  val Guestfs.set_verbose : Guestfs.t -> bool -> unit
 
@@ -78,9 +78,9 @@ that you called.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-erlang(3)>,
-L<guestfs-java(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
-L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>,
-L<http://caml.inria.fr/>.
+L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-perl(3)>,
+L<guestfs-python(3)>, L<guestfs-recipes(1)>, L<guestfs-ruby(3)>,
+L<http://libguestfs.org/>, L<http://caml.inria.fr/>.
 
 =head1 АВТОРИ
 

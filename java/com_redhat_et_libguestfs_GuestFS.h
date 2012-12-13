@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _create
- * Signature: ()J
+ * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1create
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -25,186 +25,218 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1close
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0
- * Signature: (JLjava/lang/String;Ljava/lang/String;[Ljava/lang/String;ZIJLjava/lang/String;Ljava/lang/String;[BJZIJLjava/lang/String;)V
+ * Method:    _internal_test
+ * Signature: (JLjava/lang/String;Ljava/lang/String;[Ljava/lang/String;ZIJLjava/lang/String;Ljava/lang/String;[BJZIJLjava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0
-  (JNIEnv *, jobject, jlong, jstring, jstring, jobjectArray, jboolean, jint, jlong, jstring, jstring, jbyteArray, jlong, jboolean, jint, jlong, jstring);
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test
+  (JNIEnv *, jobject, jlong, jstring, jstring, jobjectArray, jboolean, jint, jlong, jstring, jstring, jbyteArray, jlong, jboolean, jint, jlong, jstring, jobjectArray);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rint
+ * Method:    _internal_test_only_optargs
+ * Signature: (JJI)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1only_1optargs
+  (JNIEnv *, jobject, jlong, jlong, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _internal_test_63_optargs
+ * Signature: (JJIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_163_1optargs
+  (JNIEnv *, jobject, jlong, jlong, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _internal_test_rint
  * Signature: (JLjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rint
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rint
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rinterr
+ * Method:    _internal_test_rinterr
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rinterr
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rinterr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rint64
+ * Method:    _internal_test_rint64
  * Signature: (JLjava/lang/String;)J
  */
-JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rint64
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rint64
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rint64err
+ * Method:    _internal_test_rint64err
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rint64err
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rint64err
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rbool
+ * Method:    _internal_test_rbool
  * Signature: (JLjava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rbool
+JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rbool
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rboolerr
+ * Method:    _internal_test_rboolerr
  * Signature: (J)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rboolerr
+JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rboolerr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rconststring
+ * Method:    _internal_test_rconststring
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rconststring
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rconststring
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rconststringerr
+ * Method:    _internal_test_rconststringerr
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rconststringerr
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rconststringerr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rconstoptstring
+ * Method:    _internal_test_rconstoptstring
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rconstoptstring
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rconstoptstring
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rconstoptstringerr
+ * Method:    _internal_test_rconstoptstringerr
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rconstoptstringerr
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rconstoptstringerr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstring
+ * Method:    _internal_test_rstring
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstring
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstring
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstringerr
+ * Method:    _internal_test_rstringerr
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstringerr
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstringerr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstringlist
+ * Method:    _internal_test_rstringlist
  * Signature: (JLjava/lang/String;)[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlist
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstringlist
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstringlisterr
+ * Method:    _internal_test_rstringlisterr
  * Signature: (J)[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstringlisterr
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstringlisterr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstruct
+ * Method:    _internal_test_rstruct
  * Signature: (JLjava/lang/String;)Lcom/redhat/et/libguestfs/PV;
  */
-JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstruct
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstruct
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstructerr
+ * Method:    _internal_test_rstructerr
  * Signature: (J)Lcom/redhat/et/libguestfs/PV;
  */
-JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstructerr
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstructerr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstructlist
+ * Method:    _internal_test_rstructlist
  * Signature: (JLjava/lang/String;)[Lcom/redhat/et/libguestfs/PV;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlist
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstructlist
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rstructlisterr
+ * Method:    _internal_test_rstructlisterr
  * Signature: (J)[Lcom/redhat/et/libguestfs/PV;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rstructlisterr
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rstructlisterr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rhashtable
+ * Method:    _internal_test_rhashtable
  * Signature: (JLjava/lang/String;)[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtable
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rhashtable
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rhashtableerr
+ * Method:    _internal_test_rhashtableerr
  * Signature: (J)[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rhashtableerr
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rhashtableerr
   (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rbufferout
+ * Method:    _internal_test_rbufferout
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rbufferout
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rbufferout
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _test0rbufferouterr
+ * Method:    _internal_test_rbufferouterr
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1test0rbufferouterr
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1rbufferouterr
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _internal_test_set_output
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1set_1output
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _internal_test_close_output
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1test_1close_1output
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -230,14 +262,6 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1wait_1ready
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1kill_1subprocess
   (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _add_drive
- * Signature: (JLjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive
-  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -601,11 +625,11 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1list_1fil
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _add_drive_opts
- * Signature: (JLjava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ * Method:    _add_drive
+ * Signature: (JLjava/lang/String;JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1opts
-  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jstring, jstring, jstring);
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jstring, jstring, jstring, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -621,14 +645,6 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1
  * Signature: (J)[Ljava/lang/String;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1roots
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _debug_cmdline
- * Signature: (J)[Ljava/lang/String;
- */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1debug_1cmdline
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -669,6 +685,14 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1get_1
  * Signature: (JLjava/lang/String;)[Lcom/redhat/et/libguestfs/Application;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _inspect_list_applications2
+ * Signature: (JLjava/lang/String;)[Lcom/redhat/et/libguestfs/Application2;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1inspect_1list_1applications2
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
@@ -817,10 +841,242 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1umount_1local
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _max_disks
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1max_1disks
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _canonical_device_name
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1canonical_1device_1name
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _shutdown
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1shutdown
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _cat
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1cat
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _find
+ * Signature: (JLjava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1find
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _read_file
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1read_1file
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _read_lines
+ * Signature: (JLjava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1read_1lines
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _write
+ * Signature: (JLjava/lang/String;[B)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1write
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _write_append
+ * Signature: (JLjava/lang/String;[B)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1write_1append
+  (JNIEnv *, jobject, jlong, jstring, jbyteArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _lstatlist
+ * Signature: (JLjava/lang/String;[Ljava/lang/String;)[Lcom/redhat/et/libguestfs/Stat;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lstatlist
+  (JNIEnv *, jobject, jlong, jstring, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _lxattrlist
+ * Signature: (JLjava/lang/String;[Ljava/lang/String;)[Lcom/redhat/et/libguestfs/XAttr;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lxattrlist
+  (JNIEnv *, jobject, jlong, jstring, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _readlinklist
+ * Signature: (JLjava/lang/String;[Ljava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1readlinklist
+  (JNIEnv *, jobject, jlong, jstring, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ls
+ * Signature: (JLjava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ls
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_value_utf8
+ * Signature: (JJ)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1value_1utf8
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _disk_format
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1disk_1format
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _disk_virtual_size
+ * Signature: (JLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1disk_1virtual_1size
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _disk_has_backing_file
+ * Signature: (JLjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1disk_1has_1backing_1file
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _remove_drive
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1remove_1drive
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_libvirt_supported_credentials
+ * Signature: (J[Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1libvirt_1supported_1credentials
+  (JNIEnv *, jobject, jlong, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_libvirt_requested_credentials
+ * Signature: (J)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1libvirt_1requested_1credentials
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_libvirt_requested_credential_prompt
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1libvirt_1requested_1credential_1prompt
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_libvirt_requested_credential_challenge
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1libvirt_1requested_1credential_1challenge
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_libvirt_requested_credential_defresult
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1libvirt_1requested_1credential_1defresult
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_libvirt_requested_credential
+ * Signature: (JI[B)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1libvirt_1requested_1credential
+  (JNIEnv *, jobject, jlong, jint, jbyteArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _parse_environment
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1parse_1environment
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _parse_environment_list
+ * Signature: (J[Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1parse_1environment_1list
+  (JNIEnv *, jobject, jlong, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_tmpdir
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1tmpdir
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_tmpdir
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1tmpdir
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_cachedir
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1cachedir
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_cachedir
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1cachedir
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -849,26 +1105,10 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1touch
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _cat
- * Signature: (JLjava/lang/String;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1cat
-  (JNIEnv *, jobject, jlong, jstring);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _ll
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ll
-  (JNIEnv *, jobject, jlong, jstring);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _ls
- * Signature: (JLjava/lang/String;)[Ljava/lang/String;
- */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ls
   (JNIEnv *, jobject, jlong, jstring);
 
 /*
@@ -934,14 +1174,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1vgs_1full
  */
 JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lvs_1full
   (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _read_lines
- * Signature: (JLjava/lang/String;)[Ljava/lang/String;
- */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1read_1lines
-  (JNIEnv *, jobject, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -1153,14 +1385,6 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lvcreate
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _mkfs
- * Signature: (JLjava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mkfs
-  (JNIEnv *, jobject, jlong, jstring, jstring);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _sfdisk
  * Signature: (JLjava/lang/String;III[Ljava/lang/String;)V
  */
@@ -1178,10 +1402,10 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1write_1file
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _umount
- * Signature: (JLjava/lang/String;)V
+ * Signature: (JLjava/lang/String;JZZ)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1umount
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -1370,18 +1594,18 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1checksum
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _tar_in
- * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1tar_1in
-  (JNIEnv *, jobject, jlong, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _tar_out
- * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JLjava/lang/String;Z[Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1tar_1out
-  (JNIEnv *, jobject, jlong, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jstring, jboolean, jobjectArray);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -1673,14 +1897,6 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1resize2fs
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _find
- * Signature: (JLjava/lang/String;)[Ljava/lang/String;
- */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1find
-  (JNIEnv *, jobject, jlong, jstring);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _e2fsck_f
  * Signature: (JLjava/lang/String;)V
  */
@@ -1858,10 +2074,10 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mount_1loop
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _mkswap
- * Signature: (JLjava/lang/String;)V
+ * Signature: (JLjava/lang/String;JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mkswap
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jstring, jstring);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -2017,19 +2233,11 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1rmmountpoint
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _read_file
- * Signature: (JLjava/lang/String;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1read_1file
-  (JNIEnv *, jobject, jlong, jstring);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _grep
- * Signature: (JLjava/lang/String;Ljava/lang/String;)[Ljava/lang/String;
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JZZZZ)[Ljava/lang/String;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1grep
-  (JNIEnv *, jobject, jlong, jstring, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jboolean, jboolean, jboolean, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -2449,26 +2657,26 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lchown
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _lstatlist
+ * Method:    _internal_lstatlist
  * Signature: (JLjava/lang/String;[Ljava/lang/String;)[Lcom/redhat/et/libguestfs/Stat;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lstatlist
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1lstatlist
   (JNIEnv *, jobject, jlong, jstring, jobjectArray);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _lxattrlist
+ * Method:    _internal_lxattrlist
  * Signature: (JLjava/lang/String;[Ljava/lang/String;)[Lcom/redhat/et/libguestfs/XAttr;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lxattrlist
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1lxattrlist
   (JNIEnv *, jobject, jlong, jstring, jobjectArray);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _readlinklist
+ * Method:    _internal_readlinklist
  * Signature: (JLjava/lang/String;[Ljava/lang/String;)[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1readlinklist
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1readlinklist
   (JNIEnv *, jobject, jlong, jstring, jobjectArray);
 
 /*
@@ -2665,14 +2873,6 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1txz_1out
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _ntfsresize
- * Signature: (JLjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize
-  (JNIEnv *, jobject, jlong, jstring);
-
-/*
- * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _vgscan
  * Signature: (J)V
  */
@@ -2785,10 +2985,10 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1fill_1pattern
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _write
+ * Method:    _internal_write
  * Signature: (JLjava/lang/String;[B)V
  */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1write
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1write
   (JNIEnv *, jobject, jlong, jstring, jbyteArray);
 
 /*
@@ -3041,10 +3241,10 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1lvm_1canonical
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _mkfs_opts
+ * Method:    _mkfs
  * Signature: (JLjava/lang/String;Ljava/lang/String;JILjava/lang/String;II)V
  */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mkfs_1opts
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mkfs
   (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jint, jstring, jint, jint);
 
 /*
@@ -3121,10 +3321,10 @@ JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1list_1dm_
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _ntfsresize_opts
+ * Method:    _ntfsresize
  * Signature: (JLjava/lang/String;JJZ)V
  */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize_1opts
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ntfsresize
   (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jboolean);
 
 /*
@@ -3137,10 +3337,10 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1filesystem
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
- * Method:    _write_append
+ * Method:    _internal_write_append
  * Signature: (JLjava/lang/String;[B)V
  */
-JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1write_1append
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1write_1append
   (JNIEnv *, jobject, jlong, jstring, jbyteArray);
 
 /*
@@ -3481,6 +3681,22 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1btrfs_1fsck
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _filesystem_available
+ * Signature: (JLjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1filesystem_1available
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _fstrim
+ * Signature: (JLjava/lang/String;JJJJ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1fstrim
+  (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _device_index
  * Signature: (JLjava/lang/String;)I
  */
@@ -3494,6 +3710,446 @@ JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1device_1index
  */
 JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1nr_1devices
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _xfs_info
+ * Signature: (JLjava/lang/String;)Lcom/redhat/et/libguestfs/XFSInfo;
+ */
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1xfs_1info
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _pvchange_uuid
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1pvchange_1uuid
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _pvchange_uuid_all
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1pvchange_1uuid_1all
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _vgchange_uuid
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1vgchange_1uuid
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _vgchange_uuid_all
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1vgchange_1uuid_1all
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _utsname
+ * Signature: (J)Lcom/redhat/et/libguestfs/UTSName;
+ */
+JNIEXPORT jobject JNICALL Java_com_redhat_et_libguestfs_GuestFS__1utsname
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _xfs_growfs
+ * Signature: (JLjava/lang/String;JZZZJJJJI)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1xfs_1growfs
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jboolean, jboolean, jlong, jlong, jlong, jlong, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _rsync
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JZZ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1rsync
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jboolean, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _rsync_in
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JZZ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1rsync_1in
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jboolean, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _rsync_out
+ * Signature: (JLjava/lang/String;Ljava/lang/String;JZZ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1rsync_1out
+  (JNIEnv *, jobject, jlong, jstring, jstring, jlong, jboolean, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ls0
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ls0
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _fill_dir
+ * Signature: (JLjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1fill_1dir
+  (JNIEnv *, jobject, jlong, jstring, jint);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _xfs_admin
+ * Signature: (JLjava/lang/String;JZZZZZLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1xfs_1admin
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jboolean, jboolean, jboolean, jboolean, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_open
+ * Signature: (JLjava/lang/String;JZZZ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1open
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jboolean, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_close
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1close
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_root
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1root
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_name
+ * Signature: (JJ)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1name
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_children
+ * Signature: (JJ)[Lcom/redhat/et/libguestfs/HivexNode;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1children
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_get_child
+ * Signature: (JJLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1get_1child
+  (JNIEnv *, jobject, jlong, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_parent
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1parent
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_values
+ * Signature: (JJ)[Lcom/redhat/et/libguestfs/HivexValue;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1values
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_get_value
+ * Signature: (JJLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1get_1value
+  (JNIEnv *, jobject, jlong, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_value_key
+ * Signature: (JJ)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1value_1key
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_value_type
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1value_1type
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_value_value
+ * Signature: (JJ)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1value_1value
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_commit
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1commit
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_add_child
+ * Signature: (JJLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1add_1child
+  (JNIEnv *, jobject, jlong, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_delete_child
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1delete_1child
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _hivex_node_set_value
+ * Signature: (JJLjava/lang/String;J[B)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1hivex_1node_1set_1value
+  (JNIEnv *, jobject, jlong, jlong, jstring, jlong, jbyteArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _xfs_repair
+ * Signature: (JLjava/lang/String;JZZZZJJJJLjava/lang/String;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1xfs_1repair
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean, jboolean, jboolean, jboolean, jlong, jlong, jlong, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _rm_f
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1rm_1f
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _mke2fs
+ * Signature: (JLjava/lang/String;JJJJJJJJJJJJJIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZZZZZZZZZZ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mke2fs
+  (JNIEnv *, jobject, jlong, jstring, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jint, jint, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _list_disk_labels
+ * Signature: (J)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1list_1disk_1labels
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _internal_hot_add_drive
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1hot_1add_1drive
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _internal_hot_remove_drive_precheck
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1hot_1remove_1drive_1precheck
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _internal_hot_remove_drive
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1internal_1hot_1remove_1drive
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _mktemp
+ * Signature: (JLjava/lang/String;JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mktemp
+  (JNIEnv *, jobject, jlong, jstring, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _mklost_and_found
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1mklost_1and_1found
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _acl_get_file
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1acl_1get_1file
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _acl_set_file
+ * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1acl_1set_1file
+  (JNIEnv *, jobject, jlong, jstring, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _acl_delete_def_file
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1acl_1delete_1def_1file
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _cap_get_file
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1cap_1get_1file
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _cap_set_file
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1cap_1set_1file
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _list_ldm_volumes
+ * Signature: (J)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1list_1ldm_1volumes
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _list_ldm_partitions
+ * Signature: (J)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1list_1ldm_1partitions
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_create_all
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1create_1all
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_remove_all
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1remove_1all
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_scan
+ * Signature: (J)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1scan
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_scan_devices
+ * Signature: (J[Ljava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1scan_1devices
+  (JNIEnv *, jobject, jlong, jobjectArray);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_diskgroup_name
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1diskgroup_1name
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_diskgroup_volumes
+ * Signature: (JLjava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1diskgroup_1volumes
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_diskgroup_disks
+ * Signature: (JLjava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1diskgroup_1disks
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_volume_type
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1volume_1type
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_volume_hint
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1volume_1hint
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _ldmtool_volume_partitions
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1volume_1partitions
+  (JNIEnv *, jobject, jlong, jstring, jstring);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   generator/generator_*.ml
+#   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
 # Copyright (C) 2009-2012 Red Hat Inc.
@@ -22,17 +22,21 @@
 require 'guestfs'
 
 g = Guestfs::create()
-g.test0("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:obool => true, :oint => 1})
-g.test0("abc", nil, [], false, 0, 0, "123", "456", "abc\0abc", {:oint64 => 1, :ostring => "string"})
-g.test0("", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:obool => false})
-g.test0("", "", [], false, 0, 0, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], false, 0, 0, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1","2"], false, 0, 0, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], true, 0, 0, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], false, -1, -1, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], false, -2, -2, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], false, 1, 1, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], false, 2, 2, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], false, 4095, 4095, "123", "456", "abc\0abc", {})
-g.test0("abc", "def", ["1"], false, 0, 0, "", "", "abc\0abc", {})
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:obool => true, :oint => 1, :oint64 => 9223372036854775807})
+g.internal_test("abc", nil, [], false, 0, 0, "123", "456", "abc\0abc", {:oint64 => 1, :ostring => "string"})
+g.internal_test("", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:obool => false, :oint64 => -9223372036854775808})
+g.internal_test("", "", [], false, 0, 0, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], false, 0, 0, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1","2"], false, 0, 0, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], true, 0, 0, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], false, -1, -1, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], false, -2, -2, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], false, 1, 1, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], false, 2, 2, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], false, 4095, 9223372036854775807, "123", "456", "abc\0abc", {})
+g.internal_test("abc", "def", ["1"], false, 0, -9223372036854775808, "", "", "abc\0abc", {})
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:ostringlist => []})
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:ostringlist => ["optelem1"]})
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:ostringlist => ["optelem1","optelem2"]})
+g.internal_test("abc", "def", [], false, 0, 0, "123", "456", "abc\0abc", {:ostringlist => ["optelem1","optelem2","optelem3"]})
 print "EOF\n"

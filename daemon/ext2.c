@@ -29,33 +29,14 @@
 #include "c-ctype.h"
 #include "actions.h"
 
-#define MAX_ARGS 64
+#define MAX_ARGS 128
 
-/* Choose which tools like mke2fs to use.  For RHEL 5 (only) there
- * is a special set of tools which support ext2/3/4.  eg. On RHEL 5,
- * mke2fs only supports ext2/3, but mke4fs supports ext2/3/4.
- *
- * We specify e4fsprogs in the package list to ensure it is loaded
- * if it exists.
- */
-int
-e2prog (char *name)
-{
-  char *p = strstr (name, "e2");
-  if (!p) return 0;
-  p++;
-
-  *p = '4';
-  if (prog_exists (name))
-    return 0;
-
-  *p = '2';
-  if (prog_exists (name))
-    return 0;
-
-  reply_with_error ("cannot find required program %s", name);
-  return -1;
-}
+GUESTFSD_EXT_CMD(str_tune2fs, tune2fs);
+GUESTFSD_EXT_CMD(str_e2fsck, e2fsck);
+GUESTFSD_EXT_CMD(str_resize2fs, resize2fs);
+GUESTFSD_EXT_CMD(str_mke2fs, mke2fs);
+GUESTFSD_EXT_CMD(str_lsattr, lsattr);
+GUESTFSD_EXT_CMD(str_chattr, chattr);
 
 char **
 do_tune2fs_l (const char *device)
@@ -65,11 +46,7 @@ do_tune2fs_l (const char *device)
   char *p, *pend, *colon;
   DECLARE_STRINGSBUF (ret);
 
-  char prog[] = "tune2fs";
-  if (e2prog (prog) == -1)
-    return NULL;
-
-  r = command (&out, &err, prog, "-l", device, NULL);
+  r = command (&out, &err, str_tune2fs, "-l", device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -165,11 +142,7 @@ do_set_e2uuid (const char *device, const char *uuid)
   int r;
   char *err;
 
-  char prog[] = "tune2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
-  r = command (NULL, &err, prog, "-U", uuid, device, NULL);
+  r = command (NULL, &err, str_tune2fs, "-U", uuid, device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -192,17 +165,13 @@ if_not_mounted_run_e2fsck (const char *device)
 {
   char *err;
   int r, mounted;
-  char prog[] = "e2fsck";
-
-  if (e2prog (prog) == -1)
-    return -1;
 
   mounted = is_device_mounted (device);
   if (mounted == -1)
     return -1;
 
   if (!mounted) {
-    r = command (NULL, &err, prog, "-fy", device, NULL);
+    r = command (NULL, &err, str_e2fsck, "-fy", device, NULL);
     if (r == -1) {
       reply_with_error ("%s", err);
       free (err);
@@ -220,14 +189,10 @@ do_resize2fs (const char *device)
   char *err;
   int r;
 
-  char prog[] = "resize2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   if (if_not_mounted_run_e2fsck (device) == -1)
     return -1;
 
-  r = command (NULL, &err, prog, device, NULL);
+  r = command (NULL, &err, str_resize2fs, device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -243,10 +208,6 @@ do_resize2fs_size (const char *device, int64_t size)
 {
   char *err;
   int r;
-
-  char prog[] = "resize2fs";
-  if (e2prog (prog) == -1)
-    return -1;
 
   /* resize2fs itself may impose additional limits.  Since we are
    * going to use the 'K' suffix however we can only work with whole
@@ -265,7 +226,7 @@ do_resize2fs_size (const char *device, int64_t size)
   char buf[32];
   snprintf (buf, sizeof buf, "%" PRIi64 "K", size);
 
-  r = command (NULL, &err, prog, device, buf, NULL);
+  r = command (NULL, &err, str_resize2fs, device, buf, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -282,14 +243,10 @@ do_resize2fs_M (const char *device)
   char *err;
   int r;
 
-  char prog[] = "resize2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   if (if_not_mounted_run_e2fsck (device) == -1)
     return -1;
 
-  r = command (NULL, &err, prog, "-M", device, NULL);
+  r = command (NULL, &err, str_resize2fs, "-M", device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (err);
@@ -310,10 +267,6 @@ do_e2fsck (const char *device,
   char *err;
   size_t i = 0;
   int r;
-  char prog[] = "e2fsck";
-
-  if (e2prog (prog) == -1)
-    return -1;
 
   /* Default if not selected. */
   if (!(optargs_bitmask & GUESTFS_E2FSCK_CORRECT_BITMASK))
@@ -326,7 +279,7 @@ do_e2fsck (const char *device,
     return -1;
   }
 
-  ADD_ARG (argv, i, prog);
+  ADD_ARG (argv, i, str_e2fsck);
   ADD_ARG (argv, i, "-f");
 
   if (correct)
@@ -369,15 +322,11 @@ do_mke2journal (int blocksize, const char *device)
   char *err;
   int r;
 
-  char prog[] = "mke2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
   r = command (NULL, &err,
-               prog, "-F", "-O", "journal_dev", "-b", blocksize_s,
+               str_mke2fs, "-F", "-O", "journal_dev", "-b", blocksize_s,
                device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -395,10 +344,6 @@ do_mke2journal_L (int blocksize, const char *label, const char *device)
   char *err;
   int r;
 
-  char prog[] = "mke2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   if (strlen (label) > EXT2_LABEL_MAX) {
     reply_with_error ("%s: ext2 labels are limited to %d bytes",
                       label, EXT2_LABEL_MAX);
@@ -409,7 +354,7 @@ do_mke2journal_L (int blocksize, const char *label, const char *device)
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
   r = command (NULL, &err,
-               prog, "-F", "-O", "journal_dev", "-b", blocksize_s,
+               str_mke2fs, "-F", "-O", "journal_dev", "-b", blocksize_s,
                "-L", label,
                device, NULL);
   if (r == -1) {
@@ -428,15 +373,11 @@ do_mke2journal_U (int blocksize, const char *uuid, const char *device)
   char *err;
   int r;
 
-  char prog[] = "mke2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
   r = command (NULL, &err,
-               prog, "-F", "-O", "journal_dev", "-b", blocksize_s,
+               str_mke2fs, "-F", "-O", "journal_dev", "-b", blocksize_s,
                "-U", uuid,
                device, NULL);
   if (r == -1) {
@@ -456,10 +397,6 @@ do_mke2fs_J (const char *fstype, int blocksize, const char *device,
   char *err;
   int r;
 
-  char prog[] = "mke2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
@@ -468,7 +405,7 @@ do_mke2fs_J (const char *fstype, int blocksize, const char *device,
   snprintf (jdev, len+32, "device=%s", journal);
 
   r = command (NULL, &err,
-               prog, "-F", "-t", fstype, "-J", jdev, "-b", blocksize_s,
+               str_mke2fs, "-F", "-t", fstype, "-J", jdev, "-b", blocksize_s,
                device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -487,10 +424,6 @@ do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
   char *err;
   int r;
 
-  char prog[] = "mke2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   if (strlen (label) > EXT2_LABEL_MAX) {
     reply_with_error ("%s: ext2 labels are limited to %d bytes",
                       label, EXT2_LABEL_MAX);
@@ -505,7 +438,7 @@ do_mke2fs_JL (const char *fstype, int blocksize, const char *device,
   snprintf (jdev, len+32, "device=LABEL=%s", label);
 
   r = command (NULL, &err,
-               prog, "-F", "-t", fstype, "-J", jdev, "-b", blocksize_s,
+               str_mke2fs, "-F", "-t", fstype, "-J", jdev, "-b", blocksize_s,
                device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -524,10 +457,6 @@ do_mke2fs_JU (const char *fstype, int blocksize, const char *device,
   char *err;
   int r;
 
-  char prog[] = "mke2fs";
-  if (e2prog (prog) == -1)
-    return -1;
-
   char blocksize_s[32];
   snprintf (blocksize_s, sizeof blocksize_s, "%d", blocksize);
 
@@ -536,7 +465,7 @@ do_mke2fs_JU (const char *fstype, int blocksize, const char *device,
   snprintf (jdev, len+32, "device=UUID=%s", uuid);
 
   r = command (NULL, &err,
-               prog, "-F", "-t", fstype, "-J", jdev, "-b", blocksize_s,
+               str_mke2fs, "-F", "-t", fstype, "-J", jdev, "-b", blocksize_s,
                device, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -566,7 +495,6 @@ do_tune2fs (const char *device, /* only required parameter */
   size_t i = 0;
   int r;
   char *err;
-  char prog[] = "tune2fs";
   char maxmountcount_s[64];
   char mountcount_s[64];
   char group_s[64];
@@ -575,10 +503,7 @@ do_tune2fs (const char *device, /* only required parameter */
   char reservedblockscount_s[64];
   char user_s[64];
 
-  if (e2prog (prog) == -1)
-    return -1;
-
-  ADD_ARG (argv, i, prog);
+  ADD_ARG (argv, i, str_tune2fs);
 
   if (optargs_bitmask & GUESTFS_TUNE2FS_FORCE_BITMASK) {
     if (force)
@@ -686,7 +611,7 @@ do_tune2fs (const char *device, /* only required parameter */
 
   r = commandv (NULL, &err, argv);
   if (r == -1) {
-    reply_with_error ("%s: %s: %s", prog, device, err);
+    reply_with_error ("%s: %s", device, err);
     free (err);
     return -1;
   }
@@ -717,7 +642,7 @@ do_get_e2attrs (const char *filename)
     return NULL;
   }
 
-  r = command (&out, &err, "lsattr", "-d", "--", buf, NULL);
+  r = command (&out, &err, str_lsattr, "-d", "--", buf, NULL);
   free (buf);
   if (r == -1) {
     reply_with_error ("%s: %s: %s", "lsattr", filename, err);
@@ -811,7 +736,7 @@ do_set_e2attrs (const char *filename, const char *attrs, int clear)
     return -1;
   }
 
-  r = command (NULL, &err, "chattr", attr_arg, "--", buf, NULL);
+  r = command (NULL, &err, str_chattr, attr_arg, "--", buf, NULL);
   free (buf);
   if (r == -1) {
     reply_with_error ("%s: %s: %s", "chattr", filename, err);
@@ -837,7 +762,7 @@ do_get_e2generation (const char *filename)
     return -1;
   }
 
-  r = command (&out, &err, "lsattr", "-dv", "--", buf, NULL);
+  r = command (&out, &err, str_lsattr, "-dv", "--", buf, NULL);
   free (buf);
   if (r == -1) {
     reply_with_error ("%s: %s: %s", "lsattr", filename, err);
@@ -875,7 +800,7 @@ do_set_e2generation (const char *filename, int64_t generation)
   snprintf (generation_str, sizeof generation_str,
             "%" PRIu64, (uint64_t) generation);
 
-  r = command (NULL, &err, "chattr", "-v", generation_str, "--", buf, NULL);
+  r = command (NULL, &err, str_chattr, "-v", generation_str, "--", buf, NULL);
   free (buf);
   if (r == -1) {
     reply_with_error ("%s: %s: %s", "chattr", filename, err);
@@ -883,6 +808,414 @@ do_set_e2generation (const char *filename, int64_t generation)
     return -1;
   }
   free (err);
+
+  return 0;
+}
+
+int
+do_mke2fs (const char *device,               /* 0 */
+           int64_t blockscount,
+           int64_t blocksize,
+           int64_t fragsize,
+           int64_t blockspergroup,
+           int64_t numberofgroups,           /* 5 */
+           int64_t bytesperinode,
+           int64_t inodesize,
+           int64_t journalsize,
+           int64_t numberofinodes,
+           int64_t stridesize,               /* 10 */
+           int64_t stripewidth,
+           int64_t maxonlineresize,
+           int reservedblockspercentage,
+           int mmpupdateinterval,
+           const char *journaldevice,        /* 15 */
+           const char *label,
+           const char *lastmounteddir,
+           const char *creatoros,
+           const char *fstype,
+           const char *usagetype,            /* 20 */
+           const char *uuid,
+           int forcecreate,
+           int writesbandgrouponly,
+           int lazyitableinit,
+           int lazyjournalinit,              /* 25 */
+           int testfs,
+           int discard,
+           int quotatype,
+           int extent,
+           int filetype,                     /* 30 */
+           int flexbg,
+           int hasjournal,
+           int journaldev,
+           int largefile,
+           int quota,                        /* 35 */
+           int resizeinode,
+           int sparsesuper,
+           int uninitbg)
+{
+  int r;
+  char *err = NULL;
+  const char *argv[MAX_ARGS];
+  char blockscount_s[64];
+  char blocksize_s[64];
+  char fragsize_s[64];
+  char blockspergroup_s[64];
+  char numberofgroups_s[64];
+  char bytesperinode_s[64];
+  char inodesize_s[64];
+  char journalsize_s[64];
+  char *journaldevice_s = NULL;
+  char reservedblockspercentage_s[64];
+  char numberofinodes_s[64];
+  char mmpupdateinterval_s[84];
+  char stridesize_s[74];
+  char stripewidth_s[84];
+  char maxonlineresize_s[74];
+  size_t i = 0;
+
+  ADD_ARG (argv, i, str_mke2fs);
+
+  if (optargs_bitmask & GUESTFS_MKE2FS_BLOCKSIZE_BITMASK) {
+    if (blocksize < 0) {
+      reply_with_error ("blocksize must be >= 0");
+      goto error;
+    }
+    snprintf (blocksize_s, sizeof blocksize_s, "%" PRIi64, blocksize);
+    ADD_ARG (argv, i, "-b");
+    ADD_ARG (argv, i, blocksize_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_FRAGSIZE_BITMASK) {
+    if (fragsize < 0) {
+      reply_with_error ("fragsize must be >= 0");
+      goto error;
+    }
+    snprintf (fragsize_s, sizeof fragsize_s, "%" PRIi64, fragsize);
+    ADD_ARG (argv, i, "-f");
+    ADD_ARG (argv, i, fragsize_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_FORCECREATE_BITMASK) {
+    if (forcecreate)
+      ADD_ARG (argv, i, "-F");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK) {
+    if (blockspergroup < 0) {
+      reply_with_error ("blockspergroup must be >= 0");
+      goto error;
+    }
+    snprintf (blockspergroup_s, sizeof blockspergroup_s,
+              "%" PRIi64, blockspergroup);
+    ADD_ARG (argv, i, "-g");
+    ADD_ARG (argv, i, blockspergroup_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK) {
+    if (numberofgroups < 0) {
+      reply_with_error ("numberofgroups must be >= 0");
+      goto error;
+    }
+    snprintf (numberofgroups_s, sizeof numberofgroups_s,
+              "%" PRIi64, numberofgroups);
+    ADD_ARG (argv, i, "-G");
+    ADD_ARG (argv, i, numberofgroups_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_BYTESPERINODE_BITMASK) {
+    if (bytesperinode < 0) {
+      reply_with_error ("bytesperinode must be >= 0");
+      goto error;
+    }
+    snprintf (bytesperinode_s, sizeof bytesperinode_s, "%" PRIi64, bytesperinode);
+    ADD_ARG (argv, i, "-i");
+    ADD_ARG (argv, i, bytesperinode_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_INODESIZE_BITMASK) {
+    if (inodesize < 0) {
+      reply_with_error ("inodesize must be >= 0");
+      goto error;
+    }
+    snprintf (inodesize_s, sizeof inodesize_s, "%" PRIi64, inodesize);
+    ADD_ARG (argv, i, "-I");
+    ADD_ARG (argv, i, inodesize_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_JOURNALSIZE_BITMASK) {
+    if (journalsize < 0) {
+      reply_with_error ("journalsize must be >= 0");
+      goto error;
+    }
+    snprintf (journalsize_s, sizeof journalsize_s,
+              "size=" "%" PRIi64, journalsize);
+    ADD_ARG (argv, i, "-J");
+    ADD_ARG (argv, i, journalsize_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK) {
+    if (journaldevice) {
+      /* OString doesn't do device name translation (RHBZ#876579).  We
+       * have to do it manually here, but note that LABEL=.. and
+       * UUID=.. are valid strings which do not require translation.
+       */
+      journaldevice_s = malloc (strlen (journaldevice) + 8);
+      if (!journaldevice_s) {
+        reply_with_perror ("malloc");
+        goto error;
+      }
+
+      sprintf (journaldevice_s, "device=%s", journaldevice);
+      if (STRPREFIX (&journaldevice_s[7], "/dev/"))
+        RESOLVE_DEVICE (&journaldevice_s[7], , goto error);
+
+      ADD_ARG (argv, i, "-J");
+      ADD_ARG (argv, i, journaldevice_s);
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_LABEL_BITMASK) {
+    if (label) {
+      ADD_ARG (argv, i, "-L");
+      ADD_ARG (argv, i, label);
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK) {
+    if (reservedblockspercentage < 0) {
+      reply_with_error ("reservedblockspercentage must be >= 0");
+      goto error;
+    }
+    snprintf (reservedblockspercentage_s, sizeof reservedblockspercentage_s,
+              "%" PRIi32, reservedblockspercentage);
+    ADD_ARG (argv, i, "-m");
+    ADD_ARG (argv, i, reservedblockspercentage_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK) {
+    if (lastmounteddir) {
+      ADD_ARG (argv, i, "-M");
+      ADD_ARG (argv, i, lastmounteddir);
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK) {
+    if (numberofinodes < 0) {
+      reply_with_error ("numberofinodes must be >= 0");
+      goto error;
+    }
+    snprintf (numberofinodes_s, sizeof numberofinodes_s,
+              "%" PRIi64, numberofinodes);
+    ADD_ARG (argv, i, "-N");
+    ADD_ARG (argv, i, numberofinodes_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_CREATOROS_BITMASK) {
+    if (creatoros) {
+      ADD_ARG (argv, i, "-o");
+      ADD_ARG (argv, i, creatoros);
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK) {
+    if (writesbandgrouponly)
+      ADD_ARG (argv, i, "-S");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_FSTYPE_BITMASK) {
+    if (fstype) {
+      ADD_ARG (argv, i, "-t");
+      ADD_ARG (argv, i, fstype);
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_USAGETYPE_BITMASK) {
+    if (usagetype) {
+      ADD_ARG (argv, i, "-T");
+      ADD_ARG (argv, i, usagetype);
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_UUID_BITMASK) {
+    if (uuid) {
+      ADD_ARG (argv, i, "-U");
+      ADD_ARG (argv, i, uuid);
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK) {
+    if (mmpupdateinterval < 0) {
+      reply_with_error ("mmpupdateinterval must be >= 0");
+      goto error;
+    }
+    snprintf (mmpupdateinterval_s, sizeof mmpupdateinterval_s,
+              "mmp_update_interval=" "%" PRIi32, mmpupdateinterval);
+    ADD_ARG (argv, i, "-E");
+    ADD_ARG (argv, i, mmpupdateinterval_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_STRIDESIZE_BITMASK) {
+    if (stridesize < 0) {
+      reply_with_error ("stridesize must be >= 0");
+      goto error;
+    }
+    snprintf (stridesize_s, sizeof stridesize_s,
+              "stride=" "%" PRIi64, stridesize);
+    ADD_ARG (argv, i, "-E");
+    ADD_ARG (argv, i, stridesize_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK) {
+    if (stripewidth< 0) {
+      reply_with_error ("stripewidth must be >= 0");
+      goto error;
+    }
+    snprintf (stripewidth_s, sizeof stripewidth_s,
+              "stripe_width=" "%" PRIi64, stripewidth);
+    ADD_ARG (argv, i, "-E");
+    ADD_ARG (argv, i, stripewidth_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK) {
+    if (maxonlineresize < 0) {
+      reply_with_error ("maxonlineresize must be >= 0");
+      goto error;
+    }
+    snprintf (maxonlineresize_s, sizeof maxonlineresize_s,
+              "resize=" "%" PRIi64, maxonlineresize);
+    ADD_ARG (argv, i, "-E");
+    ADD_ARG (argv, i, maxonlineresize_s);
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK) {
+    ADD_ARG (argv, i, "-E");
+    if (lazyitableinit)
+      ADD_ARG (argv, i, "lazy_itable_init=1");
+    else
+      ADD_ARG (argv, i, "lazy_itable_init=0");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK) {
+    ADD_ARG (argv, i, "-E");
+    if (lazyjournalinit)
+      ADD_ARG (argv, i, "lazy_journal_init=1");
+    else
+      ADD_ARG (argv, i, "lazy_journal_init=0");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_TESTFS_BITMASK) {
+    if (testfs) {
+      ADD_ARG (argv, i, "-E");
+      ADD_ARG (argv, i, "test_fs");
+    }
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_DISCARD_BITMASK) {
+    ADD_ARG (argv, i, "-E");
+    if (discard)
+      ADD_ARG (argv, i, "discard");
+    else
+      ADD_ARG (argv, i, "nodiscard");
+  }
+
+  if (optargs_bitmask & GUESTFS_MKE2FS_EXTENT_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (extent)
+      ADD_ARG (argv, i, "extent");
+    else
+      ADD_ARG (argv, i, "^extent");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_FILETYPE_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (filetype)
+      ADD_ARG (argv, i, "filetype");
+    else
+      ADD_ARG (argv, i, "^filetype");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_FLEXBG_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (flexbg)
+      ADD_ARG (argv, i, "flexbg");
+    else
+      ADD_ARG (argv, i, "^flexbg");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_HASJOURNAL_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (hasjournal)
+      ADD_ARG (argv, i, "has_journal");
+    else
+      ADD_ARG (argv, i, "^has_journal");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_JOURNALDEV_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (journaldev)
+      ADD_ARG (argv, i, "journal_dev");
+    else
+      ADD_ARG (argv, i, "^journal_dev");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_LARGEFILE_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (largefile)
+      ADD_ARG (argv, i, "large_file");
+    else
+      ADD_ARG (argv, i, "^large_file");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_QUOTA_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (quota)
+      ADD_ARG (argv, i, "quota");
+    else
+      ADD_ARG (argv, i, "^quota");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_RESIZEINODE_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (resizeinode)
+      ADD_ARG (argv, i, "resize_inode");
+    else
+      ADD_ARG (argv, i, "^resize_inode");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_SPARSESUPER_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (sparsesuper)
+      ADD_ARG (argv, i, "sparse_super");
+    else
+      ADD_ARG (argv, i, "^sparse_super");
+  }
+  if (optargs_bitmask & GUESTFS_MKE2FS_UNINITBG_BITMASK) {
+    ADD_ARG (argv, i, "-O");
+    if (uninitbg)
+      ADD_ARG (argv, i, "uninit_bg");
+    else
+      ADD_ARG (argv, i, "^uninit_bg");
+  }
+
+  ADD_ARG (argv, i, device);
+
+  if (optargs_bitmask & GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK) {
+    if (blockscount < 0) {
+      reply_with_error ("blockscount must be >= 0");
+      goto error;
+    }
+    snprintf (blockscount_s, sizeof blockscount_s, "%" PRIi64, blockscount);
+    ADD_ARG (argv, i, blockscount_s);
+  }
+
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (NULL, &err, argv);
+  if (r == -1) {
+    reply_with_error ("%s: %s", device, err);
+    goto error;
+  }
+
+  free (journaldevice_s);
+  free (err);
+  return 0;
+
+error:
+  free (journaldevice_s);
+  free (err);
+  return -1;
+}
+
+int
+do_mklost_and_found (const char *mountpoint)
+{
+  char *cmd;
+  int r;
+
+  if (asprintf_nowarn (&cmd, "cd %R && mklost+found", mountpoint) == -1) {
+    reply_with_perror ("asprintf");
+    return -1;
+  }
+
+  r = system (cmd);
+  if (r == -1) {
+    reply_with_perror ("system");
+    free (cmd);
+    return -1;
+  }
+  if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
+    reply_with_error ("%s: command failed", cmd);
+    free (cmd);
+    return -1;
+  }
+  free (cmd);
 
   return 0;
 }

@@ -2,7 +2,7 @@
 
 =head1 名前
 
-virt-alignment-scan - 仮想マシンのパーティション配置の確認
+virt-alignment-scan - 仮想マシンのパーティションにおけるアライメントの確認
 
 =head1 書式
 
@@ -14,11 +14,9 @@ virt-alignment-scan - 仮想マシンのパーティション配置の確認
 
 =head1 説明
 
-When older operating systems install themselves, the partitioning tools
-place partitions at a sector misaligned with the underlying storage
-(commonly the first partition starts on sector C<63>).  Misaligned
-partitions can result in an operating system issuing more I/O than should be
-necessary.
+古いオペレーティングシステムが自身をインストールするとき、パーティションツールが基礎となるストレージと一致しないセクターにパーティションを配置します
+(一般的に最初のパーティションはセクター C<63> から始まります)。一致しないパーティションにより、必要以上に I/O
+を発生させるというオペレーティングシステムの問題を引き起こします。
 
 virt-alignment-scan ツールは、仮想マシンおよびディスクイメージにあるパーティションの配置を確認します。配置に問題があれば警告します。
 
@@ -57,20 +55,17 @@ libvirt が把握している仮想マシンにおいてツールを実行する
  F16x64:/dev/sda2      2097152         2048K   ok
  F16x64:/dev/sda3    526385152         2048K   ok
 
-The output consists of 4 or more whitespace-separated columns.  Only the
-first 4 columns are significant if you want to parse this from a program.
-The columns are:
+出力は 4 つまたはそれより多い、空白区切りの項目から構成されます。プログラムからこれを構文解析する場合、最初の 4
+列のみが重要です。各項目は次のとおりです:
 
 =over 4
 
 =item 1 列目
 
-The device and partition name (eg. C</dev/sda1> meaning the first partition
-on the first block device).
+デバイス名およびパーティション名 (例: C</dev/sda1> は最初のブロックデバイスにある最初のパーティションを意味します)。
 
-When listing all libvirt domains (no I<-a> or I<-d> option given) this
-column is prefixed by the libvirt name or UUID (if I<--uuid> is given).  eg:
-C<WinXP:/dev/sda1>
+すべての libvirt ドメインを一覧表示するとき (I<-a> や I<-d> オプションなし)、この列は libvirt 名または UUID
+が先頭につきます (I<--uuid> が指定されていると)。例: C<WinXP:/dev/sda1>
 
 =item 2 列目
 
@@ -82,8 +77,7 @@ C<WinXP:/dev/sda1>
 
 =item 4 列目
 
-C<ok> if the alignment is best for performance, or C<bad> if the alignment
-can cause performance problems
+アライメントが最適なパフォーマンスの場合に C<ok>、アライメントがパフォーマンスの問題を引き起こす可能性がある場合に C<bad>。
 
 =item 5 列目以降
 
@@ -91,10 +85,10 @@ can cause performance problems
 
 =back
 
-The exit code from the program changes depending on whether poorly aligned
-partitions were found.  See L</EXIT STATUS> below.
+プログラムからの終了コードは、不適切に配置されたパーティションが見つかったかどうかに依存して変わります。以下の L</終了ステータス>
+を参照してください。
 
-If you just want the exit code with no output, use the I<-q> option.
+出力なしで終了コードを欲しいならば、I<-q> オプションを使用してください。
 
 =head1 オプション
 
@@ -155,12 +149,11 @@ C<disk.img> に対してロー形式（自動検知なし）を強制し、C<ano
 
 =item B<--uuid>
 
-Print UUIDs instead of names.  This is useful for following a guest even
-when the guest is migrated or renamed, or when two guests happen to have the
-same name.
+名前の代わりに UUID を表示します。仮想マシンがマイグレーションまたは名前変更されたとき、または偶然 2
+つの仮想マシンが同じ名前を持つとき、仮想マシンに使用させるために有用です。
 
-This option only applies when listing all libvirt domains (when no I<-a> or
-I<-d> options are specified).
+すべての libvirt ドメインを一覧表示するとき (I<-a> や I<-d>
+オプションが指定されていないとき)、このオプションのみが適用されます。
 
 =item B<-v>
 
@@ -282,12 +275,11 @@ L<http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Storage_Admi
 Microsoft は Windows Server 2008 以降、すべてのパーティションに対してデフォルトのアライメントとして 1 MB
 を選択しました。 Linux はこれに従ってきました。
 
-Assuming 512 byte sectors in the guest, you will now see the first partition
-starting at sector 2048, and subsequent partitions (if any)  will start at a
-multiple of 2048 sectors.
+仮想マシンにおいて 512 バイトのセクターと仮定すると、セクター 2048
+に開始されている最初のパーティションを参照してください。また、（もしあれば）後続のパーティションは 2048 セクターの倍数から始まります。
 
-1 MB alignment is compatible with all current alignment requirements (4K,
-64K) and provides room for future growth in physical block sizes.
+1 MB アライメントはすべての現行アライメント要求 (4K, 64K)
+と互換性があります。また、物理ブロック容量における将来的な拡張の余地を残します。
 
 =head2 アライメントの設定法
 

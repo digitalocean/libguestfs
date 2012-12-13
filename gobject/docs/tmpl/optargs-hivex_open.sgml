@@ -1,0 +1,59 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsHivexOpen
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsHivexOpen ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsHivexOpen:debug ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsHivexOpen:verbose ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsHivexOpen:write ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsHivexOpenClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_hivex_open_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

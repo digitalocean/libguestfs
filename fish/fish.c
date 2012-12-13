@@ -69,6 +69,7 @@ static void error_cb (guestfs_h *g, void *data, const char *msg);
 static void initialize_readline (void);
 static void cleanup_readline (void);
 #ifdef HAVE_LIBREADLINE
+static char *decode_ps1 (const char *);
 static void add_history_line (const char *);
 #endif
 
@@ -125,8 +126,9 @@ usage (int status)
              "  --listen             Listen for remote commands\n"
              "  --live               Connect to a live virtual machine\n"
              "  -m|--mount dev[:mnt[:opts]] Mount dev on mnt (if omitted, /)\n"
-             "  -n|--no-sync         Don't autosync\n"
+             "  --network            Enable network\n"
              "  -N|--new type        Create prepared disk (test1.img, ...)\n"
+             "  -n|--no-sync         Don't autosync\n"
              "  --pipe-error         Pipe commands can detect write errors\n"
              "  --progress-bars      Enable progress bars even when not interactive\n"
              "  --no-progress-bars   Disable progress bars\n"
@@ -190,6 +192,7 @@ main (int argc, char *argv[])
     { "listen", 0, 0, 0 },
     { "live", 0, 0, 0 },
     { "mount", 1, 0, 'm' },
+    { "network", 0, 0, 0 },
     { "new", 1, 0, 'N' },
     { "no-dest-paths", 0, 0, 'D' },
     { "no-sync", 0, 0, 'n' },
@@ -266,7 +269,8 @@ main (int argc, char *argv[])
           }
         }
       } else if (STREQ (long_options[option_index].name, "selinux")) {
-        guestfs_set_selinux (g, 1);
+        if (guestfs_set_selinux (g, 1) == -1)
+          exit (EXIT_FAILURE);
       } else if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
         keys_from_stdin = 1;
       } else if (STREQ (long_options[option_index].name, "progress-bars")) {
@@ -286,6 +290,9 @@ main (int argc, char *argv[])
         live = 1;
       } else if (STREQ (long_options[option_index].name, "pipe-error")) {
         pipe_error = 1;
+      } else if (STREQ (long_options[option_index].name, "network")) {
+        if (guestfs_set_network (g, 1) == -1)
+          exit (EXIT_FAILURE);
       } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
                  program_name, long_options[option_index].name, option_index);
@@ -610,12 +617,14 @@ shell_script (void)
 
 #define FISH "><fs> "
 
+static char *ps1 = NULL;
 static char *line_read = NULL;
 
 static char *
 rl_gets (int prompt)
 {
 #ifdef HAVE_LIBREADLINE
+  char *p = NULL;
 
   if (prompt) {
     if (line_read) {
@@ -623,7 +632,9 @@ rl_gets (int prompt)
       line_read = NULL;
     }
 
-    line_read = readline (prompt ? FISH : "");
+    p = prompt && ps1 ? decode_ps1 (ps1) : NULL;
+    line_read = readline (prompt ? (ps1 ? p : FISH) : "");
+    free (p);
 
     if (line_read && *line_read)
       add_history_line (line_read);
@@ -1136,6 +1147,8 @@ issue_command (const char *cmd, char *argv[], const char *pipecmd,
    */
   if (fflush (stdout) == EOF) {
     perror ("failed to flush standard output");
+    if (pipecmd)
+      close (stdout_saved_fd);
     return -1;
   }
   if (ferror (stdout)) {
@@ -1427,14 +1440,7 @@ static void
 initialize_readline (void)
 {
 #ifdef HAVE_LIBREADLINE
-  const char *home;
-
-  home = getenv ("HOME");
-  if (home) {
-    snprintf (histfile, sizeof histfile, "%s/.guestfish", home);
-    using_history ();
-    (void) read_history (histfile);
-  }
+  const char *str;
 
   rl_readline_name = "guestfish";
   rl_attempted_completion_function = do_completion;
@@ -1445,6 +1451,25 @@ initialize_readline (void)
    * they wish.
    */
   (void) rl_variable_bind ("completion-ignore-case", "on");
+
+  /* Set up the history file. */
+  str = getenv ("HOME");
+  if (str) {
+    snprintf (histfile, sizeof histfile, "%s/.guestfish", str);
+    using_history ();
+    (void) read_history (histfile);
+  }
+
+  /* Set up the prompt. */
+  str = getenv ("GUESTFISH_PS1");
+  if (str) {
+    free (ps1);
+    ps1 = strdup (str);
+    if (!ps1) {
+      perror ("strdup");
+      exit (EXIT_FAILURE);
+    }
+  }
 #endif
 }
 
@@ -1478,6 +1503,114 @@ add_history_line (const char *line)
 {
   add_history (line);
   nr_history_lines++;
+}
+
+static int decode_ps1_octal (const char *s, size_t *i);
+static int decode_ps1_hex (const char *s, size_t *i);
+
+/* Decode 'str' into the final printable prompt string. */
+static char *
+decode_ps1 (const char *str)
+{
+  char *ret;
+  size_t len = strlen (str);
+  size_t i, j;
+
+  /* Result string is always smaller than the input string.  This will
+   * change if we add new features like date/time substitution in
+   * future.
+   */
+  ret = malloc (len + 1);
+  if (!ret) {
+    perror ("malloc");
+    exit (EXIT_FAILURE);
+  }
+
+  for (i = j = 0; i < len; ++i) {
+    if (str[i] == '\\') {       /* Start of an escape sequence. */
+      if (i < len-1)
+        i++;
+      switch (str[i]) {
+      case '\\':
+        ret[j++] = '\\';
+        break;
+      case '[':
+        ret[j++] = RL_PROMPT_START_IGNORE;
+        break;
+      case ']':
+        ret[j++] = RL_PROMPT_END_IGNORE;
+        break;
+      case 'a':
+        ret[j++] = '\a';
+        break;
+      case 'e':
+        ret[j++] = '\033';
+        break;
+      case 'n':
+        ret[j++] = '\n';
+        break;
+      case 'r':
+        ret[j++] = '\r';
+        break;
+      case '0'...'7':
+        ret[j++] = decode_ps1_octal (str, &i);
+        i--;
+        break;
+      case 'x':
+        i++;
+        ret[j++] = decode_ps1_hex (str, &i);
+        i--;
+        break;
+      default:
+        ret[j++] = '?';
+      }
+    }
+    else
+      ret[j++] = str[i];
+  }
+
+  ret[j] = '\0';
+  return ret;                   /* caller frees */
+}
+
+static int
+decode_ps1_octal (const char *s, size_t *i)
+{
+  size_t lim = 3;
+  int ret = 0;
+
+  while (lim > 0 && s[*i] >= '0' && s[*i] <= '7') {
+    ret *= 8;
+    ret += s[*i] - '0';
+    (*i)++;
+    lim--;
+  }
+
+  return ret;
+}
+
+static int
+decode_ps1_hex (const char *s, size_t *i)
+{
+  size_t lim = 2;
+  int ret = 0;
+
+  while (lim > 0 && c_isxdigit (s[*i])) {
+    ret *= 16;
+    if (s[*i] >= '0' && s[*i] <= '9')
+      ret += s[*i] - '0';
+    else if (s[*i] >= 'a' && s[*i] <= 'f')
+      ret += s[*i] - 'a' + 10;
+    else if (s[*i] >= 'A' && s[*i] <= 'F')
+      ret += s[*i] - 'A' + 10;
+    (*i)++;
+    lim--;
+  }
+
+  if (lim == 2)                 /* \x not followed by any hex digits */
+    return '?';
+
+  return ret;
 }
 #endif
 
@@ -1680,22 +1813,25 @@ static char *
 file_in_heredoc (const char *endmarker)
 {
   TMP_TEMPLATE_ON_STACK (template);
+  int fd;
+  size_t markerlen;
+  char buffer[BUFSIZ];
+  int write_error = 0;
+
   file_in_tmpfile = strdup (template);
   if (file_in_tmpfile == NULL) {
     perror ("strdup");
     return NULL;
   }
 
-  int fd = mkstemp (file_in_tmpfile);
+  fd = mkstemp (file_in_tmpfile);
   if (fd == -1) {
     perror ("mkstemp");
     goto error1;
   }
 
-  size_t markerlen = strlen (endmarker);
+  markerlen = strlen (endmarker);
 
-  char buffer[BUFSIZ];
-  int write_error = 0;
   while (fgets (buffer, sizeof buffer, stdin) != NULL) {
     /* Look for "END"<EOF> or "END\n" in input. */
     size_t blen = strlen (buffer);
@@ -1800,15 +1936,12 @@ feature_available (guestfs_h *g, const char *feature)
   /* If there's an error we should ignore it, so to do that we have to
    * temporarily replace the error handler with a null one.
    */
-  guestfs_error_handler_cb old_error_cb;
-  void *old_error_data;
-  old_error_cb = guestfs_get_error_handler (g, &old_error_data);
-  guestfs_set_error_handler (g, NULL, NULL);
+  guestfs_push_error_handler (g, NULL, NULL);
 
   const char *groups[] = { feature, NULL };
   int r = guestfs_available (g, (char * const *) groups);
 
-  guestfs_set_error_handler (g, old_error_cb, old_error_data);
+  guestfs_pop_error_handler (g);
 
   return r == 0 ? 1 : 0;
 }

@@ -1,6 +1,6 @@
 (* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -47,8 +47,14 @@ exception Handle_closed of string
     after calling {!close} on it.  The string is the name of
     the function. *)
 
-val create : unit -> t
-(** Create a {!t} handle. *)
+val create : ?environment:bool -> ?close_on_exit:bool -> unit -> t
+(** Create a {!t} handle.
+
+    [?environment] defaults to [true].  If set to false, it sets
+    the [GUESTFS_CREATE_NO_ENVIRONMENT] flag.
+
+    [?close_on_exit] defaults to [true].  If set to false, it sets
+    the [GUESTFS_CREATE_NO_CLOSE_ON_EXIT] flag. *)
 
 val close : t -> unit
 (** Close the {!t} handle and free up all resources used
@@ -67,6 +73,7 @@ type event =
   | EVENT_LIBRARY
   | EVENT_TRACE
   | EVENT_ENTER
+  | EVENT_LIBVIRT_AUTH
 
 val event_all : event list
 (** A list containing all event types. *)
@@ -245,6 +252,26 @@ type application = {
   app_description : string;
 }
 
+type application2 = {
+  app2_name : string;
+  app2_display_name : string;
+  app2_epoch : int32;
+  app2_version : string;
+  app2_release : string;
+  app2_arch : string;
+  app2_install_path : string;
+  app2_trans_path : string;
+  app2_publisher : string;
+  app2_url : string;
+  app2_source_package : string;
+  app2_summary : string;
+  app2_description : string;
+  app2_spare1 : string;
+  app2_spare2 : string;
+  app2_spare3 : string;
+  app2_spare4 : string;
+}
+
 type isoinfo = {
   iso_system_id : string;
   iso_volume_id : string;
@@ -277,20 +304,71 @@ type btrfssubvolume = {
   btrfssubvolume_path : string;
 }
 
+type xfsinfo = {
+  xfs_mntpoint : string;
+  xfs_inodesize : int32;
+  xfs_agcount : int32;
+  xfs_agsize : int32;
+  xfs_sectsize : int32;
+  xfs_attr : int32;
+  xfs_blocksize : int32;
+  xfs_datablocks : int64;
+  xfs_imaxpct : int32;
+  xfs_sunit : int32;
+  xfs_swidth : int32;
+  xfs_dirversion : int32;
+  xfs_dirblocksize : int32;
+  xfs_cimode : int32;
+  xfs_logname : string;
+  xfs_logblocksize : int32;
+  xfs_logblocks : int32;
+  xfs_logversion : int32;
+  xfs_logsectsize : int32;
+  xfs_logsunit : int32;
+  xfs_lazycount : int32;
+  xfs_rtname : string;
+  xfs_rtextsize : int32;
+  xfs_rtblocks : int64;
+  xfs_rtextents : int64;
+}
+
+type utsname = {
+  uts_sysname : string;
+  uts_release : string;
+  uts_version : string;
+  uts_machine : string;
+}
+
+type hivex_node = {
+  hivex_node_h : int64;
+}
+
+type hivex_value = {
+  hivex_value_h : int64;
+}
+
+val acl_delete_def_file : t -> string -> unit
+(** delete the default POSIX ACL of a directory *)
+
+val acl_get_file : t -> string -> string -> string
+(** get the POSIX ACL attached to a file *)
+
+val acl_set_file : t -> string -> string -> string -> unit
+(** set the POSIX ACL attached to a file *)
+
 val add_cdrom : t -> string -> unit
 (** add a CD-ROM disk image to examine
 
-    @deprecated Use {!add_drive_opts} instead
+    @deprecated Use {!add_drive} instead
  *)
 
 val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
 (** add the disk(s) from a named libvirt domain *)
 
-val add_drive : t -> string -> unit
+val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
 (** add an image to examine or modify *)
 
-val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> string -> unit
-(** add an image to examine or modify *)
+val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
 
 val add_drive_ro : t -> string -> unit
 (** add a drive in snapshot mode (read-only) *)
@@ -298,13 +376,13 @@ val add_drive_ro : t -> string -> unit
 val add_drive_ro_with_if : t -> string -> string -> unit
 (** add a drive read-only specifying the QEMU block emulation to use
 
-    @deprecated Use {!add_drive_opts} instead
+    @deprecated Use {!add_drive} instead
  *)
 
 val add_drive_with_if : t -> string -> string -> unit
 (** add a drive specifying the QEMU block emulation to use
 
-    @deprecated Use {!add_drive_opts} instead
+    @deprecated Use {!add_drive} instead
  *)
 
 val aug_clear : t -> string -> unit
@@ -430,6 +508,15 @@ val btrfs_subvolume_set_default : t -> int64 -> string -> unit
 val btrfs_subvolume_snapshot : t -> string -> string -> unit
 (** create a writable btrfs snapshot *)
 
+val canonical_device_name : t -> string -> string
+(** return canonical device name *)
+
+val cap_get_file : t -> string -> string
+(** get the Linux capabilities attached to a file *)
+
+val cap_set_file : t -> string -> string -> unit
+(** set the Linux capabilities attached to a file *)
+
 val case_sensitive_path : t -> string -> string
 (** return true path on case-insensitive filesystem *)
 
@@ -498,8 +585,6 @@ val dd : t -> string -> string -> unit
 
 val debug : t -> string -> string array -> string
 
-val debug_cmdline : t -> string array
-
 val debug_drives : t -> string array
 
 val debug_upload : t -> string -> string -> int -> unit
@@ -512,6 +597,15 @@ val df : t -> string
 
 val df_h : t -> string
 (** report file system disk space usage (human readable) *)
+
+val disk_format : t -> string -> string
+(** detect the disk format of a disk image *)
+
+val disk_has_backing_file : t -> string -> bool
+(** return whether disk has a backing file *)
+
+val disk_virtual_size : t -> string -> int64
+(** return virtual size of a disk *)
 
 val dmesg : t -> string
 (** return kernel messages *)
@@ -541,10 +635,16 @@ val echo_daemon : t -> string array -> string
 (** echo arguments back to the client *)
 
 val egrep : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val egrepi : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val equal : t -> string -> string -> bool
 (** test if two files have equal contents *)
@@ -562,10 +662,16 @@ val fallocate64 : t -> string -> int64 -> unit
 (** preallocate a file in the guest filesystem *)
 
 val fgrep : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val fgrepi : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val file : t -> string -> string
 (** determine file type *)
@@ -576,8 +682,14 @@ val file_architecture : t -> string -> string
 val filesize : t -> string -> int64
 (** return the size of the file in bytes *)
 
+val filesystem_available : t -> string -> bool
+(** check if filesystem is available *)
+
 val fill : t -> int -> int -> string -> unit
 (** fill a file with octets *)
+
+val fill_dir : t -> string -> int -> unit
+(** fill a directory with empty files *)
 
 val fill_pattern : t -> string -> int -> string -> unit
 (** fill a file with a repeating pattern of bytes *)
@@ -597,6 +709,9 @@ val findfs_uuid : t -> string -> string
 val fsck : t -> string -> string -> int
 (** run the filesystem checker *)
 
+val fstrim : t -> ?offset:int64 -> ?length:int64 -> ?minimumfreeextent:int64 -> string -> unit
+(** trim free space in a filesystem *)
+
 val get_append : t -> string option
 (** get the additional kernel options *)
 
@@ -605,6 +720,9 @@ val get_attach_method : t -> string
 
 val get_autosync : t -> bool
 (** get autosync mode *)
+
+val get_cachedir : t -> string
+(** get the appliance cache directory *)
 
 val get_direct : t -> bool
 (** get direct appliance mode flag *)
@@ -626,6 +744,18 @@ val get_e2uuid : t -> string -> string
 
     @deprecated Use {!vfs_uuid} instead
  *)
+
+val get_libvirt_requested_credential_challenge : t -> int -> string
+(** challenge of i'th requested credential *)
+
+val get_libvirt_requested_credential_defresult : t -> int -> string
+(** default result of i'th requested credential *)
+
+val get_libvirt_requested_credential_prompt : t -> int -> string
+(** prompt of i'th requested credential *)
+
+val get_libvirt_requested_credentials : t -> string array
+(** get list of credentials requested by libvirt *)
 
 val get_memsize : t -> int
 (** get memory allocated to the qemu subprocess *)
@@ -657,6 +787,9 @@ val get_smp : t -> int
 val get_state : t -> int
 (** get the current state *)
 
+val get_tmpdir : t -> string
+(** get the temporary directory *)
+
 val get_trace : t -> bool
 (** get command trace enabled flag *)
 
@@ -678,11 +811,16 @@ val getxattrs : t -> string -> xattr array
 val glob_expand : t -> string -> string array
 (** expand a wildcard path *)
 
-val grep : t -> string -> string -> string array
+val grep : t -> ?extended:bool -> ?fixed:bool -> ?insensitive:bool -> ?compressed:bool -> string -> string -> string array
 (** return lines matching a pattern *)
 
+val grep_opts : t -> ?extended:bool -> ?fixed:bool -> ?insensitive:bool -> ?compressed:bool -> string -> string -> string array
+
 val grepi : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val grub_install : t -> string -> string -> unit
 (** install GRUB 1 *)
@@ -695,6 +833,57 @@ val head_n : t -> int -> string -> string array
 
 val hexdump : t -> string -> string
 (** dump a file in hexadecimal *)
+
+val hivex_close : t -> unit
+(** close the current hivex handle *)
+
+val hivex_commit : t -> string option -> unit
+(** commit (write) changes back to the hive *)
+
+val hivex_node_add_child : t -> int64 -> string -> int64
+(** add a child node *)
+
+val hivex_node_children : t -> int64 -> hivex_node array
+(** return list of nodes which are subkeys of node *)
+
+val hivex_node_delete_child : t -> int64 -> unit
+(** delete a node (recursively) *)
+
+val hivex_node_get_child : t -> int64 -> string -> int64
+(** return the named child of node *)
+
+val hivex_node_get_value : t -> int64 -> string -> int64
+(** return the named value *)
+
+val hivex_node_name : t -> int64 -> string
+(** return the name of the node *)
+
+val hivex_node_parent : t -> int64 -> int64
+(** return the parent of node *)
+
+val hivex_node_set_value : t -> int64 -> string -> int64 -> string -> unit
+(** set or replace a single value in a node *)
+
+val hivex_node_values : t -> int64 -> hivex_value array
+(** return list of values attached to node *)
+
+val hivex_open : t -> ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
+(** open a Windows Registry hive file *)
+
+val hivex_root : t -> int64
+(** return the root node of the hive *)
+
+val hivex_value_key : t -> int64 -> string
+(** return the key field from the (key, datatype, data) tuple *)
+
+val hivex_value_type : t -> int64 -> int64
+(** return the data type from the (key, datatype, data) tuple *)
+
+val hivex_value_utf8 : t -> int64 -> string
+(** return the data field from the (key, datatype, data) tuple *)
+
+val hivex_value_value : t -> int64 -> string
+(** return the data field from the (key, datatype, data) tuple *)
 
 val initrd_cat : t -> string -> string -> string
 (** list the contents of a single file in an initrd *)
@@ -784,12 +973,88 @@ val inspect_is_netinst : t -> string -> bool
 (** get netinst (network installer) flag for install disk *)
 
 val inspect_list_applications : t -> string -> application array
+(** get list of applications installed in the operating system
+
+    @deprecated Use {!inspect_list_applications2} instead
+ *)
+
+val inspect_list_applications2 : t -> string -> application2 array
 (** get list of applications installed in the operating system *)
 
 val inspect_os : t -> string array
 (** inspect disk and return list of operating systems found *)
 
 val internal_autosync : t -> unit
+
+val internal_hot_add_drive : t -> string -> unit
+
+val internal_hot_remove_drive : t -> string -> unit
+
+val internal_hot_remove_drive_precheck : t -> string -> unit
+
+val internal_lstatlist : t -> string -> string array -> stat array
+
+val internal_lxattrlist : t -> string -> string array -> xattr array
+
+val internal_readlinklist : t -> string -> string array -> string array
+
+val internal_test : t -> ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
+
+val internal_test_63_optargs : t -> ?opt1:int -> ?opt2:int -> ?opt3:int -> ?opt4:int -> ?opt5:int -> ?opt6:int -> ?opt7:int -> ?opt8:int -> ?opt9:int -> ?opt10:int -> ?opt11:int -> ?opt12:int -> ?opt13:int -> ?opt14:int -> ?opt15:int -> ?opt16:int -> ?opt17:int -> ?opt18:int -> ?opt19:int -> ?opt20:int -> ?opt21:int -> ?opt22:int -> ?opt23:int -> ?opt24:int -> ?opt25:int -> ?opt26:int -> ?opt27:int -> ?opt28:int -> ?opt29:int -> ?opt30:int -> ?opt31:int -> ?opt32:int -> ?opt33:int -> ?opt34:int -> ?opt35:int -> ?opt36:int -> ?opt37:int -> ?opt38:int -> ?opt39:int -> ?opt40:int -> ?opt41:int -> ?opt42:int -> ?opt43:int -> ?opt44:int -> ?opt45:int -> ?opt46:int -> ?opt47:int -> ?opt48:int -> ?opt49:int -> ?opt50:int -> ?opt51:int -> ?opt52:int -> ?opt53:int -> ?opt54:int -> ?opt55:int -> ?opt56:int -> ?opt57:int -> ?opt58:int -> ?opt59:int -> ?opt60:int -> ?opt61:int -> ?opt62:int -> ?opt63:int -> unit
+
+val internal_test_close_output : t -> unit
+
+val internal_test_only_optargs : t -> ?test:int -> unit
+
+val internal_test_rbool : t -> string -> bool
+
+val internal_test_rboolerr : t -> bool
+
+val internal_test_rbufferout : t -> string -> string
+
+val internal_test_rbufferouterr : t -> string
+
+val internal_test_rconstoptstring : t -> string -> string option
+
+val internal_test_rconstoptstringerr : t -> string option
+
+val internal_test_rconststring : t -> string -> string
+
+val internal_test_rconststringerr : t -> string
+
+val internal_test_rhashtable : t -> string -> (string * string) list
+
+val internal_test_rhashtableerr : t -> (string * string) list
+
+val internal_test_rint : t -> string -> int
+
+val internal_test_rint64 : t -> string -> int64
+
+val internal_test_rint64err : t -> int64
+
+val internal_test_rinterr : t -> int
+
+val internal_test_rstring : t -> string -> string
+
+val internal_test_rstringerr : t -> string
+
+val internal_test_rstringlist : t -> string -> string array
+
+val internal_test_rstringlisterr : t -> string array
+
+val internal_test_rstruct : t -> string -> lvm_pv
+
+val internal_test_rstructerr : t -> lvm_pv
+
+val internal_test_rstructlist : t -> string -> lvm_pv array
+
+val internal_test_rstructlisterr : t -> lvm_pv array
+
+val internal_test_set_output : t -> string -> unit
+
+val internal_write : t -> string -> string -> unit
+
+val internal_write_append : t -> string -> string -> unit
 
 val is_blockdev : t -> string -> bool
 (** test if block device *)
@@ -850,6 +1115,36 @@ val launch : t -> unit
 val lchown : t -> int -> int -> string -> unit
 (** change file owner and group *)
 
+val ldmtool_create_all : t -> unit
+(** scan and create Windows dynamic disk volumes *)
+
+val ldmtool_diskgroup_disks : t -> string -> string array
+(** return the disks in a Windows dynamic disk group *)
+
+val ldmtool_diskgroup_name : t -> string -> string
+(** return the name of a Windows dynamic disk group *)
+
+val ldmtool_diskgroup_volumes : t -> string -> string array
+(** return the volumes in a Windows dynamic disk group *)
+
+val ldmtool_remove_all : t -> unit
+(** remove all Windows dynamic disk volumes *)
+
+val ldmtool_scan : t -> string array
+(** scan for Windows dynamic disks *)
+
+val ldmtool_scan_devices : t -> string array -> string array
+(** scan for Windows dynamic disks *)
+
+val ldmtool_volume_hint : t -> string -> string -> string
+(** return the hint field of a Windows dynamic disk volume *)
+
+val ldmtool_volume_partitions : t -> string -> string -> string array
+(** return the partitions in a Windows dynamic disk volume *)
+
+val ldmtool_volume_type : t -> string -> string -> string
+(** return the type of a Windows dynamic disk volume *)
+
 val lgetxattr : t -> string -> string -> string
 (** get a single extended attribute *)
 
@@ -862,11 +1157,20 @@ val list_9p : t -> string array
 val list_devices : t -> string array
 (** list the block devices *)
 
+val list_disk_labels : t -> (string * string) list
+(** mapping of disk labels to devices *)
+
 val list_dm_devices : t -> string array
 (** list device mapper devices *)
 
 val list_filesystems : t -> (string * string) list
 (** list filesystems *)
+
+val list_ldm_partitions : t -> string array
+(** list all Windows dynamic disk partitions *)
+
+val list_ldm_volumes : t -> string array
+(** list all Windows dynamic disk volumes *)
 
 val list_md_devices : t -> string array
 (** list Linux md (RAID) devices *)
@@ -897,6 +1201,9 @@ val lremovexattr : t -> string -> string -> unit
 
 val ls : t -> string -> string array
 (** list the files in a directory *)
+
+val ls0 : t -> string -> string -> unit
+(** get list of files in a directory *)
 
 val lsetxattr : t -> string -> string -> int -> string -> unit
 (** set extended attribute of a file or directory *)
@@ -970,6 +1277,9 @@ val lvuuid : t -> string -> string
 val lxattrlist : t -> string -> string array -> xattr array
 (** lgetxattr on multiple files *)
 
+val max_disks : t -> int
+(** maximum number of disks that may be added *)
+
 val md_create : t -> ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
 (** create a Linux md (RAID) device *)
 
@@ -994,41 +1304,64 @@ val mkdir_p : t -> string -> unit
 val mkdtemp : t -> string -> string
 (** create a temporary directory *)
 
+val mke2fs : t -> ?blockscount:int64 -> ?blocksize:int64 -> ?fragsize:int64 -> ?blockspergroup:int64 -> ?numberofgroups:int64 -> ?bytesperinode:int64 -> ?inodesize:int64 -> ?journalsize:int64 -> ?numberofinodes:int64 -> ?stridesize:int64 -> ?stripewidth:int64 -> ?maxonlineresize:int64 -> ?reservedblockspercentage:int -> ?mmpupdateinterval:int -> ?journaldevice:string -> ?label:string -> ?lastmounteddir:string -> ?creatoros:string -> ?fstype:string -> ?usagetype:string -> ?uuid:string -> ?forcecreate:bool -> ?writesbandgrouponly:bool -> ?lazyitableinit:bool -> ?lazyjournalinit:bool -> ?testfs:bool -> ?discard:bool -> ?quotatype:bool -> ?extent:bool -> ?filetype:bool -> ?flexbg:bool -> ?hasjournal:bool -> ?journaldev:bool -> ?largefile:bool -> ?quota:bool -> ?resizeinode:bool -> ?sparsesuper:bool -> ?uninitbg:bool -> string -> unit
+(** create an ext2/ext3/ext4 filesystem on device *)
+
 val mke2fs_J : t -> string -> int -> string -> string -> unit
-(** make ext2/3/4 filesystem with external journal *)
+(** make ext2/3/4 filesystem with external journal
+
+    @deprecated Use {!mke2fs} instead
+ *)
 
 val mke2fs_JL : t -> string -> int -> string -> string -> unit
-(** make ext2/3/4 filesystem with external journal *)
+(** make ext2/3/4 filesystem with external journal
+
+    @deprecated Use {!mke2fs} instead
+ *)
 
 val mke2fs_JU : t -> string -> int -> string -> string -> unit
-(** make ext2/3/4 filesystem with external journal *)
+(** make ext2/3/4 filesystem with external journal
+
+    @deprecated Use {!mke2fs} instead
+ *)
 
 val mke2journal : t -> int -> string -> unit
-(** make ext2/3/4 external journal *)
+(** make ext2/3/4 external journal
+
+    @deprecated Use {!mke2fs} instead
+ *)
 
 val mke2journal_L : t -> int -> string -> string -> unit
-(** make ext2/3/4 external journal with label *)
+(** make ext2/3/4 external journal with label
+
+    @deprecated Use {!mke2fs} instead
+ *)
 
 val mke2journal_U : t -> int -> string -> string -> unit
-(** make ext2/3/4 external journal with UUID *)
+(** make ext2/3/4 external journal with UUID
+
+    @deprecated Use {!mke2fs} instead
+ *)
 
 val mkfifo : t -> int -> string -> unit
 (** make FIFO (named pipe) *)
 
-val mkfs : t -> string -> string -> unit
+val mkfs : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
 (** make a filesystem *)
+
+val mkfs_opts : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
 
 val mkfs_b : t -> string -> int -> string -> unit
 (** make a filesystem with block size
 
-    @deprecated Use {!mkfs_opts} instead
+    @deprecated Use {!mkfs} instead
  *)
 
 val mkfs_btrfs : t -> ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
 (** create a btrfs filesystem *)
 
-val mkfs_opts : t -> ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
-(** make a filesystem *)
+val mklost_and_found : t -> string -> unit
+(** make lost+found directory on an ext2/3/4 filesystem *)
 
 val mkmountpoint : t -> string -> unit
 (** create a mountpoint *)
@@ -1042,17 +1375,28 @@ val mknod_b : t -> int -> int -> int -> string -> unit
 val mknod_c : t -> int -> int -> int -> string -> unit
 (** make char device node *)
 
-val mkswap : t -> string -> unit
+val mkswap : t -> ?label:string -> ?uuid:string -> string -> unit
 (** create a swap partition *)
 
+val mkswap_opts : t -> ?label:string -> ?uuid:string -> string -> unit
+
 val mkswap_L : t -> string -> string -> unit
-(** create a swap partition with a label *)
+(** create a swap partition with a label
+
+    @deprecated Use {!mkswap} instead
+ *)
 
 val mkswap_U : t -> string -> string -> unit
-(** create a swap partition with an explicit UUID *)
+(** create a swap partition with an explicit UUID
+
+    @deprecated Use {!mkswap} instead
+ *)
 
 val mkswap_file : t -> string -> unit
 (** create a swap file *)
+
+val mktemp : t -> ?suffix:string -> string -> string
+(** create a temporary file *)
 
 val modprobe : t -> string -> unit
 (** load a kernel module *)
@@ -1105,20 +1449,22 @@ val ntfsclone_out : t -> ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bo
 val ntfsfix : t -> ?clearbadsectors:bool -> string -> unit
 (** fix common errors and force Windows to check NTFS *)
 
-val ntfsresize : t -> string -> unit
-(** resize an NTFS filesystem
-
-    @deprecated Use {!ntfsresize_opts} instead
- *)
+val ntfsresize : t -> ?size:int64 -> ?force:bool -> string -> unit
+(** resize an NTFS filesystem *)
 
 val ntfsresize_opts : t -> ?size:int64 -> ?force:bool -> string -> unit
-(** resize an NTFS filesystem *)
 
 val ntfsresize_size : t -> string -> int64 -> unit
 (** resize an NTFS filesystem (with size)
 
-    @deprecated Use {!ntfsresize_opts} instead
+    @deprecated Use {!ntfsresize} instead
  *)
+
+val parse_environment : t -> unit
+(** parse the environment and set handle flags accordingly *)
+
+val parse_environment_list : t -> string array -> unit
+(** parse the environment and set handle flags accordingly *)
 
 val part_add : t -> string -> string -> int64 -> int64 -> unit
 (** add a partition to the device *)
@@ -1168,6 +1514,12 @@ val pread : t -> string -> int -> int64 -> string
 val pread_device : t -> string -> int -> int64 -> string
 (** read part of a device *)
 
+val pvchange_uuid : t -> string -> unit
+(** generate a new random UUID for a physical volume *)
+
+val pvchange_uuid_all : t -> unit
+(** generate new random UUIDs for all physical volumes *)
+
 val pvcreate : t -> string -> unit
 (** create an LVM physical volume *)
 
@@ -1213,6 +1565,9 @@ val readlinklist : t -> string -> string array -> string array
 val realpath : t -> string -> string
 (** canonicalized absolute pathname *)
 
+val remove_drive : t -> string -> unit
+(** remove a disk image *)
+
 val removexattr : t -> string -> string -> unit
 (** remove extended attribute of a file or directory *)
 
@@ -1228,6 +1583,9 @@ val resize2fs_size : t -> string -> int64 -> unit
 val rm : t -> string -> unit
 (** remove a file *)
 
+val rm_f : t -> string -> unit
+(** remove a file ignoring errors *)
+
 val rm_rf : t -> string -> unit
 (** remove a file or directory recursively *)
 
@@ -1236,6 +1594,15 @@ val rmdir : t -> string -> unit
 
 val rmmountpoint : t -> string -> unit
 (** remove a mountpoint *)
+
+val rsync : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
+(** synchronize the contents of two directories *)
+
+val rsync_in : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
+(** synchronize host or remote filesystem with filesystem *)
+
+val rsync_out : t -> ?archive:bool -> ?deletedest:bool -> string -> string -> unit
+(** synchronize filesystem with host or remote filesystem *)
 
 val scrub_device : t -> string -> unit
 (** scrub (securely wipe) a device *)
@@ -1254,6 +1621,9 @@ val set_attach_method : t -> string -> unit
 
 val set_autosync : t -> bool -> unit
 (** set autosync mode *)
+
+val set_cachedir : t -> string option -> unit
+(** set the appliance cache directory *)
 
 val set_direct : t -> bool -> unit
 (** enable or disable direct appliance mode *)
@@ -1275,6 +1645,12 @@ val set_e2uuid : t -> string -> string -> unit
 
 val set_label : t -> string -> string -> unit
 (** set filesystem label *)
+
+val set_libvirt_requested_credential : t -> int -> string -> unit
+(** pass requested credential back to libvirt *)
+
+val set_libvirt_supported_credentials : t -> string array -> unit
+(** set libvirt credentials supported by calling program *)
 
 val set_memsize : t -> int -> unit
 (** set memory allocated to the qemu subprocess *)
@@ -1299,6 +1675,9 @@ val set_selinux : t -> bool -> unit
 
 val set_smp : t -> int -> unit
 (** set number of virtual CPUs in appliance *)
+
+val set_tmpdir : t -> string option -> unit
+(** set the temporary directory *)
 
 val set_trace : t -> bool -> unit
 (** enable or disable command traces *)
@@ -1399,63 +1778,27 @@ val tail : t -> string -> string array
 val tail_n : t -> int -> string -> string array
 (** return last N lines of a file *)
 
-val tar_in : t -> string -> string -> unit
+val tar_in : t -> ?compress:string -> string -> string -> unit
 (** unpack tarfile to directory *)
 
-val tar_out : t -> string -> string -> unit
+val tar_in_opts : t -> ?compress:string -> string -> string -> unit
+
+val tar_out : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit
 (** pack directory into tarfile *)
 
-val test0 : t -> ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
-
-val test0rbool : t -> string -> bool
-
-val test0rboolerr : t -> bool
-
-val test0rbufferout : t -> string -> string
-
-val test0rbufferouterr : t -> string
-
-val test0rconstoptstring : t -> string -> string option
-
-val test0rconstoptstringerr : t -> string option
-
-val test0rconststring : t -> string -> string
-
-val test0rconststringerr : t -> string
-
-val test0rhashtable : t -> string -> (string * string) list
-
-val test0rhashtableerr : t -> (string * string) list
-
-val test0rint : t -> string -> int
-
-val test0rint64 : t -> string -> int64
-
-val test0rint64err : t -> int64
-
-val test0rinterr : t -> int
-
-val test0rstring : t -> string -> string
-
-val test0rstringerr : t -> string
-
-val test0rstringlist : t -> string -> string array
-
-val test0rstringlisterr : t -> string array
-
-val test0rstruct : t -> string -> lvm_pv
-
-val test0rstructerr : t -> lvm_pv
-
-val test0rstructlist : t -> string -> lvm_pv array
-
-val test0rstructlisterr : t -> lvm_pv array
+val tar_out_opts : t -> ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit
 
 val tgz_in : t -> string -> string -> unit
-(** unpack compressed tarball to directory *)
+(** unpack compressed tarball to directory
+
+    @deprecated Use {!tar_in} instead
+ *)
 
 val tgz_out : t -> string -> string -> unit
-(** pack directory into compressed tarball *)
+(** pack directory into compressed tarball
+
+    @deprecated Use {!tar_out} instead
+ *)
 
 val touch : t -> string -> unit
 (** update file timestamps or create a new file *)
@@ -1473,16 +1816,24 @@ val tune2fs_l : t -> string -> (string * string) list
 (** get ext2/ext3/ext4 superblock details *)
 
 val txz_in : t -> string -> string -> unit
-(** unpack compressed tarball to directory *)
+(** unpack compressed tarball to directory
+
+    @deprecated Use {!tar_in} instead
+ *)
 
 val txz_out : t -> string -> string -> unit
-(** pack directory into compressed tarball *)
+(** pack directory into compressed tarball
+
+    @deprecated Use {!tar_out} instead
+ *)
 
 val umask : t -> int -> int
 (** set file mode creation mask (umask) *)
 
-val umount : t -> string -> unit
+val umount : t -> ?force:bool -> ?lazyunmount:bool -> string -> unit
 (** unmount a filesystem *)
+
+val umount_opts : t -> ?force:bool -> ?lazyunmount:bool -> string -> unit
 
 val umount_all : t -> unit
 (** unmount all filesystems *)
@@ -1498,6 +1849,9 @@ val upload_offset : t -> string -> string -> int64 -> unit
 
 val utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit
 (** set timestamp of a file with nanosecond precision *)
+
+val utsname : t -> utsname
+(** appliance kernel version *)
 
 val version : t -> version
 (** get the library version number *)
@@ -1516,6 +1870,12 @@ val vg_activate : t -> bool -> string array -> unit
 
 val vg_activate_all : t -> bool -> unit
 (** activate or deactivate all volume groups *)
+
+val vgchange_uuid : t -> string -> unit
+(** generate a new random UUID for a volume group *)
+
+val vgchange_uuid_all : t -> unit
+(** generate new random UUIDs for all volume groups *)
 
 val vgcreate : t -> string -> string array -> unit
 (** create an LVM volume group *)
@@ -1577,11 +1937,29 @@ val write_file : t -> string -> string -> int -> unit
     @deprecated Use {!write} instead
  *)
 
+val xfs_admin : t -> ?extunwritten:bool -> ?imgfile:bool -> ?v2log:bool -> ?projid32bit:bool -> ?lazycounter:bool -> ?label:string -> ?uuid:string -> string -> unit
+(** change parameters of an XFS filesystem *)
+
+val xfs_growfs : t -> ?datasec:bool -> ?logsec:bool -> ?rtsec:bool -> ?datasize:int64 -> ?logsize:int64 -> ?rtsize:int64 -> ?rtextsize:int64 -> ?maxpct:int -> string -> unit
+(** expand an existing XFS filesystem *)
+
+val xfs_info : t -> string -> xfsinfo
+(** get geometry of XFS filesystem *)
+
+val xfs_repair : t -> ?forcelogzero:bool -> ?nomodify:bool -> ?noprefetch:bool -> ?forcegeometry:bool -> ?maxmem:int64 -> ?ihashsize:int64 -> ?bhashsize:int64 -> ?agstride:int64 -> ?logdev:string -> ?rtdev:string -> string -> int
+(** repair an XFS filesystem *)
+
 val zegrep : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val zegrepi : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val zero : t -> string -> unit
 (** write zeroes to the device *)
@@ -1596,10 +1974,16 @@ val zerofree : t -> string -> unit
 (** zero unused inodes and disk blocks on ext2/3 filesystem *)
 
 val zfgrep : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val zfgrepi : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val zfile : t -> string -> string -> string
 (** determine file type inside a compressed file
@@ -1608,10 +1992,16 @@ val zfile : t -> string -> string -> string
  *)
 
 val zgrep : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 val zgrepi : t -> string -> string -> string array
-(** return lines matching a pattern *)
+(** return lines matching a pattern
+
+    @deprecated Use {!grep} instead
+ *)
 
 (** {2 Object-oriented API}
 
@@ -1635,17 +2025,20 @@ val zgrepi : t -> string -> string -> string array
     For example [g#]{{!guestfs.get_verbose}get_verbose} [()]
     calls the method, whereas [g#get_verbose] is a function. *)
 
-class guestfs : unit -> object
+class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method close : unit -> unit
   method set_event_callback : event_callback -> event list -> event_handle
   method delete_event_callback : event_handle -> unit
   method last_errno : unit -> int
   method user_cancel : unit -> unit
   method ocaml_handle : t
+  method acl_delete_def_file : string -> unit
+  method acl_get_file : string -> string -> string
+  method acl_set_file : string -> string -> string -> unit
   method add_cdrom : string -> unit
   method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
-  method add_drive : string -> unit
-  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> string -> unit
+  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
+  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
   method add_drive_ro : string -> unit
   method add_drive_ro_with_if : string -> string -> unit
   method add_drive_with_if : string -> string -> unit
@@ -1690,6 +2083,9 @@ class guestfs : unit -> object
   method btrfs_subvolume_list : string -> btrfssubvolume array
   method btrfs_subvolume_set_default : int64 -> string -> unit
   method btrfs_subvolume_snapshot : string -> string -> unit
+  method canonical_device_name : string -> string
+  method cap_get_file : string -> string
+  method cap_set_file : string -> string -> unit
   method case_sensitive_path : string -> string
   method cat : string -> string
   method checksum : string -> string -> string
@@ -1711,12 +2107,14 @@ class guestfs : unit -> object
   method cp_a : string -> string -> unit
   method dd : string -> string -> unit
   method debug : string -> string array -> string
-  method debug_cmdline : unit -> string array
   method debug_drives : unit -> string array
   method debug_upload : string -> string -> int -> unit
   method device_index : string -> int
   method df : unit -> string
   method df_h : unit -> string
+  method disk_format : string -> string
+  method disk_has_backing_file : string -> bool
+  method disk_virtual_size : string -> int64
   method dmesg : unit -> string
   method download : string -> string -> unit
   method download_offset : string -> string -> int64 -> int64 -> unit
@@ -1736,21 +2134,29 @@ class guestfs : unit -> object
   method file : string -> string
   method file_architecture : string -> string
   method filesize : string -> int64
+  method filesystem_available : string -> bool
   method fill : int -> int -> string -> unit
+  method fill_dir : string -> int -> unit
   method fill_pattern : string -> int -> string -> unit
   method find : string -> string array
   method find0 : string -> string -> unit
   method findfs_label : string -> string
   method findfs_uuid : string -> string
   method fsck : string -> string -> int
+  method fstrim : ?offset:int64 -> ?length:int64 -> ?minimumfreeextent:int64 -> string -> unit
   method get_append : unit -> string option
   method get_attach_method : unit -> string
   method get_autosync : unit -> bool
+  method get_cachedir : unit -> string
   method get_direct : unit -> bool
   method get_e2attrs : string -> string
   method get_e2generation : string -> int64
   method get_e2label : string -> string
   method get_e2uuid : string -> string
+  method get_libvirt_requested_credential_challenge : int -> string
+  method get_libvirt_requested_credential_defresult : int -> string
+  method get_libvirt_requested_credential_prompt : int -> string
+  method get_libvirt_requested_credentials : unit -> string array
   method get_memsize : unit -> int
   method get_network : unit -> bool
   method get_path : unit -> string
@@ -1761,6 +2167,7 @@ class guestfs : unit -> object
   method get_selinux : unit -> bool
   method get_smp : unit -> int
   method get_state : unit -> int
+  method get_tmpdir : unit -> string
   method get_trace : unit -> bool
   method get_umask : unit -> int
   method get_verbose : unit -> bool
@@ -1768,12 +2175,30 @@ class guestfs : unit -> object
   method getxattr : string -> string -> string
   method getxattrs : string -> xattr array
   method glob_expand : string -> string array
-  method grep : string -> string -> string array
+  method grep : ?extended:bool -> ?fixed:bool -> ?insensitive:bool -> ?compressed:bool -> string -> string -> string array
+  method grep_opts : ?extended:bool -> ?fixed:bool -> ?insensitive:bool -> ?compressed:bool -> string -> string -> string array
   method grepi : string -> string -> string array
   method grub_install : string -> string -> unit
   method head : string -> string array
   method head_n : int -> string -> string array
   method hexdump : string -> string
+  method hivex_close : unit -> unit
+  method hivex_commit : string option -> unit
+  method hivex_node_add_child : int64 -> string -> int64
+  method hivex_node_children : int64 -> hivex_node array
+  method hivex_node_delete_child : int64 -> unit
+  method hivex_node_get_child : int64 -> string -> int64
+  method hivex_node_get_value : int64 -> string -> int64
+  method hivex_node_name : int64 -> string
+  method hivex_node_parent : int64 -> int64
+  method hivex_node_set_value : int64 -> string -> int64 -> string -> unit
+  method hivex_node_values : int64 -> hivex_value array
+  method hivex_open : ?verbose:bool -> ?debug:bool -> ?write:bool -> string -> unit
+  method hivex_root : unit -> int64
+  method hivex_value_key : int64 -> string
+  method hivex_value_type : int64 -> int64
+  method hivex_value_utf8 : int64 -> string
+  method hivex_value_value : int64 -> string
   method initrd_cat : string -> string -> string
   method initrd_list : string -> string array
   method inotify_add_watch : string -> int -> int64
@@ -1804,8 +2229,44 @@ class guestfs : unit -> object
   method inspect_is_multipart : string -> bool
   method inspect_is_netinst : string -> bool
   method inspect_list_applications : string -> application array
+  method inspect_list_applications2 : string -> application2 array
   method inspect_os : unit -> string array
   method internal_autosync : unit -> unit
+  method internal_hot_add_drive : string -> unit
+  method internal_hot_remove_drive : string -> unit
+  method internal_hot_remove_drive_precheck : string -> unit
+  method internal_lstatlist : string -> string array -> stat array
+  method internal_lxattrlist : string -> string array -> xattr array
+  method internal_readlinklist : string -> string array -> string array
+  method internal_test : ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
+  method internal_test_63_optargs : ?opt1:int -> ?opt2:int -> ?opt3:int -> ?opt4:int -> ?opt5:int -> ?opt6:int -> ?opt7:int -> ?opt8:int -> ?opt9:int -> ?opt10:int -> ?opt11:int -> ?opt12:int -> ?opt13:int -> ?opt14:int -> ?opt15:int -> ?opt16:int -> ?opt17:int -> ?opt18:int -> ?opt19:int -> ?opt20:int -> ?opt21:int -> ?opt22:int -> ?opt23:int -> ?opt24:int -> ?opt25:int -> ?opt26:int -> ?opt27:int -> ?opt28:int -> ?opt29:int -> ?opt30:int -> ?opt31:int -> ?opt32:int -> ?opt33:int -> ?opt34:int -> ?opt35:int -> ?opt36:int -> ?opt37:int -> ?opt38:int -> ?opt39:int -> ?opt40:int -> ?opt41:int -> ?opt42:int -> ?opt43:int -> ?opt44:int -> ?opt45:int -> ?opt46:int -> ?opt47:int -> ?opt48:int -> ?opt49:int -> ?opt50:int -> ?opt51:int -> ?opt52:int -> ?opt53:int -> ?opt54:int -> ?opt55:int -> ?opt56:int -> ?opt57:int -> ?opt58:int -> ?opt59:int -> ?opt60:int -> ?opt61:int -> ?opt62:int -> ?opt63:int -> unit -> unit
+  method internal_test_close_output : unit -> unit
+  method internal_test_only_optargs : ?test:int -> unit -> unit
+  method internal_test_rbool : string -> bool
+  method internal_test_rboolerr : unit -> bool
+  method internal_test_rbufferout : string -> string
+  method internal_test_rbufferouterr : unit -> string
+  method internal_test_rconstoptstring : string -> string option
+  method internal_test_rconstoptstringerr : unit -> string option
+  method internal_test_rconststring : string -> string
+  method internal_test_rconststringerr : unit -> string
+  method internal_test_rhashtable : string -> (string * string) list
+  method internal_test_rhashtableerr : unit -> (string * string) list
+  method internal_test_rint : string -> int
+  method internal_test_rint64 : string -> int64
+  method internal_test_rint64err : unit -> int64
+  method internal_test_rinterr : unit -> int
+  method internal_test_rstring : string -> string
+  method internal_test_rstringerr : unit -> string
+  method internal_test_rstringlist : string -> string array
+  method internal_test_rstringlisterr : unit -> string array
+  method internal_test_rstruct : string -> lvm_pv
+  method internal_test_rstructerr : unit -> lvm_pv
+  method internal_test_rstructlist : string -> lvm_pv array
+  method internal_test_rstructlisterr : unit -> lvm_pv array
+  method internal_test_set_output : string -> unit
+  method internal_write : string -> string -> unit
+  method internal_write_append : string -> string -> unit
   method is_blockdev : string -> bool
   method is_busy : unit -> bool
   method is_chardev : string -> bool
@@ -1825,12 +2286,25 @@ class guestfs : unit -> object
   method kill_subprocess : unit -> unit
   method launch : unit -> unit
   method lchown : int -> int -> string -> unit
+  method ldmtool_create_all : unit -> unit
+  method ldmtool_diskgroup_disks : string -> string array
+  method ldmtool_diskgroup_name : string -> string
+  method ldmtool_diskgroup_volumes : string -> string array
+  method ldmtool_remove_all : unit -> unit
+  method ldmtool_scan : unit -> string array
+  method ldmtool_scan_devices : string array -> string array
+  method ldmtool_volume_hint : string -> string -> string
+  method ldmtool_volume_partitions : string -> string -> string array
+  method ldmtool_volume_type : string -> string -> string
   method lgetxattr : string -> string -> string
   method lgetxattrs : string -> xattr array
   method list_9p : unit -> string array
   method list_devices : unit -> string array
+  method list_disk_labels : unit -> (string * string) list
   method list_dm_devices : unit -> string array
   method list_filesystems : unit -> (string * string) list
+  method list_ldm_partitions : unit -> string array
+  method list_ldm_volumes : unit -> string array
   method list_md_devices : unit -> string array
   method list_partitions : unit -> string array
   method ll : string -> string
@@ -1841,6 +2315,7 @@ class guestfs : unit -> object
   method ln_sf : string -> string -> unit
   method lremovexattr : string -> string -> unit
   method ls : string -> string array
+  method ls0 : string -> string -> unit
   method lsetxattr : string -> string -> int -> string -> unit
   method lstat : string -> stat
   method lstatlist : string -> string array -> stat array
@@ -1865,6 +2340,7 @@ class guestfs : unit -> object
   method lvs_full : unit -> lvm_lv array
   method lvuuid : string -> string
   method lxattrlist : string -> string array -> xattr array
+  method max_disks : unit -> int
   method md_create : ?missingbitmap:int64 -> ?nrdevices:int -> ?spare:int -> ?chunk:int64 -> ?level:string -> string -> string array -> unit
   method md_detail : string -> (string * string) list
   method md_stat : string -> mdstat array
@@ -1873,6 +2349,7 @@ class guestfs : unit -> object
   method mkdir_mode : string -> int -> unit
   method mkdir_p : string -> unit
   method mkdtemp : string -> string
+  method mke2fs : ?blockscount:int64 -> ?blocksize:int64 -> ?fragsize:int64 -> ?blockspergroup:int64 -> ?numberofgroups:int64 -> ?bytesperinode:int64 -> ?inodesize:int64 -> ?journalsize:int64 -> ?numberofinodes:int64 -> ?stridesize:int64 -> ?stripewidth:int64 -> ?maxonlineresize:int64 -> ?reservedblockspercentage:int -> ?mmpupdateinterval:int -> ?journaldevice:string -> ?label:string -> ?lastmounteddir:string -> ?creatoros:string -> ?fstype:string -> ?usagetype:string -> ?uuid:string -> ?forcecreate:bool -> ?writesbandgrouponly:bool -> ?lazyitableinit:bool -> ?lazyjournalinit:bool -> ?testfs:bool -> ?discard:bool -> ?quotatype:bool -> ?extent:bool -> ?filetype:bool -> ?flexbg:bool -> ?hasjournal:bool -> ?journaldev:bool -> ?largefile:bool -> ?quota:bool -> ?resizeinode:bool -> ?sparsesuper:bool -> ?uninitbg:bool -> string -> unit
   method mke2fs_J : string -> int -> string -> string -> unit
   method mke2fs_JL : string -> int -> string -> string -> unit
   method mke2fs_JU : string -> int -> string -> string -> unit
@@ -1880,18 +2357,21 @@ class guestfs : unit -> object
   method mke2journal_L : int -> string -> string -> unit
   method mke2journal_U : int -> string -> string -> unit
   method mkfifo : int -> string -> unit
-  method mkfs : string -> string -> unit
+  method mkfs : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
+  method mkfs_opts : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
   method mkfs_b : string -> int -> string -> unit
   method mkfs_btrfs : ?allocstart:int64 -> ?bytecount:int64 -> ?datatype:string -> ?leafsize:int -> ?label:string -> ?metadata:string -> ?nodesize:int -> ?sectorsize:int -> string array -> unit
-  method mkfs_opts : ?blocksize:int -> ?features:string -> ?inode:int -> ?sectorsize:int -> string -> string -> unit
+  method mklost_and_found : string -> unit
   method mkmountpoint : string -> unit
   method mknod : int -> int -> int -> string -> unit
   method mknod_b : int -> int -> int -> string -> unit
   method mknod_c : int -> int -> int -> string -> unit
-  method mkswap : string -> unit
+  method mkswap : ?label:string -> ?uuid:string -> string -> unit
+  method mkswap_opts : ?label:string -> ?uuid:string -> string -> unit
   method mkswap_L : string -> string -> unit
   method mkswap_U : string -> string -> unit
   method mkswap_file : string -> unit
+  method mktemp : ?suffix:string -> string -> string
   method modprobe : string -> unit
   method mount : string -> string -> unit
   method mount_9p : ?options:string -> string -> string -> unit
@@ -1909,9 +2389,11 @@ class guestfs : unit -> object
   method ntfsclone_in : string -> string -> unit
   method ntfsclone_out : ?metadataonly:bool -> ?rescue:bool -> ?ignorefscheck:bool -> ?preservetimestamps:bool -> ?force:bool -> string -> string -> unit
   method ntfsfix : ?clearbadsectors:bool -> string -> unit
-  method ntfsresize : string -> unit
+  method ntfsresize : ?size:int64 -> ?force:bool -> string -> unit
   method ntfsresize_opts : ?size:int64 -> ?force:bool -> string -> unit
   method ntfsresize_size : string -> int64 -> unit
+  method parse_environment : unit -> unit
+  method parse_environment_list : string array -> unit
   method part_add : string -> string -> int64 -> int64 -> unit
   method part_del : string -> int -> unit
   method part_disk : string -> string -> unit
@@ -1928,6 +2410,8 @@ class guestfs : unit -> object
   method ping_daemon : unit -> unit
   method pread : string -> int -> int64 -> string
   method pread_device : string -> int -> int64 -> string
+  method pvchange_uuid : string -> unit
+  method pvchange_uuid_all : unit -> unit
   method pvcreate : string -> unit
   method pvremove : string -> unit
   method pvresize : string -> unit
@@ -1943,26 +2427,34 @@ class guestfs : unit -> object
   method readlink : string -> string
   method readlinklist : string -> string array -> string array
   method realpath : string -> string
+  method remove_drive : string -> unit
   method removexattr : string -> string -> unit
   method resize2fs : string -> unit
   method resize2fs_M : string -> unit
   method resize2fs_size : string -> int64 -> unit
   method rm : string -> unit
+  method rm_f : string -> unit
   method rm_rf : string -> unit
   method rmdir : string -> unit
   method rmmountpoint : string -> unit
+  method rsync : ?archive:bool -> ?deletedest:bool -> string -> string -> unit
+  method rsync_in : ?archive:bool -> ?deletedest:bool -> string -> string -> unit
+  method rsync_out : ?archive:bool -> ?deletedest:bool -> string -> string -> unit
   method scrub_device : string -> unit
   method scrub_file : string -> unit
   method scrub_freespace : string -> unit
   method set_append : string option -> unit
   method set_attach_method : string -> unit
   method set_autosync : bool -> unit
+  method set_cachedir : string option -> unit
   method set_direct : bool -> unit
   method set_e2attrs : ?clear:bool -> string -> string -> unit
   method set_e2generation : string -> int64 -> unit
   method set_e2label : string -> string -> unit
   method set_e2uuid : string -> string -> unit
   method set_label : string -> string -> unit
+  method set_libvirt_requested_credential : int -> string -> unit
+  method set_libvirt_supported_credentials : string array -> unit
   method set_memsize : int -> unit
   method set_network : bool -> unit
   method set_path : string option -> unit
@@ -1971,6 +2463,7 @@ class guestfs : unit -> object
   method set_recovery_proc : bool -> unit
   method set_selinux : bool -> unit
   method set_smp : int -> unit
+  method set_tmpdir : string option -> unit
   method set_trace : bool -> unit
   method set_verbose : bool -> unit
   method setcon : string -> unit
@@ -2000,31 +2493,10 @@ class guestfs : unit -> object
   method sync : unit -> unit
   method tail : string -> string array
   method tail_n : int -> string -> string array
-  method tar_in : string -> string -> unit
-  method tar_out : string -> string -> unit
-  method test0 : ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
-  method test0rbool : string -> bool
-  method test0rboolerr : unit -> bool
-  method test0rbufferout : string -> string
-  method test0rbufferouterr : unit -> string
-  method test0rconstoptstring : string -> string option
-  method test0rconstoptstringerr : unit -> string option
-  method test0rconststring : string -> string
-  method test0rconststringerr : unit -> string
-  method test0rhashtable : string -> (string * string) list
-  method test0rhashtableerr : unit -> (string * string) list
-  method test0rint : string -> int
-  method test0rint64 : string -> int64
-  method test0rint64err : unit -> int64
-  method test0rinterr : unit -> int
-  method test0rstring : string -> string
-  method test0rstringerr : unit -> string
-  method test0rstringlist : string -> string array
-  method test0rstringlisterr : unit -> string array
-  method test0rstruct : string -> lvm_pv
-  method test0rstructerr : unit -> lvm_pv
-  method test0rstructlist : string -> lvm_pv array
-  method test0rstructlisterr : unit -> lvm_pv array
+  method tar_in : ?compress:string -> string -> string -> unit
+  method tar_in_opts : ?compress:string -> string -> string -> unit
+  method tar_out : ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit
+  method tar_out_opts : ?compress:string -> ?numericowner:bool -> ?excludes:string array -> string -> string -> unit
   method tgz_in : string -> string -> unit
   method tgz_out : string -> string -> unit
   method touch : string -> unit
@@ -2035,18 +2507,22 @@ class guestfs : unit -> object
   method txz_in : string -> string -> unit
   method txz_out : string -> string -> unit
   method umask : int -> int
-  method umount : string -> unit
+  method umount : ?force:bool -> ?lazyunmount:bool -> string -> unit
+  method umount_opts : ?force:bool -> ?lazyunmount:bool -> string -> unit
   method umount_all : unit -> unit
   method umount_local : ?retry:bool -> unit -> unit
   method upload : string -> string -> unit
   method upload_offset : string -> string -> int64 -> unit
   method utimens : string -> int64 -> int64 -> int64 -> int64 -> unit
+  method utsname : unit -> utsname
   method version : unit -> version
   method vfs_label : string -> string
   method vfs_type : string -> string
   method vfs_uuid : string -> string
   method vg_activate : bool -> string array -> unit
   method vg_activate_all : bool -> unit
+  method vgchange_uuid : string -> unit
+  method vgchange_uuid_all : unit -> unit
   method vgcreate : string -> string array -> unit
   method vglvuuids : string -> string array
   method vgmeta : string -> string
@@ -2065,6 +2541,10 @@ class guestfs : unit -> object
   method write : string -> string -> unit
   method write_append : string -> string -> unit
   method write_file : string -> string -> int -> unit
+  method xfs_admin : ?extunwritten:bool -> ?imgfile:bool -> ?v2log:bool -> ?projid32bit:bool -> ?lazycounter:bool -> ?label:string -> ?uuid:string -> string -> unit
+  method xfs_growfs : ?datasec:bool -> ?logsec:bool -> ?rtsec:bool -> ?datasize:int64 -> ?logsize:int64 -> ?rtsize:int64 -> ?rtextsize:int64 -> ?maxpct:int -> string -> unit
+  method xfs_info : string -> xfsinfo
+  method xfs_repair : ?forcelogzero:bool -> ?nomodify:bool -> ?noprefetch:bool -> ?forcegeometry:bool -> ?maxmem:int64 -> ?ihashsize:int64 -> ?bhashsize:int64 -> ?agstride:int64 -> ?logdev:string -> ?rtdev:string -> string -> int
   method zegrep : string -> string -> string array
   method zegrepi : string -> string -> string array
   method zero : string -> unit

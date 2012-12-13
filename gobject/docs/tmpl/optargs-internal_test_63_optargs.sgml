@@ -1,0 +1,359 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsInternalTest63Optargs
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsInternalTest63Optargs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt1 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt10 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt11 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt12 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt13 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt14 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt15 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt16 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt17 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt18 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt19 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt2 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt20 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt21 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt22 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt23 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt24 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt25 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt26 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt27 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt28 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt29 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt3 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt30 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt31 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt32 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt33 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt34 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt35 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt36 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt37 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt38 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt39 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt4 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt40 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt41 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt42 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt43 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt44 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt45 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt46 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt47 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt48 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt49 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt5 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt50 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt51 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt52 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt53 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt54 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt55 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt56 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt57 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt58 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt59 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt6 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt60 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt61 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt62 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt63 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt7 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt8 ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsInternalTest63Optargs:opt9 ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsInternalTest63OptargsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_internal_test_63_optargs_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

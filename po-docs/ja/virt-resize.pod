@@ -87,7 +87,7 @@ dumpxml> like this to find the disk image name:
 
 =item 3. 現在の容量を確認します
 
-Use L<virt-filesystems(1)> to display the current partitions and sizes:
+現在のパーティションおよび容量を表示するには L<virt-filesystems(1)> を使用します:
 
  # virt-filesystems --long --parts --blkdevs -h -a /dev/vg/lv_guest
  Name       Type       Size  Parent
@@ -108,7 +108,7 @@ To store the resized disk image in a file, create a file of a suitable size:
  # rm -f outdisk
  # truncate -s 10G outdisk
 
-Or use L<lvcreate(1)> to create a logical volume:
+または、論理ボリュームを作成するために L<lvcreate(1)> を使用します:
 
  # lvcreate -L 10G -n lv_name vg_name
 
@@ -157,18 +157,18 @@ or L<btrfs(8)>.  However virt-resize does not know how to resize some
 filesystems, so you would have to online resize them after booting the
 guest.
 
-Other options are covered below.
+他のオプションは以下に記載しています。
 
 =item 6. テストします
 
 Thoroughly test the new disk image I<before> discarding the old one.
 
-If you are using libvirt, edit the XML to point at the new disk:
+libvirt を使用しているならば、新しいディスクを指し示すよう XML を編集します:
 
  # virsh edit guestname
 
-Change E<lt>source ...E<gt>, see
-L<http://libvirt.org/formatdomain.html#elementsDisks>
+E<lt>source ...E<gt>
+を変更します、L<http://libvirt.org/formatdomain.html#elementsDisks> を参照してください。
 
 Then start up the domain with the new, resized disk:
 

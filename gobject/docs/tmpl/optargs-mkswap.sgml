@@ -1,0 +1,54 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMkswap
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMkswap ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMkswap:label ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkswap:uuid ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMkswapClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mkswap_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

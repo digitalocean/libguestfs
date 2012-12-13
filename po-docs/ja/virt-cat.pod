@@ -31,7 +31,7 @@ tool (see L</USING GUESTFISH> below).
 
 =head1 例
 
-Display C</etc/fstab> file from inside the libvirt VM called C<mydomain>:
+C<mydomain> という名前の libvirt 仮想マシンの中にある C</etc/fstab> を表示します:
 
  virt-cat -d mydomain /etc/fstab
 
@@ -39,7 +39,7 @@ Display C</etc/fstab> file from inside the libvirt VM called C<mydomain>:
 
  virt-cat -a disk.img /var/log/messages | tail
 
-Find out what DHCP IP address a VM acquired:
+仮想マシンが取得している DHCP IP アドレスを発見するには:
 
  virt-cat -d mydomain /var/log/messages | \
    grep 'dhclient: bound to' | tail
@@ -120,8 +120,8 @@ C<disk.img> に対してロー形式（自動検知なし）を強制し、C<ano
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
+を開いているユーザーからパスフレーズを読み込もうとします。
 
 =item B<-v>
 

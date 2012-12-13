@@ -3,6 +3,7 @@
 ../cat/virt-cat.pod
 ../cat/virt-filesystems.pod
 ../cat/virt-ls.pod
+../daemon/guestfsd.pod
 ../df/virt-df.pod
 ../edit/virt-edit.pod
 ../erlang/examples/guestfs-erlang.pod
@@ -20,8 +21,10 @@
 ../fish/virt-tar-out.pod
 ../format/virt-format.pod
 ../fuse/guestmount.pod
+../guestfs-release-notes.pod
 ../inspector/virt-inspector.pod
 ../java/examples/guestfs-java.pod
+../lua/examples/guestfs-lua.pod
 ../ocaml/examples/guestfs-ocaml.pod
 ../perl/examples/guestfs-perl.pod
 ../python/examples/guestfs-python.pod

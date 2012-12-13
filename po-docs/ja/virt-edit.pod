@@ -138,8 +138,8 @@ C<disk.img> に対してロー形式（自動検知なし）を強制し、C<ano
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
+を開いているユーザーからパスフレーズを読み込もうとします。
 
 =item B<-v>
 
@@ -282,8 +282,7 @@ Using C<virt-edit> is approximately equivalent to doing:
 
  guestfish --rw -i -d domname edit /file
 
-where C<domname> is the name of the libvirt guest, and C</file> is the full
-path to the file.
+ここで C<domname> は libvirt 仮想マシンの名前で、C</file> はファイルの完全パスです。
 
 The command above uses libguestfs's guest inspection feature and so does not
 work on guests that libguestfs cannot inspect, or on things like arbitrary
@@ -312,11 +311,9 @@ new file to match the old one.  The result of this was that if you edited a
 security sensitive file such as C</etc/shadow> then it would be left
 world-readable after the edit.
 
-This issue was assigned CVE-2012-2690, and is fixed in libguestfs E<ge>
-1.16.
+この問題は CVE-2012-2690 に割り当てられおり、libguestfs E<ge> 1.16 において修正されています。
 
-For further information, see
-L<https://bugzilla.redhat.com/show_bug.cgi?id=788642>
+詳細は L<https://bugzilla.redhat.com/show_bug.cgi?id=788642> を参照してください。
 
 =head1 環境変数
 

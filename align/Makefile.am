@@ -18,6 +18,7 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	test-virt-alignment-scan.sh \
 	virt-alignment-scan.pod
 
 CLEANFILES = stamp-virt-alignment-scan.pod
@@ -45,6 +46,7 @@ virt_alignment_scan_CFLAGS = \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
 	$(LIBVIRT_CFLAGS)
 
@@ -71,10 +73,14 @@ stamp-virt-alignment-scan.pod: virt-alignment-scan.pod
 
 # Tests.
 
-# random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
-# TESTS_ENVIRONMENT = \
-# 	MALLOC_PERTURB_=$(random_val) \
-# 	$(top_builddir)/run
+TESTS =
 
-# TESTS = test-virt-alignment-scan.sh
+if ENABLE_APPLIANCE
+TESTS += \
+	test-virt-alignment-scan.sh
+endif
+
+check-valgrind:
+	$(MAKE) VG="$(top_builddir)/run @VG@" check

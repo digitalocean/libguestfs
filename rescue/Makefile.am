@@ -18,6 +18,7 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	test-virt-rescue.pl \
 	virt-rescue.pod
 
 CLEANFILES = stamp-virt-rescue.pod
@@ -42,8 +43,9 @@ virt_rescue_CFLAGS = \
 	-I$(top_srcdir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-	$(LIBCONFIG_CFLAGS) \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
+	$(LIBCONFIG_CFLAGS)
 
 virt_rescue_LDADD = \
 	$(LIBCONFIG_LIBS) \
@@ -63,3 +65,11 @@ stamp-virt-rescue.pod: virt-rescue.pod
 	  --license GPLv2+ \
 	  $<
 	touch $@
+
+# Tests.
+
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+
+if ENABLE_APPLIANCE
+TESTS = test-virt-rescue.pl
+endif ENABLE_APPLIANCE

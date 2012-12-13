@@ -35,7 +35,7 @@ check the output size using a tool that understands sparseness> such as C<du
  $ du -sh test1.img
  3.6M	test1.img
 
-(Compare the apparent size B<100M> vs the actual size B<3.6M>)
+(見た目の容量 B<100M> と実際の容量 B<3.6M> を比較します)
 
 =head2 IMPORTANT LIMITATIONS
 
@@ -253,6 +253,11 @@ fatal error.
 
 All versions of virt-sparsify have supported the I<--machine-readable>
 option.
+
+=head1 WINDOWS 8
+
+Windows 8 "fast startup" can prevent virt-sparsify from working.  See
+L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
 
 =head1 終了ステータス
 

@@ -49,6 +49,7 @@ virt_df_CFLAGS = \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
 	$(LIBVIRT_CFLAGS)
 
@@ -75,12 +76,14 @@ stamp-virt-df.pod: virt-df.pod
 
 # Tests.
 
-random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-
-TESTS_ENVIRONMENT = \
-	MALLOC_PERTURB_=$(random_val) \
-	$(top_builddir)/run
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 if ENABLE_APPLIANCE
 TESTS = test-virt-df.sh
 endif ENABLE_APPLIANCE
+
+check-valgrind:
+	$(MAKE) VG="$(top_builddir)/run @VG@" check
+
+check-valgrind-local-guests:
+	$(top_builddir)/run --test @VG@ ./virt-df -c "$(libvirt_ro_uri)"

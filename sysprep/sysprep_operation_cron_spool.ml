@@ -23,6 +23,14 @@ module G = Guestfs
 
 let cron_spool_perform g root =
   Array.iter g#rm_rf (g#glob_expand "/var/spool/cron/*");
+  Array.iter g#rm (g#glob_expand "/var/spool/atjobs/*");
+  Array.iter g#rm (g#glob_expand "/var/spool/atjobs/.SEQ");
+  Array.iter g#rm (g#glob_expand "/var/spool/atspool/*");
+  Array.iter
+    (fun path -> if not (g#is_dir path) then g#rm path)
+    (g#glob_expand "/var/spool/at/*");
+  Array.iter g#rm (g#glob_expand "/var/spool/at/.SEQ");
+  Array.iter g#rm (g#glob_expand "/var/spool/at/spool/*");
   []
 
 let cron_spool_op = {
@@ -31,7 +39,8 @@ let cron_spool_op = {
   heading = s_"Remove user at-jobs and cron-jobs";
   pod_description = None;
   extra_args = [];
-  perform = cron_spool_perform;
+  perform_on_filesystems = Some cron_spool_perform;
+  perform_on_devices = None;
 }
 
 let () = register_operation cron_spool_op

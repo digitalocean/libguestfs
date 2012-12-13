@@ -2,7 +2,8 @@
 
 =head1 名前
 
-libguestfs-make-fixed-appliance - Make a "fixed appliance" for libguestfs
+libguestfs-make-fixed-appliance - libguestfs 向け "fixed appliance"
+(固定アプライアンス) を作成します
 
 =head1 書式
 
@@ -12,8 +13,8 @@ libguestfs-make-fixed-appliance - Make a "fixed appliance" for libguestfs
 
 =head1 説明
 
-libguestfs-make-fixed-appliance lets you make a pre-built binary appliance
-for libguestfs.
+libguestfs-make-fixed-appliance により、事前に構築されたバイナリーの libguestfs
+向けアプライアンスを作成できます。
 
 B<Note that ordinary users should not need to run this tool>.  The only
 reason to use it is if you want to make a self-contained libguestfs
@@ -25,26 +26,24 @@ Instead of running this tool, you can download fixed appliances from
 L<http://libguestfs.org/download/binaries/appliance/>.  These appliances
 were made using this tool.
 
-There are two ways to use this tool.
+このツールを使用する方法が二つあります。
 
 =over 4
 
 =item *
 
-Specify an output directory, for example:
+出力ディレクトリーを指定します、たとえば:
 
  libguestfs-make-fixed-appliance /usr/local/lib/guestfs/appliance
 
-The output directory is created if it does not exist.  Four files are
-created in this directory:
+出力ディレクトリーが存在しなければ、作成されます。4 つのファイルがこのディレクトリーに作成されます:
 
  <OUTPUTDIR>/kernel
  <OUTPUTDIR>/initrd
  <OUTPUTDIR>/root
  <OUTPUTDIR>/README.fixed
 
-Note that C<I<OUTPUTDIR>/root> is a sparse file, so take care when copying
-it.
+C<I<OUTPUTDIR>/root> はスパースなファイルのため、これをコピーするときに注意する必要があります。
 
 You can then run libguestfs (possibly after copying this directory to
 another machine) by setting the environment variable LIBGUESTFS_PATH to
@@ -52,8 +51,7 @@ C<OUTPUTDIR>.
 
 =item *
 
-The alternative method is to use the I<--xz> option to create a compressed
-tarball:
+圧縮 tar ファイルを作成する、もう一つの方法は I<--xz> オプションを使用することです:
 
  libguestfs-make-fixed-appliance --xz
 
@@ -78,7 +76,7 @@ C<appliance/root> はスパースファイルであるため、コピーする�
 
 =item B<--help>
 
-Display short usage information and exit.
+簡単な使用法を表示して終了します。
 
 =item B<-V>
 
@@ -98,7 +96,7 @@ completely silent when it is running.
 
 =back
 
-=head1 FIXED APPLIANCE
+=head1 固定アプライアンス
 
 When libguestfs (or libguestfs tools) are run, they search a path looking
 for an appliance.  The path is built into libguestfs, or can be set using
@@ -121,7 +119,7 @@ Thus the fixed appliance can be used when a platform or Linux distro does
 not support febootstrap.  You build the fixed appliance on a platform that
 does support febootstrap, and copy it over, and use that to run libguestfs.
 
-=head1 LICENSING
+=head1 ライセンス
 
 The fixed appliance is a complete Linux binary distro.  If you distribute
 it, you may need to distribute corresponding source files to remain in legal
@@ -130,13 +128,11 @@ GNU General Public License).
 
 =head1 終了ステータス
 
-libguestfs-make-fixed-appliance returns I<0> if the appliance was built
-without errors.
+アプライアンスがエラーなくビルドされると、libguestfs-make-fixed-appliance は I<0> を返します。
 
 =head1 環境変数
 
-For the full list of environment variables which may affect libguestfs,
-please see the L<guestfs(3)> manual page.
+libguestfs に影響する環境変数の完全な一覧は L<guestfs(3)> マニュアルページを参照してください。
 
 =head1 関連項目
 

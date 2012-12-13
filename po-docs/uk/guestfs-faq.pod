@@ -19,7 +19,7 @@ library, and bindings for many common programming languages.
 For more information about what libguestfs can do read the introduction on
 the home page (L<http://libguestfs.org>).
 
-=head2 What are the virt tools?
+=head2 Для чого призначено virt tools?
 
 Virt tools (website: L<http://virt-tools.org>) are a whole set of
 virtualization management tools aimed at system administrators.  Some of
@@ -44,7 +44,7 @@ number of other open source projects.  But you can run libguestfs and the
 virt tools on many different Linux distros and Mac OS X.  Some virt tools
 have been ported to Windows.
 
-=head2 How does libguestfs compare to other tools?
+=head2 Що дає використання libguestfs порівняно з іншими інструментами?
 
 =over 4
 
@@ -96,7 +96,7 @@ Libguestfs development happens along an unstable branch and we periodically
 create a stable branch which we backport stable patches to.  To find out
 more, read L<guestfs(3)/LIBGUESTFS VERSION NUMBERS>.
 
-=head2 How can I get help?
+=head2 Як допомогти проектові?
 
 =head2 What mailing lists or chat rooms are available?
 
@@ -115,7 +115,7 @@ For other virt tools (not ones supplied with libguestfs) there is a general
 virt tools mailing list:
 L<https://www.redhat.com/mailman/listinfo/virt-tools-list>
 
-=head2 How do I report bugs?
+=head2 Як повідомити про вади?
 
 Please use the following link to enter a bug in Bugzilla:
 
@@ -125,7 +125,7 @@ Include as much detail as you can and a way to reproduce the problem.
 
 Include the full output of L<libguestfs-test-tool(1)>.
 
-=head1 COMMON PROBLEMS
+=head1 ТИПОВІ ПРОБЛЕМИ
 
 See also L<guestfs(3)/LIBGUESTFS GOTCHAS> for some "gotchas" with using the
 libguestfs API.
@@ -142,7 +142,7 @@ If, after using this, you still don't understand the failure, contact us
 
 =head2 Non-ASCII characters don't appear on VFAT filesystems.
 
-Typical symptoms of this problem:
+Типові симптоми проблеми:
 
 =over 4
 
@@ -180,7 +180,7 @@ or on the guestfish command line:
 
  guestfish [...] -m /dev/sda1:/:utf8
 
-or from the API:
+або з програмного інтерфейсу:
 
  guestfs_mount_options (g, "utf8", "/dev/sda1", "/");
 
@@ -212,7 +212,7 @@ sure the filesystem was created using Joliet and/or Rock Ridge extensions.
 libguestfs does not require any special mount options to handle the
 filesystem.
 
-=head1 DOWNLOADING, INSTALLING, COMPILING LIBGUESTFS
+=head1 ОТРИМАННЯ, ВСТАНОВЛЕННЯ, ЗБИРАННЯ LIBGUESTFS
 
 =begin html
 
@@ -220,17 +220,17 @@ filesystem.
 
 =end html
 
-=head2 Where can I get the latest binaries for ...?
+=head2 Де взяти найсвіжіші збірки для... ?
 
 =over 4
 
 =item Fedora E<ge> 11
 
-Use:
+Скористайтеся командою:
 
  yum install '*guestf*'
 
-For the latest builds, see:
+Найсвіжіші збірки можна знайти тут:
 L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 
 =item Red Hat Enterprise Linux
@@ -239,16 +239,18 @@ L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 
 =item RHEL 5
 
-Use the package from EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
+Скористайтеся пакунком з EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
 
 =item RHEL 6.2-6.3
 
-It is part of the default install.  On RHEL 6 (only) you have to install
-C<libguestfs-winsupport> to get Windows guest support.
+Є частиною типового набору для встановлення. У RHEL 6 (і лише тут) вам слід
+встановити C<libguestfs-winsupport>, щоб мати змогу працювати з гостьовими
+системами Windows.
 
 =item RHEL 6.4
 
-A preview repository is available.  See the announcement here:
+Ви можете скористатися сховищем пакунків для попереднього перегляду. З
+оголошенням про нього можна ознайомитися тут:
 L<https://www.redhat.com/archives/libguestfs/2012-September/msg00074.html>
 
 =item RHEL 7
@@ -259,7 +261,7 @@ get Windows guest support.
 
 =back
 
-=item Debian and Ubuntu
+=item Debian і Ubuntu
 
 =over 4
 
@@ -295,18 +297,18 @@ every user should do this:
 libguestfs in this version of Ubuntu works, but you need to update
 febootstrap and seabios to the latest versions.
 
-You need febootstrap E<ge> 3.14-2 from:
+Вам знадобиться пакунок febootstrap E<ge> 3.14-2 з
 L<http://packages.ubuntu.com/precise/febootstrap>
 
 After installing or updating febootstrap, rebuild the appliance:
 
  sudo update-guestfs-appliance
 
-You need seabios E<ge> 0.6.2-0ubuntu2.1 or E<ge> 0.6.2-0ubuntu3 from:
-L<http://packages.ubuntu.com/precise-updates/seabios> or
+Вам знадобиться пакунок seabios E<ge> 0.6.2-0ubuntu2.1 або E<ge>
+0.6.2-0ubuntu3 з L<http://packages.ubuntu.com/precise-updates/seabios> або
 L<http://packages.ubuntu.com/quantal/seabios>
 
-Also you need to do (see above):
+Крім того, вам слід виконати такі дії (див. вище):
 
  sudo chmod 0644 /boot/vmlinuz*
 
@@ -322,7 +324,7 @@ Libguestfs was added to Gentoo in 2012-07.  Do:
 
 Можна зібрати з початкових кодів (наступний розділ).
 
-=item Other non-Linux distro
+=item Інші дистрибутиви не-Linux
 
 You'll have to compile from source, and port it.
 
@@ -465,7 +467,7 @@ understands sparseness such as C<du-sh>.  It can make a huge difference:
 If all this confuses you, use a non-sparse output by specifying the
 I<--convert> option, eg:
 
- virt-sparsify --convert qcow2 disk.raw disk.qcow2
+ virt-sparsify --convert qcow2 диск.raw диск.qcow2
 
 =head1 USING LIBGUESTFS IN YOUR OWN PROGRAMS
 
@@ -504,7 +506,7 @@ In the source tree the license is in the file C<COPYING.LIB> (LGPLv2+ for
 the library and bindings) and C<COPYING> (GPLv2+ for the standalone
 programs).
 
-=head1 DEBUGGING LIBGUESTFS
+=head1 ДІАГНОСТИКА LIBGUESTFS
 
 =head2 How do I debug when using any libguestfs program or tool (eg. virt-v2v or
 virt-df)?
@@ -721,7 +723,7 @@ into a consistent hierarchy such as:
  |
  +-- /var   (/dev/vg_os/lv_var)
 
-(or drive letters on Windows).
+(або літери дисків у Windows).
 
 The API first of all sees the disk image at the "pile of filesystems"
 level.  But it also has a way to inspect the disk image to see if it
@@ -780,5 +782,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012 Red Hat Inc.
+© Red Hat Inc., 2012
 

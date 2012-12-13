@@ -68,8 +68,9 @@ option to avoid possible exploits.
 
 Add I<file>, a disk image, host partition, LV, external USB disk, etc.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром
+I<--format=..>.
 
 B<Всі поточні дані на диску буде витерто.>
 
@@ -95,12 +96,13 @@ auto-detection for subsequent I<-a> options.
 
  virt-format --format=raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img>.
 
  virt-format --format=raw -a disk.img --format -a another.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
@@ -182,5 +184,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012 Red Hat Inc.
+© Red Hat Inc., 2012
 

@@ -27,15 +27,31 @@
 # and programs in the libguestfs distribution.  Also you can make a
 # symbolic [not hard] link to this 'run' script from anywhere
 # (eg. $HOME/bin/run) if you wish.
+#
+# The script can also be used to make the output of tests shorter:
+#   TESTS_ENVIRONMENT = ... $(top_builddir)/run --test [$(VG)]
+# (Use the optional $(VG) when the tests must also be run under
+# valgrind).
 
 #----------------------------------------------------------------------
+
+if [ "$1" = "--test" ]; then
+    test_mode=1
+    shift
+fi
 
 # Find this script.
 b=@abs_builddir@
 
-# Set TMPDIR so the appliance doesn't conflict with globally
-# installed libguestfs.
-export TMPDIR="$b"
+# Set tmpdir and cachedir so the appliance doesn't conflict with
+# globally installed libguestfs.
+#
+# We set it to a subdirectory ('tmp') so that we can label this
+# subdirectory to make libvirt + sVirt + SELinux enforcing work.
+export LIBGUESTFS_TMPDIR="$b/tmp"
+export LIBGUESTFS_CACHEDIR="$b/tmp"
+mkdir -p "$b/tmp"
+chcon --reference=/tmp tmp 2>/dev/null ||:
 
 # Set local environment relative to this script.
 export LIBGUESTFS_PATH="$b/appliance"
@@ -56,6 +72,7 @@ fi
 export PERL5LIB
 
 # For Python.
+export PYTHON=@PYTHON@
 if [ -z "$PYTHONPATH" ]; then
     PYTHONPATH="$b/python:$b/python/.libs"
 else
@@ -63,7 +80,51 @@ else
 fi
 export PYTHONPATH
 
-# For GObject and friends.
+# For Ruby.
+export RUBY=@RUBY@
+if [ -z "$RUBYLIB" ]; then
+    RUBYLIB="$b/ruby/lib:$b/ruby/ext/guestfs"
+else
+    RUBYLIB="$b/ruby/lib:$b/ruby/ext/guestfs:$RUBYLIB"
+fi
+export RUBYLIB
+export LD_LIBRARY_PATH="$b/ruby/ext/guestfs:$LD_LIBRARY_PATH"
+
+# For OCaml.
+if [ -z "$CAML_LD_LIBRARY_PATH" ]; then
+    CAML_LD_LIBRARY_PATH="$b/ocaml"
+else
+    CAML_LD_LIBRARY_PATH="$b/ocaml:$CAML_LD_LIBRARY_PATH"
+fi
+export CAML_LD_LIBRARY_PATH
+
+# For Java.
+export JAVA_EXE=@JAVA_EXE@
+if [ -z "$CLASSPATH" ]; then
+    CLASSPATH="$b/java:$b/java/t:$b/java/libguestfs-@VERSION@.jar"
+else
+    CLASSPATH="$b/java:$b/java/t:$b/java/libguestfs-@VERSION@.jar:$CLASSPATH"
+fi
+export CLASSPATH
+
+# For Erlang.
+if [ -z "$PATH" ]; then
+    PATH="$b/erlang"
+else
+    PATH="$b/erlang:$PATH"
+fi
+export PATH
+
+# For Lua.
+if [ -z "$LUA_CPATH" ]; then
+    LUA_CPATH="$b/lua/?.so"
+else
+    LUA_CPATH="$b/lua/?.so;$LUA_CPATH"
+fi
+export LUA_CPATH
+
+# For GObject, Javascript and friends.
+export GJS=@GJS@
 if [ -z "$GI_TYPELIB_PATH" ]; then
     GI_TYPELIB_PATH="$b/gobject"
 else
@@ -73,6 +134,11 @@ export GI_TYPELIB_PATH
 # Be friendly to valgrind (https://live.gnome.org/Valgrind)
 export G_SLICE=always-malloc
 export G_DEBUG=gc-friendly
+
+# This is a cheap way to find some use-after-free and uninitialized
+# read problems when using glibc.
+random_val="$(awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)"
+export MALLOC_PERTURB_=$random_val
 
 # Do we have libtool?  If we have it then we can use it to make
 # running valgrind simpler.  However don't depend on it.
@@ -85,4 +151,30 @@ export GNOME_KEYRING_CONTROL=
 export GNOME_KEYRING_PID=
 
 # Run the program.
-exec $libtool "$@"
+if [ -z "$test_mode" ]; then
+    exec $libtool "$@"
+else
+    # For tests (./run --test), redirect all output to a file, and
+    # only print the file if the test fails.
+    pid=$$
+    tmpout=$b/tmp/run-$pid
+    rm -f $tmpout
+    start_t="$(date +'%s')"
+    $libtool "$@" > $tmpout 2>&1
+    fail=$?
+    end_t="$(date +'%s')"
+    if [ "$fail" -eq 0 ]; then
+        # Test successful.
+        echo $(($end_t - $start_t)) seconds: "$@"
+    elif [ "$fail" -eq 77 ]; then
+        # Tests return 77 to mean skipped.
+        cat $tmpout
+    else
+        # Test failed.
+        echo "$b/run --test" "$@"
+        cat $tmpout
+        echo "$b/run: command failed with exit code $fail"
+    fi
+    rm -f $tmpout
+    exit $fail
+fi

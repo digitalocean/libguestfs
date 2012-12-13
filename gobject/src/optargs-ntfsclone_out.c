@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -63,23 +63,23 @@ guestfs_ntfsclone_out_set_property(GObject *object, guint property_id, const GVa
 
   switch (property_id) {
     case PROP_GUESTFS_NTFSCLONE_OUT_METADATAONLY:
-      priv->metadataonly = g_value_get_enum(value);
+      priv->metadataonly = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_RESCUE:
-      priv->rescue = g_value_get_enum(value);
+      priv->rescue = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK:
-      priv->ignorefscheck = g_value_get_enum(value);
+      priv->ignorefscheck = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS:
-      priv->preservetimestamps = g_value_get_enum(value);
+      priv->preservetimestamps = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_NTFSCLONE_OUT_FORCE:
-      priv->force = g_value_get_enum(value);
+      priv->force = g_value_get_enum (value);
       break;
 
     default:

@@ -92,6 +92,9 @@ extern char **split_lines (char *str);
 #define commandv(out,err,argv) commandvf((out),(err),0,(argv))
 #define commandrv(out,err,argv) commandrvf((out),(err),0,(argv))
 
+#define __external_command __attribute__((__section__(".guestfsd_ext_cmds")))
+#define GUESTFSD_EXT_CMD(___ext_cmd_var, ___ext_cmd_str) static const char ___ext_cmd_var[] __external_command = #___ext_cmd_str
+
 #define COMMAND_FLAG_FD_MASK                   (1024-1)
 #define COMMAND_FLAG_FOLD_STDOUT_ON_STDERR     1024
 #define COMMAND_FLAG_CHROOT_COPY_FILE_TO_STDIN 2048
@@ -159,13 +162,14 @@ struct optgroup {
 };
 extern struct optgroup optgroups[];
 
+/*-- in available.c --*/
+extern int filesystem_available (const char *filesystem);
+
 /*-- in sync.c --*/
 /* Use this as a replacement for sync(2). */
 extern int sync_disks (void);
 
 /*-- in ext2.c --*/
-extern int e2prog (char *name); /* Massive hack for RHEL 5. */
-
 /* Confirmed this is true up to ext4 from the Linux sources. */
 #define EXT2_LABEL_MAX 16
 
@@ -371,6 +375,14 @@ is_zero (const char *buffer, size_t size)
     return (errcode);							\
   }									\
   while (0)
+
+/* Marks functions which are not supported. */
+#define NOT_SUPPORTED(errcode,...)                      \
+    do {                                                \
+      reply_with_error_errno (ENOTSUP, __VA_ARGS__);    \
+      return (errcode);                                 \
+    }                                                   \
+    while (0)
 
 #ifndef __attribute__
 # if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)

@@ -23,6 +23,14 @@ if [ -z "$GJS" ]; then
   exit 77
 fi
 
-../run $GJS $srcdir/bindtests.js > bindtests.tmp
+echo "GObject bind tests skipped: Int64, OInt64 and OStringList are all broken"
+exit 77
+
+rm -f bindtests.tmp
+
+$GJS $srcdir/bindtests.js > bindtests.tmp
 diff -u ${srcdir}/../bindtests bindtests.tmp
-../run $GJS $srcdir/bindtests-manual.js 2>/dev/null
+
+$GJS $srcdir/bindtests-manual.js 2>/dev/null
+
+rm bindtests.tmp

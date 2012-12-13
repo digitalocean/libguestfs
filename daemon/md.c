@@ -29,10 +29,12 @@
 #include "optgroups.h"
 #include "c-ctype.h"
 
+GUESTFSD_EXT_CMD(str_mdadm, mdadm);
+
 int
 optgroup_mdadm_available (void)
 {
-  return prog_exists ("mdadm");
+  return prog_exists (str_mdadm);
 }
 
 static size_t
@@ -121,7 +123,7 @@ do_md_create (const char *name, char *const *devices,
   const char *argv[MAX_ARGS];
   size_t i = 0;
 
-  ADD_ARG (argv, i, "mdadm");
+  ADD_ARG (argv, i, str_mdadm);
   ADD_ARG (argv, i, "--create");
   /* --run suppresses "Continue creating array" question */
   ADD_ARG (argv, i, "--run");
@@ -244,7 +246,7 @@ do_md_detail(const char *md)
 
   DECLARE_STRINGSBUF (ret);
 
-  const char *mdadm[] = { "mdadm", "-D", "--export", md, NULL };
+  const char *mdadm[] = { str_mdadm, "-D", "--export", md, NULL };
   r = commandv (&out, &err, mdadm);
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -319,7 +321,7 @@ do_md_stop(const char *md)
   int r;
   char *err = NULL;
 
-  const char *mdadm[] = { "mdadm", "--stop", md, NULL};
+  const char *mdadm[] = { str_mdadm, "--stop", md, NULL};
   r = commandv(NULL, &err, mdadm);
   if (r == -1) {
     reply_with_error("%s", err);
@@ -490,6 +492,7 @@ do_md_stat (const char *md)
 
   if (fclose (fp) == EOF) {
     reply_with_perror ("fclose: %s", "/proc/mdstat");
+    xdr_free ((xdrproc_t) xdr_guestfs_int_mdstat_list, (char *) ret);
     return NULL;
   }
 

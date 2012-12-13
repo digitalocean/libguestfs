@@ -25,51 +25,74 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include "daemon.h"
 #include "actions.h"
 
-char **
-do_ls (const char *path)
+GUESTFSD_EXT_CMD(str_ls, ls);
+
+/* Has one FileOut parameter. */
+int
+do_ls0 (const char *path)
 {
-  DECLARE_STRINGSBUF (ret);
   DIR *dir;
   struct dirent *d;
+  size_t len;
 
   CHROOT_IN;
   dir = opendir (path);
   CHROOT_OUT;
 
-  if (!dir) {
+  if (dir == NULL) {
     reply_with_perror ("opendir: %s", path);
-    return NULL;
+    return -1;
   }
 
-  while ((d = readdir (dir)) != NULL) {
+  /* Now we must send the reply message, before the filenames.  After
+   * this there is no opportunity in the protocol to send any error
+   * message back.  Instead we can only cancel the transfer.
+   */
+  reply (NULL, NULL);
+
+  while (1) {
+    errno = 0;
+    d = readdir (dir);
+    if (d == NULL) break;
+
+    /* Ignore . and .. */
     if (STREQ (d->d_name, ".") || STREQ (d->d_name, ".."))
       continue;
 
-    if (add_string (&ret, d->d_name) == -1) {
+    /* Send the name in a single chunk.  XXX Needs to be fixed if
+     * names can be longer than the chunk size.  Note we use 'len+1'
+     * because we want to include the \0 terminating character in the
+     * output.
+     */
+    len = strlen (d->d_name);
+    if (send_file_write (d->d_name, len+1) < 0) {
       closedir (dir);
-      return NULL;
+      return -1;
     }
   }
 
-  if (ret.size > 0)
-    sort_strings (ret.argv, ret.size);
-
-  if (end_stringsbuf (&ret) == -1) {
+  if (errno != 0) {
+    perror (path);
+    send_file_end (1);          /* Cancel. */
     closedir (dir);
-    return NULL;
+    return -1;
   }
 
   if (closedir (dir) == -1) {
-    reply_with_perror ("closedir: %s", path);
-    free_stringslen (ret.argv, ret.size);
-    return NULL;
+    perror (path);
+    send_file_end (1);          /* Cancel. */
+    return -1;
   }
 
-  return ret.argv;
+  if (send_file_end (0))	/* Normal end of file. */
+    return -1;
+
+  return 0;
 }
 
 /* Because we can't chroot and run the ls command (since 'ls' won't
@@ -91,7 +114,7 @@ do_ll (const char *path)
     return NULL;
   }
 
-  r = command (&out, &err, "ls", "-la", spath, NULL);
+  r = command (&out, &err, str_ls, "-la", spath, NULL);
   free (spath);
   if (r == -1) {
     reply_with_error ("%s", err);
@@ -117,7 +140,7 @@ do_llz (const char *path)
     return NULL;
   }
 
-  r = command (&out, &err, "ls", "-laZ", spath, NULL);
+  r = command (&out, &err, str_ls, "-laZ", spath, NULL);
   free (spath);
   if (r == -1) {
     reply_with_error ("%s", err);

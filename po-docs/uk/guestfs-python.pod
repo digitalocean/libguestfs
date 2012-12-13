@@ -2,7 +2,7 @@
 
 =head1 НАЗВА
 
-guestfs-python - How to use libguestfs from Python
+guestfs-python — як використовувати libguestfs з Python
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -23,7 +23,7 @@ you also need to read L<guestfs(3)>.
 Errors from libguestfs functions are mapped into C<RuntimeException> with a
 single string argument which is the error message.
 
-=head2 MORE DOCUMENTATION
+=head2 ДОДАТКОВА ДОКУМЕНТАЦІЯ
 
 Тип:
 
@@ -42,8 +42,9 @@ single string argument which is the error message.
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfs-examples(3)>, L<guestfs-erlang(3)>,
-L<guestfs-java(3)>, L<guestfs-ocaml(3)>, L<guestfs-perl(3)>,
-L<guestfs-recipes(1)>, L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
+L<guestfs-java(3)>, L<guestfs-lua(3)>, L<guestfs-ocaml(3)>,
+L<guestfs-perl(3)>, L<guestfs-recipes(1)>, L<guestfs-ruby(3)>,
+L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 
