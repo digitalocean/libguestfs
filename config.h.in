@@ -858,6 +858,9 @@
 /* Define to 1 if you have the 'lstat' function. */
 #undef HAVE_LSTAT
 
+/* Lua library found at compile time */
+#undef HAVE_LUA
+
 /* Define to 1 if you have the 'lutimes' function. */
 #undef HAVE_LUTIMES
 

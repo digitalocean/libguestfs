@@ -982,6 +982,8 @@ LTLIBOBJS = @LTLIBOBJS@
 LTLIBPTH = @LTLIBPTH@
 LTLIBTHREAD = @LTLIBTHREAD@
 LUA = @LUA@
+LUA_CFLAGS = @LUA_CFLAGS@
+LUA_LIBS = @LUA_LIBS@
 LUA_VERSION = @LUA_VERSION@
 MAGIC_LIBS = @MAGIC_LIBS@
 MAKEINFO = @MAKEINFO@
@@ -1365,8 +1367,11 @@ EXTRA_DIST = \
 @HAVE_PYTHON_TRUE@python_DATA = guestfs.py
 @HAVE_PYTHON_TRUE@python_LTLIBRARIES = libguestfsmod.la
 @HAVE_PYTHON_TRUE@libguestfsmod_la_SOURCES = guestfs-py.c guestfs-py.h guestfs-py-byhand.c
-@HAVE_PYTHON_TRUE@libguestfsmod_la_CFLAGS = -Wall -I$(PYTHON_INCLUDEDIR) \
-@HAVE_PYTHON_TRUE@			  -I$(top_srcdir)/src -I$(top_builddir)/src
+@HAVE_PYTHON_TRUE@libguestfsmod_la_CFLAGS = \
+@HAVE_PYTHON_TRUE@	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
+@HAVE_PYTHON_TRUE@	-Wall \
+@HAVE_PYTHON_TRUE@	-I$(PYTHON_INCLUDEDIR) \
+@HAVE_PYTHON_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version -shared

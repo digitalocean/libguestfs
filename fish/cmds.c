@@ -1012,13 +1012,13 @@ struct command_entry inspect_is_multipart_cmd_entry = {
 
 struct command_entry set_attach_method_cmd_entry = {
   .name = "set-attach-method",
-  .help = "NAME\n    set-attach-method - set the attach method\n\nSYNOPSIS\n     set-attach-method attachmethod\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the back end guestfsd\n    daemon.\n\n    Possible attach methods are:\n\n    \"appliance\"\n        Launch an appliance and connect to it.\n\n        This is the ordinary method and normally the default, but see the\n        note below.\n\n    \"libvirt\"\n    \"libvirt:*URI*\"\n        Use libvirt to launch the appliance. The optional *URI* is the\n        libvirt connection URI to use (see <http://libvirt.org/uri.html>).\n\n    \"unix:*path*\"\n        Connect to the Unix domain socket *path*.\n\n        This method lets you connect to an existing daemon or (using\n        virtio-serial) to a live guest. For more information, see \"ATTACHING\n        TO RUNNING DAEMONS\" in guestfs(3).\n\n    \"appliance\" is usually the default attach method. However since\n    libguestfs ≥ 1.19.24 it has been possible to change the default in two\n    ways:\n\n    Setting LIBGUESTFS_ATTACH_METHOD\n        Users can set this environment variable to change the default.\n\n    Configuring the default attach method when building libguestfs\n        Distributors can override the default when libguestfs is built\n        (using \"./configure --with-default-attach-method=...\").\n\n        To find out if libguestfs was compiled with a different default\n        attach method, do:\n\n         guestfish get-attach-method\n\n    You can use 'attach-method' as an alias for this command.\n\n",
+  .help = "NAME\n    set-attach-method - set the attach method\n\nSYNOPSIS\n     set-attach-method attachmethod\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the back end guestfsd\n    daemon.\n\n    See \"ATTACH METHOD\" in guestfs(3).\n\n    You can use 'attach-method' as an alias for this command.\n\n",
   .run = run_set_attach_method
 };
 
 struct command_entry get_attach_method_cmd_entry = {
   .name = "get-attach-method",
-  .help = "NAME\n    get-attach-method - get the attach method\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current attach method. See \"set_attach_method\".\n\n",
+  .help = "NAME\n    get-attach-method - get the attach method\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current attach method.\n\n    See \"set_attach_method\" and \"ATTACH METHOD\" in guestfs(3).\n\n",
   .run = run_get_attach_method
 };
 

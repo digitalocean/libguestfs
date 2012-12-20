@@ -1,3 +1,182 @@
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Set fs->device field on swap devices.
+	For some reason the fs->device field was not set for swap devices.
+
+	Apparently this did not matter before (this bug has existed since at
+	least libguestfs 1.16), but in commit 6ee80b8dac we started to depend
+	on the fs->device field being non-NULL.  This resulted in segfaults
+	when inspecting any guest which had a swap device, eg:
+
+	 #0  __strcmp_sse42 () at ../sysdeps/x86_64/multiarch/strcmp-sse42.S:164
+	 #1  0x00007ffff7d740cb in parent_device_already_probed (g=0x703a70,
+	                        partition=0x6f79b0 "/dev/vda4") at inspect.c:156
+	 #2  0x00007ffff7d73e00 in guestfs__inspect_os (g=0x703a70) at inspect.c:83
+	 #3  0x00007ffff7cee11d in guestfs_inspect_os (g=0x703a70) at actions-1.c:397
+
+	This commit sets fs->device to the device name.
+
+	(Thanks Matthew Booth for first noticing this problem.)
+	(cherry picked from commit e73cf67762f7eb7b0850a74b9610c6e18b64352c)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Pass noapic on i686 kernel command line.
+	qemu 1.2 i686 TCG is buggy and hangs when emulating APIC.
+	https://bugzilla.redhat.com/show_bug.cgi?id=857026
+	(cherry picked from commit 6628cc7ef60bf61d718c76e668546970a0dfb411)
+
+	faq: Suggest 'approx' (apt proxy) to speed up Debian builds.
+	Thanks Hilko Bengen.
+	(cherry picked from commit eca01c3105fc8dc7b19883078facd0b121b6e2dc)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Skip windows.img tests if it is zero-sized.
+	If ntfs-3g is not installed, then tests/guests creates a 'windows.img'
+	file which is zero-sized.
+
+	This is problematical because other tests which use this image will
+	fail at best, or hit RHBZ#847549 (qemu/virtio-scsi bug) at worst.
+
+	Change the tests which use windows.img so they skip if 'windows.img'
+	has zero size.
+	(cherry picked from commit d1ad89520e626c7fc03fb9627b8a054abd760a61)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Add 'make print-subdirs' rule, useful for selectively running tests.
+	If you want to selectively run tests, or if the test suite fails half
+	way through, use:
+
+	  make print-subdirs
+
+	to print the subdirectories, select the ones you want to run / the
+	remaining ones, and do:
+
+	  make check SUBDIRS="..."
+	(cherry picked from commit a34072e25b8504abdb65e0e80b05cffbe6fbd46e)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	lua: tests: If $LUA is not set, set it to 'lua' instead of '/usr/bin/lua'. (cherry picked from commit 2434a86da42eb15205929b77765a0038f7d42a31)
+
+	lua: Fix misapplied patch.
+	This fixes commit 5b70120293f3702f290fba5023a7016fa5ff1beb.
+	(cherry picked from commit 3f88f88c801fa8ede4d9555338a7b10f6ccb38f5)
+
+	docs: Properly document attach methods in the guestfs(3) man page. (cherry picked from commit 034d393bb13f54c4a471aace55ab7b1f62d2ff21)
+
+	lua: Fix Lua configure test on Fedora.
+	On Debian, the lua pkg-config file is called "lua5.1.pc" (etc)
+	whereas on Fedora it's called "lua.pc" for all versions.
+	(cherry picked from commit 62f98d64a51c8076d1a233cef8feeeaa9307a4dc)
+
+2012-12-20  Hilko Bengen  <bengen@hilluzination.de>
+
+	lua: Use correct binary for tests (cherry picked from commit 5b70120293f3702f290fba5023a7016fa5ff1beb)
+
+	lua: Add ifdefs for Lua 5.2 compatibility (cherry picked from commit f07e89c5f90a1cef8e61428f30916d39ab35541b)
+
+	lua: Use pkg-config to determine Lua version, parameters (cherry picked from commit 05103cc6937b709192438eed8333aa1fbbb6af02)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Use pvcreate --force option (RHBZ#887971).
+	pvcreate fails if the partition contains a swap space signature.  Use
+	more force to stop it from complaining.
+	(cherry picked from commit 8237ac89c5b51490f3f3c6f44d35ecaa184dca05)
+
+	list-filesystems: Ignore MBR type 0x42 (Windows dynamic disks) (RHBZ#887520). (cherry picked from commit eab324bbbb6e38120f5882f7e0fadb86e322557c)
+
+	sparsify: Document that virt-sparsify doesn't work well on multi-disk VMs.
+	See: http://bugzilla.redhat.com/887826
+	(cherry picked from commit 6f02e33c6fbf2f14ba11ef07cb078ad6f6b2fea3)
+
+	launch: libvirt: Improve loop invariant from previous commit.
+	This fixes commit 11b6293d1bf7a6c0133c609e0e8067b4422dc794.
+	(cherry picked from commit 79339798b398eda0cb24f6f192af1a74c8956792)
+
+	launch: libvirt: Parse capabilities XML and fail early if qemu/KVM not supported (RHBZ#886915). (cherry picked from commit 11b6293d1bf7a6c0133c609e0e8067b4422dc794)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Fold stdout on stderr when running e2fsck.
+	User Phill Bandelow noted that virt-resize fails with an e2fsck error
+	on a host where the system clock had been accidentally set in the
+	past.
+
+	Unfortunately this was hard to diagnose because guestfsd 'ate' the
+	stdout of the e2fsck program.  I have verified by code inspection that
+	e2fsck prints messages on stdout.
+
+	Thus this changes the daemon to fold stdout and stderr together so we
+	get to see all error messages from e2fsck when it fails.
+	(cherry picked from commit c4ad2c0ce3eea1fdb6e1123e8d5fcfed2d5a0849)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Improve 'make help' output description of 'make extra-tests'. (cherry picked from commit 22fe98ad9f885dec1af04dd748d66c344e056032)
+
+	build: Better formatting for 'make help' output.
+	This is just whitespace changes.
+	(cherry picked from commit eca2dd2e8c152ffe8a20960b0973bbd6527a051d)
+
+	build: Show 'make -k check' as a possibility in 'make help' output.
+	Thanks to Cole Robinson for this suggestion.
+	(cherry picked from commit 486efb002ae6a0011401fb6839a0823615f998e3)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Change the handling of private functions, safe_malloc etc.
+	Rename guestfs_safe_malloc et al to guestfs___safe_malloc etc.
+
+	To use the private functions, code now has to define
+	-DGUESTFS_PRIVATE_FUNCTIONS=1.  This will make it easier for us in
+	future to work out which programs are using these functions and to
+	minimize both the number of programs and the functions they are
+	calling.
+
+	Note that the Perl, Python, OCaml, Ruby and Java bindings use
+	guestfs_safe_* calls.  None of the other bindings do.  This is a bug
+	(in the bindings using those functions): these functions will call the
+	out of memory callback on failure.  This function defaults to abort(),
+	and since this happens from a language binding, there is no way to
+	change this default.
+	(cherry picked from commit 62e775c350edfddeafd829ca3edcdf3a8065eb00)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	guestfs.h: Fix use of __attribute__ and GCC < 4.
+	I guess no one uses GCC 3 any more, because if they did, including
+	<guestfs.h> would not work since GUESTFS_DLL_PUBLIC would not have
+	been defined.
+
+	At the same time, ensure that __attribute__((noreturn)) is only used
+	when the compiler is GCC >= 3.1.
+	(cherry picked from commit 27f6878e2af47f798062ae1a6571cdd13c9e5a88)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Don't call guestfs_hivex_close if previous guestfs_hivex_open call failed.
+	(Thanks Skippy VonDrake)
+	(cherry picked from commit 95df8a7c0cedb0daf8f5318fbeb931f6a67e6286)
+
+2012-12-20  Matthew Booth  <mbooth@redhat.com>
+
+	daemon: Add sentinel attribute to commandf and commandrf
+	Causes a compiler warning to be emitted if you omit the trailing NULL argument.
+	(cherry picked from commit a9051eb98ea7c97899b98b6b493f0de45a05c17a)
+
+2012-12-20  Matthew Booth  <mbooth@redhat.com>
+
+	daemon: NFC Use symbolic names in commandrvf
+	Improve readability of commandrvf() by replacing bare int values for
+	file descriptors with their symbolic names STD{IN,OUT,ERR}_FILENO.
+
+	Also add PIPE_READ and PIPE_WRITE for referencing relevant ends of a pipe.
+	(cherry picked from commit e92f9666defd5db09812c1ebd59f9cc4a957475c)
+
 2012-12-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.20.0.

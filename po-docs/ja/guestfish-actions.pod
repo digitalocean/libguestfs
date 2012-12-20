@@ -1717,7 +1717,9 @@ If C<NULL> then no options are added.
 
  get-attach-method
 
-現在の接続方式を返します。  </set-attach-method> 参照。
+Return the current attach method.
+
+See L</set-attach-method> and L<guestfs(3)/ATTACH METHOD>.
 
 =head2 get-autosync
 
@@ -5507,54 +5509,7 @@ C<append> を C<NULL> に設定することは、追加のオプションが渡�
 Set the method that libguestfs uses to connect to the back end guestfsd
 daemon.
 
-Possible attach methods are:
-
-=over 4
-
-=item C<appliance>
-
-Launch an appliance and connect to it.
-
-This is the ordinary method and normally the default, but see the note
-below.
-
-=item C<libvirt>
-
-=item C<libvirt:I<URI>>
-
-アプライアンスを起動するために libvirt を使用します。オプションの I<URI> は使用する libvirt 接続 URI です
-(L<http://libvirt.org/uri.html> 参照)。
-
-=item C<unix:I<path>>
-
-Unix ドメイン・ソケット I<path> に接続します。
-
-This method lets you connect to an existing daemon or (using virtio-serial)
-to a live guest.  For more information, see L<guestfs(3)/ATTACHING TO
-RUNNING DAEMONS>.
-
-=back
-
-C<appliance> is usually the default attach method.  However since libguestfs
-E<ge> 1.19.24 it has been possible to change the default in two ways:
-
-=over 4
-
-=item Setting LIBGUESTFS_ATTACH_METHOD
-
-Users can set this environment variable to change the default.
-
-=item Configuring the default attach method when building libguestfs
-
-Distributors can override the default when libguestfs is built (using
-C<./configure --with-default-attach-method=...>).
-
-To find out if libguestfs was compiled with a different default attach
-method, do:
-
- guestfish get-attach-method
-
-=back
+See L<guestfs(3)/ATTACH METHOD>.
 
 =head2 set-autosync
 
