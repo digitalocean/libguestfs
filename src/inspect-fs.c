@@ -34,10 +34,6 @@
 
 #include <pcre.h>
 
-#ifdef HAVE_HIVEX
-#include <hivex.h>
-#endif
-
 #include "ignore-value.h"
 #include "xstrtol.h"
 
@@ -45,8 +41,6 @@
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
-
-#if defined(HAVE_HIVEX)
 
 /* Compile all the regular expressions once when the shared library is
  * loaded.  PCRE is thread safe so we're supposedly OK here if
@@ -86,8 +80,6 @@ free_regexps (void)
 }
 
 static int check_filesystem (guestfs_h *g, const char *device, int is_block, int is_partnum);
-static void check_package_format (guestfs_h *g, struct inspect_fs *fs);
-static void check_package_management (guestfs_h *g, struct inspect_fs *fs);
 static int extend_fses (guestfs_h *g);
 
 /* Find out if 'device' contains a filesystem.  If it does, add
@@ -97,16 +89,19 @@ int
 guestfs___check_for_filesystem_on (guestfs_h *g, const char *device,
                                    int is_block, int is_partnum)
 {
+  char *vfs_type;
+  int is_swap, r;
+  struct inspect_fs *fs;
+
   /* Get vfs-type in order to check if it's a Linux(?) swap device.
    * If there's an error we should ignore it, so to do that we have to
    * temporarily replace the error handler with a null one.
    */
-  guestfs_error_handler_cb old_error_cb = g->error_cb;
-  g->error_cb = NULL;
-  char *vfs_type = guestfs_vfs_type (g, device);
-  g->error_cb = old_error_cb;
+  guestfs_push_error_handler (g, NULL, NULL);
+  vfs_type = guestfs_vfs_type (g, device);
+  guestfs_pop_error_handler (g);
 
-  int is_swap = vfs_type && STREQ (vfs_type, "swap");
+  is_swap = vfs_type && STREQ (vfs_type, "swap");
 
   debug (g, "check_for_filesystem_on: %s %d %d (%s)",
          device, is_block, is_partnum,
@@ -116,13 +111,31 @@ guestfs___check_for_filesystem_on (guestfs_h *g, const char *device,
     free (vfs_type);
     if (extend_fses (g) == -1)
       return -1;
-    g->fses[g->nr_fses-1].is_swap = 1;
+    fs = &g->fses[g->nr_fses-1];
+    fs->device = safe_strdup (g, device);
     return 0;
   }
 
+  /* If it's a whole device, see if it is an install ISO. */
+  if (is_block) {
+    if (extend_fses (g) == -1)
+      return -1;
+    fs = &g->fses[g->nr_fses-1];
+
+    r = guestfs___check_installer_iso (g, fs, device);
+    if (r == -1) {              /* Fatal error. */
+      g->nr_fses--;
+      return -1;
+    }
+    if (r > 0)                  /* Found something. */
+      return 0;
+
+    /* Didn't find anything.  Fall through ... */
+    g->nr_fses--;
+  }
+
   /* Try mounting the device.  As above, ignore errors. */
-  g->error_cb = NULL;
-  int r;
+  guestfs_push_error_handler (g, NULL, NULL);
   if (vfs_type && STREQ (vfs_type, "ufs")) { /* Hack for the *BSDs. */
     /* FreeBSD fs is a variant of ufs called ufs2 ... */
     r = guestfs_mount_vfs (g, "ro,ufstype=ufs2", "ufs", device, "/");
@@ -133,7 +146,7 @@ guestfs___check_for_filesystem_on (guestfs_h *g, const char *device,
     r = guestfs_mount_ro (g, device, "/");
   }
   free (vfs_type);
-  g->error_cb = old_error_cb;
+  guestfs_pop_error_handler (g);
   if (r == -1)
     return 0;
 
@@ -163,7 +176,6 @@ check_filesystem (guestfs_h *g, const char *device,
   struct inspect_fs *fs = &g->fses[g->nr_fses-1];
 
   fs->device = safe_strdup (g, device);
-  fs->is_mountable = 1;
 
   /* Optimize some of the tests by avoiding multiple tests of the same thing. */
   int is_dir_etc = guestfs_is_dir (g, "/etc") > 0;
@@ -174,7 +186,7 @@ check_filesystem (guestfs_h *g, const char *device,
   if (guestfs_is_file (g, "/grub/menu.lst") > 0 ||
       guestfs_is_file (g, "/grub/grub.conf") > 0 ||
       guestfs_is_file (g, "/grub2/grub.cfg") > 0)
-    fs->content = FS_CONTENT_LINUX_BOOT;
+    ;
   /* FreeBSD root? */
   else if (is_dir_etc &&
            is_dir_bin &&
@@ -188,7 +200,6 @@ check_filesystem (guestfs_h *g, const char *device,
       return 0;
 
     fs->is_root = 1;
-    fs->content = FS_CONTENT_FREEBSD_ROOT;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_freebsd_root (g, fs) == -1)
       return -1;
@@ -205,7 +216,6 @@ check_filesystem (guestfs_h *g, const char *device,
       return 0;
 
     fs->is_root = 1;
-    fs->content = FS_CONTENT_NETBSD_ROOT;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_netbsd_root (g, fs) == -1)
       return -1;
@@ -215,7 +225,6 @@ check_filesystem (guestfs_h *g, const char *device,
            guestfs_is_file (g, "/hurd/hello") > 0 &&
            guestfs_is_file (g, "/hurd/null") > 0) {
     fs->is_root = 1;
-    fs->content = FS_CONTENT_HURD_ROOT;
     fs->format = OS_FORMAT_INSTALLED; /* XXX could be more specific */
     if (guestfs___check_hurd_root (g, fs) == -1)
       return -1;
@@ -227,7 +236,6 @@ check_filesystem (guestfs_h *g, const char *device,
              guestfs_is_dir (g, "/usr/bin") > 0)) &&
            guestfs_is_file (g, "/etc/fstab") > 0) {
     fs->is_root = 1;
-    fs->content = FS_CONTENT_LINUX_ROOT;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_linux_root (g, fs) == -1)
       return -1;
@@ -238,23 +246,22 @@ check_filesystem (guestfs_h *g, const char *device,
            is_dir_share &&
            guestfs_exists (g, "/local") == 0 &&
            guestfs_is_file (g, "/etc/fstab") == 0)
-    fs->content = FS_CONTENT_LINUX_USR_LOCAL;
+    ;
   /* Linux /usr? */
   else if (is_dir_etc &&
            is_dir_bin &&
            is_dir_share &&
            guestfs_exists (g, "/local") > 0 &&
            guestfs_is_file (g, "/etc/fstab") == 0)
-    fs->content = FS_CONTENT_LINUX_USR;
+    ;
   /* Linux /var? */
   else if (guestfs_is_dir (g, "/log") > 0 &&
            guestfs_is_dir (g, "/run") > 0 &&
            guestfs_is_dir (g, "/spool") > 0)
-    fs->content = FS_CONTENT_LINUX_VAR;
+    ;
   /* Windows root? */
   else if (guestfs___has_windows_systemroot (g) >= 0) {
     fs->is_root = 1;
-    fs->content = FS_CONTENT_WINDOWS_ROOT;
     fs->format = OS_FORMAT_INSTALLED;
     if (guestfs___check_windows_root (g, fs) == -1)
       return -1;
@@ -262,15 +269,14 @@ check_filesystem (guestfs_h *g, const char *device,
   /* Windows volume with installed applications (but not root)? */
   else if (guestfs___is_dir_nocase (g, "/System Volume Information") > 0 &&
            guestfs___is_dir_nocase (g, "/Program Files") > 0)
-    fs->content = FS_CONTENT_WINDOWS_VOLUME_WITH_APPS;
+    ;
   /* Windows volume (but not root)? */
   else if (guestfs___is_dir_nocase (g, "/System Volume Information") > 0)
-    fs->content = FS_CONTENT_WINDOWS_VOLUME;
+    ;
   /* FreeDOS? */
   else if (guestfs___is_dir_nocase (g, "/FDOS") > 0 &&
            guestfs___is_file_nocase (g, "/FDOS/FREEDOS.BSS") > 0) {
     fs->is_root = 1;
-    fs->content = FS_CONTENT_FREEBSD_ROOT;
     fs->format = OS_FORMAT_INSTALLED;
     fs->type = OS_TYPE_DOS;
     fs->distro = OS_DISTRO_FREEDOS;
@@ -279,8 +285,14 @@ check_filesystem (guestfs_h *g, const char *device,
      */
     fs->arch = safe_strdup (g, "i386");
   }
-  /* Install CD/disk?  Skip these checks if it's not a whole device
-   * (eg. CD) or the first partition (eg. bootable USB key).
+  /* Install CD/disk?
+   *
+   * Note that we checked (above) for an install ISO, but there are
+   * other types of install image (eg. USB keys) which that check
+   * wouldn't have picked up.
+   *
+   * Skip these checks if it's not a whole device (eg. CD) or the
+   * first partition (eg. bootable USB key).
    */
   else if ((is_block || is_partnum == 1) &&
            (guestfs_is_file (g, "/isolinux/isolinux.cfg") > 0 ||
@@ -292,7 +304,6 @@ check_filesystem (guestfs_h *g, const char *device,
             guestfs_is_file (g, "/amd64/txtsetup.sif") > 0 ||
             guestfs_is_file (g, "/freedos/freedos.ico") > 0)) {
     fs->is_root = 1;
-    fs->content = FS_CONTENT_INSTALLER;
     fs->format = OS_FORMAT_INSTALLER;
     if (guestfs___check_installer_root (g, fs) == -1)
       return -1;
@@ -301,8 +312,8 @@ check_filesystem (guestfs_h *g, const char *device,
   /* The above code should have set fs->type and fs->distro fields, so
    * we can now guess the package management system.
    */
-  check_package_format (g, fs);
-  check_package_management (g, fs);
+  guestfs___check_package_format (g, fs);
+  guestfs___check_package_management (g, fs);
 
   return 0;
 }
@@ -406,8 +417,8 @@ guestfs___parse_major_minor (guestfs_h *g, struct inspect_fs *fs)
  * simple function of the distro and major_version fields, so these
  * can never return an error.  We might be cleverer in future.
  */
-static void
-check_package_format (guestfs_h *g, struct inspect_fs *fs)
+void
+guestfs___check_package_format (guestfs_h *g, struct inspect_fs *fs)
 {
   switch (fs->distro) {
   case OS_DISTRO_FEDORA:
@@ -416,7 +427,9 @@ check_package_format (guestfs_h *g, struct inspect_fs *fs)
   case OS_DISTRO_RHEL:
   case OS_DISTRO_MAGEIA:
   case OS_DISTRO_MANDRIVA:
+  case OS_DISTRO_SUSE_BASED:
   case OS_DISTRO_OPENSUSE:
+  case OS_DISTRO_SLES:
   case OS_DISTRO_CENTOS:
   case OS_DISTRO_SCIENTIFIC_LINUX:
     fs->package_format = OS_PACKAGE_FORMAT_RPM;
@@ -451,8 +464,8 @@ check_package_format (guestfs_h *g, struct inspect_fs *fs)
   }
 }
 
-static void
-check_package_management (guestfs_h *g, struct inspect_fs *fs)
+void
+guestfs___check_package_management (guestfs_h *g, struct inspect_fs *fs)
 {
   switch (fs->distro) {
   case OS_DISTRO_FEDORA:
@@ -490,7 +503,9 @@ check_package_management (guestfs_h *g, struct inspect_fs *fs)
     fs->package_management = OS_PACKAGE_MANAGEMENT_URPMI;
     break;
 
+  case OS_DISTRO_SUSE_BASED:
   case OS_DISTRO_OPENSUSE:
+  case OS_DISTRO_SLES:
     fs->package_management = OS_PACKAGE_MANAGEMENT_ZYPPER;
     break;
 
@@ -550,7 +565,7 @@ guestfs___first_line_of_file (guestfs_h *g, const char *filename)
   return ret;
 }
 
-/* Get the first matching line (using guestfs_egrep{,i}) of a small file,
+/* Get the first matching line (using egrep [-i]) of a small file,
  * without any trailing newline character.
  *
  * Returns: 1 = returned a line (in *ret)
@@ -564,8 +579,9 @@ guestfs___first_egrep_of_file (guestfs_h *g, const char *filename,
   char **lines;
   int64_t size;
   size_t i;
+  struct guestfs_grep_opts_argv optargs;
 
-  /* Don't trust guestfs_egrep not to break with very large files.
+  /* Don't trust guestfs_grep not to break with very large files.
    * Check the file size is something reasonable first.
    */
   size = guestfs_filesize (g, filename);
@@ -578,7 +594,13 @@ guestfs___first_egrep_of_file (guestfs_h *g, const char *filename,
     return -1;
   }
 
-  lines = (!iflag ? guestfs_egrep : guestfs_egrepi) (g, eregex, filename);
+  optargs.bitmask = GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
+  optargs.extended = 1;
+  if (iflag) {
+    optargs.bitmask |= GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
+    optargs.insensitive = 1;
+  }
+  lines = guestfs_grep_opts_argv (g, eregex, filename, &optargs);
   if (lines == NULL)
     return -1;
   if (lines[0] == NULL) {
@@ -595,5 +617,3 @@ guestfs___first_egrep_of_file (guestfs_h *g, const char *filename,
 
   return 1;
 }
-
-#endif /* defined(HAVE_HIVEX) */

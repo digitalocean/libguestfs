@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsInternalTest</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsHivexValue.html" title="GuestfsHivexValue">
+<link rel="next" href="GuestfsInternalTestOnlyOptargs.html" title="GuestfsInternalTestOnlyOptargs">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsHivexValue.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsInternalTestOnlyOptargs.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsInternalTest.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsInternalTest.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsInternalTest.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsInternalTest.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsInternalTest"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsInternalTest.top_of_page"></a>GuestfsInternalTest</span></h2>
+<p>GuestfsInternalTest — An object encapsulating optional arguments for guestfs_session_internal_test</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsInternalTest.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsInternalTest.html#GuestfsInternalTest-struct" title="struct GuestfsInternalTest">GuestfsInternalTest</a>;
+struct              <a class="link" href="GuestfsInternalTest.html#GuestfsInternalTestClass" title="struct GuestfsInternalTestClass">GuestfsInternalTestClass</a>;
+<a class="link" href="GuestfsInternalTest.html" title="GuestfsInternalTest"><span class="returnvalue">GuestfsInternalTest</span></a> * <a class="link" href="GuestfsInternalTest.html#guestfs-internal-test-new" title="guestfs_internal_test_new ()">guestfs_internal_test_new</a>         (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsInternalTest.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsInternalTest
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsInternalTest.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsInternalTest.html#GuestfsInternalTest--obool" title='The "obool" property'>obool</a>"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsInternalTest.html#GuestfsInternalTest--oint" title='The "oint" property'>oint</a>"                     <span class="type">gint</span>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsInternalTest.html#GuestfsInternalTest--oint64" title='The "oint64" property'>oint64</a>"                   <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsInternalTest.html#GuestfsInternalTest--ostring" title='The "ostring" property'>ostring</a>"                  <span class="type">gchar</span>*                : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsInternalTest.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_internal_test
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsInternalTest.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsInternalTest-struct"></a><h3>struct GuestfsInternalTest</h3>
+<pre class="programlisting">struct GuestfsInternalTest;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_internal_test.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsInternalTestClass"></a><h3>struct GuestfsInternalTestClass</h3>
+<pre class="programlisting">struct GuestfsInternalTestClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsInternalTest.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsInternalTestClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsInternalTestClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-internal-test-new"></a><h3>guestfs_internal_test_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsInternalTest.html" title="GuestfsInternalTest"><span class="returnvalue">GuestfsInternalTest</span></a> * guestfs_internal_test_new         (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsInternalTest object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsInternalTest object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsInternalTest.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsInternalTest--obool"></a><h3>The <code class="literal">"obool"</code> property</h3>
+<pre class="programlisting">  "obool"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsInternalTest--oint"></a><h3>The <code class="literal">"oint"</code> property</h3>
+<pre class="programlisting">  "oint"                     <span class="type">gint</span>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsInternalTest--oint64"></a><h3>The <code class="literal">"oint64"</code> property</h3>
+<pre class="programlisting">  "oint64"                   <span class="type">gint64</span>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsInternalTest--ostring"></a><h3>The <code class="literal">"ostring"</code> property</h3>
+<pre class="programlisting">  "ostring"                  <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

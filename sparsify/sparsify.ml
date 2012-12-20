@@ -17,6 +17,7 @@
  *)
 
 open Unix
+open Scanf
 open Printf
 
 open Sparsify_gettext.Gettext
@@ -107,7 +108,7 @@ read the man page virt-sparsify(1).
     printf "linux-swap\n";
     printf "zero\n";
     let g = new G.guestfs () in
-    g#add_drive_opts "/dev/null";
+    g#add_drive "/dev/null";
     g#launch ();
     if feature_available g [| "ntfsprogs"; "ntfs3g" |] then
       printf "ntfs\n";
@@ -152,6 +153,64 @@ read the man page virt-sparsify(1).
     debug_gc, format, ignores, machine_readable,
     option, quiet, verbose, trace, zeroes
 
+(* Try to determine the version of the 'qemu-img' program.
+ * All known versions of qemu-img display the following first
+ * line when you run 'qemu-img --help':
+ *
+ *   "qemu-img version x.y.z, Copyright [...]"
+ *
+ * Parse out 'x.y'.
+ *)
+let qemu_img_version =
+  let cmd = "qemu-img --help" in
+  let chan = open_process_in cmd in
+  let line = input_line chan in
+  let stat = close_process_in chan in
+  (match stat with
+  | WEXITED _ -> ()
+  | WSIGNALED i ->
+    error (f_"external command '%s' killed by signal %d") cmd i
+  | WSTOPPED i ->
+    error (f_"external command '%s' stopped by signal %d") cmd i
+  );
+
+  try
+    sscanf line "qemu-img version %d.%d" (
+      fun major minor ->
+        let minor = if minor > 9 then 9 else minor in
+        float major +. float minor /. 10.
+    )
+  with
+    Scan_failure msg ->
+      eprintf (f_"warning: failed to read qemu-img version\n  line: %S\n  message: %s\n%!")
+        line msg;
+      0.9
+
+let () =
+  if not quiet then
+    printf (f_"qemu-img version %g\n%!") qemu_img_version
+
+(* What should the output format be?  If the user specified an
+ * input format, use that, else detect it from the source image.
+ *)
+let output_format =
+  match convert with
+  | Some fmt -> fmt             (* user specified output conversion *)
+  | None ->
+    match format with
+    | Some fmt -> fmt           (* user specified input format, use that *)
+    | None ->
+      (* Don't know, so we must autodetect. *)
+      match (new G.guestfs ())#disk_format indisk  with
+      | "unknown" ->
+        error (f_"cannot detect input disk format; use the --format parameter")
+      | fmt -> fmt
+
+(* Compression is not supported by raw output (RHBZ#852194). *)
+let () =
+  if output_format = "raw" && compress then
+    error (f_"--compress cannot be used for raw output.  Remove this option or use --convert qcow2.")
+
 let () =
   if not quiet then
     printf (f_"Create overlay file to protect source disk ...\n%!")
@@ -176,7 +235,9 @@ let overlaydisk =
         match format with
         | None -> []
         | Some fmt -> [sprintf "backing_fmt=%s" fmt] in
-      backing_file_option @ backing_fmt_option in
+      let version3 =
+        if qemu_img_version >= 1.1 then ["compat=1.1"] else [] in
+      backing_file_option @ backing_fmt_option @ version3 in
     sprintf "qemu-img create -f qcow2 -o %s %s > /dev/null"
       (Filename.quote (String.concat "," options)) (Filename.quote tmp) in
   if verbose then
@@ -197,7 +258,7 @@ let g =
   if verbose then g#set_verbose true;
 
   (* Note that the temporary overlay disk is always qcow2 format. *)
-  g#add_drive_opts ~format:"qcow2" ~readonly:false overlaydisk;
+  g#add_drive ~format:"qcow2" ~readonly:false overlaydisk;
 
   if not quiet then Progress.set_up_progress_bar ~machine_readable g;
   g#launch ();
@@ -216,8 +277,8 @@ let () =
   let filesystems = List.sort compare filesystems in
 
   let is_ignored fs =
-    let fs = canonicalize fs in
-    List.exists (fun fs' -> fs = canonicalize fs') ignores
+    let fs = g#canonical_device_name fs in
+    List.exists (fun fs' -> fs = g#canonical_device_name fs') ignores
   in
 
   List.iter (
@@ -230,7 +291,7 @@ let () =
           g#zero_device fs
         ) else (
           let mounted =
-            try g#mount_options "" fs "/"; true
+            try g#mount fs "/"; true
             with _ -> false in
 
           if mounted then (
@@ -299,37 +360,6 @@ let () =
 let () =
   g#shutdown ();
   g#close ()
-
-(* What should the output format be?  If the user specified an
- * input format, use that, else detect it from the source image.
- *)
-let output_format =
-  match convert with
-  | Some fmt -> fmt             (* user specified output conversion *)
-  | None ->
-    match format with
-    | Some fmt -> fmt           (* user specified input format, use that *)
-    | None ->
-      (* Don't know, so we must autodetect. *)
-      let cmd = sprintf "file -bsL %s" (Filename.quote indisk) in
-      let chan = open_process_in cmd in
-      let line = input_line chan in
-      let stat = close_process_in chan in
-      (match stat with
-      | WEXITED 0 -> ()
-      | WEXITED _ ->
-        error (f_"external command failed: %s") cmd
-      | WSIGNALED i ->
-        error (f_"external command '%s' killed by signal %d") cmd i
-      | WSTOPPED i ->
-        error (f_"external command '%s' stopped by signal %d") cmd i
-      );
-      if string_prefix line "QEMU QCOW Image (v2)" then
-        "qcow2"
-      else if string_find line "VirtualBox" >= 0 then
-        "vdi"
-      else
-        "raw" (* XXX guess *)
 
 (* Now run qemu-img convert which copies the overlay to the
  * destination and automatically does sparsification.

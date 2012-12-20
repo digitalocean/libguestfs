@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -66,29 +66,29 @@ guestfs_add_domain_set_property(GObject *object, guint property_id, const GValue
   switch (property_id) {
     case PROP_GUESTFS_ADD_DOMAIN_LIBVIRTURI:
       g_free(priv->libvirturi);
-      priv->libvirturi = g_value_dup_string(value);
+      priv->libvirturi = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DOMAIN_READONLY:
-      priv->readonly = g_value_get_enum(value);
+      priv->readonly = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_ADD_DOMAIN_IFACE:
       g_free(priv->iface);
-      priv->iface = g_value_dup_string(value);
+      priv->iface = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_ADD_DOMAIN_LIVE:
-      priv->live = g_value_get_enum(value);
+      priv->live = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_ADD_DOMAIN_ALLOWUUID:
-      priv->allowuuid = g_value_get_enum(value);
+      priv->allowuuid = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_ADD_DOMAIN_READONLYDISK:
       g_free(priv->readonlydisk);
-      priv->readonlydisk = g_value_dup_string(value);
+      priv->readonlydisk = g_value_dup_string (value);
       break;
 
     default:

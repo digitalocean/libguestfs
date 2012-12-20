@@ -1,5 +1,10 @@
 =encoding utf8
 
+=item B<--firstboot> firstboot (see C<firstboot> below)
+
+Run script(s) once next time the guest boots.  You can supply the
+I<--firstboot> option as many times as needed.
+
 =item B<--hostname> hostname (以下の C<hostname> 参照)
 
 ホスト名を変更します。指定されないと、デフォルトで C<localhost.localdomain> になります。
@@ -13,7 +18,7 @@ be the guest's root directory.
 B<Note:> If the script is not on the $PATH, then you must give the full
 absolute path to the script.
 
-=item B<--scriptdir> scriptdir (see C<script> below)
+=item B<--scriptdir> scriptdir (以下の C<script> 参照)
 
 The mount point (an empty directory on the host) used when the C<script>
 operation is enabled and one or more scripts are specified using I<--script>

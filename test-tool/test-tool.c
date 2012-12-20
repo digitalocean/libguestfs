@@ -104,31 +104,6 @@ main (int argc, char *argv[])
   struct guestfs_version *vers;
   char *p;
 
-  /* Everyone ignores the documentation, so ... */
-  printf ("     ************************************************************\n"
-          "     *                    IMPORTANT NOTICE\n"
-          "     *\n"
-          "     * When reporting bugs, include the COMPLETE, UNEDITED\n"
-          "     * output below in your bug report.\n"
-          "     *\n"
-          "     ************************************************************\n"
-          );
-  sleep (3);
-
-  /* Create the handle. */
-  g = guestfs_create ();
-  if (g == NULL) {
-    fprintf (stderr,
-             _("libguestfs-test-tool: failed to create libguestfs handle\n"));
-    exit (EXIT_FAILURE);
-  }
-  guestfs_set_verbose (g, 1);
-  vers = guestfs_version (g);
-  if (vers == NULL) {
-    fprintf (stderr, _("libguestfs-test-tool: guestfs_version failed\n"));
-    exit (EXIT_FAILURE);
-  }
-
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
@@ -157,10 +132,22 @@ main (int argc, char *argv[])
       break;
 
     case 'V':
+      g = guestfs_create ();
+      if (g == NULL) {
+        fprintf (stderr,
+                 _("libguestfs-test-tool: failed to create libguestfs handle\n"));
+        exit (EXIT_FAILURE);
+      }
+      vers = guestfs_version (g);
+      if (vers == NULL) {
+        fprintf (stderr, _("libguestfs-test-tool: guestfs_version failed\n"));
+        exit (EXIT_FAILURE);
+      }
       printf ("%s %"PRIi64".%"PRIi64".%"PRIi64"%s\n",
               "libguestfs-test-tool",
               vers->major, vers->minor, vers->release, vers->extra);
-      guestfs_set_verbose (g, 0);
+      guestfs_free_version (vers);
+      guestfs_close (g);
       exit (EXIT_SUCCESS);
 
     case '?':
@@ -174,6 +161,32 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
   }
+
+  /* Everyone ignores the documentation, so ... */
+  printf ("     ************************************************************\n"
+          "     *                    IMPORTANT NOTICE\n"
+          "     *\n"
+          "     * When reporting bugs, include the COMPLETE, UNEDITED\n"
+          "     * output below in your bug report.\n"
+          "     *\n"
+          "     ************************************************************\n"
+          );
+  sleep (3);
+
+  /* Create the handle. */
+  g = guestfs_create_flags (GUESTFS_CREATE_NO_ENVIRONMENT);
+  if (g == NULL) {
+    fprintf (stderr,
+             _("libguestfs-test-tool: failed to create libguestfs handle\n"));
+    exit (EXIT_FAILURE);
+  }
+  if (guestfs_parse_environment (g) == -1) {
+    fprintf (stderr,
+             _("libguestfs-test-tool: failed parsing environment variables.\n"
+               "Check earlier messages, and the output of the 'printenv' command.\n"));
+    exit (EXIT_FAILURE);
+  }
+  guestfs_set_verbose (g, 1);
 
   make_files ();
 
@@ -210,6 +223,11 @@ main (int argc, char *argv[])
   }
 
   /* Print any version info etc. */
+  vers = guestfs_version (g);
+  if (vers == NULL) {
+    fprintf (stderr, _("libguestfs-test-tool: guestfs_version failed\n"));
+    exit (EXIT_FAILURE);
+  }
   printf ("library version: %"PRIi64".%"PRIi64".%"PRIi64"%s\n",
           vers->major, vers->minor, vers->release, vers->extra);
   guestfs_free_version (vers);
@@ -219,6 +237,9 @@ main (int argc, char *argv[])
   printf ("guestfs_get_attach_method: %s\n", p ? : "(null)");
   free (p);
   printf ("guestfs_get_autosync: %d\n", guestfs_get_autosync (g));
+  p = guestfs_get_cachedir (g);
+  printf ("guestfs_get_cachedir: %s\n", p ? : "(null)");
+  free (p);
   printf ("guestfs_get_direct: %d\n", guestfs_get_direct (g));
   printf ("guestfs_get_memsize: %d\n", guestfs_get_memsize (g));
   printf ("guestfs_get_network: %d\n", guestfs_get_network (g));
@@ -228,6 +249,9 @@ main (int argc, char *argv[])
   printf ("guestfs_get_recovery_proc: %d\n", guestfs_get_recovery_proc (g));
   printf ("guestfs_get_selinux: %d\n", guestfs_get_selinux (g));
   printf ("guestfs_get_smp: %d\n", guestfs_get_smp (g));
+  p = guestfs_get_tmpdir (g);
+  printf ("guestfs_get_tmpdir: %s\n", p ? : "(null)");
+  free (p);
   printf ("guestfs_get_trace: %d\n", guestfs_get_trace (g));
   printf ("guestfs_get_verbose: %d\n", guestfs_get_verbose (g));
 
@@ -263,7 +287,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  if (guestfs_mount_options (g, "", "/dev/sda1", "/") == -1) {
+  if (guestfs_mount (g, "/dev/sda1", "/") == -1) {
     fprintf (stderr,
              _("libguestfs-test-tool: failed to mount /dev/sda1 on /\n"));
     exit (EXIT_FAILURE);
@@ -304,7 +328,7 @@ cleanup_wrapper (void)
 static void
 set_qemu (const char *path, int use_wrapper)
 {
-  char buffer[PATH_MAX];
+  char *buffer;
   struct stat statbuf;
   int fd;
   FILE *fp;
@@ -329,14 +353,19 @@ set_qemu (const char *path, int use_wrapper)
   }
 
   /* This should be a source directory, so check it. */
-  snprintf (buffer, sizeof buffer, "%s/pc-bios", path);
+  if (asprintf (&buffer, "%s/pc-bios", path) == -1) {
+    perror ("asprintf");
+    exit (EXIT_FAILURE);
+  }
   if (stat (buffer, &statbuf) == -1 ||
       !S_ISDIR (statbuf.st_mode)) {
     fprintf (stderr,
              _("%s: does not look like a qemu source directory\n"),
              path);
+    free (buffer);
     exit (EXIT_FAILURE);
   }
+  free (buffer);
 
   /* Make a wrapper script. */
   fd = mkstemp (qemuwrapper);

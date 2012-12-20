@@ -28,6 +28,8 @@
 #include "daemon.h"
 #include "actions.h"
 
+GUESTFSD_EXT_CMD(str_ln, ln);
+
 char *
 do_readlink (const char *path)
 {
@@ -53,7 +55,7 @@ do_readlink (const char *path)
 }
 
 char **
-do_readlinklist (const char *path, char *const *names)
+do_internal_readlinklist (const char *path, char *const *names)
 {
   int fd_cwd;
   size_t i;
@@ -132,11 +134,11 @@ _link (const char *flag, int symbolic, const char *target, const char *linkname)
 
   if (flag)
     r = command (NULL, &err,
-                 "ln", flag, "--", /* target could begin with '-' */
+                 str_ln, flag, "--", /* target could begin with '-' */
                  buf_target ? : target, buf_linkname, NULL);
   else
     r = command (NULL, &err,
-                 "ln", "--",
+                 str_ln, "--",
                  buf_target ? : target, buf_linkname, NULL);
   free (buf_linkname);
   free (buf_target);

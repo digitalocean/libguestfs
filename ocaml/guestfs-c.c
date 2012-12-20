@@ -48,7 +48,7 @@ static void event_callback_wrapper (guestfs_h *g, void *data, uint64_t event, in
 #endif
 
 /* These prototypes are solely to quiet gcc warning.  */
-value ocaml_guestfs_create (value unitv);
+value ocaml_guestfs_create (value environmentv, value close_on_exitv, value unitv);
 value ocaml_guestfs_close (value gv);
 value ocaml_guestfs_set_event_callback (value gv, value closure, value events);
 value ocaml_guestfs_delete_event_callback (value gv, value eh);
@@ -141,14 +141,23 @@ ocaml_guestfs_raise_closed (const char *func)
 
 /* Guestfs.create */
 value
-ocaml_guestfs_create (value unitv)
+ocaml_guestfs_create (value environmentv, value close_on_exitv, value unitv)
 {
-  CAMLparam1 (unitv);
+  CAMLparam3 (environmentv, close_on_exitv, unitv);
   CAMLlocal1 (gv);
+  unsigned flags = 0;
   guestfs_h *g;
   value *v;
 
-  g = guestfs_create ();
+  if (environmentv != Val_int (0) &&
+      !Bool_val (Field (environmentv, 0)))
+    flags |= GUESTFS_CREATE_NO_ENVIRONMENT;
+
+  if (close_on_exitv != Val_int (0) &&
+      !Bool_val (Field (close_on_exitv, 0)))
+    flags |= GUESTFS_CREATE_NO_CLOSE_ON_EXIT;
+
+  g = guestfs_create_flags (flags);
   if (g == NULL)
     caml_failwith ("failed to create guestfs handle");
 
@@ -159,7 +168,7 @@ ocaml_guestfs_create (value unitv)
   /* Store the OCaml handle into the C handle.  This is only so we can
    * map the C handle to the OCaml handle in event_callback_wrapper.
    */
-  v = guestfs_safe_malloc (g, sizeof *v);
+  v = guestfs___safe_malloc (g, sizeof *v);
   *v = gv;
   /* XXX This global root is generational, but we cannot rely on every
    * user having the OCaml 3.11 version which supports this.
@@ -192,9 +201,9 @@ ocaml_guestfs_strings_val (guestfs_h *g, value sv)
   char **r;
   size_t i;
 
-  r = guestfs_safe_malloc (g, sizeof (char *) * (Wosize_val (sv) + 1));
+  r = guestfs___safe_malloc (g, sizeof (char *) * (Wosize_val (sv) + 1));
   for (i = 0; i < Wosize_val (sv); ++i)
-    r[i] = guestfs_safe_strdup (g, String_val (Field (sv, i)));
+    r[i] = guestfs___safe_strdup (g, String_val (Field (sv, i)));
   r[i] = NULL;
 
   CAMLreturnT (char **, r);
@@ -237,7 +246,7 @@ ocaml_guestfs_set_event_callback (value gv, value closure, value events)
 
   event_bitmask = event_bitmask_of_event_list (events);
 
-  value *root = guestfs_safe_malloc (g, sizeof *root);
+  value *root = guestfs___safe_malloc (g, sizeof *root);
   *root = closure;
 
   eh = guestfs_set_event_callback (g, event_callback_wrapper,
@@ -300,7 +309,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (value *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (value *) * (*len_rtn));
 
   i = 0;
   root = guestfs_first_private (g, &key);

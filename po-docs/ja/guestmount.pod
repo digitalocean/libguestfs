@@ -71,7 +71,7 @@ If you want to debug the program, we recommend:
 
 =head1 注記
 
-=head2 Other users cannot see the filesystem by default
+=head2 他のユーザーは標準でファイルシステムを参照できません。
 
 If you mount a filesystem as one user (eg. root), then other users will not
 be able to see it by default.  The fix is to add the FUSE C<allow_other>
@@ -88,7 +88,7 @@ Debian and derivatives.
 On other distros, no special group is required.  It is not necessary on
 Fedora or Red Hat Enterprise Linux.
 
-=head2 fusermount error: "Device or resource busy"
+=head2 fusermount エラー: "デバイスまたはリソースがビジーです"
 
 You can see this error when another process on the system jumps into the
 mountpoint you have just created, holding it open and preventing you from
@@ -240,8 +240,8 @@ machine.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
+を開いているユーザーからパスフレーズを読み込もうとします。
 
 =item B<--live>
 
@@ -314,7 +314,7 @@ the chosen values.
 
 =item B<--pid-file filename>
 
-Write the PID of the guestmount worker process to C<filename>.
+C<filename> に guestmount ワーカープロセスの PID を書き込みます。
 
 =item B<-r>
 

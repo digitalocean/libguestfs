@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsXfsRepair</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsHivexOpen.html" title="GuestfsHivexOpen">
+<link rel="next" href="GuestfsMke2fs.html" title="GuestfsMke2fs">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsHivexOpen.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsMke2fs.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsXfsRepair.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsXfsRepair.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsXfsRepair.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsXfsRepair.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsXfsRepair"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsXfsRepair.top_of_page"></a>GuestfsXfsRepair</span></h2>
+<p>GuestfsXfsRepair — An object encapsulating optional arguments for guestfs_session_xfs_repair</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsXfsRepair.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair-struct" title="struct GuestfsXfsRepair">GuestfsXfsRepair</a>;
+struct              <a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepairClass" title="struct GuestfsXfsRepairClass">GuestfsXfsRepairClass</a>;
+<a class="link" href="GuestfsXfsRepair.html" title="GuestfsXfsRepair"><span class="returnvalue">GuestfsXfsRepair</span></a> *  <a class="link" href="GuestfsXfsRepair.html#guestfs-xfs-repair-new" title="guestfs_xfs_repair_new ()">guestfs_xfs_repair_new</a>              (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsRepair.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsXfsRepair
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsRepair.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--agstride" title='The "agstride" property'>agstride</a>"                 <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--bhashsize" title='The "bhashsize" property'>bhashsize</a>"                <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--forcegeometry" title='The "forcegeometry" property'>forcegeometry</a>"            <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--forcelogzero" title='The "forcelogzero" property'>forcelogzero</a>"             <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--ihashsize" title='The "ihashsize" property'>ihashsize</a>"                <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--logdev" title='The "logdev" property'>logdev</a>"                   <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--maxmem" title='The "maxmem" property'>maxmem</a>"                   <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--nomodify" title='The "nomodify" property'>nomodify</a>"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--noprefetch" title='The "noprefetch" property'>noprefetch</a>"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsXfsRepair.html#GuestfsXfsRepair--rtdev" title='The "rtdev" property'>rtdev</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsRepair.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_xfs_repair
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsRepair.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsXfsRepair-struct"></a><h3>struct GuestfsXfsRepair</h3>
+<pre class="programlisting">struct GuestfsXfsRepair;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_xfs_repair.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepairClass"></a><h3>struct GuestfsXfsRepairClass</h3>
+<pre class="programlisting">struct GuestfsXfsRepairClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsXfsRepair.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsXfsRepairClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsXfsRepairClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-xfs-repair-new"></a><h3>guestfs_xfs_repair_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsXfsRepair.html" title="GuestfsXfsRepair"><span class="returnvalue">GuestfsXfsRepair</span></a> *  guestfs_xfs_repair_new              (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsXfsRepair object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsXfsRepair object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsXfsRepair.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--agstride"></a><h3>The <code class="literal">"agstride"</code> property</h3>
+<pre class="programlisting">  "agstride"                 <span class="type">gint64</span>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--bhashsize"></a><h3>The <code class="literal">"bhashsize"</code> property</h3>
+<pre class="programlisting">  "bhashsize"                <span class="type">gint64</span>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--forcegeometry"></a><h3>The <code class="literal">"forcegeometry"</code> property</h3>
+<pre class="programlisting">  "forcegeometry"            <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--forcelogzero"></a><h3>The <code class="literal">"forcelogzero"</code> property</h3>
+<pre class="programlisting">  "forcelogzero"             <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--ihashsize"></a><h3>The <code class="literal">"ihashsize"</code> property</h3>
+<pre class="programlisting">  "ihashsize"                <span class="type">gint64</span>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--logdev"></a><h3>The <code class="literal">"logdev"</code> property</h3>
+<pre class="programlisting">  "logdev"                   <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--maxmem"></a><h3>The <code class="literal">"maxmem"</code> property</h3>
+<pre class="programlisting">  "maxmem"                   <span class="type">gint64</span>                : Read / Write / Construct</pre>
+<p>
+A 64-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--nomodify"></a><h3>The <code class="literal">"nomodify"</code> property</h3>
+<pre class="programlisting">  "nomodify"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--noprefetch"></a><h3>The <code class="literal">"noprefetch"</code> property</h3>
+<pre class="programlisting">  "noprefetch"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsXfsRepair--rtdev"></a><h3>The <code class="literal">"rtdev"</code> property</h3>
+<pre class="programlisting">  "rtdev"                    <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

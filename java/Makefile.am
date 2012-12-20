@@ -1,5 +1,5 @@
 # libguestfs Java bindings
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -77,9 +77,10 @@ libguestfs_jni_la_SOURCES = \
 libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
 libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
 libguestfs_jni_la_CFLAGS = \
-  $(WARN_CFLAGS) $(WERROR_CFLAGS) \
-  -I$(top_srcdir)/src -I$(top_builddir)/src \
-  $(JNI_CFLAGS)
+	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	$(JNI_CFLAGS)
 
 BUILT_SOURCES = com_redhat_et_libguestfs_GuestFS.h
 
@@ -110,11 +111,7 @@ if ENABLE_APPLIANCE
 TESTS += run-java-tests
 endif ENABLE_APPLIANCE
 
-TESTS_ENVIRONMENT = \
-	JAVA_EXE=$(JAVA_EXE) \
-	CLASSPATH=.:t:libguestfs-$(VERSION).jar \
-	LIBGUESTFS_PATH=$(top_builddir)/appliance \
-	TMPDIR=$(top_builddir)
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 noinst_DATA = Bindtests.class $(java_tests:.java=.class)
 

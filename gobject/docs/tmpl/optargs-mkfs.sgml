@@ -1,0 +1,66 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMkfs
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMkfs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMkfs:blocksize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfs:features ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfs:inode ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMkfs:sectorsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMkfsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mkfs_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

@@ -1,6 +1,6 @@
 {- libguestfs generated file
    WARNING: THIS FILE IS GENERATED FROM:
-     generator/generator_*.ml
+     generator/ *.ml
    ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
   
    Copyright (C) 2009-2012 Red Hat Inc.
@@ -25,17 +25,21 @@ import qualified Guestfs
 
 main = do
   g <- Guestfs.create
-  Guestfs.test0 g "abc" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" Nothing [] False 0 0 "123" "456" "abc\0abc"
-  Guestfs.test0 g "" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
-  Guestfs.test0 g "" (Just "") [] False 0 0 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 0 0 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1","2"] False 0 0 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] True 0 0 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False (-1) (-1) "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False (-2) (-2) "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 1 1 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 2 2 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 4095 4095 "123" "456" "abc\0abc"
-  Guestfs.test0 g "abc" (Just "def") ["1"] False 0 0 "" "" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" Nothing [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "" (Just "") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1","2"] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] True 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] False (-1) (-1) "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] False (-2) (-2) "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] False 1 1 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] False 2 2 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] False 4095 9223372036854775807 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") ["1"] False 0 (-9223372036854775808) "" "" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
+  Guestfs.internal_test g "abc" (Just "def") [] False 0 0 "123" "456" "abc\0abc"
   putStrLn "EOF"

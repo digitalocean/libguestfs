@@ -1,33 +1,69 @@
 =encoding utf8
 
+=head2 acl-delete-def-file
+
+ acl-delete-def-file dir
+
+This function deletes the default POSIX Access Control List (ACL)  attached
+to directory C<dir>.
+
+=head2 acl-get-file
+
+ acl-get-file path acltype
+
+This function returns the POSIX Access Control List (ACL) attached to
+C<path>.  The ACL is returned in "long text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Return the ordinary (access) ACL for any file, directory or other filesystem
+object.
+
+=item C<default>
+
+Return the default ACL.  Normally this only makes sense if C<path> is a
+directory.
+
+=back
+
+=head2 acl-set-file
+
+ acl-set-file path acltype acl
+
+This function sets the POSIX Access Control List (ACL) attached to C<path>.
+The C<acl> parameter is the new ACL in either "long text form" or "short
+text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Set the ordinary (access) ACL for any file, directory or other filesystem
+object.
+
+=item C<default>
+
+Set the default ACL.  Normally this only makes sense if C<path> is a
+directory.
+
+=back
+
 =head2 add-cdrom
 
  add-cdrom filename
 
 この関数は仮想 CD-ROM ディスクイメージを仮想マシンに追加します。
 
-これは QEMU パラメーター I<-cdrom filename> と同等です。
+B<Do not use this function!> ISO files are just ordinary read-only disk
+images.  Use L</add-drive-ro> instead.
 
-注:
-
-=over 4
-
-=item *
-
-This call checks for the existence of C<filename>.  This stops you from
-specifying other types of drive which are supported by qemu such as C<nbd:>
-and C<http:> URLs.  To specify those, use the general L</config> call
-instead.
-
-=item *
-
-If you just want to add an ISO file (often you use this as an efficient way
-to transfer large files into the guest), then you should probably use
-L</add-drive-ro> instead.
-
-=back
-
-I<This function is deprecated.> In new code, use the L</add-drive-opts> call
+I<This function is deprecated.> In new code, use the L</add-drive> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -124,29 +160,23 @@ ARGUMENTS>.
 
 =head2 add-drive
 
- add-drive filename
-
-This function is the equivalent of calling L</add-drive-opts> with no
-optional parameters, so the disk is added writable, with the format being
-detected automatically.
-
-Automatic detection of the format opens you up to a potential security hole
-when dealing with untrusted raw-format images.  See CVE-2010-3851 and
-RHBZ#642934.  Specifying the format closes this security hole.  Therefore
-you should think about replacing calls to this function with calls to
-L</add-drive-opts>, and specifying the format.
+=head2 add
 
 =head2 add-drive-opts
 
-=head2 add
-
- add-drive-opts filename [readonly:true|false] [format:..] [iface:..] [name:..]
+ add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..]
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
 
-The first time you call this function, the disk appears as C</dev/sda>, the
-second time as C</dev/sdb>, and so on.
+When this function is called before L</launch> (the usual case) then the
+first time you call this function, the disk appears in the API as
+C</dev/sda>, the second time as C</dev/sdb>, and so on.
+
+In libguestfs E<ge> 1.20 you can also call this function after launch (with
+some restrictions).  This is called "hotplugging".  When hotplugging, you
+must specify a C<label> so that the new disk gets a predictable name.  For
+more information see L<guestfs(3)/HOTPLUGGING>.
 
 You don't necessarily need to be root when using libguestfs.  However you
 obviously do need sufficient permissions to access the filename for whatever
@@ -188,6 +218,15 @@ L</add-drive-with-if> call (q.v.)
 The name the drive had in the original guest, e.g. C</dev/sdb>.  This is
 used as a hint to the guest inspection process if it is available.
 
+=item C<label>
+
+Give the disk a label.  The label should be a unique, short string using
+I<only> ASCII characters C<[a-zA-Z]>.  As well as its usual name in the API
+(such as C</dev/sda>), the drive will also be named
+C</dev/disk/guestfs/I<label>>.
+
+L<guestfs(3)/ディスクラベル>を参照してください。
+
 =back
 
 This command has one or more optional arguments.  See L</OPTIONAL
@@ -210,7 +249,7 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add-drive-opts> call
+I<This function is deprecated.> In new code, use the L</add-drive> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -224,7 +263,7 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add-drive-opts> call
+I<This function is deprecated.> In new code, use the L</add-drive> call
 instead.
 
 Deprecated functions will not be removed from the API, but the fact that
@@ -319,11 +358,11 @@ Make save a no-op, just record what would have been changed.
 
 =item C<AUG_NO_LOAD> = 32
 
-Do not load the tree in L</aug-init>.
+L</aug-init> にあるツリーを読み込みません。
 
 =back
 
-To close the handle, you can call L</aug-close>.
+ハンドルを閉じるには、L</aug-close> を呼び出す必要があります。
 
 Augeas に関する詳細は L<http://augeas.net/> を参照してください。
 
@@ -448,6 +487,8 @@ libguestfs all you could do would be to speculatively execute a command to
 find out if the daemon implemented it.  See also L</version>.
 
 =back
+
+L</filesystem-available> 参照。
 
 =head2 available-all-groups
 
@@ -605,15 +646,15 @@ C<device> という名前のブロックデバイスを読み書きに設定し�
 
  btrfs-device-add 'devices ...' fs
 
-Add the list of device(s) in C<devices> to the btrfs filesystem mounted at
-C<fs>.  If C<devices> is an empty list, this does nothing.
+C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrfs ファイルシステムに追加します。もし C<devices>
+が空の一覧ならば、何もしません。
 
 =head2 btrfs-device-delete
 
  btrfs-device-delete 'devices ...' fs
 
-Remove the C<devices> from the btrfs filesystem mounted at C<fs>.  If
-C<devices> is an empty list, this does nothing.
+C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrfs ファイルシステムから削除します。もし C<devices>
+が空の一覧ならば、何もしません。
 
 =head2 btrfs-filesystem-balance
 
@@ -626,7 +667,7 @@ underlying devices.
 
  btrfs-filesystem-resize mountpoint [size:N]
 
-This command resizes a btrfs filesystem.
+このコマンドは btrfs ファイルシステムの容量を変更します。
 
 Note that unlike other resize calls, the filesystem has to be mounted and
 the parameter is the mountpoint not the device (this is a requirement of
@@ -672,21 +713,20 @@ btrfs ファイルシステムを含むデバイスの seeding 機能を有効�
 
  btrfs-subvolume-create dest
 
-Create a btrfs subvolume.  The C<dest> argument is the destination directory
-and the name of the snapshot, in the form C</path/to/dest/name>.
+btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/dest/name>
+形式となる、スナップショットの宛先ディレクトリーおよび名前です。
 
 =head2 btrfs-subvolume-delete
 
  btrfs-subvolume-delete subvolume
 
-Delete the named btrfs subvolume.
+名前付き btrfs サブボリュームを削除します。
 
 =head2 btrfs-subvolume-list
 
  btrfs-subvolume-list fs
 
-List the btrfs snapshots and subvolumes of the btrfs filesystem which is
-mounted at C<fs>.
+C<fs> にマウントされている btrfs ファイルシステムの btrfs スナップショットとサブディレクトリーを一覧表示します。
 
 =head2 btrfs-subvolume-set-default
 
@@ -701,6 +741,49 @@ default.  See L</btrfs-subvolume-list> to get a list of subvolumes.
 
 btrfs サブボリューム C<source> の書き込み可能なスナップショットを作成します。C<dest>
 引数は、宛先ディレクトリーで、C</path/to/dest/name> 形式のスナップショットの名前です。
+
+=head2 canonical-device-name
+
+ canonical-device-name device
+
+This utility function is useful when displaying device names to the user.
+It takes a number of irregular device names and returns them in a consistent
+format:
+
+=over 4
+
+=item C</dev/hdX>
+
+=item C</dev/vdX>
+
+These are returned as C</dev/sdX>.  Note this works for device names and
+partition names.  This is approximately the reverse of the algorithm
+described in L<guestfs(3)/BLOCK DEVICE NAMING>.
+
+=item C</dev/mapper/VG-LV>
+
+=item C</dev/dm-N>
+
+L</lvm-canonical-lvm-name> を使用して C</dev/VG/LV> に変換されます。
+
+=back
+
+他の文字列は修正されずに返されます。
+
+=head2 cap-get-file
+
+ cap-get-file path
+
+This function returns the Linux capabilities attached to C<path>.  The
+capabilities set is returned in text form (see L<cap_to_text(3)>).
+
+=head2 cap-set-file
+
+ cap-set-file path cap
+
+This function sets the Linux capabilities attached to C<path>.  The
+capabilities set C<cap> should be passed in text form (see
+L<cap_from_text(3)>).
 
 =head2 case-sensitive-path
 
@@ -740,13 +823,9 @@ L</realpath> 参照。
 
 C<path> という名前のファイルの内容を返します。
 
-Note that this function cannot correctly handle binary files (specifically,
-files containing C<\0> character which is treated as end of string).  For
-those you need to use the L</read-file> or L</download> functions which have
-a more complex interface.
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+Because, in C, this function returns a C<char *>, there is no way to
+differentiate between a C<\0> character in a file and end of string.  To
+handle binary files, use the L</read-file> or L</download> functions.
 
 =head2 checksum
 
@@ -927,9 +1006,9 @@ This can be used to add arbitrary qemu command line parameters of the form
 I<-param value>.  Actually it's not quite arbitrary - we prevent you from
 setting some parameters which would interfere with parameters that we use.
 
-The first character of C<param> string must be a C<-> (dash).
+The first character of C<qemuparam> string must be a C<-> (dash).
 
-C<value> can be NULL.
+C<qemuvalue> は NULL の可能性があります。
 
 =head2 copy-device-to-device
 
@@ -1040,7 +1119,7 @@ the device in the list of devices.
 Index numbers start from 0.  The named device must exist, for example as a
 string returned from L</list-devices>.
 
-See also L</list-devices>, L</part-to-dev>.
+L</list-devices>, L</part-to-dev> 参照。
 
 =head2 df
 
@@ -1062,6 +1141,37 @@ This command is mostly useful for interactive sessions.  It is I<not>
 intended that you try to parse the output string.  Use L</statvfs> from
 programs.
 
+=head2 disk-format
+
+ disk-format filename
+
+Detect and return the format of the disk image called C<filename>.
+C<filename> can also be a host device, etc.  If the format of the image
+could not be detected, then C<"unknown"> is returned.
+
+Note that detecting the disk format can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
+
+関連項目: L<guestfs(3)/ディスクイメージ形式>
+
+=head2 disk-has-backing-file
+
+ disk-has-backing-file filename
+
+Detect and return whether the disk image C<filename> has a backing file.
+
+Note that detecting disk features can be insecure under some circumstances.
+See L<guestfs(3)/CVE-2010-3851>.
+
+=head2 disk-virtual-size
+
+ disk-virtual-size filename
+
+C<filename> という名前のディスクイメージの仮想容量をバイト単位で検知および出力します。
+
+Note that detecting disk features can be insecure under some circumstances.
+See L<guestfs(3)/CVE-2010-3851>.
+
 =head2 dmesg
 
  dmesg
@@ -1077,8 +1187,7 @@ before running the program.
 
  download remotefilename (filename|-)
 
-Download file C<remotefilename> and save it as C<filename> on the local
-machine.
+ファイル C<remotefilename> をダウンロードし、ローカルマシンに C<filename> として保存します。
 
 C<filename> は名前付きパイプを使えます。
 
@@ -1090,8 +1199,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
  download-offset remotefilename (filename|-) offset size
 
-Download file C<remotefilename> and save it as C<filename> on the local
-machine.
+ファイル C<remotefilename> をダウンロードし、ローカルマシンに C<filename> として保存します。
 
 C<remotefilename> is read for C<size> bytes starting at C<offset> (this
 region must be within the file or device).
@@ -1121,14 +1229,13 @@ maximum guest memory is freed.
 
  du path
 
-This command runs the C<du -s> command to estimate file space usage for
-C<path>.
+このコマンドは C<path> のファイル空間使用量を見積もるために C<du -s> コマンドを実行します。
 
 C<path> can be a file or a directory.  If C<path> is a directory then the
 estimate includes the contents of the directory and all subdirectories
 (recursively).
 
-The result is the estimated size in I<kilobytes> (ie. units of 1024 bytes).
+結果は I<キロバイト> (つまり 1024 バイトの単位) の見積もり容量です。
 
 =head2 e2fsck
 
@@ -1187,26 +1294,37 @@ L</ping-daemon> 参照。
 
  egrep regex path
 
-This calls the external C<egrep> program and returns the matching lines.
+これは外部の C<egrep> プログラムを呼び出し、一致した行を返します。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 egrepi
 
  egrepi regex path
 
-This calls the external C<egrep -i> program and returns the matching lines.
+これは外部の C<egrep -i> プログラムを呼び出し、一致した行を返します。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 equal
 
  equal file1 file2
 
-This compares the two files C<file1> and C<file2> and returns true if their
-content is exactly equal, or false otherwise.
+これは 2 つのファイル C<file1> と C<file2> を比較します。内容が完全に同じならば真を、そうでなければ偽を返します。
 
 外部の L<cmp(1)> プログラムが比較のために使用されます。
 
@@ -1261,6 +1379,12 @@ This calls the external C<fgrep> program and returns the matching lines.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 fgrepi
 
  fgrepi pattern path
@@ -1269,6 +1393,12 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 file
 
@@ -1371,7 +1501,7 @@ Linux カーネルモジュール
 
 =back
 
-What it can't do currently:
+今のところ実行できないこと:
 
 =over 4
 
@@ -1381,7 +1511,7 @@ What it can't do currently:
 
 =item *
 
-Linux old-style initrd as compressed ext2 filesystem (RHEL 3)
+圧縮された ext2 ファイルシステムとして Linux 旧形式の initrd (RHEL 3)
 
 =item *
 
@@ -1398,10 +1528,26 @@ kernel module(s) instead.
 
  filesize file
 
-This command returns the size of C<file> in bytes.
+このコマンドは C<file> の容量をバイト単位で返します。
 
 ファイルに関する他の統計を取得するには use L</stat>, L</lstat>, L</is-dir>, L</is-file>
 などを使用します。ブロックデバイスの容量を取得するには L</blockdev-getsize64> を使用します。
+
+=head2 filesystem-available
+
+ filesystem-available filesystem
+
+Check whether libguestfs supports the named filesystem.  The argument
+C<filesystem> is a filesystem name, such as C<ext3>.
+
+このコマンドを使用する前に L</launch> を呼び出す必要があります。
+
+This is mainly useful as a negative test.  If this returns true, it doesn't
+mean that a particular filesystem can be mounted, since filesystems can fail
+for other reasons such as it being a later version of the filesystem, or
+having incompatible features.
+
+L</available>, L<guestfs(3)/AVAILABILITY> 参照。
 
 =head2 fill
 
@@ -1413,6 +1559,14 @@ C<[0..255]> の範囲の数値である必要があります。
 To fill a file with zero bytes (sparsely), it is much more efficient to use
 L</truncate-size>.  To create a file with a pattern of repeating bytes use
 L</fill-pattern>.
+
+=head2 fill-dir
+
+ fill-dir dir nr
+
+This function, useful for testing filesystems, creates C<nr> empty files in
+the directory C<dir> with names C<00000000> through C<nr-1> (ie. each file
+name is 8 digits long padded with zeroes).
 
 =head2 fill-pattern
 
@@ -1450,11 +1604,6 @@ If C<directory> is not a directory, then this command returns an error.
 
 返された一覧は並び替えられています。
 
-L</find0> 参照。
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
 =head2 find0
 
  find0 directory (files|-)
@@ -1475,10 +1624,6 @@ The resulting list is written to an external file.
 
 Items (filenames) in the result are separated by C<\0> characters.  See
 L<find(1)> option I<-print0>.
-
-=item *
-
-This command is not limited in the number of names that it can return.
 
 =item *
 
@@ -1536,6 +1681,29 @@ Checking or repairing NTFS volumes is not supported (by linux-ntfs).
 
 This command is entirely equivalent to running C<fsck -a -t fstype device>.
 
+=head2 fstrim
+
+ fstrim mountpoint [offset:N] [length:N] [minimumfreeextent:N]
+
+Trim the free space in the filesystem mounted on C<mountpoint>.  The
+filesystem must be mounted read-write.
+
+The filesystem contents are not affected, but any free space in the
+filesystem is "trimmed", that is, given back to the host device, thus making
+disk images more sparse, allowing unused space in qcow2 files to be reused,
+etc.
+
+This operation requires support in libguestfs, the mounted filesystem, the
+host filesystem, qemu and the host kernel.  If this support isn't present it
+may give an error or even appear to run but do nothing.
+
+See also L</zero-free-space>.  That is a slightly different operation that
+turns free space in the filesystem into zeroes.  It is valid to call
+L</fstrim> either instead of, or after calling L</zero-free-space>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 get-append
 
  get-append
@@ -1549,13 +1717,21 @@ If C<NULL> then no options are added.
 
  get-attach-method
 
-現在の接続方式を返します。  </set-attach-method> 参照。
+Return the current attach method.
+
+See L</set-attach-method> and L<guestfs(3)/ATTACH METHOD>.
 
 =head2 get-autosync
 
  get-autosync
 
 autosync フラグを取得します。
+
+=head2 get-cachedir
+
+ get-cachedir
+
+アプライアンスのキャッシュを保存するために、ハンドルにより使用されるディレクトリーを取得します。
 
 =head2 get-direct
 
@@ -1596,8 +1772,7 @@ The characters (file attributes) in the returned string are currently:
 
 =item 'D'
 
-(Directories only.)  Changes to this directory are written synchronously to
-disk.
+(ディレクトリーのみ。) このディレクトリーへの変更がディスクに同期的に書き込まれます。
 
 =item 'd'
 
@@ -1618,7 +1793,7 @@ of sectors.
 
 =item 'I'
 
-(Directories only.)  The directory is using hashed trees.
+(ディレクトリーのみ。)  ディレクトリーはハッシュツリーを使用しています。
 
 =item 'i'
 
@@ -1656,7 +1831,7 @@ undeleted.
 
 =item 'X'
 
-The raw contents of the compressed file may be accessed.
+圧縮ファイルの内容にアクセスできます。
 
 =item 'Z'
 
@@ -1703,20 +1878,62 @@ these functions.
 
  get-e2uuid device
 
-This returns the ext2/3/4 filesystem UUID of the filesystem on C<device>.
+これは C<device> にあるファイルシステムの ext2/3/4 ファイルシステム UUID を返します。
 
-I<This function is deprecated.> In new code, use the L</vfs-uuid> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</vfs-uuid> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 get-libvirt-requested-credential-challenge
+
+ get-libvirt-requested-credential-challenge index
+
+Get the challenge (provided by libvirt) for the C<index>'th requested
+credential.  If libvirt did not provide a challenge, this returns the empty
+string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 get-libvirt-requested-credential-defresult
+
+ get-libvirt-requested-credential-defresult index
+
+Get the default result (provided by libvirt) for the C<index>'th requested
+credential.  If libvirt did not provide a default result, this returns the
+empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 get-libvirt-requested-credential-prompt
+
+ get-libvirt-requested-credential-prompt index
+
+Get the prompt (provided by libvirt) for the C<index>'th requested
+credential.  If libvirt did not provide a prompt, this returns the empty
+string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 get-libvirt-requested-credentials
+
+ get-libvirt-requested-credentials
+
+This should only be called during the event callback for events of type
+C<GUESTFS_EVENT_LIBVIRT_AUTH>.
+
+Return the list of credentials requested by libvirt.  Possible values are a
+subset of the strings provided when you called
+L</set-libvirt-supported-credentials>.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
 =head2 get-memsize
 
  get-memsize
 
-This gets the memory size in megabytes allocated to the qemu subprocess.
+これは QEMU サブプロセスに割り当てられているメモリー容量をメガバイト単位で取得します。
 
 If L</set-memsize> was not called on this handle, and if
 C<LIBGUESTFS_MEMSIZE> was not set, then this returns the compiled-in default
@@ -1795,6 +2012,12 @@ for printing debug and internal error messages.
 
 For more information on states, see L<guestfs(3)>.
 
+=head2 get-tmpdir
+
+ get-tmpdir
+
+Get the directory used by the handle to store temporary files.
+
 =head2 get-trace
 
  get-trace
@@ -1870,9 +2093,38 @@ instead.
 
 =head2 grep
 
- grep regex path
+=head2 grep-opts
+
+ grep regex path [extended:true|false] [fixed:true|false] [insensitive:true|false] [compressed:true|false]
 
 This calls the external C<grep> program and returns the matching lines.
+
+The optional flags are:
+
+=over 4
+
+=item C<extended>
+
+Use extended regular expressions.  This is the same as using the I<-E> flag.
+
+=item C<fixed>
+
+Match fixed (don't use regular expressions).  This is the same as using the
+I<-F> flag.
+
+=item C<insensitive>
+
+Match case-insensitive.  This is the same as using the I<-i> flag.
+
+=item C<compressed>
+
+Use C<zgrep> instead of C<grep>.  This allows the input to be compress- or
+gzip-compressed.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -1881,10 +2133,16 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  grepi regex path
 
-This calls the external C<grep -i> program and returns the matching lines.
+これは外部の C<grep -i> プログラムを呼び出し、一致する行を返します。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 grub-install
 
@@ -1919,7 +2177,7 @@ file containing:
 
  (hd0) /dev/vda
 
-replacing C</dev/vda> with the name of the installation device.
+C</dev/vda> をインストールデバイスの名前で置き換えます。
 
 =back
 
@@ -1927,8 +2185,7 @@ replacing C</dev/vda> with the name of the installation device.
 
  head path
 
-This command returns up to the first 10 lines of a file as a list of
-strings.
+このコマンドは文字列の一覧として、ファイルの先頭 10 行までを返します。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -1937,11 +2194,9 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  head-n nrlines path
 
-If the parameter C<nrlines> is a positive number, this returns the first
-C<nrlines> lines of the file C<path>.
+パラメーター C<nrlines> が正の数ならば、これはファイル C<path> の先頭 C<nrlines> 行を返します。
 
-If the parameter C<nrlines> is a negative number, this returns lines from
-the file C<path>, excluding the last C<nrlines> lines.
+パラメーター C<nrlines> が負の数ならば、これはファイル C<path> の末尾 C<nrlines> 行を取り除いた行を返します。
 
 パラメーター C<nrlines> が 0 ならば、空の一覧を返します。
 
@@ -1957,6 +2212,160 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=head2 hivex-close
+
+ hivex-close
+
+現在の hivex ハンドルを閉じます。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-commit
+
+ hivex-commit filename
+
+ハイブへの変更をコミット（書き込み）します。
+
+オプションの C<filename>
+パラメーターがなければ、変更は開かれているハイブに書き戻されます。このオプションがあれば、指定された他のファイルに書き込まれ、元のハイブはそのまま残されます。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-add-child
+
+ hivex-node-add-child parent name
+
+子ノードに C<name> という名前の C<parent> を追加します。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-children
+
+ hivex-node-children nodeh
+
+C<nodeh> のサブキーであるノードの一覧を返します。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-delete-child
+
+ hivex-node-delete-child nodeh
+
+C<nodeh> を削除します。必要に応じて、再帰的に削除します。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-get-child
+
+ hivex-node-get-child nodeh name
+
+Return the child of C<nodeh> with the name C<name>, if it exists.  This can
+return C<0> meaning the name was not found.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-get-value
+
+ hivex-node-get-value nodeh key
+
+Return the value attached to C<nodeh> which has the name C<key>, if it
+exists.  This can return C<0> meaning the key was not found.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-name
+
+ hivex-node-name nodeh
+
+C<nodeh> の名前を返します。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-parent
+
+ hivex-node-parent nodeh
+
+C<nodeh> の親ノードを返します。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-set-value
+
+ hivex-node-set-value nodeh key t val
+
+Set or replace a single value under the node C<nodeh>.  The C<key> is the
+name, C<t> is the type, and C<val> is the data.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-node-values
+
+ hivex-node-values nodeh
+
+Return the array of (key, datatype, data) tuples attached to C<nodeh>.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-open
+
+ hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]
+
+Open the Windows Registry hive file named C<filename>.  If there was any
+previous hivex handle associated with this guestfs session, then it is
+closed.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 hivex-root
+
+ hivex-root
+
+ハイブのルートノードを返します。
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-value-key
+
+ hivex-value-key valueh
+
+Return the key (name) field of a (key, datatype, data) tuple.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-value-type
+
+ hivex-value-type valueh
+
+Return the data type field from a (key, datatype, data) tuple.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+=head2 hivex-value-utf8
+
+ hivex-value-utf8 valueh
+
+This calls L</hivex-value-value> (which returns the data field from a hivex
+value tuple).  It then assumes that the field is a UTF-16LE string and
+converts the result to UTF-8 (or if this is not possible, it returns an
+error).
+
+This is useful for reading strings out of the Windows registry.  However it
+is not foolproof because the registry is not strongly-typed and fields can
+contain arbitrary or unexpected data.
+
+=head2 hivex-value-value
+
+ hivex-value-value valueh
+
+Return the data field of a (key, datatype, data) tuple.
+
+これは同じ名前の L<hivex(3)> のラッパーです。
+
+See also: L</hivex-value-utf8>.
 
 =head2 initrd-cat
 
@@ -1987,15 +2396,14 @@ The files are listed without any initial C</> character.  The files are
 listed in the order they appear (not necessarily alphabetical).  Directory
 names are listed as separate items.
 
-Old Linux kernels (2.4 and earlier) used a compressed ext2 filesystem as
-initrd.  We I<only> support the newer initramfs format (compressed cpio
-files).
+古い Linux カーネル (2.4 およびそれ以前) は initrd として圧縮 ext2 ファイルシステムを使用していました。新しい
+initramfs 形式 (圧縮 cpio ファイル) I<のみ> をサポートします。
 
 =head2 inotify-add-watch
 
  inotify-add-watch path mask
 
-Watch C<path> for the events listed in C<mask>.
+C<mask> に一覧化されたイベントに対して C<path> を監視します。
 
 Note that if C<path> is a directory then events within that directory are
 watched, but this does I<not> happen recursively (in subdirectories).
@@ -2137,6 +2545,10 @@ Mandriva.
 
 MeeGo.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "opensuse"
 
 OpenSUSE.
@@ -2160,6 +2572,14 @@ Scientific Linux.
 =item "slackware"
 
 Slackware.
+
+=item "sles"
+
+SuSE Linux Enterprise Server or Desktop.
+
+=item "suse-based"
+
+Some openSuSE-derived distro.
 
 =item "ttylinux"
 
@@ -2249,7 +2669,7 @@ I<bootable> install disk, live CD, or similar.
 
 =item "unknown"
 
-The format of this disk image is not known.
+このディスクイメージの形式は不明です。
 
 =back
 
@@ -2495,6 +2915,10 @@ FreeBSD.
 
 NetBSD.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "hurd"
 
 GNU/Hurd.
@@ -2647,6 +3071,108 @@ A short (usually one line) description of the application or package.  If
 unavailable this is returned as an empty string C<"">.
 
 =item C<app_description>
+
+A longer description of the application or package.  If unavailable this is
+returned as an empty string C<"">.
+
+=back
+
+詳細は L<guestfs(3)/INSPECTION> を参照してください。
+
+I<This function is deprecated.> In new code, use the
+L</inspect-list-applications2> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+=head2 inspect-list-applications2
+
+ inspect-list-applications2 root
+
+Return the list of applications installed in the operating system.
+
+I<Note:> This call works differently from other parts of the inspection
+API.  You have to call L</inspect-os>, then L</inspect-get-mountpoints>,
+then mount up the disks, before calling this.  Listing applications is a
+significantly more difficult operation which requires access to the full
+filesystem.  Also note that unlike the other L</inspect-get-*> calls which
+are just returning data cached in the libguestfs handle, this call actually
+reads parts of the mounted filesystems during the call.
+
+This returns an empty list if the inspection code was not able to determine
+the list of applications.
+
+The application structure contains the following fields:
+
+=over 4
+
+=item C<app2_name>
+
+アプリケーションの名前。 Red Hat 派生および Debian 派生の Linux 仮想マシンの場合、パッケージ名になります。
+
+=item C<app2_display_name>
+
+The display name of the application, sometimes localized to the install
+language of the guest operating system.
+
+If unavailable this is returned as an empty string C<"">.  Callers needing
+to display something can use C<app2_name> instead.
+
+=item C<app2_epoch>
+
+For package managers which use epochs, this contains the epoch of the
+package (an integer).  If unavailable, this is returned as C<0>.
+
+=item C<app2_version>
+
+The version string of the application or package.  If unavailable this is
+returned as an empty string C<"">.
+
+=item C<app2_release>
+
+The release string of the application or package, for package managers that
+use this.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_arch>
+
+The architecture string of the application or package, for package managers
+that use this.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_install_path>
+
+The installation path of the application (on operating systems such as
+Windows which use installation paths).  This path is in the format used by
+the guest operating system, it is not a libguestfs path.
+
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_trans_path>
+
+The install path translated into a libguestfs path.  If unavailable this is
+returned as an empty string C<"">.
+
+=item C<app2_publisher>
+
+The name of the publisher of the application, for package managers that use
+this.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_url>
+
+The URL (eg. upstream URL) of the application.  If unavailable this is
+returned as an empty string C<"">.
+
+=item C<app2_source_package>
+
+For packaging systems which support this, the name of the source package.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_summary>
+
+A short (usually one line) description of the application or package.  If
+unavailable this is returned as an empty string C<"">.
+
+=item C<app2_description>
 
 A longer description of the application or package.  If unavailable this is
 returned as an empty string C<"">.
@@ -2828,12 +3354,11 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor> を参照して�
 
  kill-subprocess
 
-This kills the qemu subprocess.
+これにより QEMU のサブプロセスがキルされます
 
-Do not call this.  See: L</shutdown> instead.
+これを呼び出さないでください。代わりに L</shutdown> を参照してください。
 
-I<This function is deprecated.> In new code, use the L</shutdown> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</shutdown> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -2867,6 +3392,100 @@ the target.
 Only numeric uid and gid are supported.  If you want to use names, you will
 need to locate and parse the password file yourself (Augeas support makes
 this relatively easy).
+
+=head2 ldmtool-create-all
+
+ ldmtool-create-all
+
+This function scans all block devices looking for Windows dynamic disk
+volumes and partitions, and creates devices for any that were found.
+
+Call L</list-ldm-volumes> and L</list-ldm-partitions> to return all devices.
+
+Note that you B<don't> normally need to call this explicitly, since it is
+done automatically at L</launch> time.  However you might want to call this
+function if you have hotplugged disks or have just created a Windows dynamic
+disk.
+
+=head2 ldmtool-diskgroup-disks
+
+ ldmtool-diskgroup-disks diskgroup
+
+Return the disks in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from the list
+returned by L</ldmtool-scan>.
+
+=head2 ldmtool-diskgroup-name
+
+ ldmtool-diskgroup-name diskgroup
+
+Return the name of a Windows dynamic disk group.  The C<diskgroup> parameter
+should be the GUID of a disk group, one element from the list returned by
+L</ldmtool-scan>.
+
+=head2 ldmtool-diskgroup-volumes
+
+ ldmtool-diskgroup-volumes diskgroup
+
+Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from the list
+returned by L</ldmtool-scan>.
+
+=head2 ldmtool-remove-all
+
+ ldmtool-remove-all
+
+This is essentially the opposite of L</ldmtool-create-all>.  It removes the
+device mapper mappings for all Windows dynamic disk volumes
+
+=head2 ldmtool-scan
+
+ ldmtool-scan
+
+This function scans for Windows dynamic disks.  It returns a list of
+identifiers (GUIDs) for all disk groups that were found.  These identifiers
+can be passed to other L</ldmtool-*> functions.
+
+This function scans all block devices.  To scan a subset of block devices,
+call L</ldmtool-scan-devices> instead.
+
+=head2 ldmtool-scan-devices
+
+ ldmtool-scan-devices 'devices ...'
+
+This function scans for Windows dynamic disks.  It returns a list of
+identifiers (GUIDs) for all disk groups that were found.  These identifiers
+can be passed to other L</ldmtool-*> functions.
+
+The parameter C<devices> is a list of block devices which are scanned.  If
+this list is empty, all block devices are scanned.
+
+=head2 ldmtool-volume-hint
+
+ ldmtool-volume-hint diskgroup volume
+
+Return the hint field of the volume named C<volume> in the disk group with
+GUID <diskgroup>.  This may not be defined, in which case the empty string
+is returned.  The hint field is often, though not always, the name of a
+Windows drive, eg. C<E:>.
+
+=head2 ldmtool-volume-partitions
+
+ ldmtool-volume-partitions diskgroup volume
+
+Return the list of partitions in the volume named C<volume> in the disk
+group with GUID <diskgroup>.
+
+=head2 ldmtool-volume-type
+
+ ldmtool-volume-type diskgroup volume
+
+Return the type of the volume named C<volume> in the disk group with GUID
+<diskgroup>.
+
+Possible volume types that can be returned here include: C<simple>,
+C<spanned>, C<striped>, C<mirrored>, C<raid5>.  Other types may also be
+returned.
 
 =head2 lgetxattr
 
@@ -2910,6 +3529,18 @@ returned.
 
 L</list-filesystems> 参照。
 
+=head2 list-disk-labels
+
+ list-disk-labels
+
+If you add drives using the optional C<label> parameter of
+L</add-drive-opts>, you can use this call to map between disk labels, and
+raw block device and partition names (like C</dev/sda> and C</dev/sda1>).
+
+This returns a hashtable, where keys are the disk labels (I<without> the
+C</dev/disk/guestfs> prefix), and the values are the full raw block device
+and partition names (eg. C</dev/sda> and C</dev/sda1>).
+
 =head2 list-dm-devices
 
  list-dm-devices
@@ -2950,6 +3581,20 @@ partitions are returned in the list.  Also this command does not check that
 each filesystem found is valid and mountable, and some filesystems might be
 mountable but require special options.  Filesystems may not all belong to a
 single logical operating system (use L</inspect-os> to look for OSes).
+
+=head2 list-ldm-partitions
+
+ list-ldm-partitions
+
+This function returns all Windows dynamic disk partitions that were found at
+launch time.  It returns a list of device names.
+
+=head2 list-ldm-volumes
+
+ list-ldm-volumes
+
+This function returns all Windows dynamic disk volumes that were found at
+launch time.  It returns a list of device names.
 
 =head2 list-md-devices
 
@@ -3027,8 +3672,19 @@ List the files in C<directory> (relative to the root directory, there is no
 cwd).  The '.' and '..' entries are not returned, but hidden files are
 shown.
 
-This command is mostly useful for interactive sessions.  Programs should
-probably use L</readdir> instead.
+=head2 ls0
+
+ ls0 dir (filenames|-)
+
+This specialized command is used to get a listing of the filenames in the
+directory C<dir>.  The list of filenames is written to the local file
+C<filenames> (on the host).
+
+In the output file, the filenames are separated by C<\0> characters.
+
+C<.> and C<..> are not returned.  The filenames are not sorted.
+
+Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 lsetxattr
 
@@ -3062,10 +3718,7 @@ then the C<ino> field of that structure is set to C<-1>.
 
 This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also L</lxattrlist> for a
-similarly efficient call for getting extended attributes.  Very long
-directory listings might cause the protocol message size to be exceeded,
-causing this call to fail.  The caller must split up such requests into
-smaller groups of names.
+similarly efficient call for getting extended attributes.
 
 =head2 luks-add-key
 
@@ -3182,7 +3835,7 @@ C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does not refer to a
 logical volume.
 
-See also L</is-lv>.
+L</is-lv>, L</canonical-device-name> 参照。
 
 =head2 lvm-clear-filter
 
@@ -3227,11 +3880,9 @@ filesystem), even if you are not filtering out that VG.
 
  lvremove device
 
-Remove an LVM logical volume C<device>, where C<device> is the path to the
-LV, such as C</dev/VG/LV>.
+LVM 論理ボリューム C<device> を削除します、ここで C<device> は C</dev/VG/LV> のような LV へのパスです。
 
-You can also remove all LVs in a volume group by specifying the VG name,
-C</dev/VG>.
+VG 名 C</dev/VG> を指定することにより、ボリュームグループにあるすべての LV も削除できます。
 
 =head2 lvrename
 
@@ -3296,10 +3947,19 @@ for the first named file.  This repeats for the second and subsequent files.
 
 This call is intended for programs that want to efficiently list a directory
 contents without making many round-trips.  See also L</lstatlist> for a
-similarly efficient call for getting standard stats.  Very long directory
-listings might cause the protocol message size to be exceeded, causing this
-call to fail.  The caller must split up such requests into smaller groups of
-names.
+similarly efficient call for getting standard stats.
+
+=head2 max-disks
+
+ max-disks
+
+Return the maximum number of disks that may be added to a handle (eg. by
+L</add-drive-opts> and similar calls).
+
+This function was added in libguestfs 1.19.7.  In previous versions of
+libguestfs the limit was 25.
+
+この話題に関する詳細は L<guestfs(3)/MAXIMUM NUMBER OF DISKS> を参照してください。
 
 =head2 md-create
 
@@ -3445,8 +4105,7 @@ RAIDスペアデバイス
 
  md-stop md
 
-This command deactivates the MD array named C<md>.  The device is stopped,
-but it is not destroyed or zeroed.
+このコマンドは C<md> という名前の MD アレイを無効化します。デバイスが停止されますが、破壊またはゼロ書き込みされません。
 
 =head2 mkdir
 
@@ -3458,12 +4117,10 @@ C<path> という名前のディレクトリーを作成します。
 
  mkdir-mode path mode
 
-This command creates a directory, setting the initial permissions of the
-directory to C<mode>.
+このコマンドはディレクトリーを作成します、ディレクトリーの初期パーミッションを C<mode> に設定します。
 
-For common Linux filesystems, the actual mode which is set will be C<mode &
-~umask & 01777>.  Non-native-Linux filesystems may interpret the mode in
-other ways.
+一般的な Linux ファイルシステムに対して、設定されている実際のモードが C<mode & ~umask & 01777> とされます。Linux
+固有のファイルシステム以外は他の方法でモードを解釈します。
 
 L</mkdir>, L</umask> 参照。
 
@@ -3471,8 +4128,8 @@ L</mkdir>, L</umask> 参照。
 
  mkdir-p path
 
-Create a directory named C<path>, creating any parent directories as
-necessary.  This is like the C<mkdir -p> shell command.
+C<path> という名前のディレクトリーを作成します、必要に応じて親ディレクトリーを作成します。これは C<mkdir -p>
+シェルコマンドと似ています。
 
 =head2 mkdtemp
 
@@ -3494,55 +4151,103 @@ contents after use.
 
 関連項目: L<mkdtemp(3)>
 
+=head2 mke2fs
+
+ mke2fs device [blockscount:N] [blocksize:N] [fragsize:N] [blockspergroup:N] [numberofgroups:N] [bytesperinode:N] [inodesize:N] [journalsize:N] [numberofinodes:N] [stridesize:N] [stripewidth:N] [maxonlineresize:N] [reservedblockspercentage:N] [mmpupdateinterval:N] [journaldevice:..] [label:..] [lastmounteddir:..] [creatoros:..] [fstype:..] [usagetype:..] [uuid:..] [forcecreate:true|false] [writesbandgrouponly:true|false] [lazyitableinit:true|false] [lazyjournalinit:true|false] [testfs:true|false] [discard:true|false] [quotatype:true|false] [extent:true|false] [filetype:true|false] [flexbg:true|false] [hasjournal:true|false] [journaldev:true|false] [largefile:true|false] [quota:true|false] [resizeinode:true|false] [sparsesuper:true|false] [uninitbg:true|false]
+
+C<mke2fs> は C<device> に ext2, ext3, または ext4 ファイルシステムを作成するために使用されます。オプションの
+C<blockscount> はブロックにおけるファイルシステムの容量です。これが省略されると、C<device> の容量が初期値となります。
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 mke2fs-J
 
  mke2fs-J fstype blocksize device journal
 
-This creates an ext2/3/4 filesystem on C<device> with an external journal on
-C<journal>.  It is equivalent to the command:
+これは外部ジャーナルを C<journal> に持つ ext2/3/4 ファイルシステムを C<device> に作成します。次のコマンドと同じです:
 
  mke2fs -t fstype -b blocksize -J device=<journal> <device>
 
 L</mke2journal> 参照。
 
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 mke2fs-JL
 
  mke2fs-JL fstype blocksize device label
 
-This creates an ext2/3/4 filesystem on C<device> with an external journal on
-the journal labeled C<label>.
+これは外部ジャーナルをジャーナルラベル C<label> に持つ ext2/3/4 ファイルシステムを C<device> に作成します。
 
 L</mke2journal-L> 参照。
+
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mke2fs-JU
 
  mke2fs-JU fstype blocksize device uuid
 
-This creates an ext2/3/4 filesystem on C<device> with an external journal on
-the journal with UUID C<uuid>.
+これは外部ジャーナルを UUID C<uuid> のジャーナルに持つ ext2/3/4 ファイルシステムを C<device> に作成します。
 
 L</mke2journal-U> 参照。
+
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mke2journal
 
  mke2journal blocksize device
 
-This creates an ext2 external journal on C<device>.  It is equivalent to the
-command:
+これは C<device> に ext2 外部ジャーナルを作成します。次のコマンドと同じです:
 
  mke2fs -O journal_dev -b blocksize device
+
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mke2journal-L
 
  mke2journal-L blocksize label device
 
-This creates an ext2 external journal on C<device> with label C<label>.
+これはラベル C<label> を持つ C<device> に ext2 外部ジャーナルを作成します。
+
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mke2journal-U
 
  mke2journal-U blocksize uuid device
 
 This creates an ext2 external journal on C<device> with UUID C<uuid>.
+
+I<This function is deprecated.> In new code, use the L</mke2fs> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mkfifo
 
@@ -3555,46 +4260,9 @@ is just a convenient wrapper around L</mknod>.
 
 =head2 mkfs
 
- mkfs fstype device
-
-This creates a filesystem on C<device> (usually a partition or LVM logical
-volume).  The filesystem type is C<fstype>, for example C<ext3>.
-
-=head2 mkfs-b
-
- mkfs-b fstype blocksize device
-
-This call is similar to L</mkfs>, but it allows you to control the block
-size of the resulting filesystem.  Supported block sizes depend on the
-filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
-
-For VFAT and NTFS the C<blocksize> parameter is treated as the requested
-cluster size.
-
-I<This function is deprecated.> In new code, use the L</mkfs-opts> call
-instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-
-=head2 mkfs-btrfs
-
- mkfs-btrfs 'devices ...' [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
-
-すべての設定可能なものについて設定を許可して、btrfs ファイルシステムを作成します。オプション引数の詳細は L<mkfs.btrfs(8)>
-を参照してください。
-
-btrfs ファイルシステムは複数のデバイスを結合できるので、これは非空白のデバイス一覧をとります。
-
-To create general filesystems, use L</mkfs-opts>.
-
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
-
 =head2 mkfs-opts
 
- mkfs-opts fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
+ mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]
 
 This function creates a filesystem on C<device>.  The filesystem type is
 C<fstype>, for example C<ext3>.
@@ -3636,6 +4304,45 @@ sets sector size for ufs filesystem.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
+
+=head2 mkfs-b
+
+ mkfs-b fstype blocksize device
+
+This call is similar to L</mkfs>, but it allows you to control the block
+size of the resulting filesystem.  Supported block sizes depend on the
+filesystem type, but typically they are C<1024>, C<2048> or C<4096> only.
+
+For VFAT and NTFS the C<blocksize> parameter is treated as the requested
+cluster size.
+
+I<This function is deprecated.> In new code, use the L</mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+=head2 mkfs-btrfs
+
+ mkfs-btrfs 'devices ...' [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]
+
+すべての設定可能なものについて設定を許可して、btrfs ファイルシステムを作成します。オプション引数の詳細は L<mkfs.btrfs(8)>
+を参照してください。
+
+btrfs ファイルシステムは複数のデバイスを結合できるので、これは非空白のデバイス一覧をとります。
+
+To create general filesystems, use L</mkfs>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 mklost-and-found
+
+ mklost-and-found mountpoint
+
+Make the C<lost+found> directory, normally in the root directory of an
+ext2/3/4 filesystem.  C<mountpoint> is the directory under which we try to
+create the C<lost+found> directory.
 
 =head2 mkmountpoint
 
@@ -3719,9 +4426,17 @@ wrapper around L</mknod>.
 
 =head2 mkswap
 
- mkswap device
+=head2 mkswap-opts
 
-C<device> に swap パーティションを作成します。
+ mkswap device [label:..] [uuid:..]
+
+Create a Linux swap partition on C<device>.
+
+The option arguments C<label> and C<uuid> allow you to set the label and/or
+UUID of the new swap partition.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 mkswap-L
 
@@ -3733,11 +4448,25 @@ Note that you cannot attach a swap label to a block device
 (eg. C</dev/sda>), just to a partition.  This appears to be a limitation of
 the kernel or swap tools.
 
+I<This function is deprecated.> In new code, use the L</mkswap> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 mkswap-U
 
  mkswap-U uuid device
 
 UUID C<uuid> の C<device> に swap パーティションを作成します。
+
+I<This function is deprecated.> In new code, use the L</mkswap> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 mkswap-file
 
@@ -3747,6 +4476,31 @@ swap ファイルを作成します。
 
 This command just writes a swap file signature to an existing file.  To
 create the file itself, use something like L</fallocate>.
+
+=head2 mktemp
+
+ mktemp tmpl [suffix:..]
+
+This command creates a temporary file.  The C<tmpl> parameter should be a
+full pathname for the temporary directory name with the final six characters
+being "XXXXXX".
+
+例: "/tmp/myprogXXXXXX" または "/Temp/myprogXXXXXX"、2 つめの例は Windows
+ファイルシステムに適しています。
+
+The name of the temporary file that was created is returned.
+
+The temporary file is created with mode 0600 and is owned by root.
+
+The caller is responsible for deleting the temporary file after use.
+
+If the optional C<suffix> parameter is given, then the suffix (eg. C<.txt>)
+is appended to the temporary name.
+
+See also: L</mkdtemp>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 modprobe
 
@@ -3901,12 +4655,9 @@ destination filename or destination directory.
 
  nr-devices
 
-This returns the number of whole block devices that were added.  This is the
-same as the number of devices that would be returned if you called
-L</list-devices>.
+これは追加されたブロックデバイス全体の数を返します。これは L</list-devices> により返されるデバイス数と同じです。
 
-To find out the maximum number of devices that could be added, call
-L</max-disks>.
+追加できるデバイスの最大数を確認するには L</max-disks> を呼び出しください。
 
 =head2 ntfs-3g-probe
 
@@ -3971,33 +4722,11 @@ ARGUMENTS>.
 
 =head2 ntfsresize
 
- ntfsresize device
-
-This command resizes an NTFS filesystem, expanding or shrinking it to the
-size of the underlying device.
-
-I<Note:> After the resize operation, the filesystem is marked as requiring a
-consistency check (for safety).  You have to boot into Windows to perform
-this check and clear this condition.  Furthermore, ntfsresize refuses to
-resize filesystems which have been marked in this way.  So in effect it is
-not possible to call ntfsresize multiple times on a single filesystem
-without booting into Windows between each resize.
-
-L<ntfsresize(8)> 参照。
-
-I<This function is deprecated.> In new code, use the L</ntfsresize-opts>
-call instead.
-
-Deprecated functions will not be removed from the API, but the fact that
-they are deprecated indicates that there are problems with correct use of
-these functions.
-
 =head2 ntfsresize-opts
 
- ntfsresize-opts device [size:N] [force:true|false]
+ ntfsresize device [size:N] [force:true|false]
 
-This command resizes an NTFS filesystem, expanding or shrinking it to the
-size of the underlying device.
+このコマンドは NTFS ファイルシステムの容量を変更します。基礎となるデバイスの容量まで拡張または縮小します。
 
 オプションのパラメーターは次のとおりです:
 
@@ -4005,8 +4734,7 @@ size of the underlying device.
 
 =item C<size>
 
-The new size (in bytes) of the filesystem.  If omitted, the filesystem is
-resized to fit the container (eg. partition).
+ファイルシステムの新しい容量 (バイト単位)。省略されると、ファイルシステムはコンテナー (例: パーティション) に合うよう容量を変更されます。
 
 =item C<force>
 
@@ -4016,8 +4744,8 @@ filesystem is marked as requiring a consistency check.
 After the resize operation, the filesystem is always marked as requiring a
 consistency check (for safety).  You have to boot into Windows to perform
 this check and clear this condition.  If you I<don't> set the C<force>
-option then it is not possible to call L</ntfsresize-opts> multiple times on
-a single filesystem without booting into Windows between each resize.
+option then it is not possible to call L</ntfsresize> multiple times on a
+single filesystem without booting into Windows between each resize.
 
 =back
 
@@ -4033,12 +4761,38 @@ ARGUMENTS>.
 This command is the same as L</ntfsresize> except that it allows you to
 specify the new size (in bytes) explicitly.
 
-I<This function is deprecated.> In new code, use the L</ntfsresize-opts>
-call instead.
+I<This function is deprecated.> In new code, use the L</ntfsresize> call
+instead.
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
+
+=head2 parse-environment
+
+ parse-environment
+
+Parse the program's environment and set flags in the handle accordingly.
+For example if C<LIBGUESTFS_DEBUG=1> then the 'verbose' flag is set in the
+handle.
+
+I<Most programs do not need to call this>.  It is done implicitly when you
+call L</create>.
+
+See L<guestfs(3)/ENVIRONMENT VARIABLES> for a list of environment variables
+that can affect libguestfs handles.  See also
+L<guestfs(3)/guestfs_create_flags>, and L</parse-environment-list>.
+
+=head2 parse-environment-list
+
+ parse-environment-list 'environment ...'
+
+Parse the list of strings in the argument C<environment> and set flags in
+the handle accordingly.  For example if C<LIBGUESTFS_DEBUG=1> is a string in
+the list, then the 'verbose' flag is set in the handle.
+
+This is the same as L</parse-environment> except that it parses an explicit
+list of strings instead of the program's environment.
 
 =head2 part-add
 
@@ -4081,8 +4835,7 @@ possible values are described in L</part-init>.
 
  part-get-bootable device partnum
 
-This command returns true if the partition C<partnum> on C<device> has the
-bootable flag set.
+C<device> にあるパーティション C<partnum> にブート可能フラグが設定されていると、このコマンドは真を返します。
 
 L</part-set-bootable> 参照。
 
@@ -4257,7 +5010,7 @@ partition number, returning the device name (eg. "/dev/sdb").
 The named partition must exist, for example as a string returned from
 L</list-partitions>.
 
-See also L</part-to-partnum>, L</device-index>.
+L</part-to-partnum>, L</device-index> も参照してください。
 
 =head2 part-to-partnum
 
@@ -4299,8 +5052,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  pread-device device count offset
 
-This command lets you read part of a file.  It reads C<count> bytes of
-C<device>, starting at C<offset>.
+このコマンドはファイルの一部を読み込みます。C<device> を C<offset> から開始して C<count> バイト読み込みます。
 
 This may read fewer bytes than requested.  For further details see the
 L<pread(2)> system call.
@@ -4309,6 +5061,18 @@ L</pread> 参照。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=head2 pvchange-uuid
+
+ pvchange-uuid device
+
+物理ボリューム C<device> に対する新しいランダムな UUID を生成します。
+
+=head2 pvchange-uuid-all
+
+ pvchange-uuid-all
+
+すべての物理ボリュームに対する新しいランダムな UUID を生成します。
 
 =head2 pvcreate
 
@@ -4365,7 +5129,7 @@ L<pvs(8)> command.  The "full" version includes all fields.
 
  pvuuid device
 
-This command returns the UUID of the LVM PV C<device>.
+このコマンドは LVM PV C<device> の UUID を返します。
 
 =head2 pwrite
 
@@ -4408,11 +5172,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 This calls returns the contents of the file C<path> as a buffer.
 
 Unlike L</cat>, this function can correctly handle files that contain
-embedded ASCII NUL characters.  However unlike L</download>, this function
-is limited in the total size of file that can be handled.
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+embedded ASCII NUL characters.
 
 =head2 read-lines
 
@@ -4424,9 +5184,9 @@ The file contents are returned as a list of lines.  Trailing C<LF> and
 C<CRLF> character sequences are I<not> returned.
 
 Note that this function cannot correctly handle binary files (specifically,
-files containing C<\0> character which is treated as end of line).  For
-those you need to use the L</read-file> function which has a more complex
-interface.
+files containing C<\0> character which is treated as end of string).  For
+those you need to use the L</read-file> function and split the buffer into
+lines yourself.
 
 =head2 readdir
 
@@ -4485,6 +5245,9 @@ This function is primarily intended for use by programs.  To get a simple
 list of names, use L</ls>.  To get a printable directory for human
 consumption, use L</ll>.
 
+Because of the message protocol, there is a transfer limit of somewhere
+between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
 =head2 readlink
 
  readlink path
@@ -4509,9 +5272,7 @@ function with names where you don't know if they are symbolic links already
 (albeit slightly less efficient).
 
 This call is intended for programs that want to efficiently list a directory
-contents without making many round-trips.  Very long directory listings
-might cause the protocol message size to be exceeded, causing this call to
-fail.  The caller must split up such requests into smaller groups of names.
+contents without making many round-trips.
 
 =head2 realpath
 
@@ -4519,6 +5280,23 @@ fail.  The caller must split up such requests into smaller groups of names.
 
 Return the canonicalized absolute pathname of C<path>.  The returned path
 has no C<.>, C<..> or symbolic link path elements.
+
+=head2 remove-drive
+
+ remove-drive label
+
+This function is conceptually the opposite of L</add-drive-opts>.  It
+removes the drive that was previously added with label C<label>.
+
+Note that in order to remove drives, you have to add them with labels (see
+the optional C<label> argument to L</add-drive-opts>).  If you didn't use a
+label, then they cannot be removed.
+
+You can call this function before or after launching the handle.  If called
+after launch, if the attach-method supports it, we try to hot unplug the
+drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use
+(eg. mounted) when you do this.  We try to detect if the disk is in use and
+stop you from doing this.
 
 =head2 removexattr
 
@@ -4567,6 +5345,17 @@ See also L<guestfs(3)/RESIZE2FS ERRORS>.
 
 単一ファイル C<path> を削除します。
 
+=head2 rm-f
+
+ rm-f path
+
+ファイル C<path> を削除します。
+
+ファイルが存在しない場合、そのエラーは無視されます。（I/O エラーや不正なパスなど、他のエラーは無視されません）
+
+この呼び出しはディレクトリーを削除できません。空のディレクトリーを削除するには L</rmdir> を、ディレクトリーを再帰的に削除するには
+L</rm-rf> を使用します。
+
 =head2 rm-rf
 
  rm-rf path
@@ -4586,6 +5375,83 @@ its a directory.  This is like the C<rm -rf> shell command.
 
 This calls removes a mountpoint that was previously created with
 L</mkmountpoint>.  See L</mkmountpoint> for full details.
+
+=head2 rsync
+
+ rsync src dest [archive:true|false] [deletedest:true|false]
+
+This call may be used to copy or synchronize two directories under the same
+libguestfs handle.  This uses the L<rsync(1)> program which uses a fast
+algorithm that avoids copying files unnecessarily.
+
+C<src> and C<dest> are the source and destination directories.  Files are
+copied from C<src> to C<dest>.
+
+オプション引数は次のとおりです:
+
+=over 4
+
+=item C<archive>
+
+Turns on archive mode.  This is the same as passing the I<--archive> flag to
+C<rsync>.
+
+=item C<deletedest>
+
+Delete files at the destination that do not exist at the source.
+
+=back
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 rsync-in
+
+ rsync-in remote dest [archive:true|false] [deletedest:true|false]
+
+This call may be used to copy or synchronize the filesystem on the host or
+on a remote computer with the filesystem within libguestfs.  This uses the
+L<rsync(1)> program which uses a fast algorithm that avoids copying files
+unnecessarily.
+
+This call only works if the network is enabled.  See L</set-network> or the
+I<--network> option to various tools like L<guestfish(1)>.
+
+Files are copied from the remote server and directory specified by C<remote>
+to the destination directory C<dest>.
+
+The format of the remote server string is defined by L<rsync(1)>.  Note that
+there is no way to supply a password or passphrase so the target must be set
+up not to require one.
+
+The optional arguments are the same as those of L</rsync>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 rsync-out
+
+ rsync-out src remote [archive:true|false] [deletedest:true|false]
+
+This call may be used to copy or synchronize the filesystem within
+libguestfs with a filesystem on the host or on a remote computer.  This uses
+the L<rsync(1)> program which uses a fast algorithm that avoids copying
+files unnecessarily.
+
+This call only works if the network is enabled.  See L</set-network> or the
+I<--network> option to various tools like L<guestfish(1)>.
+
+Files are copied from the source directory C<src> to the remote server and
+directory specified by C<remote>.
+
+The format of the remote server string is defined by L<rsync(1)>.  Note that
+there is no way to supply a password or passphrase so the target must be set
+up not to require one.
+
+The optional arguments are the same as those of L</rsync>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 scrub-device
 
@@ -4641,24 +5507,9 @@ C<append> を C<NULL> に設定することは、追加のオプションが渡�
  set-attach-method attachmethod
 
 Set the method that libguestfs uses to connect to the back end guestfsd
-daemon.  Possible methods are:
+daemon.
 
-=over 4
-
-=item C<appliance>
-
-Launch an appliance and connect to it.  This is the ordinary method and the
-default.
-
-=item C<unix:I<path>>
-
-Connect to the Unix domain socket I<path>.
-
-This method lets you connect to an existing daemon or (using virtio-serial)
-to a live guest.  For more information, see L<guestfs(3)/ATTACHING TO
-RUNNING DAEMONS>.
-
-=back
+See L<guestfs(3)/ATTACH METHOD>.
 
 =head2 set-autosync
 
@@ -4671,6 +5522,21 @@ effort attempt to make filesystems consistent and synchronized when the
 handle is closed (also if the program exits without closing handles).
 
 デフォルトで有効です（libguestfs 1.5.24 以降、以前は デフォルトで無効でした）。
+
+=head2 set-cachedir
+
+=head2 cachedir
+
+ set-cachedir cachedir
+
+Set the directory used by the handle to store the appliance cache, when
+using a supermin appliance.  The appliance is cached and shared between all
+handles which have the same effective user ID.
+
+The environment variables C<LIBGUESTFS_CACHEDIR> and C<TMPDIR> control the
+default value: If C<LIBGUESTFS_CACHEDIR> is set, then that is the default.
+Else if C<TMPDIR> is set, then that is the default.  Else C</var/tmp> is the
+default.
 
 =head2 set-direct
 
@@ -4763,6 +5629,52 @@ ext2/3/4 ファイルシステムでは、ラベルは 16 バイトに制限さ�
 NTFS ファイルシステムでは、ラベルは 128 Unicode 文字に制限されます。
 
 ファイルシステムのラベルを読み込むには L</vfs-label> を呼び出します。
+
+=head2 set-libvirt-requested-credential
+
+ set-libvirt-requested-credential index cred
+
+After requesting the C<index>'th credential from the user, call this
+function to pass the answer back to libvirt.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=head2 set-libvirt-supported-credentials
+
+ set-libvirt-supported-credentials 'creds ...'
+
+Call this function before setting an event handler for
+C<GUESTFS_EVENT_LIBVIRT_AUTH>, to supply the list of credential types that
+the program knows how to process.
+
+The C<creds> list must be a non-empty list of strings.  Possible strings
+are:
+
+=over 4
+
+=item C<username>
+
+=item C<authname>
+
+=item C<language>
+
+=item C<cnonce>
+
+=item C<passphrase>
+
+=item C<echoprompt>
+
+=item C<noechoprompt>
+
+=item C<realm>
+
+=item C<external>
+
+=back
+
+See libvirt documentation for the meaning of these credential types.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 =head2 set-memsize
 
@@ -4883,6 +5795,19 @@ libguestfs のアーキテクチャーの詳細は L<guestfs(3)> を参照して
 
 この関数は L</launch> の前に呼び出す必要があります。
 
+=head2 set-tmpdir
+
+=head2 tmpdir
+
+ set-tmpdir tmpdir
+
+Set the directory used by the handle to store temporary files.
+
+The environment variables C<LIBGUESTFS_TMPDIR> and C<TMPDIR> control the
+default value: If C<LIBGUESTFS_TMPDIR> is set, then that is the default.
+Else if C<TMPDIR> is set, then that is the default.  Else C</tmp> is the
+default.
+
 =head2 set-trace
 
 =head2 trace
@@ -4940,7 +5865,7 @@ the value C<val> (of length C<vallen>).  The value is arbitrary 8 bit data.
 This is a direct interface to the L<sfdisk(8)> program for creating
 partitions on block devices.
 
-C<device> should be a block device, for example C</dev/sda>.
+C<device> はブロックデバイスです、たとえば C</dev/sda> です。
 
 C<cyls>, C<heads> and C<sectors> are the number of cylinders, heads and
 sectors on the device, which are passed directly to sfdisk as the I<-C>,
@@ -5065,13 +5990,11 @@ This is the same as L</sh>, but splits the result into a list of lines.
 
  shutdown
 
-This is the opposite of L</launch>.  It performs an orderly shutdown of the
-backend process(es).  If the autosync flag is set (which is the default)
-then the disk image is synchronized.
+これは L</launch>
+の反対です。バックエンドプロセスの通常シャットダウンを実行します。自動同期フラグが設定されていると（これが標準です）、ディスクイメージが同期されます。
 
-If the subprocess exits with an error then this function will return an
-error, which should I<not> be ignored (it may indicate that the disk image
-could not be written out properly).
+サブプロセスがエラーで終了すると、この関数はエラーを返します。これは（ディスクイメージが正しく書き出されていないことを意味する可能性があるので）無視すべき
+I<ではありません> 。
 
 It is safe to call this multiple times.  Extra calls are ignored.
 
@@ -5254,25 +6177,57 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 tar-in
 
- tar-in (tarfile|-) directory
+=head2 tar-in-opts
 
-This command uploads and unpacks local file C<tarfile> (an I<uncompressed>
-tar file) into C<directory>.
+ tar-in (tarfile|-) directory [compress:..]
 
-圧縮した tar ファイルをアップロードするには L</tgz-in> または L</txz-in> を使用します。
+This command uploads and unpacks local file C<tarfile> into C<directory>.
+
+The optional C<compress> flag controls compression.  If not given, then the
+input should be an uncompressed tar file.  Otherwise one of the following
+strings may be given to select the compression type of the input file:
+C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.  (Note that not all builds
+of libguestfs will support all of these compression types).
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 tar-out
 
- tar-out directory (tarfile|-)
+=head2 tar-out-opts
+
+ tar-out directory (tarfile|-) [compress:..] [numericowner:true|false] [excludes:..]
 
 This command packs the contents of C<directory> and downloads it to local
 file C<tarfile>.
 
-圧縮した tar ファイルをダウンロードするには L</tgz-out> または L</txz-out> を使用します。
+The optional C<compress> flag controls compression.  If not given, then the
+output will be an uncompressed tar file.  Otherwise one of the following
+strings may be given to select the compression type of the output file:
+C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.  (Note that not all builds
+of libguestfs will support all of these compression types).
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the wildcards.
+
+=item C<numericowner>
+
+If set to true, the output tar file will contain UID/GID numbers instead of
+user/group names.
+
+=back
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 tgz-in
 
@@ -5281,9 +6236,14 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 This command uploads and unpacks local file C<tarball> (a I<gzip compressed>
 tar file) into C<directory>.
 
-圧縮していない tar ファイルをアップロードするには L</tar-in> を使用します。
-
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+I<This function is deprecated.> In new code, use the L</tar-in> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 tgz-out
 
@@ -5292,9 +6252,14 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 This command packs the contents of C<directory> and downloads it to local
 file C<tarball>.
 
-圧縮していない tar ファイルをダウンロードするには L</tar-out> を使用します。
-
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+I<This function is deprecated.> In new code, use the L</tar-out> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 touch
 
@@ -5421,6 +6386,13 @@ tar file) into C<directory>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
+I<This function is deprecated.> In new code, use the L</tar-in> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 txz-out
 
  txz-out directory (tarball|-)
@@ -5429,6 +6401,13 @@ This command packs the contents of C<directory> and downloads it to local
 file C<tarball> (as an xz compressed tar archive).
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
+
+I<This function is deprecated.> In new code, use the L</tar-out> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 umask
 
@@ -5447,16 +6426,21 @@ even if you specify C<0777>.
 
 L</get-umask>, L<umask(2)>, L</mknod>, L</mkdir> 参照。
 
-This call returns the previous umask.
+この呼び出しは元の umask を返します。
 
 =head2 umount
 
 =head2 unmount
 
- umount pathordevice
+=head2 umount-opts
 
-This unmounts the given filesystem.  The filesystem may be specified either
-by its mountpoint (path) or the device which contains the filesystem.
+ umount pathordevice [force:true|false] [lazyunmount:true|false]
+
+これは与えられたファイルシステムをアンマウントします。ファイルシステムは、そのマウントポイント
+(path)、またはファイルシステムを含むデバイスにより指定されます。
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 umount-all
 
@@ -5515,7 +6499,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
  utimens path atsecs atnsecs mtsecs mtnsecs
 
-This command sets the timestamps of a file with nanosecond precision.
+このコマンドはファイルのタイムスタンプをナノ秒単位で設定します。
 
 C<atsecs, atnsecs> are the last access time (atime) in secs and nanoseconds
 from the epoch.
@@ -5530,6 +6514,14 @@ ignored in this case).
 If the C<*nsecs> field contains the special value C<-2> then the
 corresponding timestamp is left unchanged.  (The C<*secs> field is ignored
 in this case).
+
+=head2 utsname
+
+ utsname
+
+This returns the kernel version of the appliance, where this is available.
+This information is only useful for debugging.  Nothing in the returned
+structure is defined by the API.
 
 =head2 version
 
@@ -5613,19 +6605,29 @@ volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
 
+=head2 vgchange-uuid
+
+ vgchange-uuid vg
+
+Generate a new random UUID for the volume group C<vg>.
+
+=head2 vgchange-uuid-all
+
+ vgchange-uuid-all
+
+すべての物理ボリュームに対する新しいランダムな UUID を生成します。
+
 =head2 vgcreate
 
  vgcreate volgroup 'physvols ...'
 
-This creates an LVM volume group called C<volgroup> from the non-empty list
-of physical volumes C<physvols>.
+これは、物理ボリューム C<physvols> の空ではない一覧から、C<volgroup> という名前の LVM ボリュームグループを作成します。
 
 =head2 vglvuuids
 
  vglvuuids vgname
 
-Given a VG called C<vgname>, this returns the UUIDs of all the logical
-volumes created in this volume group.
+C<vgname> という VG が指定されると、これはこのボリュームグループに作成されたすべての論理ボリュームの UUID を返します。
 
 You can use this along with L</lvs> and L</lvuuid> calls to associate
 logical volumes and volume groups.
@@ -5702,21 +6704,19 @@ This command returns the UUID of the LVM VG named C<vgname>.
 
  wc-c path
 
-This command counts the characters in a file, using the C<wc -c> external
-command.
+このコマンドは C<wc -c> 外部コマンドを使用して、ファイルにある文字数を集計します。
 
 =head2 wc-l
 
  wc-l path
 
-This command counts the lines in a file, using the C<wc -l> external
-command.
+このコマンドは C<wc -l> 外部コマンドを使用して、ファイルにある行数を集計します。
 
 =head2 wc-w
 
  wc-w path
 
-このコマンドは、C<wc -w> 外部コマンドを使用して、ファイルにある単語を数えます。
+このコマンドは C<wc -w> 外部コマンドを使用して、ファイルにある単語を数えます。
 
 =head2 wipefs
 
@@ -5738,9 +6738,6 @@ string C<content> (which can contain any 8 bit data).
 
 L</write-append> 参照。
 
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
 =head2 write-append
 
  write-append path content
@@ -5749,9 +6746,6 @@ This call appends C<content> to the end of file C<path>.  If C<path> does
 not exist, then a new file is created.
 
 L</write> 参照。
-
-Because of the message protocol, there is a transfer limit of somewhere
-between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =head2 write-file
 
@@ -5775,6 +6769,64 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 xfs-admin
+
+ xfs-admin device [extunwritten:true|false] [imgfile:true|false] [v2log:true|false] [projid32bit:true|false] [lazycounter:true|false] [label:..] [uuid:..]
+
+Change the parameters of the XFS filesystem on C<device>.
+
+Devices that are mounted cannot be modified.  Administrators must unmount
+filesystems before this call can modify parameters.
+
+Some of the parameters of a mounted filesystem can be examined and modified
+using the L</xfs-info> and L</xfs-growfs> calls.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 xfs-growfs
+
+ xfs-growfs path [datasec:true|false] [logsec:true|false] [rtsec:true|false] [datasize:N] [logsize:N] [rtsize:N] [rtextsize:N] [maxpct:N]
+
+C<path> にマウントされた XFS ファイルシステムを拡大します。
+
+The returned struct contains geometry information.  Missing fields are
+returned as C<-1> (for numeric fields) or empty string.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
+=head2 xfs-info
+
+ xfs-info pathordevice
+
+C<pathordevice> は、マウントされた XFS ファイルシステム、または XFS
+ファイルシステムを含むデバイスです。このコマンドはファイルシステムのジオメトリーを返します。
+
+The returned struct contains geometry information.  Missing fields are
+returned as C<-1> (for numeric fields) or empty string.
+
+=head2 xfs-repair
+
+ xfs-repair device [forcelogzero:true|false] [nomodify:true|false] [noprefetch:true|false] [forcegeometry:true|false] [maxmem:N] [ihashsize:N] [bhashsize:N] [agstride:N] [logdev:..] [rtdev:..]
+
+破損または破壊された C<device> の XFS ファイルシステムを修復します。
+
+The filesystem is specified using the C<device> argument which should be the
+device name of the disk partition or volume containing the filesystem.  If
+given the name of a block device, C<xfs_repair> will attempt to find the raw
+device associated with the specified block device and will use the raw
+device instead.
+
+Regardless, the filesystem to be repaired must be unmounted, otherwise, the
+resulting filesystem may be inconsistent or corrupt.
+
+The returned status indicates whether filesystem corruption was detected
+(returns C<1>) or was not detected (returns C<0>).
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
+
 =head2 zegrep
 
  zegrep regex path
@@ -5784,6 +6836,12 @@ these functions.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 zegrepi
 
  zegrepi regex path
@@ -5792,6 +6850,12 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 zero
 
@@ -5827,8 +6891,8 @@ C<directory> にマウントされたファイルシステムにある空き領�
 
 ファイルシステムの内容は影響を受けません。しかし、ファイルシステムにある空き領域はすべて開放されます。
 
-In future (but not currently) these zeroed blocks will be "sparsified" -
-that is, given back to the host.
+Free space is not "trimmed".  You may want to call L</fstrim> either as an
+alternative to this, or after calling this, depending on your requirements.
 
 =head2 zerofree
 
@@ -5852,6 +6916,12 @@ This calls the external C<zfgrep> program and returns the matching lines.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 zfgrepi
 
  zfgrepi pattern path
@@ -5860,6 +6930,12 @@ This calls the external C<zfgrep -i> program and returns the matching lines.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 zfile
 
@@ -5886,6 +6962,12 @@ these functions.
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 =head2 zgrepi
 
  zgrepi regex path
@@ -5894,4 +6976,10 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</grep> を使用してください。
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 

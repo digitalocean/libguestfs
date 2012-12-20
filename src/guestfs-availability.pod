@@ -1,5 +1,12 @@
 =over 4
 
+=item B<acl>
+
+The following functions:
+L</guestfs_acl_delete_def_file>
+L</guestfs_acl_get_file>
+L</guestfs_acl_set_file>
+
 =item B<augeas>
 
 The following functions:
@@ -35,10 +42,35 @@ L</guestfs_btrfs_subvolume_set_default>
 L</guestfs_btrfs_subvolume_snapshot>
 L</guestfs_mkfs_btrfs>
 
+=item B<fstrim>
+
+The following functions:
+L</guestfs_fstrim>
+
 =item B<grub>
 
 The following functions:
 L</guestfs_grub_install>
+
+=item B<hivex>
+
+The following functions:
+L</guestfs_hivex_close>
+L</guestfs_hivex_commit>
+L</guestfs_hivex_node_add_child>
+L</guestfs_hivex_node_children>
+L</guestfs_hivex_node_delete_child>
+L</guestfs_hivex_node_get_child>
+L</guestfs_hivex_node_get_value>
+L</guestfs_hivex_node_name>
+L</guestfs_hivex_node_parent>
+L</guestfs_hivex_node_set_value>
+L</guestfs_hivex_node_values>
+L</guestfs_hivex_open>
+L</guestfs_hivex_root>
+L</guestfs_hivex_value_key>
+L</guestfs_hivex_value_type>
+L</guestfs_hivex_value_value>
 
 =item B<inotify>
 
@@ -49,6 +81,28 @@ L</guestfs_inotify_files>
 L</guestfs_inotify_init>
 L</guestfs_inotify_read>
 L</guestfs_inotify_rm_watch>
+
+=item B<ldm>
+
+The following functions:
+L</guestfs_ldmtool_create_all>
+L</guestfs_ldmtool_diskgroup_disks>
+L</guestfs_ldmtool_diskgroup_name>
+L</guestfs_ldmtool_diskgroup_volumes>
+L</guestfs_ldmtool_remove_all>
+L</guestfs_ldmtool_scan>
+L</guestfs_ldmtool_scan_devices>
+L</guestfs_ldmtool_volume_hint>
+L</guestfs_ldmtool_volume_partitions>
+L</guestfs_ldmtool_volume_type>
+L</guestfs_list_ldm_partitions>
+L</guestfs_list_ldm_volumes>
+
+=item B<linuxcaps>
+
+The following functions:
+L</guestfs_cap_get_file>
+L</guestfs_cap_set_file>
 
 =item B<linuxfsuuid>
 
@@ -69,11 +123,11 @@ L</guestfs_modprobe>
 The following functions:
 L</guestfs_getxattr>
 L</guestfs_getxattrs>
+L</guestfs_internal_lxattrlist>
 L</guestfs_lgetxattr>
 L</guestfs_lgetxattrs>
 L</guestfs_lremovexattr>
 L</guestfs_lsetxattr>
-L</guestfs_lxattrlist>
 L</guestfs_removexattr>
 L</guestfs_setxattr>
 
@@ -101,6 +155,8 @@ L</guestfs_lvresize>
 L</guestfs_lvresize_free>
 L</guestfs_lvs>
 L</guestfs_lvs_full>
+L</guestfs_pvchange_uuid>
+L</guestfs_pvchange_uuid_all>
 L</guestfs_pvcreate>
 L</guestfs_pvremove>
 L</guestfs_pvresize>
@@ -109,6 +165,8 @@ L</guestfs_pvs>
 L</guestfs_pvs_full>
 L</guestfs_vg_activate>
 L</guestfs_vg_activate_all>
+L</guestfs_vgchange_uuid>
+L</guestfs_vgchange_uuid_all>
 L</guestfs_vgcreate>
 L</guestfs_vgmeta>
 L</guestfs_vgremove>
@@ -143,13 +201,19 @@ L</guestfs_ntfsfix>
 
 The following functions:
 L</guestfs_ntfsresize>
-L</guestfs_ntfsresize_opts>
 L</guestfs_ntfsresize_size>
 
 =item B<realpath>
 
 The following functions:
 L</guestfs_realpath>
+
+=item B<rsync>
+
+The following functions:
+L</guestfs_rsync>
+L</guestfs_rsync_in>
+L</guestfs_rsync_out>
 
 =item B<scrub>
 
@@ -168,6 +232,14 @@ L</guestfs_setcon>
 
 The following functions:
 L</guestfs_wipefs>
+
+=item B<xfs>
+
+The following functions:
+L</guestfs_xfs_admin>
+L</guestfs_xfs_growfs>
+L</guestfs_xfs_info>
+L</guestfs_xfs_repair>
 
 =item B<xz>
 

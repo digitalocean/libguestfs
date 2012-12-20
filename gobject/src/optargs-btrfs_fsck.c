@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -57,11 +57,11 @@ guestfs_btrfs_fsck_set_property(GObject *object, guint property_id, const GValue
 
   switch (property_id) {
     case PROP_GUESTFS_BTRFS_FSCK_SUPERBLOCK:
-      priv->superblock = g_value_get_int64(value);
+      priv->superblock = g_value_get_int64 (value);
       break;
 
     case PROP_GUESTFS_BTRFS_FSCK_REPAIR:
-      priv->repair = g_value_get_enum(value);
+      priv->repair = g_value_get_enum (value);
       break;
 
     default:

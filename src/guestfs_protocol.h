@@ -236,6 +236,32 @@ typedef struct {
 	guestfs_int_application *guestfs_int_application_list_val;
 } guestfs_int_application_list;
 
+struct guestfs_int_application2 {
+	char *app2_name;
+	char *app2_display_name;
+	int app2_epoch;
+	char *app2_version;
+	char *app2_release;
+	char *app2_arch;
+	char *app2_install_path;
+	char *app2_trans_path;
+	char *app2_publisher;
+	char *app2_url;
+	char *app2_source_package;
+	char *app2_summary;
+	char *app2_description;
+	char *app2_spare1;
+	char *app2_spare2;
+	char *app2_spare3;
+	char *app2_spare4;
+};
+typedef struct guestfs_int_application2 guestfs_int_application2;
+
+typedef struct {
+	u_int guestfs_int_application2_list_len;
+	guestfs_int_application2 *guestfs_int_application2_list_val;
+} guestfs_int_application2_list;
+
 struct guestfs_int_isoinfo {
 	char *iso_system_id;
 	char *iso_volume_id;
@@ -286,6 +312,73 @@ typedef struct {
 	guestfs_int_btrfssubvolume *guestfs_int_btrfssubvolume_list_val;
 } guestfs_int_btrfssubvolume_list;
 
+struct guestfs_int_xfsinfo {
+	char *xfs_mntpoint;
+	u_int xfs_inodesize;
+	u_int xfs_agcount;
+	u_int xfs_agsize;
+	u_int xfs_sectsize;
+	u_int xfs_attr;
+	u_int xfs_blocksize;
+	uint64_t xfs_datablocks;
+	u_int xfs_imaxpct;
+	u_int xfs_sunit;
+	u_int xfs_swidth;
+	u_int xfs_dirversion;
+	u_int xfs_dirblocksize;
+	u_int xfs_cimode;
+	char *xfs_logname;
+	u_int xfs_logblocksize;
+	u_int xfs_logblocks;
+	u_int xfs_logversion;
+	u_int xfs_logsectsize;
+	u_int xfs_logsunit;
+	u_int xfs_lazycount;
+	char *xfs_rtname;
+	u_int xfs_rtextsize;
+	uint64_t xfs_rtblocks;
+	uint64_t xfs_rtextents;
+};
+typedef struct guestfs_int_xfsinfo guestfs_int_xfsinfo;
+
+typedef struct {
+	u_int guestfs_int_xfsinfo_list_len;
+	guestfs_int_xfsinfo *guestfs_int_xfsinfo_list_val;
+} guestfs_int_xfsinfo_list;
+
+struct guestfs_int_utsname {
+	char *uts_sysname;
+	char *uts_release;
+	char *uts_version;
+	char *uts_machine;
+};
+typedef struct guestfs_int_utsname guestfs_int_utsname;
+
+typedef struct {
+	u_int guestfs_int_utsname_list_len;
+	guestfs_int_utsname *guestfs_int_utsname_list_val;
+} guestfs_int_utsname_list;
+
+struct guestfs_int_hivex_node {
+	int64_t hivex_node_h;
+};
+typedef struct guestfs_int_hivex_node guestfs_int_hivex_node;
+
+typedef struct {
+	u_int guestfs_int_hivex_node_list_len;
+	guestfs_int_hivex_node *guestfs_int_hivex_node_list_val;
+} guestfs_int_hivex_node_list;
+
+struct guestfs_int_hivex_value {
+	int64_t hivex_value_h;
+};
+typedef struct guestfs_int_hivex_value guestfs_int_hivex_value;
+
+typedef struct {
+	u_int guestfs_int_hivex_value_list_len;
+	guestfs_int_hivex_value *guestfs_int_hivex_value_list_val;
+} guestfs_int_hivex_value_list;
+
 struct guestfs_mount_args {
 	char *device;
 	char *mountpoint;
@@ -297,16 +390,6 @@ struct guestfs_touch_args {
 };
 typedef struct guestfs_touch_args guestfs_touch_args;
 
-struct guestfs_cat_args {
-	char *path;
-};
-typedef struct guestfs_cat_args guestfs_cat_args;
-
-struct guestfs_cat_ret {
-	char *content;
-};
-typedef struct guestfs_cat_ret guestfs_cat_ret;
-
 struct guestfs_ll_args {
 	char *directory;
 };
@@ -316,19 +399,6 @@ struct guestfs_ll_ret {
 	char *listing;
 };
 typedef struct guestfs_ll_ret guestfs_ll_ret;
-
-struct guestfs_ls_args {
-	char *directory;
-};
-typedef struct guestfs_ls_args guestfs_ls_args;
-
-struct guestfs_ls_ret {
-	struct {
-		u_int listing_len;
-		guestfs_str *listing_val;
-	} listing;
-};
-typedef struct guestfs_ls_ret guestfs_ls_ret;
 
 struct guestfs_list_devices_ret {
 	struct {
@@ -384,19 +454,6 @@ struct guestfs_lvs_full_ret {
 	guestfs_int_lvm_lv_list logvols;
 };
 typedef struct guestfs_lvs_full_ret guestfs_lvs_full_ret;
-
-struct guestfs_read_lines_args {
-	char *path;
-};
-typedef struct guestfs_read_lines_args guestfs_read_lines_args;
-
-struct guestfs_read_lines_ret {
-	struct {
-		u_int lines_len;
-		guestfs_str *lines_val;
-	} lines;
-};
-typedef struct guestfs_read_lines_ret guestfs_read_lines_ret;
 
 struct guestfs_aug_init_args {
 	char *root;
@@ -581,12 +638,6 @@ struct guestfs_lvcreate_args {
 };
 typedef struct guestfs_lvcreate_args guestfs_lvcreate_args;
 
-struct guestfs_mkfs_args {
-	char *fstype;
-	char *device;
-};
-typedef struct guestfs_mkfs_args guestfs_mkfs_args;
-
 struct guestfs_sfdisk_args {
 	char *device;
 	int cyls;
@@ -608,6 +659,8 @@ typedef struct guestfs_write_file_args guestfs_write_file_args;
 
 struct guestfs_umount_args {
 	char *pathordevice;
+	bool_t force;
+	bool_t lazyunmount;
 };
 typedef struct guestfs_umount_args guestfs_umount_args;
 
@@ -800,11 +853,18 @@ typedef struct guestfs_checksum_ret guestfs_checksum_ret;
 
 struct guestfs_tar_in_args {
 	char *directory;
+	char *compress;
 };
 typedef struct guestfs_tar_in_args guestfs_tar_in_args;
 
 struct guestfs_tar_out_args {
 	char *directory;
+	char *compress;
+	bool_t numericowner;
+	struct {
+		u_int excludes_len;
+		guestfs_str *excludes_val;
+	} excludes;
 };
 typedef struct guestfs_tar_out_args guestfs_tar_out_args;
 
@@ -1073,19 +1133,6 @@ struct guestfs_resize2fs_args {
 };
 typedef struct guestfs_resize2fs_args guestfs_resize2fs_args;
 
-struct guestfs_find_args {
-	char *directory;
-};
-typedef struct guestfs_find_args guestfs_find_args;
-
-struct guestfs_find_ret {
-	struct {
-		u_int names_len;
-		guestfs_str *names_val;
-	} names;
-};
-typedef struct guestfs_find_ret guestfs_find_ret;
-
 struct guestfs_e2fsck_f_args {
 	char *device;
 };
@@ -1293,6 +1340,8 @@ typedef struct guestfs_mount_loop_args guestfs_mount_loop_args;
 
 struct guestfs_mkswap_args {
 	char *device;
+	char *label;
+	char *uuid;
 };
 typedef struct guestfs_mkswap_args guestfs_mkswap_args;
 
@@ -1444,22 +1493,13 @@ struct guestfs_rmmountpoint_args {
 };
 typedef struct guestfs_rmmountpoint_args guestfs_rmmountpoint_args;
 
-struct guestfs_read_file_args {
-	char *path;
-};
-typedef struct guestfs_read_file_args guestfs_read_file_args;
-
-struct guestfs_read_file_ret {
-	struct {
-		u_int content_len;
-		char *content_val;
-	} content;
-};
-typedef struct guestfs_read_file_ret guestfs_read_file_ret;
-
 struct guestfs_grep_args {
 	char *regex;
 	char *path;
+	bool_t extended;
+	bool_t fixed;
+	bool_t insensitive;
+	bool_t compressed;
 };
 typedef struct guestfs_grep_args guestfs_grep_args;
 
@@ -1891,50 +1931,50 @@ struct guestfs_lchown_args {
 };
 typedef struct guestfs_lchown_args guestfs_lchown_args;
 
-struct guestfs_lstatlist_args {
+struct guestfs_internal_lstatlist_args {
 	char *path;
 	struct {
 		u_int names_len;
 		guestfs_str *names_val;
 	} names;
 };
-typedef struct guestfs_lstatlist_args guestfs_lstatlist_args;
+typedef struct guestfs_internal_lstatlist_args guestfs_internal_lstatlist_args;
 
-struct guestfs_lstatlist_ret {
+struct guestfs_internal_lstatlist_ret {
 	guestfs_int_stat_list statbufs;
 };
-typedef struct guestfs_lstatlist_ret guestfs_lstatlist_ret;
+typedef struct guestfs_internal_lstatlist_ret guestfs_internal_lstatlist_ret;
 
-struct guestfs_lxattrlist_args {
+struct guestfs_internal_lxattrlist_args {
 	char *path;
 	struct {
 		u_int names_len;
 		guestfs_str *names_val;
 	} names;
 };
-typedef struct guestfs_lxattrlist_args guestfs_lxattrlist_args;
+typedef struct guestfs_internal_lxattrlist_args guestfs_internal_lxattrlist_args;
 
-struct guestfs_lxattrlist_ret {
+struct guestfs_internal_lxattrlist_ret {
 	guestfs_int_xattr_list xattrs;
 };
-typedef struct guestfs_lxattrlist_ret guestfs_lxattrlist_ret;
+typedef struct guestfs_internal_lxattrlist_ret guestfs_internal_lxattrlist_ret;
 
-struct guestfs_readlinklist_args {
+struct guestfs_internal_readlinklist_args {
 	char *path;
 	struct {
 		u_int names_len;
 		guestfs_str *names_val;
 	} names;
 };
-typedef struct guestfs_readlinklist_args guestfs_readlinklist_args;
+typedef struct guestfs_internal_readlinklist_args guestfs_internal_readlinklist_args;
 
-struct guestfs_readlinklist_ret {
+struct guestfs_internal_readlinklist_ret {
 	struct {
 		u_int links_len;
 		guestfs_str *links_val;
 	} links;
 };
-typedef struct guestfs_readlinklist_ret guestfs_readlinklist_ret;
+typedef struct guestfs_internal_readlinklist_ret guestfs_internal_readlinklist_ret;
 
 struct guestfs_pread_args {
 	char *path;
@@ -2140,11 +2180,6 @@ struct guestfs_txz_out_args {
 };
 typedef struct guestfs_txz_out_args guestfs_txz_out_args;
 
-struct guestfs_ntfsresize_args {
-	char *device;
-};
-typedef struct guestfs_ntfsresize_args guestfs_ntfsresize_args;
-
 struct guestfs_part_del_args {
 	char *device;
 	int partnum;
@@ -2236,14 +2271,14 @@ struct guestfs_fill_pattern_args {
 };
 typedef struct guestfs_fill_pattern_args guestfs_fill_pattern_args;
 
-struct guestfs_write_args {
+struct guestfs_internal_write_args {
 	char *path;
 	struct {
 		u_int content_len;
 		char *content_val;
 	} content;
 };
-typedef struct guestfs_write_args guestfs_write_args;
+typedef struct guestfs_internal_write_args guestfs_internal_write_args;
 
 struct guestfs_pwrite_args {
 	char *path;
@@ -2512,7 +2547,7 @@ struct guestfs_lvm_canonical_lv_name_ret {
 };
 typedef struct guestfs_lvm_canonical_lv_name_ret guestfs_lvm_canonical_lv_name_ret;
 
-struct guestfs_mkfs_opts_args {
+struct guestfs_mkfs_args {
 	char *fstype;
 	char *device;
 	int blocksize;
@@ -2520,7 +2555,7 @@ struct guestfs_mkfs_opts_args {
 	int inode;
 	int sectorsize;
 };
-typedef struct guestfs_mkfs_opts_args guestfs_mkfs_opts_args;
+typedef struct guestfs_mkfs_args guestfs_mkfs_args;
 
 struct guestfs_getxattr_args {
 	char *path;
@@ -2598,12 +2633,12 @@ struct guestfs_list_dm_devices_ret {
 };
 typedef struct guestfs_list_dm_devices_ret guestfs_list_dm_devices_ret;
 
-struct guestfs_ntfsresize_opts_args {
+struct guestfs_ntfsresize_args {
 	char *device;
 	int64_t size;
 	bool_t force;
 };
-typedef struct guestfs_ntfsresize_opts_args guestfs_ntfsresize_opts_args;
+typedef struct guestfs_ntfsresize_args guestfs_ntfsresize_args;
 
 struct guestfs_btrfs_filesystem_resize_args {
 	char *mountpoint;
@@ -2611,14 +2646,14 @@ struct guestfs_btrfs_filesystem_resize_args {
 };
 typedef struct guestfs_btrfs_filesystem_resize_args guestfs_btrfs_filesystem_resize_args;
 
-struct guestfs_write_append_args {
+struct guestfs_internal_write_append_args {
 	char *path;
 	struct {
 		u_int content_len;
 		char *content_val;
 	} content;
 };
-typedef struct guestfs_write_append_args guestfs_write_append_args;
+typedef struct guestfs_internal_write_append_args guestfs_internal_write_append_args;
 
 struct guestfs_compress_out_args {
 	char *ctype;
@@ -2974,6 +3009,24 @@ struct guestfs_btrfs_fsck_args {
 };
 typedef struct guestfs_btrfs_fsck_args guestfs_btrfs_fsck_args;
 
+struct guestfs_filesystem_available_args {
+	char *filesystem;
+};
+typedef struct guestfs_filesystem_available_args guestfs_filesystem_available_args;
+
+struct guestfs_filesystem_available_ret {
+	bool_t fsavail;
+};
+typedef struct guestfs_filesystem_available_ret guestfs_filesystem_available_ret;
+
+struct guestfs_fstrim_args {
+	char *mountpoint;
+	int64_t offset;
+	int64_t length;
+	int64_t minimumfreeextent;
+};
+typedef struct guestfs_fstrim_args guestfs_fstrim_args;
+
 struct guestfs_device_index_args {
 	char *device;
 };
@@ -2989,13 +3042,494 @@ struct guestfs_nr_devices_ret {
 };
 typedef struct guestfs_nr_devices_ret guestfs_nr_devices_ret;
 
+struct guestfs_xfs_info_args {
+	char *pathordevice;
+};
+typedef struct guestfs_xfs_info_args guestfs_xfs_info_args;
+
+struct guestfs_xfs_info_ret {
+	guestfs_int_xfsinfo info;
+};
+typedef struct guestfs_xfs_info_ret guestfs_xfs_info_ret;
+
+struct guestfs_pvchange_uuid_args {
+	char *device;
+};
+typedef struct guestfs_pvchange_uuid_args guestfs_pvchange_uuid_args;
+
+struct guestfs_vgchange_uuid_args {
+	char *vg;
+};
+typedef struct guestfs_vgchange_uuid_args guestfs_vgchange_uuid_args;
+
+struct guestfs_utsname_ret {
+	guestfs_int_utsname uts;
+};
+typedef struct guestfs_utsname_ret guestfs_utsname_ret;
+
+struct guestfs_xfs_growfs_args {
+	char *path;
+	bool_t datasec;
+	bool_t logsec;
+	bool_t rtsec;
+	int64_t datasize;
+	int64_t logsize;
+	int64_t rtsize;
+	int64_t rtextsize;
+	int maxpct;
+};
+typedef struct guestfs_xfs_growfs_args guestfs_xfs_growfs_args;
+
+struct guestfs_rsync_args {
+	char *src;
+	char *dest;
+	bool_t archive;
+	bool_t deletedest;
+};
+typedef struct guestfs_rsync_args guestfs_rsync_args;
+
+struct guestfs_rsync_in_args {
+	char *remote;
+	char *dest;
+	bool_t archive;
+	bool_t deletedest;
+};
+typedef struct guestfs_rsync_in_args guestfs_rsync_in_args;
+
+struct guestfs_rsync_out_args {
+	char *src;
+	char *remote;
+	bool_t archive;
+	bool_t deletedest;
+};
+typedef struct guestfs_rsync_out_args guestfs_rsync_out_args;
+
+struct guestfs_ls0_args {
+	char *dir;
+};
+typedef struct guestfs_ls0_args guestfs_ls0_args;
+
+struct guestfs_fill_dir_args {
+	char *dir;
+	int nr;
+};
+typedef struct guestfs_fill_dir_args guestfs_fill_dir_args;
+
+struct guestfs_xfs_admin_args {
+	char *device;
+	bool_t extunwritten;
+	bool_t imgfile;
+	bool_t v2log;
+	bool_t projid32bit;
+	bool_t lazycounter;
+	char *label;
+	char *uuid;
+};
+typedef struct guestfs_xfs_admin_args guestfs_xfs_admin_args;
+
+struct guestfs_hivex_open_args {
+	char *filename;
+	bool_t verbose;
+	bool_t debug;
+	bool_t write;
+};
+typedef struct guestfs_hivex_open_args guestfs_hivex_open_args;
+
+struct guestfs_hivex_root_ret {
+	int64_t nodeh;
+};
+typedef struct guestfs_hivex_root_ret guestfs_hivex_root_ret;
+
+struct guestfs_hivex_node_name_args {
+	int64_t nodeh;
+};
+typedef struct guestfs_hivex_node_name_args guestfs_hivex_node_name_args;
+
+struct guestfs_hivex_node_name_ret {
+	char *name;
+};
+typedef struct guestfs_hivex_node_name_ret guestfs_hivex_node_name_ret;
+
+struct guestfs_hivex_node_children_args {
+	int64_t nodeh;
+};
+typedef struct guestfs_hivex_node_children_args guestfs_hivex_node_children_args;
+
+struct guestfs_hivex_node_children_ret {
+	guestfs_int_hivex_node_list nodehs;
+};
+typedef struct guestfs_hivex_node_children_ret guestfs_hivex_node_children_ret;
+
+struct guestfs_hivex_node_get_child_args {
+	int64_t nodeh;
+	char *name;
+};
+typedef struct guestfs_hivex_node_get_child_args guestfs_hivex_node_get_child_args;
+
+struct guestfs_hivex_node_get_child_ret {
+	int64_t child;
+};
+typedef struct guestfs_hivex_node_get_child_ret guestfs_hivex_node_get_child_ret;
+
+struct guestfs_hivex_node_parent_args {
+	int64_t nodeh;
+};
+typedef struct guestfs_hivex_node_parent_args guestfs_hivex_node_parent_args;
+
+struct guestfs_hivex_node_parent_ret {
+	int64_t parent;
+};
+typedef struct guestfs_hivex_node_parent_ret guestfs_hivex_node_parent_ret;
+
+struct guestfs_hivex_node_values_args {
+	int64_t nodeh;
+};
+typedef struct guestfs_hivex_node_values_args guestfs_hivex_node_values_args;
+
+struct guestfs_hivex_node_values_ret {
+	guestfs_int_hivex_value_list valuehs;
+};
+typedef struct guestfs_hivex_node_values_ret guestfs_hivex_node_values_ret;
+
+struct guestfs_hivex_node_get_value_args {
+	int64_t nodeh;
+	char *key;
+};
+typedef struct guestfs_hivex_node_get_value_args guestfs_hivex_node_get_value_args;
+
+struct guestfs_hivex_node_get_value_ret {
+	int64_t valueh;
+};
+typedef struct guestfs_hivex_node_get_value_ret guestfs_hivex_node_get_value_ret;
+
+struct guestfs_hivex_value_key_args {
+	int64_t valueh;
+};
+typedef struct guestfs_hivex_value_key_args guestfs_hivex_value_key_args;
+
+struct guestfs_hivex_value_key_ret {
+	char *key;
+};
+typedef struct guestfs_hivex_value_key_ret guestfs_hivex_value_key_ret;
+
+struct guestfs_hivex_value_type_args {
+	int64_t valueh;
+};
+typedef struct guestfs_hivex_value_type_args guestfs_hivex_value_type_args;
+
+struct guestfs_hivex_value_type_ret {
+	int64_t datatype;
+};
+typedef struct guestfs_hivex_value_type_ret guestfs_hivex_value_type_ret;
+
+struct guestfs_hivex_value_value_args {
+	int64_t valueh;
+};
+typedef struct guestfs_hivex_value_value_args guestfs_hivex_value_value_args;
+
+struct guestfs_hivex_value_value_ret {
+	struct {
+		u_int databuf_len;
+		char *databuf_val;
+	} databuf;
+};
+typedef struct guestfs_hivex_value_value_ret guestfs_hivex_value_value_ret;
+
+struct guestfs_hivex_commit_args {
+	guestfs_str *filename;
+};
+typedef struct guestfs_hivex_commit_args guestfs_hivex_commit_args;
+
+struct guestfs_hivex_node_add_child_args {
+	int64_t parent;
+	char *name;
+};
+typedef struct guestfs_hivex_node_add_child_args guestfs_hivex_node_add_child_args;
+
+struct guestfs_hivex_node_add_child_ret {
+	int64_t nodeh;
+};
+typedef struct guestfs_hivex_node_add_child_ret guestfs_hivex_node_add_child_ret;
+
+struct guestfs_hivex_node_delete_child_args {
+	int64_t nodeh;
+};
+typedef struct guestfs_hivex_node_delete_child_args guestfs_hivex_node_delete_child_args;
+
+struct guestfs_hivex_node_set_value_args {
+	int64_t nodeh;
+	char *key;
+	int64_t t;
+	struct {
+		u_int val_len;
+		char *val_val;
+	} val;
+};
+typedef struct guestfs_hivex_node_set_value_args guestfs_hivex_node_set_value_args;
+
+struct guestfs_xfs_repair_args {
+	char *device;
+	bool_t forcelogzero;
+	bool_t nomodify;
+	bool_t noprefetch;
+	bool_t forcegeometry;
+	int64_t maxmem;
+	int64_t ihashsize;
+	int64_t bhashsize;
+	int64_t agstride;
+	char *logdev;
+	char *rtdev;
+};
+typedef struct guestfs_xfs_repair_args guestfs_xfs_repair_args;
+
+struct guestfs_xfs_repair_ret {
+	int status;
+};
+typedef struct guestfs_xfs_repair_ret guestfs_xfs_repair_ret;
+
+struct guestfs_rm_f_args {
+	char *path;
+};
+typedef struct guestfs_rm_f_args guestfs_rm_f_args;
+
+struct guestfs_mke2fs_args {
+	char *device;
+	int64_t blockscount;
+	int64_t blocksize;
+	int64_t fragsize;
+	int64_t blockspergroup;
+	int64_t numberofgroups;
+	int64_t bytesperinode;
+	int64_t inodesize;
+	int64_t journalsize;
+	int64_t numberofinodes;
+	int64_t stridesize;
+	int64_t stripewidth;
+	int64_t maxonlineresize;
+	int reservedblockspercentage;
+	int mmpupdateinterval;
+	char *journaldevice;
+	char *label;
+	char *lastmounteddir;
+	char *creatoros;
+	char *fstype;
+	char *usagetype;
+	char *uuid;
+	bool_t forcecreate;
+	bool_t writesbandgrouponly;
+	bool_t lazyitableinit;
+	bool_t lazyjournalinit;
+	bool_t testfs;
+	bool_t discard;
+	bool_t quotatype;
+	bool_t extent;
+	bool_t filetype;
+	bool_t flexbg;
+	bool_t hasjournal;
+	bool_t journaldev;
+	bool_t largefile;
+	bool_t quota;
+	bool_t resizeinode;
+	bool_t sparsesuper;
+	bool_t uninitbg;
+};
+typedef struct guestfs_mke2fs_args guestfs_mke2fs_args;
+
+struct guestfs_list_disk_labels_ret {
+	struct {
+		u_int labels_len;
+		guestfs_str *labels_val;
+	} labels;
+};
+typedef struct guestfs_list_disk_labels_ret guestfs_list_disk_labels_ret;
+
+struct guestfs_internal_hot_add_drive_args {
+	char *label;
+};
+typedef struct guestfs_internal_hot_add_drive_args guestfs_internal_hot_add_drive_args;
+
+struct guestfs_internal_hot_remove_drive_precheck_args {
+	char *label;
+};
+typedef struct guestfs_internal_hot_remove_drive_precheck_args guestfs_internal_hot_remove_drive_precheck_args;
+
+struct guestfs_internal_hot_remove_drive_args {
+	char *label;
+};
+typedef struct guestfs_internal_hot_remove_drive_args guestfs_internal_hot_remove_drive_args;
+
+struct guestfs_mktemp_args {
+	char *tmpl;
+	char *suffix;
+};
+typedef struct guestfs_mktemp_args guestfs_mktemp_args;
+
+struct guestfs_mktemp_ret {
+	char *path;
+};
+typedef struct guestfs_mktemp_ret guestfs_mktemp_ret;
+
+struct guestfs_mklost_and_found_args {
+	char *mountpoint;
+};
+typedef struct guestfs_mklost_and_found_args guestfs_mklost_and_found_args;
+
+struct guestfs_acl_get_file_args {
+	char *path;
+	char *acltype;
+};
+typedef struct guestfs_acl_get_file_args guestfs_acl_get_file_args;
+
+struct guestfs_acl_get_file_ret {
+	char *acl;
+};
+typedef struct guestfs_acl_get_file_ret guestfs_acl_get_file_ret;
+
+struct guestfs_acl_set_file_args {
+	char *path;
+	char *acltype;
+	char *acl;
+};
+typedef struct guestfs_acl_set_file_args guestfs_acl_set_file_args;
+
+struct guestfs_acl_delete_def_file_args {
+	char *dir;
+};
+typedef struct guestfs_acl_delete_def_file_args guestfs_acl_delete_def_file_args;
+
+struct guestfs_cap_get_file_args {
+	char *path;
+};
+typedef struct guestfs_cap_get_file_args guestfs_cap_get_file_args;
+
+struct guestfs_cap_get_file_ret {
+	char *cap;
+};
+typedef struct guestfs_cap_get_file_ret guestfs_cap_get_file_ret;
+
+struct guestfs_cap_set_file_args {
+	char *path;
+	char *cap;
+};
+typedef struct guestfs_cap_set_file_args guestfs_cap_set_file_args;
+
+struct guestfs_list_ldm_volumes_ret {
+	struct {
+		u_int devices_len;
+		guestfs_str *devices_val;
+	} devices;
+};
+typedef struct guestfs_list_ldm_volumes_ret guestfs_list_ldm_volumes_ret;
+
+struct guestfs_list_ldm_partitions_ret {
+	struct {
+		u_int devices_len;
+		guestfs_str *devices_val;
+	} devices;
+};
+typedef struct guestfs_list_ldm_partitions_ret guestfs_list_ldm_partitions_ret;
+
+struct guestfs_ldmtool_scan_ret {
+	struct {
+		u_int guids_len;
+		guestfs_str *guids_val;
+	} guids;
+};
+typedef struct guestfs_ldmtool_scan_ret guestfs_ldmtool_scan_ret;
+
+struct guestfs_ldmtool_scan_devices_args {
+	struct {
+		u_int devices_len;
+		guestfs_str *devices_val;
+	} devices;
+};
+typedef struct guestfs_ldmtool_scan_devices_args guestfs_ldmtool_scan_devices_args;
+
+struct guestfs_ldmtool_scan_devices_ret {
+	struct {
+		u_int guids_len;
+		guestfs_str *guids_val;
+	} guids;
+};
+typedef struct guestfs_ldmtool_scan_devices_ret guestfs_ldmtool_scan_devices_ret;
+
+struct guestfs_ldmtool_diskgroup_name_args {
+	char *diskgroup;
+};
+typedef struct guestfs_ldmtool_diskgroup_name_args guestfs_ldmtool_diskgroup_name_args;
+
+struct guestfs_ldmtool_diskgroup_name_ret {
+	char *name;
+};
+typedef struct guestfs_ldmtool_diskgroup_name_ret guestfs_ldmtool_diskgroup_name_ret;
+
+struct guestfs_ldmtool_diskgroup_volumes_args {
+	char *diskgroup;
+};
+typedef struct guestfs_ldmtool_diskgroup_volumes_args guestfs_ldmtool_diskgroup_volumes_args;
+
+struct guestfs_ldmtool_diskgroup_volumes_ret {
+	struct {
+		u_int volumes_len;
+		guestfs_str *volumes_val;
+	} volumes;
+};
+typedef struct guestfs_ldmtool_diskgroup_volumes_ret guestfs_ldmtool_diskgroup_volumes_ret;
+
+struct guestfs_ldmtool_diskgroup_disks_args {
+	char *diskgroup;
+};
+typedef struct guestfs_ldmtool_diskgroup_disks_args guestfs_ldmtool_diskgroup_disks_args;
+
+struct guestfs_ldmtool_diskgroup_disks_ret {
+	struct {
+		u_int disks_len;
+		guestfs_str *disks_val;
+	} disks;
+};
+typedef struct guestfs_ldmtool_diskgroup_disks_ret guestfs_ldmtool_diskgroup_disks_ret;
+
+struct guestfs_ldmtool_volume_type_args {
+	char *diskgroup;
+	char *volume;
+};
+typedef struct guestfs_ldmtool_volume_type_args guestfs_ldmtool_volume_type_args;
+
+struct guestfs_ldmtool_volume_type_ret {
+	char *voltype;
+};
+typedef struct guestfs_ldmtool_volume_type_ret guestfs_ldmtool_volume_type_ret;
+
+struct guestfs_ldmtool_volume_hint_args {
+	char *diskgroup;
+	char *volume;
+};
+typedef struct guestfs_ldmtool_volume_hint_args guestfs_ldmtool_volume_hint_args;
+
+struct guestfs_ldmtool_volume_hint_ret {
+	char *hint;
+};
+typedef struct guestfs_ldmtool_volume_hint_ret guestfs_ldmtool_volume_hint_ret;
+
+struct guestfs_ldmtool_volume_partitions_args {
+	char *diskgroup;
+	char *volume;
+};
+typedef struct guestfs_ldmtool_volume_partitions_args guestfs_ldmtool_volume_partitions_args;
+
+struct guestfs_ldmtool_volume_partitions_ret {
+	struct {
+		u_int partitions_len;
+		guestfs_str *partitions_val;
+	} partitions;
+};
+typedef struct guestfs_ldmtool_volume_partitions_ret guestfs_ldmtool_volume_partitions_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
 	GUESTFS_PROC_TOUCH = 3,
-	GUESTFS_PROC_CAT = 4,
 	GUESTFS_PROC_LL = 5,
-	GUESTFS_PROC_LS = 6,
 	GUESTFS_PROC_LIST_DEVICES = 7,
 	GUESTFS_PROC_LIST_PARTITIONS = 8,
 	GUESTFS_PROC_PVS = 9,
@@ -3004,7 +3538,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PVS_FULL = 12,
 	GUESTFS_PROC_VGS_FULL = 13,
 	GUESTFS_PROC_LVS_FULL = 14,
-	GUESTFS_PROC_READ_LINES = 15,
 	GUESTFS_PROC_AUG_INIT = 16,
 	GUESTFS_PROC_AUG_CLOSE = 26,
 	GUESTFS_PROC_AUG_DEFVAR = 17,
@@ -3031,7 +3564,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PVCREATE = 39,
 	GUESTFS_PROC_VGCREATE = 40,
 	GUESTFS_PROC_LVCREATE = 41,
-	GUESTFS_PROC_MKFS = 42,
 	GUESTFS_PROC_SFDISK = 43,
 	GUESTFS_PROC_WRITE_FILE = 44,
 	GUESTFS_PROC_UMOUNT = 45,
@@ -3096,7 +3628,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_VG_ACTIVATE = 104,
 	GUESTFS_PROC_LVRESIZE = 105,
 	GUESTFS_PROC_RESIZE2FS = 106,
-	GUESTFS_PROC_FIND = 107,
 	GUESTFS_PROC_E2FSCK_F = 108,
 	GUESTFS_PROC_SLEEP = 109,
 	GUESTFS_PROC_NTFS_3G_PROBE = 110,
@@ -3139,7 +3670,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_MOUNTPOINTS = 147,
 	GUESTFS_PROC_MKMOUNTPOINT = 148,
 	GUESTFS_PROC_RMMOUNTPOINT = 149,
-	GUESTFS_PROC_READ_FILE = 150,
 	GUESTFS_PROC_GREP = 151,
 	GUESTFS_PROC_EGREP = 152,
 	GUESTFS_PROC_FGREP = 153,
@@ -3193,9 +3723,9 @@ enum guestfs_procedure {
 	GUESTFS_PROC_UTIMENS = 201,
 	GUESTFS_PROC_MKDIR_MODE = 202,
 	GUESTFS_PROC_LCHOWN = 203,
-	GUESTFS_PROC_LSTATLIST = 204,
-	GUESTFS_PROC_LXATTRLIST = 205,
-	GUESTFS_PROC_READLINKLIST = 206,
+	GUESTFS_PROC_INTERNAL_LSTATLIST = 204,
+	GUESTFS_PROC_INTERNAL_LXATTRLIST = 205,
+	GUESTFS_PROC_INTERNAL_READLINKLIST = 206,
 	GUESTFS_PROC_PREAD = 207,
 	GUESTFS_PROC_PART_INIT = 208,
 	GUESTFS_PROC_PART_ADD = 209,
@@ -3220,7 +3750,6 @@ enum guestfs_procedure {
 	GUESTFS_PROC_ZERO_DEVICE = 228,
 	GUESTFS_PROC_TXZ_IN = 229,
 	GUESTFS_PROC_TXZ_OUT = 230,
-	GUESTFS_PROC_NTFSRESIZE = 231,
 	GUESTFS_PROC_VGSCAN = 232,
 	GUESTFS_PROC_PART_DEL = 233,
 	GUESTFS_PROC_PART_GET_BOOTABLE = 234,
@@ -3235,7 +3764,7 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BASE64_OUT = 243,
 	GUESTFS_PROC_CHECKSUMS_OUT = 244,
 	GUESTFS_PROC_FILL_PATTERN = 245,
-	GUESTFS_PROC_WRITE = 246,
+	GUESTFS_PROC_INTERNAL_WRITE = 246,
 	GUESTFS_PROC_PWRITE = 247,
 	GUESTFS_PROC_RESIZE2FS_SIZE = 248,
 	GUESTFS_PROC_PVRESIZE_SIZE = 249,
@@ -3267,7 +3796,7 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PWRITE_DEVICE = 275,
 	GUESTFS_PROC_PREAD_DEVICE = 276,
 	GUESTFS_PROC_LVM_CANONICAL_LV_NAME = 277,
-	GUESTFS_PROC_MKFS_OPTS = 278,
+	GUESTFS_PROC_MKFS = 278,
 	GUESTFS_PROC_GETXATTR = 279,
 	GUESTFS_PROC_LGETXATTR = 280,
 	GUESTFS_PROC_RESIZE2FS_M = 281,
@@ -3277,9 +3806,9 @@ enum guestfs_procedure {
 	GUESTFS_PROC_LIST_9P = 285,
 	GUESTFS_PROC_MOUNT_9P = 286,
 	GUESTFS_PROC_LIST_DM_DEVICES = 287,
-	GUESTFS_PROC_NTFSRESIZE_OPTS = 288,
+	GUESTFS_PROC_NTFSRESIZE = 288,
 	GUESTFS_PROC_BTRFS_FILESYSTEM_RESIZE = 289,
-	GUESTFS_PROC_WRITE_APPEND = 290,
+	GUESTFS_PROC_INTERNAL_WRITE_APPEND = 290,
 	GUESTFS_PROC_COMPRESS_OUT = 291,
 	GUESTFS_PROC_COMPRESS_DEVICE_OUT = 292,
 	GUESTFS_PROC_PART_TO_PARTNUM = 293,
@@ -3322,11 +3851,68 @@ enum guestfs_procedure {
 	GUESTFS_PROC_BTRFS_DEVICE_DELETE = 330,
 	GUESTFS_PROC_BTRFS_SET_SEEDING = 331,
 	GUESTFS_PROC_BTRFS_FSCK = 332,
+	GUESTFS_PROC_FILESYSTEM_AVAILABLE = 333,
+	GUESTFS_PROC_FSTRIM = 334,
 	GUESTFS_PROC_DEVICE_INDEX = 335,
 	GUESTFS_PROC_NR_DEVICES = 336,
-	GUESTFS_PROC_NR_PROCS = 336 + 1,
+	GUESTFS_PROC_XFS_INFO = 337,
+	GUESTFS_PROC_PVCHANGE_UUID = 338,
+	GUESTFS_PROC_PVCHANGE_UUID_ALL = 339,
+	GUESTFS_PROC_VGCHANGE_UUID = 340,
+	GUESTFS_PROC_VGCHANGE_UUID_ALL = 341,
+	GUESTFS_PROC_UTSNAME = 342,
+	GUESTFS_PROC_XFS_GROWFS = 343,
+	GUESTFS_PROC_RSYNC = 344,
+	GUESTFS_PROC_RSYNC_IN = 345,
+	GUESTFS_PROC_RSYNC_OUT = 346,
+	GUESTFS_PROC_LS0 = 347,
+	GUESTFS_PROC_FILL_DIR = 348,
+	GUESTFS_PROC_XFS_ADMIN = 349,
+	GUESTFS_PROC_HIVEX_OPEN = 350,
+	GUESTFS_PROC_HIVEX_CLOSE = 351,
+	GUESTFS_PROC_HIVEX_ROOT = 352,
+	GUESTFS_PROC_HIVEX_NODE_NAME = 353,
+	GUESTFS_PROC_HIVEX_NODE_CHILDREN = 354,
+	GUESTFS_PROC_HIVEX_NODE_GET_CHILD = 355,
+	GUESTFS_PROC_HIVEX_NODE_PARENT = 356,
+	GUESTFS_PROC_HIVEX_NODE_VALUES = 357,
+	GUESTFS_PROC_HIVEX_NODE_GET_VALUE = 358,
+	GUESTFS_PROC_HIVEX_VALUE_KEY = 359,
+	GUESTFS_PROC_HIVEX_VALUE_TYPE = 360,
+	GUESTFS_PROC_HIVEX_VALUE_VALUE = 361,
+	GUESTFS_PROC_HIVEX_COMMIT = 362,
+	GUESTFS_PROC_HIVEX_NODE_ADD_CHILD = 363,
+	GUESTFS_PROC_HIVEX_NODE_DELETE_CHILD = 364,
+	GUESTFS_PROC_HIVEX_NODE_SET_VALUE = 365,
+	GUESTFS_PROC_XFS_REPAIR = 366,
+	GUESTFS_PROC_RM_F = 367,
+	GUESTFS_PROC_MKE2FS = 368,
+	GUESTFS_PROC_LIST_DISK_LABELS = 369,
+	GUESTFS_PROC_INTERNAL_HOT_ADD_DRIVE = 370,
+	GUESTFS_PROC_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK = 371,
+	GUESTFS_PROC_INTERNAL_HOT_REMOVE_DRIVE = 372,
+	GUESTFS_PROC_MKTEMP = 373,
+	GUESTFS_PROC_MKLOST_AND_FOUND = 374,
+	GUESTFS_PROC_ACL_GET_FILE = 375,
+	GUESTFS_PROC_ACL_SET_FILE = 376,
+	GUESTFS_PROC_ACL_DELETE_DEF_FILE = 377,
+	GUESTFS_PROC_CAP_GET_FILE = 378,
+	GUESTFS_PROC_CAP_SET_FILE = 379,
+	GUESTFS_PROC_LIST_LDM_VOLUMES = 380,
+	GUESTFS_PROC_LIST_LDM_PARTITIONS = 381,
+	GUESTFS_PROC_LDMTOOL_CREATE_ALL = 382,
+	GUESTFS_PROC_LDMTOOL_REMOVE_ALL = 383,
+	GUESTFS_PROC_LDMTOOL_SCAN = 384,
+	GUESTFS_PROC_LDMTOOL_SCAN_DEVICES = 385,
+	GUESTFS_PROC_LDMTOOL_DISKGROUP_NAME = 386,
+	GUESTFS_PROC_LDMTOOL_DISKGROUP_VOLUMES = 387,
+	GUESTFS_PROC_LDMTOOL_DISKGROUP_DISKS = 388,
+	GUESTFS_PROC_LDMTOOL_VOLUME_TYPE = 389,
+	GUESTFS_PROC_LDMTOOL_VOLUME_HINT = 390,
+	GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391,
 };
 typedef enum guestfs_procedure guestfs_procedure;
+#define GUESTFS_MAX_PROC_NR 391
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -3411,20 +3997,26 @@ extern  bool_t xdr_guestfs_int_partition (XDR *, guestfs_int_partition*);
 extern  bool_t xdr_guestfs_int_partition_list (XDR *, guestfs_int_partition_list*);
 extern  bool_t xdr_guestfs_int_application (XDR *, guestfs_int_application*);
 extern  bool_t xdr_guestfs_int_application_list (XDR *, guestfs_int_application_list*);
+extern  bool_t xdr_guestfs_int_application2 (XDR *, guestfs_int_application2*);
+extern  bool_t xdr_guestfs_int_application2_list (XDR *, guestfs_int_application2_list*);
 extern  bool_t xdr_guestfs_int_isoinfo (XDR *, guestfs_int_isoinfo*);
 extern  bool_t xdr_guestfs_int_isoinfo_list (XDR *, guestfs_int_isoinfo_list*);
 extern  bool_t xdr_guestfs_int_mdstat (XDR *, guestfs_int_mdstat*);
 extern  bool_t xdr_guestfs_int_mdstat_list (XDR *, guestfs_int_mdstat_list*);
 extern  bool_t xdr_guestfs_int_btrfssubvolume (XDR *, guestfs_int_btrfssubvolume*);
 extern  bool_t xdr_guestfs_int_btrfssubvolume_list (XDR *, guestfs_int_btrfssubvolume_list*);
+extern  bool_t xdr_guestfs_int_xfsinfo (XDR *, guestfs_int_xfsinfo*);
+extern  bool_t xdr_guestfs_int_xfsinfo_list (XDR *, guestfs_int_xfsinfo_list*);
+extern  bool_t xdr_guestfs_int_utsname (XDR *, guestfs_int_utsname*);
+extern  bool_t xdr_guestfs_int_utsname_list (XDR *, guestfs_int_utsname_list*);
+extern  bool_t xdr_guestfs_int_hivex_node (XDR *, guestfs_int_hivex_node*);
+extern  bool_t xdr_guestfs_int_hivex_node_list (XDR *, guestfs_int_hivex_node_list*);
+extern  bool_t xdr_guestfs_int_hivex_value (XDR *, guestfs_int_hivex_value*);
+extern  bool_t xdr_guestfs_int_hivex_value_list (XDR *, guestfs_int_hivex_value_list*);
 extern  bool_t xdr_guestfs_mount_args (XDR *, guestfs_mount_args*);
 extern  bool_t xdr_guestfs_touch_args (XDR *, guestfs_touch_args*);
-extern  bool_t xdr_guestfs_cat_args (XDR *, guestfs_cat_args*);
-extern  bool_t xdr_guestfs_cat_ret (XDR *, guestfs_cat_ret*);
 extern  bool_t xdr_guestfs_ll_args (XDR *, guestfs_ll_args*);
 extern  bool_t xdr_guestfs_ll_ret (XDR *, guestfs_ll_ret*);
-extern  bool_t xdr_guestfs_ls_args (XDR *, guestfs_ls_args*);
-extern  bool_t xdr_guestfs_ls_ret (XDR *, guestfs_ls_ret*);
 extern  bool_t xdr_guestfs_list_devices_ret (XDR *, guestfs_list_devices_ret*);
 extern  bool_t xdr_guestfs_list_partitions_ret (XDR *, guestfs_list_partitions_ret*);
 extern  bool_t xdr_guestfs_pvs_ret (XDR *, guestfs_pvs_ret*);
@@ -3433,8 +4025,6 @@ extern  bool_t xdr_guestfs_lvs_ret (XDR *, guestfs_lvs_ret*);
 extern  bool_t xdr_guestfs_pvs_full_ret (XDR *, guestfs_pvs_full_ret*);
 extern  bool_t xdr_guestfs_vgs_full_ret (XDR *, guestfs_vgs_full_ret*);
 extern  bool_t xdr_guestfs_lvs_full_ret (XDR *, guestfs_lvs_full_ret*);
-extern  bool_t xdr_guestfs_read_lines_args (XDR *, guestfs_read_lines_args*);
-extern  bool_t xdr_guestfs_read_lines_ret (XDR *, guestfs_read_lines_ret*);
 extern  bool_t xdr_guestfs_aug_init_args (XDR *, guestfs_aug_init_args*);
 extern  bool_t xdr_guestfs_aug_defvar_args (XDR *, guestfs_aug_defvar_args*);
 extern  bool_t xdr_guestfs_aug_defvar_ret (XDR *, guestfs_aug_defvar_ret*);
@@ -3467,7 +4057,6 @@ extern  bool_t xdr_guestfs_is_dir_ret (XDR *, guestfs_is_dir_ret*);
 extern  bool_t xdr_guestfs_pvcreate_args (XDR *, guestfs_pvcreate_args*);
 extern  bool_t xdr_guestfs_vgcreate_args (XDR *, guestfs_vgcreate_args*);
 extern  bool_t xdr_guestfs_lvcreate_args (XDR *, guestfs_lvcreate_args*);
-extern  bool_t xdr_guestfs_mkfs_args (XDR *, guestfs_mkfs_args*);
 extern  bool_t xdr_guestfs_sfdisk_args (XDR *, guestfs_sfdisk_args*);
 extern  bool_t xdr_guestfs_write_file_args (XDR *, guestfs_write_file_args*);
 extern  bool_t xdr_guestfs_umount_args (XDR *, guestfs_umount_args*);
@@ -3553,8 +4142,6 @@ extern  bool_t xdr_guestfs_vg_activate_all_args (XDR *, guestfs_vg_activate_all_
 extern  bool_t xdr_guestfs_vg_activate_args (XDR *, guestfs_vg_activate_args*);
 extern  bool_t xdr_guestfs_lvresize_args (XDR *, guestfs_lvresize_args*);
 extern  bool_t xdr_guestfs_resize2fs_args (XDR *, guestfs_resize2fs_args*);
-extern  bool_t xdr_guestfs_find_args (XDR *, guestfs_find_args*);
-extern  bool_t xdr_guestfs_find_ret (XDR *, guestfs_find_ret*);
 extern  bool_t xdr_guestfs_e2fsck_f_args (XDR *, guestfs_e2fsck_f_args*);
 extern  bool_t xdr_guestfs_sleep_args (XDR *, guestfs_sleep_args*);
 extern  bool_t xdr_guestfs_ntfs_3g_probe_args (XDR *, guestfs_ntfs_3g_probe_args*);
@@ -3616,8 +4203,6 @@ extern  bool_t xdr_guestfs_lremovexattr_args (XDR *, guestfs_lremovexattr_args*)
 extern  bool_t xdr_guestfs_mountpoints_ret (XDR *, guestfs_mountpoints_ret*);
 extern  bool_t xdr_guestfs_mkmountpoint_args (XDR *, guestfs_mkmountpoint_args*);
 extern  bool_t xdr_guestfs_rmmountpoint_args (XDR *, guestfs_rmmountpoint_args*);
-extern  bool_t xdr_guestfs_read_file_args (XDR *, guestfs_read_file_args*);
-extern  bool_t xdr_guestfs_read_file_ret (XDR *, guestfs_read_file_ret*);
 extern  bool_t xdr_guestfs_grep_args (XDR *, guestfs_grep_args*);
 extern  bool_t xdr_guestfs_grep_ret (XDR *, guestfs_grep_ret*);
 extern  bool_t xdr_guestfs_egrep_args (XDR *, guestfs_egrep_args*);
@@ -3688,12 +4273,12 @@ extern  bool_t xdr_guestfs_truncate_size_args (XDR *, guestfs_truncate_size_args
 extern  bool_t xdr_guestfs_utimens_args (XDR *, guestfs_utimens_args*);
 extern  bool_t xdr_guestfs_mkdir_mode_args (XDR *, guestfs_mkdir_mode_args*);
 extern  bool_t xdr_guestfs_lchown_args (XDR *, guestfs_lchown_args*);
-extern  bool_t xdr_guestfs_lstatlist_args (XDR *, guestfs_lstatlist_args*);
-extern  bool_t xdr_guestfs_lstatlist_ret (XDR *, guestfs_lstatlist_ret*);
-extern  bool_t xdr_guestfs_lxattrlist_args (XDR *, guestfs_lxattrlist_args*);
-extern  bool_t xdr_guestfs_lxattrlist_ret (XDR *, guestfs_lxattrlist_ret*);
-extern  bool_t xdr_guestfs_readlinklist_args (XDR *, guestfs_readlinklist_args*);
-extern  bool_t xdr_guestfs_readlinklist_ret (XDR *, guestfs_readlinklist_ret*);
+extern  bool_t xdr_guestfs_internal_lstatlist_args (XDR *, guestfs_internal_lstatlist_args*);
+extern  bool_t xdr_guestfs_internal_lstatlist_ret (XDR *, guestfs_internal_lstatlist_ret*);
+extern  bool_t xdr_guestfs_internal_lxattrlist_args (XDR *, guestfs_internal_lxattrlist_args*);
+extern  bool_t xdr_guestfs_internal_lxattrlist_ret (XDR *, guestfs_internal_lxattrlist_ret*);
+extern  bool_t xdr_guestfs_internal_readlinklist_args (XDR *, guestfs_internal_readlinklist_args*);
+extern  bool_t xdr_guestfs_internal_readlinklist_ret (XDR *, guestfs_internal_readlinklist_ret*);
 extern  bool_t xdr_guestfs_pread_args (XDR *, guestfs_pread_args*);
 extern  bool_t xdr_guestfs_pread_ret (XDR *, guestfs_pread_ret*);
 extern  bool_t xdr_guestfs_part_init_args (XDR *, guestfs_part_init_args*);
@@ -3728,7 +4313,6 @@ extern  bool_t xdr_guestfs_copy_size_args (XDR *, guestfs_copy_size_args*);
 extern  bool_t xdr_guestfs_zero_device_args (XDR *, guestfs_zero_device_args*);
 extern  bool_t xdr_guestfs_txz_in_args (XDR *, guestfs_txz_in_args*);
 extern  bool_t xdr_guestfs_txz_out_args (XDR *, guestfs_txz_out_args*);
-extern  bool_t xdr_guestfs_ntfsresize_args (XDR *, guestfs_ntfsresize_args*);
 extern  bool_t xdr_guestfs_part_del_args (XDR *, guestfs_part_del_args*);
 extern  bool_t xdr_guestfs_part_get_bootable_args (XDR *, guestfs_part_get_bootable_args*);
 extern  bool_t xdr_guestfs_part_get_bootable_ret (XDR *, guestfs_part_get_bootable_ret*);
@@ -3745,7 +4329,7 @@ extern  bool_t xdr_guestfs_base64_in_args (XDR *, guestfs_base64_in_args*);
 extern  bool_t xdr_guestfs_base64_out_args (XDR *, guestfs_base64_out_args*);
 extern  bool_t xdr_guestfs_checksums_out_args (XDR *, guestfs_checksums_out_args*);
 extern  bool_t xdr_guestfs_fill_pattern_args (XDR *, guestfs_fill_pattern_args*);
-extern  bool_t xdr_guestfs_write_args (XDR *, guestfs_write_args*);
+extern  bool_t xdr_guestfs_internal_write_args (XDR *, guestfs_internal_write_args*);
 extern  bool_t xdr_guestfs_pwrite_args (XDR *, guestfs_pwrite_args*);
 extern  bool_t xdr_guestfs_pwrite_ret (XDR *, guestfs_pwrite_ret*);
 extern  bool_t xdr_guestfs_resize2fs_size_args (XDR *, guestfs_resize2fs_size_args*);
@@ -3791,7 +4375,7 @@ extern  bool_t xdr_guestfs_pread_device_args (XDR *, guestfs_pread_device_args*)
 extern  bool_t xdr_guestfs_pread_device_ret (XDR *, guestfs_pread_device_ret*);
 extern  bool_t xdr_guestfs_lvm_canonical_lv_name_args (XDR *, guestfs_lvm_canonical_lv_name_args*);
 extern  bool_t xdr_guestfs_lvm_canonical_lv_name_ret (XDR *, guestfs_lvm_canonical_lv_name_ret*);
-extern  bool_t xdr_guestfs_mkfs_opts_args (XDR *, guestfs_mkfs_opts_args*);
+extern  bool_t xdr_guestfs_mkfs_args (XDR *, guestfs_mkfs_args*);
 extern  bool_t xdr_guestfs_getxattr_args (XDR *, guestfs_getxattr_args*);
 extern  bool_t xdr_guestfs_getxattr_ret (XDR *, guestfs_getxattr_ret*);
 extern  bool_t xdr_guestfs_lgetxattr_args (XDR *, guestfs_lgetxattr_args*);
@@ -3804,9 +4388,9 @@ extern  bool_t xdr_guestfs_is_zero_device_ret (XDR *, guestfs_is_zero_device_ret
 extern  bool_t xdr_guestfs_list_9p_ret (XDR *, guestfs_list_9p_ret*);
 extern  bool_t xdr_guestfs_mount_9p_args (XDR *, guestfs_mount_9p_args*);
 extern  bool_t xdr_guestfs_list_dm_devices_ret (XDR *, guestfs_list_dm_devices_ret*);
-extern  bool_t xdr_guestfs_ntfsresize_opts_args (XDR *, guestfs_ntfsresize_opts_args*);
+extern  bool_t xdr_guestfs_ntfsresize_args (XDR *, guestfs_ntfsresize_args*);
 extern  bool_t xdr_guestfs_btrfs_filesystem_resize_args (XDR *, guestfs_btrfs_filesystem_resize_args*);
-extern  bool_t xdr_guestfs_write_append_args (XDR *, guestfs_write_append_args*);
+extern  bool_t xdr_guestfs_internal_write_append_args (XDR *, guestfs_internal_write_append_args*);
 extern  bool_t xdr_guestfs_compress_out_args (XDR *, guestfs_compress_out_args*);
 extern  bool_t xdr_guestfs_compress_device_out_args (XDR *, guestfs_compress_device_out_args*);
 extern  bool_t xdr_guestfs_part_to_partnum_args (XDR *, guestfs_part_to_partnum_args*);
@@ -3860,9 +4444,84 @@ extern  bool_t xdr_guestfs_btrfs_device_add_args (XDR *, guestfs_btrfs_device_ad
 extern  bool_t xdr_guestfs_btrfs_device_delete_args (XDR *, guestfs_btrfs_device_delete_args*);
 extern  bool_t xdr_guestfs_btrfs_set_seeding_args (XDR *, guestfs_btrfs_set_seeding_args*);
 extern  bool_t xdr_guestfs_btrfs_fsck_args (XDR *, guestfs_btrfs_fsck_args*);
+extern  bool_t xdr_guestfs_filesystem_available_args (XDR *, guestfs_filesystem_available_args*);
+extern  bool_t xdr_guestfs_filesystem_available_ret (XDR *, guestfs_filesystem_available_ret*);
+extern  bool_t xdr_guestfs_fstrim_args (XDR *, guestfs_fstrim_args*);
 extern  bool_t xdr_guestfs_device_index_args (XDR *, guestfs_device_index_args*);
 extern  bool_t xdr_guestfs_device_index_ret (XDR *, guestfs_device_index_ret*);
 extern  bool_t xdr_guestfs_nr_devices_ret (XDR *, guestfs_nr_devices_ret*);
+extern  bool_t xdr_guestfs_xfs_info_args (XDR *, guestfs_xfs_info_args*);
+extern  bool_t xdr_guestfs_xfs_info_ret (XDR *, guestfs_xfs_info_ret*);
+extern  bool_t xdr_guestfs_pvchange_uuid_args (XDR *, guestfs_pvchange_uuid_args*);
+extern  bool_t xdr_guestfs_vgchange_uuid_args (XDR *, guestfs_vgchange_uuid_args*);
+extern  bool_t xdr_guestfs_utsname_ret (XDR *, guestfs_utsname_ret*);
+extern  bool_t xdr_guestfs_xfs_growfs_args (XDR *, guestfs_xfs_growfs_args*);
+extern  bool_t xdr_guestfs_rsync_args (XDR *, guestfs_rsync_args*);
+extern  bool_t xdr_guestfs_rsync_in_args (XDR *, guestfs_rsync_in_args*);
+extern  bool_t xdr_guestfs_rsync_out_args (XDR *, guestfs_rsync_out_args*);
+extern  bool_t xdr_guestfs_ls0_args (XDR *, guestfs_ls0_args*);
+extern  bool_t xdr_guestfs_fill_dir_args (XDR *, guestfs_fill_dir_args*);
+extern  bool_t xdr_guestfs_xfs_admin_args (XDR *, guestfs_xfs_admin_args*);
+extern  bool_t xdr_guestfs_hivex_open_args (XDR *, guestfs_hivex_open_args*);
+extern  bool_t xdr_guestfs_hivex_root_ret (XDR *, guestfs_hivex_root_ret*);
+extern  bool_t xdr_guestfs_hivex_node_name_args (XDR *, guestfs_hivex_node_name_args*);
+extern  bool_t xdr_guestfs_hivex_node_name_ret (XDR *, guestfs_hivex_node_name_ret*);
+extern  bool_t xdr_guestfs_hivex_node_children_args (XDR *, guestfs_hivex_node_children_args*);
+extern  bool_t xdr_guestfs_hivex_node_children_ret (XDR *, guestfs_hivex_node_children_ret*);
+extern  bool_t xdr_guestfs_hivex_node_get_child_args (XDR *, guestfs_hivex_node_get_child_args*);
+extern  bool_t xdr_guestfs_hivex_node_get_child_ret (XDR *, guestfs_hivex_node_get_child_ret*);
+extern  bool_t xdr_guestfs_hivex_node_parent_args (XDR *, guestfs_hivex_node_parent_args*);
+extern  bool_t xdr_guestfs_hivex_node_parent_ret (XDR *, guestfs_hivex_node_parent_ret*);
+extern  bool_t xdr_guestfs_hivex_node_values_args (XDR *, guestfs_hivex_node_values_args*);
+extern  bool_t xdr_guestfs_hivex_node_values_ret (XDR *, guestfs_hivex_node_values_ret*);
+extern  bool_t xdr_guestfs_hivex_node_get_value_args (XDR *, guestfs_hivex_node_get_value_args*);
+extern  bool_t xdr_guestfs_hivex_node_get_value_ret (XDR *, guestfs_hivex_node_get_value_ret*);
+extern  bool_t xdr_guestfs_hivex_value_key_args (XDR *, guestfs_hivex_value_key_args*);
+extern  bool_t xdr_guestfs_hivex_value_key_ret (XDR *, guestfs_hivex_value_key_ret*);
+extern  bool_t xdr_guestfs_hivex_value_type_args (XDR *, guestfs_hivex_value_type_args*);
+extern  bool_t xdr_guestfs_hivex_value_type_ret (XDR *, guestfs_hivex_value_type_ret*);
+extern  bool_t xdr_guestfs_hivex_value_value_args (XDR *, guestfs_hivex_value_value_args*);
+extern  bool_t xdr_guestfs_hivex_value_value_ret (XDR *, guestfs_hivex_value_value_ret*);
+extern  bool_t xdr_guestfs_hivex_commit_args (XDR *, guestfs_hivex_commit_args*);
+extern  bool_t xdr_guestfs_hivex_node_add_child_args (XDR *, guestfs_hivex_node_add_child_args*);
+extern  bool_t xdr_guestfs_hivex_node_add_child_ret (XDR *, guestfs_hivex_node_add_child_ret*);
+extern  bool_t xdr_guestfs_hivex_node_delete_child_args (XDR *, guestfs_hivex_node_delete_child_args*);
+extern  bool_t xdr_guestfs_hivex_node_set_value_args (XDR *, guestfs_hivex_node_set_value_args*);
+extern  bool_t xdr_guestfs_xfs_repair_args (XDR *, guestfs_xfs_repair_args*);
+extern  bool_t xdr_guestfs_xfs_repair_ret (XDR *, guestfs_xfs_repair_ret*);
+extern  bool_t xdr_guestfs_rm_f_args (XDR *, guestfs_rm_f_args*);
+extern  bool_t xdr_guestfs_mke2fs_args (XDR *, guestfs_mke2fs_args*);
+extern  bool_t xdr_guestfs_list_disk_labels_ret (XDR *, guestfs_list_disk_labels_ret*);
+extern  bool_t xdr_guestfs_internal_hot_add_drive_args (XDR *, guestfs_internal_hot_add_drive_args*);
+extern  bool_t xdr_guestfs_internal_hot_remove_drive_precheck_args (XDR *, guestfs_internal_hot_remove_drive_precheck_args*);
+extern  bool_t xdr_guestfs_internal_hot_remove_drive_args (XDR *, guestfs_internal_hot_remove_drive_args*);
+extern  bool_t xdr_guestfs_mktemp_args (XDR *, guestfs_mktemp_args*);
+extern  bool_t xdr_guestfs_mktemp_ret (XDR *, guestfs_mktemp_ret*);
+extern  bool_t xdr_guestfs_mklost_and_found_args (XDR *, guestfs_mklost_and_found_args*);
+extern  bool_t xdr_guestfs_acl_get_file_args (XDR *, guestfs_acl_get_file_args*);
+extern  bool_t xdr_guestfs_acl_get_file_ret (XDR *, guestfs_acl_get_file_ret*);
+extern  bool_t xdr_guestfs_acl_set_file_args (XDR *, guestfs_acl_set_file_args*);
+extern  bool_t xdr_guestfs_acl_delete_def_file_args (XDR *, guestfs_acl_delete_def_file_args*);
+extern  bool_t xdr_guestfs_cap_get_file_args (XDR *, guestfs_cap_get_file_args*);
+extern  bool_t xdr_guestfs_cap_get_file_ret (XDR *, guestfs_cap_get_file_ret*);
+extern  bool_t xdr_guestfs_cap_set_file_args (XDR *, guestfs_cap_set_file_args*);
+extern  bool_t xdr_guestfs_list_ldm_volumes_ret (XDR *, guestfs_list_ldm_volumes_ret*);
+extern  bool_t xdr_guestfs_list_ldm_partitions_ret (XDR *, guestfs_list_ldm_partitions_ret*);
+extern  bool_t xdr_guestfs_ldmtool_scan_ret (XDR *, guestfs_ldmtool_scan_ret*);
+extern  bool_t xdr_guestfs_ldmtool_scan_devices_args (XDR *, guestfs_ldmtool_scan_devices_args*);
+extern  bool_t xdr_guestfs_ldmtool_scan_devices_ret (XDR *, guestfs_ldmtool_scan_devices_ret*);
+extern  bool_t xdr_guestfs_ldmtool_diskgroup_name_args (XDR *, guestfs_ldmtool_diskgroup_name_args*);
+extern  bool_t xdr_guestfs_ldmtool_diskgroup_name_ret (XDR *, guestfs_ldmtool_diskgroup_name_ret*);
+extern  bool_t xdr_guestfs_ldmtool_diskgroup_volumes_args (XDR *, guestfs_ldmtool_diskgroup_volumes_args*);
+extern  bool_t xdr_guestfs_ldmtool_diskgroup_volumes_ret (XDR *, guestfs_ldmtool_diskgroup_volumes_ret*);
+extern  bool_t xdr_guestfs_ldmtool_diskgroup_disks_args (XDR *, guestfs_ldmtool_diskgroup_disks_args*);
+extern  bool_t xdr_guestfs_ldmtool_diskgroup_disks_ret (XDR *, guestfs_ldmtool_diskgroup_disks_ret*);
+extern  bool_t xdr_guestfs_ldmtool_volume_type_args (XDR *, guestfs_ldmtool_volume_type_args*);
+extern  bool_t xdr_guestfs_ldmtool_volume_type_ret (XDR *, guestfs_ldmtool_volume_type_ret*);
+extern  bool_t xdr_guestfs_ldmtool_volume_hint_args (XDR *, guestfs_ldmtool_volume_hint_args*);
+extern  bool_t xdr_guestfs_ldmtool_volume_hint_ret (XDR *, guestfs_ldmtool_volume_hint_ret*);
+extern  bool_t xdr_guestfs_ldmtool_volume_partitions_args (XDR *, guestfs_ldmtool_volume_partitions_args*);
+extern  bool_t xdr_guestfs_ldmtool_volume_partitions_ret (XDR *, guestfs_ldmtool_volume_partitions_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -3897,20 +4556,26 @@ extern bool_t xdr_guestfs_int_partition ();
 extern bool_t xdr_guestfs_int_partition_list ();
 extern bool_t xdr_guestfs_int_application ();
 extern bool_t xdr_guestfs_int_application_list ();
+extern bool_t xdr_guestfs_int_application2 ();
+extern bool_t xdr_guestfs_int_application2_list ();
 extern bool_t xdr_guestfs_int_isoinfo ();
 extern bool_t xdr_guestfs_int_isoinfo_list ();
 extern bool_t xdr_guestfs_int_mdstat ();
 extern bool_t xdr_guestfs_int_mdstat_list ();
 extern bool_t xdr_guestfs_int_btrfssubvolume ();
 extern bool_t xdr_guestfs_int_btrfssubvolume_list ();
+extern bool_t xdr_guestfs_int_xfsinfo ();
+extern bool_t xdr_guestfs_int_xfsinfo_list ();
+extern bool_t xdr_guestfs_int_utsname ();
+extern bool_t xdr_guestfs_int_utsname_list ();
+extern bool_t xdr_guestfs_int_hivex_node ();
+extern bool_t xdr_guestfs_int_hivex_node_list ();
+extern bool_t xdr_guestfs_int_hivex_value ();
+extern bool_t xdr_guestfs_int_hivex_value_list ();
 extern bool_t xdr_guestfs_mount_args ();
 extern bool_t xdr_guestfs_touch_args ();
-extern bool_t xdr_guestfs_cat_args ();
-extern bool_t xdr_guestfs_cat_ret ();
 extern bool_t xdr_guestfs_ll_args ();
 extern bool_t xdr_guestfs_ll_ret ();
-extern bool_t xdr_guestfs_ls_args ();
-extern bool_t xdr_guestfs_ls_ret ();
 extern bool_t xdr_guestfs_list_devices_ret ();
 extern bool_t xdr_guestfs_list_partitions_ret ();
 extern bool_t xdr_guestfs_pvs_ret ();
@@ -3919,8 +4584,6 @@ extern bool_t xdr_guestfs_lvs_ret ();
 extern bool_t xdr_guestfs_pvs_full_ret ();
 extern bool_t xdr_guestfs_vgs_full_ret ();
 extern bool_t xdr_guestfs_lvs_full_ret ();
-extern bool_t xdr_guestfs_read_lines_args ();
-extern bool_t xdr_guestfs_read_lines_ret ();
 extern bool_t xdr_guestfs_aug_init_args ();
 extern bool_t xdr_guestfs_aug_defvar_args ();
 extern bool_t xdr_guestfs_aug_defvar_ret ();
@@ -3953,7 +4616,6 @@ extern bool_t xdr_guestfs_is_dir_ret ();
 extern bool_t xdr_guestfs_pvcreate_args ();
 extern bool_t xdr_guestfs_vgcreate_args ();
 extern bool_t xdr_guestfs_lvcreate_args ();
-extern bool_t xdr_guestfs_mkfs_args ();
 extern bool_t xdr_guestfs_sfdisk_args ();
 extern bool_t xdr_guestfs_write_file_args ();
 extern bool_t xdr_guestfs_umount_args ();
@@ -4039,8 +4701,6 @@ extern bool_t xdr_guestfs_vg_activate_all_args ();
 extern bool_t xdr_guestfs_vg_activate_args ();
 extern bool_t xdr_guestfs_lvresize_args ();
 extern bool_t xdr_guestfs_resize2fs_args ();
-extern bool_t xdr_guestfs_find_args ();
-extern bool_t xdr_guestfs_find_ret ();
 extern bool_t xdr_guestfs_e2fsck_f_args ();
 extern bool_t xdr_guestfs_sleep_args ();
 extern bool_t xdr_guestfs_ntfs_3g_probe_args ();
@@ -4102,8 +4762,6 @@ extern bool_t xdr_guestfs_lremovexattr_args ();
 extern bool_t xdr_guestfs_mountpoints_ret ();
 extern bool_t xdr_guestfs_mkmountpoint_args ();
 extern bool_t xdr_guestfs_rmmountpoint_args ();
-extern bool_t xdr_guestfs_read_file_args ();
-extern bool_t xdr_guestfs_read_file_ret ();
 extern bool_t xdr_guestfs_grep_args ();
 extern bool_t xdr_guestfs_grep_ret ();
 extern bool_t xdr_guestfs_egrep_args ();
@@ -4174,12 +4832,12 @@ extern bool_t xdr_guestfs_truncate_size_args ();
 extern bool_t xdr_guestfs_utimens_args ();
 extern bool_t xdr_guestfs_mkdir_mode_args ();
 extern bool_t xdr_guestfs_lchown_args ();
-extern bool_t xdr_guestfs_lstatlist_args ();
-extern bool_t xdr_guestfs_lstatlist_ret ();
-extern bool_t xdr_guestfs_lxattrlist_args ();
-extern bool_t xdr_guestfs_lxattrlist_ret ();
-extern bool_t xdr_guestfs_readlinklist_args ();
-extern bool_t xdr_guestfs_readlinklist_ret ();
+extern bool_t xdr_guestfs_internal_lstatlist_args ();
+extern bool_t xdr_guestfs_internal_lstatlist_ret ();
+extern bool_t xdr_guestfs_internal_lxattrlist_args ();
+extern bool_t xdr_guestfs_internal_lxattrlist_ret ();
+extern bool_t xdr_guestfs_internal_readlinklist_args ();
+extern bool_t xdr_guestfs_internal_readlinklist_ret ();
 extern bool_t xdr_guestfs_pread_args ();
 extern bool_t xdr_guestfs_pread_ret ();
 extern bool_t xdr_guestfs_part_init_args ();
@@ -4214,7 +4872,6 @@ extern bool_t xdr_guestfs_copy_size_args ();
 extern bool_t xdr_guestfs_zero_device_args ();
 extern bool_t xdr_guestfs_txz_in_args ();
 extern bool_t xdr_guestfs_txz_out_args ();
-extern bool_t xdr_guestfs_ntfsresize_args ();
 extern bool_t xdr_guestfs_part_del_args ();
 extern bool_t xdr_guestfs_part_get_bootable_args ();
 extern bool_t xdr_guestfs_part_get_bootable_ret ();
@@ -4231,7 +4888,7 @@ extern bool_t xdr_guestfs_base64_in_args ();
 extern bool_t xdr_guestfs_base64_out_args ();
 extern bool_t xdr_guestfs_checksums_out_args ();
 extern bool_t xdr_guestfs_fill_pattern_args ();
-extern bool_t xdr_guestfs_write_args ();
+extern bool_t xdr_guestfs_internal_write_args ();
 extern bool_t xdr_guestfs_pwrite_args ();
 extern bool_t xdr_guestfs_pwrite_ret ();
 extern bool_t xdr_guestfs_resize2fs_size_args ();
@@ -4277,7 +4934,7 @@ extern bool_t xdr_guestfs_pread_device_args ();
 extern bool_t xdr_guestfs_pread_device_ret ();
 extern bool_t xdr_guestfs_lvm_canonical_lv_name_args ();
 extern bool_t xdr_guestfs_lvm_canonical_lv_name_ret ();
-extern bool_t xdr_guestfs_mkfs_opts_args ();
+extern bool_t xdr_guestfs_mkfs_args ();
 extern bool_t xdr_guestfs_getxattr_args ();
 extern bool_t xdr_guestfs_getxattr_ret ();
 extern bool_t xdr_guestfs_lgetxattr_args ();
@@ -4290,9 +4947,9 @@ extern bool_t xdr_guestfs_is_zero_device_ret ();
 extern bool_t xdr_guestfs_list_9p_ret ();
 extern bool_t xdr_guestfs_mount_9p_args ();
 extern bool_t xdr_guestfs_list_dm_devices_ret ();
-extern bool_t xdr_guestfs_ntfsresize_opts_args ();
+extern bool_t xdr_guestfs_ntfsresize_args ();
 extern bool_t xdr_guestfs_btrfs_filesystem_resize_args ();
-extern bool_t xdr_guestfs_write_append_args ();
+extern bool_t xdr_guestfs_internal_write_append_args ();
 extern bool_t xdr_guestfs_compress_out_args ();
 extern bool_t xdr_guestfs_compress_device_out_args ();
 extern bool_t xdr_guestfs_part_to_partnum_args ();
@@ -4346,9 +5003,84 @@ extern bool_t xdr_guestfs_btrfs_device_add_args ();
 extern bool_t xdr_guestfs_btrfs_device_delete_args ();
 extern bool_t xdr_guestfs_btrfs_set_seeding_args ();
 extern bool_t xdr_guestfs_btrfs_fsck_args ();
+extern bool_t xdr_guestfs_filesystem_available_args ();
+extern bool_t xdr_guestfs_filesystem_available_ret ();
+extern bool_t xdr_guestfs_fstrim_args ();
 extern bool_t xdr_guestfs_device_index_args ();
 extern bool_t xdr_guestfs_device_index_ret ();
 extern bool_t xdr_guestfs_nr_devices_ret ();
+extern bool_t xdr_guestfs_xfs_info_args ();
+extern bool_t xdr_guestfs_xfs_info_ret ();
+extern bool_t xdr_guestfs_pvchange_uuid_args ();
+extern bool_t xdr_guestfs_vgchange_uuid_args ();
+extern bool_t xdr_guestfs_utsname_ret ();
+extern bool_t xdr_guestfs_xfs_growfs_args ();
+extern bool_t xdr_guestfs_rsync_args ();
+extern bool_t xdr_guestfs_rsync_in_args ();
+extern bool_t xdr_guestfs_rsync_out_args ();
+extern bool_t xdr_guestfs_ls0_args ();
+extern bool_t xdr_guestfs_fill_dir_args ();
+extern bool_t xdr_guestfs_xfs_admin_args ();
+extern bool_t xdr_guestfs_hivex_open_args ();
+extern bool_t xdr_guestfs_hivex_root_ret ();
+extern bool_t xdr_guestfs_hivex_node_name_args ();
+extern bool_t xdr_guestfs_hivex_node_name_ret ();
+extern bool_t xdr_guestfs_hivex_node_children_args ();
+extern bool_t xdr_guestfs_hivex_node_children_ret ();
+extern bool_t xdr_guestfs_hivex_node_get_child_args ();
+extern bool_t xdr_guestfs_hivex_node_get_child_ret ();
+extern bool_t xdr_guestfs_hivex_node_parent_args ();
+extern bool_t xdr_guestfs_hivex_node_parent_ret ();
+extern bool_t xdr_guestfs_hivex_node_values_args ();
+extern bool_t xdr_guestfs_hivex_node_values_ret ();
+extern bool_t xdr_guestfs_hivex_node_get_value_args ();
+extern bool_t xdr_guestfs_hivex_node_get_value_ret ();
+extern bool_t xdr_guestfs_hivex_value_key_args ();
+extern bool_t xdr_guestfs_hivex_value_key_ret ();
+extern bool_t xdr_guestfs_hivex_value_type_args ();
+extern bool_t xdr_guestfs_hivex_value_type_ret ();
+extern bool_t xdr_guestfs_hivex_value_value_args ();
+extern bool_t xdr_guestfs_hivex_value_value_ret ();
+extern bool_t xdr_guestfs_hivex_commit_args ();
+extern bool_t xdr_guestfs_hivex_node_add_child_args ();
+extern bool_t xdr_guestfs_hivex_node_add_child_ret ();
+extern bool_t xdr_guestfs_hivex_node_delete_child_args ();
+extern bool_t xdr_guestfs_hivex_node_set_value_args ();
+extern bool_t xdr_guestfs_xfs_repair_args ();
+extern bool_t xdr_guestfs_xfs_repair_ret ();
+extern bool_t xdr_guestfs_rm_f_args ();
+extern bool_t xdr_guestfs_mke2fs_args ();
+extern bool_t xdr_guestfs_list_disk_labels_ret ();
+extern bool_t xdr_guestfs_internal_hot_add_drive_args ();
+extern bool_t xdr_guestfs_internal_hot_remove_drive_precheck_args ();
+extern bool_t xdr_guestfs_internal_hot_remove_drive_args ();
+extern bool_t xdr_guestfs_mktemp_args ();
+extern bool_t xdr_guestfs_mktemp_ret ();
+extern bool_t xdr_guestfs_mklost_and_found_args ();
+extern bool_t xdr_guestfs_acl_get_file_args ();
+extern bool_t xdr_guestfs_acl_get_file_ret ();
+extern bool_t xdr_guestfs_acl_set_file_args ();
+extern bool_t xdr_guestfs_acl_delete_def_file_args ();
+extern bool_t xdr_guestfs_cap_get_file_args ();
+extern bool_t xdr_guestfs_cap_get_file_ret ();
+extern bool_t xdr_guestfs_cap_set_file_args ();
+extern bool_t xdr_guestfs_list_ldm_volumes_ret ();
+extern bool_t xdr_guestfs_list_ldm_partitions_ret ();
+extern bool_t xdr_guestfs_ldmtool_scan_ret ();
+extern bool_t xdr_guestfs_ldmtool_scan_devices_args ();
+extern bool_t xdr_guestfs_ldmtool_scan_devices_ret ();
+extern bool_t xdr_guestfs_ldmtool_diskgroup_name_args ();
+extern bool_t xdr_guestfs_ldmtool_diskgroup_name_ret ();
+extern bool_t xdr_guestfs_ldmtool_diskgroup_volumes_args ();
+extern bool_t xdr_guestfs_ldmtool_diskgroup_volumes_ret ();
+extern bool_t xdr_guestfs_ldmtool_diskgroup_disks_args ();
+extern bool_t xdr_guestfs_ldmtool_diskgroup_disks_ret ();
+extern bool_t xdr_guestfs_ldmtool_volume_type_args ();
+extern bool_t xdr_guestfs_ldmtool_volume_type_ret ();
+extern bool_t xdr_guestfs_ldmtool_volume_hint_args ();
+extern bool_t xdr_guestfs_ldmtool_volume_hint_ret ();
+extern bool_t xdr_guestfs_ldmtool_volume_partitions_args ();
+extern bool_t xdr_guestfs_ldmtool_volume_partitions_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

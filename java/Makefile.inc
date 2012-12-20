@@ -1,6 +1,6 @@
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   generator/generator_*.ml
+#   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
 # Copyright (C) 2009-2012 Red Hat Inc.
@@ -21,8 +21,11 @@
 
 java_built_sources = \
 	com/redhat/et/libguestfs/Application.java \
+	com/redhat/et/libguestfs/Application2.java \
 	com/redhat/et/libguestfs/BTRFSSubvolume.java \
 	com/redhat/et/libguestfs/Dirent.java \
+	com/redhat/et/libguestfs/HivexNode.java \
+	com/redhat/et/libguestfs/HivexValue.java \
 	com/redhat/et/libguestfs/INotifyEvent.java \
 	com/redhat/et/libguestfs/ISOInfo.java \
 	com/redhat/et/libguestfs/IntBool.java \
@@ -32,7 +35,9 @@ java_built_sources = \
 	com/redhat/et/libguestfs/Partition.java \
 	com/redhat/et/libguestfs/Stat.java \
 	com/redhat/et/libguestfs/StatVFS.java \
+	com/redhat/et/libguestfs/UTSName.java \
 	com/redhat/et/libguestfs/VG.java \
 	com/redhat/et/libguestfs/Version.java \
 	com/redhat/et/libguestfs/XAttr.java \
+	com/redhat/et/libguestfs/XFSInfo.java \
 	com/redhat/et/libguestfs/GuestFS.java

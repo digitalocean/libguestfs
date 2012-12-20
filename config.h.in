@@ -42,6 +42,9 @@
 /* Name of db_load program. */
 #undef DB_LOAD
 
+/* Default attach method. */
+#undef DEFAULT_ATTACH_METHOD
+
 /* the name of the file descriptor member of DIR */
 #undef DIR_FD_MEMBER_NAME
 
@@ -54,9 +57,6 @@
 
 /* Define to 1 if // is a file system root distinct from /. */
 #undef DOUBLE_SLASH_IS_DISTINCT_ROOT
-
-/* Default drive interface. */
-#undef DRIVE_IF
 
 /* Define if struct dirent has a member d_ino that actually works. */
 #undef D_INO_IN_DIRENT
@@ -301,6 +301,9 @@
 /* Define to 1 when the gnulib module pipe should be tested. */
 #undef GNULIB_TEST_PIPE
 
+/* Define to 1 when the gnulib module pipe2 should be tested. */
+#undef GNULIB_TEST_PIPE2
+
 /* Define to 1 when the gnulib module pread should be tested. */
 #undef GNULIB_TEST_PREAD
 
@@ -403,6 +406,9 @@
 /* Define to 1 if you have the 'accept4' function. */
 #undef HAVE_ACCEPT4
 
+/* Define to 1 if the POSIX acl library is available. */
+#undef HAVE_ACL
+
 /* Define to 1 if you have 'alloca' after including <alloca.h>, a header that
    may be supplied by this distribution. */
 #undef HAVE_ALLOCA
@@ -440,6 +446,9 @@
 
 /* Define to 1 if you have the <byteswap.h> header file. */
 #undef HAVE_BYTESWAP_H
+
+/* Define to 1 if the Linux capabilities library (libcap) is available. */
+#undef HAVE_CAP
 
 /* Define to 1 if you have the 'catgets' function. */
 #undef HAVE_CATGETS
@@ -767,11 +776,6 @@
 /* Define to 1 if you have the `inet_pton' function. */
 #undef HAVE_INET_PTON
 
-/* Define to 1 if the compiler supports one of the keywords 'inline',
-   '__inline__', '__inline' and effectively inlines functions marked as such.
-   */
-#undef HAVE_INLINE
-
 /* Define to 1 if you have the `inotify_init1' function. */
 #undef HAVE_INOTIFY_INIT1
 
@@ -854,6 +858,9 @@
 /* Define to 1 if you have the 'lstat' function. */
 #undef HAVE_LSTAT
 
+/* Lua library found at compile time */
+#undef HAVE_LUA
+
 /* Define to 1 if you have the 'lutimes' function. */
 #undef HAVE_LUTIMES
 
@@ -933,6 +940,9 @@
 
 /* Define to 1 if you have the 'pipe' function. */
 #undef HAVE_PIPE
+
+/* Define to 1 if you have the 'pipe2' function. */
+#undef HAVE_PIPE2
 
 /* Define to 1 if you have the `posix_fadvise' function. */
 #undef HAVE_POSIX_FADVISE
@@ -1987,6 +1997,12 @@
 /* Define to 1 if you have the <xlocale.h> header file. */
 #undef HAVE_XLOCALE_H
 
+/* Define to 1 if you have the `xmlBufferDetach' function. */
+#undef HAVE_XMLBUFFERDETACH
+
+/* Define to 1 if you have yajl. */
+#undef HAVE_YAJL
+
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
@@ -2033,9 +2049,6 @@
 
 /* Define if the mbrtowc function returns a wrong return value. */
 #undef MBRTOWC_RETVAL_BUG
-
-/* Default network interface. */
-#undef NET_IF
 
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
 #undef NO_MINUS_C_MINUS_O
@@ -2107,9 +2120,6 @@
 
 /* Location of qemu binary. */
 #undef QEMU
-
-/* qemu -machine accel=tcg option is broken (in qemu 0.15 only) */
-#undef QEMU_MACHINE_TYPE_IS_BROKEN
 
 /* Extra options for qemu command line. */
 #undef QEMU_OPTIONS
@@ -2369,11 +2379,19 @@
      when FOO is an inline function in the header; see
      <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=54113>.
    _GL_INLINE_HEADER_END contains useful stuff to put
-     in the same include file, after uses of _GL_INLINE.  */
-#if __GNUC__ ? __GNUC_STDC_INLINE__ : 199901L <= __STDC_VERSION__
+     in the same include file, after uses of _GL_INLINE.
+
+   Suppress the use of extern inline on Apple's platforms,
+   as Libc-825.25 (2012-09-19) is incompatible with it; see
+   <http://lists.gnu.org/archive/html/bug-gnulib/2012-12/msg00023.html>.
+   Perhaps Apple will fix this some day.  */
+#if ((__GNUC__ \
+      ? defined __GNUC_STDC_INLINE__ && __GNUC_STDC_INLINE__ \
+      : 199901L <= __STDC_VERSION__) \
+     && !defined __APPLE__)
 # define _GL_INLINE inline
 # define _GL_EXTERN_INLINE extern inline
-#elif 2 < __GNUC__ + (7 <= __GNUC_MINOR__)
+#elif 2 < __GNUC__ + (7 <= __GNUC_MINOR__) && !defined __APPLE__
 # if __GNUC_GNU_INLINE__
    /* __gnu_inline__ suppresses a GCC 4.2 diagnostic.  */
 #  define _GL_INLINE extern inline __attribute__ ((__gnu_inline__))
@@ -2382,12 +2400,12 @@
 # endif
 # define _GL_EXTERN_INLINE extern
 #else
-# define _GL_INLINE static inline
-# define _GL_EXTERN_INLINE static inline
+# define _GL_INLINE static _GL_UNUSED
+# define _GL_EXTERN_INLINE static _GL_UNUSED
 #endif
 
 #if 4 < __GNUC__ + (6 <= __GNUC_MINOR__)
-# if __GNUC_STDC_INLINE__
+# if defined __GNUC_STDC_INLINE__ && __GNUC_STDC_INLINE__
 #  define _GL_INLINE_HEADER_CONST_PRAGMA
 # else
 #  define _GL_INLINE_HEADER_CONST_PRAGMA \

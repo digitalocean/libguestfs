@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -61,20 +61,20 @@ guestfs_mount_local_set_property(GObject *object, guint property_id, const GValu
 
   switch (property_id) {
     case PROP_GUESTFS_MOUNT_LOCAL_READONLY:
-      priv->readonly = g_value_get_enum(value);
+      priv->readonly = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_MOUNT_LOCAL_OPTIONS:
       g_free(priv->options);
-      priv->options = g_value_dup_string(value);
+      priv->options = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MOUNT_LOCAL_CACHETIMEOUT:
-      priv->cachetimeout = g_value_get_int(value);
+      priv->cachetimeout = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_MOUNT_LOCAL_DEBUGCALLS:
-      priv->debugcalls = g_value_get_enum(value);
+      priv->debugcalls = g_value_get_enum (value);
       break;
 
     default:

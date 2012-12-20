@@ -66,7 +66,10 @@ OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 
 virt-resize: $(OBJECTS)
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
-	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
+	  mlguestfs.cmxa -linkpkg $^ \
+	  -cclib -lncurses \
+	  $(OCAML_GCOV_LDFLAGS) \
+	  -o $@
 
 .mli.cmi:
 	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
@@ -109,16 +112,15 @@ resize_utils_tests: resize_gettext.cmx resize_utils.cmx resize_utils_tests.cmx
 	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
 
-random_val := $(shell awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)
-
-TESTS_ENVIRONMENT = \
-	MALLOC_PERTURB_=$(random_val) \
-	$(top_builddir)/run
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 TESTS = resize_utils_tests
 if ENABLE_APPLIANCE
 TESTS += test-virt-resize.sh
 endif
+
+check-valgrind:
+	$(MAKE) VG="$(top_builddir)/run @VG@" check
 
 # Dependencies.
 depend: .depend

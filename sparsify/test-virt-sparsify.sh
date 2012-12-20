@@ -24,11 +24,11 @@ rm -f test1.img test2.img
 # Create a filesystem, fill it with data, then delete the data.  Then
 # prove that sparsifying it reduces the size of the final filesystem.
 
-../fish/guestfish \
+$VG ../fish/guestfish \
     -N bootrootlv:/dev/VG/LV:ext2:ext4:400M:32M:gpt <<EOF
-mount-options "" /dev/VG/LV /
+mount /dev/VG/LV /
 mkdir /boot
-mount-options "" /dev/sda1 /boot
+mount /dev/sda1 /boot
 fill 1 300M /big
 fill 1 10M /boot/big
 sync
@@ -37,7 +37,7 @@ rm /boot/big
 umount-all
 EOF
 
-$VG ./virt-sparsify --debug-gc --format raw test1.img --convert qcow2 test2.img
+$VG ./virt-sparsify --debug-gc test1.img --convert qcow2 test2.img
 
 size_before=$(du -s test1.img | awk '{print $1}')
 size_after=$(du -s test2.img | awk '{print $1}')

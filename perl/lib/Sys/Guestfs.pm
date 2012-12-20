@@ -1,6 +1,6 @@
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   generator/generator_*.ml
+#   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
 # Copyright (C) 2009-2012 Red Hat Inc.
@@ -32,7 +32,7 @@ Sys::Guestfs - Perl bindings for libguestfs
  my $g = Sys::Guestfs->new ();
  $g->add_drive_opts ('guest.img', format => 'raw');
  $g->launch ();
- $g->mount_options ('', '/dev/sda1', '/');
+ $g->mount ('/dev/sda1', '/');
  $g->touch ('/hello');
  $g->shutdown ();
  $g->close ();
@@ -86,23 +86,34 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.336';
+$VERSION = '0.391';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
 
-=item $g = Sys::Guestfs->new ();
+=item $g = Sys::Guestfs->new ([environment => 0,] [close_on_exit => 0]);
 
 Create a new guestfs handle.
+
+If the optional argument C<environment> is false, then
+the C<GUESTFS_CREATE_NO_ENVIRONMENT> flag is set.
+
+If the optional argument C<close_on_exit> is false, then
+the C<GUESTFS_CREATE_NO_CLOSE_ON_EXIT> flag is set.
 
 =cut
 
 sub new {
   my $proto = shift;
   my $class = ref ($proto) || $proto;
+  my %flags = @_;
 
-  my $g = Sys::Guestfs::_create ();
-  my $self = { _g => $g };
+  my $flags = 0;
+  $flags |= 1 if exists $flags{environment} && !$flags{environment};
+  $flags |= 2 if exists $flags{close_on_exit} && !$flags{close_on_exit};
+
+  my $g = Sys::Guestfs::_create ($flags);
+  my $self = { _g => $g, _flags => $flags };
   bless $self, $class;
   return $self;
 }
@@ -185,6 +196,14 @@ See L<guestfs(3)/GUESTFS_EVENT_ENTER>.
 
 our $EVENT_ENTER = 0x80;
 
+=item $Sys::Guestfs::EVENT_LIBVIRT_AUTH
+
+See L<guestfs(3)/GUESTFS_EVENT_LIBVIRT_AUTH>.
+
+=cut
+
+our $EVENT_LIBVIRT_AUTH = 0x100;
+
 =item $event_handle = $g->set_event_callback (\&cb, $event_bitmask);
 
 Register C<cb> as a callback function for all of the events
@@ -255,33 +274,63 @@ handlers and threads.
 
 =cut
 
+=item $g->acl_delete_def_file ($dir);
+
+This function deletes the default POSIX Access Control List (ACL)
+attached to directory C<dir>.
+
+=item $acl = $g->acl_get_file ($path, $acltype);
+
+This function returns the POSIX Access Control List (ACL) attached
+to C<path>.  The ACL is returned in "long text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Return the ordinary (access) ACL for any file, directory or
+other filesystem object.
+
+=item C<default>
+
+Return the default ACL.  Normally this only makes sense if
+C<path> is a directory.
+
+=back
+
+=item $g->acl_set_file ($path, $acltype, $acl);
+
+This function sets the POSIX Access Control List (ACL) attached
+to C<path>.  The C<acl> parameter is the new ACL in either
+"long text form" or "short text form" (see L<acl(5)>).
+
+The C<acltype> parameter may be:
+
+=over 4
+
+=item C<access>
+
+Set the ordinary (access) ACL for any file, directory or
+other filesystem object.
+
+=item C<default>
+
+Set the default ACL.  Normally this only makes sense if
+C<path> is a directory.
+
+=back
+
 =item $g->add_cdrom ($filename);
 
 This function adds a virtual CD-ROM disk image to the guest.
 
-This is equivalent to the qemu parameter I<-cdrom filename>.
-
-Notes:
-
-=over 4
-
-=item *
-
-This call checks for the existence of C<filename>.  This
-stops you from specifying other types of drive which are supported
-by qemu such as C<nbd:> and C<http:> URLs.  To specify those, use
-the general C<$g-E<gt>config> call instead.
-
-=item *
-
-If you just want to add an ISO file (often you use this as an
-efficient way to transfer large files into the guest), then you
-should probably use C<$g-E<gt>add_drive_ro> instead.
-
-=back
+B<Do not use this function!>  ISO files are just ordinary
+read-only disk images.  Use C<$g-E<gt>add_drive_ro> instead.
 
 I<This function is deprecated.>
-In new code, use the L</add_drive_opts> call instead.
+In new code, use the L</add_drive> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -373,26 +422,21 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename);
-
-This function is the equivalent of calling C<$g-E<gt>add_drive_opts>
-with no optional parameters, so the disk is added writable, with
-the format being detected automatically.
-
-Automatic detection of the format opens you up to a potential
-security hole when dealing with untrusted raw-format images.
-See CVE-2010-3851 and RHBZ#642934.  Specifying the format closes
-this security hole.  Therefore you should think about replacing
-calls to this function with calls to C<$g-E<gt>add_drive_opts>,
-and specifying the format.
-
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
 
-The first time you call this function, the disk appears as
-C</dev/sda>, the second time as C</dev/sdb>, and so on.
+When this function is called before C<$g-E<gt>launch> (the
+usual case) then the first time you call this function,
+the disk appears in the API as C</dev/sda>, the second time
+as C</dev/sdb>, and so on.
+
+In libguestfs E<ge> 1.20 you can also call this function
+after launch (with some restrictions).  This is called
+"hotplugging".  When hotplugging, you must specify a
+C<label> so that the new disk gets a predictable name.
+For more information see L<guestfs(3)/HOTPLUGGING>.
 
 You don't necessarily need to be root when using libguestfs.  However
 you obviously do need sufficient permissions to access the filename
@@ -437,7 +481,28 @@ The name the drive had in the original guest, e.g. C</dev/sdb>.
 This is used as a hint to the guest inspection process if
 it is available.
 
+=item C<label>
+
+Give the disk a label.  The label should be a unique, short
+string using I<only> ASCII characters C<[a-zA-Z]>.
+As well as its usual name in the API (such as C</dev/sda>),
+the drive will also be named C</dev/disk/guestfs/I<label>>.
+
+See L<guestfs(3)/DISK LABELS>.
+
 =back
+
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label]);
+
+This is an alias of L</add_drive>.
+
+=cut
+
+sub add_drive_opts {
+  &add_drive (@_)
+}
+
+=pod
 
 =item $g->add_drive_ro ($filename);
 
@@ -452,7 +517,7 @@ This is the same as C<$g-E<gt>add_drive_ro> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
 I<This function is deprecated.>
-In new code, use the L</add_drive_opts> call instead.
+In new code, use the L</add_drive> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -464,7 +529,7 @@ This is the same as C<$g-E<gt>add_drive> but it allows you
 to specify the QEMU interface emulation to use at run time.
 
 I<This function is deprecated.>
-In new code, use the L</add_drive_opts> call instead.
+In new code, use the L</add_drive> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
@@ -677,6 +742,8 @@ See also C<$g-E<gt>version>.
 
 =back
 
+See also C<$g-E<gt>filesystem_available>.
+
 =item @groups = $g->available_all_groups ();
 
 This command returns a list of all optional groups that this
@@ -881,6 +948,43 @@ Create a writable snapshot of the btrfs subvolume C<source>.
 The C<dest> argument is the destination directory and the name
 of the snapshot, in the form C</path/to/dest/name>.
 
+=item $canonical = $g->canonical_device_name ($device);
+
+This utility function is useful when displaying device names to
+the user.  It takes a number of irregular device names and
+returns them in a consistent format:
+
+=over 4
+
+=item C</dev/hdX>
+
+=item C</dev/vdX>
+
+These are returned as C</dev/sdX>.  Note this works for device
+names and partition names.  This is approximately the reverse of
+the algorithm described in L<guestfs(3)/BLOCK DEVICE NAMING>.
+
+=item C</dev/mapper/VG-LV>
+
+=item C</dev/dm-N>
+
+Converted to C</dev/VG/LV> form using C<$g-E<gt>lvm_canonical_lvm_name>.
+
+=back
+
+Other strings are returned unmodified.
+
+=item $cap = $g->cap_get_file ($path);
+
+This function returns the Linux capabilities attached to C<path>.
+The capabilities set is returned in text form (see L<cap_to_text(3)>).
+
+=item $g->cap_set_file ($path, $cap);
+
+This function sets the Linux capabilities attached to C<path>.
+The capabilities set C<cap> should be passed in text form
+(see L<cap_from_text(3)>).
+
 =item $rpath = $g->case_sensitive_path ($path);
 
 This can be used to resolve case insensitive paths on
@@ -919,13 +1023,10 @@ See also C<$g-E<gt>realpath>.
 
 Return the contents of the file named C<path>.
 
-Note that this function cannot correctly handle binary files
-(specifically, files containing C<\0> character which is treated
-as end of string).  For those you need to use the C<$g-E<gt>read_file>
-or C<$g-E<gt>download> functions which have a more complex interface.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+Because, in C, this function returns a C<char *>, there is no
+way to differentiate between a C<\0> character in a file and
+end of string.  To handle binary files, use the C<$g-E<gt>read_file>
+or C<$g-E<gt>download> functions.
 
 =item $checksum = $g->checksum ($csumtype, $path);
 
@@ -1088,9 +1189,9 @@ of the form I<-param value>.  Actually it's not quite arbitrary - we
 prevent you from setting some parameters which would interfere with
 parameters that we use.
 
-The first character of C<param> string must be a C<-> (dash).
+The first character of C<qemuparam> string must be a C<-> (dash).
 
-C<value> can be NULL.
+C<qemuvalue> can be NULL.
 
 =item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
 
@@ -1203,6 +1304,33 @@ in human-readable format.
 This command is mostly useful for interactive sessions.  It
 is I<not> intended that you try to parse the output string.
 Use C<$g-E<gt>statvfs> from programs.
+
+=item $format = $g->disk_format ($filename);
+
+Detect and return the format of the disk image called C<filename>.
+C<filename> can also be a host device, etc.  If the format of the
+image could not be detected, then C<"unknown"> is returned.
+
+Note that detecting the disk format can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
+
+See also: L<guestfs(3)/DISK IMAGE FORMATS>
+
+=item $backingfile = $g->disk_has_backing_file ($filename);
+
+Detect and return whether the disk image C<filename> has a
+backing file.
+
+Note that detecting disk features can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
+
+=item $size = $g->disk_virtual_size ($filename);
+
+Detect and return the virtual size in bytes of the disk image
+called C<filename>.
+
+Note that detecting disk features can be insecure under some
+circumstances.  See L<guestfs(3)/CVE-2010-3851>.
 
 =item $kmsgs = $g->dmesg ();
 
@@ -1317,6 +1445,13 @@ matching lines.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item @lines = $g->egrepi ($regex, $path);
 
 This calls the external C<egrep -i> program and returns the
@@ -1324,6 +1459,13 @@ matching lines.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $equality = $g->equal ($file1, $file2);
 
@@ -1382,6 +1524,13 @@ matching lines.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item @lines = $g->fgrepi ($pattern, $path);
 
 This calls the external C<fgrep -i> program and returns the
@@ -1389,6 +1538,13 @@ matching lines.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $description = $g->file ($path);
 
@@ -1520,6 +1676,21 @@ To get other stats about a file, use C<$g-E<gt>stat>, C<$g-E<gt>lstat>,
 C<$g-E<gt>is_dir>, C<$g-E<gt>is_file> etc.
 To get the size of block devices, use C<$g-E<gt>blockdev_getsize64>.
 
+=item $fsavail = $g->filesystem_available ($filesystem);
+
+Check whether libguestfs supports the named filesystem.
+The argument C<filesystem> is a filesystem name, such as
+C<ext3>.
+
+You must call C<$g-E<gt>launch> before using this command.
+
+This is mainly useful as a negative test.  If this returns true,
+it doesn't mean that a particular filesystem can be mounted,
+since filesystems can fail for other reasons such as it being
+a later version of the filesystem, or having incompatible features.
+
+See also C<$g-E<gt>available>, L<guestfs(3)/AVAILABILITY>.
+
 =item $g->fill ($c, $len, $path);
 
 This command creates a new file called C<path>.  The initial
@@ -1530,6 +1701,13 @@ To fill a file with zero bytes (sparsely), it is
 much more efficient to use C<$g-E<gt>truncate_size>.
 To create a file with a pattern of repeating bytes
 use C<$g-E<gt>fill_pattern>.
+
+=item $g->fill_dir ($dir, $nr);
+
+This function, useful for testing filesystems, creates C<nr>
+empty files in the directory C<dir> with names C<00000000>
+through C<nr-1> (ie. each file name is 8 digits long padded
+with zeroes).
 
 =item $g->fill_pattern ($pattern, $len, $path);
 
@@ -1565,11 +1743,6 @@ an error.
 
 The returned list is sorted.
 
-See also C<$g-E<gt>find0>.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
 =item $g->find0 ($directory, $files);
 
 This command lists out all files and directories, recursively,
@@ -1589,11 +1762,6 @@ The resulting list is written to an external file.
 
 Items (filenames) in the result are separated
 by C<\0> characters.  See L<find(1)> option I<-print0>.
-
-=item *
-
-This command is not limited in the number of names that it
-can return.
 
 =item *
 
@@ -1647,6 +1815,26 @@ Checking or repairing NTFS volumes is not supported
 
 This command is entirely equivalent to running C<fsck -a -t fstype device>.
 
+=item $g->fstrim ($mountpoint [, offset => $offset] [, length => $length] [, minimumfreeextent => $minimumfreeextent]);
+
+Trim the free space in the filesystem mounted on C<mountpoint>.
+The filesystem must be mounted read-write.
+
+The filesystem contents are not affected, but any free space
+in the filesystem is "trimmed", that is, given back to the host
+device, thus making disk images more sparse, allowing unused space
+in qcow2 files to be reused, etc.
+
+This operation requires support in libguestfs, the mounted
+filesystem, the host filesystem, qemu and the host kernel.
+If this support isn't present it may give an error or even
+appear to run but do nothing.
+
+See also C<$g-E<gt>zero_free_space>.  That is a slightly
+different operation that turns free space in the filesystem
+into zeroes.  It is valid to call C<$g-E<gt>fstrim> either
+instead of, or after calling C<$g-E<gt>zero_free_space>.
+
 =item $append = $g->get_append ();
 
 Return the additional kernel options which are added to the
@@ -1656,11 +1844,17 @@ If C<NULL> then no options are added.
 
 =item $attachmethod = $g->get_attach_method ();
 
-Return the current attach method.  See C<$g-E<gt>set_attach_method>.
+Return the current attach method.
+
+See C<$g-E<gt>set_attach_method> and L<guestfs(3)/ATTACH METHOD>.
 
 =item $autosync = $g->get_autosync ();
 
 Get the autosync flag.
+
+=item $cachedir = $g->get_cachedir ();
+
+Get the directory used by the handle to store the appliance cache.
 
 =item $direct = $g->get_direct ();
 
@@ -1812,6 +2006,41 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=item $challenge = $g->get_libvirt_requested_credential_challenge ($index);
+
+Get the challenge (provided by libvirt) for the C<index>'th
+requested credential.  If libvirt did not provide a challenge,
+this returns the empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=item $defresult = $g->get_libvirt_requested_credential_defresult ($index);
+
+Get the default result (provided by libvirt) for the C<index>'th
+requested credential.  If libvirt did not provide a default result,
+this returns the empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=item $prompt = $g->get_libvirt_requested_credential_prompt ($index);
+
+Get the prompt (provided by libvirt) for the C<index>'th
+requested credential.  If libvirt did not provide a prompt,
+this returns the empty string C<"">.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=item @creds = $g->get_libvirt_requested_credentials ();
+
+This should only be called during the event callback
+for events of type C<GUESTFS_EVENT_LIBVIRT_AUTH>.
+
+Return the list of credentials requested by libvirt.  Possible
+values are a subset of the strings provided when you called
+C<$g-E<gt>set_libvirt_supported_credentials>.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
 =item $memsize = $g->get_memsize ();
 
 This gets the memory size in megabytes allocated to the
@@ -1875,6 +2104,10 @@ This returns the current state as an opaque integer.  This is
 only useful for printing debug and internal error messages.
 
 For more information on states, see L<guestfs(3)>.
+
+=item $tmpdir = $g->get_tmpdir ();
+
+Get the directory used by the handle to store temporary files.
 
 =item $trace = $g->get_trace ();
 
@@ -1941,13 +2174,50 @@ Notice that there is no equivalent command for expanding a device
 name (eg. C</dev/sd*>).  Use C<$g-E<gt>list_devices>,
 C<$g-E<gt>list_partitions> etc functions instead.
 
-=item @lines = $g->grep ($regex, $path);
+=item @lines = $g->grep ($regex, $path [, extended => $extended] [, fixed => $fixed] [, insensitive => $insensitive] [, compressed => $compressed]);
 
 This calls the external C<grep> program and returns the
 matching lines.
 
+The optional flags are:
+
+=over 4
+
+=item C<extended>
+
+Use extended regular expressions.
+This is the same as using the I<-E> flag.
+
+=item C<fixed>
+
+Match fixed (don't use regular expressions).
+This is the same as using the I<-F> flag.
+
+=item C<insensitive>
+
+Match case-insensitive.  This is the same as using the I<-i> flag.
+
+=item C<compressed>
+
+Use C<zgrep> instead of C<grep>.  This allows the input to be
+compress- or gzip-compressed.
+
+=back
+
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=item @lines = $g->grep_opts ($regex, $path [, extended => $extended] [, fixed => $fixed] [, insensitive => $insensitive] [, compressed => $compressed]);
+
+This is an alias of L</grep>.
+
+=cut
+
+sub grep_opts {
+  &grep (@_)
+}
+
+=pod
 
 =item @lines = $g->grepi ($regex, $path);
 
@@ -1956,6 +2226,13 @@ matching lines.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->grub_install ($root, $device);
 
@@ -2023,6 +2300,127 @@ the human-readable, canonical hex dump of the file.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+=item $g->hivex_close ();
+
+Close the current hivex handle.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $g->hivex_commit ($filename);
+
+Commit (write) changes to the hive.
+
+If the optional C<filename> parameter is null, then the changes
+are written back to the same hive that was opened.  If this is
+not null then they are written to the alternate filename given
+and the original hive is left untouched.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $nodeh = $g->hivex_node_add_child ($parent, $name);
+
+Add a child node to C<parent> named C<name>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item @nodehs = $g->hivex_node_children ($nodeh);
+
+Return the list of nodes which are subkeys of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $g->hivex_node_delete_child ($nodeh);
+
+Delete C<nodeh>, recursively if necessary.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $child = $g->hivex_node_get_child ($nodeh, $name);
+
+Return the child of C<nodeh> with the name C<name>, if it exists.
+This can return C<0> meaning the name was not found.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $valueh = $g->hivex_node_get_value ($nodeh, $key);
+
+Return the value attached to C<nodeh> which has the
+name C<key>, if it exists.  This can return C<0> meaning
+the key was not found.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $name = $g->hivex_node_name ($nodeh);
+
+Return the name of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $parent = $g->hivex_node_parent ($nodeh);
+
+Return the parent node of C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $g->hivex_node_set_value ($nodeh, $key, $t, $val);
+
+Set or replace a single value under the node C<nodeh>.  The
+C<key> is the name, C<t> is the type, and C<val> is the data.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item @valuehs = $g->hivex_node_values ($nodeh);
+
+Return the array of (key, datatype, data) tuples attached to C<nodeh>.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $g->hivex_open ($filename [, verbose => $verbose] [, debug => $debug] [, write => $write]);
+
+Open the Windows Registry hive file named C<filename>.
+If there was any previous hivex handle associated with this
+guestfs session, then it is closed.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $nodeh = $g->hivex_root ();
+
+Return the root node of the hive.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $key = $g->hivex_value_key ($valueh);
+
+Return the key (name) field of a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $datatype = $g->hivex_value_type ($valueh);
+
+Return the data type field from a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+=item $databuf = $g->hivex_value_utf8 ($valueh);
+
+This calls C<$g-E<gt>hivex_value_value> (which returns the
+data field from a hivex value tuple).  It then assumes that
+the field is a UTF-16LE string and converts the result to
+UTF-8 (or if this is not possible, it returns an error).
+
+This is useful for reading strings out of the Windows registry.
+However it is not foolproof because the registry is not
+strongly-typed and fields can contain arbitrary or unexpected
+data.
+
+=item $databuf = $g->hivex_value_value ($valueh);
+
+Return the data field of a (key, datatype, data) tuple.
+
+This is a wrapper around the L<hivex(3)> call of the same name.
+
+See also: C<$g-E<gt>hivex_value_utf8>.
 
 =item $content = $g->initrd_cat ($initrdpath, $filename);
 
@@ -2199,6 +2597,10 @@ Mandriva.
 
 MeeGo.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "opensuse"
 
 OpenSUSE.
@@ -2222,6 +2624,14 @@ Scientific Linux.
 =item "slackware"
 
 Slackware.
+
+=item "sles"
+
+SuSE Linux Enterprise Server or Desktop.
+
+=item "suse-based"
+
+Some openSuSE-derived distro.
 
 =item "ttylinux"
 
@@ -2554,6 +2964,10 @@ FreeBSD.
 
 NetBSD.
 
+=item "openbsd"
+
+OpenBSD.
+
 =item "hurd"
 
 GNU/Hurd.
@@ -2707,6 +3121,113 @@ A short (usually one line) description of the application or package.
 If unavailable this is returned as an empty string C<"">.
 
 =item C<app_description>
+
+A longer description of the application or package.
+If unavailable this is returned as an empty string C<"">.
+
+=back
+
+Please read L<guestfs(3)/INSPECTION> for more details.
+
+I<This function is deprecated.>
+In new code, use the L</inspect_list_applications2> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=item @applications2 = $g->inspect_list_applications2 ($root);
+
+Return the list of applications installed in the operating system.
+
+I<Note:> This call works differently from other parts of the
+inspection API.  You have to call C<$g-E<gt>inspect_os>, then
+C<$g-E<gt>inspect_get_mountpoints>, then mount up the disks,
+before calling this.  Listing applications is a significantly
+more difficult operation which requires access to the full
+filesystem.  Also note that unlike the other
+C<$g-E<gt>inspect_get_*> calls which are just returning
+data cached in the libguestfs handle, this call actually reads
+parts of the mounted filesystems during the call.
+
+This returns an empty list if the inspection code was not able
+to determine the list of applications.
+
+The application structure contains the following fields:
+
+=over 4
+
+=item C<app2_name>
+
+The name of the application.  For Red Hat-derived and Debian-derived
+Linux guests, this is the package name.
+
+=item C<app2_display_name>
+
+The display name of the application, sometimes localized to the
+install language of the guest operating system.
+
+If unavailable this is returned as an empty string C<"">.
+Callers needing to display something can use C<app2_name> instead.
+
+=item C<app2_epoch>
+
+For package managers which use epochs, this contains the epoch of
+the package (an integer).  If unavailable, this is returned as C<0>.
+
+=item C<app2_version>
+
+The version string of the application or package.  If unavailable
+this is returned as an empty string C<"">.
+
+=item C<app2_release>
+
+The release string of the application or package, for package
+managers that use this.  If unavailable this is returned as an
+empty string C<"">.
+
+=item C<app2_arch>
+
+The architecture string of the application or package, for package
+managers that use this.  If unavailable this is returned as an empty
+string C<"">.
+
+=item C<app2_install_path>
+
+The installation path of the application (on operating systems
+such as Windows which use installation paths).  This path is
+in the format used by the guest operating system, it is not
+a libguestfs path.
+
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_trans_path>
+
+The install path translated into a libguestfs path.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_publisher>
+
+The name of the publisher of the application, for package
+managers that use this.  If unavailable this is returned
+as an empty string C<"">.
+
+=item C<app2_url>
+
+The URL (eg. upstream URL) of the application.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_source_package>
+
+For packaging systems which support this, the name of the source
+package.  If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_summary>
+
+A short (usually one line) description of the application or package.
+If unavailable this is returned as an empty string C<"">.
+
+=item C<app2_description>
 
 A longer description of the application or package.
 If unavailable this is returned as an empty string C<"">.
@@ -2894,6 +3415,83 @@ Only numeric uid and gid are supported.  If you want to use
 names, you will need to locate and parse the password file
 yourself (Augeas support makes this relatively easy).
 
+=item $g->ldmtool_create_all ();
+
+This function scans all block devices looking for Windows
+dynamic disk volumes and partitions, and creates devices
+for any that were found.
+
+Call C<$g-E<gt>list_ldm_volumes> and C<$g-E<gt>list_ldm_partitions>
+to return all devices.
+
+Note that you B<don't> normally need to call this explicitly,
+since it is done automatically at C<$g-E<gt>launch> time.
+However you might want to call this function if you have
+hotplugged disks or have just created a Windows dynamic disk.
+
+=item @disks = $g->ldmtool_diskgroup_disks ($diskgroup);
+
+Return the disks in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from
+the list returned by C<$g-E<gt>ldmtool_scan>.
+
+=item $name = $g->ldmtool_diskgroup_name ($diskgroup);
+
+Return the name of a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from
+the list returned by C<$g-E<gt>ldmtool_scan>.
+
+=item @volumes = $g->ldmtool_diskgroup_volumes ($diskgroup);
+
+Return the volumes in a Windows dynamic disk group.  The C<diskgroup>
+parameter should be the GUID of a disk group, one element from
+the list returned by C<$g-E<gt>ldmtool_scan>.
+
+=item $g->ldmtool_remove_all ();
+
+This is essentially the opposite of C<$g-E<gt>ldmtool_create_all>.
+It removes the device mapper mappings for all Windows dynamic disk
+volumes
+
+=item @guids = $g->ldmtool_scan ();
+
+This function scans for Windows dynamic disks.  It returns a list
+of identifiers (GUIDs) for all disk groups that were found.  These
+identifiers can be passed to other C<$g-E<gt>ldmtool_*> functions.
+
+This function scans all block devices.  To scan a subset of
+block devices, call C<$g-E<gt>ldmtool_scan_devices> instead.
+
+=item @guids = $g->ldmtool_scan_devices (\@devices);
+
+This function scans for Windows dynamic disks.  It returns a list
+of identifiers (GUIDs) for all disk groups that were found.  These
+identifiers can be passed to other C<$g-E<gt>ldmtool_*> functions.
+
+The parameter C<devices> is a list of block devices which are
+scanned.  If this list is empty, all block devices are scanned.
+
+=item $hint = $g->ldmtool_volume_hint ($diskgroup, $volume);
+
+Return the hint field of the volume named C<volume> in the disk
+group with GUID <diskgroup>.  This may not be defined, in which
+case the empty string is returned.  The hint field is often, though
+not always, the name of a Windows drive, eg. C<E:>.
+
+=item @partitions = $g->ldmtool_volume_partitions ($diskgroup, $volume);
+
+Return the list of partitions in the volume named C<volume> in the disk
+group with GUID <diskgroup>.
+
+=item $voltype = $g->ldmtool_volume_type ($diskgroup, $volume);
+
+Return the type of the volume named C<volume> in the disk
+group with GUID <diskgroup>.
+
+Possible volume types that can be returned here include:
+C<simple>, C<spanned>, C<striped>, C<mirrored>, C<raid5>.
+Other types may also be returned.
+
 =item $xattr = $g->lgetxattr ($path, $name);
 
 Get a single extended attribute from file C<path> named C<name>.
@@ -2930,6 +3528,18 @@ List all the block devices.
 The full block device names are returned, eg. C</dev/sda>.
 
 See also C<$g-E<gt>list_filesystems>.
+
+=item %labels = $g->list_disk_labels ();
+
+If you add drives using the optional C<label> parameter
+of C<$g-E<gt>add_drive_opts>, you can use this call to
+map between disk labels, and raw block device and partition
+names (like C</dev/sda> and C</dev/sda1>).
+
+This returns a hashtable, where keys are the disk labels
+(I<without> the C</dev/disk/guestfs> prefix), and the values
+are the full raw block device and partition names
+(eg. C</dev/sda> and C</dev/sda1>).
 
 =item @devices = $g->list_dm_devices ();
 
@@ -2972,6 +3582,18 @@ found is valid and mountable, and some filesystems might
 be mountable but require special options.  Filesystems may
 not all belong to a single logical operating system
 (use C<$g-E<gt>inspect_os> to look for OSes).
+
+=item @devices = $g->list_ldm_partitions ();
+
+This function returns all Windows dynamic disk partitions
+that were found at launch time.  It returns a list of
+device names.
+
+=item @devices = $g->list_ldm_volumes ();
+
+This function returns all Windows dynamic disk volumes
+that were found at launch time.  It returns a list of
+device names.
 
 =item @devices = $g->list_md_devices ();
 
@@ -3033,8 +3655,15 @@ List the files in C<directory> (relative to the root directory,
 there is no cwd).  The '.' and '..' entries are not returned, but
 hidden files are shown.
 
-This command is mostly useful for interactive sessions.  Programs
-should probably use C<$g-E<gt>readdir> instead.
+=item $g->ls0 ($dir, $filenames);
+
+This specialized command is used to get a listing of
+the filenames in the directory C<dir>.  The list of filenames
+is written to the local file C<filenames> (on the host).
+
+In the output file, the filenames are separated by C<\0> characters.
+
+C<.> and C<..> are not returned.  The filenames are not sorted.
 
 =item $g->lsetxattr ($xattr, $val, $vallen, $path);
 
@@ -3066,10 +3695,7 @@ is set to C<-1>.
 This call is intended for programs that want to efficiently
 list a directory contents without making many round-trips.
 See also C<$g-E<gt>lxattrlist> for a similarly efficient call
-for getting extended attributes.  Very long directory listings
-might cause the protocol message size to be exceeded, causing
-this call to fail.  The caller must split up such requests
-into smaller groups of names.
+for getting extended attributes.
 
 =item $g->luks_add_key ($device, $key, $newkey, $keyslot);
 
@@ -3155,7 +3781,7 @@ is converted to C</dev/VG/LV>.
 This command returns an error if the C<lvname> parameter does
 not refer to a logical volume.
 
-See also C<$g-E<gt>is_lv>.
+See also C<$g-E<gt>is_lv>, C<$g-E<gt>canonical_device_name>.
 
 =item $g->lvm_clear_filter ();
 
@@ -3259,10 +3885,18 @@ This repeats for the second and subsequent files.
 This call is intended for programs that want to efficiently
 list a directory contents without making many round-trips.
 See also C<$g-E<gt>lstatlist> for a similarly efficient call
-for getting standard stats.  Very long directory listings
-might cause the protocol message size to be exceeded, causing
-this call to fail.  The caller must split up such requests
-into smaller groups of names.
+for getting standard stats.
+
+=item $disks = $g->max_disks ();
+
+Return the maximum number of disks that may be added to a
+handle (eg. by C<$g-E<gt>add_drive_opts> and similar calls).
+
+This function was added in libguestfs 1.19.7.  In previous
+versions of libguestfs the limit was 25.
+
+See L<guestfs(3)/MAXIMUM NUMBER OF DISKS> for additional
+information on this topic.
 
 =item $g->md_create ($name, \@devices [, missingbitmap => $missingbitmap] [, nrdevices => $nrdevices] [, spare => $spare] [, chunk => $chunk] [, level => $level]);
 
@@ -3443,6 +4077,13 @@ directory and its contents after use.
 
 See also: L<mkdtemp(3)>
 
+=item $g->mke2fs ($device [, blockscount => $blockscount] [, blocksize => $blocksize] [, fragsize => $fragsize] [, blockspergroup => $blockspergroup] [, numberofgroups => $numberofgroups] [, bytesperinode => $bytesperinode] [, inodesize => $inodesize] [, journalsize => $journalsize] [, numberofinodes => $numberofinodes] [, stridesize => $stridesize] [, stripewidth => $stripewidth] [, maxonlineresize => $maxonlineresize] [, reservedblockspercentage => $reservedblockspercentage] [, mmpupdateinterval => $mmpupdateinterval] [, journaldevice => $journaldevice] [, label => $label] [, lastmounteddir => $lastmounteddir] [, creatoros => $creatoros] [, fstype => $fstype] [, usagetype => $usagetype] [, uuid => $uuid] [, forcecreate => $forcecreate] [, writesbandgrouponly => $writesbandgrouponly] [, lazyitableinit => $lazyitableinit] [, lazyjournalinit => $lazyjournalinit] [, testfs => $testfs] [, discard => $discard] [, quotatype => $quotatype] [, extent => $extent] [, filetype => $filetype] [, flexbg => $flexbg] [, hasjournal => $hasjournal] [, journaldev => $journaldev] [, largefile => $largefile] [, quota => $quota] [, resizeinode => $resizeinode] [, sparsesuper => $sparsesuper] [, uninitbg => $uninitbg]);
+
+C<mke2fs> is used to create an ext2, ext3, or ext4 filesystem
+on C<device>.  The optional C<blockscount> is the size of the
+filesystem in blocks.  If omitted it defaults to the size of
+C<device>.
+
 =item $g->mke2fs_J ($fstype, $blocksize, $device, $journal);
 
 This creates an ext2/3/4 filesystem on C<device> with
@@ -3453,12 +4094,26 @@ to the command:
 
 See also C<$g-E<gt>mke2journal>.
 
+I<This function is deprecated.>
+In new code, use the L</mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $g->mke2fs_JL ($fstype, $blocksize, $device, $label);
 
 This creates an ext2/3/4 filesystem on C<device> with
 an external journal on the journal labeled C<label>.
 
 See also C<$g-E<gt>mke2journal_L>.
+
+I<This function is deprecated.>
+In new code, use the L</mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->mke2fs_JU ($fstype, $blocksize, $device, $uuid);
 
@@ -3467,6 +4122,13 @@ an external journal on the journal with UUID C<uuid>.
 
 See also C<$g-E<gt>mke2journal_U>.
 
+I<This function is deprecated.>
+In new code, use the L</mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $g->mke2journal ($blocksize, $device);
 
 This creates an ext2 external journal on C<device>.  It is equivalent
@@ -3474,13 +4136,34 @@ to the command:
 
  mke2fs -O journal_dev -b blocksize device
 
+I<This function is deprecated.>
+In new code, use the L</mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $g->mke2journal_L ($blocksize, $label, $device);
 
 This creates an ext2 external journal on C<device> with label C<label>.
 
+I<This function is deprecated.>
+In new code, use the L</mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $g->mke2journal_U ($blocksize, $uuid, $device);
 
 This creates an ext2 external journal on C<device> with UUID C<uuid>.
+
+I<This function is deprecated.>
+In new code, use the L</mke2fs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->mkfifo ($mode, $path);
 
@@ -3490,40 +4173,7 @@ C<$g-E<gt>mknod>.
 
 The mode actually set is affected by the umask.
 
-=item $g->mkfs ($fstype, $device);
-
-This creates a filesystem on C<device> (usually a partition
-or LVM logical volume).  The filesystem type is C<fstype>, for
-example C<ext3>.
-
-=item $g->mkfs_b ($fstype, $blocksize, $device);
-
-This call is similar to C<$g-E<gt>mkfs>, but it allows you to
-control the block size of the resulting filesystem.  Supported
-block sizes depend on the filesystem type, but typically they
-are C<1024>, C<2048> or C<4096> only.
-
-For VFAT and NTFS the C<blocksize> parameter is treated as
-the requested cluster size.
-
-I<This function is deprecated.>
-In new code, use the L</mkfs_opts> call instead.
-
-Deprecated functions will not be removed from the API, but the
-fact that they are deprecated indicates that there are problems
-with correct use of these functions.
-
-=item $g->mkfs_btrfs (\@devices [, allocstart => $allocstart] [, bytecount => $bytecount] [, datatype => $datatype] [, leafsize => $leafsize] [, label => $label] [, metadata => $metadata] [, nodesize => $nodesize] [, sectorsize => $sectorsize]);
-
-Create a btrfs filesystem, allowing all configurables to be set.
-For more information on the optional arguments, see L<mkfs.btrfs(8)>.
-
-Since btrfs filesystems can span multiple devices, this takes a
-non-empty list of devices.
-
-To create general filesystems, use C<$g-E<gt>mkfs_opts>.
-
-=item $g->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
+=item $g->mkfs ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
 
 This function creates a filesystem on C<device>.  The filesystem
 type is C<fstype>, for example C<ext3>.
@@ -3565,6 +4215,51 @@ This passes the I<-S> parameter to external L<mkfs.ufs(8)> program,
 which sets sector size for ufs filesystem.
 
 =back
+
+=item $g->mkfs_opts ($fstype, $device [, blocksize => $blocksize] [, features => $features] [, inode => $inode] [, sectorsize => $sectorsize]);
+
+This is an alias of L</mkfs>.
+
+=cut
+
+sub mkfs_opts {
+  &mkfs (@_)
+}
+
+=pod
+
+=item $g->mkfs_b ($fstype, $blocksize, $device);
+
+This call is similar to C<$g-E<gt>mkfs>, but it allows you to
+control the block size of the resulting filesystem.  Supported
+block sizes depend on the filesystem type, but typically they
+are C<1024>, C<2048> or C<4096> only.
+
+For VFAT and NTFS the C<blocksize> parameter is treated as
+the requested cluster size.
+
+I<This function is deprecated.>
+In new code, use the L</mkfs> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+=item $g->mkfs_btrfs (\@devices [, allocstart => $allocstart] [, bytecount => $bytecount] [, datatype => $datatype] [, leafsize => $leafsize] [, label => $label] [, metadata => $metadata] [, nodesize => $nodesize] [, sectorsize => $sectorsize]);
+
+Create a btrfs filesystem, allowing all configurables to be set.
+For more information on the optional arguments, see L<mkfs.btrfs(8)>.
+
+Since btrfs filesystems can span multiple devices, this takes a
+non-empty list of devices.
+
+To create general filesystems, use C<$g-E<gt>mkfs>.
+
+=item $g->mklost_and_found ($mountpoint);
+
+Make the C<lost+found> directory, normally in the root directory
+of an ext2/3/4 filesystem.  C<mountpoint> is the directory under
+which we try to create the C<lost+found> directory.
 
 =item $g->mkmountpoint ($exemptpath);
 
@@ -3643,9 +4338,24 @@ It is just a convenient wrapper around C<$g-E<gt>mknod>.
 
 The mode actually set is affected by the umask.
 
-=item $g->mkswap ($device);
+=item $g->mkswap ($device [, label => $label] [, uuid => $uuid]);
 
-Create a swap partition on C<device>.
+Create a Linux swap partition on C<device>.
+
+The option arguments C<label> and C<uuid> allow you to set the
+label and/or UUID of the new swap partition.
+
+=item $g->mkswap_opts ($device [, label => $label] [, uuid => $uuid]);
+
+This is an alias of L</mkswap>.
+
+=cut
+
+sub mkswap_opts {
+  &mkswap (@_)
+}
+
+=pod
 
 =item $g->mkswap_L ($label, $device);
 
@@ -3655,9 +4365,23 @@ Note that you cannot attach a swap label to a block device
 (eg. C</dev/sda>), just to a partition.  This appears to be
 a limitation of the kernel or swap tools.
 
+I<This function is deprecated.>
+In new code, use the L</mkswap> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $g->mkswap_U ($uuid, $device);
 
 Create a swap partition on C<device> with UUID C<uuid>.
+
+I<This function is deprecated.>
+In new code, use the L</mkswap> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->mkswap_file ($path);
 
@@ -3665,6 +4389,30 @@ Create a swap file.
 
 This command just writes a swap file signature to an existing
 file.  To create the file itself, use something like C<$g-E<gt>fallocate>.
+
+=item $path = $g->mktemp ($tmpl [, suffix => $suffix]);
+
+This command creates a temporary file.  The
+C<tmpl> parameter should be a full pathname for the
+temporary directory name with the final six characters being
+"XXXXXX".
+
+For example: "/tmp/myprogXXXXXX" or "/Temp/myprogXXXXXX",
+the second one being suitable for Windows filesystems.
+
+The name of the temporary file that was created
+is returned.
+
+The temporary file is created with mode 0600
+and is owned by root.
+
+The caller is responsible for deleting the temporary
+file after use.
+
+If the optional C<suffix> parameter is given, then the suffix
+(eg. C<.txt>) is appended to the temporary name.
+
+See also: C<$g-E<gt>mkdtemp>.
 
 =item $g->modprobe ($modulename);
 
@@ -3856,29 +4604,7 @@ scan the filesystem for inconsistencies.
 The optional C<clearbadsectors> flag clears the list of bad sectors.
 This is useful after cloning a disk with bad sectors to a new disk.
 
-=item $g->ntfsresize ($device);
-
-This command resizes an NTFS filesystem, expanding or
-shrinking it to the size of the underlying device.
-
-I<Note:> After the resize operation, the filesystem is marked
-as requiring a consistency check (for safety).  You have to boot
-into Windows to perform this check and clear this condition.
-Furthermore, ntfsresize refuses to resize filesystems
-which have been marked in this way.  So in effect it is
-not possible to call ntfsresize multiple times on a single
-filesystem without booting into Windows between each resize.
-
-See also L<ntfsresize(8)>.
-
-I<This function is deprecated.>
-In new code, use the L</ntfsresize_opts> call instead.
-
-Deprecated functions will not be removed from the API, but the
-fact that they are deprecated indicates that there are problems
-with correct use of these functions.
-
-=item $g->ntfsresize_opts ($device [, size => $size] [, force => $force]);
+=item $g->ntfsresize ($device [, size => $size] [, force => $force]);
 
 This command resizes an NTFS filesystem, expanding or
 shrinking it to the size of the underlying device.
@@ -3901,12 +4627,24 @@ After the resize operation, the filesystem is always marked
 as requiring a consistency check (for safety).  You have to boot
 into Windows to perform this check and clear this condition.
 If you I<don't> set the C<force> option then it is not
-possible to call C<$g-E<gt>ntfsresize_opts> multiple times on a
+possible to call C<$g-E<gt>ntfsresize> multiple times on a
 single filesystem without booting into Windows between each resize.
 
 =back
 
 See also L<ntfsresize(8)>.
+
+=item $g->ntfsresize_opts ($device [, size => $size] [, force => $force]);
+
+This is an alias of L</ntfsresize>.
+
+=cut
+
+sub ntfsresize_opts {
+  &ntfsresize (@_)
+}
+
+=pod
 
 =item $g->ntfsresize_size ($device, $size);
 
@@ -3914,11 +4652,36 @@ This command is the same as C<$g-E<gt>ntfsresize> except that it
 allows you to specify the new size (in bytes) explicitly.
 
 I<This function is deprecated.>
-In new code, use the L</ntfsresize_opts> call instead.
+In new code, use the L</ntfsresize> call instead.
 
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
+
+=item $g->parse_environment ();
+
+Parse the program's environment and set flags in the handle
+accordingly.  For example if C<LIBGUESTFS_DEBUG=1> then the
+'verbose' flag is set in the handle.
+
+I<Most programs do not need to call this>.  It is done implicitly
+when you call C<$g-E<gt>create>.
+
+See L<guestfs(3)/ENVIRONMENT VARIABLES> for a list of environment
+variables that can affect libguestfs handles.  See also
+L<guestfs(3)/guestfs_create_flags>, and
+C<$g-E<gt>parse_environment_list>.
+
+=item $g->parse_environment_list (\@environment);
+
+Parse the list of strings in the argument C<environment>
+and set flags in the handle accordingly.
+For example if C<LIBGUESTFS_DEBUG=1> is a string in the list,
+then the 'verbose' flag is set in the handle.
+
+This is the same as C<$g-E<gt>parse_environment> except that
+it parses an explicit list of strings instead of the program's
+environment.
 
 =item $g->part_add ($device, $prlogex, $startsect, $endsect);
 
@@ -4166,6 +4929,14 @@ See also C<$g-E<gt>pread>.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+=item $g->pvchange_uuid ($device);
+
+Generate a new random UUID for the physical volume C<device>.
+
+=item $g->pvchange_uuid_all ();
+
+Generate new random UUIDs for all physical volumes.
+
 =item $g->pvcreate ($device);
 
 This creates an LVM physical volume on the named C<device>,
@@ -4248,11 +5019,6 @@ buffer.
 
 Unlike C<$g-E<gt>cat>, this function can correctly
 handle files that contain embedded ASCII NUL characters.
-However unlike C<$g-E<gt>download>, this function is limited
-in the total size of file that can be handled.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =item @lines = $g->read_lines ($path);
 
@@ -4263,8 +5029,8 @@ C<LF> and C<CRLF> character sequences are I<not> returned.
 
 Note that this function cannot correctly handle binary files
 (specifically, files containing C<\0> character which is treated
-as end of line).  For those you need to use the C<$g-E<gt>read_file>
-function which has a more complex interface.
+as end of string).  For those you need to use the C<$g-E<gt>read_file>
+function and split the buffer into lines yourself.
 
 =item @entries = $g->readdir ($dir);
 
@@ -4322,6 +5088,9 @@ This function is primarily intended for use by programs.  To
 get a simple list of names, use C<$g-E<gt>ls>.  To get a printable
 directory for human consumption, use C<$g-E<gt>ll>.
 
+Because of the message protocol, there is a transfer limit
+of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
 =item $link = $g->readlink ($path);
 
 This command reads the target of a symbolic link.
@@ -4345,15 +5114,26 @@ symbolic links already (albeit slightly less efficient).
 
 This call is intended for programs that want to efficiently
 list a directory contents without making many round-trips.
-Very long directory listings might cause the protocol
-message size to be exceeded, causing
-this call to fail.  The caller must split up such requests
-into smaller groups of names.
 
 =item $rpath = $g->realpath ($path);
 
 Return the canonicalized absolute pathname of C<path>.  The
 returned path has no C<.>, C<..> or symbolic link path elements.
+
+=item $g->remove_drive ($label);
+
+This function is conceptually the opposite of C<$g-E<gt>add_drive_opts>.
+It removes the drive that was previously added with label C<label>.
+
+Note that in order to remove drives, you have to add them with
+labels (see the optional C<label> argument to C<$g-E<gt>add_drive_opts>).
+If you didn't use a label, then they cannot be removed.
+
+You can call this function before or after launching the handle.
+If called after launch, if the attach-method supports it, we try to hot
+unplug the drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not>
+be in use (eg. mounted) when you do this.  We try to detect if the
+disk is in use and stop you from doing this.
 
 =item $g->removexattr ($xattr, $path);
 
@@ -4393,6 +5173,17 @@ See also L<guestfs(3)/RESIZE2FS ERRORS>.
 
 Remove the single file C<path>.
 
+=item $g->rm_f ($path);
+
+Remove the file C<path>.
+
+If the file doesn't exist, that error is ignored.  (Other errors,
+eg. I/O errors or bad paths, are not ignored)
+
+This call cannot remove directories.
+Use C<$g-E<gt>rmdir> to remove an empty directory,
+or C<$g-E<gt>rm_rf> to remove directories recursively.
+
 =item $g->rm_rf ($path);
 
 Remove the file or directory C<path>, recursively removing the
@@ -4408,6 +5199,71 @@ Remove the single directory C<path>.
 This calls removes a mountpoint that was previously created
 with C<$g-E<gt>mkmountpoint>.  See C<$g-E<gt>mkmountpoint>
 for full details.
+
+=item $g->rsync ($src, $dest [, archive => $archive] [, deletedest => $deletedest]);
+
+This call may be used to copy or synchronize two directories
+under the same libguestfs handle.  This uses the L<rsync(1)>
+program which uses a fast algorithm that avoids copying files
+unnecessarily.
+
+C<src> and C<dest> are the source and destination directories.
+Files are copied from C<src> to C<dest>.
+
+The optional arguments are:
+
+=over 4
+
+=item C<archive>
+
+Turns on archive mode.  This is the same as passing the
+I<--archive> flag to C<rsync>.
+
+=item C<deletedest>
+
+Delete files at the destination that do not exist at the source.
+
+=back
+
+=item $g->rsync_in ($remote, $dest [, archive => $archive] [, deletedest => $deletedest]);
+
+This call may be used to copy or synchronize the filesystem
+on the host or on a remote computer with the filesystem
+within libguestfs.  This uses the L<rsync(1)> program
+which uses a fast algorithm that avoids copying files unnecessarily.
+
+This call only works if the network is enabled.  See
+C<$g-E<gt>set_network> or the I<--network> option to
+various tools like L<guestfish(1)>.
+
+Files are copied from the remote server and directory
+specified by C<remote> to the destination directory C<dest>.
+
+The format of the remote server string is defined by L<rsync(1)>.
+Note that there is no way to supply a password or passphrase
+so the target must be set up not to require one.
+
+The optional arguments are the same as those of C<$g-E<gt>rsync>.
+
+=item $g->rsync_out ($src, $remote [, archive => $archive] [, deletedest => $deletedest]);
+
+This call may be used to copy or synchronize the filesystem within
+libguestfs with a filesystem on the host or on a remote computer.
+This uses the L<rsync(1)> program which uses a fast algorithm that
+avoids copying files unnecessarily.
+
+This call only works if the network is enabled.  See
+C<$g-E<gt>set_network> or the I<--network> option to
+various tools like L<guestfish(1)>.
+
+Files are copied from the source directory C<src> to the
+remote server and directory specified by C<remote>.
+
+The format of the remote server string is defined by L<rsync(1)>.
+Note that there is no way to supply a password or passphrase
+so the target must be set up not to require one.
+
+The optional arguments are the same as those of C<$g-E<gt>rsync>.
 
 =item $g->scrub_device ($device);
 
@@ -4452,24 +5308,9 @@ are passed (libguestfs always adds a few of its own).
 =item $g->set_attach_method ($attachmethod);
 
 Set the method that libguestfs uses to connect to the back end
-guestfsd daemon.  Possible methods are:
+guestfsd daemon.
 
-=over 4
-
-=item C<appliance>
-
-Launch an appliance and connect to it.  This is the ordinary method
-and the default.
-
-=item C<unix:I<path>>
-
-Connect to the Unix domain socket I<path>.
-
-This method lets you connect to an existing daemon or (using
-virtio-serial) to a live guest.  For more information, see
-L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>.
-
-=back
+See L<guestfs(3)/ATTACH METHOD>.
 
 =item $g->set_autosync ($autosync);
 
@@ -4480,6 +5321,18 @@ when the handle is closed
 
 This is enabled by default (since libguestfs 1.5.24, previously it was
 disabled by default).
+
+=item $g->set_cachedir ($cachedir);
+
+Set the directory used by the handle to store the appliance
+cache, when using a supermin appliance.  The appliance is
+cached and shared between all handles which have the same
+effective user ID.
+
+The environment variables C<LIBGUESTFS_CACHEDIR> and C<TMPDIR>
+control the default value: If C<LIBGUESTFS_CACHEDIR> is set, then
+that is the default.  Else if C<TMPDIR> is set, then that is
+the default.  Else C</var/tmp> is the default.
 
 =item $g->set_direct ($direct);
 
@@ -4562,6 +5415,48 @@ On ext2/3/4 filesystems, labels are limited to 16 bytes.
 On NTFS filesystems, labels are limited to 128 unicode characters.
 
 To read the label on a filesystem, call C<$g-E<gt>vfs_label>.
+
+=item $g->set_libvirt_requested_credential ($index, $cred);
+
+After requesting the C<index>'th credential from the user,
+call this function to pass the answer back to libvirt.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
+
+=item $g->set_libvirt_supported_credentials (\@creds);
+
+Call this function before setting an event handler for
+C<GUESTFS_EVENT_LIBVIRT_AUTH>, to supply the list of credential types
+that the program knows how to process.
+
+The C<creds> list must be a non-empty list of strings.
+Possible strings are:
+
+=over 4
+
+=item C<username>
+
+=item C<authname>
+
+=item C<language>
+
+=item C<cnonce>
+
+=item C<passphrase>
+
+=item C<echoprompt>
+
+=item C<noechoprompt>
+
+=item C<realm>
+
+=item C<external>
+
+=back
+
+See libvirt documentation for the meaning of these credential types.
+
+See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 =item $g->set_memsize ($memsize);
 
@@ -4663,6 +5558,15 @@ default is C<1>.  Increasing this may improve performance, though
 often it has no effect.
 
 This function must be called before C<$g-E<gt>launch>.
+
+=item $g->set_tmpdir ($tmpdir);
+
+Set the directory used by the handle to store temporary files.
+
+The environment variables C<LIBGUESTFS_TMPDIR> and C<TMPDIR>
+control the default value: If C<LIBGUESTFS_TMPDIR> is set, then
+that is the default.  Else if C<TMPDIR> is set, then that is
+the default.  Else C</tmp> is the default.
 
 =item $g->set_trace ($trace);
 
@@ -4993,35 +5897,92 @@ If the parameter C<nrlines> is zero, this returns an empty list.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
-=item $g->tar_in ($tarfile, $directory);
+=item $g->tar_in ($tarfile, $directory [, compress => $compress]);
 
-This command uploads and unpacks local file C<tarfile> (an
-I<uncompressed> tar file) into C<directory>.
+This command uploads and unpacks local file C<tarfile> into C<directory>.
 
-To upload a compressed tarball, use C<$g-E<gt>tgz_in>
-or C<$g-E<gt>txz_in>.
+The optional C<compress> flag controls compression.  If not given,
+then the input should be an uncompressed tar file.  Otherwise one
+of the following strings may be given to select the compression
+type of the input file: C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.
+(Note that not all builds of libguestfs will support all of these
+compression types).
 
-=item $g->tar_out ($directory, $tarfile);
+=item $g->tar_in_opts ($tarfile, $directory [, compress => $compress]);
+
+This is an alias of L</tar_in>.
+
+=cut
+
+sub tar_in_opts {
+  &tar_in (@_)
+}
+
+=pod
+
+=item $g->tar_out ($directory, $tarfile [, compress => $compress] [, numericowner => $numericowner] [, excludes => $excludes]);
 
 This command packs the contents of C<directory> and downloads
 it to local file C<tarfile>.
 
-To download a compressed tarball, use C<$g-E<gt>tgz_out>
-or C<$g-E<gt>txz_out>.
+The optional C<compress> flag controls compression.  If not given,
+then the output will be an uncompressed tar file.  Otherwise one
+of the following strings may be given to select the compression
+type of the output file: C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.
+(Note that not all builds of libguestfs will support all of these
+compression types).
+
+The other optional arguments are:
+
+=over 4
+
+=item C<excludes>
+
+A list of wildcards.  Files are excluded if they match any of the
+wildcards.
+
+=item C<numericowner>
+
+If set to true, the output tar file will contain UID/GID numbers
+instead of user/group names.
+
+=back
+
+=item $g->tar_out_opts ($directory, $tarfile [, compress => $compress] [, numericowner => $numericowner] [, excludes => $excludes]);
+
+This is an alias of L</tar_out>.
+
+=cut
+
+sub tar_out_opts {
+  &tar_out (@_)
+}
+
+=pod
 
 =item $g->tgz_in ($tarball, $directory);
 
 This command uploads and unpacks local file C<tarball> (a
 I<gzip compressed> tar file) into C<directory>.
 
-To upload an uncompressed tarball, use C<$g-E<gt>tar_in>.
+I<This function is deprecated.>
+In new code, use the L</tar_in> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->tgz_out ($directory, $tarball);
 
 This command packs the contents of C<directory> and downloads
 it to local file C<tarball>.
 
-To download an uncompressed tarball, use C<$g-E<gt>tar_out>.
+I<This function is deprecated.>
+In new code, use the L</tar_out> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->touch ($path);
 
@@ -5138,10 +6099,24 @@ that libguestfs was built against, and the filesystem itself.
 This command uploads and unpacks local file C<tarball> (an
 I<xz compressed> tar file) into C<directory>.
 
+I<This function is deprecated.>
+In new code, use the L</tar_in> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item $g->txz_out ($directory, $tarball);
 
 This command packs the contents of C<directory> and downloads
 it to local file C<tarball> (as an xz compressed tar archive).
+
+I<This function is deprecated.>
+In new code, use the L</tar_out> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $oldmask = $g->umask ($mask);
 
@@ -5162,11 +6137,23 @@ L<umask(2)>, C<$g-E<gt>mknod>, C<$g-E<gt>mkdir>.
 
 This call returns the previous umask.
 
-=item $g->umount ($pathordevice);
+=item $g->umount ($pathordevice [, force => $force] [, lazyunmount => $lazyunmount]);
 
 This unmounts the given filesystem.  The filesystem may be
 specified either by its mountpoint (path) or the device which
 contains the filesystem.
+
+=item $g->umount_opts ($pathordevice [, force => $force] [, lazyunmount => $lazyunmount]);
+
+This is an alias of L</umount>.
+
+=cut
+
+sub umount_opts {
+  &umount (@_)
+}
+
+=pod
 
 =item $g->umount_all ();
 
@@ -5227,6 +6214,12 @@ C<*secs> field is ignored in this case).
 If the C<*nsecs> field contains the special value C<-2> then
 the corresponding timestamp is left unchanged.  (The
 C<*secs> field is ignored in this case).
+
+=item %uts = $g->utsname ();
+
+This returns the kernel version of the appliance, where this is
+available.  This information is only useful for debugging.  Nothing
+in the returned structure is defined by the API.
 
 =item %version = $g->version ();
 
@@ -5305,6 +6298,14 @@ This command activates or (if C<activate> is false) deactivates
 all logical volumes in all volume groups.
 
 This command is the same as running C<vgchange -a y|n>
+
+=item $g->vgchange_uuid ($vg);
+
+Generate a new random UUID for the volume group C<vg>.
+
+=item $g->vgchange_uuid_all ();
+
+Generate new random UUIDs for all volume groups.
 
 =item $g->vgcreate ($volgroup, \@physvols);
 
@@ -5427,18 +6428,12 @@ file is the string C<content> (which can contain any 8 bit data).
 
 See also C<$g-E<gt>write_append>.
 
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
-
 =item $g->write_append ($path, $content);
 
 This call appends C<content> to the end of file C<path>.  If
 C<path> does not exist, then a new file is created.
 
 See also C<$g-E<gt>write>.
-
-Because of the message protocol, there is a transfer limit
-of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =item $g->write_file ($path, $content, $size);
 
@@ -5463,6 +6458,51 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=item $g->xfs_admin ($device [, extunwritten => $extunwritten] [, imgfile => $imgfile] [, v2log => $v2log] [, projid32bit => $projid32bit] [, lazycounter => $lazycounter] [, label => $label] [, uuid => $uuid]);
+
+Change the parameters of the XFS filesystem on C<device>.
+
+Devices that are mounted cannot be modified.
+Administrators must unmount filesystems before this call
+can modify parameters.
+
+Some of the parameters of a mounted filesystem can be examined
+and modified using the C<$g-E<gt>xfs_info> and
+C<$g-E<gt>xfs_growfs> calls.
+
+=item $g->xfs_growfs ($path [, datasec => $datasec] [, logsec => $logsec] [, rtsec => $rtsec] [, datasize => $datasize] [, logsize => $logsize] [, rtsize => $rtsize] [, rtextsize => $rtextsize] [, maxpct => $maxpct]);
+
+Grow the XFS filesystem mounted at C<path>.
+
+The returned struct contains geometry information.  Missing
+fields are returned as C<-1> (for numeric fields) or empty
+string.
+
+=item %info = $g->xfs_info ($pathordevice);
+
+C<pathordevice> is a mounted XFS filesystem or a device containing
+an XFS filesystem.  This command returns the geometry of the filesystem.
+
+The returned struct contains geometry information.  Missing
+fields are returned as C<-1> (for numeric fields) or empty
+string.
+
+=item $status = $g->xfs_repair ($device [, forcelogzero => $forcelogzero] [, nomodify => $nomodify] [, noprefetch => $noprefetch] [, forcegeometry => $forcegeometry] [, maxmem => $maxmem] [, ihashsize => $ihashsize] [, bhashsize => $bhashsize] [, agstride => $agstride] [, logdev => $logdev] [, rtdev => $rtdev]);
+
+Repair corrupt or damaged XFS filesystem on C<device>.
+
+The filesystem is specified using the C<device> argument which should be
+the device name of the disk partition or volume containing the filesystem.
+If given the name of a block device, C<xfs_repair> will attempt to find
+the raw device associated with the specified block device and will use
+the raw device instead.
+
+Regardless, the filesystem to be repaired must be unmounted, otherwise,
+the resulting filesystem may be inconsistent or corrupt.
+
+The returned status indicates whether filesystem corruption was
+detected (returns C<1>) or was not detected (returns C<0>).
+
 =item @lines = $g->zegrep ($regex, $path);
 
 This calls the external C<zegrep> program and returns the
@@ -5471,6 +6511,13 @@ matching lines.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item @lines = $g->zegrepi ($regex, $path);
 
 This calls the external C<zegrep -i> program and returns the
@@ -5478,6 +6525,13 @@ matching lines.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->zero ($device);
 
@@ -5512,8 +6566,9 @@ The filesystem must be mounted read-write.
 The filesystem contents are not affected, but any free space
 in the filesystem is freed.
 
-In future (but not currently) these zeroed blocks will be
-"sparsified" - that is, given back to the host.
+Free space is not "trimmed".  You may want to call
+C<$g-E<gt>fstrim> either as an alternative to this,
+or after calling this, depending on your requirements.
 
 =item $g->zerofree ($device);
 
@@ -5536,6 +6591,13 @@ matching lines.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item @lines = $g->zfgrepi ($pattern, $path);
 
 This calls the external C<zfgrep -i> program and returns the
@@ -5543,6 +6605,13 @@ matching lines.
 
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
+
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $description = $g->zfile ($meth, $path);
 
@@ -5569,6 +6638,13 @@ matching lines.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =item @lines = $g->zgrepi ($regex, $path);
 
 This calls the external C<zgrep -i> program and returns the
@@ -5577,10 +6653,44 @@ matching lines.
 Because of the message protocol, there is a transfer limit
 of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
+I<This function is deprecated.>
+In new code, use the L</grep> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
 =cut
 
 use vars qw(%guestfs_introspection);
 %guestfs_introspection = (
+  "acl_delete_def_file" => {
+    ret => 'void',
+    args => [
+      [ 'dir', 'string(path)', 0 ],
+    ],
+    name => "acl_delete_def_file",
+    description => "delete the default POSIX ACL of a directory",
+  },
+  "acl_get_file" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'acltype', 'string', 1 ],
+    ],
+    name => "acl_get_file",
+    description => "get the POSIX ACL attached to a file",
+  },
+  "acl_set_file" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'acltype', 'string', 1 ],
+      [ 'acl', 'string', 2 ],
+    ],
+    name => "acl_set_file",
+    description => "set the POSIX ACL attached to a file",
+  },
   "add_cdrom" => {
     ret => 'void',
     args => [
@@ -5610,21 +6720,14 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'filename', 'string', 0 ],
     ],
-    name => "add_drive",
-    description => "add an image to examine or modify",
-  },
-  "add_drive_opts" => {
-    ret => 'void',
-    args => [
-      [ 'filename', 'string', 0 ],
-    ],
     optargs => {
       readonly => [ 'readonly', 'bool', 0 ],
       format => [ 'format', 'string', 1 ],
       iface => [ 'iface', 'string', 2 ],
       name => [ 'name', 'string', 3 ],
+      label => [ 'label', 'string', 4 ],
     },
-    name => "add_drive_opts",
+    name => "add_drive",
     description => "add an image to examine or modify",
   },
   "add_drive_ro" => {
@@ -6000,6 +7103,31 @@ use vars qw(%guestfs_introspection);
     name => "btrfs_subvolume_snapshot",
     description => "create a writable btrfs snapshot",
   },
+  "canonical_device_name" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string', 0 ],
+    ],
+    name => "canonical_device_name",
+    description => "return canonical device name",
+  },
+  "cap_get_file" => {
+    ret => 'string',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "cap_get_file",
+    description => "get the Linux capabilities attached to a file",
+  },
+  "cap_set_file" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'cap', 'string', 1 ],
+    ],
+    name => "cap_set_file",
+    description => "set the Linux capabilities attached to a file",
+  },
   "case_sensitive_path" => {
     ret => 'string',
     args => [
@@ -6216,13 +7344,6 @@ use vars qw(%guestfs_introspection);
     name => "debug",
     description => "debugging and internals",
   },
-  "debug_cmdline" => {
-    ret => 'string list',
-    args => [
-    ],
-    name => "debug_cmdline",
-    description => "debug the QEMU command line (internal use only)",
-  },
   "debug_drives" => {
     ret => 'string list',
     args => [
@@ -6261,6 +7382,30 @@ use vars qw(%guestfs_introspection);
     ],
     name => "df_h",
     description => "report file system disk space usage (human readable)",
+  },
+  "disk_format" => {
+    ret => 'string',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    name => "disk_format",
+    description => "detect the disk format of a disk image",
+  },
+  "disk_has_backing_file" => {
+    ret => 'bool',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    name => "disk_has_backing_file",
+    description => "return whether disk has a backing file",
+  },
+  "disk_virtual_size" => {
+    ret => 'int64',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    name => "disk_virtual_size",
+    description => "return virtual size of a disk",
   },
   "dmesg" => {
     ret => 'string',
@@ -6428,6 +7573,14 @@ use vars qw(%guestfs_introspection);
     name => "filesize",
     description => "return the size of the file in bytes",
   },
+  "filesystem_available" => {
+    ret => 'bool',
+    args => [
+      [ 'filesystem', 'string', 0 ],
+    ],
+    name => "filesystem_available",
+    description => "check if filesystem is available",
+  },
   "fill" => {
     ret => 'void',
     args => [
@@ -6437,6 +7590,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "fill",
     description => "fill a file with octets",
+  },
+  "fill_dir" => {
+    ret => 'void',
+    args => [
+      [ 'dir', 'string(path)', 0 ],
+      [ 'nr', 'int', 1 ],
+    ],
+    name => "fill_dir",
+    description => "fill a directory with empty files",
   },
   "fill_pattern" => {
     ret => 'void',
@@ -6490,6 +7652,19 @@ use vars qw(%guestfs_introspection);
     name => "fsck",
     description => "run the filesystem checker",
   },
+  "fstrim" => {
+    ret => 'void',
+    args => [
+      [ 'mountpoint', 'string(path)', 0 ],
+    ],
+    optargs => {
+      offset => [ 'offset', 'int64', 0 ],
+      length => [ 'length', 'int64', 1 ],
+      minimumfreeextent => [ 'minimumfreeextent', 'int64', 2 ],
+    },
+    name => "fstrim",
+    description => "trim free space in a filesystem",
+  },
   "get_append" => {
     ret => 'const nullable string',
     args => [
@@ -6510,6 +7685,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_autosync",
     description => "get autosync mode",
+  },
+  "get_cachedir" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_cachedir",
+    description => "get the appliance cache directory",
   },
   "get_direct" => {
     ret => 'bool',
@@ -6549,6 +7731,37 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_e2uuid",
     description => "get the ext2/3/4 filesystem UUID",
+  },
+  "get_libvirt_requested_credential_challenge" => {
+    ret => 'string',
+    args => [
+      [ 'index', 'int', 0 ],
+    ],
+    name => "get_libvirt_requested_credential_challenge",
+    description => "challenge of i'th requested credential",
+  },
+  "get_libvirt_requested_credential_defresult" => {
+    ret => 'string',
+    args => [
+      [ 'index', 'int', 0 ],
+    ],
+    name => "get_libvirt_requested_credential_defresult",
+    description => "default result of i'th requested credential",
+  },
+  "get_libvirt_requested_credential_prompt" => {
+    ret => 'string',
+    args => [
+      [ 'index', 'int', 0 ],
+    ],
+    name => "get_libvirt_requested_credential_prompt",
+    description => "prompt of i'th requested credential",
+  },
+  "get_libvirt_requested_credentials" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "get_libvirt_requested_credentials",
+    description => "get list of credentials requested by libvirt",
   },
   "get_memsize" => {
     ret => 'int',
@@ -6620,6 +7833,13 @@ use vars qw(%guestfs_introspection);
     name => "get_state",
     description => "get the current state",
   },
+  "get_tmpdir" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_tmpdir",
+    description => "get the temporary directory",
+  },
   "get_trace" => {
     ret => 'bool',
     args => [
@@ -6679,6 +7899,12 @@ use vars qw(%guestfs_introspection);
       [ 'regex', 'string', 0 ],
       [ 'path', 'string(path)', 1 ],
     ],
+    optargs => {
+      extended => [ 'extended', 'bool', 0 ],
+      fixed => [ 'fixed', 'bool', 1 ],
+      insensitive => [ 'insensitive', 'bool', 2 ],
+      compressed => [ 'compressed', 'bool', 3 ],
+    },
     name => "grep",
     description => "return lines matching a pattern",
   },
@@ -6724,6 +7950,151 @@ use vars qw(%guestfs_introspection);
     ],
     name => "hexdump",
     description => "dump a file in hexadecimal",
+  },
+  "hivex_close" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "hivex_close",
+    description => "close the current hivex handle",
+  },
+  "hivex_commit" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'nullable string', 0 ],
+    ],
+    name => "hivex_commit",
+    description => "commit (write) changes back to the hive",
+  },
+  "hivex_node_add_child" => {
+    ret => 'int64',
+    args => [
+      [ 'parent', 'int64', 0 ],
+      [ 'name', 'string', 1 ],
+    ],
+    name => "hivex_node_add_child",
+    description => "add a child node",
+  },
+  "hivex_node_children" => {
+    ret => 'struct hivex_node list',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+    ],
+    name => "hivex_node_children",
+    description => "return list of nodes which are subkeys of node",
+  },
+  "hivex_node_delete_child" => {
+    ret => 'void',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+    ],
+    name => "hivex_node_delete_child",
+    description => "delete a node (recursively)",
+  },
+  "hivex_node_get_child" => {
+    ret => 'int64',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+      [ 'name', 'string', 1 ],
+    ],
+    name => "hivex_node_get_child",
+    description => "return the named child of node",
+  },
+  "hivex_node_get_value" => {
+    ret => 'int64',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+      [ 'key', 'string', 1 ],
+    ],
+    name => "hivex_node_get_value",
+    description => "return the named value",
+  },
+  "hivex_node_name" => {
+    ret => 'string',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+    ],
+    name => "hivex_node_name",
+    description => "return the name of the node",
+  },
+  "hivex_node_parent" => {
+    ret => 'int64',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+    ],
+    name => "hivex_node_parent",
+    description => "return the parent of node",
+  },
+  "hivex_node_set_value" => {
+    ret => 'void',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+      [ 'key', 'string', 1 ],
+      [ 't', 'int64', 2 ],
+      [ 'val', 'buffer', 3 ],
+    ],
+    name => "hivex_node_set_value",
+    description => "set or replace a single value in a node",
+  },
+  "hivex_node_values" => {
+    ret => 'struct hivex_value list',
+    args => [
+      [ 'nodeh', 'int64', 0 ],
+    ],
+    name => "hivex_node_values",
+    description => "return list of values attached to node",
+  },
+  "hivex_open" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string(path)', 0 ],
+    ],
+    optargs => {
+      verbose => [ 'verbose', 'bool', 0 ],
+      debug => [ 'debug', 'bool', 1 ],
+      write => [ 'write', 'bool', 2 ],
+    },
+    name => "hivex_open",
+    description => "open a Windows Registry hive file",
+  },
+  "hivex_root" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "hivex_root",
+    description => "return the root node of the hive",
+  },
+  "hivex_value_key" => {
+    ret => 'string',
+    args => [
+      [ 'valueh', 'int64', 0 ],
+    ],
+    name => "hivex_value_key",
+    description => "return the key field from the (key, datatype, data) tuple",
+  },
+  "hivex_value_type" => {
+    ret => 'int64',
+    args => [
+      [ 'valueh', 'int64', 0 ],
+    ],
+    name => "hivex_value_type",
+    description => "return the data type from the (key, datatype, data) tuple",
+  },
+  "hivex_value_utf8" => {
+    ret => 'string',
+    args => [
+      [ 'valueh', 'int64', 0 ],
+    ],
+    name => "hivex_value_utf8",
+    description => "return the data field from the (key, datatype, data) tuple",
+  },
+  "hivex_value_value" => {
+    ret => 'buffer',
+    args => [
+      [ 'valueh', 'int64', 0 ],
+    ],
+    name => "hivex_value_value",
+    description => "return the data field from the (key, datatype, data) tuple",
   },
   "initrd_cat" => {
     ret => 'buffer',
@@ -6967,6 +8338,14 @@ use vars qw(%guestfs_introspection);
     name => "inspect_list_applications",
     description => "get list of applications installed in the operating system",
   },
+  "inspect_list_applications2" => {
+    ret => 'struct application2 list',
+    args => [
+      [ 'root', 'string(device)', 0 ],
+    ],
+    name => "inspect_list_applications2",
+    description => "get list of applications installed in the operating system",
+  },
   "inspect_os" => {
     ret => 'string list',
     args => [
@@ -6980,6 +8359,360 @@ use vars qw(%guestfs_introspection);
     ],
     name => "internal_autosync",
     description => "internal autosync operation",
+  },
+  "internal_hot_add_drive" => {
+    ret => 'void',
+    args => [
+      [ 'label', 'string', 0 ],
+    ],
+    name => "internal_hot_add_drive",
+    description => "internal hotplugging operation",
+  },
+  "internal_hot_remove_drive" => {
+    ret => 'void',
+    args => [
+      [ 'label', 'string', 0 ],
+    ],
+    name => "internal_hot_remove_drive",
+    description => "internal hotplugging operation",
+  },
+  "internal_hot_remove_drive_precheck" => {
+    ret => 'void',
+    args => [
+      [ 'label', 'string', 0 ],
+    ],
+    name => "internal_hot_remove_drive_precheck",
+    description => "internal hotplugging operation",
+  },
+  "internal_lstatlist" => {
+    ret => 'struct stat list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'names', 'string list', 1 ],
+    ],
+    name => "internal_lstatlist",
+    description => "lstat on multiple files",
+  },
+  "internal_lxattrlist" => {
+    ret => 'struct xattr list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'names', 'string list', 1 ],
+    ],
+    name => "internal_lxattrlist",
+    description => "lgetxattr on multiple files",
+  },
+  "internal_readlinklist" => {
+    ret => 'string list',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'names', 'string list', 1 ],
+    ],
+    name => "internal_readlinklist",
+    description => "readlink on multiple files",
+  },
+  "internal_test" => {
+    ret => 'void',
+    args => [
+      [ 'str', 'string', 0 ],
+      [ 'optstr', 'nullable string', 1 ],
+      [ 'strlist', 'string list', 2 ],
+      [ 'b', 'bool', 3 ],
+      [ 'integer', 'int', 4 ],
+      [ 'integer64', 'int64', 5 ],
+      [ 'filein', 'string(filename)', 6 ],
+      [ 'fileout', 'string(filename)', 7 ],
+      [ 'bufferin', 'buffer', 8 ],
+    ],
+    optargs => {
+      obool => [ 'obool', 'bool', 0 ],
+      oint => [ 'oint', 'int', 1 ],
+      oint64 => [ 'oint64', 'int64', 2 ],
+      ostring => [ 'ostring', 'string', 3 ],
+      ostringlist => [ 'ostringlist', 'string list', 4 ],
+    },
+    name => "internal_test",
+    description => "internal test function - do not use",
+  },
+  "internal_test_63_optargs" => {
+    ret => 'void',
+    args => [
+    ],
+    optargs => {
+      opt1 => [ 'opt1', 'int', 0 ],
+      opt2 => [ 'opt2', 'int', 1 ],
+      opt3 => [ 'opt3', 'int', 2 ],
+      opt4 => [ 'opt4', 'int', 3 ],
+      opt5 => [ 'opt5', 'int', 4 ],
+      opt6 => [ 'opt6', 'int', 5 ],
+      opt7 => [ 'opt7', 'int', 6 ],
+      opt8 => [ 'opt8', 'int', 7 ],
+      opt9 => [ 'opt9', 'int', 8 ],
+      opt10 => [ 'opt10', 'int', 9 ],
+      opt11 => [ 'opt11', 'int', 10 ],
+      opt12 => [ 'opt12', 'int', 11 ],
+      opt13 => [ 'opt13', 'int', 12 ],
+      opt14 => [ 'opt14', 'int', 13 ],
+      opt15 => [ 'opt15', 'int', 14 ],
+      opt16 => [ 'opt16', 'int', 15 ],
+      opt17 => [ 'opt17', 'int', 16 ],
+      opt18 => [ 'opt18', 'int', 17 ],
+      opt19 => [ 'opt19', 'int', 18 ],
+      opt20 => [ 'opt20', 'int', 19 ],
+      opt21 => [ 'opt21', 'int', 20 ],
+      opt22 => [ 'opt22', 'int', 21 ],
+      opt23 => [ 'opt23', 'int', 22 ],
+      opt24 => [ 'opt24', 'int', 23 ],
+      opt25 => [ 'opt25', 'int', 24 ],
+      opt26 => [ 'opt26', 'int', 25 ],
+      opt27 => [ 'opt27', 'int', 26 ],
+      opt28 => [ 'opt28', 'int', 27 ],
+      opt29 => [ 'opt29', 'int', 28 ],
+      opt30 => [ 'opt30', 'int', 29 ],
+      opt31 => [ 'opt31', 'int', 30 ],
+      opt32 => [ 'opt32', 'int', 31 ],
+      opt33 => [ 'opt33', 'int', 32 ],
+      opt34 => [ 'opt34', 'int', 33 ],
+      opt35 => [ 'opt35', 'int', 34 ],
+      opt36 => [ 'opt36', 'int', 35 ],
+      opt37 => [ 'opt37', 'int', 36 ],
+      opt38 => [ 'opt38', 'int', 37 ],
+      opt39 => [ 'opt39', 'int', 38 ],
+      opt40 => [ 'opt40', 'int', 39 ],
+      opt41 => [ 'opt41', 'int', 40 ],
+      opt42 => [ 'opt42', 'int', 41 ],
+      opt43 => [ 'opt43', 'int', 42 ],
+      opt44 => [ 'opt44', 'int', 43 ],
+      opt45 => [ 'opt45', 'int', 44 ],
+      opt46 => [ 'opt46', 'int', 45 ],
+      opt47 => [ 'opt47', 'int', 46 ],
+      opt48 => [ 'opt48', 'int', 47 ],
+      opt49 => [ 'opt49', 'int', 48 ],
+      opt50 => [ 'opt50', 'int', 49 ],
+      opt51 => [ 'opt51', 'int', 50 ],
+      opt52 => [ 'opt52', 'int', 51 ],
+      opt53 => [ 'opt53', 'int', 52 ],
+      opt54 => [ 'opt54', 'int', 53 ],
+      opt55 => [ 'opt55', 'int', 54 ],
+      opt56 => [ 'opt56', 'int', 55 ],
+      opt57 => [ 'opt57', 'int', 56 ],
+      opt58 => [ 'opt58', 'int', 57 ],
+      opt59 => [ 'opt59', 'int', 58 ],
+      opt60 => [ 'opt60', 'int', 59 ],
+      opt61 => [ 'opt61', 'int', 60 ],
+      opt62 => [ 'opt62', 'int', 61 ],
+      opt63 => [ 'opt63', 'int', 62 ],
+    },
+    name => "internal_test_63_optargs",
+    description => "internal test function - do not use",
+  },
+  "internal_test_close_output" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "internal_test_close_output",
+    description => "internal test function - do not use",
+  },
+  "internal_test_only_optargs" => {
+    ret => 'void',
+    args => [
+    ],
+    optargs => {
+      test => [ 'test', 'int', 0 ],
+    },
+    name => "internal_test_only_optargs",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rbool" => {
+    ret => 'bool',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rbool",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rboolerr" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "internal_test_rboolerr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rbufferout" => {
+    ret => 'buffer',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rbufferout",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rbufferouterr" => {
+    ret => 'buffer',
+    args => [
+    ],
+    name => "internal_test_rbufferouterr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rconstoptstring" => {
+    ret => 'const nullable string',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rconstoptstring",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rconstoptstringerr" => {
+    ret => 'const nullable string',
+    args => [
+    ],
+    name => "internal_test_rconstoptstringerr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rconststring" => {
+    ret => 'const string',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rconststring",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rconststringerr" => {
+    ret => 'const string',
+    args => [
+    ],
+    name => "internal_test_rconststringerr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rhashtable" => {
+    ret => 'hash',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rhashtable",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rhashtableerr" => {
+    ret => 'hash',
+    args => [
+    ],
+    name => "internal_test_rhashtableerr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rint" => {
+    ret => 'int',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rint",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rint64" => {
+    ret => 'int64',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rint64",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rint64err" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "internal_test_rint64err",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rinterr" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "internal_test_rinterr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstring" => {
+    ret => 'string',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rstring",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstringerr" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "internal_test_rstringerr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstringlist" => {
+    ret => 'string list',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rstringlist",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstringlisterr" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "internal_test_rstringlisterr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstruct" => {
+    ret => 'struct lvm_pv',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rstruct",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstructerr" => {
+    ret => 'struct lvm_pv',
+    args => [
+    ],
+    name => "internal_test_rstructerr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstructlist" => {
+    ret => 'struct lvm_pv list',
+    args => [
+      [ 'val', 'string', 0 ],
+    ],
+    name => "internal_test_rstructlist",
+    description => "internal test function - do not use",
+  },
+  "internal_test_rstructlisterr" => {
+    ret => 'struct lvm_pv list',
+    args => [
+    ],
+    name => "internal_test_rstructlisterr",
+    description => "internal test function - do not use",
+  },
+  "internal_test_set_output" => {
+    ret => 'void',
+    args => [
+      [ 'filename', 'string', 0 ],
+    ],
+    name => "internal_test_set_output",
+    description => "internal test function - do not use",
+  },
+  "internal_write" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'content', 'buffer', 1 ],
+    ],
+    name => "internal_write",
+    description => "create a new file",
+  },
+  "internal_write_append" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+      [ 'content', 'buffer', 1 ],
+    ],
+    name => "internal_write_append",
+    description => "append content to end of file",
   },
   "is_blockdev" => {
     ret => 'bool',
@@ -7129,6 +8862,86 @@ use vars qw(%guestfs_introspection);
     name => "lchown",
     description => "change file owner and group",
   },
+  "ldmtool_create_all" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "ldmtool_create_all",
+    description => "scan and create Windows dynamic disk volumes",
+  },
+  "ldmtool_diskgroup_disks" => {
+    ret => 'string list',
+    args => [
+      [ 'diskgroup', 'string', 0 ],
+    ],
+    name => "ldmtool_diskgroup_disks",
+    description => "return the disks in a Windows dynamic disk group",
+  },
+  "ldmtool_diskgroup_name" => {
+    ret => 'string',
+    args => [
+      [ 'diskgroup', 'string', 0 ],
+    ],
+    name => "ldmtool_diskgroup_name",
+    description => "return the name of a Windows dynamic disk group",
+  },
+  "ldmtool_diskgroup_volumes" => {
+    ret => 'string list',
+    args => [
+      [ 'diskgroup', 'string', 0 ],
+    ],
+    name => "ldmtool_diskgroup_volumes",
+    description => "return the volumes in a Windows dynamic disk group",
+  },
+  "ldmtool_remove_all" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "ldmtool_remove_all",
+    description => "remove all Windows dynamic disk volumes",
+  },
+  "ldmtool_scan" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "ldmtool_scan",
+    description => "scan for Windows dynamic disks",
+  },
+  "ldmtool_scan_devices" => {
+    ret => 'string list',
+    args => [
+      [ 'devices', 'string(device) list', 0 ],
+    ],
+    name => "ldmtool_scan_devices",
+    description => "scan for Windows dynamic disks",
+  },
+  "ldmtool_volume_hint" => {
+    ret => 'string',
+    args => [
+      [ 'diskgroup', 'string', 0 ],
+      [ 'volume', 'string', 1 ],
+    ],
+    name => "ldmtool_volume_hint",
+    description => "return the hint field of a Windows dynamic disk volume",
+  },
+  "ldmtool_volume_partitions" => {
+    ret => 'string list',
+    args => [
+      [ 'diskgroup', 'string', 0 ],
+      [ 'volume', 'string', 1 ],
+    ],
+    name => "ldmtool_volume_partitions",
+    description => "return the partitions in a Windows dynamic disk volume",
+  },
+  "ldmtool_volume_type" => {
+    ret => 'string',
+    args => [
+      [ 'diskgroup', 'string', 0 ],
+      [ 'volume', 'string', 1 ],
+    ],
+    name => "ldmtool_volume_type",
+    description => "return the type of a Windows dynamic disk volume",
+  },
   "lgetxattr" => {
     ret => 'buffer',
     args => [
@@ -7160,6 +8973,13 @@ use vars qw(%guestfs_introspection);
     name => "list_devices",
     description => "list the block devices",
   },
+  "list_disk_labels" => {
+    ret => 'hash',
+    args => [
+    ],
+    name => "list_disk_labels",
+    description => "mapping of disk labels to devices",
+  },
   "list_dm_devices" => {
     ret => 'string list',
     args => [
@@ -7173,6 +8993,20 @@ use vars qw(%guestfs_introspection);
     ],
     name => "list_filesystems",
     description => "list filesystems",
+  },
+  "list_ldm_partitions" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "list_ldm_partitions",
+    description => "list all Windows dynamic disk partitions",
+  },
+  "list_ldm_volumes" => {
+    ret => 'string list',
+    args => [
+    ],
+    name => "list_ldm_volumes",
+    description => "list all Windows dynamic disk volumes",
   },
   "list_md_devices" => {
     ret => 'string list',
@@ -7256,6 +9090,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "ls",
     description => "list the files in a directory",
+  },
+  "ls0" => {
+    ret => 'void',
+    args => [
+      [ 'dir', 'string(path)', 0 ],
+      [ 'filenames', 'string(filename)', 1 ],
+    ],
+    name => "ls0",
+    description => "get list of files in a directory",
   },
   "lsetxattr" => {
     ret => 'void',
@@ -7471,6 +9314,13 @@ use vars qw(%guestfs_introspection);
     name => "lxattrlist",
     description => "lgetxattr on multiple files",
   },
+  "max_disks" => {
+    ret => 'int',
+    args => [
+    ],
+    name => "max_disks",
+    description => "maximum number of disks that may be added",
+  },
   "md_create" => {
     ret => 'void',
     args => [
@@ -7543,6 +9393,54 @@ use vars qw(%guestfs_introspection);
     ],
     name => "mkdtemp",
     description => "create a temporary directory",
+  },
+  "mke2fs" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      blockscount => [ 'blockscount', 'int64', 0 ],
+      blocksize => [ 'blocksize', 'int64', 1 ],
+      fragsize => [ 'fragsize', 'int64', 2 ],
+      blockspergroup => [ 'blockspergroup', 'int64', 3 ],
+      numberofgroups => [ 'numberofgroups', 'int64', 4 ],
+      bytesperinode => [ 'bytesperinode', 'int64', 5 ],
+      inodesize => [ 'inodesize', 'int64', 6 ],
+      journalsize => [ 'journalsize', 'int64', 7 ],
+      numberofinodes => [ 'numberofinodes', 'int64', 8 ],
+      stridesize => [ 'stridesize', 'int64', 9 ],
+      stripewidth => [ 'stripewidth', 'int64', 10 ],
+      maxonlineresize => [ 'maxonlineresize', 'int64', 11 ],
+      reservedblockspercentage => [ 'reservedblockspercentage', 'int', 12 ],
+      mmpupdateinterval => [ 'mmpupdateinterval', 'int', 13 ],
+      journaldevice => [ 'journaldevice', 'string', 14 ],
+      label => [ 'label', 'string', 15 ],
+      lastmounteddir => [ 'lastmounteddir', 'string', 16 ],
+      creatoros => [ 'creatoros', 'string', 17 ],
+      fstype => [ 'fstype', 'string', 18 ],
+      usagetype => [ 'usagetype', 'string', 19 ],
+      uuid => [ 'uuid', 'string', 20 ],
+      forcecreate => [ 'forcecreate', 'bool', 21 ],
+      writesbandgrouponly => [ 'writesbandgrouponly', 'bool', 22 ],
+      lazyitableinit => [ 'lazyitableinit', 'bool', 23 ],
+      lazyjournalinit => [ 'lazyjournalinit', 'bool', 24 ],
+      testfs => [ 'testfs', 'bool', 25 ],
+      discard => [ 'discard', 'bool', 26 ],
+      quotatype => [ 'quotatype', 'bool', 27 ],
+      extent => [ 'extent', 'bool', 28 ],
+      filetype => [ 'filetype', 'bool', 29 ],
+      flexbg => [ 'flexbg', 'bool', 30 ],
+      hasjournal => [ 'hasjournal', 'bool', 31 ],
+      journaldev => [ 'journaldev', 'bool', 32 ],
+      largefile => [ 'largefile', 'bool', 33 ],
+      quota => [ 'quota', 'bool', 34 ],
+      resizeinode => [ 'resizeinode', 'bool', 35 ],
+      sparsesuper => [ 'sparsesuper', 'bool', 36 ],
+      uninitbg => [ 'uninitbg', 'bool', 37 ],
+    },
+    name => "mke2fs",
+    description => "create an ext2/ext3/ext4 filesystem on device",
   },
   "mke2fs_J" => {
     ret => 'void',
@@ -7621,6 +9519,12 @@ use vars qw(%guestfs_introspection);
       [ 'fstype', 'string', 0 ],
       [ 'device', 'string(device)', 1 ],
     ],
+    optargs => {
+      blocksize => [ 'blocksize', 'int', 0 ],
+      features => [ 'features', 'string', 1 ],
+      inode => [ 'inode', 'int', 2 ],
+      sectorsize => [ 'sectorsize', 'int', 3 ],
+    },
     name => "mkfs",
     description => "make a filesystem",
   },
@@ -7652,20 +9556,13 @@ use vars qw(%guestfs_introspection);
     name => "mkfs_btrfs",
     description => "create a btrfs filesystem",
   },
-  "mkfs_opts" => {
+  "mklost_and_found" => {
     ret => 'void',
     args => [
-      [ 'fstype', 'string', 0 ],
-      [ 'device', 'string(device)', 1 ],
+      [ 'mountpoint', 'string(path)', 0 ],
     ],
-    optargs => {
-      blocksize => [ 'blocksize', 'int', 0 ],
-      features => [ 'features', 'string', 1 ],
-      inode => [ 'inode', 'int', 2 ],
-      sectorsize => [ 'sectorsize', 'int', 3 ],
-    },
-    name => "mkfs_opts",
-    description => "make a filesystem",
+    name => "mklost_and_found",
+    description => "make lost+found directory on an ext2/3/4 filesystem",
   },
   "mkmountpoint" => {
     ret => 'void',
@@ -7713,6 +9610,10 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'device', 'string(device)', 0 ],
     ],
+    optargs => {
+      label => [ 'label', 'string', 0 ],
+      uuid => [ 'uuid', 'string', 1 ],
+    },
     name => "mkswap",
     description => "create a swap partition",
   },
@@ -7741,6 +9642,17 @@ use vars qw(%guestfs_introspection);
     ],
     name => "mkswap_file",
     description => "create a swap file",
+  },
+  "mktemp" => {
+    ret => 'string',
+    args => [
+      [ 'tmpl', 'string(path)', 0 ],
+    ],
+    optargs => {
+      suffix => [ 'suffix', 'string', 0 ],
+    },
+    name => "mktemp",
+    description => "create a temporary file",
   },
   "modprobe" => {
     ret => 'void',
@@ -7911,19 +9823,11 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'device', 'string(device)', 0 ],
     ],
-    name => "ntfsresize",
-    description => "resize an NTFS filesystem",
-  },
-  "ntfsresize_opts" => {
-    ret => 'void',
-    args => [
-      [ 'device', 'string(device)', 0 ],
-    ],
     optargs => {
       size => [ 'size', 'int64', 0 ],
       force => [ 'force', 'bool', 1 ],
     },
-    name => "ntfsresize_opts",
+    name => "ntfsresize",
     description => "resize an NTFS filesystem",
   },
   "ntfsresize_size" => {
@@ -7934,6 +9838,21 @@ use vars qw(%guestfs_introspection);
     ],
     name => "ntfsresize_size",
     description => "resize an NTFS filesystem (with size)",
+  },
+  "parse_environment" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "parse_environment",
+    description => "parse the environment and set handle flags accordingly",
+  },
+  "parse_environment_list" => {
+    ret => 'void',
+    args => [
+      [ 'environment', 'string list', 0 ],
+    ],
+    name => "parse_environment_list",
+    description => "parse the environment and set handle flags accordingly",
   },
   "part_add" => {
     ret => 'void',
@@ -8080,6 +9999,21 @@ use vars qw(%guestfs_introspection);
     name => "pread_device",
     description => "read part of a device",
   },
+  "pvchange_uuid" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "pvchange_uuid",
+    description => "generate a new random UUID for a physical volume",
+  },
+  "pvchange_uuid_all" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "pvchange_uuid_all",
+    description => "generate new random UUIDs for all physical volumes",
+  },
   "pvcreate" => {
     ret => 'void',
     args => [
@@ -8204,6 +10138,14 @@ use vars qw(%guestfs_introspection);
     name => "realpath",
     description => "canonicalized absolute pathname",
   },
+  "remove_drive" => {
+    ret => 'void',
+    args => [
+      [ 'label', 'string', 0 ],
+    ],
+    name => "remove_drive",
+    description => "remove a disk image",
+  },
   "removexattr" => {
     ret => 'void',
     args => [
@@ -8246,6 +10188,14 @@ use vars qw(%guestfs_introspection);
     name => "rm",
     description => "remove a file",
   },
+  "rm_f" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    name => "rm_f",
+    description => "remove a file ignoring errors",
+  },
   "rm_rf" => {
     ret => 'void',
     args => [
@@ -8269,6 +10219,45 @@ use vars qw(%guestfs_introspection);
     ],
     name => "rmmountpoint",
     description => "remove a mountpoint",
+  },
+  "rsync" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    optargs => {
+      archive => [ 'archive', 'bool', 0 ],
+      deletedest => [ 'deletedest', 'bool', 1 ],
+    },
+    name => "rsync",
+    description => "synchronize the contents of two directories",
+  },
+  "rsync_in" => {
+    ret => 'void',
+    args => [
+      [ 'remote', 'string', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    optargs => {
+      archive => [ 'archive', 'bool', 0 ],
+      deletedest => [ 'deletedest', 'bool', 1 ],
+    },
+    name => "rsync_in",
+    description => "synchronize host or remote filesystem with filesystem",
+  },
+  "rsync_out" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'remote', 'string', 1 ],
+    ],
+    optargs => {
+      archive => [ 'archive', 'bool', 0 ],
+      deletedest => [ 'deletedest', 'bool', 1 ],
+    },
+    name => "rsync_out",
+    description => "synchronize filesystem with host or remote filesystem",
   },
   "scrub_device" => {
     ret => 'void',
@@ -8317,6 +10306,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_autosync",
     description => "set autosync mode",
+  },
+  "set_cachedir" => {
+    ret => 'void',
+    args => [
+      [ 'cachedir', 'nullable string', 0 ],
+    ],
+    name => "set_cachedir",
+    description => "set the appliance cache directory",
   },
   "set_direct" => {
     ret => 'void',
@@ -8373,6 +10370,23 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_label",
     description => "set filesystem label",
+  },
+  "set_libvirt_requested_credential" => {
+    ret => 'void',
+    args => [
+      [ 'index', 'int', 0 ],
+      [ 'cred', 'buffer', 1 ],
+    ],
+    name => "set_libvirt_requested_credential",
+    description => "pass requested credential back to libvirt",
+  },
+  "set_libvirt_supported_credentials" => {
+    ret => 'void',
+    args => [
+      [ 'creds', 'string list', 0 ],
+    ],
+    name => "set_libvirt_supported_credentials",
+    description => "set libvirt credentials supported by calling program",
   },
   "set_memsize" => {
     ret => 'void',
@@ -8437,6 +10451,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_smp",
     description => "set number of virtual CPUs in appliance",
+  },
+  "set_tmpdir" => {
+    ret => 'void',
+    args => [
+      [ 'tmpdir', 'nullable string', 0 ],
+    ],
+    name => "set_tmpdir",
+    description => "set the temporary directory",
   },
   "set_trace" => {
     ret => 'void',
@@ -8689,6 +10711,9 @@ use vars qw(%guestfs_introspection);
       [ 'tarfile', 'string(filename)', 0 ],
       [ 'directory', 'string(path)', 1 ],
     ],
+    optargs => {
+      compress => [ 'compress', 'string', 0 ],
+    },
     name => "tar_in",
     description => "unpack tarfile to directory",
   },
@@ -8698,195 +10723,13 @@ use vars qw(%guestfs_introspection);
       [ 'directory', 'string', 0 ],
       [ 'tarfile', 'string(filename)', 1 ],
     ],
+    optargs => {
+      compress => [ 'compress', 'string', 0 ],
+      numericowner => [ 'numericowner', 'bool', 1 ],
+      excludes => [ 'excludes', 'string list', 2 ],
+    },
     name => "tar_out",
     description => "pack directory into tarfile",
-  },
-  "test0" => {
-    ret => 'void',
-    args => [
-      [ 'str', 'string', 0 ],
-      [ 'optstr', 'nullable string', 1 ],
-      [ 'strlist', 'string list', 2 ],
-      [ 'b', 'bool', 3 ],
-      [ 'integer', 'int', 4 ],
-      [ 'integer64', 'int64', 5 ],
-      [ 'filein', 'string(filename)', 6 ],
-      [ 'fileout', 'string(filename)', 7 ],
-      [ 'bufferin', 'buffer', 8 ],
-    ],
-    optargs => {
-      obool => [ 'obool', 'bool', 0 ],
-      oint => [ 'oint', 'int', 1 ],
-      oint64 => [ 'oint64', 'int64', 2 ],
-      ostring => [ 'ostring', 'string', 3 ],
-    },
-    name => "test0",
-    description => "internal test function - do not use",
-  },
-  "test0rbool" => {
-    ret => 'bool',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rbool",
-    description => "internal test function - do not use",
-  },
-  "test0rboolerr" => {
-    ret => 'bool',
-    args => [
-    ],
-    name => "test0rboolerr",
-    description => "internal test function - do not use",
-  },
-  "test0rbufferout" => {
-    ret => 'buffer',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rbufferout",
-    description => "internal test function - do not use",
-  },
-  "test0rbufferouterr" => {
-    ret => 'buffer',
-    args => [
-    ],
-    name => "test0rbufferouterr",
-    description => "internal test function - do not use",
-  },
-  "test0rconstoptstring" => {
-    ret => 'const nullable string',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rconstoptstring",
-    description => "internal test function - do not use",
-  },
-  "test0rconstoptstringerr" => {
-    ret => 'const nullable string',
-    args => [
-    ],
-    name => "test0rconstoptstringerr",
-    description => "internal test function - do not use",
-  },
-  "test0rconststring" => {
-    ret => 'const string',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rconststring",
-    description => "internal test function - do not use",
-  },
-  "test0rconststringerr" => {
-    ret => 'const string',
-    args => [
-    ],
-    name => "test0rconststringerr",
-    description => "internal test function - do not use",
-  },
-  "test0rhashtable" => {
-    ret => 'hash',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rhashtable",
-    description => "internal test function - do not use",
-  },
-  "test0rhashtableerr" => {
-    ret => 'hash',
-    args => [
-    ],
-    name => "test0rhashtableerr",
-    description => "internal test function - do not use",
-  },
-  "test0rint" => {
-    ret => 'int',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rint",
-    description => "internal test function - do not use",
-  },
-  "test0rint64" => {
-    ret => 'int64',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rint64",
-    description => "internal test function - do not use",
-  },
-  "test0rint64err" => {
-    ret => 'int64',
-    args => [
-    ],
-    name => "test0rint64err",
-    description => "internal test function - do not use",
-  },
-  "test0rinterr" => {
-    ret => 'int',
-    args => [
-    ],
-    name => "test0rinterr",
-    description => "internal test function - do not use",
-  },
-  "test0rstring" => {
-    ret => 'string',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rstring",
-    description => "internal test function - do not use",
-  },
-  "test0rstringerr" => {
-    ret => 'string',
-    args => [
-    ],
-    name => "test0rstringerr",
-    description => "internal test function - do not use",
-  },
-  "test0rstringlist" => {
-    ret => 'string list',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rstringlist",
-    description => "internal test function - do not use",
-  },
-  "test0rstringlisterr" => {
-    ret => 'string list',
-    args => [
-    ],
-    name => "test0rstringlisterr",
-    description => "internal test function - do not use",
-  },
-  "test0rstruct" => {
-    ret => 'struct lvm_pv',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rstruct",
-    description => "internal test function - do not use",
-  },
-  "test0rstructerr" => {
-    ret => 'struct lvm_pv',
-    args => [
-    ],
-    name => "test0rstructerr",
-    description => "internal test function - do not use",
-  },
-  "test0rstructlist" => {
-    ret => 'struct lvm_pv list',
-    args => [
-      [ 'val', 'string', 0 ],
-    ],
-    name => "test0rstructlist",
-    description => "internal test function - do not use",
-  },
-  "test0rstructlisterr" => {
-    ret => 'struct lvm_pv list',
-    args => [
-    ],
-    name => "test0rstructlisterr",
-    description => "internal test function - do not use",
   },
   "tgz_in" => {
     ret => 'void',
@@ -8988,8 +10831,12 @@ use vars qw(%guestfs_introspection);
   "umount" => {
     ret => 'void',
     args => [
-      [ 'pathordevice', 'string', 0 ],
+      [ 'pathordevice', 'string(dev_or_path)', 0 ],
     ],
+    optargs => {
+      force => [ 'force', 'bool', 0 ],
+      lazyunmount => [ 'lazyunmount', 'bool', 1 ],
+    },
     name => "umount",
     description => "unmount a filesystem",
   },
@@ -9041,6 +10888,13 @@ use vars qw(%guestfs_introspection);
     name => "utimens",
     description => "set timestamp of a file with nanosecond precision",
   },
+  "utsname" => {
+    ret => 'struct utsname',
+    args => [
+    ],
+    name => "utsname",
+    description => "appliance kernel version",
+  },
   "version" => {
     ret => 'struct version',
     args => [
@@ -9088,6 +10942,21 @@ use vars qw(%guestfs_introspection);
     ],
     name => "vg_activate_all",
     description => "activate or deactivate all volume groups",
+  },
+  "vgchange_uuid" => {
+    ret => 'void',
+    args => [
+      [ 'vg', 'string', 0 ],
+    ],
+    name => "vgchange_uuid",
+    description => "generate a new random UUID for a volume group",
+  },
+  "vgchange_uuid_all" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "vgchange_uuid_all",
+    description => "generate new random UUIDs for all volume groups",
   },
   "vgcreate" => {
     ret => 'void',
@@ -9235,6 +11104,69 @@ use vars qw(%guestfs_introspection);
     name => "write_file",
     description => "create a file",
   },
+  "xfs_admin" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      extunwritten => [ 'extunwritten', 'bool', 0 ],
+      imgfile => [ 'imgfile', 'bool', 1 ],
+      v2log => [ 'v2log', 'bool', 2 ],
+      projid32bit => [ 'projid32bit', 'bool', 3 ],
+      lazycounter => [ 'lazycounter', 'bool', 4 ],
+      label => [ 'label', 'string', 5 ],
+      uuid => [ 'uuid', 'string', 6 ],
+    },
+    name => "xfs_admin",
+    description => "change parameters of an XFS filesystem",
+  },
+  "xfs_growfs" => {
+    ret => 'void',
+    args => [
+      [ 'path', 'string(path)', 0 ],
+    ],
+    optargs => {
+      datasec => [ 'datasec', 'bool', 0 ],
+      logsec => [ 'logsec', 'bool', 1 ],
+      rtsec => [ 'rtsec', 'bool', 2 ],
+      datasize => [ 'datasize', 'int64', 3 ],
+      logsize => [ 'logsize', 'int64', 4 ],
+      rtsize => [ 'rtsize', 'int64', 5 ],
+      rtextsize => [ 'rtextsize', 'int64', 6 ],
+      maxpct => [ 'maxpct', 'int', 7 ],
+    },
+    name => "xfs_growfs",
+    description => "expand an existing XFS filesystem",
+  },
+  "xfs_info" => {
+    ret => 'struct xfsinfo',
+    args => [
+      [ 'pathordevice', 'string(dev_or_path)', 0 ],
+    ],
+    name => "xfs_info",
+    description => "get geometry of XFS filesystem",
+  },
+  "xfs_repair" => {
+    ret => 'int',
+    args => [
+      [ 'device', 'string(dev_or_path)', 0 ],
+    ],
+    optargs => {
+      forcelogzero => [ 'forcelogzero', 'bool', 0 ],
+      nomodify => [ 'nomodify', 'bool', 1 ],
+      noprefetch => [ 'noprefetch', 'bool', 2 ],
+      forcegeometry => [ 'forcegeometry', 'bool', 3 ],
+      maxmem => [ 'maxmem', 'int64', 4 ],
+      ihashsize => [ 'ihashsize', 'int64', 5 ],
+      bhashsize => [ 'bhashsize', 'int64', 6 ],
+      agstride => [ 'agstride', 'int64', 7 ],
+      logdev => [ 'logdev', 'string', 8 ],
+      rtdev => [ 'rtdev', 'string', 9 ],
+    },
+    name => "xfs_repair",
+    description => "repair an XFS filesystem",
+  },
   "zegrep" => {
     ret => 'string list',
     args => [
@@ -9332,6 +11264,24 @@ use vars qw(%guestfs_introspection);
   },
 );
 
+# Add aliases to the introspection hash.
+my %ielem0 = %{$guestfs_introspection{add_drive}};
+$guestfs_introspection{add_drive_opts} = \%ielem0;
+my %ielem1 = %{$guestfs_introspection{grep}};
+$guestfs_introspection{grep_opts} = \%ielem1;
+my %ielem2 = %{$guestfs_introspection{mkfs}};
+$guestfs_introspection{mkfs_opts} = \%ielem2;
+my %ielem3 = %{$guestfs_introspection{mkswap}};
+$guestfs_introspection{mkswap_opts} = \%ielem3;
+my %ielem4 = %{$guestfs_introspection{ntfsresize}};
+$guestfs_introspection{ntfsresize_opts} = \%ielem4;
+my %ielem5 = %{$guestfs_introspection{tar_in}};
+$guestfs_introspection{tar_in_opts} = \%ielem5;
+my %ielem6 = %{$guestfs_introspection{tar_out}};
+$guestfs_introspection{tar_out_opts} = \%ielem6;
+my %ielem7 = %{$guestfs_introspection{umount}};
+$guestfs_introspection{umount_opts} = \%ielem7;
+
 1;
 
 =back
@@ -9363,7 +11313,7 @@ containing useful introspection information about the method
 (further fields may be added to this in future).
 
  use Sys::Guestfs;
- $Sys::Guestfs::guestfs_introspection{mkfs_opts}
+ $Sys::Guestfs::guestfs_introspection{mkfs}
  => {
     ret => 'void',                    # return type
     args => [                         # required arguments
@@ -9376,7 +11326,7 @@ containing useful introspection information about the method
       inode => [ 'inode', 'int', 2 ],
       sectorsize => [ 'sectorsize', 'int', 3 ],
     },
-    name => "mkfs_opts",
+    name => "mkfs",
     description => "make a filesystem",
   }
 
@@ -9397,10 +11347,11 @@ L<guestfs(3)/AVAILABILITY>.
 =head1 STORING DATA IN THE HANDLE
 
 The handle returned from L</new> is a hash reference.  The hash
-normally contains a single element:
+normally contains some elements:
 
  {
-   _g => [private data used by libguestfs]
+   _g => [private data used by libguestfs],
+   _flags => [flags provided when creating the handle]
  }
 
 Callers can add other elements to this hash to store data for their own

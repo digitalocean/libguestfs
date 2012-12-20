@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -34,18 +34,30 @@
 #include <guestfs-gobject/struct-inotify_event.h>
 #include <guestfs-gobject/struct-partition.h>
 #include <guestfs-gobject/struct-application.h>
+#include <guestfs-gobject/struct-application2.h>
 #include <guestfs-gobject/struct-isoinfo.h>
 #include <guestfs-gobject/struct-mdstat.h>
 #include <guestfs-gobject/struct-btrfssubvolume.h>
-#include <guestfs-gobject/optargs-test0.h>
-#include <guestfs-gobject/optargs-add_drive_opts.h>
+#include <guestfs-gobject/struct-xfsinfo.h>
+#include <guestfs-gobject/struct-utsname.h>
+#include <guestfs-gobject/struct-hivex_node.h>
+#include <guestfs-gobject/struct-hivex_value.h>
+#include <guestfs-gobject/optargs-internal_test.h>
+#include <guestfs-gobject/optargs-internal_test_only_optargs.h>
+#include <guestfs-gobject/optargs-internal_test_63_optargs.h>
+#include <guestfs-gobject/optargs-add_drive.h>
 #include <guestfs-gobject/optargs-add_domain.h>
 #include <guestfs-gobject/optargs-inspect_get_icon.h>
 #include <guestfs-gobject/optargs-mount_local.h>
 #include <guestfs-gobject/optargs-umount_local.h>
-#include <guestfs-gobject/optargs-mkfs_opts.h>
+#include <guestfs-gobject/optargs-umount.h>
+#include <guestfs-gobject/optargs-tar_in.h>
+#include <guestfs-gobject/optargs-tar_out.h>
+#include <guestfs-gobject/optargs-mkswap.h>
+#include <guestfs-gobject/optargs-grep.h>
+#include <guestfs-gobject/optargs-mkfs.h>
 #include <guestfs-gobject/optargs-mount_9p.h>
-#include <guestfs-gobject/optargs-ntfsresize_opts.h>
+#include <guestfs-gobject/optargs-ntfsresize.h>
 #include <guestfs-gobject/optargs-btrfs_filesystem_resize.h>
 #include <guestfs-gobject/optargs-compress_out.h>
 #include <guestfs-gobject/optargs-compress_device_out.h>
@@ -61,3 +73,13 @@
 #include <guestfs-gobject/optargs-mkfs_btrfs.h>
 #include <guestfs-gobject/optargs-set_e2attrs.h>
 #include <guestfs-gobject/optargs-btrfs_fsck.h>
+#include <guestfs-gobject/optargs-fstrim.h>
+#include <guestfs-gobject/optargs-xfs_growfs.h>
+#include <guestfs-gobject/optargs-rsync.h>
+#include <guestfs-gobject/optargs-rsync_in.h>
+#include <guestfs-gobject/optargs-rsync_out.h>
+#include <guestfs-gobject/optargs-xfs_admin.h>
+#include <guestfs-gobject/optargs-hivex_open.h>
+#include <guestfs-gobject/optargs-xfs_repair.h>
+#include <guestfs-gobject/optargs-mke2fs.h>
+#include <guestfs-gobject/optargs-mktemp.h>

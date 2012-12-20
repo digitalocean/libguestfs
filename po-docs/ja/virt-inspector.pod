@@ -107,8 +107,8 @@ the format is always specified.
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
+を開いているユーザーからパスフレーズを読み込もうとします。
 
 =item B<-v>
 
@@ -415,7 +415,7 @@ variable (since guestfish doesn't have variables), so if you want to do this
 reproducibly you are better off writing a script using one of the other
 languages that the libguestfs API supports.
 
-To list applications, you have to first mount up the disks:
+アプリケーションを一覧表示するには、まずディスクをマウントする必要があります:
 
  ><fs> inspect-get-mountpoints /dev/vg_f15x32/lv_root
  /: /dev/vg_f15x32/lv_root

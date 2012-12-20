@@ -147,7 +147,7 @@ command.
  - 0755     943360 /bin/bash
  [etc.]
 
-These basic fields are always shown:
+これらの基本的な項目は常に表示されます:
 
 =over 4
 
@@ -229,7 +229,7 @@ inode 番号。
 
 =item rdev
 
-For block and char special files, the device (displayed as major:minor).
+ブロックおよびキャラクタースペシャルファイルに対する、デバイス (メジャー:マイナーとして表示)。
 
 =item ブロック
 
@@ -333,8 +333,8 @@ C<disk.img> に対してロー形式（自動検知なし）を強制し、C<ano
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
+を開いているユーザーからパスフレーズを読み込もうとします。
 
 =item B<-l>
 
@@ -410,7 +410,7 @@ libguestfs API 呼び出しのトレースを有効にします。
 
 =head1 旧形式のコマンドライン引数
 
-Previous versions of virt-ls allowed you to write either:
+前のバージョンの virt-ls により、次のどちらも書くことができます:
 
  virt-ls disk.img [disk.img ...] /dir
 
@@ -428,13 +428,11 @@ the confusing case where a disk image might have the same name as a guest.
 Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
 should be easy to parse, but it is definitely not easy to parse.
 
-Myth: Just split fields at commas.  Reality: This does I<not> work
-reliably.  This example has two columns:
+神話: ただコンマで項目を区切る。 真実: これは正しく動き I<ません>。この例は 2 つの列があります:
 
  "foo,bar",baz
 
-Myth: Read the file one line at a time.  Reality: This does I<not> work
-reliably.  This example has one row:
+神話: 同時にファイルの 1 行を読み込みます。 真実: これは正しく動き I<ません>。この例は 1 つの行があります:
 
  "foo
  bar",baz

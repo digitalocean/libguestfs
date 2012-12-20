@@ -192,19 +192,20 @@ Do the results match what is actually in the guest?
 
 =head2 Try the auditing features of virt-ls on all your guests.
 
-List all setuid or setgid programs in a Linux virtual machine:
+Показати список всіх програм з setuid або setgid у віртуальній машині Linux:
 
  virt-ls -lR -d Guest / | grep '^- [42]'
 
-List all public-writable directories in a Linux virtual machine:
+Показати список всіх каталогів з відкритим для всіх доступом на запис у
+віртуальній машині Linux:
 
  virt-ls -lR -d Guest / | grep '^d ...7'
 
-List all Unix domain sockets in a Linux virtual machine:
+Показати список всіх сокетів доменів Unix у віртуальній машині Linux:
 
  virt-ls -lR -d Guest / | grep '^s'
 
-List all regular files with filenames ending in '.png':
+Показати список всіх звичайних файлів, назви яких завершуються на «.png»:
 
  virt-ls -lR -d Guest / | grep -i '^-.*\.png$'
 
@@ -212,11 +213,12 @@ Display files larger than 10MB in home directories:
 
  virt-ls -lR -d Guest /home | awk '$3 > 10*1024*1024'
 
-Find everything modified in the last 7 days:
+Знайти всі об’єкти, які було змінено протягом попередніх 7 днів:
 
  virt-ls -lR -d Guest --time-days / | awk '$6 <= 7'
 
-Find regular files modified in the last 24 hours:
+Знайти звичайні файли, зміни до яких було внесено протягом попередніх 24
+годин:
 
  virt-ls -lR -d Guest --time-days / | grep '^-' | awk '$6 < 1'
 

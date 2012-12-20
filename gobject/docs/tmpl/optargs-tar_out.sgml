@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsTarOut
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsTarOut ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsTarOut:compress ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsTarOut:numericowner ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsTarOutClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_tar_out_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

@@ -40,6 +40,7 @@
 
 static void remove_from_list (char **list, const char *item);
 static void check_with_vfs_type (guestfs_h *g, const char *dev, char ***ret, size_t *ret_size);
+static int is_mbr_partition_type_42 (guestfs_h *g, const char *partition);
 
 char **
 guestfs__list_filesystems (guestfs_h *g)
@@ -52,6 +53,8 @@ guestfs__list_filesystems (guestfs_h *g)
   char **partitions = NULL;
   char **mds = NULL;
   char **lvs = NULL;
+  char **ldmvols = NULL;
+  char **ldmparts = NULL;
 
   /* Look to see if any devices directly contain filesystems
    * (RHBZ#590167).  However vfs-type will fail to tell us anything
@@ -78,8 +81,10 @@ guestfs__list_filesystems (guestfs_h *g)
     check_with_vfs_type (g, devices[i], &ret, &ret_size);
 
   /* Use vfs-type to check for filesystems on partitions. */
-  for (i = 0; partitions[i] != NULL; ++i)
-    check_with_vfs_type (g, partitions[i], &ret, &ret_size);
+  for (i = 0; partitions[i] != NULL; ++i) {
+    if (! is_mbr_partition_type_42 (g, partitions[i]))
+      check_with_vfs_type (g, partitions[i], &ret, &ret_size);
+  }
 
   /* Use vfs-type to check for filesystems on md devices. */
   for (i = 0; mds[i] != NULL; ++i)
@@ -94,17 +99,36 @@ guestfs__list_filesystems (guestfs_h *g)
       check_with_vfs_type (g, lvs[i], &ret, &ret_size);
   }
 
+  if (guestfs___feature_available (g, "ldm")) {
+    /* Use vfs-type to check for filesystems on Windows dynamic disks. */
+    ldmvols = guestfs_list_ldm_volumes (g);
+    if (ldmvols == NULL) goto error;
+
+    for (i = 0; ldmvols[i] != NULL; ++i)
+      check_with_vfs_type (g, ldmvols[i], &ret, &ret_size);
+
+    ldmparts = guestfs_list_ldm_partitions (g);
+    if (ldmparts == NULL) goto error;
+
+    for (i = 0; ldmparts[i] != NULL; ++i)
+      check_with_vfs_type (g, ldmparts[i], &ret, &ret_size);
+  }
+
   guestfs___free_string_list (devices);
   guestfs___free_string_list (partitions);
   guestfs___free_string_list (mds);
   if (lvs) guestfs___free_string_list (lvs);
+  if (ldmvols) guestfs___free_string_list (ldmvols);
+  if (ldmparts) guestfs___free_string_list (ldmparts);
   return ret;
 
  error:
   if (devices) guestfs___free_string_list (devices);
   if (partitions) guestfs___free_string_list (partitions);
   if (mds) guestfs___free_string_list (mds);
-  //if (lvs) guestfs___free_string_list (lvs);
+  if (lvs) guestfs___free_string_list (lvs);
+  if (ldmvols) guestfs___free_string_list (ldmvols);
+  if (ldmparts) guestfs___free_string_list (ldmparts);
   if (ret) guestfs___free_string_list (ret);
   return NULL;
 }
@@ -134,11 +158,11 @@ check_with_vfs_type (guestfs_h *g, const char *device,
                      char ***ret, size_t *ret_size)
 {
   char *v;
+  char *vfs_type;
 
-  guestfs_error_handler_cb old_error_cb = g->error_cb;
-  g->error_cb = NULL;
-  char *vfs_type = guestfs_vfs_type (g, device);
-  g->error_cb = old_error_cb;
+  guestfs_push_error_handler (g, NULL, NULL);
+  vfs_type = guestfs_vfs_type (g, device);
+  guestfs_pop_error_handler (g);
 
   if (!vfs_type)
     v = safe_strdup (g, "unknown");
@@ -173,4 +197,38 @@ check_with_vfs_type (guestfs_h *g, const char *device,
   (*ret)[i] = safe_strdup (g, device);
   (*ret)[i+1] = v;
   (*ret)[i+2] = NULL;
+}
+
+/* We should ignore partitions that have MBR type byte 0x42, because
+ * these are members of a Windows dynamic disk group.  Trying to read
+ * them will cause errors (RHBZ#887520).  Assuming that libguestfs was
+ * compiled with ldm support, we'll get the filesystems on these later.
+ */
+static int
+is_mbr_partition_type_42 (guestfs_h *g, const char *partition)
+{
+  char *device = NULL;
+  int partnum;
+  int mbr_id;
+  int ret = 0;
+
+  guestfs_push_error_handler (g, NULL, NULL);
+
+  partnum = guestfs_part_to_partnum (g, partition);
+  if (partnum == -1)
+    goto out;
+
+  device = guestfs_part_to_dev (g, partition);
+  if (device == NULL)
+    goto out;
+
+  mbr_id = guestfs_part_get_mbr_id (g, device, partnum);
+
+  ret = mbr_id == 0x42;
+
+ out:
+  guestfs_pop_error_handler (g);
+  free (device);
+
+  return ret;
 }

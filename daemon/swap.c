@@ -30,6 +30,10 @@
 
 #include "ignore-value.h"
 
+GUESTFSD_EXT_CMD(str_mkswap, mkswap);
+GUESTFSD_EXT_CMD(str_swapon, swapon);
+GUESTFSD_EXT_CMD(str_swapoff, swapoff);
+
 /* Confirmed this is true for Linux swap partitions from the Linux sources. */
 #define SWAP_LABEL_MAX 16
 
@@ -49,26 +53,48 @@ optgroup_linuxfsuuid_available (void)
    * return code.
    */
   ignore_value (commandf (NULL, &err, COMMAND_FLAG_FOLD_STDOUT_ON_STDERR,
-                          "mkswap", "--help", NULL));
+                          str_mkswap, "--help", NULL));
 
   av = strstr (err, "-U") != NULL;
   free (err);
   return av;
 }
 
-static int
-mkswap (const char *device, const char *flag, const char *value)
+/* Takes optional arguments, consult optargs_bitmask. */
+int
+do_mkswap (const char *device, const char *label, const char *uuid)
 {
-  char *err;
+  const size_t MAX_ARGS = 64;
+  const char *argv[MAX_ARGS];
+  size_t i = 0;
   int r;
+  char *err;
 
-  if (!flag)
-    r = command (NULL, &err, "mkswap", "-f", device, NULL);
-  else
-    r = command (NULL, &err, "mkswap", "-f", flag, value, device, NULL);
+  ADD_ARG (argv, i, str_mkswap);
+  ADD_ARG (argv, i, "-f");
 
+  if (optargs_bitmask & GUESTFS_MKSWAP_LABEL_BITMASK) {
+    if (strlen (label) > SWAP_LABEL_MAX) {
+      reply_with_error ("%s: Linux swap labels are limited to %d bytes",
+                        label, SWAP_LABEL_MAX);
+      return -1;
+    }
+
+    ADD_ARG (argv, i, "-L");
+    ADD_ARG (argv, i, label);
+  }
+
+  if (optargs_bitmask & GUESTFS_MKSWAP_UUID_BITMASK) {
+    ADD_ARG (argv, i, "-U");
+    ADD_ARG (argv, i, uuid);
+  }
+
+  ADD_ARG (argv, i, device);
+  ADD_ARG (argv, i, NULL);
+
+  r = commandv (NULL, &err, argv);
   if (r == -1) {
-    reply_with_error ("%s", err);
+    reply_with_error ("%s: %s", device, err);
     free (err);
     return -1;
   }
@@ -81,33 +107,24 @@ mkswap (const char *device, const char *flag, const char *value)
 }
 
 int
-do_mkswap (const char *device)
-{
-  return mkswap (device, NULL, NULL);
-}
-
-int
 do_mkswap_L (const char *label, const char *device)
 {
-  if (strlen (label) > SWAP_LABEL_MAX) {
-    reply_with_error ("%s: Linux swap labels are limited to %d bytes",
-                      label, SWAP_LABEL_MAX);
-    return -1;
-  }
-
-  return mkswap (device, "-L", label);
+  optargs_bitmask = GUESTFS_MKSWAP_LABEL_BITMASK;
+  return do_mkswap (device, label, NULL);
 }
 
 int
 do_mkswap_U (const char *uuid, const char *device)
 {
-  return mkswap (device, "-U", uuid);
+  optargs_bitmask = GUESTFS_MKSWAP_UUID_BITMASK;
+  return do_mkswap (device, NULL, uuid);
 }
 
 int
 do_mkswap_file (const char *path)
 {
   char *buf;
+  char *err;
   int r;
 
   buf = sysroot_path (path);
@@ -116,8 +133,17 @@ do_mkswap_file (const char *path)
     return -1;
   }
 
-  r = mkswap (buf, NULL, NULL);
+  r = command (NULL, &err, str_mkswap, "-f", buf, NULL);
   free (buf);
+
+  if (r == -1) {
+    reply_with_error ("%s: %s", path, err);
+    free (err);
+    return -1;
+  }
+
+  free (err);
+
   return r;
 }
 
@@ -151,13 +177,13 @@ swaponoff (const char *cmd, const char *flag, const char *value)
 int
 do_swapon_device (const char *device)
 {
-  return swaponoff ("swapon", NULL, device);
+  return swaponoff (str_swapon, NULL, device);
 }
 
 int
 do_swapoff_device (const char *device)
 {
-  return swaponoff ("swapoff", NULL, device);
+  return swaponoff (str_swapoff, NULL, device);
 }
 
 int
@@ -172,7 +198,7 @@ do_swapon_file (const char *path)
     return -1;
   }
 
-  r = swaponoff ("swapon", NULL, buf);
+  r = swaponoff (str_swapon, NULL, buf);
   free (buf);
   return r;
 }
@@ -189,7 +215,7 @@ do_swapoff_file (const char *path)
     return -1;
   }
 
-  r = swaponoff ("swapoff", NULL, buf);
+  r = swaponoff (str_swapoff, NULL, buf);
   free (buf);
   return r;
 }
@@ -203,7 +229,7 @@ do_swapon_label (const char *label)
     return -1;
   }
 
-  return swaponoff ("swapon", "-L", label);
+  return swaponoff (str_swapon, "-L", label);
 }
 
 int
@@ -215,17 +241,17 @@ do_swapoff_label (const char *label)
     return -1;
   }
 
-  return swaponoff ("swapoff", "-L", label);
+  return swaponoff (str_swapoff, "-L", label);
 }
 
 int
 do_swapon_uuid (const char *uuid)
 {
-  return swaponoff ("swapon", "-U", uuid);
+  return swaponoff (str_swapon, "-U", uuid);
 }
 
 int
 do_swapoff_uuid (const char *uuid)
 {
-  return swaponoff ("swapoff", "-U", uuid);
+  return swaponoff (str_swapoff, "-U", uuid);
 }

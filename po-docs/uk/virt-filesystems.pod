@@ -102,8 +102,9 @@ Add I<file> which should be a disk image from a virtual machine.  If the
 virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром
+I<--format=..>.
 
 =item B<--all>
 
@@ -124,8 +125,8 @@ be added to this list in future).
 
 =item B<--connect> адреса
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
 libvirt не буде використовуватися взагалі.
@@ -178,12 +179,13 @@ auto-detection for subsequent I<-a> options.
 
  virt-filesystems --format=raw -a диск.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img>.
 
  virt-filesystems --format=raw -a диск.img --format -a інший_диск.img
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem

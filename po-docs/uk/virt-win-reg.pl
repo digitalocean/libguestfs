@@ -81,8 +81,8 @@ L<hivexregedit(1)>.
 
 =item B<--connect адреса>
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 If you specify guest block devices directly, then libvirt is not used at
 all.
@@ -159,7 +159,7 @@ into another program or stored in another Registry.
 =head1 ПІДТРИМУВАНІ СИСТЕМИ
 
 The program currently supports Windows NT-derived guests starting with
-Windows XP through to at least Windows 7.
+Windows XP through to at least Windows 8.
 
 The following Registry keys are supported:
 
@@ -190,6 +190,12 @@ C<HKEY_USERS>.
 
 The literal keys C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are not
 supported (there is no "current user").
+
+=head2 WINDOWS 8
+
+Windows 8 "fast startup" can prevent virt-win-reg from being able to edit
+the Registry.  See L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST
+STARTUP>.
 
 =head1 КОДУВАННЯ
 

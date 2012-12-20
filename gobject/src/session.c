@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -74,7 +74,7 @@ G_DEFINE_BOXED_TYPE(GuestfsSessionEventParams,
                     guestfs_session_event_params_free)
 
 /* Event callback */
-static guint signals[8] = { 0 };
+static guint signals[9] = { 0 };
 
 static GuestfsSessionEvent
 guestfs_session_event_from_guestfs_event(uint64_t event)
@@ -88,6 +88,7 @@ guestfs_session_event_from_guestfs_event(uint64_t event)
     case GUESTFS_EVENT_LIBRARY: return GUESTFS_SESSION_EVENT_LIBRARY;
     case GUESTFS_EVENT_TRACE: return GUESTFS_SESSION_EVENT_TRACE;
     case GUESTFS_EVENT_ENTER: return GUESTFS_SESSION_EVENT_ENTER;
+    case GUESTFS_EVENT_LIBVIRT_AUTH: return GUESTFS_SESSION_EVENT_LIBVIRT_AUTH;
   }
 
   g_warning("guestfs_session_event_from_guestfs_event: invalid event %lu",
@@ -141,6 +142,7 @@ guestfs_session_event_get_type(void)
       { GUESTFS_SESSION_EVENT_LIBRARY, "GUESTFS_SESSION_EVENT_LIBRARY", "library" },
       { GUESTFS_SESSION_EVENT_TRACE, "GUESTFS_SESSION_EVENT_TRACE", "trace" },
       { GUESTFS_SESSION_EVENT_ENTER, "GUESTFS_SESSION_EVENT_ENTER", "enter" },
+      { GUESTFS_SESSION_EVENT_LIBVIRT_AUTH, "GUESTFS_SESSION_EVENT_LIBVIRT_AUTH", "libvirt_auth" },
     };
     etype = g_enum_register_static("GuestfsSessionEvent", values);
   }
@@ -322,6 +324,24 @@ guestfs_session_class_init(GuestfsSessionClass *klass)
                  NULL,
                  G_TYPE_NONE,
                  1, guestfs_session_event_params_get_type());
+
+  /**
+   * GuestfsSession::libvirt_auth:
+   * @session: The session which emitted the signal
+   * @params: An object containing event parameters
+   *
+   * See "SETTING CALLBACKS TO HANDLE EVENTS" in guestfs(3) for
+   * more details about this event.
+   */
+  signals[GUESTFS_SESSION_EVENT_LIBVIRT_AUTH] =
+    g_signal_new(g_intern_static_string("libvirt_auth"),
+                 G_OBJECT_CLASS_TYPE(object_class),
+                 G_SIGNAL_RUN_LAST,
+                 0,
+                 NULL, NULL,
+                 NULL,
+                 G_TYPE_NONE,
+                 1, guestfs_session_event_params_get_type());
 }
 
 static void
@@ -375,7 +395,7 @@ guestfs_session_close(GuestfsSession *session, GError **err)
   return TRUE;
 }
 /**
- * guestfs_session_test0:
+ * guestfs_session_internal_test:
  * @session: (transfer none): A GuestfsSession object
  * @str: (transfer none) (type utf8):
  * @optstr: (transfer none) (type utf8) (allow-none):
@@ -387,7 +407,7 @@ guestfs_session_close(GuestfsSession *session, GError **err)
  * @fileout: (transfer none) (type filename):
  * @bufferin: (transfer none) (array length=bufferin_size) (element-type guint8): an array of binary data
  * @bufferin_size: The size of bufferin, in bytes
- * @optargs: (transfer none) (allow-none): a GuestfsTest0 containing optional arguments
+ * @optargs: (transfer none) (allow-none): a GuestfsInternalTest containing optional arguments
  * @cancellable: A GCancellable object
  * @err: A GError object to receive any generated errors
  *
@@ -397,14 +417,15 @@ guestfs_session_close(GuestfsSession *session, GError **err)
  * automatically generated bindings can handle every possible parameter
  * type correctly.
  * 
- * It echos the contents of each parameter to stdout.
+ * It echos the contents of each parameter to stdout (by default) or to a
+ * file (if guestfs_session_internal_test_set_output() was called).
  * 
  * You probably don't want to call this function.
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *optstr, gchar *const *strlist, gboolean b, gint32 integer, gint64 integer64, const gchar *filein, const gchar *fileout, const guint8 *bufferin, gsize bufferin_size, GuestfsTest0 *optargs, GCancellable *cancellable, GError **err)
+guestfs_session_internal_test(GuestfsSession *session, const gchar *str, const gchar *optstr, gchar *const *strlist, gboolean b, gint32 integer, gint64 integer64, const gchar *filein, const gchar *fileout, const guint8 *bufferin, gsize bufferin_size, GuestfsInternalTest *optargs, GCancellable *cancellable, GError **err)
 {
   /* Check we haven't already been cancelled */
   if (g_cancellable_set_error_if_cancelled (cancellable, err))
@@ -414,12 +435,12 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0");
+                "internal_test");
     return FALSE;
   }
 
-  struct guestfs_test0_argv argv;
-  struct guestfs_test0_argv *argvp = NULL;
+  struct guestfs_internal_test_argv argv;
+  struct guestfs_internal_test_argv *argvp = NULL;
 
   if (optargs) {
     argv.bitmask = 0;
@@ -429,7 +450,7 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
     g_object_get_property(G_OBJECT(optargs), "obool", &obool_v);
     GuestfsTristate obool = g_value_get_enum(&obool_v);
     if (obool != GUESTFS_TRISTATE_NONE) {
-      argv.bitmask |= GUESTFS_TEST0_OBOOL_BITMASK;
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_OBOOL_BITMASK;
       argv.obool = obool;
     }
     GValue oint_v = {0, };
@@ -437,7 +458,7 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
     g_object_get_property(G_OBJECT(optargs), "oint", &oint_v);
     gint32 oint = g_value_get_int(&oint_v);
     if (oint != -1) {
-      argv.bitmask |= GUESTFS_TEST0_OINT_BITMASK;
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_OINT_BITMASK;
       argv.oint = oint;
     }
     GValue oint64_v = {0, };
@@ -445,7 +466,7 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
     g_object_get_property(G_OBJECT(optargs), "oint64", &oint64_v);
     gint64 oint64 = g_value_get_int64(&oint64_v);
     if (oint64 != -1) {
-      argv.bitmask |= GUESTFS_TEST0_OINT64_BITMASK;
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_OINT64_BITMASK;
       argv.oint64 = oint64;
     }
     GValue ostring_v = {0, };
@@ -453,7 +474,7 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
     g_object_get_property(G_OBJECT(optargs), "ostring", &ostring_v);
     const gchar *ostring = g_value_get_string(&ostring_v);
     if (ostring != NULL) {
-      argv.bitmask |= GUESTFS_TEST0_OSTRING_BITMASK;
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
       argv.ostring = ostring;
     }
     argvp = &argv;
@@ -465,7 +486,7 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
                                g, NULL);
   }
 
-  int ret = guestfs_test0_argv(g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, argvp);
+  int ret = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, argvp);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -476,7 +497,640 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
 }
 
 /**
- * guestfs_session_test0rint:
+ * guestfs_session_internal_test_only_optargs:
+ * @session: (transfer none): A GuestfsSession object
+ * @optargs: (transfer none) (allow-none): a GuestfsInternalTestOnlyOptargs containing optional arguments
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * internal test function - do not use
+ *
+ * This is an internal test function which is used to test whether the
+ * automatically generated bindings can handle no args, some optargs
+ * correctly.
+ * 
+ * It echos the contents of each parameter to stdout (by default) or to a
+ * file (if guestfs_session_internal_test_set_output() was called).
+ * 
+ * You probably don't want to call this function.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_internal_test_only_optargs(GuestfsSession *session, GuestfsInternalTestOnlyOptargs *optargs, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_test_only_optargs");
+    return FALSE;
+  }
+
+  struct guestfs_internal_test_only_optargs_argv argv;
+  struct guestfs_internal_test_only_optargs_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue test_v = {0, };
+    g_value_init(&test_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "test", &test_v);
+    gint32 test = g_value_get_int(&test_v);
+    if (test != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK;
+      argv.test = test;
+    }
+    argvp = &argv;
+  }
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect(cancellable,
+                               G_CALLBACK(cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_internal_test_only_optargs_argv (g, argvp);
+  g_cancellable_disconnect(cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_internal_test_63_optargs:
+ * @session: (transfer none): A GuestfsSession object
+ * @optargs: (transfer none) (allow-none): a GuestfsInternalTest63Optargs containing optional arguments
+ * @cancellable: A GCancellable object
+ * @err: A GError object to receive any generated errors
+ *
+ * internal test function - do not use
+ *
+ * This is an internal test function which is used to test whether the
+ * automatically generated bindings can handle the full range of 63 optargs
+ * correctly. (Note that 63 is not an absolute limit and it could be raised
+ * by changing the XDR protocol).
+ * 
+ * It echos the contents of each parameter to stdout (by default) or to a
+ * file (if guestfs_session_internal_test_set_output() was called).
+ * 
+ * You probably don't want to call this function.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_internal_test_63_optargs(GuestfsSession *session, GuestfsInternalTest63Optargs *optargs, GCancellable *cancellable, GError **err)
+{
+  /* Check we haven't already been cancelled */
+  if (g_cancellable_set_error_if_cancelled (cancellable, err))
+    return FALSE;
+
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_test_63_optargs");
+    return FALSE;
+  }
+
+  struct guestfs_internal_test_63_optargs_argv argv;
+  struct guestfs_internal_test_63_optargs_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue opt1_v = {0, };
+    g_value_init(&opt1_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt1", &opt1_v);
+    gint32 opt1 = g_value_get_int(&opt1_v);
+    if (opt1 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK;
+      argv.opt1 = opt1;
+    }
+    GValue opt2_v = {0, };
+    g_value_init(&opt2_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt2", &opt2_v);
+    gint32 opt2 = g_value_get_int(&opt2_v);
+    if (opt2 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK;
+      argv.opt2 = opt2;
+    }
+    GValue opt3_v = {0, };
+    g_value_init(&opt3_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt3", &opt3_v);
+    gint32 opt3 = g_value_get_int(&opt3_v);
+    if (opt3 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK;
+      argv.opt3 = opt3;
+    }
+    GValue opt4_v = {0, };
+    g_value_init(&opt4_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt4", &opt4_v);
+    gint32 opt4 = g_value_get_int(&opt4_v);
+    if (opt4 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK;
+      argv.opt4 = opt4;
+    }
+    GValue opt5_v = {0, };
+    g_value_init(&opt5_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt5", &opt5_v);
+    gint32 opt5 = g_value_get_int(&opt5_v);
+    if (opt5 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK;
+      argv.opt5 = opt5;
+    }
+    GValue opt6_v = {0, };
+    g_value_init(&opt6_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt6", &opt6_v);
+    gint32 opt6 = g_value_get_int(&opt6_v);
+    if (opt6 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK;
+      argv.opt6 = opt6;
+    }
+    GValue opt7_v = {0, };
+    g_value_init(&opt7_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt7", &opt7_v);
+    gint32 opt7 = g_value_get_int(&opt7_v);
+    if (opt7 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK;
+      argv.opt7 = opt7;
+    }
+    GValue opt8_v = {0, };
+    g_value_init(&opt8_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt8", &opt8_v);
+    gint32 opt8 = g_value_get_int(&opt8_v);
+    if (opt8 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK;
+      argv.opt8 = opt8;
+    }
+    GValue opt9_v = {0, };
+    g_value_init(&opt9_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt9", &opt9_v);
+    gint32 opt9 = g_value_get_int(&opt9_v);
+    if (opt9 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK;
+      argv.opt9 = opt9;
+    }
+    GValue opt10_v = {0, };
+    g_value_init(&opt10_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt10", &opt10_v);
+    gint32 opt10 = g_value_get_int(&opt10_v);
+    if (opt10 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK;
+      argv.opt10 = opt10;
+    }
+    GValue opt11_v = {0, };
+    g_value_init(&opt11_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt11", &opt11_v);
+    gint32 opt11 = g_value_get_int(&opt11_v);
+    if (opt11 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK;
+      argv.opt11 = opt11;
+    }
+    GValue opt12_v = {0, };
+    g_value_init(&opt12_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt12", &opt12_v);
+    gint32 opt12 = g_value_get_int(&opt12_v);
+    if (opt12 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK;
+      argv.opt12 = opt12;
+    }
+    GValue opt13_v = {0, };
+    g_value_init(&opt13_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt13", &opt13_v);
+    gint32 opt13 = g_value_get_int(&opt13_v);
+    if (opt13 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK;
+      argv.opt13 = opt13;
+    }
+    GValue opt14_v = {0, };
+    g_value_init(&opt14_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt14", &opt14_v);
+    gint32 opt14 = g_value_get_int(&opt14_v);
+    if (opt14 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK;
+      argv.opt14 = opt14;
+    }
+    GValue opt15_v = {0, };
+    g_value_init(&opt15_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt15", &opt15_v);
+    gint32 opt15 = g_value_get_int(&opt15_v);
+    if (opt15 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK;
+      argv.opt15 = opt15;
+    }
+    GValue opt16_v = {0, };
+    g_value_init(&opt16_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt16", &opt16_v);
+    gint32 opt16 = g_value_get_int(&opt16_v);
+    if (opt16 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK;
+      argv.opt16 = opt16;
+    }
+    GValue opt17_v = {0, };
+    g_value_init(&opt17_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt17", &opt17_v);
+    gint32 opt17 = g_value_get_int(&opt17_v);
+    if (opt17 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK;
+      argv.opt17 = opt17;
+    }
+    GValue opt18_v = {0, };
+    g_value_init(&opt18_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt18", &opt18_v);
+    gint32 opt18 = g_value_get_int(&opt18_v);
+    if (opt18 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK;
+      argv.opt18 = opt18;
+    }
+    GValue opt19_v = {0, };
+    g_value_init(&opt19_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt19", &opt19_v);
+    gint32 opt19 = g_value_get_int(&opt19_v);
+    if (opt19 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK;
+      argv.opt19 = opt19;
+    }
+    GValue opt20_v = {0, };
+    g_value_init(&opt20_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt20", &opt20_v);
+    gint32 opt20 = g_value_get_int(&opt20_v);
+    if (opt20 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK;
+      argv.opt20 = opt20;
+    }
+    GValue opt21_v = {0, };
+    g_value_init(&opt21_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt21", &opt21_v);
+    gint32 opt21 = g_value_get_int(&opt21_v);
+    if (opt21 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK;
+      argv.opt21 = opt21;
+    }
+    GValue opt22_v = {0, };
+    g_value_init(&opt22_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt22", &opt22_v);
+    gint32 opt22 = g_value_get_int(&opt22_v);
+    if (opt22 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK;
+      argv.opt22 = opt22;
+    }
+    GValue opt23_v = {0, };
+    g_value_init(&opt23_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt23", &opt23_v);
+    gint32 opt23 = g_value_get_int(&opt23_v);
+    if (opt23 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK;
+      argv.opt23 = opt23;
+    }
+    GValue opt24_v = {0, };
+    g_value_init(&opt24_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt24", &opt24_v);
+    gint32 opt24 = g_value_get_int(&opt24_v);
+    if (opt24 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK;
+      argv.opt24 = opt24;
+    }
+    GValue opt25_v = {0, };
+    g_value_init(&opt25_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt25", &opt25_v);
+    gint32 opt25 = g_value_get_int(&opt25_v);
+    if (opt25 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK;
+      argv.opt25 = opt25;
+    }
+    GValue opt26_v = {0, };
+    g_value_init(&opt26_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt26", &opt26_v);
+    gint32 opt26 = g_value_get_int(&opt26_v);
+    if (opt26 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK;
+      argv.opt26 = opt26;
+    }
+    GValue opt27_v = {0, };
+    g_value_init(&opt27_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt27", &opt27_v);
+    gint32 opt27 = g_value_get_int(&opt27_v);
+    if (opt27 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK;
+      argv.opt27 = opt27;
+    }
+    GValue opt28_v = {0, };
+    g_value_init(&opt28_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt28", &opt28_v);
+    gint32 opt28 = g_value_get_int(&opt28_v);
+    if (opt28 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK;
+      argv.opt28 = opt28;
+    }
+    GValue opt29_v = {0, };
+    g_value_init(&opt29_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt29", &opt29_v);
+    gint32 opt29 = g_value_get_int(&opt29_v);
+    if (opt29 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK;
+      argv.opt29 = opt29;
+    }
+    GValue opt30_v = {0, };
+    g_value_init(&opt30_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt30", &opt30_v);
+    gint32 opt30 = g_value_get_int(&opt30_v);
+    if (opt30 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK;
+      argv.opt30 = opt30;
+    }
+    GValue opt31_v = {0, };
+    g_value_init(&opt31_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt31", &opt31_v);
+    gint32 opt31 = g_value_get_int(&opt31_v);
+    if (opt31 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK;
+      argv.opt31 = opt31;
+    }
+    GValue opt32_v = {0, };
+    g_value_init(&opt32_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt32", &opt32_v);
+    gint32 opt32 = g_value_get_int(&opt32_v);
+    if (opt32 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK;
+      argv.opt32 = opt32;
+    }
+    GValue opt33_v = {0, };
+    g_value_init(&opt33_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt33", &opt33_v);
+    gint32 opt33 = g_value_get_int(&opt33_v);
+    if (opt33 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK;
+      argv.opt33 = opt33;
+    }
+    GValue opt34_v = {0, };
+    g_value_init(&opt34_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt34", &opt34_v);
+    gint32 opt34 = g_value_get_int(&opt34_v);
+    if (opt34 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK;
+      argv.opt34 = opt34;
+    }
+    GValue opt35_v = {0, };
+    g_value_init(&opt35_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt35", &opt35_v);
+    gint32 opt35 = g_value_get_int(&opt35_v);
+    if (opt35 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK;
+      argv.opt35 = opt35;
+    }
+    GValue opt36_v = {0, };
+    g_value_init(&opt36_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt36", &opt36_v);
+    gint32 opt36 = g_value_get_int(&opt36_v);
+    if (opt36 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK;
+      argv.opt36 = opt36;
+    }
+    GValue opt37_v = {0, };
+    g_value_init(&opt37_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt37", &opt37_v);
+    gint32 opt37 = g_value_get_int(&opt37_v);
+    if (opt37 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK;
+      argv.opt37 = opt37;
+    }
+    GValue opt38_v = {0, };
+    g_value_init(&opt38_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt38", &opt38_v);
+    gint32 opt38 = g_value_get_int(&opt38_v);
+    if (opt38 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK;
+      argv.opt38 = opt38;
+    }
+    GValue opt39_v = {0, };
+    g_value_init(&opt39_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt39", &opt39_v);
+    gint32 opt39 = g_value_get_int(&opt39_v);
+    if (opt39 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK;
+      argv.opt39 = opt39;
+    }
+    GValue opt40_v = {0, };
+    g_value_init(&opt40_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt40", &opt40_v);
+    gint32 opt40 = g_value_get_int(&opt40_v);
+    if (opt40 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK;
+      argv.opt40 = opt40;
+    }
+    GValue opt41_v = {0, };
+    g_value_init(&opt41_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt41", &opt41_v);
+    gint32 opt41 = g_value_get_int(&opt41_v);
+    if (opt41 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK;
+      argv.opt41 = opt41;
+    }
+    GValue opt42_v = {0, };
+    g_value_init(&opt42_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt42", &opt42_v);
+    gint32 opt42 = g_value_get_int(&opt42_v);
+    if (opt42 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK;
+      argv.opt42 = opt42;
+    }
+    GValue opt43_v = {0, };
+    g_value_init(&opt43_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt43", &opt43_v);
+    gint32 opt43 = g_value_get_int(&opt43_v);
+    if (opt43 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK;
+      argv.opt43 = opt43;
+    }
+    GValue opt44_v = {0, };
+    g_value_init(&opt44_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt44", &opt44_v);
+    gint32 opt44 = g_value_get_int(&opt44_v);
+    if (opt44 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK;
+      argv.opt44 = opt44;
+    }
+    GValue opt45_v = {0, };
+    g_value_init(&opt45_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt45", &opt45_v);
+    gint32 opt45 = g_value_get_int(&opt45_v);
+    if (opt45 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK;
+      argv.opt45 = opt45;
+    }
+    GValue opt46_v = {0, };
+    g_value_init(&opt46_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt46", &opt46_v);
+    gint32 opt46 = g_value_get_int(&opt46_v);
+    if (opt46 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK;
+      argv.opt46 = opt46;
+    }
+    GValue opt47_v = {0, };
+    g_value_init(&opt47_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt47", &opt47_v);
+    gint32 opt47 = g_value_get_int(&opt47_v);
+    if (opt47 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK;
+      argv.opt47 = opt47;
+    }
+    GValue opt48_v = {0, };
+    g_value_init(&opt48_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt48", &opt48_v);
+    gint32 opt48 = g_value_get_int(&opt48_v);
+    if (opt48 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK;
+      argv.opt48 = opt48;
+    }
+    GValue opt49_v = {0, };
+    g_value_init(&opt49_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt49", &opt49_v);
+    gint32 opt49 = g_value_get_int(&opt49_v);
+    if (opt49 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK;
+      argv.opt49 = opt49;
+    }
+    GValue opt50_v = {0, };
+    g_value_init(&opt50_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt50", &opt50_v);
+    gint32 opt50 = g_value_get_int(&opt50_v);
+    if (opt50 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK;
+      argv.opt50 = opt50;
+    }
+    GValue opt51_v = {0, };
+    g_value_init(&opt51_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt51", &opt51_v);
+    gint32 opt51 = g_value_get_int(&opt51_v);
+    if (opt51 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK;
+      argv.opt51 = opt51;
+    }
+    GValue opt52_v = {0, };
+    g_value_init(&opt52_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt52", &opt52_v);
+    gint32 opt52 = g_value_get_int(&opt52_v);
+    if (opt52 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK;
+      argv.opt52 = opt52;
+    }
+    GValue opt53_v = {0, };
+    g_value_init(&opt53_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt53", &opt53_v);
+    gint32 opt53 = g_value_get_int(&opt53_v);
+    if (opt53 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK;
+      argv.opt53 = opt53;
+    }
+    GValue opt54_v = {0, };
+    g_value_init(&opt54_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt54", &opt54_v);
+    gint32 opt54 = g_value_get_int(&opt54_v);
+    if (opt54 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK;
+      argv.opt54 = opt54;
+    }
+    GValue opt55_v = {0, };
+    g_value_init(&opt55_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt55", &opt55_v);
+    gint32 opt55 = g_value_get_int(&opt55_v);
+    if (opt55 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK;
+      argv.opt55 = opt55;
+    }
+    GValue opt56_v = {0, };
+    g_value_init(&opt56_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt56", &opt56_v);
+    gint32 opt56 = g_value_get_int(&opt56_v);
+    if (opt56 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK;
+      argv.opt56 = opt56;
+    }
+    GValue opt57_v = {0, };
+    g_value_init(&opt57_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt57", &opt57_v);
+    gint32 opt57 = g_value_get_int(&opt57_v);
+    if (opt57 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK;
+      argv.opt57 = opt57;
+    }
+    GValue opt58_v = {0, };
+    g_value_init(&opt58_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt58", &opt58_v);
+    gint32 opt58 = g_value_get_int(&opt58_v);
+    if (opt58 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK;
+      argv.opt58 = opt58;
+    }
+    GValue opt59_v = {0, };
+    g_value_init(&opt59_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt59", &opt59_v);
+    gint32 opt59 = g_value_get_int(&opt59_v);
+    if (opt59 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK;
+      argv.opt59 = opt59;
+    }
+    GValue opt60_v = {0, };
+    g_value_init(&opt60_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt60", &opt60_v);
+    gint32 opt60 = g_value_get_int(&opt60_v);
+    if (opt60 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK;
+      argv.opt60 = opt60;
+    }
+    GValue opt61_v = {0, };
+    g_value_init(&opt61_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt61", &opt61_v);
+    gint32 opt61 = g_value_get_int(&opt61_v);
+    if (opt61 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK;
+      argv.opt61 = opt61;
+    }
+    GValue opt62_v = {0, };
+    g_value_init(&opt62_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt62", &opt62_v);
+    gint32 opt62 = g_value_get_int(&opt62_v);
+    if (opt62 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK;
+      argv.opt62 = opt62;
+    }
+    GValue opt63_v = {0, };
+    g_value_init(&opt63_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "opt63", &opt63_v);
+    gint32 opt63 = g_value_get_int(&opt63_v);
+    if (opt63 != -1) {
+      argv.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK;
+      argv.opt63 = opt63;
+    }
+    argvp = &argv;
+  }
+  gulong id = 0;
+  if (cancellable) {
+    id = g_cancellable_connect(cancellable,
+                               G_CALLBACK(cancelled_handler),
+                               g, NULL);
+  }
+
+  int ret = guestfs_internal_test_63_optargs_argv (g, argvp);
+  g_cancellable_disconnect(cancellable, id);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_internal_test_rint:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -494,17 +1148,17 @@ guestfs_session_test0(GuestfsSession *session, const gchar *str, const gchar *op
  * Returns: the returned value, or -1 on error
  */
 gint32
-guestfs_session_test0rint(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rint(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rint");
+                "internal_test_rint");
     return -1;
   }
 
-  int ret = guestfs_test0rint(g, val);
+  int ret = guestfs_internal_test_rint (g, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -514,7 +1168,7 @@ guestfs_session_test0rint(GuestfsSession *session, const gchar *val, GError **er
 }
 
 /**
- * guestfs_session_test0rinterr:
+ * guestfs_session_internal_test_rinterr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -531,17 +1185,17 @@ guestfs_session_test0rint(GuestfsSession *session, const gchar *val, GError **er
  * Returns: the returned value, or -1 on error
  */
 gint32
-guestfs_session_test0rinterr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rinterr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rinterr");
+                "internal_test_rinterr");
     return -1;
   }
 
-  int ret = guestfs_test0rinterr(g);
+  int ret = guestfs_internal_test_rinterr (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -551,7 +1205,7 @@ guestfs_session_test0rinterr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rint64:
+ * guestfs_session_internal_test_rint64:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -569,17 +1223,17 @@ guestfs_session_test0rinterr(GuestfsSession *session, GError **err)
  * Returns: the returned value, or -1 on error
  */
 gint64
-guestfs_session_test0rint64(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rint64(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rint64");
+                "internal_test_rint64");
     return -1;
   }
 
-  int64_t ret = guestfs_test0rint64(g, val);
+  int64_t ret = guestfs_internal_test_rint64 (g, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -589,7 +1243,7 @@ guestfs_session_test0rint64(GuestfsSession *session, const gchar *val, GError **
 }
 
 /**
- * guestfs_session_test0rint64err:
+ * guestfs_session_internal_test_rint64err:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -606,17 +1260,17 @@ guestfs_session_test0rint64(GuestfsSession *session, const gchar *val, GError **
  * Returns: the returned value, or -1 on error
  */
 gint64
-guestfs_session_test0rint64err(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rint64err(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rint64err");
+                "internal_test_rint64err");
     return -1;
   }
 
-  int64_t ret = guestfs_test0rint64err(g);
+  int64_t ret = guestfs_internal_test_rint64err (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -626,7 +1280,7 @@ guestfs_session_test0rint64err(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rbool:
+ * guestfs_session_internal_test_rbool:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -644,17 +1298,17 @@ guestfs_session_test0rint64err(GuestfsSession *session, GError **err)
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_test0rbool(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rbool(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rbool");
+                "internal_test_rbool");
     return -1;
   }
 
-  int ret = guestfs_test0rbool(g, val);
+  int ret = guestfs_internal_test_rbool (g, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -664,7 +1318,7 @@ guestfs_session_test0rbool(GuestfsSession *session, const gchar *val, GError **e
 }
 
 /**
- * guestfs_session_test0rboolerr:
+ * guestfs_session_internal_test_rboolerr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -681,17 +1335,17 @@ guestfs_session_test0rbool(GuestfsSession *session, const gchar *val, GError **e
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_test0rboolerr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rboolerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rboolerr");
+                "internal_test_rboolerr");
     return -1;
   }
 
-  int ret = guestfs_test0rboolerr(g);
+  int ret = guestfs_internal_test_rboolerr (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -701,7 +1355,7 @@ guestfs_session_test0rboolerr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rconststring:
+ * guestfs_session_internal_test_rconststring:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -719,17 +1373,17 @@ guestfs_session_test0rboolerr(GuestfsSession *session, GError **err)
  * Returns: (transfer none): the returned string, or NULL on error
  */
 const gchar *
-guestfs_session_test0rconststring(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rconststring(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rconststring");
+                "internal_test_rconststring");
     return NULL;
   }
 
-  const char *ret = guestfs_test0rconststring(g, val);
+  const char *ret = guestfs_internal_test_rconststring (g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -739,7 +1393,7 @@ guestfs_session_test0rconststring(GuestfsSession *session, const gchar *val, GEr
 }
 
 /**
- * guestfs_session_test0rconststringerr:
+ * guestfs_session_internal_test_rconststringerr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -756,17 +1410,17 @@ guestfs_session_test0rconststring(GuestfsSession *session, const gchar *val, GEr
  * Returns: (transfer none): the returned string, or NULL on error
  */
 const gchar *
-guestfs_session_test0rconststringerr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rconststringerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rconststringerr");
+                "internal_test_rconststringerr");
     return NULL;
   }
 
-  const char *ret = guestfs_test0rconststringerr(g);
+  const char *ret = guestfs_internal_test_rconststringerr (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -776,7 +1430,7 @@ guestfs_session_test0rconststringerr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rconstoptstring:
+ * guestfs_session_internal_test_rconstoptstring:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -794,23 +1448,23 @@ guestfs_session_test0rconststringerr(GuestfsSession *session, GError **err)
  * Returns: (transfer none): the returned string. Note that NULL does not indicate error
  */
 const gchar *
-guestfs_session_test0rconstoptstring(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rconstoptstring(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rconstoptstring");
+                "internal_test_rconstoptstring");
     return NULL;
   }
 
-  const char *ret = guestfs_test0rconstoptstring(g, val);
+  const char *ret = guestfs_internal_test_rconstoptstring (g, val);
 
   return ret;
 }
 
 /**
- * guestfs_session_test0rconstoptstringerr:
+ * guestfs_session_internal_test_rconstoptstringerr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -827,23 +1481,23 @@ guestfs_session_test0rconstoptstring(GuestfsSession *session, const gchar *val, 
  * Returns: (transfer none): the returned string. Note that NULL does not indicate error
  */
 const gchar *
-guestfs_session_test0rconstoptstringerr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rconstoptstringerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rconstoptstringerr");
+                "internal_test_rconstoptstringerr");
     return NULL;
   }
 
-  const char *ret = guestfs_test0rconstoptstringerr(g);
+  const char *ret = guestfs_internal_test_rconstoptstringerr (g);
 
   return ret;
 }
 
 /**
- * guestfs_session_test0rstring:
+ * guestfs_session_internal_test_rstring:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -861,17 +1515,17 @@ guestfs_session_test0rconstoptstringerr(GuestfsSession *session, GError **err)
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_test0rstring(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rstring(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstring");
+                "internal_test_rstring");
     return NULL;
   }
 
-  char *ret = guestfs_test0rstring(g, val);
+  char *ret = guestfs_internal_test_rstring (g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -881,7 +1535,7 @@ guestfs_session_test0rstring(GuestfsSession *session, const gchar *val, GError *
 }
 
 /**
- * guestfs_session_test0rstringerr:
+ * guestfs_session_internal_test_rstringerr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -898,17 +1552,17 @@ guestfs_session_test0rstring(GuestfsSession *session, const gchar *val, GError *
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_test0rstringerr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rstringerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstringerr");
+                "internal_test_rstringerr");
     return NULL;
   }
 
-  char *ret = guestfs_test0rstringerr(g);
+  char *ret = guestfs_internal_test_rstringerr (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -918,7 +1572,7 @@ guestfs_session_test0rstringerr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rstringlist:
+ * guestfs_session_internal_test_rstringlist:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -936,17 +1590,17 @@ guestfs_session_test0rstringerr(GuestfsSession *session, GError **err)
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */
 gchar **
-guestfs_session_test0rstringlist(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rstringlist(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstringlist");
+                "internal_test_rstringlist");
     return NULL;
   }
 
-  char **ret = guestfs_test0rstringlist(g, val);
+  char **ret = guestfs_internal_test_rstringlist (g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -956,7 +1610,7 @@ guestfs_session_test0rstringlist(GuestfsSession *session, const gchar *val, GErr
 }
 
 /**
- * guestfs_session_test0rstringlisterr:
+ * guestfs_session_internal_test_rstringlisterr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -973,17 +1627,17 @@ guestfs_session_test0rstringlist(GuestfsSession *session, const gchar *val, GErr
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */
 gchar **
-guestfs_session_test0rstringlisterr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rstringlisterr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstringlisterr");
+                "internal_test_rstringlisterr");
     return NULL;
   }
 
-  char **ret = guestfs_test0rstringlisterr(g);
+  char **ret = guestfs_internal_test_rstringlisterr (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -993,7 +1647,7 @@ guestfs_session_test0rstringlisterr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rstruct:
+ * guestfs_session_internal_test_rstruct:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -1011,17 +1665,17 @@ guestfs_session_test0rstringlisterr(GuestfsSession *session, GError **err)
  * Returns: (transfer full): a PV object, or NULL on error
  */
 GuestfsPV *
-guestfs_session_test0rstruct(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rstruct(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstruct");
+                "internal_test_rstruct");
     return NULL;
   }
 
-  struct guestfs_lvm_pv *ret = guestfs_test0rstruct(g, val);
+  struct guestfs_lvm_pv *ret = guestfs_internal_test_rstruct (g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1047,7 +1701,7 @@ guestfs_session_test0rstruct(GuestfsSession *session, const gchar *val, GError *
 }
 
 /**
- * guestfs_session_test0rstructerr:
+ * guestfs_session_internal_test_rstructerr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -1064,17 +1718,17 @@ guestfs_session_test0rstruct(GuestfsSession *session, const gchar *val, GError *
  * Returns: (transfer full): a PV object, or NULL on error
  */
 GuestfsPV *
-guestfs_session_test0rstructerr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rstructerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstructerr");
+                "internal_test_rstructerr");
     return NULL;
   }
 
-  struct guestfs_lvm_pv *ret = guestfs_test0rstructerr(g);
+  struct guestfs_lvm_pv *ret = guestfs_internal_test_rstructerr (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1100,7 +1754,7 @@ guestfs_session_test0rstructerr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rstructlist:
+ * guestfs_session_internal_test_rstructlist:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -1118,17 +1772,17 @@ guestfs_session_test0rstructerr(GuestfsSession *session, GError **err)
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsPV): an array of PV objects, or NULL on error
  */
 GuestfsPV **
-guestfs_session_test0rstructlist(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rstructlist(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstructlist");
+                "internal_test_rstructlist");
     return NULL;
   }
 
-  struct guestfs_lvm_pv_list *ret = guestfs_test0rstructlist(g, val);
+  struct guestfs_lvm_pv_list *ret = guestfs_internal_test_rstructlist (g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1159,7 +1813,7 @@ guestfs_session_test0rstructlist(GuestfsSession *session, const gchar *val, GErr
 }
 
 /**
- * guestfs_session_test0rstructlisterr:
+ * guestfs_session_internal_test_rstructlisterr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -1176,17 +1830,17 @@ guestfs_session_test0rstructlist(GuestfsSession *session, const gchar *val, GErr
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsPV): an array of PV objects, or NULL on error
  */
 GuestfsPV **
-guestfs_session_test0rstructlisterr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rstructlisterr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rstructlisterr");
+                "internal_test_rstructlisterr");
     return NULL;
   }
 
-  struct guestfs_lvm_pv_list *ret = guestfs_test0rstructlisterr(g);
+  struct guestfs_lvm_pv_list *ret = guestfs_internal_test_rstructlisterr (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1217,7 +1871,7 @@ guestfs_session_test0rstructlisterr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rhashtable:
+ * guestfs_session_internal_test_rhashtable:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
@@ -1235,17 +1889,17 @@ guestfs_session_test0rstructlisterr(GuestfsSession *session, GError **err)
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
  */
 GHashTable *
-guestfs_session_test0rhashtable(GuestfsSession *session, const gchar *val, GError **err)
+guestfs_session_internal_test_rhashtable(GuestfsSession *session, const gchar *val, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rhashtable");
+                "internal_test_rhashtable");
     return NULL;
   }
 
-  char **ret = guestfs_test0rhashtable(g, val);
+  char **ret = guestfs_internal_test_rhashtable (g, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1263,7 +1917,7 @@ guestfs_session_test0rhashtable(GuestfsSession *session, const gchar *val, GErro
 }
 
 /**
- * guestfs_session_test0rhashtableerr:
+ * guestfs_session_internal_test_rhashtableerr:
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
@@ -1280,17 +1934,17 @@ guestfs_session_test0rhashtable(GuestfsSession *session, const gchar *val, GErro
  * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
  */
 GHashTable *
-guestfs_session_test0rhashtableerr(GuestfsSession *session, GError **err)
+guestfs_session_internal_test_rhashtableerr(GuestfsSession *session, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rhashtableerr");
+                "internal_test_rhashtableerr");
     return NULL;
   }
 
-  char **ret = guestfs_test0rhashtableerr(g);
+  char **ret = guestfs_internal_test_rhashtableerr (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1308,7 +1962,7 @@ guestfs_session_test0rhashtableerr(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_test0rbufferout:
+ * guestfs_session_internal_test_rbufferout:
  * @session: (transfer none): A GuestfsSession object
  * @val: (transfer none) (type utf8):
  * @size_r: The size of the returned buffer, in bytes
@@ -1327,17 +1981,17 @@ guestfs_session_test0rhashtableerr(GuestfsSession *session, GError **err)
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
  */
 guint8 *
-guestfs_session_test0rbufferout(GuestfsSession *session, const gchar *val, gsize *size_r, GError **err)
+guestfs_session_internal_test_rbufferout(GuestfsSession *session, const gchar *val, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rbufferout");
+                "internal_test_rbufferout");
     return NULL;
   }
 
-  char *ret = guestfs_test0rbufferout(g, val, size_r);
+  char *ret = guestfs_internal_test_rbufferout (g, val, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1347,7 +2001,7 @@ guestfs_session_test0rbufferout(GuestfsSession *session, const gchar *val, gsize
 }
 
 /**
- * guestfs_session_test0rbufferouterr:
+ * guestfs_session_internal_test_rbufferouterr:
  * @session: (transfer none): A GuestfsSession object
  * @size_r: The size of the returned buffer, in bytes
  * @err: A GError object to receive any generated errors
@@ -1365,23 +2019,99 @@ guestfs_session_test0rbufferout(GuestfsSession *session, const gchar *val, gsize
  * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
  */
 guint8 *
-guestfs_session_test0rbufferouterr(GuestfsSession *session, gsize *size_r, GError **err)
+guestfs_session_internal_test_rbufferouterr(GuestfsSession *session, gsize *size_r, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "test0rbufferouterr");
+                "internal_test_rbufferouterr");
     return NULL;
   }
 
-  char *ret = guestfs_test0rbufferouterr(g, size_r);
+  char *ret = guestfs_internal_test_rbufferouterr (g, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
   }
 
   return ret;
+}
+
+/**
+ * guestfs_session_internal_test_set_output:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * internal test function - do not use
+ *
+ * This is an internal test function which is used to test whether the
+ * automatically generated bindings can handle every possible parameter
+ * type correctly.
+ * 
+ * It sets the output file used by guestfs_session_internal_test().
+ * 
+ * You probably don't want to call this function.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_internal_test_set_output(GuestfsSession *session, const gchar *filename, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_test_set_output");
+    return FALSE;
+  }
+
+  int ret = guestfs_internal_test_set_output (g, filename);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_internal_test_close_output:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * internal test function - do not use
+ *
+ * This is an internal test function which is used to test whether the
+ * automatically generated bindings can handle every possible parameter
+ * type correctly.
+ * 
+ * It closes the output file previously opened by
+ * guestfs_session_internal_test_set_output().
+ * 
+ * You probably don't want to call this function.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_internal_test_close_output(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_test_close_output");
+    return FALSE;
+  }
+
+  int ret = guestfs_internal_test_close_output (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**
@@ -1415,7 +2145,7 @@ guestfs_session_launch(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_launch(g);
+  int ret = guestfs_launch (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1455,7 +2185,7 @@ guestfs_session_wait_ready(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_wait_ready(g);
+  int ret = guestfs_wait_ready (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1488,51 +2218,7 @@ guestfs_session_kill_subprocess(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_kill_subprocess(g);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * guestfs_session_add_drive:
- * @session: (transfer none): A GuestfsSession object
- * @filename: (transfer none) (type utf8):
- * @err: A GError object to receive any generated errors
- *
- * add an image to examine or modify
- *
- * This function is the equivalent of calling
- * guestfs_session_add_drive_opts() with no optional parameters, so the
- * disk is added writable, with the format being detected automatically.
- * 
- * Automatic detection of the format opens you up to a potential security
- * hole when dealing with untrusted raw-format images. See <ulink
- * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'>
- * CVE-2010-3851 </ulink> and <ulink
- * url='https://bugzilla.redhat.com/show_bug.cgi?id=642934'>
- * RHBZ&num;642934 </ulink>. Specifying the format closes this security
- * hole. Therefore you should think about replacing calls to this function
- * with calls to guestfs_session_add_drive_opts(), and specifying the
- * format.
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "add_drive");
-    return FALSE;
-  }
-
-  int ret = guestfs_add_drive(g, filename);
+  int ret = guestfs_kill_subprocess (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1551,18 +2237,8 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, GError
  *
  * This function adds a virtual CD-ROM disk image to the guest.
  * 
- * This is equivalent to the qemu parameter *-cdrom filename*.
- * 
- * Notes:
- * 
- * *   This call checks for the existence of @filename. This stops you from
- * specifying other types of drive which are supported by qemu such as
- * "nbd:" and "http:" URLs. To specify those, use the general
- * guestfs_session_config() call instead.
- * 
- * *   If you just want to add an ISO file (often you use this as an
- * efficient way to transfer large files into the guest), then you
- * should probably use guestfs_session_add_drive_ro() instead.
+ * Do not use this function! ISO files are just ordinary read-only disk
+ * images. Use guestfs_session_add_drive_ro() instead.
  * 
  * Returns: true on success, false on error
  */
@@ -1577,7 +2253,7 @@ guestfs_session_add_cdrom(GuestfsSession *session, const gchar *filename, GError
     return FALSE;
   }
 
-  int ret = guestfs_add_cdrom(g, filename);
+  int ret = guestfs_add_cdrom (g, filename);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1612,7 +2288,7 @@ guestfs_session_add_drive_ro(GuestfsSession *session, const gchar *filename, GEr
     return FALSE;
   }
 
-  int ret = guestfs_add_drive_ro(g, filename);
+  int ret = guestfs_add_drive_ro (g, filename);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1635,9 +2311,9 @@ guestfs_session_add_drive_ro(GuestfsSession *session, const gchar *filename, GEr
  * from setting some parameters which would interfere with parameters that
  * we use.
  * 
- * The first character of @param string must be a @- (dash).
+ * The first character of @qemuparam string must be a @- (dash).
  * 
- * @value can be NULL.
+ * @qemuvalue can be NULL.
  * 
  * Returns: true on success, false on error
  */
@@ -1652,7 +2328,7 @@ guestfs_session_config(GuestfsSession *session, const gchar *qemuparam, const gc
     return FALSE;
   }
 
-  int ret = guestfs_config(g, qemuparam, qemuvalue);
+  int ret = guestfs_config (g, qemuparam, qemuvalue);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1700,7 +2376,7 @@ guestfs_session_set_qemu(GuestfsSession *session, const gchar *qemu, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_set_qemu(g, qemu);
+  int ret = guestfs_set_qemu (g, qemu);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1734,7 +2410,7 @@ guestfs_session_get_qemu(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  const char *ret = guestfs_get_qemu(g);
+  const char *ret = guestfs_get_qemu (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1771,7 +2447,7 @@ guestfs_session_set_path(GuestfsSession *session, const gchar *searchpath, GErro
     return FALSE;
   }
 
-  int ret = guestfs_set_path(g, searchpath);
+  int ret = guestfs_set_path (g, searchpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1805,7 +2481,7 @@ guestfs_session_get_path(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  const char *ret = guestfs_get_path(g);
+  const char *ret = guestfs_get_path (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -1844,7 +2520,7 @@ guestfs_session_set_append(GuestfsSession *session, const gchar *append, GError 
     return FALSE;
   }
 
-  int ret = guestfs_set_append(g, append);
+  int ret = guestfs_set_append (g, append);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1878,7 +2554,7 @@ guestfs_session_get_append(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  const char *ret = guestfs_get_append(g);
+  const char *ret = guestfs_get_append (g);
 
   return ret;
 }
@@ -1911,7 +2587,7 @@ guestfs_session_set_autosync(GuestfsSession *session, gboolean autosync, GError 
     return FALSE;
   }
 
-  int ret = guestfs_set_autosync(g, autosync);
+  int ret = guestfs_set_autosync (g, autosync);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -1942,7 +2618,7 @@ guestfs_session_get_autosync(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_autosync(g);
+  int ret = guestfs_get_autosync (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -1981,7 +2657,7 @@ guestfs_session_set_verbose(GuestfsSession *session, gboolean verbose, GError **
     return FALSE;
   }
 
-  int ret = guestfs_set_verbose(g, verbose);
+  int ret = guestfs_set_verbose (g, verbose);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2012,7 +2688,7 @@ guestfs_session_get_verbose(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_verbose(g);
+  int ret = guestfs_get_verbose (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2046,7 +2722,7 @@ guestfs_session_is_ready(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_is_ready(g);
+  int ret = guestfs_is_ready (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2080,7 +2756,7 @@ guestfs_session_is_config(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_is_config(g);
+  int ret = guestfs_is_config (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2114,7 +2790,7 @@ guestfs_session_is_launching(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_is_launching(g);
+  int ret = guestfs_is_launching (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2147,7 +2823,7 @@ guestfs_session_is_busy(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_is_busy(g);
+  int ret = guestfs_is_busy (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2181,7 +2857,7 @@ guestfs_session_get_state(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_state(g);
+  int ret = guestfs_get_state (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2219,7 +2895,7 @@ guestfs_session_set_memsize(GuestfsSession *session, gint32 memsize, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_set_memsize(g, memsize);
+  int ret = guestfs_set_memsize (g, memsize);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2256,7 +2932,7 @@ guestfs_session_get_memsize(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_memsize(g);
+  int ret = guestfs_get_memsize (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2290,7 +2966,7 @@ guestfs_session_get_pid(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_pid(g);
+  int ret = guestfs_get_pid (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2345,7 +3021,7 @@ guestfs_session_version(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  struct guestfs_version *ret = guestfs_version(g);
+  struct guestfs_version *ret = guestfs_version (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -2389,7 +3065,7 @@ guestfs_session_set_selinux(GuestfsSession *session, gboolean selinux, GError **
     return FALSE;
   }
 
-  int ret = guestfs_set_selinux(g, selinux);
+  int ret = guestfs_set_selinux (g, selinux);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2423,7 +3099,7 @@ guestfs_session_get_selinux(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_selinux(g);
+  int ret = guestfs_get_selinux (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2466,7 +3142,7 @@ guestfs_session_set_trace(GuestfsSession *session, gboolean trace, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_set_trace(g, trace);
+  int ret = guestfs_set_trace (g, trace);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2497,7 +3173,7 @@ guestfs_session_get_trace(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_trace(g);
+  int ret = guestfs_get_trace (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2538,7 +3214,7 @@ guestfs_session_set_direct(GuestfsSession *session, gboolean direct, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_set_direct(g, direct);
+  int ret = guestfs_set_direct (g, direct);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2569,7 +3245,7 @@ guestfs_session_get_direct(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_direct(g);
+  int ret = guestfs_get_direct (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2612,7 +3288,7 @@ guestfs_session_set_recovery_proc(GuestfsSession *session, gboolean recoveryproc
     return FALSE;
   }
 
-  int ret = guestfs_set_recovery_proc(g, recoveryproc);
+  int ret = guestfs_set_recovery_proc (g, recoveryproc);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2643,7 +3319,7 @@ guestfs_session_get_recovery_proc(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_recovery_proc(g);
+  int ret = guestfs_get_recovery_proc (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -2677,7 +3353,7 @@ guestfs_session_add_drive_with_if(GuestfsSession *session, const gchar *filename
     return FALSE;
   }
 
-  int ret = guestfs_add_drive_with_if(g, filename, iface);
+  int ret = guestfs_add_drive_with_if (g, filename, iface);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2711,7 +3387,7 @@ guestfs_session_add_drive_ro_with_if(GuestfsSession *session, const gchar *filen
     return FALSE;
   }
 
-  int ret = guestfs_add_drive_ro_with_if(g, filename, iface);
+  int ret = guestfs_add_drive_ro_with_if (g, filename, iface);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2804,7 +3480,7 @@ guestfs_session_file_architecture(GuestfsSession *session, const gchar *filename
     return NULL;
   }
 
-  char *ret = guestfs_file_architecture(g, filename);
+  char *ret = guestfs_file_architecture (g, filename);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -2863,7 +3539,7 @@ guestfs_session_inspect_os(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_inspect_os(g);
+  char **ret = guestfs_inspect_os (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -2895,6 +3571,9 @@ guestfs_session_inspect_os(GuestfsSession *session, GError **err)
  * "netbsd"
  * NetBSD.
  * 
+ * "openbsd"
+ * OpenBSD.
+ * 
  * "hurd"
  * GNU/Hurd.
  * 
@@ -2922,7 +3601,7 @@ guestfs_session_inspect_get_type(GuestfsSession *session, const gchar *root, GEr
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_type(g, root);
+  char *ret = guestfs_inspect_get_type (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -2961,7 +3640,7 @@ guestfs_session_inspect_get_arch(GuestfsSession *session, const gchar *root, GEr
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_arch(g, root);
+  char *ret = guestfs_inspect_get_arch (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3019,6 +3698,9 @@ guestfs_session_inspect_get_arch(GuestfsSession *session, const gchar *root, GEr
  * "meego"
  * MeeGo.
  * 
+ * "openbsd"
+ * OpenBSD.
+ * 
  * "opensuse"
  * OpenSUSE.
  * 
@@ -3036,6 +3718,12 @@ guestfs_session_inspect_get_arch(GuestfsSession *session, const gchar *root, GEr
  * 
  * "slackware"
  * Slackware.
+ * 
+ * "sles"
+ * SuSE Linux Enterprise Server or Desktop.
+ * 
+ * "suse-based"
+ * Some openSuSE-derived distro.
  * 
  * "ttylinux"
  * ttylinux.
@@ -3068,7 +3756,7 @@ guestfs_session_inspect_get_distro(GuestfsSession *session, const gchar *root, G
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_distro(g, root);
+  char *ret = guestfs_inspect_get_distro (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3110,7 +3798,7 @@ guestfs_session_inspect_get_major_version(GuestfsSession *session, const gchar *
     return -1;
   }
 
-  int ret = guestfs_inspect_get_major_version(g, root);
+  int ret = guestfs_inspect_get_major_version (g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -3147,7 +3835,7 @@ guestfs_session_inspect_get_minor_version(GuestfsSession *session, const gchar *
     return -1;
   }
 
-  int ret = guestfs_inspect_get_minor_version(g, root);
+  int ret = guestfs_inspect_get_minor_version (g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -3186,7 +3874,7 @@ guestfs_session_inspect_get_product_name(GuestfsSession *session, const gchar *r
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_product_name(g, root);
+  char *ret = guestfs_inspect_get_product_name (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3238,7 +3926,7 @@ guestfs_session_inspect_get_mountpoints(GuestfsSession *session, const gchar *ro
     return NULL;
   }
 
-  char **ret = guestfs_inspect_get_mountpoints(g, root);
+  char **ret = guestfs_inspect_get_mountpoints (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3286,7 +3974,7 @@ guestfs_session_inspect_get_filesystems(GuestfsSession *session, const gchar *ro
     return NULL;
   }
 
-  char **ret = guestfs_inspect_get_filesystems(g, root);
+  char **ret = guestfs_inspect_get_filesystems (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3325,7 +4013,7 @@ guestfs_session_set_network(GuestfsSession *session, gboolean network, GError **
     return FALSE;
   }
 
-  int ret = guestfs_set_network(g, network);
+  int ret = guestfs_set_network (g, network);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -3356,7 +4044,7 @@ guestfs_session_get_network(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_network(g);
+  int ret = guestfs_get_network (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -3415,7 +4103,7 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_list_filesystems(g);
+  char **ret = guestfs_list_filesystems (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3433,10 +4121,10 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_add_drive_opts:
+ * guestfs_session_add_drive:
  * @session: (transfer none): A GuestfsSession object
  * @filename: (transfer none) (type utf8):
- * @optargs: (transfer none) (allow-none): a GuestfsAddDriveOpts containing optional arguments
+ * @optargs: (transfer none) (allow-none): a GuestfsAddDrive containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * add an image to examine or modify
@@ -3444,8 +4132,14 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * This function adds a disk image called @filename to the handle.
  * @filename may be a regular host file or a host device.
  * 
- * The first time you call this function, the disk appears as "/dev/sda",
- * the second time as "/dev/sdb", and so on.
+ * When this function is called before guestfs_session_launch() (the usual
+ * case) then the first time you call this function, the disk appears in
+ * the API as "/dev/sda", the second time as "/dev/sdb", and so on.
+ * 
+ * In libguestfs &ge; 1.20 you can also call this function after launch
+ * (with some restrictions). This is called "hotplugging". When
+ * hotplugging, you must specify a @label so that the new disk gets a
+ * predictable name. For more information see "HOTPLUGGING" in guestfs(3).
  * 
  * You don't necessarily need to be root when using libguestfs. However you
  * obviously do need sufficient permissions to access the filename for
@@ -3488,16 +4182,24 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * is used as a hint to the guest inspection process if it is
  * available.
  * 
+ * @label
+ * Give the disk a label. The label should be a unique, short string
+ * using *only* ASCII characters "[a-zA-Z]". As well as its usual name
+ * in the API (such as "/dev/sda"), the drive will also be named
+ * "/dev/disk/guestfs/*label*".
+ * 
+ * See "DISK LABELS" in guestfs(3).
+ * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_add_drive_opts(GuestfsSession *session, const gchar *filename, GuestfsAddDriveOpts *optargs, GError **err)
+guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, GuestfsAddDrive *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "add_drive_opts");
+                "add_drive");
     return FALSE;
   }
 
@@ -3539,9 +4241,17 @@ guestfs_session_add_drive_opts(GuestfsSession *session, const gchar *filename, G
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
       argv.name = name;
     }
+    GValue label_v = {0, };
+    g_value_init(&label_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "label", &label_v);
+    const gchar *label = g_value_get_string(&label_v);
+    if (label != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
+      argv.label = label;
+    }
     argvp = &argv;
   }
-  int ret = guestfs_add_drive_opts_argv(g, filename, argvp);
+  int ret = guestfs_add_drive_opts_argv (g, filename, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -3580,7 +4290,7 @@ guestfs_session_inspect_get_windows_systemroot(GuestfsSession *session, const gc
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_windows_systemroot(g, root);
+  char *ret = guestfs_inspect_get_windows_systemroot (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3618,39 +4328,7 @@ guestfs_session_inspect_get_roots(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_inspect_get_roots(g);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  return ret;
-}
-
-/**
- * guestfs_session_debug_cmdline:
- * @session: (transfer none): A GuestfsSession object
- * @err: A GError object to receive any generated errors
- *
- * debug the QEMU command line (internal use only)
- *
- * This returns the internal QEMU command line. 'debug' commands are not
- * part of the formal API and can be removed or changed at any time.
- * 
- * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
- */
-gchar **
-guestfs_session_debug_cmdline(GuestfsSession *session, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "debug_cmdline");
-    return NULL;
-  }
-
-  char **ret = guestfs_debug_cmdline(g);
+  char **ret = guestfs_inspect_get_roots (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3682,7 +4360,7 @@ guestfs_session_debug_drives(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_debug_drives(g);
+  char **ret = guestfs_debug_drives (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3844,7 +4522,7 @@ guestfs_session_add_domain(GuestfsSession *session, const gchar *dom, GuestfsAdd
     }
     argvp = &argv;
   }
-  int ret = guestfs_add_domain_argv(g, dom, argvp);
+  int ret = guestfs_add_domain_argv (g, dom, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -3888,7 +4566,7 @@ guestfs_session_inspect_get_package_format(GuestfsSession *session, const gchar 
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_package_format(g, root);
+  char *ret = guestfs_inspect_get_package_format (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -3933,7 +4611,7 @@ guestfs_session_inspect_get_package_management(GuestfsSession *session, const gc
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_package_management(g, root);
+  char *ret = guestfs_inspect_get_package_management (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4037,7 +4715,7 @@ guestfs_session_inspect_list_applications(GuestfsSession *session, const gchar *
     return NULL;
   }
 
-  struct guestfs_application_list *ret = guestfs_inspect_list_applications(g, root);
+  struct guestfs_application_list *ret = guestfs_inspect_list_applications (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4061,6 +4739,139 @@ guestfs_session_inspect_list_applications(GuestfsSession *session, const gchar *
     if (ret->val[i].app_description) l[i]->app_description = g_strdup(ret->val[i].app_description);
   }
   guestfs_free_application_list(ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
+ * guestfs_session_inspect_list_applications2:
+ * @session: (transfer none): A GuestfsSession object
+ * @root: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get list of applications installed in the operating system
+ *
+ * Return the list of applications installed in the operating system.
+ * 
+ * *Note:* This call works differently from other parts of the inspection
+ * API. You have to call guestfs_session_inspect_os(), then
+ * guestfs_session_inspect_get_mountpoints(), then mount up the disks,
+ * before calling this. Listing applications is a significantly more
+ * difficult operation which requires access to the full filesystem. Also
+ * note that unlike the other "guestfs_inspect_get_*" calls which are just
+ * returning data cached in the libguestfs handle, this call actually reads
+ * parts of the mounted filesystems during the call.
+ * 
+ * This returns an empty list if the inspection code was not able to
+ * determine the list of applications.
+ * 
+ * The application structure contains the following fields:
+ * 
+ * @app2_name
+ * The name of the application. For Red Hat-derived and Debian-derived
+ * Linux guests, this is the package name.
+ * 
+ * @app2_display_name
+ * The display name of the application, sometimes localized to the
+ * install language of the guest operating system.
+ * 
+ * If unavailable this is returned as an empty string "". Callers
+ * needing to display something can use @app2_name instead.
+ * 
+ * @app2_epoch
+ * For package managers which use epochs, this contains the epoch of
+ * the package (an integer). If unavailable, this is returned as @0.
+ * 
+ * @app2_version
+ * The version string of the application or package. If unavailable
+ * this is returned as an empty string "".
+ * 
+ * @app2_release
+ * The release string of the application or package, for package
+ * managers that use this. If unavailable this is returned as an empty
+ * string "".
+ * 
+ * @app2_arch
+ * The architecture string of the application or package, for package
+ * managers that use this. If unavailable this is returned as an empty
+ * string "".
+ * 
+ * @app2_install_path
+ * The installation path of the application (on operating systems such
+ * as Windows which use installation paths). This path is in the format
+ * used by the guest operating system, it is not a libguestfs path.
+ * 
+ * If unavailable this is returned as an empty string "".
+ * 
+ * @app2_trans_path
+ * The install path translated into a libguestfs path. If unavailable
+ * this is returned as an empty string "".
+ * 
+ * @app2_publisher
+ * The name of the publisher of the application, for package managers
+ * that use this. If unavailable this is returned as an empty string
+ * "".
+ * 
+ * @app2_url
+ * The URL (eg. upstream URL) of the application. If unavailable this
+ * is returned as an empty string "".
+ * 
+ * @app2_source_package
+ * For packaging systems which support this, the name of the source
+ * package. If unavailable this is returned as an empty string "".
+ * 
+ * @app2_summary
+ * A short (usually one line) description of the application or
+ * package. If unavailable this is returned as an empty string "".
+ * 
+ * @app2_description
+ * A longer description of the application or package. If unavailable
+ * this is returned as an empty string "".
+ * 
+ * Please read "INSPECTION" in guestfs(3) for more details.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsApplication2): an array of Application2 objects, or NULL on error
+ */
+GuestfsApplication2 **
+guestfs_session_inspect_list_applications2(GuestfsSession *session, const gchar *root, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "inspect_list_applications2");
+    return NULL;
+  }
+
+  struct guestfs_application2_list *ret = guestfs_inspect_list_applications2 (g, root);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsApplication2 **l = g_malloc(sizeof(GuestfsApplication2*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0(GuestfsApplication2);
+    if (ret->val[i].app2_name) l[i]->app2_name = g_strdup(ret->val[i].app2_name);
+    if (ret->val[i].app2_display_name) l[i]->app2_display_name = g_strdup(ret->val[i].app2_display_name);
+    l[i]->app2_epoch = ret->val[i].app2_epoch;
+    if (ret->val[i].app2_version) l[i]->app2_version = g_strdup(ret->val[i].app2_version);
+    if (ret->val[i].app2_release) l[i]->app2_release = g_strdup(ret->val[i].app2_release);
+    if (ret->val[i].app2_arch) l[i]->app2_arch = g_strdup(ret->val[i].app2_arch);
+    if (ret->val[i].app2_install_path) l[i]->app2_install_path = g_strdup(ret->val[i].app2_install_path);
+    if (ret->val[i].app2_trans_path) l[i]->app2_trans_path = g_strdup(ret->val[i].app2_trans_path);
+    if (ret->val[i].app2_publisher) l[i]->app2_publisher = g_strdup(ret->val[i].app2_publisher);
+    if (ret->val[i].app2_url) l[i]->app2_url = g_strdup(ret->val[i].app2_url);
+    if (ret->val[i].app2_source_package) l[i]->app2_source_package = g_strdup(ret->val[i].app2_source_package);
+    if (ret->val[i].app2_summary) l[i]->app2_summary = g_strdup(ret->val[i].app2_summary);
+    if (ret->val[i].app2_description) l[i]->app2_description = g_strdup(ret->val[i].app2_description);
+    if (ret->val[i].app2_spare1) l[i]->app2_spare1 = g_strdup(ret->val[i].app2_spare1);
+    if (ret->val[i].app2_spare2) l[i]->app2_spare2 = g_strdup(ret->val[i].app2_spare2);
+    if (ret->val[i].app2_spare3) l[i]->app2_spare3 = g_strdup(ret->val[i].app2_spare3);
+    if (ret->val[i].app2_spare4) l[i]->app2_spare4 = g_strdup(ret->val[i].app2_spare4);
+  }
+  guestfs_free_application2_list(ret);
   l[i] = NULL;
   return l;
 }
@@ -4094,7 +4905,7 @@ guestfs_session_inspect_get_hostname(GuestfsSession *session, const gchar *root,
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_hostname(g, root);
+  char *ret = guestfs_inspect_get_hostname (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4144,7 +4955,7 @@ guestfs_session_inspect_get_format(GuestfsSession *session, const gchar *root, G
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_format(g, root);
+  char *ret = guestfs_inspect_get_format (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4180,7 +4991,7 @@ guestfs_session_inspect_is_live(GuestfsSession *session, const gchar *root, GErr
     return -1;
   }
 
-  int ret = guestfs_inspect_is_live(g, root);
+  int ret = guestfs_inspect_is_live (g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -4217,7 +5028,7 @@ guestfs_session_inspect_is_netinst(GuestfsSession *session, const gchar *root, G
     return -1;
   }
 
-  int ret = guestfs_inspect_is_netinst(g, root);
+  int ret = guestfs_inspect_is_netinst (g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -4252,7 +5063,7 @@ guestfs_session_inspect_is_multipart(GuestfsSession *session, const gchar *root,
     return -1;
   }
 
-  int ret = guestfs_inspect_is_multipart(g, root);
+  int ret = guestfs_inspect_is_multipart (g, root);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -4270,18 +5081,9 @@ guestfs_session_inspect_is_multipart(GuestfsSession *session, const gchar *root,
  * set the attach method
  *
  * Set the method that libguestfs uses to connect to the back end guestfsd
- * daemon. Possible methods are:
+ * daemon.
  * 
- * @appliance
- * Launch an appliance and connect to it. This is the ordinary method
- * and the default.
- * 
- * "unix:*path*"
- * Connect to the Unix domain socket *path*.
- * 
- * This method lets you connect to an existing daemon or (using
- * virtio-serial) to a live guest. For more information, see "ATTACHING
- * TO RUNNING DAEMONS" in guestfs(3).
+ * See "ATTACH METHOD" in guestfs(3).
  * 
  * Returns: true on success, false on error
  */
@@ -4296,7 +5098,7 @@ guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachme
     return FALSE;
   }
 
-  int ret = guestfs_set_attach_method(g, attachmethod);
+  int ret = guestfs_set_attach_method (g, attachmethod);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -4312,8 +5114,10 @@ guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachme
  *
  * get the attach method
  *
- * Return the current attach method. See
- * guestfs_session_set_attach_method().
+ * Return the current attach method.
+ * 
+ * See guestfs_session_set_attach_method() and "ATTACH METHOD" in
+ * guestfs(3).
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  */
@@ -4328,7 +5132,7 @@ guestfs_session_get_attach_method(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char *ret = guestfs_get_attach_method(g);
+  char *ret = guestfs_get_attach_method (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4379,7 +5183,7 @@ guestfs_session_inspect_get_product_variant(GuestfsSession *session, const gchar
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_product_variant(g, root);
+  char *ret = guestfs_inspect_get_product_variant (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4418,7 +5222,7 @@ guestfs_session_inspect_get_windows_current_control_set(GuestfsSession *session,
     return NULL;
   }
 
-  char *ret = guestfs_inspect_get_windows_current_control_set(g, root);
+  char *ret = guestfs_inspect_get_windows_current_control_set (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4479,7 +5283,7 @@ guestfs_session_inspect_get_drive_mappings(GuestfsSession *session, const gchar 
     return NULL;
   }
 
-  char **ret = guestfs_inspect_get_drive_mappings(g, root);
+  char **ret = guestfs_inspect_get_drive_mappings (g, root);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4586,7 +5390,7 @@ guestfs_session_inspect_get_icon(GuestfsSession *session, const gchar *root, Gue
     }
     argvp = &argv;
   }
-  char *ret = guestfs_inspect_get_icon_argv(g, root, size_r, argvp);
+  char *ret = guestfs_inspect_get_icon_argv (g, root, size_r, argvp);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -4627,7 +5431,7 @@ guestfs_session_set_pgroup(GuestfsSession *session, gboolean pgroup, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_set_pgroup(g, pgroup);
+  int ret = guestfs_set_pgroup (g, pgroup);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -4658,7 +5462,7 @@ guestfs_session_get_pgroup(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_pgroup(g);
+  int ret = guestfs_get_pgroup (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -4694,7 +5498,7 @@ guestfs_session_set_smp(GuestfsSession *session, gint32 smp, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_set_smp(g, smp);
+  int ret = guestfs_set_smp (g, smp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -4725,7 +5529,7 @@ guestfs_session_get_smp(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_smp(g);
+  int ret = guestfs_get_smp (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -4820,7 +5624,7 @@ guestfs_session_mount_local(GuestfsSession *session, const gchar *localmountpoin
     }
     argvp = &argv;
   }
-  int ret = guestfs_mount_local_argv(g, localmountpoint, argvp);
+  int ret = guestfs_mount_local_argv (g, localmountpoint, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -4878,7 +5682,7 @@ guestfs_session_mount_local_run(GuestfsSession *session, GCancellable *cancellab
                                g, NULL);
   }
 
-  int ret = guestfs_mount_local_run(g);
+  int ret = guestfs_mount_local_run (g);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -4930,13 +5734,98 @@ guestfs_session_umount_local(GuestfsSession *session, GuestfsUmountLocal *optarg
     }
     argvp = &argv;
   }
-  int ret = guestfs_umount_local_argv(g, argvp);
+  int ret = guestfs_umount_local_argv (g, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
   }
 
   return TRUE;
+}
+
+/**
+ * guestfs_session_max_disks:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * maximum number of disks that may be added
+ *
+ * Return the maximum number of disks that may be added to a handle (eg. by
+ * guestfs_session_add_drive_opts() and similar calls).
+ * 
+ * This function was added in libguestfs 1.19.7. In previous versions of
+ * libguestfs the limit was 25.
+ * 
+ * See "MAXIMUM NUMBER OF DISKS" in guestfs(3) for additional information
+ * on this topic.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint32
+guestfs_session_max_disks(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "max_disks");
+    return -1;
+  }
+
+  int ret = guestfs_max_disks (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_canonical_device_name:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return canonical device name
+ *
+ * This utility function is useful when displaying device names to the
+ * user. It takes a number of irregular device names and returns them in a
+ * consistent format:
+ * 
+ * "/dev/hdX"
+ * "/dev/vdX"
+ * These are returned as "/dev/sdX". Note this works for device names
+ * and partition names. This is approximately the reverse of the
+ * algorithm described in "BLOCK DEVICE NAMING" in guestfs(3).
+ * 
+ * "/dev/mapper/VG-LV"
+ * "/dev/dm-N"
+ * Converted to "/dev/VG/LV" form using
+ * guestfs_session_lvm_canonical_lvm_name().
+ * 
+ * Other strings are returned unmodified.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_canonical_device_name(GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "canonical_device_name");
+    return NULL;
+  }
+
+  char *ret = guestfs_canonical_device_name (g, device);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
 }
 
 /**
@@ -4975,13 +5864,1120 @@ guestfs_session_shutdown(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_shutdown(g);
+  int ret = guestfs_shutdown (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
   }
 
   return TRUE;
+}
+
+/**
+ * guestfs_session_cat:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * list the contents of a file
+ *
+ * Return the contents of the file named @path.
+ * 
+ * Because, in C, this function returns a "char *", there is no way to
+ * differentiate between a "\0" character in a file and end of string. To
+ * handle binary files, use the guestfs_session_read_file() or
+ * guestfs_session_download() functions.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_cat(GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cat");
+    return NULL;
+  }
+
+  char *ret = guestfs_cat (g, path);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_find:
+ * @session: (transfer none): A GuestfsSession object
+ * @directory: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * find all files and directories
+ *
+ * This command lists out all files and directories, recursively, starting
+ * at @directory. It is essentially equivalent to running the shell command
+ * "find directory -print" but some post-processing happens on the output,
+ * described below.
+ * 
+ * This returns a list of strings *without any prefix*. Thus if the
+ * directory structure was:
+ * 
+ * <![CDATA[/tmp/a]]>
+ * 
+ * <![CDATA[/tmp/b]]>
+ * 
+ * <![CDATA[/tmp/c/d]]>
+ * 
+ * then the returned list from guestfs_session_find() "/tmp" would be 4
+ * elements:
+ * 
+ * <![CDATA[a]]>
+ * 
+ * <![CDATA[b]]>
+ * 
+ * <![CDATA[c]]>
+ * 
+ * <![CDATA[c/d]]>
+ * 
+ * If @directory is not a directory, then this command returns an error.
+ * 
+ * The returned list is sorted.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_find(GuestfsSession *session, const gchar *directory, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "find");
+    return NULL;
+  }
+
+  char **ret = guestfs_find (g, directory);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_read_file:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @size_r: The size of the returned buffer, in bytes
+ * @err: A GError object to receive any generated errors
+ *
+ * read a file
+ *
+ * This calls returns the contents of the file @path as a buffer.
+ * 
+ * Unlike guestfs_session_cat(), this function can correctly handle files
+ * that contain embedded ASCII NUL characters.
+ * 
+ * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ */
+guint8 *
+guestfs_session_read_file(GuestfsSession *session, const gchar *path, gsize *size_r, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "read_file");
+    return NULL;
+  }
+
+  char *ret = guestfs_read_file (g, path, size_r);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_read_lines:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * read file as lines
+ *
+ * Return the contents of the file named @path.
+ * 
+ * The file contents are returned as a list of lines. Trailing @LF and
+ * @CRLF character sequences are *not* returned.
+ * 
+ * Note that this function cannot correctly handle binary files
+ * (specifically, files containing "\0" character which is treated as end
+ * of string). For those you need to use the guestfs_session_read_file()
+ * function and split the buffer into lines yourself.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_read_lines(GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "read_lines");
+    return NULL;
+  }
+
+  char **ret = guestfs_read_lines (g, path);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_write:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @content: (transfer none) (array length=content_size) (element-type guint8): an array of binary data
+ * @content_size: The size of content, in bytes
+ * @err: A GError object to receive any generated errors
+ *
+ * create a new file
+ *
+ * This call creates a file called @path. The content of the file is the
+ * string @content (which can contain any 8 bit data).
+ * 
+ * See also guestfs_session_write_append().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_write(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "write");
+    return FALSE;
+  }
+
+  int ret = guestfs_write (g, path, content, content_size);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_write_append:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @content: (transfer none) (array length=content_size) (element-type guint8): an array of binary data
+ * @content_size: The size of content, in bytes
+ * @err: A GError object to receive any generated errors
+ *
+ * append content to end of file
+ *
+ * This call appends @content to the end of file @path. If @path does not
+ * exist, then a new file is created.
+ * 
+ * See also guestfs_session_write().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_write_append(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "write_append");
+    return FALSE;
+  }
+
+  int ret = guestfs_write_append (g, path, content, content_size);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_lstatlist:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * lstat on multiple files
+ *
+ * This call allows you to perform the guestfs_session_lstat() operation on
+ * multiple files, where all files are in the directory @path. @names is
+ * the list of files from this directory.
+ * 
+ * On return you get a list of stat structs, with a one-to-one
+ * correspondence to the @names list. If any name did not exist or could
+ * not be lstat'd, then the @ino field of that structure is set to @-1.
+ * 
+ * This call is intended for programs that want to efficiently list a
+ * directory contents without making many round-trips. See also
+ * guestfs_session_lxattrlist() for a similarly efficient call for getting
+ * extended attributes.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsStat): an array of Stat objects, or NULL on error
+ */
+GuestfsStat **
+guestfs_session_lstatlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lstatlist");
+    return NULL;
+  }
+
+  struct guestfs_stat_list *ret = guestfs_lstatlist (g, path, names);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsStat **l = g_malloc(sizeof(GuestfsStat*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0(GuestfsStat);
+    l[i]->dev = ret->val[i].dev;
+    l[i]->ino = ret->val[i].ino;
+    l[i]->mode = ret->val[i].mode;
+    l[i]->nlink = ret->val[i].nlink;
+    l[i]->uid = ret->val[i].uid;
+    l[i]->gid = ret->val[i].gid;
+    l[i]->rdev = ret->val[i].rdev;
+    l[i]->size = ret->val[i].size;
+    l[i]->blksize = ret->val[i].blksize;
+    l[i]->blocks = ret->val[i].blocks;
+    l[i]->atime = ret->val[i].atime;
+    l[i]->mtime = ret->val[i].mtime;
+    l[i]->ctime = ret->val[i].ctime;
+  }
+  guestfs_free_stat_list(ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
+ * guestfs_session_lxattrlist:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * lgetxattr on multiple files
+ *
+ * This call allows you to get the extended attributes of multiple files,
+ * where all files are in the directory @path. @names is the list of files
+ * from this directory.
+ * 
+ * On return you get a flat list of xattr structs which must be interpreted
+ * sequentially. The first xattr struct always has a zero-length @attrname.
+ * @attrval in this struct is zero-length to indicate there was an error
+ * doing @lgetxattr for this file, *or* is a C string which is a decimal
+ * number (the number of following attributes for this file, which could be
+ * "0"). Then after the first xattr struct are the zero or more attributes
+ * for the first named file. This repeats for the second and subsequent
+ * files.
+ * 
+ * This call is intended for programs that want to efficiently list a
+ * directory contents without making many round-trips. See also
+ * guestfs_session_lstatlist() for a similarly efficient call for getting
+ * standard stats.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
+ */
+GuestfsXAttr **
+guestfs_session_lxattrlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "lxattrlist");
+    return NULL;
+  }
+
+  struct guestfs_xattr_list *ret = guestfs_lxattrlist (g, path, names);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsXAttr **l = g_malloc(sizeof(GuestfsXAttr*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0(GuestfsXAttr);
+    if (ret->val[i].attrname) l[i]->attrname = g_strdup(ret->val[i].attrname);
+    if (ret->val[i].attrval) {
+      l[i]->attrval = g_byte_array_sized_new(ret->val[i].attrval_len);
+      g_byte_array_append(l[i]->attrval, ret->val[i].attrval, ret->val[i].attrval_len);
+    }
+  }
+  guestfs_free_xattr_list(ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
+ * guestfs_session_readlinklist:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * readlink on multiple files
+ *
+ * This call allows you to do a @readlink operation on multiple files,
+ * where all files are in the directory @path. @names is the list of files
+ * from this directory.
+ * 
+ * On return you get a list of strings, with a one-to-one correspondence to
+ * the @names list. Each string is the value of the symbolic link.
+ * 
+ * If the readlink(2) operation fails on any name, then the corresponding
+ * result string is the empty string "". However the whole operation is
+ * completed even if there were readlink(2) errors, and so you can call
+ * this function with names where you don't know if they are symbolic links
+ * already (albeit slightly less efficient).
+ * 
+ * This call is intended for programs that want to efficiently list a
+ * directory contents without making many round-trips.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_readlinklist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "readlinklist");
+    return NULL;
+  }
+
+  char **ret = guestfs_readlinklist (g, path, names);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ls:
+ * @session: (transfer none): A GuestfsSession object
+ * @directory: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * list the files in a directory
+ *
+ * List the files in @directory (relative to the root directory, there is
+ * no cwd). The '.' and '..' entries are not returned, but hidden files are
+ * shown.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_ls(GuestfsSession *session, const gchar *directory, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ls");
+    return NULL;
+  }
+
+  char **ret = guestfs_ls (g, directory);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_value_utf8:
+ * @session: (transfer none): A GuestfsSession object
+ * @valueh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the data field from the (key, datatype, data) tuple
+ *
+ * This calls guestfs_session_hivex_value_value() (which returns the data
+ * field from a hivex value tuple). It then assumes that the field is a
+ * UTF-16LE string and converts the result to UTF-8 (or if this is not
+ * possible, it returns an error).
+ * 
+ * This is useful for reading strings out of the Windows registry. However
+ * it is not foolproof because the registry is not strongly-typed and
+ * fields can contain arbitrary or unexpected data.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_hivex_value_utf8(GuestfsSession *session, gint64 valueh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_value_utf8");
+    return NULL;
+  }
+
+  char *ret = guestfs_hivex_value_utf8 (g, valueh);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_disk_format:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * detect the disk format of a disk image
+ *
+ * Detect and return the format of the disk image called @filename.
+ * @filename can also be a host device, etc. If the format of the image
+ * could not be detected, then "unknown" is returned.
+ * 
+ * Note that detecting the disk format can be insecure under some
+ * circumstances. See "<ulink
+ * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'" in
+ * guestfs(3) CVE-2010-3851 </ulink>>.
+ * 
+ * See also: "DISK IMAGE FORMATS" in guestfs(3)
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_disk_format(GuestfsSession *session, const gchar *filename, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "disk_format");
+    return NULL;
+  }
+
+  char *ret = guestfs_disk_format (g, filename);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_disk_virtual_size:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return virtual size of a disk
+ *
+ * Detect and return the virtual size in bytes of the disk image called
+ * @filename.
+ * 
+ * Note that detecting disk features can be insecure under some
+ * circumstances. See "<ulink
+ * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'" in
+ * guestfs(3) CVE-2010-3851 </ulink>>.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_disk_virtual_size(GuestfsSession *session, const gchar *filename, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "disk_virtual_size");
+    return -1;
+  }
+
+  int64_t ret = guestfs_disk_virtual_size (g, filename);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_disk_has_backing_file:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return whether disk has a backing file
+ *
+ * Detect and return whether the disk image @filename has a backing file.
+ * 
+ * Note that detecting disk features can be insecure under some
+ * circumstances. See "<ulink
+ * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'" in
+ * guestfs(3) CVE-2010-3851 </ulink>>.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_disk_has_backing_file(GuestfsSession *session, const gchar *filename, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "disk_has_backing_file");
+    return -1;
+  }
+
+  int ret = guestfs_disk_has_backing_file (g, filename);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_remove_drive:
+ * @session: (transfer none): A GuestfsSession object
+ * @label: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * remove a disk image
+ *
+ * This function is conceptually the opposite of
+ * guestfs_session_add_drive_opts(). It removes the drive that was
+ * previously added with label @label.
+ * 
+ * Note that in order to remove drives, you have to add them with labels
+ * (see the optional @label argument to guestfs_session_add_drive_opts()).
+ * If you didn't use a label, then they cannot be removed.
+ * 
+ * You can call this function before or after launching the handle. If
+ * called after launch, if the attach-method supports it, we try to hot
+ * unplug the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be
+ * in use (eg. mounted) when you do this. We try to detect if the disk is
+ * in use and stop you from doing this.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_remove_drive(GuestfsSession *session, const gchar *label, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "remove_drive");
+    return FALSE;
+  }
+
+  int ret = guestfs_remove_drive (g, label);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_set_libvirt_supported_credentials:
+ * @session: (transfer none): A GuestfsSession object
+ * @creds: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * set libvirt credentials supported by calling program
+ *
+ * Call this function before setting an event handler for
+ * @GUESTFS_EVENT_LIBVIRT_AUTH, to supply the list of credential types that
+ * the program knows how to process.
+ * 
+ * The @creds list must be a non-empty list of strings. Possible strings
+ * are:
+ * 
+ * @username
+ * @authname
+ * @language
+ * @cnonce
+ * @passphrase
+ * @echoprompt
+ * @noechoprompt
+ * @realm
+ * @external
+ * 
+ * See libvirt documentation for the meaning of these credential types.
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for documentation and example
+ * code.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_libvirt_supported_credentials(GuestfsSession *session, gchar *const *creds, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_libvirt_supported_credentials");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_libvirt_supported_credentials (g, creds);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_libvirt_requested_credentials:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get list of credentials requested by libvirt
+ *
+ * This should only be called during the event callback for events of type
+ * @GUESTFS_EVENT_LIBVIRT_AUTH.
+ * 
+ * Return the list of credentials requested by libvirt. Possible values are
+ * a subset of the strings provided when you called
+ * guestfs_session_set_libvirt_supported_credentials().
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for documentation and example
+ * code.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_get_libvirt_requested_credentials(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_libvirt_requested_credentials");
+    return NULL;
+  }
+
+  char **ret = guestfs_get_libvirt_requested_credentials (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_get_libvirt_requested_credential_prompt:
+ * @session: (transfer none): A GuestfsSession object
+ * @index: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * prompt of i'th requested credential
+ *
+ * Get the prompt (provided by libvirt) for the @index'th requested
+ * credential. If libvirt did not provide a prompt, this returns the empty
+ * string "".
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for documentation and example
+ * code.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_libvirt_requested_credential_prompt(GuestfsSession *session, gint32 index, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_libvirt_requested_credential_prompt");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_libvirt_requested_credential_prompt (g, index);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_get_libvirt_requested_credential_challenge:
+ * @session: (transfer none): A GuestfsSession object
+ * @index: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * challenge of i'th requested credential
+ *
+ * Get the challenge (provided by libvirt) for the @index'th requested
+ * credential. If libvirt did not provide a challenge, this returns the
+ * empty string "".
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for documentation and example
+ * code.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_libvirt_requested_credential_challenge(GuestfsSession *session, gint32 index, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_libvirt_requested_credential_challenge");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_libvirt_requested_credential_challenge (g, index);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_get_libvirt_requested_credential_defresult:
+ * @session: (transfer none): A GuestfsSession object
+ * @index: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * default result of i'th requested credential
+ *
+ * Get the default result (provided by libvirt) for the @index'th requested
+ * credential. If libvirt did not provide a default result, this returns
+ * the empty string "".
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for documentation and example
+ * code.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_libvirt_requested_credential_defresult(GuestfsSession *session, gint32 index, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_libvirt_requested_credential_defresult");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_libvirt_requested_credential_defresult (g, index);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_set_libvirt_requested_credential:
+ * @session: (transfer none): A GuestfsSession object
+ * @index: (type gint32):
+ * @cred: (transfer none) (array length=cred_size) (element-type guint8): an array of binary data
+ * @cred_size: The size of cred, in bytes
+ * @err: A GError object to receive any generated errors
+ *
+ * pass requested credential back to libvirt
+ *
+ * After requesting the @index'th credential from the user, call this
+ * function to pass the answer back to libvirt.
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for documentation and example
+ * code.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_libvirt_requested_credential(GuestfsSession *session, gint32 index, const guint8 *cred, gsize cred_size, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_libvirt_requested_credential");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_libvirt_requested_credential (g, index, cred, cred_size);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_parse_environment:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * parse the environment and set handle flags accordingly
+ *
+ * Parse the program's environment and set flags in the handle accordingly.
+ * For example if "LIBGUESTFS_DEBUG=1" then the 'verbose' flag is set in
+ * the handle.
+ * 
+ * *Most programs do not need to call this*. It is done implicitly when you
+ * call guestfs_session_create().
+ * 
+ * See "ENVIRONMENT VARIABLES" in guestfs(3) for a list of environment
+ * variables that can affect libguestfs handles. See also
+ * "guestfs_create_flags" in guestfs(3), and
+ * guestfs_session_parse_environment_list().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_parse_environment(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "parse_environment");
+    return FALSE;
+  }
+
+  int ret = guestfs_parse_environment (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_parse_environment_list:
+ * @session: (transfer none): A GuestfsSession object
+ * @environment: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * parse the environment and set handle flags accordingly
+ *
+ * Parse the list of strings in the argument @environment and set flags in
+ * the handle accordingly. For example if "LIBGUESTFS_DEBUG=1" is a string
+ * in the list, then the 'verbose' flag is set in the handle.
+ * 
+ * This is the same as guestfs_session_parse_environment() except that it
+ * parses an explicit list of strings instead of the program's environment.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_parse_environment_list(GuestfsSession *session, gchar *const *environment, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "parse_environment_list");
+    return FALSE;
+  }
+
+  int ret = guestfs_parse_environment_list (g, environment);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_set_tmpdir:
+ * @session: (transfer none): A GuestfsSession object
+ * @tmpdir: (transfer none) (type utf8) (allow-none):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the temporary directory
+ *
+ * Set the directory used by the handle to store temporary files.
+ * 
+ * The environment variables @LIBGUESTFS_TMPDIR and @TMPDIR control the
+ * default value: If @LIBGUESTFS_TMPDIR is set, then that is the default.
+ * Else if @TMPDIR is set, then that is the default. Else "/tmp" is the
+ * default.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_tmpdir(GuestfsSession *session, const gchar *tmpdir, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_tmpdir");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_tmpdir (g, tmpdir);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_tmpdir:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the temporary directory
+ *
+ * Get the directory used by the handle to store temporary files.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_tmpdir(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_tmpdir");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_tmpdir (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_set_cachedir:
+ * @session: (transfer none): A GuestfsSession object
+ * @cachedir: (transfer none) (type utf8) (allow-none):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the appliance cache directory
+ *
+ * Set the directory used by the handle to store the appliance cache, when
+ * using a supermin appliance. The appliance is cached and shared between
+ * all handles which have the same effective user ID.
+ * 
+ * The environment variables @LIBGUESTFS_CACHEDIR and @TMPDIR control the
+ * default value: If @LIBGUESTFS_CACHEDIR is set, then that is the default.
+ * Else if @TMPDIR is set, then that is the default. Else "/var/tmp" is the
+ * default.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_cachedir(GuestfsSession *session, const gchar *cachedir, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_cachedir");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_cachedir (g, cachedir);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_cachedir:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the appliance cache directory
+ *
+ * Get the directory used by the handle to store the appliance cache.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_cachedir");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_cachedir (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
 }
 
 /**
@@ -5025,7 +7021,7 @@ guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar 
     return FALSE;
   }
 
-  int ret = guestfs_mount(g, device, mountpoint);
+  int ret = guestfs_mount (g, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5060,7 +7056,7 @@ guestfs_session_sync(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_sync(g);
+  int ret = guestfs_sync (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5097,51 +7093,13 @@ guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_touch(g, path);
+  int ret = guestfs_touch (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
   }
 
   return TRUE;
-}
-
-/**
- * guestfs_session_cat:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @err: A GError object to receive any generated errors
- *
- * list the contents of a file
- *
- * Return the contents of the file named @path.
- * 
- * Note that this function cannot correctly handle binary files
- * (specifically, files containing "\0" character which is treated as end
- * of string). For those you need to use the guestfs_session_read_file() or
- * guestfs_session_download() functions which have a more complex
- * interface.
- * 
- * Returns: (transfer full): the returned string, or NULL on error
- */
-gchar *
-guestfs_session_cat(GuestfsSession *session, const gchar *path, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "cat");
-    return NULL;
-  }
-
-  char *ret = guestfs_cat(g, path);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  return ret;
 }
 
 /**
@@ -5171,44 +7129,7 @@ guestfs_session_ll(GuestfsSession *session, const gchar *directory, GError **err
     return NULL;
   }
 
-  char *ret = guestfs_ll(g, directory);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  return ret;
-}
-
-/**
- * guestfs_session_ls:
- * @session: (transfer none): A GuestfsSession object
- * @directory: (transfer none) (type filename):
- * @err: A GError object to receive any generated errors
- *
- * list the files in a directory
- *
- * List the files in @directory (relative to the root directory, there is
- * no cwd). The '.' and '..' entries are not returned, but hidden files are
- * shown.
- * 
- * This command is mostly useful for interactive sessions. Programs should
- * probably use guestfs_session_readdir() instead.
- * 
- * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
- */
-gchar **
-guestfs_session_ls(GuestfsSession *session, const gchar *directory, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "ls");
-    return NULL;
-  }
-
-  char **ret = guestfs_ls(g, directory);
+  char *ret = guestfs_ll (g, directory);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5243,7 +7164,7 @@ guestfs_session_list_devices(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_list_devices(g);
+  char **ret = guestfs_list_devices (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5281,7 +7202,7 @@ guestfs_session_list_partitions(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_list_partitions(g);
+  char **ret = guestfs_list_partitions (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5318,7 +7239,7 @@ guestfs_session_pvs(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_pvs(g);
+  char **ret = guestfs_pvs (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5355,7 +7276,7 @@ guestfs_session_vgs(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_vgs(g);
+  char **ret = guestfs_vgs (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5392,7 +7313,7 @@ guestfs_session_lvs(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_lvs(g);
+  char **ret = guestfs_lvs (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5424,7 +7345,7 @@ guestfs_session_pvs_full(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  struct guestfs_lvm_pv_list *ret = guestfs_pvs_full(g);
+  struct guestfs_lvm_pv_list *ret = guestfs_pvs_full (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5477,7 +7398,7 @@ guestfs_session_vgs_full(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  struct guestfs_lvm_vg_list *ret = guestfs_vgs_full(g);
+  struct guestfs_lvm_vg_list *ret = guestfs_vgs_full (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5535,7 +7456,7 @@ guestfs_session_lvs_full(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  struct guestfs_lvm_lv_list *ret = guestfs_lvs_full(g);
+  struct guestfs_lvm_lv_list *ret = guestfs_lvs_full (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5565,46 +7486,6 @@ guestfs_session_lvs_full(GuestfsSession *session, GError **err)
   guestfs_free_lvm_lv_list(ret);
   l[i] = NULL;
   return l;
-}
-
-/**
- * guestfs_session_read_lines:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @err: A GError object to receive any generated errors
- *
- * read file as lines
- *
- * Return the contents of the file named @path.
- * 
- * The file contents are returned as a list of lines. Trailing @LF and
- * @CRLF character sequences are *not* returned.
- * 
- * Note that this function cannot correctly handle binary files
- * (specifically, files containing "\0" character which is treated as end
- * of line). For those you need to use the guestfs_session_read_file()
- * function which has a more complex interface.
- * 
- * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
- */
-gchar **
-guestfs_session_read_lines(GuestfsSession *session, const gchar *path, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "read_lines");
-    return NULL;
-  }
-
-  char **ret = guestfs_read_lines(g, path);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  return ret;
 }
 
 /**
@@ -5669,7 +7550,7 @@ guestfs_session_aug_init(GuestfsSession *session, const gchar *root, gint32 flag
     return FALSE;
   }
 
-  int ret = guestfs_aug_init(g, root, flags);
+  int ret = guestfs_aug_init (g, root, flags);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5702,7 +7583,7 @@ guestfs_session_aug_close(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_aug_close(g);
+  int ret = guestfs_aug_close (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5739,7 +7620,7 @@ guestfs_session_aug_defvar(GuestfsSession *session, const gchar *name, const gch
     return -1;
   }
 
-  int ret = guestfs_aug_defvar(g, name, expr);
+  int ret = guestfs_aug_defvar (g, name, expr);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -5780,7 +7661,7 @@ guestfs_session_aug_defnode(GuestfsSession *session, const gchar *name, const gc
     return NULL;
   }
 
-  struct guestfs_int_bool *ret = guestfs_aug_defnode(g, name, expr, val);
+  struct guestfs_int_bool *ret = guestfs_aug_defnode (g, name, expr, val);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5817,7 +7698,7 @@ guestfs_session_aug_get(GuestfsSession *session, const gchar *augpath, GError **
     return NULL;
   }
 
-  char *ret = guestfs_aug_get(g, augpath);
+  char *ret = guestfs_aug_get (g, augpath);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -5855,7 +7736,7 @@ guestfs_session_aug_set(GuestfsSession *session, const gchar *augpath, const gch
     return FALSE;
   }
 
-  int ret = guestfs_aug_set(g, augpath, val);
+  int ret = guestfs_aug_set (g, augpath, val);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5894,7 +7775,7 @@ guestfs_session_aug_insert(GuestfsSession *session, const gchar *augpath, const 
     return FALSE;
   }
 
-  int ret = guestfs_aug_insert(g, augpath, label, before);
+  int ret = guestfs_aug_insert (g, augpath, label, before);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5928,7 +7809,7 @@ guestfs_session_aug_rm(GuestfsSession *session, const gchar *augpath, GError **e
     return -1;
   }
 
-  int ret = guestfs_aug_rm(g, augpath);
+  int ret = guestfs_aug_rm (g, augpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -5962,7 +7843,7 @@ guestfs_session_aug_mv(GuestfsSession *session, const gchar *src, const gchar *d
     return FALSE;
   }
 
-  int ret = guestfs_aug_mv(g, src, dest);
+  int ret = guestfs_aug_mv (g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5996,7 +7877,7 @@ guestfs_session_aug_match(GuestfsSession *session, const gchar *augpath, GError 
     return NULL;
   }
 
-  char **ret = guestfs_aug_match(g, augpath);
+  char **ret = guestfs_aug_match (g, augpath);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6030,7 +7911,7 @@ guestfs_session_aug_save(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_aug_save(g);
+  int ret = guestfs_aug_save (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6063,7 +7944,7 @@ guestfs_session_aug_load(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_aug_load(g);
+  int ret = guestfs_aug_load (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6096,7 +7977,7 @@ guestfs_session_aug_ls(GuestfsSession *session, const gchar *augpath, GError **e
     return NULL;
   }
 
-  char **ret = guestfs_aug_ls(g, augpath);
+  char **ret = guestfs_aug_ls (g, augpath);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6128,7 +8009,7 @@ guestfs_session_rm(GuestfsSession *session, const gchar *path, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_rm(g, path);
+  int ret = guestfs_rm (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6160,7 +8041,7 @@ guestfs_session_rmdir(GuestfsSession *session, const gchar *path, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_rmdir(g, path);
+  int ret = guestfs_rmdir (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6193,7 +8074,7 @@ guestfs_session_rm_rf(GuestfsSession *session, const gchar *path, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_rm_rf(g, path);
+  int ret = guestfs_rm_rf (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6225,7 +8106,7 @@ guestfs_session_mkdir(GuestfsSession *session, const gchar *path, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_mkdir(g, path);
+  int ret = guestfs_mkdir (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6258,7 +8139,7 @@ guestfs_session_mkdir_p(GuestfsSession *session, const gchar *path, GError **err
     return FALSE;
   }
 
-  int ret = guestfs_mkdir_p(g, path);
+  int ret = guestfs_mkdir_p (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6298,7 +8179,7 @@ guestfs_session_chmod(GuestfsSession *session, gint32 mode, const gchar *path, G
     return FALSE;
   }
 
-  int ret = guestfs_chmod(g, mode, path);
+  int ret = guestfs_chmod (g, mode, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6336,7 +8217,7 @@ guestfs_session_chown(GuestfsSession *session, gint32 owner, gint32 group, const
     return FALSE;
   }
 
-  int ret = guestfs_chown(g, owner, group, path);
+  int ret = guestfs_chown (g, owner, group, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6372,7 +8253,7 @@ guestfs_session_exists(GuestfsSession *session, const gchar *path, GError **err)
     return -1;
   }
 
-  int ret = guestfs_exists(g, path);
+  int ret = guestfs_exists (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -6408,7 +8289,7 @@ guestfs_session_is_file(GuestfsSession *session, const gchar *path, GError **err
     return -1;
   }
 
-  int ret = guestfs_is_file(g, path);
+  int ret = guestfs_is_file (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -6443,7 +8324,7 @@ guestfs_session_is_dir(GuestfsSession *session, const gchar *path, GError **err)
     return -1;
   }
 
-  int ret = guestfs_is_dir(g, path);
+  int ret = guestfs_is_dir (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -6476,7 +8357,7 @@ guestfs_session_pvcreate(GuestfsSession *session, const gchar *device, GError **
     return FALSE;
   }
 
-  int ret = guestfs_pvcreate(g, device);
+  int ret = guestfs_pvcreate (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6510,7 +8391,7 @@ guestfs_session_vgcreate(GuestfsSession *session, const gchar *volgroup, gchar *
     return FALSE;
   }
 
-  int ret = guestfs_vgcreate(g, volgroup, physvols);
+  int ret = guestfs_vgcreate (g, volgroup, physvols);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6545,41 +8426,7 @@ guestfs_session_lvcreate(GuestfsSession *session, const gchar *logvol, const gch
     return FALSE;
   }
 
-  int ret = guestfs_lvcreate(g, logvol, volgroup, mbytes);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * guestfs_session_mkfs:
- * @session: (transfer none): A GuestfsSession object
- * @fstype: (transfer none) (type utf8):
- * @device: (transfer none) (type filename):
- * @err: A GError object to receive any generated errors
- *
- * make a filesystem
- *
- * This creates a filesystem on @device (usually a partition or LVM logical
- * volume). The filesystem type is @fstype, for example @ext3.
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_mkfs(GuestfsSession *session, const gchar *fstype, const gchar *device, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "mkfs");
-    return FALSE;
-  }
-
-  int ret = guestfs_mkfs(g, fstype, device);
+  int ret = guestfs_lvcreate (g, logvol, volgroup, mbytes);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6636,7 +8483,7 @@ guestfs_session_sfdisk(GuestfsSession *session, const gchar *device, gint32 cyls
     return FALSE;
   }
 
-  int ret = guestfs_sfdisk(g, device, cyls, heads, sectors, lines);
+  int ret = guestfs_sfdisk (g, device, cyls, heads, sectors, lines);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6678,7 +8525,7 @@ guestfs_session_write_file(GuestfsSession *session, const gchar *path, const gch
     return FALSE;
   }
 
-  int ret = guestfs_write_file(g, path, content, size);
+  int ret = guestfs_write_file (g, path, content, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6690,7 +8537,8 @@ guestfs_session_write_file(GuestfsSession *session, const gchar *path, const gch
 /**
  * guestfs_session_umount:
  * @session: (transfer none): A GuestfsSession object
- * @pathordevice: (transfer none) (type utf8):
+ * @pathordevice: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsUmount containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * unmount a filesystem
@@ -6702,7 +8550,7 @@ guestfs_session_write_file(GuestfsSession *session, const gchar *path, const gch
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_umount(GuestfsSession *session, const gchar *pathordevice, GError **err)
+guestfs_session_umount(GuestfsSession *session, const gchar *pathordevice, GuestfsUmount *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -6712,7 +8560,31 @@ guestfs_session_umount(GuestfsSession *session, const gchar *pathordevice, GErro
     return FALSE;
   }
 
-  int ret = guestfs_umount(g, pathordevice);
+  struct guestfs_umount_opts_argv argv;
+  struct guestfs_umount_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue force_v = {0, };
+    g_value_init(&force_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "force", &force_v);
+    GuestfsTristate force = g_value_get_enum(&force_v);
+    if (force != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
+      argv.force = force;
+    }
+    GValue lazyunmount_v = {0, };
+    g_value_init(&lazyunmount_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "lazyunmount", &lazyunmount_v);
+    GuestfsTristate lazyunmount = g_value_get_enum(&lazyunmount_v);
+    if (lazyunmount != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
+      argv.lazyunmount = lazyunmount;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_umount_opts_argv (g, pathordevice, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6748,7 +8620,7 @@ guestfs_session_mounts(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_mounts(g);
+  char **ret = guestfs_mounts (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6781,7 +8653,7 @@ guestfs_session_umount_all(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_umount_all(g);
+  int ret = guestfs_umount_all (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6813,7 +8685,7 @@ guestfs_session_lvm_remove_all(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_lvm_remove_all(g);
+  int ret = guestfs_lvm_remove_all (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -6860,7 +8732,7 @@ guestfs_session_file(GuestfsSession *session, const gchar *path, GError **err)
     return NULL;
   }
 
-  char *ret = guestfs_file(g, path);
+  char *ret = guestfs_file (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6915,7 +8787,7 @@ guestfs_session_command(GuestfsSession *session, gchar *const *arguments, GError
     return NULL;
   }
 
-  char *ret = guestfs_command(g, arguments);
+  char *ret = guestfs_command (g, arguments);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6950,7 +8822,7 @@ guestfs_session_command_lines(GuestfsSession *session, gchar *const *arguments, 
     return NULL;
   }
 
-  char **ret = guestfs_command_lines(g, arguments);
+  char **ret = guestfs_command_lines (g, arguments);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6984,7 +8856,7 @@ guestfs_session_stat(GuestfsSession *session, const gchar *path, GError **err)
     return NULL;
   }
 
-  struct guestfs_stat *ret = guestfs_stat(g, path);
+  struct guestfs_stat *ret = guestfs_stat (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -7036,7 +8908,7 @@ guestfs_session_lstat(GuestfsSession *session, const gchar *path, GError **err)
     return NULL;
   }
 
-  struct guestfs_stat *ret = guestfs_lstat(g, path);
+  struct guestfs_stat *ret = guestfs_lstat (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -7087,7 +8959,7 @@ guestfs_session_statvfs(GuestfsSession *session, const gchar *path, GError **err
     return NULL;
   }
 
-  struct guestfs_statvfs *ret = guestfs_statvfs(g, path);
+  struct guestfs_statvfs *ret = guestfs_statvfs (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -7138,7 +9010,7 @@ guestfs_session_tune2fs_l(GuestfsSession *session, const gchar *device, GError *
     return NULL;
   }
 
-  char **ret = guestfs_tune2fs_l(g, device);
+  char **ret = guestfs_tune2fs_l (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -7180,7 +9052,7 @@ guestfs_session_blockdev_setro(GuestfsSession *session, const gchar *device, GEr
     return FALSE;
   }
 
-  int ret = guestfs_blockdev_setro(g, device);
+  int ret = guestfs_blockdev_setro (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -7214,7 +9086,7 @@ guestfs_session_blockdev_setrw(GuestfsSession *session, const gchar *device, GEr
     return FALSE;
   }
 
-  int ret = guestfs_blockdev_setrw(g, device);
+  int ret = guestfs_blockdev_setrw (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -7249,7 +9121,7 @@ guestfs_session_blockdev_getro(GuestfsSession *session, const gchar *device, GEr
     return -1;
   }
 
-  int ret = guestfs_blockdev_getro(g, device);
+  int ret = guestfs_blockdev_getro (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -7287,7 +9159,7 @@ guestfs_session_blockdev_getss(GuestfsSession *session, const gchar *device, GEr
     return -1;
   }
 
-  int ret = guestfs_blockdev_getss(g, device);
+  int ret = guestfs_blockdev_getss (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -7324,7 +9196,7 @@ guestfs_session_blockdev_getbsz(GuestfsSession *session, const gchar *device, GE
     return -1;
   }
 
-  int ret = guestfs_blockdev_getbsz(g, device);
+  int ret = guestfs_blockdev_getbsz (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -7362,7 +9234,7 @@ guestfs_session_blockdev_setbsz(GuestfsSession *session, const gchar *device, gi
     return FALSE;
   }
 
-  int ret = guestfs_blockdev_setbsz(g, device, blocksize);
+  int ret = guestfs_blockdev_setbsz (g, device, blocksize);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -7401,7 +9273,7 @@ guestfs_session_blockdev_getsz(GuestfsSession *session, const gchar *device, GEr
     return -1;
   }
 
-  int64_t ret = guestfs_blockdev_getsz(g, device);
+  int64_t ret = guestfs_blockdev_getsz (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -7437,7 +9309,7 @@ guestfs_session_blockdev_getsize64(GuestfsSession *session, const gchar *device,
     return -1;
   }
 
-  int64_t ret = guestfs_blockdev_getsize64(g, device);
+  int64_t ret = guestfs_blockdev_getsize64 (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -7471,7 +9343,7 @@ guestfs_session_blockdev_flushbufs(GuestfsSession *session, const gchar *device,
     return FALSE;
   }
 
-  int ret = guestfs_blockdev_flushbufs(g, device);
+  int ret = guestfs_blockdev_flushbufs (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -7505,7 +9377,7 @@ guestfs_session_blockdev_rereadpt(GuestfsSession *session, const gchar *device, 
     return FALSE;
   }
 
-  int ret = guestfs_blockdev_rereadpt(g, device);
+  int ret = guestfs_blockdev_rereadpt (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -7554,7 +9426,7 @@ guestfs_session_upload(GuestfsSession *session, const gchar *filename, const gch
                                g, NULL);
   }
 
-  int ret = guestfs_upload(g, filename, remotefilename);
+  int ret = guestfs_upload (g, filename, remotefilename);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7605,7 +9477,7 @@ guestfs_session_download(GuestfsSession *session, const gchar *remotefilename, c
                                g, NULL);
   }
 
-  int ret = guestfs_download(g, remotefilename, filename);
+  int ret = guestfs_download (g, remotefilename, filename);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7672,7 +9544,7 @@ guestfs_session_checksum(GuestfsSession *session, const gchar *csumtype, const g
     return NULL;
   }
 
-  char *ret = guestfs_checksum(g, csumtype, path);
+  char *ret = guestfs_checksum (g, csumtype, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -7686,21 +9558,24 @@ guestfs_session_checksum(GuestfsSession *session, const gchar *csumtype, const g
  * @session: (transfer none): A GuestfsSession object
  * @tarfile: (transfer none) (type filename):
  * @directory: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsTarIn containing optional arguments
  * @cancellable: A GCancellable object
  * @err: A GError object to receive any generated errors
  *
  * unpack tarfile to directory
  *
- * This command uploads and unpacks local file @tarfile (an *uncompressed*
- * tar file) into @directory.
+ * This command uploads and unpacks local file @tarfile into @directory.
  * 
- * To upload a compressed tarball, use guestfs_session_tgz_in() or
- * guestfs_session_txz_in().
+ * The optional @compress flag controls compression. If not given, then the
+ * input should be an uncompressed tar file. Otherwise one of the following
+ * strings may be given to select the compression type of the input file:
+ * @compress, @gzip, @bzip2, @xz, @lzop. (Note that not all builds of
+ * libguestfs will support all of these compression types).
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, const gchar *directory, GCancellable *cancellable, GError **err)
+guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, const gchar *directory, GuestfsTarIn *optargs, GCancellable *cancellable, GError **err)
 {
   /* Check we haven't already been cancelled */
   if (g_cancellable_set_error_if_cancelled (cancellable, err))
@@ -7714,6 +9589,22 @@ guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, const gcha
     return FALSE;
   }
 
+  struct guestfs_tar_in_opts_argv argv;
+  struct guestfs_tar_in_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue compress_v = {0, };
+    g_value_init(&compress_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "compress", &compress_v);
+    const gchar *compress = g_value_get_string(&compress_v);
+    if (compress != NULL) {
+      argv.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
+      argv.compress = compress;
+    }
+    argvp = &argv;
+  }
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -7721,7 +9612,7 @@ guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, const gcha
                                g, NULL);
   }
 
-  int ret = guestfs_tar_in(g, tarfile, directory);
+  int ret = guestfs_tar_in_opts_argv (g, tarfile, directory, argvp);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7736,6 +9627,7 @@ guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, const gcha
  * @session: (transfer none): A GuestfsSession object
  * @directory: (transfer none) (type utf8):
  * @tarfile: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsTarOut containing optional arguments
  * @cancellable: A GCancellable object
  * @err: A GError object to receive any generated errors
  *
@@ -7744,13 +9636,26 @@ guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, const gcha
  * This command packs the contents of @directory and downloads it to local
  * file @tarfile.
  * 
- * To download a compressed tarball, use guestfs_session_tgz_out() or
- * guestfs_session_txz_out().
+ * The optional @compress flag controls compression. If not given, then the
+ * output will be an uncompressed tar file. Otherwise one of the following
+ * strings may be given to select the compression type of the output file:
+ * @compress, @gzip, @bzip2, @xz, @lzop. (Note that not all builds of
+ * libguestfs will support all of these compression types).
+ * 
+ * The other optional arguments are:
+ * 
+ * @excludes
+ * A list of wildcards. Files are excluded if they match any of the
+ * wildcards.
+ * 
+ * @numericowner
+ * If set to true, the output tar file will contain UID/GID numbers
+ * instead of user/group names.
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_tar_out(GuestfsSession *session, const gchar *directory, const gchar *tarfile, GCancellable *cancellable, GError **err)
+guestfs_session_tar_out(GuestfsSession *session, const gchar *directory, const gchar *tarfile, GuestfsTarOut *optargs, GCancellable *cancellable, GError **err)
 {
   /* Check we haven't already been cancelled */
   if (g_cancellable_set_error_if_cancelled (cancellable, err))
@@ -7764,6 +9669,30 @@ guestfs_session_tar_out(GuestfsSession *session, const gchar *directory, const g
     return FALSE;
   }
 
+  struct guestfs_tar_out_opts_argv argv;
+  struct guestfs_tar_out_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue compress_v = {0, };
+    g_value_init(&compress_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "compress", &compress_v);
+    const gchar *compress = g_value_get_string(&compress_v);
+    if (compress != NULL) {
+      argv.bitmask |= GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK;
+      argv.compress = compress;
+    }
+    GValue numericowner_v = {0, };
+    g_value_init(&numericowner_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "numericowner", &numericowner_v);
+    GuestfsTristate numericowner = g_value_get_enum(&numericowner_v);
+    if (numericowner != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
+      argv.numericowner = numericowner;
+    }
+    argvp = &argv;
+  }
   gulong id = 0;
   if (cancellable) {
     id = g_cancellable_connect(cancellable,
@@ -7771,7 +9700,7 @@ guestfs_session_tar_out(GuestfsSession *session, const gchar *directory, const g
                                g, NULL);
   }
 
-  int ret = guestfs_tar_out(g, directory, tarfile);
+  int ret = guestfs_tar_out_opts_argv (g, directory, tarfile, argvp);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7793,8 +9722,6 @@ guestfs_session_tar_out(GuestfsSession *session, const gchar *directory, const g
  *
  * This command uploads and unpacks local file @tarball (a *gzip
  * compressed* tar file) into @directory.
- * 
- * To upload an uncompressed tarball, use guestfs_session_tar_in().
  * 
  * Returns: true on success, false on error
  */
@@ -7820,7 +9747,7 @@ guestfs_session_tgz_in(GuestfsSession *session, const gchar *tarball, const gcha
                                g, NULL);
   }
 
-  int ret = guestfs_tgz_in(g, tarball, directory);
+  int ret = guestfs_tgz_in (g, tarball, directory);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7842,8 +9769,6 @@ guestfs_session_tgz_in(GuestfsSession *session, const gchar *tarball, const gcha
  *
  * This command packs the contents of @directory and downloads it to local
  * file @tarball.
- * 
- * To download an uncompressed tarball, use guestfs_session_tar_out().
  * 
  * Returns: true on success, false on error
  */
@@ -7869,7 +9794,7 @@ guestfs_session_tgz_out(GuestfsSession *session, const gchar *directory, const g
                                g, NULL);
   }
 
-  int ret = guestfs_tgz_out(g, directory, tarball);
+  int ret = guestfs_tgz_out (g, directory, tarball);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -7904,7 +9829,7 @@ guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gch
     return FALSE;
   }
 
-  int ret = guestfs_mount_ro(g, device, mountpoint);
+  int ret = guestfs_mount_ro (g, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -7942,7 +9867,7 @@ guestfs_session_mount_options(GuestfsSession *session, const gchar *options, con
     return FALSE;
   }
 
-  int ret = guestfs_mount_options(g, options, device, mountpoint);
+  int ret = guestfs_mount_options (g, options, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -7979,7 +9904,7 @@ guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const g
     return FALSE;
   }
 
-  int ret = guestfs_mount_vfs(g, options, vfstype, device, mountpoint);
+  int ret = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8017,7 +9942,7 @@ guestfs_session_debug(GuestfsSession *session, const gchar *subcmd, gchar *const
     return NULL;
   }
 
-  char *ret = guestfs_debug(g, subcmd, extraargs);
+  char *ret = guestfs_debug (g, subcmd, extraargs);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8053,7 +9978,7 @@ guestfs_session_lvremove(GuestfsSession *session, const gchar *device, GError **
     return FALSE;
   }
 
-  int ret = guestfs_lvremove(g, device);
+  int ret = guestfs_lvremove (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8088,7 +10013,7 @@ guestfs_session_vgremove(GuestfsSession *session, const gchar *vgname, GError **
     return FALSE;
   }
 
-  int ret = guestfs_vgremove(g, vgname);
+  int ret = guestfs_vgremove (g, vgname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8125,7 +10050,7 @@ guestfs_session_pvremove(GuestfsSession *session, const gchar *device, GError **
     return FALSE;
   }
 
-  int ret = guestfs_pvremove(g, device);
+  int ret = guestfs_pvremove (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8163,7 +10088,7 @@ guestfs_session_set_e2label(GuestfsSession *session, const gchar *device, const 
     return FALSE;
   }
 
-  int ret = guestfs_set_e2label(g, device, label);
+  int ret = guestfs_set_e2label (g, device, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8195,7 +10120,7 @@ guestfs_session_get_e2label(GuestfsSession *session, const gchar *device, GError
     return NULL;
   }
 
-  char *ret = guestfs_get_e2label(g, device);
+  char *ret = guestfs_get_e2label (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8234,7 +10159,7 @@ guestfs_session_set_e2uuid(GuestfsSession *session, const gchar *device, const g
     return FALSE;
   }
 
-  int ret = guestfs_set_e2uuid(g, device, uuid);
+  int ret = guestfs_set_e2uuid (g, device, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8266,7 +10191,7 @@ guestfs_session_get_e2uuid(GuestfsSession *session, const gchar *device, GError 
     return NULL;
   }
 
-  char *ret = guestfs_get_e2uuid(g, device);
+  char *ret = guestfs_get_e2uuid (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8315,7 +10240,7 @@ guestfs_session_fsck(GuestfsSession *session, const gchar *fstype, const gchar *
     return -1;
   }
 
-  int ret = guestfs_fsck(g, fstype, device);
+  int ret = guestfs_fsck (g, fstype, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -8358,7 +10283,7 @@ guestfs_session_zero(GuestfsSession *session, const gchar *device, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_zero(g, device);
+  int ret = guestfs_zero (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8413,7 +10338,7 @@ guestfs_session_grub_install(GuestfsSession *session, const gchar *root, const g
     return FALSE;
   }
 
-  int ret = guestfs_grub_install(g, root, device);
+  int ret = guestfs_grub_install (g, root, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8447,7 +10372,7 @@ guestfs_session_cp(GuestfsSession *session, const gchar *src, const gchar *dest,
     return FALSE;
   }
 
-  int ret = guestfs_cp(g, src, dest);
+  int ret = guestfs_cp (g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8481,7 +10406,7 @@ guestfs_session_cp_a(GuestfsSession *session, const gchar *src, const gchar *des
     return FALSE;
   }
 
-  int ret = guestfs_cp_a(g, src, dest);
+  int ret = guestfs_cp_a (g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8515,7 +10440,7 @@ guestfs_session_mv(GuestfsSession *session, const gchar *src, const gchar *dest,
     return FALSE;
   }
 
-  int ret = guestfs_mv(g, src, dest);
+  int ret = guestfs_mv (g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8555,7 +10480,7 @@ guestfs_session_drop_caches(GuestfsSession *session, gint32 whattodrop, GError *
     return FALSE;
   }
 
-  int ret = guestfs_drop_caches(g, whattodrop);
+  int ret = guestfs_drop_caches (g, whattodrop);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8591,7 +10516,7 @@ guestfs_session_dmesg(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char *ret = guestfs_dmesg(g);
+  char *ret = guestfs_dmesg (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8625,7 +10550,7 @@ guestfs_session_ping_daemon(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_ping_daemon(g);
+  int ret = guestfs_ping_daemon (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8661,7 +10586,7 @@ guestfs_session_equal(GuestfsSession *session, const gchar *file1, const gchar *
     return -1;
   }
 
-  int ret = guestfs_equal(g, file1, file2);
+  int ret = guestfs_equal (g, file1, file2);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -8694,7 +10619,7 @@ guestfs_session_strings(GuestfsSession *session, const gchar *path, GError **err
     return NULL;
   }
 
-  char **ret = guestfs_strings(g, path);
+  char **ret = guestfs_strings (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8749,7 +10674,7 @@ guestfs_session_strings_e(GuestfsSession *session, const gchar *encoding, const 
     return NULL;
   }
 
-  char **ret = guestfs_strings_e(g, encoding, path);
+  char **ret = guestfs_strings_e (g, encoding, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8782,7 +10707,7 @@ guestfs_session_hexdump(GuestfsSession *session, const gchar *path, GError **err
     return NULL;
   }
 
-  char *ret = guestfs_hexdump(g, path);
+  char *ret = guestfs_hexdump (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8821,7 +10746,7 @@ guestfs_session_zerofree(GuestfsSession *session, const gchar *device, GError **
     return FALSE;
   }
 
-  int ret = guestfs_zerofree(g, device);
+  int ret = guestfs_zerofree (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8854,7 +10779,7 @@ guestfs_session_pvresize(GuestfsSession *session, const gchar *device, GError **
     return FALSE;
   }
 
-  int ret = guestfs_pvresize(g, device);
+  int ret = guestfs_pvresize (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8897,7 +10822,7 @@ guestfs_session_sfdisk_N(GuestfsSession *session, const gchar *device, gint32 pa
     return FALSE;
   }
 
-  int ret = guestfs_sfdisk_N(g, device, partnum, cyls, heads, sectors, line);
+  int ret = guestfs_sfdisk_N (g, device, partnum, cyls, heads, sectors, line);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -8932,7 +10857,7 @@ guestfs_session_sfdisk_l(GuestfsSession *session, const gchar *device, GError **
     return NULL;
   }
 
-  char *ret = guestfs_sfdisk_l(g, device);
+  char *ret = guestfs_sfdisk_l (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -8966,7 +10891,7 @@ guestfs_session_sfdisk_kernel_geometry(GuestfsSession *session, const gchar *dev
     return NULL;
   }
 
-  char *ret = guestfs_sfdisk_kernel_geometry(g, device);
+  char *ret = guestfs_sfdisk_kernel_geometry (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9003,7 +10928,7 @@ guestfs_session_sfdisk_disk_geometry(GuestfsSession *session, const gchar *devic
     return NULL;
   }
 
-  char *ret = guestfs_sfdisk_disk_geometry(g, device);
+  char *ret = guestfs_sfdisk_disk_geometry (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9038,7 +10963,7 @@ guestfs_session_vg_activate_all(GuestfsSession *session, gboolean activate, GErr
     return FALSE;
   }
 
-  int ret = guestfs_vg_activate_all(g, activate);
+  int ret = guestfs_vg_activate_all (g, activate);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9077,7 +11002,7 @@ guestfs_session_vg_activate(GuestfsSession *session, gboolean activate, gchar *c
     return FALSE;
   }
 
-  int ret = guestfs_vg_activate(g, activate, volgroups);
+  int ret = guestfs_vg_activate (g, activate, volgroups);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9111,7 +11036,7 @@ guestfs_session_lvresize(GuestfsSession *session, const gchar *device, gint32 mb
     return FALSE;
   }
 
-  int ret = guestfs_lvresize(g, device, mbytes);
+  int ret = guestfs_lvresize (g, device, mbytes);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9146,74 +11071,13 @@ guestfs_session_resize2fs(GuestfsSession *session, const gchar *device, GError *
     return FALSE;
   }
 
-  int ret = guestfs_resize2fs(g, device);
+  int ret = guestfs_resize2fs (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
   }
 
   return TRUE;
-}
-
-/**
- * guestfs_session_find:
- * @session: (transfer none): A GuestfsSession object
- * @directory: (transfer none) (type filename):
- * @err: A GError object to receive any generated errors
- *
- * find all files and directories
- *
- * This command lists out all files and directories, recursively, starting
- * at @directory. It is essentially equivalent to running the shell command
- * "find directory -print" but some post-processing happens on the output,
- * described below.
- * 
- * This returns a list of strings *without any prefix*. Thus if the
- * directory structure was:
- * 
- * <![CDATA[/tmp/a]]>
- * 
- * <![CDATA[/tmp/b]]>
- * 
- * <![CDATA[/tmp/c/d]]>
- * 
- * then the returned list from guestfs_session_find() "/tmp" would be 4
- * elements:
- * 
- * <![CDATA[a]]>
- * 
- * <![CDATA[b]]>
- * 
- * <![CDATA[c]]>
- * 
- * <![CDATA[c/d]]>
- * 
- * If @directory is not a directory, then this command returns an error.
- * 
- * The returned list is sorted.
- * 
- * See also guestfs_session_find0().
- * 
- * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
- */
-gchar **
-guestfs_session_find(GuestfsSession *session, const gchar *directory, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "find");
-    return NULL;
-  }
-
-  char **ret = guestfs_find(g, directory);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  return ret;
 }
 
 /**
@@ -9241,7 +11105,7 @@ guestfs_session_e2fsck_f(GuestfsSession *session, const gchar *device, GError **
     return FALSE;
   }
 
-  int ret = guestfs_e2fsck_f(g, device);
+  int ret = guestfs_e2fsck_f (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9273,7 +11137,7 @@ guestfs_session_sleep(GuestfsSession *session, gint32 secs, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_sleep(g, secs);
+  int ret = guestfs_sleep (g, secs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9315,7 +11179,7 @@ guestfs_session_ntfs_3g_probe(GuestfsSession *session, gboolean rw, const gchar 
     return -1;
   }
 
-  int ret = guestfs_ntfs_3g_probe(g, rw, device);
+  int ret = guestfs_ntfs_3g_probe (g, rw, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -9357,7 +11221,7 @@ guestfs_session_sh(GuestfsSession *session, const gchar *command, GError **err)
     return NULL;
   }
 
-  char *ret = guestfs_sh(g, command);
+  char *ret = guestfs_sh (g, command);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9392,7 +11256,7 @@ guestfs_session_sh_lines(GuestfsSession *session, const gchar *command, GError *
     return NULL;
   }
 
-  char **ret = guestfs_sh_lines(g, command);
+  char **ret = guestfs_sh_lines (g, command);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9434,7 +11298,7 @@ guestfs_session_glob_expand(GuestfsSession *session, const gchar *pattern, GErro
     return NULL;
   }
 
-  char **ret = guestfs_glob_expand(g, pattern);
+  char **ret = guestfs_glob_expand (g, pattern);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9470,7 +11334,7 @@ guestfs_session_scrub_device(GuestfsSession *session, const gchar *device, GErro
     return FALSE;
   }
 
-  int ret = guestfs_scrub_device(g, device);
+  int ret = guestfs_scrub_device (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9508,7 +11372,7 @@ guestfs_session_scrub_file(GuestfsSession *session, const gchar *file, GError **
     return FALSE;
   }
 
-  int ret = guestfs_scrub_file(g, file);
+  int ret = guestfs_scrub_file (g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9546,7 +11410,7 @@ guestfs_session_scrub_freespace(GuestfsSession *session, const gchar *dir, GErro
     return FALSE;
   }
 
-  int ret = guestfs_scrub_freespace(g, dir);
+  int ret = guestfs_scrub_freespace (g, dir);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9592,7 +11456,7 @@ guestfs_session_mkdtemp(GuestfsSession *session, const gchar *tmpl, GError **err
     return NULL;
   }
 
-  char *ret = guestfs_mkdtemp(g, tmpl);
+  char *ret = guestfs_mkdtemp (g, tmpl);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9625,7 +11489,7 @@ guestfs_session_wc_l(GuestfsSession *session, const gchar *path, GError **err)
     return -1;
   }
 
-  int ret = guestfs_wc_l(g, path);
+  int ret = guestfs_wc_l (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -9658,7 +11522,7 @@ guestfs_session_wc_w(GuestfsSession *session, const gchar *path, GError **err)
     return -1;
   }
 
-  int ret = guestfs_wc_w(g, path);
+  int ret = guestfs_wc_w (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -9691,7 +11555,7 @@ guestfs_session_wc_c(GuestfsSession *session, const gchar *path, GError **err)
     return -1;
   }
 
-  int ret = guestfs_wc_c(g, path);
+  int ret = guestfs_wc_c (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -9724,7 +11588,7 @@ guestfs_session_head(GuestfsSession *session, const gchar *path, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_head(g, path);
+  char **ret = guestfs_head (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9763,7 +11627,7 @@ guestfs_session_head_n(GuestfsSession *session, gint32 nrlines, const gchar *pat
     return NULL;
   }
 
-  char **ret = guestfs_head_n(g, nrlines, path);
+  char **ret = guestfs_head_n (g, nrlines, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9796,7 +11660,7 @@ guestfs_session_tail(GuestfsSession *session, const gchar *path, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_tail(g, path);
+  char **ret = guestfs_tail (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9835,7 +11699,7 @@ guestfs_session_tail_n(GuestfsSession *session, gint32 nrlines, const gchar *pat
     return NULL;
   }
 
-  char **ret = guestfs_tail_n(g, nrlines, path);
+  char **ret = guestfs_tail_n (g, nrlines, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9870,7 +11734,7 @@ guestfs_session_df(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char *ret = guestfs_df(g);
+  char *ret = guestfs_df (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9906,7 +11770,7 @@ guestfs_session_df_h(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char *ret = guestfs_df_h(g);
+  char *ret = guestfs_df_h (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -9946,7 +11810,7 @@ guestfs_session_du(GuestfsSession *session, const gchar *path, GError **err)
     return -1;
   }
 
-  int64_t ret = guestfs_du(g, path);
+  int64_t ret = guestfs_du (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -9986,7 +11850,7 @@ guestfs_session_initrd_list(GuestfsSession *session, const gchar *path, GError *
     return NULL;
   }
 
-  char **ret = guestfs_initrd_list(g, path);
+  char **ret = guestfs_initrd_list (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -10021,7 +11885,7 @@ guestfs_session_mount_loop(GuestfsSession *session, const gchar *file, const gch
     return FALSE;
   }
 
-  int ret = guestfs_mount_loop(g, file, mountpoint);
+  int ret = guestfs_mount_loop (g, file, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10034,16 +11898,20 @@ guestfs_session_mount_loop(GuestfsSession *session, const gchar *file, const gch
  * guestfs_session_mkswap:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsMkswap containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * create a swap partition
  *
- * Create a swap partition on @device.
+ * Create a Linux swap partition on @device.
+ * 
+ * The option arguments @label and @uuid allow you to set the label and/or
+ * UUID of the new swap partition.
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mkswap(GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_mkswap(GuestfsSession *session, const gchar *device, GuestfsMkswap *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -10053,7 +11921,31 @@ guestfs_session_mkswap(GuestfsSession *session, const gchar *device, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_mkswap(g, device);
+  struct guestfs_mkswap_opts_argv argv;
+  struct guestfs_mkswap_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue label_v = {0, };
+    g_value_init(&label_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "label", &label_v);
+    const gchar *label = g_value_get_string(&label_v);
+    if (label != NULL) {
+      argv.bitmask |= GUESTFS_MKSWAP_OPTS_LABEL_BITMASK;
+      argv.label = label;
+    }
+    GValue uuid_v = {0, };
+    g_value_init(&uuid_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "uuid", &uuid_v);
+    const gchar *uuid = g_value_get_string(&uuid_v);
+    if (uuid != NULL) {
+      argv.bitmask |= GUESTFS_MKSWAP_OPTS_UUID_BITMASK;
+      argv.uuid = uuid;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_mkswap_opts_argv (g, device, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10090,7 +11982,7 @@ guestfs_session_mkswap_L(GuestfsSession *session, const gchar *label, const gcha
     return FALSE;
   }
 
-  int ret = guestfs_mkswap_L(g, label, device);
+  int ret = guestfs_mkswap_L (g, label, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10123,7 +12015,7 @@ guestfs_session_mkswap_U(GuestfsSession *session, const gchar *uuid, const gchar
     return FALSE;
   }
 
-  int ret = guestfs_mkswap_U(g, uuid, device);
+  int ret = guestfs_mkswap_U (g, uuid, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10173,7 +12065,7 @@ guestfs_session_mknod(GuestfsSession *session, gint32 mode, gint32 devmajor, gin
     return FALSE;
   }
 
-  int ret = guestfs_mknod(g, mode, devmajor, devminor, path);
+  int ret = guestfs_mknod (g, mode, devmajor, devminor, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10209,7 +12101,7 @@ guestfs_session_mkfifo(GuestfsSession *session, gint32 mode, const gchar *path, 
     return FALSE;
   }
 
-  int ret = guestfs_mkfifo(g, mode, path);
+  int ret = guestfs_mkfifo (g, mode, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10248,7 +12140,7 @@ guestfs_session_mknod_b(GuestfsSession *session, gint32 mode, gint32 devmajor, g
     return FALSE;
   }
 
-  int ret = guestfs_mknod_b(g, mode, devmajor, devminor, path);
+  int ret = guestfs_mknod_b (g, mode, devmajor, devminor, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10287,7 +12179,7 @@ guestfs_session_mknod_c(GuestfsSession *session, gint32 mode, gint32 devmajor, g
     return FALSE;
   }
 
-  int ret = guestfs_mknod_c(g, mode, devmajor, devminor, path);
+  int ret = guestfs_mknod_c (g, mode, devmajor, devminor, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10333,7 +12225,7 @@ guestfs_session_umask(GuestfsSession *session, gint32 mask, GError **err)
     return -1;
   }
 
-  int ret = guestfs_umask(g, mask);
+  int ret = guestfs_umask (g, mask);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -10395,7 +12287,7 @@ guestfs_session_readdir(GuestfsSession *session, const gchar *dir, GError **err)
     return NULL;
   }
 
-  struct guestfs_dirent_list *ret = guestfs_readdir(g, dir);
+  struct guestfs_dirent_list *ret = guestfs_readdir (g, dir);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -10444,7 +12336,7 @@ guestfs_session_sfdiskM(GuestfsSession *session, const gchar *device, gchar *con
     return FALSE;
   }
 
-  int ret = guestfs_sfdiskM(g, device, lines);
+  int ret = guestfs_sfdiskM (g, device, lines);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10482,7 +12374,7 @@ guestfs_session_zfile(GuestfsSession *session, const gchar *meth, const gchar *p
     return NULL;
   }
 
-  char *ret = guestfs_zfile(g, meth, path);
+  char *ret = guestfs_zfile (g, meth, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -10519,7 +12411,7 @@ guestfs_session_getxattrs(GuestfsSession *session, const gchar *path, GError **e
     return NULL;
   }
 
-  struct guestfs_xattr_list *ret = guestfs_getxattrs(g, path);
+  struct guestfs_xattr_list *ret = guestfs_getxattrs (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -10565,7 +12457,7 @@ guestfs_session_lgetxattrs(GuestfsSession *session, const gchar *path, GError **
     return NULL;
   }
 
-  struct guestfs_xattr_list *ret = guestfs_lgetxattrs(g, path);
+  struct guestfs_xattr_list *ret = guestfs_lgetxattrs (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -10615,7 +12507,7 @@ guestfs_session_setxattr(GuestfsSession *session, const gchar *xattr, const gcha
     return FALSE;
   }
 
-  int ret = guestfs_setxattr(g, xattr, val, vallen, path);
+  int ret = guestfs_setxattr (g, xattr, val, vallen, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10651,7 +12543,7 @@ guestfs_session_lsetxattr(GuestfsSession *session, const gchar *xattr, const gch
     return FALSE;
   }
 
-  int ret = guestfs_lsetxattr(g, xattr, val, vallen, path);
+  int ret = guestfs_lsetxattr (g, xattr, val, vallen, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10686,7 +12578,7 @@ guestfs_session_removexattr(GuestfsSession *session, const gchar *xattr, const g
     return FALSE;
   }
 
-  int ret = guestfs_removexattr(g, xattr, path);
+  int ret = guestfs_removexattr (g, xattr, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10720,7 +12612,7 @@ guestfs_session_lremovexattr(GuestfsSession *session, const gchar *xattr, const 
     return FALSE;
   }
 
-  int ret = guestfs_lremovexattr(g, xattr, path);
+  int ret = guestfs_lremovexattr (g, xattr, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10753,7 +12645,7 @@ guestfs_session_mountpoints(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_mountpoints(g);
+  char **ret = guestfs_mountpoints (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -10839,7 +12731,7 @@ guestfs_session_mkmountpoint(GuestfsSession *session, const gchar *exemptpath, G
     return FALSE;
   }
 
-  int ret = guestfs_mkmountpoint(g, exemptpath);
+  int ret = guestfs_mkmountpoint (g, exemptpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10873,7 +12765,7 @@ guestfs_session_rmmountpoint(GuestfsSession *session, const gchar *exemptpath, G
     return FALSE;
   }
 
-  int ret = guestfs_rmmountpoint(g, exemptpath);
+  int ret = guestfs_rmmountpoint (g, exemptpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -10883,58 +12775,38 @@ guestfs_session_rmmountpoint(GuestfsSession *session, const gchar *exemptpath, G
 }
 
 /**
- * guestfs_session_read_file:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @size_r: The size of the returned buffer, in bytes
- * @err: A GError object to receive any generated errors
- *
- * read a file
- *
- * This calls returns the contents of the file @path as a buffer.
- * 
- * Unlike guestfs_session_cat(), this function can correctly handle files
- * that contain embedded ASCII NUL characters. However unlike
- * guestfs_session_download(), this function is limited in the total size
- * of file that can be handled.
- * 
- * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
- */
-guint8 *
-guestfs_session_read_file(GuestfsSession *session, const gchar *path, gsize *size_r, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "read_file");
-    return NULL;
-  }
-
-  char *ret = guestfs_read_file(g, path, size_r);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  return ret;
-}
-
-/**
  * guestfs_session_grep:
  * @session: (transfer none): A GuestfsSession object
  * @regex: (transfer none) (type utf8):
  * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsGrep containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * return lines matching a pattern
  *
  * This calls the external @grep program and returns the matching lines.
  * 
+ * The optional flags are:
+ * 
+ * @extended
+ * Use extended regular expressions. This is the same as using the *-E*
+ * flag.
+ * 
+ * @fixed
+ * Match fixed (don't use regular expressions). This is the same as
+ * using the *-F* flag.
+ * 
+ * @insensitive
+ * Match case-insensitive. This is the same as using the *-i* flag.
+ * 
+ * @compressed
+ * Use @zgrep instead of @grep. This allows the input to be compress-
+ * or gzip-compressed.
+ * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */
 gchar **
-guestfs_session_grep(GuestfsSession *session, const gchar *regex, const gchar *path, GError **err)
+guestfs_session_grep(GuestfsSession *session, const gchar *regex, const gchar *path, GuestfsGrep *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -10944,7 +12816,47 @@ guestfs_session_grep(GuestfsSession *session, const gchar *regex, const gchar *p
     return NULL;
   }
 
-  char **ret = guestfs_grep(g, regex, path);
+  struct guestfs_grep_opts_argv argv;
+  struct guestfs_grep_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue extended_v = {0, };
+    g_value_init(&extended_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "extended", &extended_v);
+    GuestfsTristate extended = g_value_get_enum(&extended_v);
+    if (extended != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
+      argv.extended = extended;
+    }
+    GValue fixed_v = {0, };
+    g_value_init(&fixed_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "fixed", &fixed_v);
+    GuestfsTristate fixed = g_value_get_enum(&fixed_v);
+    if (fixed != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_GREP_OPTS_FIXED_BITMASK;
+      argv.fixed = fixed;
+    }
+    GValue insensitive_v = {0, };
+    g_value_init(&insensitive_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "insensitive", &insensitive_v);
+    GuestfsTristate insensitive = g_value_get_enum(&insensitive_v);
+    if (insensitive != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
+      argv.insensitive = insensitive;
+    }
+    GValue compressed_v = {0, };
+    g_value_init(&compressed_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "compressed", &compressed_v);
+    GuestfsTristate compressed = g_value_get_enum(&compressed_v);
+    if (compressed != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
+      argv.compressed = compressed;
+    }
+    argvp = &argv;
+  }
+  char **ret = guestfs_grep_opts_argv (g, regex, path, argvp);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -10977,7 +12889,7 @@ guestfs_session_egrep(GuestfsSession *session, const gchar *regex, const gchar *
     return NULL;
   }
 
-  char **ret = guestfs_egrep(g, regex, path);
+  char **ret = guestfs_egrep (g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11010,7 +12922,7 @@ guestfs_session_fgrep(GuestfsSession *session, const gchar *pattern, const gchar
     return NULL;
   }
 
-  char **ret = guestfs_fgrep(g, pattern, path);
+  char **ret = guestfs_fgrep (g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11044,7 +12956,7 @@ guestfs_session_grepi(GuestfsSession *session, const gchar *regex, const gchar *
     return NULL;
   }
 
-  char **ret = guestfs_grepi(g, regex, path);
+  char **ret = guestfs_grepi (g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11078,7 +12990,7 @@ guestfs_session_egrepi(GuestfsSession *session, const gchar *regex, const gchar 
     return NULL;
   }
 
-  char **ret = guestfs_egrepi(g, regex, path);
+  char **ret = guestfs_egrepi (g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11112,7 +13024,7 @@ guestfs_session_fgrepi(GuestfsSession *session, const gchar *pattern, const gcha
     return NULL;
   }
 
-  char **ret = guestfs_fgrepi(g, pattern, path);
+  char **ret = guestfs_fgrepi (g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11145,7 +13057,7 @@ guestfs_session_zgrep(GuestfsSession *session, const gchar *regex, const gchar *
     return NULL;
   }
 
-  char **ret = guestfs_zgrep(g, regex, path);
+  char **ret = guestfs_zgrep (g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11178,7 +13090,7 @@ guestfs_session_zegrep(GuestfsSession *session, const gchar *regex, const gchar 
     return NULL;
   }
 
-  char **ret = guestfs_zegrep(g, regex, path);
+  char **ret = guestfs_zegrep (g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11211,7 +13123,7 @@ guestfs_session_zfgrep(GuestfsSession *session, const gchar *pattern, const gcha
     return NULL;
   }
 
-  char **ret = guestfs_zfgrep(g, pattern, path);
+  char **ret = guestfs_zfgrep (g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11245,7 +13157,7 @@ guestfs_session_zgrepi(GuestfsSession *session, const gchar *regex, const gchar 
     return NULL;
   }
 
-  char **ret = guestfs_zgrepi(g, regex, path);
+  char **ret = guestfs_zgrepi (g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11279,7 +13191,7 @@ guestfs_session_zegrepi(GuestfsSession *session, const gchar *regex, const gchar
     return NULL;
   }
 
-  char **ret = guestfs_zegrepi(g, regex, path);
+  char **ret = guestfs_zegrepi (g, regex, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11313,7 +13225,7 @@ guestfs_session_zfgrepi(GuestfsSession *session, const gchar *pattern, const gch
     return NULL;
   }
 
-  char **ret = guestfs_zfgrepi(g, pattern, path);
+  char **ret = guestfs_zfgrepi (g, pattern, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11346,7 +13258,7 @@ guestfs_session_realpath(GuestfsSession *session, const gchar *path, GError **er
     return NULL;
   }
 
-  char *ret = guestfs_realpath(g, path);
+  char *ret = guestfs_realpath (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11379,7 +13291,7 @@ guestfs_session_ln(GuestfsSession *session, const gchar *target, const gchar *li
     return FALSE;
   }
 
-  int ret = guestfs_ln(g, target, linkname);
+  int ret = guestfs_ln (g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11413,7 +13325,7 @@ guestfs_session_ln_f(GuestfsSession *session, const gchar *target, const gchar *
     return FALSE;
   }
 
-  int ret = guestfs_ln_f(g, target, linkname);
+  int ret = guestfs_ln_f (g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11446,7 +13358,7 @@ guestfs_session_ln_s(GuestfsSession *session, const gchar *target, const gchar *
     return FALSE;
   }
 
-  int ret = guestfs_ln_s(g, target, linkname);
+  int ret = guestfs_ln_s (g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11480,7 +13392,7 @@ guestfs_session_ln_sf(GuestfsSession *session, const gchar *target, const gchar 
     return FALSE;
   }
 
-  int ret = guestfs_ln_sf(g, target, linkname);
+  int ret = guestfs_ln_sf (g, target, linkname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11512,7 +13424,7 @@ guestfs_session_readlink(GuestfsSession *session, const gchar *path, GError **er
     return NULL;
   }
 
-  char *ret = guestfs_readlink(g, path);
+  char *ret = guestfs_readlink (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -11549,7 +13461,7 @@ guestfs_session_fallocate(GuestfsSession *session, const gchar *path, gint32 len
     return FALSE;
   }
 
-  int ret = guestfs_fallocate(g, path, len);
+  int ret = guestfs_fallocate (g, path, len);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11590,7 +13502,7 @@ guestfs_session_swapon_device(GuestfsSession *session, const gchar *device, GErr
     return FALSE;
   }
 
-  int ret = guestfs_swapon_device(g, device);
+  int ret = guestfs_swapon_device (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11623,7 +13535,7 @@ guestfs_session_swapoff_device(GuestfsSession *session, const gchar *device, GEr
     return FALSE;
   }
 
-  int ret = guestfs_swapoff_device(g, device);
+  int ret = guestfs_swapoff_device (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11656,7 +13568,7 @@ guestfs_session_swapon_file(GuestfsSession *session, const gchar *file, GError *
     return FALSE;
   }
 
-  int ret = guestfs_swapon_file(g, file);
+  int ret = guestfs_swapon_file (g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11688,7 +13600,7 @@ guestfs_session_swapoff_file(GuestfsSession *session, const gchar *file, GError 
     return FALSE;
   }
 
-  int ret = guestfs_swapoff_file(g, file);
+  int ret = guestfs_swapoff_file (g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11721,7 +13633,7 @@ guestfs_session_swapon_label(GuestfsSession *session, const gchar *label, GError
     return FALSE;
   }
 
-  int ret = guestfs_swapon_label(g, label);
+  int ret = guestfs_swapon_label (g, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11754,7 +13666,7 @@ guestfs_session_swapoff_label(GuestfsSession *session, const gchar *label, GErro
     return FALSE;
   }
 
-  int ret = guestfs_swapoff_label(g, label);
+  int ret = guestfs_swapoff_label (g, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11787,7 +13699,7 @@ guestfs_session_swapon_uuid(GuestfsSession *session, const gchar *uuid, GError *
     return FALSE;
   }
 
-  int ret = guestfs_swapon_uuid(g, uuid);
+  int ret = guestfs_swapon_uuid (g, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11820,7 +13732,7 @@ guestfs_session_swapoff_uuid(GuestfsSession *session, const gchar *uuid, GError 
     return FALSE;
   }
 
-  int ret = guestfs_swapoff_uuid(g, uuid);
+  int ret = guestfs_swapoff_uuid (g, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11855,7 +13767,7 @@ guestfs_session_mkswap_file(GuestfsSession *session, const gchar *path, GError *
     return FALSE;
   }
 
-  int ret = guestfs_mkswap_file(g, path);
+  int ret = guestfs_mkswap_file (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11915,7 +13827,7 @@ guestfs_session_inotify_init(GuestfsSession *session, gint32 maxevents, GError *
     return FALSE;
   }
 
-  int ret = guestfs_inotify_init(g, maxevents);
+  int ret = guestfs_inotify_init (g, maxevents);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -11954,7 +13866,7 @@ guestfs_session_inotify_add_watch(GuestfsSession *session, const gchar *path, gi
     return -1;
   }
 
-  int64_t ret = guestfs_inotify_add_watch(g, path, mask);
+  int64_t ret = guestfs_inotify_add_watch (g, path, mask);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -11987,7 +13899,7 @@ guestfs_session_inotify_rm_watch(GuestfsSession *session, gint32 wd, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_inotify_rm_watch(g, wd);
+  int ret = guestfs_inotify_rm_watch (g, wd);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12026,7 +13938,7 @@ guestfs_session_inotify_read(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  struct guestfs_inotify_event_list *ret = guestfs_inotify_read(g);
+  struct guestfs_inotify_event_list *ret = guestfs_inotify_read (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -12070,7 +13982,7 @@ guestfs_session_inotify_files(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_inotify_files(g);
+  char **ret = guestfs_inotify_files (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -12103,7 +14015,7 @@ guestfs_session_inotify_close(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_inotify_close(g);
+  int ret = guestfs_inotify_close (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12138,7 +14050,7 @@ guestfs_session_setcon(GuestfsSession *session, const gchar *context, GError **e
     return FALSE;
   }
 
-  int ret = guestfs_setcon(g, context);
+  int ret = guestfs_setcon (g, context);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12172,7 +14084,7 @@ guestfs_session_getcon(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char *ret = guestfs_getcon(g);
+  char *ret = guestfs_getcon (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -12212,7 +14124,7 @@ guestfs_session_mkfs_b(GuestfsSession *session, const gchar *fstype, gint32 bloc
     return FALSE;
   }
 
-  int ret = guestfs_mkfs_b(g, fstype, blocksize, device);
+  int ret = guestfs_mkfs_b (g, fstype, blocksize, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12248,7 +14160,7 @@ guestfs_session_mke2journal(GuestfsSession *session, gint32 blocksize, const gch
     return FALSE;
   }
 
-  int ret = guestfs_mke2journal(g, blocksize, device);
+  int ret = guestfs_mke2journal (g, blocksize, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12282,7 +14194,7 @@ guestfs_session_mke2journal_L(GuestfsSession *session, gint32 blocksize, const g
     return FALSE;
   }
 
-  int ret = guestfs_mke2journal_L(g, blocksize, label, device);
+  int ret = guestfs_mke2journal_L (g, blocksize, label, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12316,7 +14228,7 @@ guestfs_session_mke2journal_U(GuestfsSession *session, gint32 blocksize, const g
     return FALSE;
   }
 
-  int ret = guestfs_mke2journal_U(g, blocksize, uuid, device);
+  int ret = guestfs_mke2journal_U (g, blocksize, uuid, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12356,7 +14268,7 @@ guestfs_session_mke2fs_J(GuestfsSession *session, const gchar *fstype, gint32 bl
     return FALSE;
   }
 
-  int ret = guestfs_mke2fs_J(g, fstype, blocksize, device, journal);
+  int ret = guestfs_mke2fs_J (g, fstype, blocksize, device, journal);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12394,7 +14306,7 @@ guestfs_session_mke2fs_JL(GuestfsSession *session, const gchar *fstype, gint32 b
     return FALSE;
   }
 
-  int ret = guestfs_mke2fs_JL(g, fstype, blocksize, device, label);
+  int ret = guestfs_mke2fs_JL (g, fstype, blocksize, device, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12432,7 +14344,7 @@ guestfs_session_mke2fs_JU(GuestfsSession *session, const gchar *fstype, gint32 b
     return FALSE;
   }
 
-  int ret = guestfs_mke2fs_JU(g, fstype, blocksize, device, uuid);
+  int ret = guestfs_mke2fs_JU (g, fstype, blocksize, device, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12467,7 +14379,7 @@ guestfs_session_modprobe(GuestfsSession *session, const gchar *modulename, GErro
     return FALSE;
   }
 
-  int ret = guestfs_modprobe(g, modulename);
+  int ret = guestfs_modprobe (g, modulename);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12504,7 +14416,7 @@ guestfs_session_echo_daemon(GuestfsSession *session, gchar *const *words, GError
     return NULL;
   }
 
-  char *ret = guestfs_echo_daemon(g, words);
+  char *ret = guestfs_echo_daemon (g, words);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -12535,9 +14447,6 @@ guestfs_session_echo_daemon(GuestfsSession *session, gchar *const *words, GError
  * *   Items (filenames) in the result are separated by "\0" characters.
  * See find(1) option *-print0*.
  * 
- * *   This command is not limited in the number of names that it can
- * return.
- * 
  * *   The result list is not sorted.
  * 
  * Returns: true on success, false on error
@@ -12564,7 +14473,7 @@ guestfs_session_find0(GuestfsSession *session, const gchar *directory, const gch
                                g, NULL);
   }
 
-  int ret = guestfs_find0(g, directory, files);
+  int ret = guestfs_find0 (g, directory, files);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -12625,7 +14534,7 @@ guestfs_session_case_sensitive_path(GuestfsSession *session, const gchar *path, 
     return NULL;
   }
 
-  char *ret = guestfs_case_sensitive_path(g, path);
+  char *ret = guestfs_case_sensitive_path (g, path);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -12663,7 +14572,7 @@ guestfs_session_vfs_type(GuestfsSession *session, const gchar *device, GError **
     return NULL;
   }
 
-  char *ret = guestfs_vfs_type(g, device);
+  char *ret = guestfs_vfs_type (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -12696,7 +14605,7 @@ guestfs_session_truncate(GuestfsSession *session, const gchar *path, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_truncate(g, path);
+  int ret = guestfs_truncate (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12735,7 +14644,7 @@ guestfs_session_truncate_size(GuestfsSession *session, const gchar *path, gint64
     return FALSE;
   }
 
-  int ret = guestfs_truncate_size(g, path, size);
+  int ret = guestfs_truncate_size (g, path, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12785,7 +14694,7 @@ guestfs_session_utimens(GuestfsSession *session, const gchar *path, gint64 atsec
     return FALSE;
   }
 
-  int ret = guestfs_utimens(g, path, atsecs, atnsecs, mtsecs, mtnsecs);
+  int ret = guestfs_utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12825,7 +14734,7 @@ guestfs_session_mkdir_mode(GuestfsSession *session, const gchar *path, gint32 mo
     return FALSE;
   }
 
-  int ret = guestfs_mkdir_mode(g, path, mode);
+  int ret = guestfs_mkdir_mode (g, path, mode);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12865,7 +14774,7 @@ guestfs_session_lchown(GuestfsSession *session, gint32 owner, gint32 group, cons
     return FALSE;
   }
 
-  int ret = guestfs_lchown(g, owner, group, path);
+  int ret = guestfs_lchown (g, owner, group, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -12875,7 +14784,7 @@ guestfs_session_lchown(GuestfsSession *session, gint32 owner, gint32 group, cons
 }
 
 /**
- * guestfs_session_lstatlist:
+ * guestfs_session_internal_lstatlist:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
  * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
@@ -12901,17 +14810,17 @@ guestfs_session_lchown(GuestfsSession *session, gint32 owner, gint32 group, cons
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsStat): an array of Stat objects, or NULL on error
  */
 GuestfsStat **
-guestfs_session_lstatlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
+guestfs_session_internal_lstatlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "lstatlist");
+                "internal_lstatlist");
     return NULL;
   }
 
-  struct guestfs_stat_list *ret = guestfs_lstatlist(g, path, names);
+  struct guestfs_stat_list *ret = guestfs_internal_lstatlist (g, path, names);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -12941,7 +14850,7 @@ guestfs_session_lstatlist(GuestfsSession *session, const gchar *path, gchar *con
 }
 
 /**
- * guestfs_session_lxattrlist:
+ * guestfs_session_internal_lxattrlist:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
  * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
@@ -12972,17 +14881,17 @@ guestfs_session_lstatlist(GuestfsSession *session, const gchar *path, gchar *con
  * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
  */
 GuestfsXAttr **
-guestfs_session_lxattrlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
+guestfs_session_internal_lxattrlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "lxattrlist");
+                "internal_lxattrlist");
     return NULL;
   }
 
-  struct guestfs_xattr_list *ret = guestfs_lxattrlist(g, path, names);
+  struct guestfs_xattr_list *ret = guestfs_internal_lxattrlist (g, path, names);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13004,7 +14913,7 @@ guestfs_session_lxattrlist(GuestfsSession *session, const gchar *path, gchar *co
 }
 
 /**
- * guestfs_session_readlinklist:
+ * guestfs_session_internal_readlinklist:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
  * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
@@ -13034,17 +14943,17 @@ guestfs_session_lxattrlist(GuestfsSession *session, const gchar *path, gchar *co
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */
 gchar **
-guestfs_session_readlinklist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
+guestfs_session_internal_readlinklist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "readlinklist");
+                "internal_readlinklist");
     return NULL;
   }
 
-  char **ret = guestfs_readlinklist(g, path, names);
+  char **ret = guestfs_internal_readlinklist (g, path, names);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13085,7 +14994,7 @@ guestfs_session_pread(GuestfsSession *session, const gchar *path, gint32 count, 
     return NULL;
   }
 
-  char *ret = guestfs_pread(g, path, count, offset, size_r);
+  char *ret = guestfs_pread (g, path, count, offset, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13159,7 +15068,7 @@ guestfs_session_part_init(GuestfsSession *session, const gchar *device, const gc
     return FALSE;
   }
 
-  int ret = guestfs_part_init(g, device, parttype);
+  int ret = guestfs_part_init (g, device, parttype);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13206,7 +15115,7 @@ guestfs_session_part_add(GuestfsSession *session, const gchar *device, const gch
     return FALSE;
   }
 
-  int ret = guestfs_part_add(g, device, prlogex, startsect, endsect);
+  int ret = guestfs_part_add (g, device, prlogex, startsect, endsect);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13244,7 +15153,7 @@ guestfs_session_part_disk(GuestfsSession *session, const gchar *device, const gc
     return FALSE;
   }
 
-  int ret = guestfs_part_disk(g, device, parttype);
+  int ret = guestfs_part_disk (g, device, parttype);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13283,7 +15192,7 @@ guestfs_session_part_set_bootable(GuestfsSession *session, const gchar *device, 
     return FALSE;
   }
 
-  int ret = guestfs_part_set_bootable(g, device, partnum, bootable);
+  int ret = guestfs_part_set_bootable (g, device, partnum, bootable);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13321,7 +15230,7 @@ guestfs_session_part_set_name(GuestfsSession *session, const gchar *device, gint
     return FALSE;
   }
 
-  int ret = guestfs_part_set_name(g, device, partnum, name);
+  int ret = guestfs_part_set_name (g, device, partnum, name);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13369,7 +15278,7 @@ guestfs_session_part_list(GuestfsSession *session, const gchar *device, GError *
     return NULL;
   }
 
-  struct guestfs_partition_list *ret = guestfs_part_list(g, device);
+  struct guestfs_partition_list *ret = guestfs_part_list (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13418,7 +15327,7 @@ guestfs_session_part_get_parttype(GuestfsSession *session, const gchar *device, 
     return NULL;
   }
 
-  char *ret = guestfs_part_get_parttype(g, device);
+  char *ret = guestfs_part_get_parttype (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13458,7 +15367,7 @@ guestfs_session_fill(GuestfsSession *session, gint32 c, gint32 len, const gchar 
     return FALSE;
   }
 
-  int ret = guestfs_fill(g, c, len, path);
+  int ret = guestfs_fill (g, c, len, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13516,6 +15425,8 @@ guestfs_session_fill(GuestfsSession *session, gint32 c, gint32 len, const gchar 
  * command to find out if the daemon implemented it. See also
  * guestfs_session_version().
  * 
+ * See also guestfs_session_filesystem_available().
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -13529,7 +15440,7 @@ guestfs_session_available(GuestfsSession *session, gchar *const *groups, GError 
     return FALSE;
   }
 
-  int ret = guestfs_available(g, groups);
+  int ret = guestfs_available (g, groups);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13568,7 +15479,7 @@ guestfs_session_dd(GuestfsSession *session, const gchar *src, const gchar *dest,
     return FALSE;
   }
 
-  int ret = guestfs_dd(g, src, dest);
+  int ret = guestfs_dd (g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13605,7 +15516,7 @@ guestfs_session_filesize(GuestfsSession *session, const gchar *file, GError **er
     return -1;
   }
 
-  int64_t ret = guestfs_filesize(g, file);
+  int64_t ret = guestfs_filesize (g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -13638,7 +15549,7 @@ guestfs_session_lvrename(GuestfsSession *session, const gchar *logvol, const gch
     return FALSE;
   }
 
-  int ret = guestfs_lvrename(g, logvol, newlogvol);
+  int ret = guestfs_lvrename (g, logvol, newlogvol);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13671,7 +15582,7 @@ guestfs_session_vgrename(GuestfsSession *session, const gchar *volgroup, const g
     return FALSE;
   }
 
-  int ret = guestfs_vgrename(g, volgroup, newvolgroup);
+  int ret = guestfs_vgrename (g, volgroup, newvolgroup);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13715,7 +15626,7 @@ guestfs_session_initrd_cat(GuestfsSession *session, const gchar *initrdpath, con
     return NULL;
   }
 
-  char *ret = guestfs_initrd_cat(g, initrdpath, filename, size_r);
+  char *ret = guestfs_initrd_cat (g, initrdpath, filename, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13747,7 +15658,7 @@ guestfs_session_pvuuid(GuestfsSession *session, const gchar *device, GError **er
     return NULL;
   }
 
-  char *ret = guestfs_pvuuid(g, device);
+  char *ret = guestfs_pvuuid (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13779,7 +15690,7 @@ guestfs_session_vguuid(GuestfsSession *session, const gchar *vgname, GError **er
     return NULL;
   }
 
-  char *ret = guestfs_vguuid(g, vgname);
+  char *ret = guestfs_vguuid (g, vgname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13811,7 +15722,7 @@ guestfs_session_lvuuid(GuestfsSession *session, const gchar *device, GError **er
     return NULL;
   }
 
-  char *ret = guestfs_lvuuid(g, device);
+  char *ret = guestfs_lvuuid (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13850,7 +15761,7 @@ guestfs_session_vgpvuuids(GuestfsSession *session, const gchar *vgname, GError *
     return NULL;
   }
 
-  char **ret = guestfs_vgpvuuids(g, vgname);
+  char **ret = guestfs_vgpvuuids (g, vgname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13889,7 +15800,7 @@ guestfs_session_vglvuuids(GuestfsSession *session, const gchar *vgname, GError *
     return NULL;
   }
 
-  char **ret = guestfs_vglvuuids(g, vgname);
+  char **ret = guestfs_vglvuuids (g, vgname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -13927,7 +15838,7 @@ guestfs_session_copy_size(GuestfsSession *session, const gchar *src, const gchar
     return FALSE;
   }
 
-  int ret = guestfs_copy_size(g, src, dest, size);
+  int ret = guestfs_copy_size (g, src, dest, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -13965,7 +15876,7 @@ guestfs_session_zero_device(GuestfsSession *session, const gchar *device, GError
     return FALSE;
   }
 
-  int ret = guestfs_zero_device(g, device);
+  int ret = guestfs_zero_device (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14011,7 +15922,7 @@ guestfs_session_txz_in(GuestfsSession *session, const gchar *tarball, const gcha
                                g, NULL);
   }
 
-  int ret = guestfs_txz_in(g, tarball, directory);
+  int ret = guestfs_txz_in (g, tarball, directory);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14058,50 +15969,8 @@ guestfs_session_txz_out(GuestfsSession *session, const gchar *directory, const g
                                g, NULL);
   }
 
-  int ret = guestfs_txz_out(g, directory, tarball);
+  int ret = guestfs_txz_out (g, directory, tarball);
   g_cancellable_disconnect(cancellable, id);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * guestfs_session_ntfsresize:
- * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
- * @err: A GError object to receive any generated errors
- *
- * resize an NTFS filesystem
- *
- * This command resizes an NTFS filesystem, expanding or shrinking it to
- * the size of the underlying device.
- * 
- * *Note:* After the resize operation, the filesystem is marked as
- * requiring a consistency check (for safety). You have to boot into
- * Windows to perform this check and clear this condition. Furthermore,
- * ntfsresize refuses to resize filesystems which have been marked in this
- * way. So in effect it is not possible to call ntfsresize multiple times
- * on a single filesystem without booting into Windows between each resize.
- * 
- * See also ntfsresize(8).
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_ntfsresize(GuestfsSession *session, const gchar *device, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "ntfsresize");
-    return FALSE;
-  }
-
-  int ret = guestfs_ntfsresize(g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14133,7 +16002,7 @@ guestfs_session_vgscan(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_vgscan(g);
+  int ret = guestfs_vgscan (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14169,7 +16038,7 @@ guestfs_session_part_del(GuestfsSession *session, const gchar *device, gint32 pa
     return FALSE;
   }
 
-  int ret = guestfs_part_del(g, device, partnum);
+  int ret = guestfs_part_del (g, device, partnum);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14205,7 +16074,7 @@ guestfs_session_part_get_bootable(GuestfsSession *session, const gchar *device, 
     return -1;
   }
 
-  int ret = guestfs_part_get_bootable(g, device, partnum);
+  int ret = guestfs_part_get_bootable (g, device, partnum);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -14243,7 +16112,7 @@ guestfs_session_part_get_mbr_id(GuestfsSession *session, const gchar *device, gi
     return -1;
   }
 
-  int ret = guestfs_part_get_mbr_id(g, device, partnum);
+  int ret = guestfs_part_get_mbr_id (g, device, partnum);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -14284,7 +16153,7 @@ guestfs_session_part_set_mbr_id(GuestfsSession *session, const gchar *device, gi
     return FALSE;
   }
 
-  int ret = guestfs_part_set_mbr_id(g, device, partnum, idbyte);
+  int ret = guestfs_part_set_mbr_id (g, device, partnum, idbyte);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14319,7 +16188,7 @@ guestfs_session_checksum_device(GuestfsSession *session, const gchar *csumtype, 
     return NULL;
   }
 
-  char *ret = guestfs_checksum_device(g, csumtype, device);
+  char *ret = guestfs_checksum_device (g, csumtype, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -14355,7 +16224,7 @@ guestfs_session_lvresize_free(GuestfsSession *session, const gchar *lv, gint32 p
     return FALSE;
   }
 
-  int ret = guestfs_lvresize_free(g, lv, percent);
+  int ret = guestfs_lvresize_free (g, lv, percent);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14388,7 +16257,7 @@ guestfs_session_aug_clear(GuestfsSession *session, const gchar *augpath, GError 
     return FALSE;
   }
 
-  int ret = guestfs_aug_clear(g, augpath);
+  int ret = guestfs_aug_clear (g, augpath);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14420,7 +16289,7 @@ guestfs_session_get_umask(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_get_umask(g);
+  int ret = guestfs_get_umask (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -14471,7 +16340,7 @@ guestfs_session_debug_upload(GuestfsSession *session, const gchar *filename, con
                                g, NULL);
   }
 
-  int ret = guestfs_debug_upload(g, filename, tmpname, mode);
+  int ret = guestfs_debug_upload (g, filename, tmpname, mode);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14517,7 +16386,7 @@ guestfs_session_base64_in(GuestfsSession *session, const gchar *base64file, cons
                                g, NULL);
   }
 
-  int ret = guestfs_base64_in(g, base64file, filename);
+  int ret = guestfs_base64_in (g, base64file, filename);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14564,7 +16433,7 @@ guestfs_session_base64_out(GuestfsSession *session, const gchar *filename, const
                                g, NULL);
   }
 
-  int ret = guestfs_base64_out(g, filename, base64file);
+  int ret = guestfs_base64_out (g, filename, base64file);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14619,7 +16488,7 @@ guestfs_session_checksums_out(GuestfsSession *session, const gchar *csumtype, co
                                g, NULL);
   }
 
-  int ret = guestfs_checksums_out(g, csumtype, directory, sumsfile);
+  int ret = guestfs_checksums_out (g, csumtype, directory, sumsfile);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -14657,7 +16526,7 @@ guestfs_session_fill_pattern(GuestfsSession *session, const gchar *pattern, gint
     return FALSE;
   }
 
-  int ret = guestfs_fill_pattern(g, pattern, len, path);
+  int ret = guestfs_fill_pattern (g, pattern, len, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14667,7 +16536,7 @@ guestfs_session_fill_pattern(GuestfsSession *session, const gchar *pattern, gint
 }
 
 /**
- * guestfs_session_write:
+ * guestfs_session_internal_write:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
  * @content: (transfer none) (array length=content_size) (element-type guint8): an array of binary data
@@ -14684,17 +16553,17 @@ guestfs_session_fill_pattern(GuestfsSession *session, const gchar *pattern, gint
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_write(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
+guestfs_session_internal_write(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "write");
+                "internal_write");
     return FALSE;
   }
 
-  int ret = guestfs_write(g, path, content, content_size);
+  int ret = guestfs_internal_write (g, path, content, content_size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14738,7 +16607,7 @@ guestfs_session_pwrite(GuestfsSession *session, const gchar *path, const guint8 
     return -1;
   }
 
-  int ret = guestfs_pwrite(g, path, content, content_size, offset);
+  int ret = guestfs_pwrite (g, path, content, content_size, offset);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -14774,7 +16643,7 @@ guestfs_session_resize2fs_size(GuestfsSession *session, const gchar *device, gin
     return FALSE;
   }
 
-  int ret = guestfs_resize2fs_size(g, device, size);
+  int ret = guestfs_resize2fs_size (g, device, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14808,7 +16677,7 @@ guestfs_session_pvresize_size(GuestfsSession *session, const gchar *device, gint
     return FALSE;
   }
 
-  int ret = guestfs_pvresize_size(g, device, size);
+  int ret = guestfs_pvresize_size (g, device, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14842,7 +16711,7 @@ guestfs_session_ntfsresize_size(GuestfsSession *session, const gchar *device, gi
     return FALSE;
   }
 
-  int ret = guestfs_ntfsresize_size(g, device, size);
+  int ret = guestfs_ntfsresize_size (g, device, size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14878,7 +16747,7 @@ guestfs_session_available_all_groups(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_available_all_groups(g);
+  char **ret = guestfs_available_all_groups (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -14923,7 +16792,7 @@ guestfs_session_fallocate64(GuestfsSession *session, const gchar *path, gint64 l
     return FALSE;
   }
 
-  int ret = guestfs_fallocate64(g, path, len);
+  int ret = guestfs_fallocate64 (g, path, len);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14959,7 +16828,7 @@ guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError *
     return NULL;
   }
 
-  char *ret = guestfs_vfs_label(g, device);
+  char *ret = guestfs_vfs_label (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -14995,7 +16864,7 @@ guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *device, GError **
     return NULL;
   }
 
-  char *ret = guestfs_vfs_uuid(g, device);
+  char *ret = guestfs_vfs_uuid (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -15044,7 +16913,7 @@ guestfs_session_lvm_set_filter(GuestfsSession *session, gchar *const *devices, G
     return FALSE;
   }
 
-  int ret = guestfs_lvm_set_filter(g, devices);
+  int ret = guestfs_lvm_set_filter (g, devices);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15078,7 +16947,7 @@ guestfs_session_lvm_clear_filter(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_lvm_clear_filter(g);
+  int ret = guestfs_lvm_clear_filter (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15128,7 +16997,7 @@ guestfs_session_luks_open(GuestfsSession *session, const gchar *device, const gc
     return FALSE;
   }
 
-  int ret = guestfs_luks_open(g, device, key, mapname);
+  int ret = guestfs_luks_open (g, device, key, mapname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15163,7 +17032,7 @@ guestfs_session_luks_open_ro(GuestfsSession *session, const gchar *device, const
     return FALSE;
   }
 
-  int ret = guestfs_luks_open_ro(g, device, key, mapname);
+  int ret = guestfs_luks_open_ro (g, device, key, mapname);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15199,7 +17068,7 @@ guestfs_session_luks_close(GuestfsSession *session, const gchar *device, GError 
     return FALSE;
   }
 
-  int ret = guestfs_luks_close(g, device);
+  int ret = guestfs_luks_close (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15235,7 +17104,7 @@ guestfs_session_luks_format(GuestfsSession *session, const gchar *device, const 
     return FALSE;
   }
 
-  int ret = guestfs_luks_format(g, device, key, keyslot);
+  int ret = guestfs_luks_format (g, device, key, keyslot);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15271,7 +17140,7 @@ guestfs_session_luks_format_cipher(GuestfsSession *session, const gchar *device,
     return FALSE;
   }
 
-  int ret = guestfs_luks_format_cipher(g, device, key, keyslot, cipher);
+  int ret = guestfs_luks_format_cipher (g, device, key, keyslot, cipher);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15312,7 +17181,7 @@ guestfs_session_luks_add_key(GuestfsSession *session, const gchar *device, const
     return FALSE;
   }
 
-  int ret = guestfs_luks_add_key(g, device, key, newkey, keyslot);
+  int ret = guestfs_luks_add_key (g, device, key, newkey, keyslot);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15347,7 +17216,7 @@ guestfs_session_luks_kill_slot(GuestfsSession *session, const gchar *device, con
     return FALSE;
   }
 
-  int ret = guestfs_luks_kill_slot(g, device, key, keyslot);
+  int ret = guestfs_luks_kill_slot (g, device, key, keyslot);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -15380,7 +17249,7 @@ guestfs_session_is_lv(GuestfsSession *session, const gchar *device, GError **err
     return -1;
   }
 
-  int ret = guestfs_is_lv(g, device);
+  int ret = guestfs_is_lv (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -15415,7 +17284,7 @@ guestfs_session_findfs_uuid(GuestfsSession *session, const gchar *uuid, GError *
     return NULL;
   }
 
-  char *ret = guestfs_findfs_uuid(g, uuid);
+  char *ret = guestfs_findfs_uuid (g, uuid);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -15450,7 +17319,7 @@ guestfs_session_findfs_label(GuestfsSession *session, const gchar *label, GError
     return NULL;
   }
 
-  char *ret = guestfs_findfs_label(g, label);
+  char *ret = guestfs_findfs_label (g, label);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -15485,7 +17354,7 @@ guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GError **
     return -1;
   }
 
-  int ret = guestfs_is_chardev(g, path);
+  int ret = guestfs_is_chardev (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -15520,7 +17389,7 @@ guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GError *
     return -1;
   }
 
-  int ret = guestfs_is_blockdev(g, path);
+  int ret = guestfs_is_blockdev (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -15555,7 +17424,7 @@ guestfs_session_is_fifo(GuestfsSession *session, const gchar *path, GError **err
     return -1;
   }
 
-  int ret = guestfs_is_fifo(g, path);
+  int ret = guestfs_is_fifo (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -15590,7 +17459,7 @@ guestfs_session_is_symlink(GuestfsSession *session, const gchar *path, GError **
     return -1;
   }
 
-  int ret = guestfs_is_symlink(g, path);
+  int ret = guestfs_is_symlink (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -15625,7 +17494,7 @@ guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GError **e
     return -1;
   }
 
-  int ret = guestfs_is_socket(g, path);
+  int ret = guestfs_is_socket (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -15664,7 +17533,7 @@ guestfs_session_part_to_dev(GuestfsSession *session, const gchar *partition, GEr
     return NULL;
   }
 
-  char *ret = guestfs_part_to_dev(g, partition);
+  char *ret = guestfs_part_to_dev (g, partition);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -15722,7 +17591,7 @@ guestfs_session_upload_offset(GuestfsSession *session, const gchar *filename, co
                                g, NULL);
   }
 
-  int ret = guestfs_upload_offset(g, filename, remotefilename, offset);
+  int ret = guestfs_upload_offset (g, filename, remotefilename, offset);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -15780,7 +17649,7 @@ guestfs_session_download_offset(GuestfsSession *session, const gchar *remotefile
                                g, NULL);
   }
 
-  int ret = guestfs_download_offset(g, remotefilename, filename, offset, size);
+  int ret = guestfs_download_offset (g, remotefilename, filename, offset, size);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -15824,7 +17693,7 @@ guestfs_session_pwrite_device(GuestfsSession *session, const gchar *device, cons
     return -1;
   }
 
-  int ret = guestfs_pwrite_device(g, device, content, content_size, offset);
+  int ret = guestfs_pwrite_device (g, device, content, content_size, offset);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -15865,7 +17734,7 @@ guestfs_session_pread_device(GuestfsSession *session, const gchar *device, gint3
     return NULL;
   }
 
-  char *ret = guestfs_pread_device(g, device, count, offset, size_r);
+  char *ret = guestfs_pread_device (g, device, count, offset, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -15889,7 +17758,8 @@ guestfs_session_pread_device(GuestfsSession *session, const gchar *device, gint3
  * This command returns an error if the @lvname parameter does not refer to
  * a logical volume.
  * 
- * See also guestfs_session_is_lv().
+ * See also guestfs_session_is_lv(),
+ * guestfs_session_canonical_device_name().
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  */
@@ -15904,7 +17774,7 @@ guestfs_session_lvm_canonical_lv_name(GuestfsSession *session, const gchar *lvna
     return NULL;
   }
 
-  char *ret = guestfs_lvm_canonical_lv_name(g, lvname);
+  char *ret = guestfs_lvm_canonical_lv_name (g, lvname);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -15914,11 +17784,11 @@ guestfs_session_lvm_canonical_lv_name(GuestfsSession *session, const gchar *lvna
 }
 
 /**
- * guestfs_session_mkfs_opts:
+ * guestfs_session_mkfs:
  * @session: (transfer none): A GuestfsSession object
  * @fstype: (transfer none) (type utf8):
  * @device: (transfer none) (type filename):
- * @optargs: (transfer none) (allow-none): a GuestfsMkfsOpts containing optional arguments
+ * @optargs: (transfer none) (allow-none): a GuestfsMkfs containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * make a filesystem
@@ -15959,13 +17829,13 @@ guestfs_session_lvm_canonical_lv_name(GuestfsSession *session, const gchar *lvna
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mkfs_opts(GuestfsSession *session, const gchar *fstype, const gchar *device, GuestfsMkfsOpts *optargs, GError **err)
+guestfs_session_mkfs(GuestfsSession *session, const gchar *fstype, const gchar *device, GuestfsMkfs *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "mkfs_opts");
+                "mkfs");
     return FALSE;
   }
 
@@ -16009,7 +17879,7 @@ guestfs_session_mkfs_opts(GuestfsSession *session, const gchar *fstype, const gc
     }
     argvp = &argv;
   }
-  int ret = guestfs_mkfs_opts_argv(g, fstype, device, argvp);
+  int ret = guestfs_mkfs_opts_argv (g, fstype, device, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16058,7 +17928,7 @@ guestfs_session_getxattr(GuestfsSession *session, const gchar *path, const gchar
     return NULL;
   }
 
-  char *ret = guestfs_getxattr(g, path, name, size_r);
+  char *ret = guestfs_getxattr (g, path, name, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -16107,7 +17977,7 @@ guestfs_session_lgetxattr(GuestfsSession *session, const gchar *path, const gcha
     return NULL;
   }
 
-  char *ret = guestfs_lgetxattr(g, path, name, size_r);
+  char *ret = guestfs_lgetxattr (g, path, name, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -16148,7 +18018,7 @@ guestfs_session_resize2fs_M(GuestfsSession *session, const gchar *device, GError
     return FALSE;
   }
 
-  int ret = guestfs_resize2fs_M(g, device);
+  int ret = guestfs_resize2fs_M (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16182,7 +18052,7 @@ guestfs_session_internal_autosync(GuestfsSession *session, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_internal_autosync(g);
+  int ret = guestfs_internal_autosync (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16215,7 +18085,7 @@ guestfs_session_is_zero(GuestfsSession *session, const gchar *path, GError **err
     return -1;
   }
 
-  int ret = guestfs_is_zero(g, path);
+  int ret = guestfs_is_zero (g, path);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -16249,7 +18119,7 @@ guestfs_session_is_zero_device(GuestfsSession *session, const gchar *device, GEr
     return -1;
   }
 
-  int ret = guestfs_is_zero_device(g, device);
+  int ret = guestfs_is_zero_device (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -16281,7 +18151,7 @@ guestfs_session_list_9p(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_list_9p(g);
+  char **ret = guestfs_list_9p (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -16336,7 +18206,7 @@ guestfs_session_mount_9p(GuestfsSession *session, const gchar *mounttag, const g
     }
     argvp = &argv;
   }
-  int ret = guestfs_mount_9p_argv(g, mounttag, mountpoint, argvp);
+  int ret = guestfs_mount_9p_argv (g, mounttag, mountpoint, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16374,7 +18244,7 @@ guestfs_session_list_dm_devices(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_list_dm_devices(g);
+  char **ret = guestfs_list_dm_devices (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -16384,7 +18254,7 @@ guestfs_session_list_dm_devices(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_ntfsresize_opts:
+ * guestfs_session_ntfsresize:
  * @session: (transfer none): A GuestfsSession object
  * @device: (transfer none) (type filename):
  * @optargs: (transfer none) (allow-none): a GuestfsNTFSResizeOpts containing optional arguments
@@ -16409,21 +18279,21 @@ guestfs_session_list_dm_devices(GuestfsSession *session, GError **err)
  * requiring a consistency check (for safety). You have to boot into
  * Windows to perform this check and clear this condition. If you
  * *don't* set the @force option then it is not possible to call
- * guestfs_session_ntfsresize_opts() multiple times on a single
- * filesystem without booting into Windows between each resize.
+ * guestfs_session_ntfsresize() multiple times on a single filesystem
+ * without booting into Windows between each resize.
  * 
  * See also ntfsresize(8).
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_ntfsresize_opts(GuestfsSession *session, const gchar *device, GuestfsNTFSResizeOpts *optargs, GError **err)
+guestfs_session_ntfsresize(GuestfsSession *session, const gchar *device, GuestfsNTFSResizeOpts *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "ntfsresize_opts");
+                "ntfsresize");
     return FALSE;
   }
 
@@ -16451,7 +18321,7 @@ guestfs_session_ntfsresize_opts(GuestfsSession *session, const gchar *device, Gu
     }
     argvp = &argv;
   }
-  int ret = guestfs_ntfsresize_opts_argv(g, device, argvp);
+  int ret = guestfs_ntfsresize_opts_argv (g, device, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16512,7 +18382,7 @@ guestfs_session_btrfs_filesystem_resize(GuestfsSession *session, const gchar *mo
     }
     argvp = &argv;
   }
-  int ret = guestfs_btrfs_filesystem_resize_argv(g, mountpoint, argvp);
+  int ret = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16522,7 +18392,7 @@ guestfs_session_btrfs_filesystem_resize(GuestfsSession *session, const gchar *mo
 }
 
 /**
- * guestfs_session_write_append:
+ * guestfs_session_internal_write_append:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
  * @content: (transfer none) (array length=content_size) (element-type guint8): an array of binary data
@@ -16539,17 +18409,17 @@ guestfs_session_btrfs_filesystem_resize(GuestfsSession *session, const gchar *mo
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_write_append(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
+guestfs_session_internal_write_append(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
     g_set_error(err, GUESTFS_ERROR, 0,
                 "attempt to call %s after the session has been closed",
-                "write_append");
+                "internal_write_append");
     return FALSE;
   }
 
-  int ret = guestfs_write_append(g, path, content, content_size);
+  int ret = guestfs_internal_write_append (g, path, content, content_size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16623,7 +18493,7 @@ guestfs_session_compress_out(GuestfsSession *session, const gchar *ctype, const 
                                g, NULL);
   }
 
-  int ret = guestfs_compress_out_argv(g, ctype, file, zfile, argvp);
+  int ret = guestfs_compress_out_argv (g, ctype, file, zfile, argvp);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -16691,7 +18561,7 @@ guestfs_session_compress_device_out(GuestfsSession *session, const gchar *ctype,
                                g, NULL);
   }
 
-  int ret = guestfs_compress_device_out_argv(g, ctype, device, zdevice, argvp);
+  int ret = guestfs_compress_device_out_argv (g, ctype, device, zdevice, argvp);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -16730,7 +18600,7 @@ guestfs_session_part_to_partnum(GuestfsSession *session, const gchar *partition,
     return -1;
   }
 
-  int ret = guestfs_part_to_partnum(g, partition);
+  int ret = guestfs_part_to_partnum (g, partition);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -16812,7 +18682,7 @@ guestfs_session_copy_device_to_device(GuestfsSession *session, const gchar *src,
     }
     argvp = &argv;
   }
-  int ret = guestfs_copy_device_to_device_argv(g, src, dest, argvp);
+  int ret = guestfs_copy_device_to_device_argv (g, src, dest, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16879,7 +18749,7 @@ guestfs_session_copy_device_to_file(GuestfsSession *session, const gchar *src, c
     }
     argvp = &argv;
   }
-  int ret = guestfs_copy_device_to_file_argv(g, src, dest, argvp);
+  int ret = guestfs_copy_device_to_file_argv (g, src, dest, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -16946,7 +18816,7 @@ guestfs_session_copy_file_to_device(GuestfsSession *session, const gchar *src, c
     }
     argvp = &argv;
   }
-  int ret = guestfs_copy_file_to_device_argv(g, src, dest, argvp);
+  int ret = guestfs_copy_file_to_device_argv (g, src, dest, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17018,7 +18888,7 @@ guestfs_session_copy_file_to_file(GuestfsSession *session, const gchar *src, con
     }
     argvp = &argv;
   }
-  int ret = guestfs_copy_file_to_file_argv(g, src, dest, argvp);
+  int ret = guestfs_copy_file_to_file_argv (g, src, dest, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17194,7 +19064,7 @@ guestfs_session_tune2fs(GuestfsSession *session, const gchar *device, GuestfsTun
     }
     argvp = &argv;
   }
-  int ret = guestfs_tune2fs_argv(g, device, argvp);
+  int ret = guestfs_tune2fs_argv (g, device, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17319,7 +19189,7 @@ guestfs_session_md_create(GuestfsSession *session, const gchar *name, gchar *con
     }
     argvp = &argv;
   }
-  int ret = guestfs_md_create_argv(g, name, devices, argvp);
+  int ret = guestfs_md_create_argv (g, name, devices, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17350,7 +19220,7 @@ guestfs_session_list_md_devices(GuestfsSession *session, GError **err)
     return NULL;
   }
 
-  char **ret = guestfs_list_md_devices(g);
+  char **ret = guestfs_list_md_devices (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -17399,7 +19269,7 @@ guestfs_session_md_detail(GuestfsSession *session, const gchar *md, GError **err
     return NULL;
   }
 
-  char **ret = guestfs_md_detail(g, md);
+  char **ret = guestfs_md_detail (g, md);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -17440,7 +19310,7 @@ guestfs_session_md_stop(GuestfsSession *session, const gchar *md, GError **err)
     return FALSE;
   }
 
-  int ret = guestfs_md_stop(g, md);
+  int ret = guestfs_md_stop (g, md);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17489,7 +19359,7 @@ guestfs_session_blkid(GuestfsSession *session, const gchar *device, GError **err
     return NULL;
   }
 
-  char **ret = guestfs_blkid(g, device);
+  char **ret = guestfs_blkid (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -17570,7 +19440,7 @@ guestfs_session_e2fsck(GuestfsSession *session, const gchar *device, GuestfsE2fs
     }
     argvp = &argv;
   }
-  int ret = guestfs_e2fsck_argv(g, device, argvp);
+  int ret = guestfs_e2fsck_argv (g, device, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17605,7 +19475,7 @@ guestfs_session_llz(GuestfsSession *session, const gchar *directory, GError **er
     return NULL;
   }
 
-  char *ret = guestfs_llz(g, directory);
+  char *ret = guestfs_llz (g, directory);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -17644,7 +19514,7 @@ guestfs_session_wipefs(GuestfsSession *session, const gchar *device, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_wipefs(g, device);
+  int ret = guestfs_wipefs (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17701,7 +19571,7 @@ guestfs_session_ntfsfix(GuestfsSession *session, const gchar *device, GuestfsNtf
     }
     argvp = &argv;
   }
-  int ret = guestfs_ntfsfix_argv(g, device, argvp);
+  int ret = guestfs_ntfsfix_argv (g, device, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17807,7 +19677,7 @@ guestfs_session_ntfsclone_out(GuestfsSession *session, const gchar *device, cons
                                g, NULL);
   }
 
-  int ret = guestfs_ntfsclone_out_argv(g, device, backupfile, argvp);
+  int ret = guestfs_ntfsclone_out_argv (g, device, backupfile, argvp);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -17855,7 +19725,7 @@ guestfs_session_ntfsclone_in(GuestfsSession *session, const gchar *backupfile, c
                                g, NULL);
   }
 
-  int ret = guestfs_ntfsclone_in(g, backupfile, device);
+  int ret = guestfs_ntfsclone_in (g, backupfile, device);
   g_cancellable_disconnect(cancellable, id);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
@@ -17898,7 +19768,7 @@ guestfs_session_set_label(GuestfsSession *session, const gchar *device, const gc
     return FALSE;
   }
 
-  int ret = guestfs_set_label(g, device, label);
+  int ret = guestfs_set_label (g, device, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17921,8 +19791,9 @@ guestfs_session_set_label(GuestfsSession *session, const gchar *device, const gc
  * The filesystem contents are not affected, but any free space in the
  * filesystem is freed.
  * 
- * In future (but not currently) these zeroed blocks will be "sparsified" -
- * that is, given back to the host.
+ * Free space is not "trimmed". You may want to call
+ * guestfs_session_fstrim() either as an alternative to this, or after
+ * calling this, depending on your requirements.
  * 
  * Returns: true on success, false on error
  */
@@ -17937,7 +19808,7 @@ guestfs_session_zero_free_space(GuestfsSession *session, const gchar *directory,
     return FALSE;
   }
 
-  int ret = guestfs_zero_free_space(g, directory);
+  int ret = guestfs_zero_free_space (g, directory);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -17974,7 +19845,7 @@ guestfs_session_lvcreate_free(GuestfsSession *session, const gchar *logvol, cons
     return FALSE;
   }
 
-  int ret = guestfs_lvcreate_free(g, logvol, volgroup, percent);
+  int ret = guestfs_lvcreate_free (g, logvol, volgroup, percent);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18016,7 +19887,7 @@ guestfs_session_isoinfo_device(GuestfsSession *session, const gchar *device, GEr
     return NULL;
   }
 
-  struct guestfs_isoinfo *ret = guestfs_isoinfo_device(g, device);
+  struct guestfs_isoinfo *ret = guestfs_isoinfo_device (g, device);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -18071,7 +19942,7 @@ guestfs_session_isoinfo(GuestfsSession *session, const gchar *isofile, GError **
     return NULL;
   }
 
-  struct guestfs_isoinfo *ret = guestfs_isoinfo(g, isofile);
+  struct guestfs_isoinfo *ret = guestfs_isoinfo (g, isofile);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -18127,7 +19998,7 @@ guestfs_session_vgmeta(GuestfsSession *session, const gchar *vgname, gsize *size
     return NULL;
   }
 
-  char *ret = guestfs_vgmeta(g, vgname, size_r);
+  char *ret = guestfs_vgmeta (g, vgname, size_r);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -18184,7 +20055,7 @@ guestfs_session_md_stat(GuestfsSession *session, const gchar *md, GError **err)
     return NULL;
   }
 
-  struct guestfs_mdstat_list *ret = guestfs_md_stat(g, md);
+  struct guestfs_mdstat_list *ret = guestfs_md_stat (g, md);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -18218,7 +20089,7 @@ guestfs_session_md_stat(GuestfsSession *session, const gchar *md, GError **err)
  * Since btrfs filesystems can span multiple devices, this takes a
  * non-empty list of devices.
  * 
- * To create general filesystems, use guestfs_session_mkfs_opts().
+ * To create general filesystems, use guestfs_session_mkfs().
  * 
  * Returns: true on success, false on error
  */
@@ -18305,7 +20176,7 @@ guestfs_session_mkfs_btrfs(GuestfsSession *session, gchar *const *devices, Guest
     }
     argvp = &argv;
   }
-  int ret = guestfs_mkfs_btrfs_argv(g, devices, argvp);
+  int ret = guestfs_mkfs_btrfs_argv (g, devices, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18401,7 +20272,7 @@ guestfs_session_get_e2attrs(GuestfsSession *session, const gchar *file, GError *
     return NULL;
   }
 
-  char *ret = guestfs_get_e2attrs(g, file);
+  char *ret = guestfs_get_e2attrs (g, file);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -18468,7 +20339,7 @@ guestfs_session_set_e2attrs(GuestfsSession *session, const gchar *file, const gc
     }
     argvp = &argv;
   }
-  int ret = guestfs_set_e2attrs_argv(g, file, attrs, argvp);
+  int ret = guestfs_set_e2attrs_argv (g, file, attrs, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18508,7 +20379,7 @@ guestfs_session_get_e2generation(GuestfsSession *session, const gchar *file, GEr
     return -1;
   }
 
-  int64_t ret = guestfs_get_e2generation(g, file);
+  int64_t ret = guestfs_get_e2generation (g, file);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -18543,7 +20414,7 @@ guestfs_session_set_e2generation(GuestfsSession *session, const gchar *file, gin
     return FALSE;
   }
 
-  int ret = guestfs_set_e2generation(g, file, generation);
+  int ret = guestfs_set_e2generation (g, file, generation);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18578,7 +20449,7 @@ guestfs_session_btrfs_subvolume_snapshot(GuestfsSession *session, const gchar *s
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_subvolume_snapshot(g, source, dest);
+  int ret = guestfs_btrfs_subvolume_snapshot (g, source, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18610,7 +20481,7 @@ guestfs_session_btrfs_subvolume_delete(GuestfsSession *session, const gchar *sub
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_subvolume_delete(g, subvolume);
+  int ret = guestfs_btrfs_subvolume_delete (g, subvolume);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18644,7 +20515,7 @@ guestfs_session_btrfs_subvolume_create(GuestfsSession *session, const gchar *des
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_subvolume_create(g, dest);
+  int ret = guestfs_btrfs_subvolume_create (g, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18677,7 +20548,7 @@ guestfs_session_btrfs_subvolume_list(GuestfsSession *session, const gchar *fs, G
     return NULL;
   }
 
-  struct guestfs_btrfssubvolume_list *ret = guestfs_btrfs_subvolume_list(g, fs);
+  struct guestfs_btrfssubvolume_list *ret = guestfs_btrfs_subvolume_list (g, fs);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -18722,7 +20593,7 @@ guestfs_session_btrfs_subvolume_set_default(GuestfsSession *session, gint64 id, 
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_subvolume_set_default(g, id, fs);
+  int ret = guestfs_btrfs_subvolume_set_default (g, id, fs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18754,7 +20625,7 @@ guestfs_session_btrfs_filesystem_sync(GuestfsSession *session, const gchar *fs, 
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_filesystem_sync(g, fs);
+  int ret = guestfs_btrfs_filesystem_sync (g, fs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18787,7 +20658,7 @@ guestfs_session_btrfs_filesystem_balance(GuestfsSession *session, const gchar *f
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_filesystem_balance(g, fs);
+  int ret = guestfs_btrfs_filesystem_balance (g, fs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18821,7 +20692,7 @@ guestfs_session_btrfs_device_add(GuestfsSession *session, gchar *const *devices,
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_device_add(g, devices, fs);
+  int ret = guestfs_btrfs_device_add (g, devices, fs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18855,7 +20726,7 @@ guestfs_session_btrfs_device_delete(GuestfsSession *session, gchar *const *devic
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_device_delete(g, devices, fs);
+  int ret = guestfs_btrfs_device_delete (g, devices, fs);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18889,7 +20760,7 @@ guestfs_session_btrfs_set_seeding(GuestfsSession *session, const gchar *device, 
     return FALSE;
   }
 
-  int ret = guestfs_btrfs_set_seeding(g, device, seeding);
+  int ret = guestfs_btrfs_set_seeding (g, device, seeding);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18947,7 +20818,129 @@ guestfs_session_btrfs_fsck(GuestfsSession *session, const gchar *device, Guestfs
     }
     argvp = &argv;
   }
-  int ret = guestfs_btrfs_fsck_argv(g, device, argvp);
+  int ret = guestfs_btrfs_fsck_argv (g, device, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_filesystem_available:
+ * @session: (transfer none): A GuestfsSession object
+ * @filesystem: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * check if filesystem is available
+ *
+ * Check whether libguestfs supports the named filesystem. The argument
+ * @filesystem is a filesystem name, such as @ext3.
+ * 
+ * You must call guestfs_session_launch() before using this command.
+ * 
+ * This is mainly useful as a negative test. If this returns true, it
+ * doesn't mean that a particular filesystem can be mounted, since
+ * filesystems can fail for other reasons such as it being a later version
+ * of the filesystem, or having incompatible features.
+ * 
+ * See also guestfs_session_available(), "AVAILABILITY" in guestfs(3).
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_filesystem_available(GuestfsSession *session, const gchar *filesystem, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "filesystem_available");
+    return -1;
+  }
+
+  int ret = guestfs_filesystem_available (g, filesystem);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_fstrim:
+ * @session: (transfer none): A GuestfsSession object
+ * @mountpoint: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsFstrim containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * trim free space in a filesystem
+ *
+ * Trim the free space in the filesystem mounted on @mountpoint. The
+ * filesystem must be mounted read-write.
+ * 
+ * The filesystem contents are not affected, but any free space in the
+ * filesystem is "trimmed", that is, given back to the host device, thus
+ * making disk images more sparse, allowing unused space in qcow2 files to
+ * be reused, etc.
+ * 
+ * This operation requires support in libguestfs, the mounted filesystem,
+ * the host filesystem, qemu and the host kernel. If this support isn't
+ * present it may give an error or even appear to run but do nothing.
+ * 
+ * See also guestfs_session_zero_free_space(). That is a slightly different
+ * operation that turns free space in the filesystem into zeroes. It is
+ * valid to call guestfs_session_fstrim() either instead of, or after
+ * calling guestfs_session_zero_free_space().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_fstrim(GuestfsSession *session, const gchar *mountpoint, GuestfsFstrim *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fstrim");
+    return FALSE;
+  }
+
+  struct guestfs_fstrim_argv argv;
+  struct guestfs_fstrim_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue offset_v = {0, };
+    g_value_init(&offset_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "offset", &offset_v);
+    gint64 offset = g_value_get_int64(&offset_v);
+    if (offset != -1) {
+      argv.bitmask |= GUESTFS_FSTRIM_OFFSET_BITMASK;
+      argv.offset = offset;
+    }
+    GValue length_v = {0, };
+    g_value_init(&length_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "length", &length_v);
+    gint64 length = g_value_get_int64(&length_v);
+    if (length != -1) {
+      argv.bitmask |= GUESTFS_FSTRIM_LENGTH_BITMASK;
+      argv.length = length;
+    }
+    GValue minimumfreeextent_v = {0, };
+    g_value_init(&minimumfreeextent_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "minimumfreeextent", &minimumfreeextent_v);
+    gint64 minimumfreeextent = g_value_get_int64(&minimumfreeextent_v);
+    if (minimumfreeextent != -1) {
+      argv.bitmask |= GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK;
+      argv.minimumfreeextent = minimumfreeextent;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_fstrim_argv (g, mountpoint, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -18985,7 +20978,7 @@ guestfs_session_device_index(GuestfsSession *session, const gchar *device, GErro
     return -1;
   }
 
-  int ret = guestfs_device_index(g, device);
+  int ret = guestfs_device_index (g, device);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -19021,10 +21014,2725 @@ guestfs_session_nr_devices(GuestfsSession *session, GError **err)
     return -1;
   }
 
-  int ret = guestfs_nr_devices(g);
+  int ret = guestfs_nr_devices (g);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_xfs_info:
+ * @session: (transfer none): A GuestfsSession object
+ * @pathordevice: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get geometry of XFS filesystem
+ *
+ * @pathordevice is a mounted XFS filesystem or a device containing an XFS
+ * filesystem. This command returns the geometry of the filesystem.
+ * 
+ * The returned struct contains geometry information. Missing fields are
+ * returned as @-1 (for numeric fields) or empty string.
+ * 
+ * Returns: (transfer full): a XFSInfo object, or NULL on error
+ */
+GuestfsXFSInfo *
+guestfs_session_xfs_info(GuestfsSession *session, const gchar *pathordevice, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "xfs_info");
+    return NULL;
+  }
+
+  struct guestfs_xfsinfo *ret = guestfs_xfs_info (g, pathordevice);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsXFSInfo *s = g_slice_new0(GuestfsXFSInfo);
+  if (ret->xfs_mntpoint) s->xfs_mntpoint = g_strdup(ret->xfs_mntpoint);
+  s->xfs_inodesize = ret->xfs_inodesize;
+  s->xfs_agcount = ret->xfs_agcount;
+  s->xfs_agsize = ret->xfs_agsize;
+  s->xfs_sectsize = ret->xfs_sectsize;
+  s->xfs_attr = ret->xfs_attr;
+  s->xfs_blocksize = ret->xfs_blocksize;
+  s->xfs_datablocks = ret->xfs_datablocks;
+  s->xfs_imaxpct = ret->xfs_imaxpct;
+  s->xfs_sunit = ret->xfs_sunit;
+  s->xfs_swidth = ret->xfs_swidth;
+  s->xfs_dirversion = ret->xfs_dirversion;
+  s->xfs_dirblocksize = ret->xfs_dirblocksize;
+  s->xfs_cimode = ret->xfs_cimode;
+  if (ret->xfs_logname) s->xfs_logname = g_strdup(ret->xfs_logname);
+  s->xfs_logblocksize = ret->xfs_logblocksize;
+  s->xfs_logblocks = ret->xfs_logblocks;
+  s->xfs_logversion = ret->xfs_logversion;
+  s->xfs_logsectsize = ret->xfs_logsectsize;
+  s->xfs_logsunit = ret->xfs_logsunit;
+  s->xfs_lazycount = ret->xfs_lazycount;
+  if (ret->xfs_rtname) s->xfs_rtname = g_strdup(ret->xfs_rtname);
+  s->xfs_rtextsize = ret->xfs_rtextsize;
+  s->xfs_rtblocks = ret->xfs_rtblocks;
+  s->xfs_rtextents = ret->xfs_rtextents;
+  guestfs_free_xfsinfo(ret);
+  return s;
+}
+
+/**
+ * guestfs_session_pvchange_uuid:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * generate a new random UUID for a physical volume
+ *
+ * Generate a new random UUID for the physical volume @device.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_pvchange_uuid(GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvchange_uuid");
+    return FALSE;
+  }
+
+  int ret = guestfs_pvchange_uuid (g, device);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_pvchange_uuid_all:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * generate new random UUIDs for all physical volumes
+ *
+ * Generate new random UUIDs for all physical volumes.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_pvchange_uuid_all(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "pvchange_uuid_all");
+    return FALSE;
+  }
+
+  int ret = guestfs_pvchange_uuid_all (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_vgchange_uuid:
+ * @session: (transfer none): A GuestfsSession object
+ * @vg: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * generate a new random UUID for a volume group
+ *
+ * Generate a new random UUID for the volume group @vg.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_vgchange_uuid(GuestfsSession *session, const gchar *vg, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgchange_uuid");
+    return FALSE;
+  }
+
+  int ret = guestfs_vgchange_uuid (g, vg);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_vgchange_uuid_all:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * generate new random UUIDs for all volume groups
+ *
+ * Generate new random UUIDs for all volume groups.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_vgchange_uuid_all(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "vgchange_uuid_all");
+    return FALSE;
+  }
+
+  int ret = guestfs_vgchange_uuid_all (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_utsname:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * appliance kernel version
+ *
+ * This returns the kernel version of the appliance, where this is
+ * available. This information is only useful for debugging. Nothing in the
+ * returned structure is defined by the API.
+ * 
+ * Returns: (transfer full): a UTSName object, or NULL on error
+ */
+GuestfsUTSName *
+guestfs_session_utsname(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "utsname");
+    return NULL;
+  }
+
+  struct guestfs_utsname *ret = guestfs_utsname (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsUTSName *s = g_slice_new0(GuestfsUTSName);
+  if (ret->uts_sysname) s->uts_sysname = g_strdup(ret->uts_sysname);
+  if (ret->uts_release) s->uts_release = g_strdup(ret->uts_release);
+  if (ret->uts_version) s->uts_version = g_strdup(ret->uts_version);
+  if (ret->uts_machine) s->uts_machine = g_strdup(ret->uts_machine);
+  guestfs_free_utsname(ret);
+  return s;
+}
+
+/**
+ * guestfs_session_xfs_growfs:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsXfsGrowfs containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * expand an existing XFS filesystem
+ *
+ * Grow the XFS filesystem mounted at @path.
+ * 
+ * The returned struct contains geometry information. Missing fields are
+ * returned as @-1 (for numeric fields) or empty string.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_xfs_growfs(GuestfsSession *session, const gchar *path, GuestfsXfsGrowfs *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "xfs_growfs");
+    return FALSE;
+  }
+
+  struct guestfs_xfs_growfs_argv argv;
+  struct guestfs_xfs_growfs_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue datasec_v = {0, };
+    g_value_init(&datasec_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "datasec", &datasec_v);
+    GuestfsTristate datasec = g_value_get_enum(&datasec_v);
+    if (datasec != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
+      argv.datasec = datasec;
+    }
+    GValue logsec_v = {0, };
+    g_value_init(&logsec_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "logsec", &logsec_v);
+    GuestfsTristate logsec = g_value_get_enum(&logsec_v);
+    if (logsec != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
+      argv.logsec = logsec;
+    }
+    GValue rtsec_v = {0, };
+    g_value_init(&rtsec_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "rtsec", &rtsec_v);
+    GuestfsTristate rtsec = g_value_get_enum(&rtsec_v);
+    if (rtsec != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
+      argv.rtsec = rtsec;
+    }
+    GValue datasize_v = {0, };
+    g_value_init(&datasize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "datasize", &datasize_v);
+    gint64 datasize = g_value_get_int64(&datasize_v);
+    if (datasize != -1) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_DATASIZE_BITMASK;
+      argv.datasize = datasize;
+    }
+    GValue logsize_v = {0, };
+    g_value_init(&logsize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "logsize", &logsize_v);
+    gint64 logsize = g_value_get_int64(&logsize_v);
+    if (logsize != -1) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK;
+      argv.logsize = logsize;
+    }
+    GValue rtsize_v = {0, };
+    g_value_init(&rtsize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "rtsize", &rtsize_v);
+    gint64 rtsize = g_value_get_int64(&rtsize_v);
+    if (rtsize != -1) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_RTSIZE_BITMASK;
+      argv.rtsize = rtsize;
+    }
+    GValue rtextsize_v = {0, };
+    g_value_init(&rtextsize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "rtextsize", &rtextsize_v);
+    gint64 rtextsize = g_value_get_int64(&rtextsize_v);
+    if (rtextsize != -1) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK;
+      argv.rtextsize = rtextsize;
+    }
+    GValue maxpct_v = {0, };
+    g_value_init(&maxpct_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "maxpct", &maxpct_v);
+    gint32 maxpct = g_value_get_int(&maxpct_v);
+    if (maxpct != -1) {
+      argv.bitmask |= GUESTFS_XFS_GROWFS_MAXPCT_BITMASK;
+      argv.maxpct = maxpct;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_xfs_growfs_argv (g, path, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_rsync:
+ * @session: (transfer none): A GuestfsSession object
+ * @src: (transfer none) (type filename):
+ * @dest: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsRsync containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * synchronize the contents of two directories
+ *
+ * This call may be used to copy or synchronize two directories under the
+ * same libguestfs handle. This uses the rsync(1) program which uses a fast
+ * algorithm that avoids copying files unnecessarily.
+ * 
+ * @src and @dest are the source and destination directories. Files are
+ * copied from @src to @dest.
+ * 
+ * The optional arguments are:
+ * 
+ * @archive
+ * Turns on archive mode. This is the same as passing the *--archive*
+ * flag to @rsync.
+ * 
+ * @deletedest
+ * Delete files at the destination that do not exist at the source.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_rsync(GuestfsSession *session, const gchar *src, const gchar *dest, GuestfsRsync *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rsync");
+    return FALSE;
+  }
+
+  struct guestfs_rsync_argv argv;
+  struct guestfs_rsync_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue archive_v = {0, };
+    g_value_init(&archive_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "archive", &archive_v);
+    GuestfsTristate archive = g_value_get_enum(&archive_v);
+    if (archive != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_RSYNC_ARCHIVE_BITMASK;
+      argv.archive = archive;
+    }
+    GValue deletedest_v = {0, };
+    g_value_init(&deletedest_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "deletedest", &deletedest_v);
+    GuestfsTristate deletedest = g_value_get_enum(&deletedest_v);
+    if (deletedest != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_RSYNC_DELETEDEST_BITMASK;
+      argv.deletedest = deletedest;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_rsync_argv (g, src, dest, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_rsync_in:
+ * @session: (transfer none): A GuestfsSession object
+ * @remote: (transfer none) (type utf8):
+ * @dest: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsRsyncIn containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * synchronize host or remote filesystem with filesystem
+ *
+ * This call may be used to copy or synchronize the filesystem on the host
+ * or on a remote computer with the filesystem within libguestfs. This uses
+ * the rsync(1) program which uses a fast algorithm that avoids copying
+ * files unnecessarily.
+ * 
+ * This call only works if the network is enabled. See
+ * guestfs_session_set_network() or the *--network* option to various tools
+ * like guestfish(1).
+ * 
+ * Files are copied from the remote server and directory specified by
+ * @remote to the destination directory @dest.
+ * 
+ * The format of the remote server string is defined by rsync(1). Note that
+ * there is no way to supply a password or passphrase so the target must be
+ * set up not to require one.
+ * 
+ * The optional arguments are the same as those of guestfs_session_rsync().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_rsync_in(GuestfsSession *session, const gchar *remote, const gchar *dest, GuestfsRsyncIn *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rsync_in");
+    return FALSE;
+  }
+
+  struct guestfs_rsync_in_argv argv;
+  struct guestfs_rsync_in_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue archive_v = {0, };
+    g_value_init(&archive_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "archive", &archive_v);
+    GuestfsTristate archive = g_value_get_enum(&archive_v);
+    if (archive != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
+      argv.archive = archive;
+    }
+    GValue deletedest_v = {0, };
+    g_value_init(&deletedest_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "deletedest", &deletedest_v);
+    GuestfsTristate deletedest = g_value_get_enum(&deletedest_v);
+    if (deletedest != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
+      argv.deletedest = deletedest;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_rsync_in_argv (g, remote, dest, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_rsync_out:
+ * @session: (transfer none): A GuestfsSession object
+ * @src: (transfer none) (type filename):
+ * @remote: (transfer none) (type utf8):
+ * @optargs: (transfer none) (allow-none): a GuestfsRsyncOut containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * synchronize filesystem with host or remote filesystem
+ *
+ * This call may be used to copy or synchronize the filesystem within
+ * libguestfs with a filesystem on the host or on a remote computer. This
+ * uses the rsync(1) program which uses a fast algorithm that avoids
+ * copying files unnecessarily.
+ * 
+ * This call only works if the network is enabled. See
+ * guestfs_session_set_network() or the *--network* option to various tools
+ * like guestfish(1).
+ * 
+ * Files are copied from the source directory @src to the remote server and
+ * directory specified by @remote.
+ * 
+ * The format of the remote server string is defined by rsync(1). Note that
+ * there is no way to supply a password or passphrase so the target must be
+ * set up not to require one.
+ * 
+ * The optional arguments are the same as those of guestfs_session_rsync().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_rsync_out(GuestfsSession *session, const gchar *src, const gchar *remote, GuestfsRsyncOut *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rsync_out");
+    return FALSE;
+  }
+
+  struct guestfs_rsync_out_argv argv;
+  struct guestfs_rsync_out_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue archive_v = {0, };
+    g_value_init(&archive_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "archive", &archive_v);
+    GuestfsTristate archive = g_value_get_enum(&archive_v);
+    if (archive != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
+      argv.archive = archive;
+    }
+    GValue deletedest_v = {0, };
+    g_value_init(&deletedest_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "deletedest", &deletedest_v);
+    GuestfsTristate deletedest = g_value_get_enum(&deletedest_v);
+    if (deletedest != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
+      argv.deletedest = deletedest;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_rsync_out_argv (g, src, remote, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_ls0:
+ * @session: (transfer none): A GuestfsSession object
+ * @dir: (transfer none) (type filename):
+ * @filenames: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get list of files in a directory
+ *
+ * This specialized command is used to get a listing of the filenames in
+ * the directory @dir. The list of filenames is written to the local file
+ * @filenames (on the host).
+ * 
+ * In the output file, the filenames are separated by "\0" characters.
+ * 
+ * "." and ".." are not returned. The filenames are not sorted.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_ls0(GuestfsSession *session, const gchar *dir, const gchar *filenames, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ls0");
+    return FALSE;
+  }
+
+  int ret = guestfs_ls0 (g, dir, filenames);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_fill_dir:
+ * @session: (transfer none): A GuestfsSession object
+ * @dir: (transfer none) (type filename):
+ * @nr: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * fill a directory with empty files
+ *
+ * This function, useful for testing filesystems, creates @nr empty files
+ * in the directory @dir with names @00000000 through @nr-1 (ie. each file
+ * name is 8 digits long padded with zeroes).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_fill_dir(GuestfsSession *session, const gchar *dir, gint32 nr, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "fill_dir");
+    return FALSE;
+  }
+
+  int ret = guestfs_fill_dir (g, dir, nr);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_xfs_admin:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsXfsAdmin containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * change parameters of an XFS filesystem
+ *
+ * Change the parameters of the XFS filesystem on @device.
+ * 
+ * Devices that are mounted cannot be modified. Administrators must unmount
+ * filesystems before this call can modify parameters.
+ * 
+ * Some of the parameters of a mounted filesystem can be examined and
+ * modified using the guestfs_session_xfs_info() and
+ * guestfs_session_xfs_growfs() calls.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_xfs_admin(GuestfsSession *session, const gchar *device, GuestfsXfsAdmin *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "xfs_admin");
+    return FALSE;
+  }
+
+  struct guestfs_xfs_admin_argv argv;
+  struct guestfs_xfs_admin_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue extunwritten_v = {0, };
+    g_value_init(&extunwritten_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "extunwritten", &extunwritten_v);
+    GuestfsTristate extunwritten = g_value_get_enum(&extunwritten_v);
+    if (extunwritten != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
+      argv.extunwritten = extunwritten;
+    }
+    GValue imgfile_v = {0, };
+    g_value_init(&imgfile_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "imgfile", &imgfile_v);
+    GuestfsTristate imgfile = g_value_get_enum(&imgfile_v);
+    if (imgfile != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
+      argv.imgfile = imgfile;
+    }
+    GValue v2log_v = {0, };
+    g_value_init(&v2log_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "v2log", &v2log_v);
+    GuestfsTristate v2log = g_value_get_enum(&v2log_v);
+    if (v2log != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
+      argv.v2log = v2log;
+    }
+    GValue projid32bit_v = {0, };
+    g_value_init(&projid32bit_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "projid32bit", &projid32bit_v);
+    GuestfsTristate projid32bit = g_value_get_enum(&projid32bit_v);
+    if (projid32bit != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
+      argv.projid32bit = projid32bit;
+    }
+    GValue lazycounter_v = {0, };
+    g_value_init(&lazycounter_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "lazycounter", &lazycounter_v);
+    GuestfsTristate lazycounter = g_value_get_enum(&lazycounter_v);
+    if (lazycounter != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
+      argv.lazycounter = lazycounter;
+    }
+    GValue label_v = {0, };
+    g_value_init(&label_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "label", &label_v);
+    const gchar *label = g_value_get_string(&label_v);
+    if (label != NULL) {
+      argv.bitmask |= GUESTFS_XFS_ADMIN_LABEL_BITMASK;
+      argv.label = label;
+    }
+    GValue uuid_v = {0, };
+    g_value_init(&uuid_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "uuid", &uuid_v);
+    const gchar *uuid = g_value_get_string(&uuid_v);
+    if (uuid != NULL) {
+      argv.bitmask |= GUESTFS_XFS_ADMIN_UUID_BITMASK;
+      argv.uuid = uuid;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_xfs_admin_argv (g, device, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_hivex_open:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsHivexOpen containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * open a Windows Registry hive file
+ *
+ * Open the Windows Registry hive file named @filename. If there was any
+ * previous hivex handle associated with this guestfs session, then it is
+ * closed.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_hivex_open(GuestfsSession *session, const gchar *filename, GuestfsHivexOpen *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_open");
+    return FALSE;
+  }
+
+  struct guestfs_hivex_open_argv argv;
+  struct guestfs_hivex_open_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue verbose_v = {0, };
+    g_value_init(&verbose_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "verbose", &verbose_v);
+    GuestfsTristate verbose = g_value_get_enum(&verbose_v);
+    if (verbose != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
+      argv.verbose = verbose;
+    }
+    GValue debug_v = {0, };
+    g_value_init(&debug_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "debug", &debug_v);
+    GuestfsTristate debug = g_value_get_enum(&debug_v);
+    if (debug != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
+      argv.debug = debug;
+    }
+    GValue write_v = {0, };
+    g_value_init(&write_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "write", &write_v);
+    GuestfsTristate write = g_value_get_enum(&write_v);
+    if (write != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
+      argv.write = write;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_hivex_open_argv (g, filename, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_hivex_close:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * close the current hivex handle
+ *
+ * Close the current hivex handle.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_hivex_close(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_close");
+    return FALSE;
+  }
+
+  int ret = guestfs_hivex_close (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_hivex_root:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * return the root node of the hive
+ *
+ * Return the root node of the hive.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_hivex_root(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_root");
+    return -1;
+  }
+
+  int64_t ret = guestfs_hivex_root (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_node_name:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the name of the node
+ *
+ * Return the name of @nodeh.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_hivex_node_name(GuestfsSession *session, gint64 nodeh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_name");
+    return NULL;
+  }
+
+  char *ret = guestfs_hivex_node_name (g, nodeh);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_node_children:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return list of nodes which are subkeys of node
+ *
+ * Return the list of nodes which are subkeys of @nodeh.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsHivexNode): an array of HivexNode objects, or NULL on error
+ */
+GuestfsHivexNode **
+guestfs_session_hivex_node_children(GuestfsSession *session, gint64 nodeh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_children");
+    return NULL;
+  }
+
+  struct guestfs_hivex_node_list *ret = guestfs_hivex_node_children (g, nodeh);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsHivexNode **l = g_malloc(sizeof(GuestfsHivexNode*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0(GuestfsHivexNode);
+    l[i]->hivex_node_h = ret->val[i].hivex_node_h;
+  }
+  guestfs_free_hivex_node_list(ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
+ * guestfs_session_hivex_node_get_child:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @name: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the named child of node
+ *
+ * Return the child of @nodeh with the name @name, if it exists. This can
+ * return @0 meaning the name was not found.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_hivex_node_get_child(GuestfsSession *session, gint64 nodeh, const gchar *name, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_get_child");
+    return -1;
+  }
+
+  int64_t ret = guestfs_hivex_node_get_child (g, nodeh, name);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_node_parent:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the parent of node
+ *
+ * Return the parent node of @nodeh.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_hivex_node_parent(GuestfsSession *session, gint64 nodeh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_parent");
+    return -1;
+  }
+
+  int64_t ret = guestfs_hivex_node_parent (g, nodeh);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_node_values:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return list of values attached to node
+ *
+ * Return the array of (key, datatype, data) tuples attached to @nodeh.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsHivexValue): an array of HivexValue objects, or NULL on error
+ */
+GuestfsHivexValue **
+guestfs_session_hivex_node_values(GuestfsSession *session, gint64 nodeh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_values");
+    return NULL;
+  }
+
+  struct guestfs_hivex_value_list *ret = guestfs_hivex_node_values (g, nodeh);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsHivexValue **l = g_malloc(sizeof(GuestfsHivexValue*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0(GuestfsHivexValue);
+    l[i]->hivex_value_h = ret->val[i].hivex_value_h;
+  }
+  guestfs_free_hivex_value_list(ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
+ * guestfs_session_hivex_node_get_value:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @key: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the named value
+ *
+ * Return the value attached to @nodeh which has the name @key, if it
+ * exists. This can return @0 meaning the key was not found.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_hivex_node_get_value(GuestfsSession *session, gint64 nodeh, const gchar *key, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_get_value");
+    return -1;
+  }
+
+  int64_t ret = guestfs_hivex_node_get_value (g, nodeh, key);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_value_key:
+ * @session: (transfer none): A GuestfsSession object
+ * @valueh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the key field from the (key, datatype, data) tuple
+ *
+ * Return the key (name) field of a (key, datatype, data) tuple.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_hivex_value_key(GuestfsSession *session, gint64 valueh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_value_key");
+    return NULL;
+  }
+
+  char *ret = guestfs_hivex_value_key (g, valueh);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_value_type:
+ * @session: (transfer none): A GuestfsSession object
+ * @valueh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the data type from the (key, datatype, data) tuple
+ *
+ * Return the data type field from a (key, datatype, data) tuple.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_hivex_value_type(GuestfsSession *session, gint64 valueh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_value_type");
+    return -1;
+  }
+
+  int64_t ret = guestfs_hivex_value_type (g, valueh);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_value_value:
+ * @session: (transfer none): A GuestfsSession object
+ * @valueh: (type gint64):
+ * @size_r: The size of the returned buffer, in bytes
+ * @err: A GError object to receive any generated errors
+ *
+ * return the data field from the (key, datatype, data) tuple
+ *
+ * Return the data field of a (key, datatype, data) tuple.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * See also: guestfs_session_hivex_value_utf8().
+ * 
+ * Returns: (transfer full) (array length=size_r) (element-type guint8): an array of binary data, or NULL on error
+ */
+guint8 *
+guestfs_session_hivex_value_value(GuestfsSession *session, gint64 valueh, gsize *size_r, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_value_value");
+    return NULL;
+  }
+
+  char *ret = guestfs_hivex_value_value (g, valueh, size_r);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_commit:
+ * @session: (transfer none): A GuestfsSession object
+ * @filename: (transfer none) (type utf8) (allow-none):
+ * @err: A GError object to receive any generated errors
+ *
+ * commit (write) changes back to the hive
+ *
+ * Commit (write) changes to the hive.
+ * 
+ * If the optional @filename parameter is null, then the changes are
+ * written back to the same hive that was opened. If this is not null then
+ * they are written to the alternate filename given and the original hive
+ * is left untouched.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_hivex_commit(GuestfsSession *session, const gchar *filename, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_commit");
+    return FALSE;
+  }
+
+  int ret = guestfs_hivex_commit (g, filename);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_hivex_node_add_child:
+ * @session: (transfer none): A GuestfsSession object
+ * @parent: (type gint64):
+ * @name: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * add a child node
+ *
+ * Add a child node to @parent named @name.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_hivex_node_add_child(GuestfsSession *session, gint64 parent, const gchar *name, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_add_child");
+    return -1;
+  }
+
+  int64_t ret = guestfs_hivex_node_add_child (g, parent, name);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_hivex_node_delete_child:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * delete a node (recursively)
+ *
+ * Delete @nodeh, recursively if necessary.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_hivex_node_delete_child(GuestfsSession *session, gint64 nodeh, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_delete_child");
+    return FALSE;
+  }
+
+  int ret = guestfs_hivex_node_delete_child (g, nodeh);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_hivex_node_set_value:
+ * @session: (transfer none): A GuestfsSession object
+ * @nodeh: (type gint64):
+ * @key: (transfer none) (type utf8):
+ * @t: (type gint64):
+ * @val: (transfer none) (array length=val_size) (element-type guint8): an array of binary data
+ * @val_size: The size of val, in bytes
+ * @err: A GError object to receive any generated errors
+ *
+ * set or replace a single value in a node
+ *
+ * Set or replace a single value under the node @nodeh. The @key is the
+ * name, @t is the type, and @val is the data.
+ * 
+ * This is a wrapper around the hivex(3) call of the same name.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_hivex_node_set_value(GuestfsSession *session, gint64 nodeh, const gchar *key, gint64 t, const guint8 *val, gsize val_size, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "hivex_node_set_value");
+    return FALSE;
+  }
+
+  int ret = guestfs_hivex_node_set_value (g, nodeh, key, t, val, val_size);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_xfs_repair:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsXfsRepair containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * repair an XFS filesystem
+ *
+ * Repair corrupt or damaged XFS filesystem on @device.
+ * 
+ * The filesystem is specified using the @device argument which should be
+ * the device name of the disk partition or volume containing the
+ * filesystem. If given the name of a block device, @xfs_repair will
+ * attempt to find the raw device associated with the specified block
+ * device and will use the raw device instead.
+ * 
+ * Regardless, the filesystem to be repaired must be unmounted, otherwise,
+ * the resulting filesystem may be inconsistent or corrupt.
+ * 
+ * The returned status indicates whether filesystem corruption was detected
+ * (returns @1) or was not detected (returns @0).
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint32
+guestfs_session_xfs_repair(GuestfsSession *session, const gchar *device, GuestfsXfsRepair *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "xfs_repair");
+    return -1;
+  }
+
+  struct guestfs_xfs_repair_argv argv;
+  struct guestfs_xfs_repair_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue forcelogzero_v = {0, };
+    g_value_init(&forcelogzero_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "forcelogzero", &forcelogzero_v);
+    GuestfsTristate forcelogzero = g_value_get_enum(&forcelogzero_v);
+    if (forcelogzero != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
+      argv.forcelogzero = forcelogzero;
+    }
+    GValue nomodify_v = {0, };
+    g_value_init(&nomodify_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "nomodify", &nomodify_v);
+    GuestfsTristate nomodify = g_value_get_enum(&nomodify_v);
+    if (nomodify != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
+      argv.nomodify = nomodify;
+    }
+    GValue noprefetch_v = {0, };
+    g_value_init(&noprefetch_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "noprefetch", &noprefetch_v);
+    GuestfsTristate noprefetch = g_value_get_enum(&noprefetch_v);
+    if (noprefetch != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
+      argv.noprefetch = noprefetch;
+    }
+    GValue forcegeometry_v = {0, };
+    g_value_init(&forcegeometry_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "forcegeometry", &forcegeometry_v);
+    GuestfsTristate forcegeometry = g_value_get_enum(&forcegeometry_v);
+    if (forcegeometry != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
+      argv.forcegeometry = forcegeometry;
+    }
+    GValue maxmem_v = {0, };
+    g_value_init(&maxmem_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "maxmem", &maxmem_v);
+    gint64 maxmem = g_value_get_int64(&maxmem_v);
+    if (maxmem != -1) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_MAXMEM_BITMASK;
+      argv.maxmem = maxmem;
+    }
+    GValue ihashsize_v = {0, };
+    g_value_init(&ihashsize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "ihashsize", &ihashsize_v);
+    gint64 ihashsize = g_value_get_int64(&ihashsize_v);
+    if (ihashsize != -1) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK;
+      argv.ihashsize = ihashsize;
+    }
+    GValue bhashsize_v = {0, };
+    g_value_init(&bhashsize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "bhashsize", &bhashsize_v);
+    gint64 bhashsize = g_value_get_int64(&bhashsize_v);
+    if (bhashsize != -1) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK;
+      argv.bhashsize = bhashsize;
+    }
+    GValue agstride_v = {0, };
+    g_value_init(&agstride_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "agstride", &agstride_v);
+    gint64 agstride = g_value_get_int64(&agstride_v);
+    if (agstride != -1) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK;
+      argv.agstride = agstride;
+    }
+    GValue logdev_v = {0, };
+    g_value_init(&logdev_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "logdev", &logdev_v);
+    const gchar *logdev = g_value_get_string(&logdev_v);
+    if (logdev != NULL) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
+      argv.logdev = logdev;
+    }
+    GValue rtdev_v = {0, };
+    g_value_init(&rtdev_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "rtdev", &rtdev_v);
+    const gchar *rtdev = g_value_get_string(&rtdev_v);
+    if (rtdev != NULL) {
+      argv.bitmask |= GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
+      argv.rtdev = rtdev;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_xfs_repair_argv (g, device, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_rm_f:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * remove a file ignoring errors
+ *
+ * Remove the file @path.
+ * 
+ * If the file doesn't exist, that error is ignored. (Other errors, eg. I/O
+ * errors or bad paths, are not ignored)
+ * 
+ * This call cannot remove directories. Use guestfs_session_rmdir() to
+ * remove an empty directory, or guestfs_session_rm_rf() to remove
+ * directories recursively.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_rm_f(GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rm_f");
+    return FALSE;
+  }
+
+  int ret = guestfs_rm_f (g, path);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_mke2fs:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsMke2fs containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * create an ext2/ext3/ext4 filesystem on device
+ *
+ * @mke2fs is used to create an ext2, ext3, or ext4 filesystem on @device.
+ * The optional @blockscount is the size of the filesystem in blocks. If
+ * omitted it defaults to the size of @device.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_mke2fs(GuestfsSession *session, const gchar *device, GuestfsMke2fs *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mke2fs");
+    return FALSE;
+  }
+
+  struct guestfs_mke2fs_argv argv;
+  struct guestfs_mke2fs_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue blockscount_v = {0, };
+    g_value_init(&blockscount_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "blockscount", &blockscount_v);
+    gint64 blockscount = g_value_get_int64(&blockscount_v);
+    if (blockscount != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK;
+      argv.blockscount = blockscount;
+    }
+    GValue blocksize_v = {0, };
+    g_value_init(&blocksize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "blocksize", &blocksize_v);
+    gint64 blocksize = g_value_get_int64(&blocksize_v);
+    if (blocksize != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_BLOCKSIZE_BITMASK;
+      argv.blocksize = blocksize;
+    }
+    GValue fragsize_v = {0, };
+    g_value_init(&fragsize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "fragsize", &fragsize_v);
+    gint64 fragsize = g_value_get_int64(&fragsize_v);
+    if (fragsize != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_FRAGSIZE_BITMASK;
+      argv.fragsize = fragsize;
+    }
+    GValue blockspergroup_v = {0, };
+    g_value_init(&blockspergroup_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "blockspergroup", &blockspergroup_v);
+    gint64 blockspergroup = g_value_get_int64(&blockspergroup_v);
+    if (blockspergroup != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK;
+      argv.blockspergroup = blockspergroup;
+    }
+    GValue numberofgroups_v = {0, };
+    g_value_init(&numberofgroups_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "numberofgroups", &numberofgroups_v);
+    gint64 numberofgroups = g_value_get_int64(&numberofgroups_v);
+    if (numberofgroups != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK;
+      argv.numberofgroups = numberofgroups;
+    }
+    GValue bytesperinode_v = {0, };
+    g_value_init(&bytesperinode_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "bytesperinode", &bytesperinode_v);
+    gint64 bytesperinode = g_value_get_int64(&bytesperinode_v);
+    if (bytesperinode != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_BYTESPERINODE_BITMASK;
+      argv.bytesperinode = bytesperinode;
+    }
+    GValue inodesize_v = {0, };
+    g_value_init(&inodesize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "inodesize", &inodesize_v);
+    gint64 inodesize = g_value_get_int64(&inodesize_v);
+    if (inodesize != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_INODESIZE_BITMASK;
+      argv.inodesize = inodesize;
+    }
+    GValue journalsize_v = {0, };
+    g_value_init(&journalsize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "journalsize", &journalsize_v);
+    gint64 journalsize = g_value_get_int64(&journalsize_v);
+    if (journalsize != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_JOURNALSIZE_BITMASK;
+      argv.journalsize = journalsize;
+    }
+    GValue numberofinodes_v = {0, };
+    g_value_init(&numberofinodes_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "numberofinodes", &numberofinodes_v);
+    gint64 numberofinodes = g_value_get_int64(&numberofinodes_v);
+    if (numberofinodes != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK;
+      argv.numberofinodes = numberofinodes;
+    }
+    GValue stridesize_v = {0, };
+    g_value_init(&stridesize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "stridesize", &stridesize_v);
+    gint64 stridesize = g_value_get_int64(&stridesize_v);
+    if (stridesize != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_STRIDESIZE_BITMASK;
+      argv.stridesize = stridesize;
+    }
+    GValue stripewidth_v = {0, };
+    g_value_init(&stripewidth_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "stripewidth", &stripewidth_v);
+    gint64 stripewidth = g_value_get_int64(&stripewidth_v);
+    if (stripewidth != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK;
+      argv.stripewidth = stripewidth;
+    }
+    GValue maxonlineresize_v = {0, };
+    g_value_init(&maxonlineresize_v, G_TYPE_INT64);
+    g_object_get_property(G_OBJECT(optargs), "maxonlineresize", &maxonlineresize_v);
+    gint64 maxonlineresize = g_value_get_int64(&maxonlineresize_v);
+    if (maxonlineresize != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK;
+      argv.maxonlineresize = maxonlineresize;
+    }
+    GValue reservedblockspercentage_v = {0, };
+    g_value_init(&reservedblockspercentage_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "reservedblockspercentage", &reservedblockspercentage_v);
+    gint32 reservedblockspercentage = g_value_get_int(&reservedblockspercentage_v);
+    if (reservedblockspercentage != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+      argv.reservedblockspercentage = reservedblockspercentage;
+    }
+    GValue mmpupdateinterval_v = {0, };
+    g_value_init(&mmpupdateinterval_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "mmpupdateinterval", &mmpupdateinterval_v);
+    gint32 mmpupdateinterval = g_value_get_int(&mmpupdateinterval_v);
+    if (mmpupdateinterval != -1) {
+      argv.bitmask |= GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK;
+      argv.mmpupdateinterval = mmpupdateinterval;
+    }
+    GValue journaldevice_v = {0, };
+    g_value_init(&journaldevice_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "journaldevice", &journaldevice_v);
+    const gchar *journaldevice = g_value_get_string(&journaldevice_v);
+    if (journaldevice != NULL) {
+      argv.bitmask |= GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK;
+      argv.journaldevice = journaldevice;
+    }
+    GValue label_v = {0, };
+    g_value_init(&label_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "label", &label_v);
+    const gchar *label = g_value_get_string(&label_v);
+    if (label != NULL) {
+      argv.bitmask |= GUESTFS_MKE2FS_LABEL_BITMASK;
+      argv.label = label;
+    }
+    GValue lastmounteddir_v = {0, };
+    g_value_init(&lastmounteddir_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "lastmounteddir", &lastmounteddir_v);
+    const gchar *lastmounteddir = g_value_get_string(&lastmounteddir_v);
+    if (lastmounteddir != NULL) {
+      argv.bitmask |= GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK;
+      argv.lastmounteddir = lastmounteddir;
+    }
+    GValue creatoros_v = {0, };
+    g_value_init(&creatoros_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "creatoros", &creatoros_v);
+    const gchar *creatoros = g_value_get_string(&creatoros_v);
+    if (creatoros != NULL) {
+      argv.bitmask |= GUESTFS_MKE2FS_CREATOROS_BITMASK;
+      argv.creatoros = creatoros;
+    }
+    GValue fstype_v = {0, };
+    g_value_init(&fstype_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "fstype", &fstype_v);
+    const gchar *fstype = g_value_get_string(&fstype_v);
+    if (fstype != NULL) {
+      argv.bitmask |= GUESTFS_MKE2FS_FSTYPE_BITMASK;
+      argv.fstype = fstype;
+    }
+    GValue usagetype_v = {0, };
+    g_value_init(&usagetype_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "usagetype", &usagetype_v);
+    const gchar *usagetype = g_value_get_string(&usagetype_v);
+    if (usagetype != NULL) {
+      argv.bitmask |= GUESTFS_MKE2FS_USAGETYPE_BITMASK;
+      argv.usagetype = usagetype;
+    }
+    GValue uuid_v = {0, };
+    g_value_init(&uuid_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "uuid", &uuid_v);
+    const gchar *uuid = g_value_get_string(&uuid_v);
+    if (uuid != NULL) {
+      argv.bitmask |= GUESTFS_MKE2FS_UUID_BITMASK;
+      argv.uuid = uuid;
+    }
+    GValue forcecreate_v = {0, };
+    g_value_init(&forcecreate_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "forcecreate", &forcecreate_v);
+    GuestfsTristate forcecreate = g_value_get_enum(&forcecreate_v);
+    if (forcecreate != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_FORCECREATE_BITMASK;
+      argv.forcecreate = forcecreate;
+    }
+    GValue writesbandgrouponly_v = {0, };
+    g_value_init(&writesbandgrouponly_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "writesbandgrouponly", &writesbandgrouponly_v);
+    GuestfsTristate writesbandgrouponly = g_value_get_enum(&writesbandgrouponly_v);
+    if (writesbandgrouponly != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
+      argv.writesbandgrouponly = writesbandgrouponly;
+    }
+    GValue lazyitableinit_v = {0, };
+    g_value_init(&lazyitableinit_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "lazyitableinit", &lazyitableinit_v);
+    GuestfsTristate lazyitableinit = g_value_get_enum(&lazyitableinit_v);
+    if (lazyitableinit != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
+      argv.lazyitableinit = lazyitableinit;
+    }
+    GValue lazyjournalinit_v = {0, };
+    g_value_init(&lazyjournalinit_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "lazyjournalinit", &lazyjournalinit_v);
+    GuestfsTristate lazyjournalinit = g_value_get_enum(&lazyjournalinit_v);
+    if (lazyjournalinit != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
+      argv.lazyjournalinit = lazyjournalinit;
+    }
+    GValue testfs_v = {0, };
+    g_value_init(&testfs_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "testfs", &testfs_v);
+    GuestfsTristate testfs = g_value_get_enum(&testfs_v);
+    if (testfs != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_TESTFS_BITMASK;
+      argv.testfs = testfs;
+    }
+    GValue discard_v = {0, };
+    g_value_init(&discard_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "discard", &discard_v);
+    GuestfsTristate discard = g_value_get_enum(&discard_v);
+    if (discard != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_DISCARD_BITMASK;
+      argv.discard = discard;
+    }
+    GValue quotatype_v = {0, };
+    g_value_init(&quotatype_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "quotatype", &quotatype_v);
+    GuestfsTristate quotatype = g_value_get_enum(&quotatype_v);
+    if (quotatype != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
+      argv.quotatype = quotatype;
+    }
+    GValue extent_v = {0, };
+    g_value_init(&extent_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "extent", &extent_v);
+    GuestfsTristate extent = g_value_get_enum(&extent_v);
+    if (extent != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_EXTENT_BITMASK;
+      argv.extent = extent;
+    }
+    GValue filetype_v = {0, };
+    g_value_init(&filetype_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "filetype", &filetype_v);
+    GuestfsTristate filetype = g_value_get_enum(&filetype_v);
+    if (filetype != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_FILETYPE_BITMASK;
+      argv.filetype = filetype;
+    }
+    GValue flexbg_v = {0, };
+    g_value_init(&flexbg_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "flexbg", &flexbg_v);
+    GuestfsTristate flexbg = g_value_get_enum(&flexbg_v);
+    if (flexbg != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_FLEXBG_BITMASK;
+      argv.flexbg = flexbg;
+    }
+    GValue hasjournal_v = {0, };
+    g_value_init(&hasjournal_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "hasjournal", &hasjournal_v);
+    GuestfsTristate hasjournal = g_value_get_enum(&hasjournal_v);
+    if (hasjournal != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
+      argv.hasjournal = hasjournal;
+    }
+    GValue journaldev_v = {0, };
+    g_value_init(&journaldev_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "journaldev", &journaldev_v);
+    GuestfsTristate journaldev = g_value_get_enum(&journaldev_v);
+    if (journaldev != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
+      argv.journaldev = journaldev;
+    }
+    GValue largefile_v = {0, };
+    g_value_init(&largefile_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "largefile", &largefile_v);
+    GuestfsTristate largefile = g_value_get_enum(&largefile_v);
+    if (largefile != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_LARGEFILE_BITMASK;
+      argv.largefile = largefile;
+    }
+    GValue quota_v = {0, };
+    g_value_init(&quota_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "quota", &quota_v);
+    GuestfsTristate quota = g_value_get_enum(&quota_v);
+    if (quota != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_QUOTA_BITMASK;
+      argv.quota = quota;
+    }
+    GValue resizeinode_v = {0, };
+    g_value_init(&resizeinode_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "resizeinode", &resizeinode_v);
+    GuestfsTristate resizeinode = g_value_get_enum(&resizeinode_v);
+    if (resizeinode != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
+      argv.resizeinode = resizeinode;
+    }
+    GValue sparsesuper_v = {0, };
+    g_value_init(&sparsesuper_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparsesuper", &sparsesuper_v);
+    GuestfsTristate sparsesuper = g_value_get_enum(&sparsesuper_v);
+    if (sparsesuper != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
+      argv.sparsesuper = sparsesuper;
+    }
+    GValue uninitbg_v = {0, };
+    g_value_init(&uninitbg_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "uninitbg", &uninitbg_v);
+    GuestfsTristate uninitbg = g_value_get_enum(&uninitbg_v);
+    if (uninitbg != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_MKE2FS_UNINITBG_BITMASK;
+      argv.uninitbg = uninitbg;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_mke2fs_argv (g, device, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_list_disk_labels:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * mapping of disk labels to devices
+ *
+ * If you add drives using the optional @label parameter of
+ * guestfs_session_add_drive_opts(), you can use this call to map between
+ * disk labels, and raw block device and partition names (like "/dev/sda"
+ * and "/dev/sda1").
+ * 
+ * This returns a hashtable, where keys are the disk labels (*without* the
+ * "/dev/disk/guestfs" prefix), and the values are the full raw block
+ * device and partition names (eg. "/dev/sda" and "/dev/sda1").
+ * 
+ * Returns: (transfer full) (element-type utf8 utf8): a GHashTable of results, or NULL on error
+ */
+GHashTable *
+guestfs_session_list_disk_labels(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_disk_labels");
+    return NULL;
+  }
+
+  char **ret = guestfs_list_disk_labels (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GHashTable *h = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+  char **i = ret;
+  while (*i) {
+    char *key = *i; i++;
+    char *value = *i; i++;
+    g_hash_table_insert(h, key, value);
+  };
+  g_free(ret);
+  return h;
+}
+
+/**
+ * guestfs_session_internal_hot_add_drive:
+ * @session: (transfer none): A GuestfsSession object
+ * @label: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * internal hotplugging operation
+ *
+ * This function is used internally when hotplugging drives.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_internal_hot_add_drive(GuestfsSession *session, const gchar *label, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_hot_add_drive");
+    return FALSE;
+  }
+
+  int ret = guestfs_internal_hot_add_drive (g, label);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_internal_hot_remove_drive_precheck:
+ * @session: (transfer none): A GuestfsSession object
+ * @label: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * internal hotplugging operation
+ *
+ * This function is used internally when hotplugging drives.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_internal_hot_remove_drive_precheck(GuestfsSession *session, const gchar *label, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_hot_remove_drive_precheck");
+    return FALSE;
+  }
+
+  int ret = guestfs_internal_hot_remove_drive_precheck (g, label);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_internal_hot_remove_drive:
+ * @session: (transfer none): A GuestfsSession object
+ * @label: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * internal hotplugging operation
+ *
+ * This function is used internally when hotplugging drives.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_internal_hot_remove_drive(GuestfsSession *session, const gchar *label, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "internal_hot_remove_drive");
+    return FALSE;
+  }
+
+  int ret = guestfs_internal_hot_remove_drive (g, label);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_mktemp:
+ * @session: (transfer none): A GuestfsSession object
+ * @tmpl: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsMktemp containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * create a temporary file
+ *
+ * This command creates a temporary file. The @tmpl parameter should be a
+ * full pathname for the temporary directory name with the final six
+ * characters being "XXXXXX".
+ * 
+ * For example: "/tmp/myprogXXXXXX" or "/Temp/myprogXXXXXX", the second one
+ * being suitable for Windows filesystems.
+ * 
+ * The name of the temporary file that was created is returned.
+ * 
+ * The temporary file is created with mode 0600 and is owned by root.
+ * 
+ * The caller is responsible for deleting the temporary file after use.
+ * 
+ * If the optional @suffix parameter is given, then the suffix (eg. ".txt")
+ * is appended to the temporary name.
+ * 
+ * See also: guestfs_session_mkdtemp().
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_mktemp(GuestfsSession *session, const gchar *tmpl, GuestfsMktemp *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mktemp");
+    return NULL;
+  }
+
+  struct guestfs_mktemp_argv argv;
+  struct guestfs_mktemp_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue suffix_v = {0, };
+    g_value_init(&suffix_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "suffix", &suffix_v);
+    const gchar *suffix = g_value_get_string(&suffix_v);
+    if (suffix != NULL) {
+      argv.bitmask |= GUESTFS_MKTEMP_SUFFIX_BITMASK;
+      argv.suffix = suffix;
+    }
+    argvp = &argv;
+  }
+  char *ret = guestfs_mktemp_argv (g, tmpl, argvp);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_mklost_and_found:
+ * @session: (transfer none): A GuestfsSession object
+ * @mountpoint: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * make lost+found directory on an ext2/3/4 filesystem
+ *
+ * Make the "lost+found" directory, normally in the root directory of an
+ * ext2/3/4 filesystem. @mountpoint is the directory under which we try to
+ * create the "lost+found" directory.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_mklost_and_found(GuestfsSession *session, const gchar *mountpoint, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "mklost_and_found");
+    return FALSE;
+  }
+
+  int ret = guestfs_mklost_and_found (g, mountpoint);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_acl_get_file:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @acltype: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the POSIX ACL attached to a file
+ *
+ * This function returns the POSIX Access Control List (ACL) attached to
+ * @path. The ACL is returned in "long text form" (see acl(5)).
+ * 
+ * The @acltype parameter may be:
+ * 
+ * @access
+ * Return the ordinary (access) ACL for any file, directory or other
+ * filesystem object.
+ * 
+ * @default
+ * Return the default ACL. Normally this only makes sense if @path is a
+ * directory.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_acl_get_file(GuestfsSession *session, const gchar *path, const gchar *acltype, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "acl_get_file");
+    return NULL;
+  }
+
+  char *ret = guestfs_acl_get_file (g, path, acltype);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_acl_set_file:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @acltype: (transfer none) (type utf8):
+ * @acl: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the POSIX ACL attached to a file
+ *
+ * This function sets the POSIX Access Control List (ACL) attached to
+ * @path. The @acl parameter is the new ACL in either "long text form" or
+ * "short text form" (see acl(5)).
+ * 
+ * The @acltype parameter may be:
+ * 
+ * @access
+ * Set the ordinary (access) ACL for any file, directory or other
+ * filesystem object.
+ * 
+ * @default
+ * Set the default ACL. Normally this only makes sense if @path is a
+ * directory.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_acl_set_file(GuestfsSession *session, const gchar *path, const gchar *acltype, const gchar *acl, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "acl_set_file");
+    return FALSE;
+  }
+
+  int ret = guestfs_acl_set_file (g, path, acltype, acl);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_acl_delete_def_file:
+ * @session: (transfer none): A GuestfsSession object
+ * @dir: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * delete the default POSIX ACL of a directory
+ *
+ * This function deletes the default POSIX Access Control List (ACL)
+ * attached to directory @dir.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_acl_delete_def_file(GuestfsSession *session, const gchar *dir, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "acl_delete_def_file");
+    return FALSE;
+  }
+
+  int ret = guestfs_acl_delete_def_file (g, dir);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_cap_get_file:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the Linux capabilities attached to a file
+ *
+ * This function returns the Linux capabilities attached to @path. The
+ * capabilities set is returned in text form (see cap_to_text(3)).
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_cap_get_file(GuestfsSession *session, const gchar *path, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cap_get_file");
+    return NULL;
+  }
+
+  char *ret = guestfs_cap_get_file (g, path);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_cap_set_file:
+ * @session: (transfer none): A GuestfsSession object
+ * @path: (transfer none) (type filename):
+ * @cap: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the Linux capabilities attached to a file
+ *
+ * This function sets the Linux capabilities attached to @path. The
+ * capabilities set @cap should be passed in text form (see
+ * cap_from_text(3)).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_cap_set_file(GuestfsSession *session, const gchar *path, const gchar *cap, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cap_set_file");
+    return FALSE;
+  }
+
+  int ret = guestfs_cap_set_file (g, path, cap);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_list_ldm_volumes:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * list all Windows dynamic disk volumes
+ *
+ * This function returns all Windows dynamic disk volumes that were found
+ * at launch time. It returns a list of device names.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_list_ldm_volumes(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_ldm_volumes");
+    return NULL;
+  }
+
+  char **ret = guestfs_list_ldm_volumes (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_list_ldm_partitions:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * list all Windows dynamic disk partitions
+ *
+ * This function returns all Windows dynamic disk partitions that were
+ * found at launch time. It returns a list of device names.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_list_ldm_partitions(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "list_ldm_partitions");
+    return NULL;
+  }
+
+  char **ret = guestfs_list_ldm_partitions (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_create_all:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * scan and create Windows dynamic disk volumes
+ *
+ * This function scans all block devices looking for Windows dynamic disk
+ * volumes and partitions, and creates devices for any that were found.
+ * 
+ * Call guestfs_session_list_ldm_volumes() and
+ * guestfs_session_list_ldm_partitions() to return all devices.
+ * 
+ * Note that you don't normally need to call this explicitly, since it is
+ * done automatically at guestfs_session_launch() time. However you might
+ * want to call this function if you have hotplugged disks or have just
+ * created a Windows dynamic disk.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_ldmtool_create_all(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_create_all");
+    return FALSE;
+  }
+
+  int ret = guestfs_ldmtool_create_all (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_ldmtool_remove_all:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * remove all Windows dynamic disk volumes
+ *
+ * This is essentially the opposite of
+ * guestfs_session_ldmtool_create_all(). It removes the device mapper
+ * mappings for all Windows dynamic disk volumes
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_ldmtool_remove_all(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_remove_all");
+    return FALSE;
+  }
+
+  int ret = guestfs_ldmtool_remove_all (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_ldmtool_scan:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * scan for Windows dynamic disks
+ *
+ * This function scans for Windows dynamic disks. It returns a list of
+ * identifiers (GUIDs) for all disk groups that were found. These
+ * identifiers can be passed to other "guestfs_ldmtool_*" functions.
+ * 
+ * This function scans all block devices. To scan a subset of block
+ * devices, call guestfs_session_ldmtool_scan_devices() instead.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_ldmtool_scan(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_scan");
+    return NULL;
+  }
+
+  char **ret = guestfs_ldmtool_scan (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_scan_devices:
+ * @session: (transfer none): A GuestfsSession object
+ * @devices: (transfer none) (array zero-terminated=1) (element-type filename): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * scan for Windows dynamic disks
+ *
+ * This function scans for Windows dynamic disks. It returns a list of
+ * identifiers (GUIDs) for all disk groups that were found. These
+ * identifiers can be passed to other "guestfs_ldmtool_*" functions.
+ * 
+ * The parameter @devices is a list of block devices which are scanned. If
+ * this list is empty, all block devices are scanned.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_ldmtool_scan_devices(GuestfsSession *session, gchar *const *devices, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_scan_devices");
+    return NULL;
+  }
+
+  char **ret = guestfs_ldmtool_scan_devices (g, devices);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_diskgroup_name:
+ * @session: (transfer none): A GuestfsSession object
+ * @diskgroup: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the name of a Windows dynamic disk group
+ *
+ * Return the name of a Windows dynamic disk group. The @diskgroup
+ * parameter should be the GUID of a disk group, one element from the list
+ * returned by guestfs_session_ldmtool_scan().
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_ldmtool_diskgroup_name(GuestfsSession *session, const gchar *diskgroup, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_diskgroup_name");
+    return NULL;
+  }
+
+  char *ret = guestfs_ldmtool_diskgroup_name (g, diskgroup);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_diskgroup_volumes:
+ * @session: (transfer none): A GuestfsSession object
+ * @diskgroup: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the volumes in a Windows dynamic disk group
+ *
+ * Return the volumes in a Windows dynamic disk group. The @diskgroup
+ * parameter should be the GUID of a disk group, one element from the list
+ * returned by guestfs_session_ldmtool_scan().
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_ldmtool_diskgroup_volumes(GuestfsSession *session, const gchar *diskgroup, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_diskgroup_volumes");
+    return NULL;
+  }
+
+  char **ret = guestfs_ldmtool_diskgroup_volumes (g, diskgroup);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_diskgroup_disks:
+ * @session: (transfer none): A GuestfsSession object
+ * @diskgroup: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the disks in a Windows dynamic disk group
+ *
+ * Return the disks in a Windows dynamic disk group. The @diskgroup
+ * parameter should be the GUID of a disk group, one element from the list
+ * returned by guestfs_session_ldmtool_scan().
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_ldmtool_diskgroup_disks(GuestfsSession *session, const gchar *diskgroup, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_diskgroup_disks");
+    return NULL;
+  }
+
+  char **ret = guestfs_ldmtool_diskgroup_disks (g, diskgroup);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_volume_type:
+ * @session: (transfer none): A GuestfsSession object
+ * @diskgroup: (transfer none) (type utf8):
+ * @volume: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the type of a Windows dynamic disk volume
+ *
+ * Return the type of the volume named @volume in the disk group with GUID
+ * <diskgroup>.
+ * 
+ * Possible volume types that can be returned here include: @simple,
+ * @spanned, @striped, @mirrored, @raid5. Other types may also be returned.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_ldmtool_volume_type(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_volume_type");
+    return NULL;
+  }
+
+  char *ret = guestfs_ldmtool_volume_type (g, diskgroup, volume);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_volume_hint:
+ * @session: (transfer none): A GuestfsSession object
+ * @diskgroup: (transfer none) (type utf8):
+ * @volume: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the hint field of a Windows dynamic disk volume
+ *
+ * Return the hint field of the volume named @volume in the disk group with
+ * GUID <diskgroup>. This may not be defined, in which case the empty
+ * string is returned. The hint field is often, though not always, the name
+ * of a Windows drive, eg. "E:".
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_ldmtool_volume_hint(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_volume_hint");
+    return NULL;
+  }
+
+  char *ret = guestfs_ldmtool_volume_hint (g, diskgroup, volume);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_ldmtool_volume_partitions:
+ * @session: (transfer none): A GuestfsSession object
+ * @diskgroup: (transfer none) (type utf8):
+ * @volume: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * return the partitions in a Windows dynamic disk volume
+ *
+ * Return the list of partitions in the volume named @volume in the disk
+ * group with GUID <diskgroup>.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
+ */
+gchar **
+guestfs_session_ldmtool_volume_partitions(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "ldmtool_volume_partitions");
+    return NULL;
+  }
+
+  char **ret = guestfs_ldmtool_volume_partitions (g, diskgroup, volume);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
   }
 
   return ret;

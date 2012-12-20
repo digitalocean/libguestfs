@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -42,15 +42,39 @@ public class GuestFS {
   long g;
 
   /**
+   * Create a libguestfs handle, setting flags.
+   *
+   * @throws LibGuestFSException
+   */
+  public GuestFS (Map<String, Object> optargs) throws LibGuestFSException
+  {
+    int flags = 0;
+
+    /* Unpack optional args. */
+    Object _optobj;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("environment");
+    if (_optobj != null && !((Boolean) _optobj).booleanValue())
+      flags |= 1;
+    if (optargs != null)
+      _optobj = optargs.get ("close_on_exit");
+    if (_optobj != null && !((Boolean) _optobj).booleanValue())
+      flags |= 2;
+
+    g = _create (flags);
+  }
+
+  /**
    * Create a libguestfs handle.
    *
    * @throws LibGuestFSException
    */
   public GuestFS () throws LibGuestFSException
   {
-    g = _create ();
+    g = _create (0);
   }
-  private native long _create () throws LibGuestFSException;
+  private native long _create (int flags) throws LibGuestFSException;
 
   /**
    * Close a libguestfs handle.
@@ -76,11 +100,11 @@ public class GuestFS {
     close ();
   }
 
-  public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, Map<String, Object> optargs)
+  public void internal_test (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0: handle is closed");
+      throw new LibGuestFSException ("internal_test: handle is closed");
 
     /* Unpack optional args. */
     Object _optobj;
@@ -117,242 +141,806 @@ public class GuestFS {
       ostring = ((String) _optobj);
       _optargs_bitmask |= 8L;
     }
+    String[] ostringlist = new String[]{};
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("ostringlist");
+    if (_optobj != null) {
+      ostringlist = ((String[]) _optobj);
+      _optargs_bitmask |= 16L;
+    }
 
-    _test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, _optargs_bitmask, obool, oint, oint64, ostring);
+    _internal_test (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, _optargs_bitmask, obool, oint, oint64, ostring, ostringlist);
   }
 
-  public void test0 (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
+  public void internal_test (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin)
     throws LibGuestFSException
   {
-    test0 (str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, null);
+    internal_test (str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, null);
   }
 
-  private native void _test0 (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, long _optargs_bitmask, boolean obool, int oint, long oint64, String ostring)
+  private native void _internal_test (long g, String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, long _optargs_bitmask, boolean obool, int oint, long oint64, String ostring, String[] ostringlist)
     throws LibGuestFSException;
 
-  public int test0rint (String val)
+  public void internal_test_only_optargs (Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rint: handle is closed");
+      throw new LibGuestFSException ("internal_test_only_optargs: handle is closed");
 
-    return _test0rint (g, val);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    int test = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("test");
+    if (_optobj != null) {
+      test = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    _internal_test_only_optargs (g, _optargs_bitmask, test);
   }
 
-  private native int _test0rint (long g, String val)
+  public void internal_test_only_optargs ()
+    throws LibGuestFSException
+  {
+    internal_test_only_optargs (null);
+  }
+
+  private native void _internal_test_only_optargs (long g, long _optargs_bitmask, int test)
     throws LibGuestFSException;
 
-  public int test0rinterr ()
+  public void internal_test_63_optargs (Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rinterr: handle is closed");
+      throw new LibGuestFSException ("internal_test_63_optargs: handle is closed");
 
-    return _test0rinterr (g);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    int opt1 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt1");
+    if (_optobj != null) {
+      opt1 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1L;
+    }
+    int opt2 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt2");
+    if (_optobj != null) {
+      opt2 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2L;
+    }
+    int opt3 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt3");
+    if (_optobj != null) {
+      opt3 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4L;
+    }
+    int opt4 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt4");
+    if (_optobj != null) {
+      opt4 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8L;
+    }
+    int opt5 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt5");
+    if (_optobj != null) {
+      opt5 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 16L;
+    }
+    int opt6 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt6");
+    if (_optobj != null) {
+      opt6 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 32L;
+    }
+    int opt7 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt7");
+    if (_optobj != null) {
+      opt7 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 64L;
+    }
+    int opt8 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt8");
+    if (_optobj != null) {
+      opt8 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 128L;
+    }
+    int opt9 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt9");
+    if (_optobj != null) {
+      opt9 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 256L;
+    }
+    int opt10 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt10");
+    if (_optobj != null) {
+      opt10 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 512L;
+    }
+    int opt11 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt11");
+    if (_optobj != null) {
+      opt11 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1024L;
+    }
+    int opt12 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt12");
+    if (_optobj != null) {
+      opt12 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2048L;
+    }
+    int opt13 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt13");
+    if (_optobj != null) {
+      opt13 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4096L;
+    }
+    int opt14 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt14");
+    if (_optobj != null) {
+      opt14 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8192L;
+    }
+    int opt15 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt15");
+    if (_optobj != null) {
+      opt15 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 16384L;
+    }
+    int opt16 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt16");
+    if (_optobj != null) {
+      opt16 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 32768L;
+    }
+    int opt17 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt17");
+    if (_optobj != null) {
+      opt17 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 65536L;
+    }
+    int opt18 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt18");
+    if (_optobj != null) {
+      opt18 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 131072L;
+    }
+    int opt19 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt19");
+    if (_optobj != null) {
+      opt19 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 262144L;
+    }
+    int opt20 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt20");
+    if (_optobj != null) {
+      opt20 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 524288L;
+    }
+    int opt21 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt21");
+    if (_optobj != null) {
+      opt21 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1048576L;
+    }
+    int opt22 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt22");
+    if (_optobj != null) {
+      opt22 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2097152L;
+    }
+    int opt23 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt23");
+    if (_optobj != null) {
+      opt23 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4194304L;
+    }
+    int opt24 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt24");
+    if (_optobj != null) {
+      opt24 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8388608L;
+    }
+    int opt25 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt25");
+    if (_optobj != null) {
+      opt25 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 16777216L;
+    }
+    int opt26 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt26");
+    if (_optobj != null) {
+      opt26 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 33554432L;
+    }
+    int opt27 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt27");
+    if (_optobj != null) {
+      opt27 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 67108864L;
+    }
+    int opt28 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt28");
+    if (_optobj != null) {
+      opt28 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 134217728L;
+    }
+    int opt29 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt29");
+    if (_optobj != null) {
+      opt29 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 268435456L;
+    }
+    int opt30 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt30");
+    if (_optobj != null) {
+      opt30 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 536870912L;
+    }
+    int opt31 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt31");
+    if (_optobj != null) {
+      opt31 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1073741824L;
+    }
+    int opt32 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt32");
+    if (_optobj != null) {
+      opt32 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2147483648L;
+    }
+    int opt33 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt33");
+    if (_optobj != null) {
+      opt33 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4294967296L;
+    }
+    int opt34 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt34");
+    if (_optobj != null) {
+      opt34 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8589934592L;
+    }
+    int opt35 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt35");
+    if (_optobj != null) {
+      opt35 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 17179869184L;
+    }
+    int opt36 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt36");
+    if (_optobj != null) {
+      opt36 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 34359738368L;
+    }
+    int opt37 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt37");
+    if (_optobj != null) {
+      opt37 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 68719476736L;
+    }
+    int opt38 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt38");
+    if (_optobj != null) {
+      opt38 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 137438953472L;
+    }
+    int opt39 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt39");
+    if (_optobj != null) {
+      opt39 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 274877906944L;
+    }
+    int opt40 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt40");
+    if (_optobj != null) {
+      opt40 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 549755813888L;
+    }
+    int opt41 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt41");
+    if (_optobj != null) {
+      opt41 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1099511627776L;
+    }
+    int opt42 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt42");
+    if (_optobj != null) {
+      opt42 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2199023255552L;
+    }
+    int opt43 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt43");
+    if (_optobj != null) {
+      opt43 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4398046511104L;
+    }
+    int opt44 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt44");
+    if (_optobj != null) {
+      opt44 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8796093022208L;
+    }
+    int opt45 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt45");
+    if (_optobj != null) {
+      opt45 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 17592186044416L;
+    }
+    int opt46 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt46");
+    if (_optobj != null) {
+      opt46 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 35184372088832L;
+    }
+    int opt47 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt47");
+    if (_optobj != null) {
+      opt47 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 70368744177664L;
+    }
+    int opt48 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt48");
+    if (_optobj != null) {
+      opt48 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 140737488355328L;
+    }
+    int opt49 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt49");
+    if (_optobj != null) {
+      opt49 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 281474976710656L;
+    }
+    int opt50 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt50");
+    if (_optobj != null) {
+      opt50 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 562949953421312L;
+    }
+    int opt51 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt51");
+    if (_optobj != null) {
+      opt51 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1125899906842624L;
+    }
+    int opt52 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt52");
+    if (_optobj != null) {
+      opt52 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2251799813685248L;
+    }
+    int opt53 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt53");
+    if (_optobj != null) {
+      opt53 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4503599627370496L;
+    }
+    int opt54 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt54");
+    if (_optobj != null) {
+      opt54 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 9007199254740992L;
+    }
+    int opt55 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt55");
+    if (_optobj != null) {
+      opt55 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 18014398509481984L;
+    }
+    int opt56 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt56");
+    if (_optobj != null) {
+      opt56 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 36028797018963968L;
+    }
+    int opt57 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt57");
+    if (_optobj != null) {
+      opt57 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 72057594037927936L;
+    }
+    int opt58 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt58");
+    if (_optobj != null) {
+      opt58 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 144115188075855872L;
+    }
+    int opt59 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt59");
+    if (_optobj != null) {
+      opt59 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 288230376151711744L;
+    }
+    int opt60 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt60");
+    if (_optobj != null) {
+      opt60 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 576460752303423488L;
+    }
+    int opt61 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt61");
+    if (_optobj != null) {
+      opt61 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 1152921504606846976L;
+    }
+    int opt62 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt62");
+    if (_optobj != null) {
+      opt62 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 2305843009213693952L;
+    }
+    int opt63 = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("opt63");
+    if (_optobj != null) {
+      opt63 = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4611686018427387904L;
+    }
+
+    _internal_test_63_optargs (g, _optargs_bitmask, opt1, opt2, opt3, opt4, opt5, opt6, opt7, opt8, opt9, opt10, opt11, opt12, opt13, opt14, opt15, opt16, opt17, opt18, opt19, opt20, opt21, opt22, opt23, opt24, opt25, opt26, opt27, opt28, opt29, opt30, opt31, opt32, opt33, opt34, opt35, opt36, opt37, opt38, opt39, opt40, opt41, opt42, opt43, opt44, opt45, opt46, opt47, opt48, opt49, opt50, opt51, opt52, opt53, opt54, opt55, opt56, opt57, opt58, opt59, opt60, opt61, opt62, opt63);
   }
 
-  private native int _test0rinterr (long g)
+  public void internal_test_63_optargs ()
+    throws LibGuestFSException
+  {
+    internal_test_63_optargs (null);
+  }
+
+  private native void _internal_test_63_optargs (long g, long _optargs_bitmask, int opt1, int opt2, int opt3, int opt4, int opt5, int opt6, int opt7, int opt8, int opt9, int opt10, int opt11, int opt12, int opt13, int opt14, int opt15, int opt16, int opt17, int opt18, int opt19, int opt20, int opt21, int opt22, int opt23, int opt24, int opt25, int opt26, int opt27, int opt28, int opt29, int opt30, int opt31, int opt32, int opt33, int opt34, int opt35, int opt36, int opt37, int opt38, int opt39, int opt40, int opt41, int opt42, int opt43, int opt44, int opt45, int opt46, int opt47, int opt48, int opt49, int opt50, int opt51, int opt52, int opt53, int opt54, int opt55, int opt56, int opt57, int opt58, int opt59, int opt60, int opt61, int opt62, int opt63)
     throws LibGuestFSException;
 
-  public long test0rint64 (String val)
+  public int internal_test_rint (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rint64: handle is closed");
+      throw new LibGuestFSException ("internal_test_rint: handle is closed");
 
-    return _test0rint64 (g, val);
+    return _internal_test_rint (g, val);
   }
 
-  private native long _test0rint64 (long g, String val)
+  private native int _internal_test_rint (long g, String val)
     throws LibGuestFSException;
 
-  public long test0rint64err ()
+  public int internal_test_rinterr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rint64err: handle is closed");
+      throw new LibGuestFSException ("internal_test_rinterr: handle is closed");
 
-    return _test0rint64err (g);
+    return _internal_test_rinterr (g);
   }
 
-  private native long _test0rint64err (long g)
+  private native int _internal_test_rinterr (long g)
     throws LibGuestFSException;
 
-  public boolean test0rbool (String val)
+  public long internal_test_rint64 (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rbool: handle is closed");
+      throw new LibGuestFSException ("internal_test_rint64: handle is closed");
 
-    return _test0rbool (g, val);
+    return _internal_test_rint64 (g, val);
   }
 
-  private native boolean _test0rbool (long g, String val)
+  private native long _internal_test_rint64 (long g, String val)
     throws LibGuestFSException;
 
-  public boolean test0rboolerr ()
+  public long internal_test_rint64err ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rboolerr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rint64err: handle is closed");
 
-    return _test0rboolerr (g);
+    return _internal_test_rint64err (g);
   }
 
-  private native boolean _test0rboolerr (long g)
+  private native long _internal_test_rint64err (long g)
     throws LibGuestFSException;
 
-  public String test0rconststring (String val)
+  public boolean internal_test_rbool (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rconststring: handle is closed");
+      throw new LibGuestFSException ("internal_test_rbool: handle is closed");
 
-    return _test0rconststring (g, val);
+    return _internal_test_rbool (g, val);
   }
 
-  private native String _test0rconststring (long g, String val)
+  private native boolean _internal_test_rbool (long g, String val)
     throws LibGuestFSException;
 
-  public String test0rconststringerr ()
+  public boolean internal_test_rboolerr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rconststringerr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rboolerr: handle is closed");
 
-    return _test0rconststringerr (g);
+    return _internal_test_rboolerr (g);
   }
 
-  private native String _test0rconststringerr (long g)
+  private native boolean _internal_test_rboolerr (long g)
     throws LibGuestFSException;
 
-  public String test0rconstoptstring (String val)
+  public String internal_test_rconststring (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rconstoptstring: handle is closed");
+      throw new LibGuestFSException ("internal_test_rconststring: handle is closed");
 
-    return _test0rconstoptstring (g, val);
+    return _internal_test_rconststring (g, val);
   }
 
-  private native String _test0rconstoptstring (long g, String val)
+  private native String _internal_test_rconststring (long g, String val)
     throws LibGuestFSException;
 
-  public String test0rconstoptstringerr ()
+  public String internal_test_rconststringerr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rconstoptstringerr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rconststringerr: handle is closed");
 
-    return _test0rconstoptstringerr (g);
+    return _internal_test_rconststringerr (g);
   }
 
-  private native String _test0rconstoptstringerr (long g)
+  private native String _internal_test_rconststringerr (long g)
     throws LibGuestFSException;
 
-  public String test0rstring (String val)
+  public String internal_test_rconstoptstring (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstring: handle is closed");
+      throw new LibGuestFSException ("internal_test_rconstoptstring: handle is closed");
 
-    return _test0rstring (g, val);
+    return _internal_test_rconstoptstring (g, val);
   }
 
-  private native String _test0rstring (long g, String val)
+  private native String _internal_test_rconstoptstring (long g, String val)
     throws LibGuestFSException;
 
-  public String test0rstringerr ()
+  public String internal_test_rconstoptstringerr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstringerr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rconstoptstringerr: handle is closed");
 
-    return _test0rstringerr (g);
+    return _internal_test_rconstoptstringerr (g);
   }
 
-  private native String _test0rstringerr (long g)
+  private native String _internal_test_rconstoptstringerr (long g)
     throws LibGuestFSException;
 
-  public String[] test0rstringlist (String val)
+  public String internal_test_rstring (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstringlist: handle is closed");
+      throw new LibGuestFSException ("internal_test_rstring: handle is closed");
 
-    return _test0rstringlist (g, val);
+    return _internal_test_rstring (g, val);
   }
 
-  private native String[] _test0rstringlist (long g, String val)
+  private native String _internal_test_rstring (long g, String val)
     throws LibGuestFSException;
 
-  public String[] test0rstringlisterr ()
+  public String internal_test_rstringerr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstringlisterr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rstringerr: handle is closed");
 
-    return _test0rstringlisterr (g);
+    return _internal_test_rstringerr (g);
   }
 
-  private native String[] _test0rstringlisterr (long g)
+  private native String _internal_test_rstringerr (long g)
     throws LibGuestFSException;
 
-  public PV test0rstruct (String val)
+  public String[] internal_test_rstringlist (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstruct: handle is closed");
+      throw new LibGuestFSException ("internal_test_rstringlist: handle is closed");
 
-    return _test0rstruct (g, val);
+    return _internal_test_rstringlist (g, val);
   }
 
-  private native PV _test0rstruct (long g, String val)
+  private native String[] _internal_test_rstringlist (long g, String val)
     throws LibGuestFSException;
 
-  public PV test0rstructerr ()
+  public String[] internal_test_rstringlisterr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstructerr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rstringlisterr: handle is closed");
 
-    return _test0rstructerr (g);
+    return _internal_test_rstringlisterr (g);
   }
 
-  private native PV _test0rstructerr (long g)
+  private native String[] _internal_test_rstringlisterr (long g)
     throws LibGuestFSException;
 
-  public PV[] test0rstructlist (String val)
+  public PV internal_test_rstruct (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstructlist: handle is closed");
+      throw new LibGuestFSException ("internal_test_rstruct: handle is closed");
 
-    return _test0rstructlist (g, val);
+    return _internal_test_rstruct (g, val);
   }
 
-  private native PV[] _test0rstructlist (long g, String val)
+  private native PV _internal_test_rstruct (long g, String val)
     throws LibGuestFSException;
 
-  public PV[] test0rstructlisterr ()
+  public PV internal_test_rstructerr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rstructlisterr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rstructerr: handle is closed");
 
-    return _test0rstructlisterr (g);
+    return _internal_test_rstructerr (g);
   }
 
-  private native PV[] _test0rstructlisterr (long g)
+  private native PV _internal_test_rstructerr (long g)
     throws LibGuestFSException;
 
-  public Map<String,String> test0rhashtable (String val)
+  public PV[] internal_test_rstructlist (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rhashtable: handle is closed");
+      throw new LibGuestFSException ("internal_test_rstructlist: handle is closed");
 
-    String[] r = _test0rhashtable (g, val);
+    return _internal_test_rstructlist (g, val);
+  }
+
+  private native PV[] _internal_test_rstructlist (long g, String val)
+    throws LibGuestFSException;
+
+  public PV[] internal_test_rstructlisterr ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_test_rstructlisterr: handle is closed");
+
+    return _internal_test_rstructlisterr (g);
+  }
+
+  private native PV[] _internal_test_rstructlisterr (long g)
+    throws LibGuestFSException;
+
+  public Map<String,String> internal_test_rhashtable (String val)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_test_rhashtable: handle is closed");
+
+    String[] r = _internal_test_rhashtable (g, val);
 
     HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
@@ -360,16 +948,16 @@ public class GuestFS {
     return rhash;
   }
 
-  private native String[] _test0rhashtable (long g, String val)
+  private native String[] _internal_test_rhashtable (long g, String val)
     throws LibGuestFSException;
 
-  public Map<String,String> test0rhashtableerr ()
+  public Map<String,String> internal_test_rhashtableerr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rhashtableerr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rhashtableerr: handle is closed");
 
-    String[] r = _test0rhashtableerr (g);
+    String[] r = _internal_test_rhashtableerr (g);
 
     HashMap<String, String> rhash = new HashMap<String, String> ();
     for (int i = 0; i < r.length; i += 2)
@@ -377,31 +965,55 @@ public class GuestFS {
     return rhash;
   }
 
-  private native String[] _test0rhashtableerr (long g)
+  private native String[] _internal_test_rhashtableerr (long g)
     throws LibGuestFSException;
 
-  public String test0rbufferout (String val)
+  public String internal_test_rbufferout (String val)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rbufferout: handle is closed");
+      throw new LibGuestFSException ("internal_test_rbufferout: handle is closed");
 
-    return _test0rbufferout (g, val);
+    return _internal_test_rbufferout (g, val);
   }
 
-  private native String _test0rbufferout (long g, String val)
+  private native String _internal_test_rbufferout (long g, String val)
     throws LibGuestFSException;
 
-  public String test0rbufferouterr ()
+  public String internal_test_rbufferouterr ()
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("test0rbufferouterr: handle is closed");
+      throw new LibGuestFSException ("internal_test_rbufferouterr: handle is closed");
 
-    return _test0rbufferouterr (g);
+    return _internal_test_rbufferouterr (g);
   }
 
-  private native String _test0rbufferouterr (long g)
+  private native String _internal_test_rbufferouterr (long g)
+    throws LibGuestFSException;
+
+  public void internal_test_set_output (String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_test_set_output: handle is closed");
+
+    _internal_test_set_output (g, filename);
+  }
+
+  private native void _internal_test_set_output (long g, String filename)
+    throws LibGuestFSException;
+
+  public void internal_test_close_output ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_test_close_output: handle is closed");
+
+    _internal_test_close_output (g);
+  }
+
+  private native void _internal_test_close_output (long g)
     throws LibGuestFSException;
 
   /**
@@ -497,59 +1109,16 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * add an image to examine or modify
-   * <p>
-   * This function is the equivalent of calling
-   * "g.add_drive_opts" with no optional parameters, so the
-   * disk is added writable, with the format being detected
-   * automatically.
-   * <p>
-   * Automatic detection of the format opens you up to a
-   * potential security hole when dealing with untrusted
-   * raw-format images. See CVE-2010-3851 and RHBZ#642934.
-   * Specifying the format closes this security hole.
-   * Therefore you should think about replacing calls to this
-   * function with calls to "g.add_drive_opts", and
-   * specifying the format.
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void add_drive (String filename)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("add_drive: handle is closed");
-
-    _add_drive (g, filename);
-  }
-
-  private native void _add_drive (long g, String filename)
-    throws LibGuestFSException;
-
-  /**
    * add a CD-ROM disk image to examine
    * <p>
    * This function adds a virtual CD-ROM disk image to the
    * guest.
    * <p>
-   * This is equivalent to the qemu parameter *-cdrom
-   * filename*.
-   * <p>
-   * Notes:
-   * <p>
-   * *   This call checks for the existence of "filename".
-   * This stops you from specifying other types of drive
-   * which are supported by qemu such as "nbd:" and
-   * "http:" URLs. To specify those, use the general
-   * "g.config" call instead.
-   * <p>
-   * *   If you just want to add an ISO file (often you use
-   * this as an efficient way to transfer large files
-   * into the guest), then you should probably use
-   * "g.add_drive_ro" instead.
+   * Do not use this function! ISO files are just ordinary
+   * read-only disk images. Use "g.add_drive_ro" instead.
    * <p>
    * *This function is deprecated.* In new code, use the
-   * "add_drive_opts" call instead.
+   * "add_drive" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
    * but the fact that they are deprecated indicates that
@@ -601,10 +1170,10 @@ public class GuestFS {
    * parameters which would interfere with parameters that we
    * use.
    * <p>
-   * The first character of "param" string must be a "-"
+   * The first character of "qemuparam" string must be a "-"
    * (dash).
    * <p>
-   * "value" can be NULL.
+   * "qemuvalue" can be NULL.
    * <p>
    * @throws LibGuestFSException
    */
@@ -1299,7 +1868,7 @@ public class GuestFS {
    * specify the QEMU interface emulation to use at run time.
    * <p>
    * *This function is deprecated.* In new code, use the
-   * "add_drive_opts" call instead.
+   * "add_drive" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
    * but the fact that they are deprecated indicates that
@@ -1327,7 +1896,7 @@ public class GuestFS {
    * time.
    * <p>
    * *This function is deprecated.* In new code, use the
-   * "add_drive_opts" call instead.
+   * "add_drive" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
    * but the fact that they are deprecated indicates that
@@ -1502,6 +2071,9 @@ public class GuestFS {
    * "netbsd"
    * NetBSD.
    * <p>
+   * "openbsd"
+   * OpenBSD.
+   * <p>
    * "hurd"
    * GNU/Hurd.
    * <p>
@@ -1602,6 +2174,9 @@ public class GuestFS {
    * "meego"
    * MeeGo.
    * <p>
+   * "openbsd"
+   * OpenBSD.
+   * <p>
    * "opensuse"
    * OpenSUSE.
    * <p>
@@ -1619,6 +2194,12 @@ public class GuestFS {
    * <p>
    * "slackware"
    * Slackware.
+   * <p>
+   * "sles"
+   * SuSE Linux Enterprise Server or Desktop.
+   * <p>
+   * "suse-based"
+   * Some openSuSE-derived distro.
    * <p>
    * "ttylinux"
    * ttylinux.
@@ -1919,8 +2500,16 @@ public class GuestFS {
    * handle. "filename" may be a regular host file or a host
    * device.
    * <p>
-   * The first time you call this function, the disk appears
-   * as "/dev/sda", the second time as "/dev/sdb", and so on.
+   * When this function is called before "g.launch" (the
+   * usual case) then the first time you call this function,
+   * the disk appears in the API as "/dev/sda", the second
+   * time as "/dev/sdb", and so on.
+   * <p>
+   * In libguestfs ≥ 1.20 you can also call this function
+   * after launch (with some restrictions). This is called
+   * "hotplugging". When hotplugging, you must specify a
+   * "label" so that the new disk gets a predictable name.
+   * For more information see "HOTPLUGGING" in guestfs(3).
    * <p>
    * You don't necessarily need to be root when using
    * libguestfs. However you obviously do need sufficient
@@ -1964,6 +2553,15 @@ public class GuestFS {
    * "/dev/sdb". This is used as a hint to the guest
    * inspection process if it is available.
    * <p>
+   * "label"
+   * Give the disk a label. The label should be a unique,
+   * short string using *only* ASCII characters
+   * "[a-zA-Z]". As well as its usual name in the API
+   * (such as "/dev/sda"), the drive will also be named
+   * "/dev/disk/guestfs/*label*".
+   * <p>
+   * See "DISK LABELS" in guestfs(3).
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -1971,11 +2569,11 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void add_drive_opts (String filename, Map<String, Object> optargs)
+  public void add_drive (String filename, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("add_drive_opts: handle is closed");
+      throw new LibGuestFSException ("add_drive: handle is closed");
 
     /* Unpack optional args. */
     Object _optobj;
@@ -2012,17 +2610,37 @@ public class GuestFS {
       name = ((String) _optobj);
       _optargs_bitmask |= 8L;
     }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 16L;
+    }
 
-    _add_drive_opts (g, filename, _optargs_bitmask, readonly, format, iface, name);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label);
+  }
+
+  public void add_drive (String filename)
+    throws LibGuestFSException
+  {
+    add_drive (filename, null);
+  }
+
+  public void add_drive_opts (String filename, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    add_drive (filename, optargs);
   }
 
   public void add_drive_opts (String filename)
     throws LibGuestFSException
   {
-    add_drive_opts (filename, null);
+    add_drive (filename, null);
   }
 
-  private native void _add_drive_opts (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label)
     throws LibGuestFSException;
 
   /**
@@ -2077,18 +2695,6 @@ public class GuestFS {
   }
 
   private native String[] _inspect_get_roots (long g)
-    throws LibGuestFSException;
-
-  public String[] debug_cmdline ()
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("debug_cmdline: handle is closed");
-
-    return _debug_cmdline (g);
-  }
-
-  private native String[] _debug_cmdline (long g)
     throws LibGuestFSException;
 
   public String[] debug_drives ()
@@ -2424,6 +3030,13 @@ public class GuestFS {
    * <p>
    * Please read "INSPECTION" in guestfs(3) for more details.
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "inspect_list_applications2" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public Application[] inspect_list_applications (String root)
@@ -2436,6 +3049,115 @@ public class GuestFS {
   }
 
   private native Application[] _inspect_list_applications (long g, String root)
+    throws LibGuestFSException;
+
+  /**
+   * get list of applications installed in the operating system
+   * <p>
+   * Return the list of applications installed in the
+   * operating system.
+   * <p>
+   * *Note:* This call works differently from other parts of
+   * the inspection API. You have to call "g.inspect_os",
+   * then "g.inspect_get_mountpoints", then mount up the
+   * disks, before calling this. Listing applications is a
+   * significantly more difficult operation which requires
+   * access to the full filesystem. Also note that unlike the
+   * other "g.inspect_get_*" calls which are just returning
+   * data cached in the libguestfs handle, this call actually
+   * reads parts of the mounted filesystems during the call.
+   * <p>
+   * This returns an empty list if the inspection code was
+   * not able to determine the list of applications.
+   * <p>
+   * The application structure contains the following fields:
+   * <p>
+   * "app2_name"
+   * The name of the application. For Red Hat-derived and
+   * Debian-derived Linux guests, this is the package
+   * name.
+   * <p>
+   * "app2_display_name"
+   * The display name of the application, sometimes
+   * localized to the install language of the guest
+   * operating system.
+   * <p>
+   * If unavailable this is returned as an empty string
+   * "". Callers needing to display something can use
+   * "app2_name" instead.
+   * <p>
+   * "app2_epoch"
+   * For package managers which use epochs, this contains
+   * the epoch of the package (an integer). If
+   * unavailable, this is returned as 0.
+   * <p>
+   * "app2_version"
+   * The version string of the application or package. If
+   * unavailable this is returned as an empty string "".
+   * <p>
+   * "app2_release"
+   * The release string of the application or package,
+   * for package managers that use this. If unavailable
+   * this is returned as an empty string "".
+   * <p>
+   * "app2_arch"
+   * The architecture string of the application or
+   * package, for package managers that use this. If
+   * unavailable this is returned as an empty string "".
+   * <p>
+   * "app2_install_path"
+   * The installation path of the application (on
+   * operating systems such as Windows which use
+   * installation paths). This path is in the format used
+   * by the guest operating system, it is not a
+   * libguestfs path.
+   * <p>
+   * If unavailable this is returned as an empty string
+   * "".
+   * <p>
+   * "app2_trans_path"
+   * The install path translated into a libguestfs path.
+   * If unavailable this is returned as an empty string
+   * "".
+   * <p>
+   * "app2_publisher"
+   * The name of the publisher of the application, for
+   * package managers that use this. If unavailable this
+   * is returned as an empty string "".
+   * <p>
+   * "app2_url"
+   * The URL (eg. upstream URL) of the application. If
+   * unavailable this is returned as an empty string "".
+   * <p>
+   * "app2_source_package"
+   * For packaging systems which support this, the name
+   * of the source package. If unavailable this is
+   * returned as an empty string "".
+   * <p>
+   * "app2_summary"
+   * A short (usually one line) description of the
+   * application or package. If unavailable this is
+   * returned as an empty string "".
+   * <p>
+   * "app2_description"
+   * A longer description of the application or package.
+   * If unavailable this is returned as an empty string
+   * "".
+   * <p>
+   * Please read "INSPECTION" in guestfs(3) for more details.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Application2[] inspect_list_applications2 (String root)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("inspect_list_applications2: handle is closed");
+
+    return _inspect_list_applications2 (g, root);
+  }
+
+  private native Application2[] _inspect_list_applications2 (long g, String root)
     throws LibGuestFSException;
 
   /**
@@ -2579,19 +3301,9 @@ public class GuestFS {
    * set the attach method
    * <p>
    * Set the method that libguestfs uses to connect to the
-   * back end guestfsd daemon. Possible methods are:
+   * back end guestfsd daemon.
    * <p>
-   * "appliance"
-   * Launch an appliance and connect to it. This is the
-   * ordinary method and the default.
-   * <p>
-   * "unix:*path*"
-   * Connect to the Unix domain socket *path*.
-   * <p>
-   * This method lets you connect to an existing daemon
-   * or (using virtio-serial) to a live guest. For more
-   * information, see "ATTACHING TO RUNNING DAEMONS" in
-   * guestfs(3).
+   * See "ATTACH METHOD" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -2610,8 +3322,10 @@ public class GuestFS {
   /**
    * get the attach method
    * <p>
-   * Return the current attach method. See
-   * "g.set_attach_method".
+   * Return the current attach method.
+   * <p>
+   * See "g.set_attach_method" and "ATTACH METHOD" in
+   * guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -3113,6 +3827,67 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * maximum number of disks that may be added
+   * <p>
+   * Return the maximum number of disks that may be added to
+   * a handle (eg. by "g.add_drive_opts" and similar calls).
+   * <p>
+   * This function was added in libguestfs 1.19.7. In
+   * previous versions of libguestfs the limit was 25.
+   * <p>
+   * See "MAXIMUM NUMBER OF DISKS" in guestfs(3) for
+   * additional information on this topic.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int max_disks ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("max_disks: handle is closed");
+
+    return _max_disks (g);
+  }
+
+  private native int _max_disks (long g)
+    throws LibGuestFSException;
+
+  /**
+   * return canonical device name
+   * <p>
+   * This utility function is useful when displaying device
+   * names to the user. It takes a number of irregular device
+   * names and returns them in a consistent format:
+   * <p>
+   * "/dev/hdX"
+   * "/dev/vdX"
+   * These are returned as "/dev/sdX". Note this works
+   * for device names and partition names. This is
+   * approximately the reverse of the algorithm described
+   * in "BLOCK DEVICE NAMING" in guestfs(3).
+   * <p>
+   * "/dev/mapper/VG-LV"
+   * "/dev/dm-N"
+   * Converted to "/dev/VG/LV" form using
+   * "g.lvm_canonical_lvm_name".
+   * <p>
+   * Other strings are returned unmodified.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String canonical_device_name (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("canonical_device_name: handle is closed");
+
+    return _canonical_device_name (g, device);
+  }
+
+  private native String _canonical_device_name (long g, String device)
+    throws LibGuestFSException;
+
+  /**
    * shutdown the qemu subprocess
    * <p>
    * This is the opposite of "g.launch". It performs an
@@ -3146,6 +3921,747 @@ public class GuestFS {
   }
 
   private native void _shutdown (long g)
+    throws LibGuestFSException;
+
+  /**
+   * list the contents of a file
+   * <p>
+   * Return the contents of the file named "path".
+   * <p>
+   * Because, in C, this function returns a "char *", there
+   * is no way to differentiate between a "\0" character in a
+   * file and end of string. To handle binary files, use the
+   * "g.read_file" or "g.download" functions.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String cat (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("cat: handle is closed");
+
+    return _cat (g, path);
+  }
+
+  private native String _cat (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * find all files and directories
+   * <p>
+   * This command lists out all files and directories,
+   * recursively, starting at "directory". It is essentially
+   * equivalent to running the shell command "find directory
+   * -print" but some post-processing happens on the output,
+   * described below.
+   * <p>
+   * This returns a list of strings *without any prefix*.
+   * Thus if the directory structure was:
+   * <p>
+   * /tmp/a
+   * /tmp/b
+   * /tmp/c/d
+   * <p>
+   * then the returned list from "g.find" "/tmp" would be 4
+   * elements:
+   * <p>
+   * a
+   * b
+   * c
+   * c/d
+   * <p>
+   * If "directory" is not a directory, then this command
+   * returns an error.
+   * <p>
+   * The returned list is sorted.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] find (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("find: handle is closed");
+
+    return _find (g, directory);
+  }
+
+  private native String[] _find (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * read a file
+   * <p>
+   * This calls returns the contents of the file "path" as a
+   * buffer.
+   * <p>
+   * Unlike "g.cat", this function can correctly handle files
+   * that contain embedded ASCII NUL characters.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String read_file (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("read_file: handle is closed");
+
+    return _read_file (g, path);
+  }
+
+  private native String _read_file (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * read file as lines
+   * <p>
+   * Return the contents of the file named "path".
+   * <p>
+   * The file contents are returned as a list of lines.
+   * Trailing "LF" and "CRLF" character sequences are *not*
+   * returned.
+   * <p>
+   * Note that this function cannot correctly handle binary
+   * files (specifically, files containing "\0" character
+   * which is treated as end of string). For those you need
+   * to use the "g.read_file" function and split the buffer
+   * into lines yourself.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] read_lines (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("read_lines: handle is closed");
+
+    return _read_lines (g, path);
+  }
+
+  private native String[] _read_lines (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * create a new file
+   * <p>
+   * This call creates a file called "path". The content of
+   * the file is the string "content" (which can contain any
+   * 8 bit data).
+   * <p>
+   * See also "g.write_append".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void write (String path, byte[] content)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("write: handle is closed");
+
+    _write (g, path, content);
+  }
+
+  private native void _write (long g, String path, byte[] content)
+    throws LibGuestFSException;
+
+  /**
+   * append content to end of file
+   * <p>
+   * This call appends "content" to the end of file "path".
+   * If "path" does not exist, then a new file is created.
+   * <p>
+   * See also "g.write".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void write_append (String path, byte[] content)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("write_append: handle is closed");
+
+    _write_append (g, path, content);
+  }
+
+  private native void _write_append (long g, String path, byte[] content)
+    throws LibGuestFSException;
+
+  /**
+   * lstat on multiple files
+   * <p>
+   * This call allows you to perform the "g.lstat" operation
+   * on multiple files, where all files are in the directory
+   * "path". "names" is the list of files from this
+   * directory.
+   * <p>
+   * On return you get a list of stat structs, with a
+   * one-to-one correspondence to the "names" list. If any
+   * name did not exist or could not be lstat'd, then the
+   * "ino" field of that structure is set to -1.
+   * <p>
+   * This call is intended for programs that want to
+   * efficiently list a directory contents without making
+   * many round-trips. See also "g.lxattrlist" for a
+   * similarly efficient call for getting extended
+   * attributes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Stat[] lstatlist (String path, String[] names)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lstatlist: handle is closed");
+
+    return _lstatlist (g, path, names);
+  }
+
+  private native Stat[] _lstatlist (long g, String path, String[] names)
+    throws LibGuestFSException;
+
+  /**
+   * lgetxattr on multiple files
+   * <p>
+   * This call allows you to get the extended attributes of
+   * multiple files, where all files are in the directory
+   * "path". "names" is the list of files from this
+   * directory.
+   * <p>
+   * On return you get a flat list of xattr structs which
+   * must be interpreted sequentially. The first xattr struct
+   * always has a zero-length "attrname". "attrval" in this
+   * struct is zero-length to indicate there was an error
+   * doing "lgetxattr" for this file, *or* is a C string
+   * which is a decimal number (the number of following
+   * attributes for this file, which could be "0"). Then
+   * after the first xattr struct are the zero or more
+   * attributes for the first named file. This repeats for
+   * the second and subsequent files.
+   * <p>
+   * This call is intended for programs that want to
+   * efficiently list a directory contents without making
+   * many round-trips. See also "g.lstatlist" for a similarly
+   * efficient call for getting standard stats.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public XAttr[] lxattrlist (String path, String[] names)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("lxattrlist: handle is closed");
+
+    return _lxattrlist (g, path, names);
+  }
+
+  private native XAttr[] _lxattrlist (long g, String path, String[] names)
+    throws LibGuestFSException;
+
+  /**
+   * readlink on multiple files
+   * <p>
+   * This call allows you to do a "readlink" operation on
+   * multiple files, where all files are in the directory
+   * "path". "names" is the list of files from this
+   * directory.
+   * <p>
+   * On return you get a list of strings, with a one-to-one
+   * correspondence to the "names" list. Each string is the
+   * value of the symbolic link.
+   * <p>
+   * If the readlink(2) operation fails on any name, then the
+   * corresponding result string is the empty string "".
+   * However the whole operation is completed even if there
+   * were readlink(2) errors, and so you can call this
+   * function with names where you don't know if they are
+   * symbolic links already (albeit slightly less efficient).
+   * <p>
+   * This call is intended for programs that want to
+   * efficiently list a directory contents without making
+   * many round-trips.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] readlinklist (String path, String[] names)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("readlinklist: handle is closed");
+
+    return _readlinklist (g, path, names);
+  }
+
+  private native String[] _readlinklist (long g, String path, String[] names)
+    throws LibGuestFSException;
+
+  /**
+   * list the files in a directory
+   * <p>
+   * List the files in "directory" (relative to the root
+   * directory, there is no cwd). The '.' and '..' entries
+   * are not returned, but hidden files are shown.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] ls (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ls: handle is closed");
+
+    return _ls (g, directory);
+  }
+
+  private native String[] _ls (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * return the data field from the (key, datatype, data) tuple
+   * <p>
+   * This calls "g.hivex_value_value" (which returns the data
+   * field from a hivex value tuple). It then assumes that
+   * the field is a UTF-16LE string and converts the result
+   * to UTF-8 (or if this is not possible, it returns an
+   * error).
+   * <p>
+   * This is useful for reading strings out of the Windows
+   * registry. However it is not foolproof because the
+   * registry is not strongly-typed and fields can contain
+   * arbitrary or unexpected data.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String hivex_value_utf8 (long valueh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_value_utf8: handle is closed");
+
+    return _hivex_value_utf8 (g, valueh);
+  }
+
+  private native String _hivex_value_utf8 (long g, long valueh)
+    throws LibGuestFSException;
+
+  /**
+   * detect the disk format of a disk image
+   * <p>
+   * Detect and return the format of the disk image called
+   * "filename". "filename" can also be a host device, etc.
+   * If the format of the image could not be detected, then
+   * "unknown" is returned.
+   * <p>
+   * Note that detecting the disk format can be insecure
+   * under some circumstances. See "CVE-2010-3851" in
+   * guestfs(3).
+   * <p>
+   * See also: "DISK IMAGE FORMATS" in guestfs(3)
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String disk_format (String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("disk_format: handle is closed");
+
+    return _disk_format (g, filename);
+  }
+
+  private native String _disk_format (long g, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * return virtual size of a disk
+   * <p>
+   * Detect and return the virtual size in bytes of the disk
+   * image called "filename".
+   * <p>
+   * Note that detecting disk features can be insecure under
+   * some circumstances. See "CVE-2010-3851" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long disk_virtual_size (String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("disk_virtual_size: handle is closed");
+
+    return _disk_virtual_size (g, filename);
+  }
+
+  private native long _disk_virtual_size (long g, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * return whether disk has a backing file
+   * <p>
+   * Detect and return whether the disk image "filename" has
+   * a backing file.
+   * <p>
+   * Note that detecting disk features can be insecure under
+   * some circumstances. See "CVE-2010-3851" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean disk_has_backing_file (String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("disk_has_backing_file: handle is closed");
+
+    return _disk_has_backing_file (g, filename);
+  }
+
+  private native boolean _disk_has_backing_file (long g, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * remove a disk image
+   * <p>
+   * This function is conceptually the opposite of
+   * "g.add_drive_opts". It removes the drive that was
+   * previously added with label "label".
+   * <p>
+   * Note that in order to remove drives, you have to add
+   * them with labels (see the optional "label" argument to
+   * "g.add_drive_opts"). If you didn't use a label, then
+   * they cannot be removed.
+   * <p>
+   * You can call this function before or after launching the
+   * handle. If called after launch, if the attach-method
+   * supports it, we try to hot unplug the drive: see
+   * "HOTPLUGGING" in guestfs(3). The disk must not be in use
+   * (eg. mounted) when you do this. We try to detect if the
+   * disk is in use and stop you from doing this.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void remove_drive (String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("remove_drive: handle is closed");
+
+    _remove_drive (g, label);
+  }
+
+  private native void _remove_drive (long g, String label)
+    throws LibGuestFSException;
+
+  /**
+   * set libvirt credentials supported by calling program
+   * <p>
+   * Call this function before setting an event handler for
+   * "GUESTFS_EVENT_LIBVIRT_AUTH", to supply the list of
+   * credential types that the program knows how to process.
+   * <p>
+   * The "creds" list must be a non-empty list of strings.
+   * Possible strings are:
+   * <p>
+   * "username"
+   * "authname"
+   * "language"
+   * "cnonce"
+   * "passphrase"
+   * "echoprompt"
+   * "noechoprompt"
+   * "realm"
+   * "external"
+   * <p>
+   * See libvirt documentation for the meaning of these
+   * credential types.
+   * <p>
+   * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+   * documentation and example code.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_libvirt_supported_credentials (String[] creds)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_libvirt_supported_credentials: handle is closed");
+
+    _set_libvirt_supported_credentials (g, creds);
+  }
+
+  private native void _set_libvirt_supported_credentials (long g, String[] creds)
+    throws LibGuestFSException;
+
+  /**
+   * get list of credentials requested by libvirt
+   * <p>
+   * This should only be called during the event callback for
+   * events of type "GUESTFS_EVENT_LIBVIRT_AUTH".
+   * <p>
+   * Return the list of credentials requested by libvirt.
+   * Possible values are a subset of the strings provided
+   * when you called "g.set_libvirt_supported_credentials".
+   * <p>
+   * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+   * documentation and example code.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] get_libvirt_requested_credentials ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_libvirt_requested_credentials: handle is closed");
+
+    return _get_libvirt_requested_credentials (g);
+  }
+
+  private native String[] _get_libvirt_requested_credentials (long g)
+    throws LibGuestFSException;
+
+  /**
+   * prompt of i'th requested credential
+   * <p>
+   * Get the prompt (provided by libvirt) for the "index"'th
+   * requested credential. If libvirt did not provide a
+   * prompt, this returns the empty string "".
+   * <p>
+   * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+   * documentation and example code.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_libvirt_requested_credential_prompt (int index)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_libvirt_requested_credential_prompt: handle is closed");
+
+    return _get_libvirt_requested_credential_prompt (g, index);
+  }
+
+  private native String _get_libvirt_requested_credential_prompt (long g, int index)
+    throws LibGuestFSException;
+
+  /**
+   * challenge of i'th requested credential
+   * <p>
+   * Get the challenge (provided by libvirt) for the
+   * "index"'th requested credential. If libvirt did not
+   * provide a challenge, this returns the empty string "".
+   * <p>
+   * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+   * documentation and example code.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_libvirt_requested_credential_challenge (int index)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_libvirt_requested_credential_challenge: handle is closed");
+
+    return _get_libvirt_requested_credential_challenge (g, index);
+  }
+
+  private native String _get_libvirt_requested_credential_challenge (long g, int index)
+    throws LibGuestFSException;
+
+  /**
+   * default result of i'th requested credential
+   * <p>
+   * Get the default result (provided by libvirt) for the
+   * "index"'th requested credential. If libvirt did not
+   * provide a default result, this returns the empty string
+   * "".
+   * <p>
+   * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+   * documentation and example code.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_libvirt_requested_credential_defresult (int index)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_libvirt_requested_credential_defresult: handle is closed");
+
+    return _get_libvirt_requested_credential_defresult (g, index);
+  }
+
+  private native String _get_libvirt_requested_credential_defresult (long g, int index)
+    throws LibGuestFSException;
+
+  /**
+   * pass requested credential back to libvirt
+   * <p>
+   * After requesting the "index"'th credential from the
+   * user, call this function to pass the answer back to
+   * libvirt.
+   * <p>
+   * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+   * documentation and example code.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_libvirt_requested_credential (int index, byte[] cred)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_libvirt_requested_credential: handle is closed");
+
+    _set_libvirt_requested_credential (g, index, cred);
+  }
+
+  private native void _set_libvirt_requested_credential (long g, int index, byte[] cred)
+    throws LibGuestFSException;
+
+  /**
+   * parse the environment and set handle flags accordingly
+   * <p>
+   * Parse the program's environment and set flags in the
+   * handle accordingly. For example if "LIBGUESTFS_DEBUG=1"
+   * then the 'verbose' flag is set in the handle.
+   * <p>
+   * *Most programs do not need to call this*. It is done
+   * implicitly when you call "g.create".
+   * <p>
+   * See "ENVIRONMENT VARIABLES" in guestfs(3) for a list of
+   * environment variables that can affect libguestfs
+   * handles. See also "guestfs_create_flags" in guestfs(3),
+   * and "g.parse_environment_list".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void parse_environment ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("parse_environment: handle is closed");
+
+    _parse_environment (g);
+  }
+
+  private native void _parse_environment (long g)
+    throws LibGuestFSException;
+
+  /**
+   * parse the environment and set handle flags accordingly
+   * <p>
+   * Parse the list of strings in the argument "environment"
+   * and set flags in the handle accordingly. For example if
+   * "LIBGUESTFS_DEBUG=1" is a string in the list, then the
+   * 'verbose' flag is set in the handle.
+   * <p>
+   * This is the same as "g.parse_environment" except that it
+   * parses an explicit list of strings instead of the
+   * program's environment.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void parse_environment_list (String[] environment)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("parse_environment_list: handle is closed");
+
+    _parse_environment_list (g, environment);
+  }
+
+  private native void _parse_environment_list (long g, String[] environment)
+    throws LibGuestFSException;
+
+  /**
+   * set the temporary directory
+   * <p>
+   * Set the directory used by the handle to store temporary
+   * files.
+   * <p>
+   * The environment variables "LIBGUESTFS_TMPDIR" and
+   * "TMPDIR" control the default value: If
+   * "LIBGUESTFS_TMPDIR" is set, then that is the default.
+   * Else if "TMPDIR" is set, then that is the default. Else
+   * "/tmp" is the default.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_tmpdir (String tmpdir)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_tmpdir: handle is closed");
+
+    _set_tmpdir (g, tmpdir);
+  }
+
+  private native void _set_tmpdir (long g, String tmpdir)
+    throws LibGuestFSException;
+
+  /**
+   * get the temporary directory
+   * <p>
+   * Get the directory used by the handle to store temporary
+   * files.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_tmpdir ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_tmpdir: handle is closed");
+
+    return _get_tmpdir (g);
+  }
+
+  private native String _get_tmpdir (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the appliance cache directory
+   * <p>
+   * Set the directory used by the handle to store the
+   * appliance cache, when using a supermin appliance. The
+   * appliance is cached and shared between all handles which
+   * have the same effective user ID.
+   * <p>
+   * The environment variables "LIBGUESTFS_CACHEDIR" and
+   * "TMPDIR" control the default value: If
+   * "LIBGUESTFS_CACHEDIR" is set, then that is the default.
+   * Else if "TMPDIR" is set, then that is the default. Else
+   * "/var/tmp" is the default.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_cachedir (String cachedir)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_cachedir: handle is closed");
+
+    _set_cachedir (g, cachedir);
+  }
+
+  private native void _set_cachedir (long g, String cachedir)
+    throws LibGuestFSException;
+
+  /**
+   * get the appliance cache directory
+   * <p>
+   * Get the directory used by the handle to store the
+   * appliance cache.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_cachedir ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_cachedir: handle is closed");
+
+    return _get_cachedir (g);
+  }
+
+  private native String _get_cachedir (long g)
     throws LibGuestFSException;
 
   /**
@@ -3237,35 +4753,6 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * list the contents of a file
-   * <p>
-   * Return the contents of the file named "path".
-   * <p>
-   * Note that this function cannot correctly handle binary
-   * files (specifically, files containing "\0" character
-   * which is treated as end of string). For those you need
-   * to use the "g.read_file" or "g.download" functions which
-   * have a more complex interface.
-   * <p>
-   * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
-   * LIMITS" in guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public String cat (String path)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("cat: handle is closed");
-
-    return _cat (g, path);
-  }
-
-  private native String _cat (long g, String path)
-    throws LibGuestFSException;
-
-  /**
    * list the files in a directory (long format)
    * <p>
    * List the files in "directory" (relative to the root
@@ -3287,30 +4774,6 @@ public class GuestFS {
   }
 
   private native String _ll (long g, String directory)
-    throws LibGuestFSException;
-
-  /**
-   * list the files in a directory
-   * <p>
-   * List the files in "directory" (relative to the root
-   * directory, there is no cwd). The '.' and '..' entries
-   * are not returned, but hidden files are shown.
-   * <p>
-   * This command is mostly useful for interactive sessions.
-   * Programs should probably use "g.readdir" instead.
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public String[] ls (String directory)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("ls: handle is closed");
-
-    return _ls (g, directory);
-  }
-
-  private native String[] _ls (long g, String directory)
     throws LibGuestFSException;
 
   /**
@@ -3500,35 +4963,6 @@ public class GuestFS {
   }
 
   private native LV[] _lvs_full (long g)
-    throws LibGuestFSException;
-
-  /**
-   * read file as lines
-   * <p>
-   * Return the contents of the file named "path".
-   * <p>
-   * The file contents are returned as a list of lines.
-   * Trailing "LF" and "CRLF" character sequences are *not*
-   * returned.
-   * <p>
-   * Note that this function cannot correctly handle binary
-   * files (specifically, files containing "\0" character
-   * which is treated as end of line). For those you need to
-   * use the "g.read_file" function which has a more complex
-   * interface.
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public String[] read_lines (String path)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("read_lines: handle is closed");
-
-    return _read_lines (g, path);
-  }
-
-  private native String[] _read_lines (long g, String path)
     throws LibGuestFSException;
 
   /**
@@ -4144,27 +5578,6 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * make a filesystem
-   * <p>
-   * This creates a filesystem on "device" (usually a
-   * partition or LVM logical volume). The filesystem type is
-   * "fstype", for example "ext3".
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void mkfs (String fstype, String device)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("mkfs: handle is closed");
-
-    _mkfs (g, fstype, device);
-  }
-
-  private native void _mkfs (long g, String fstype, String device)
-    throws LibGuestFSException;
-
-  /**
    * create partitions on a block device
    * <p>
    * This is a direct interface to the sfdisk(8) program for
@@ -4260,18 +5673,61 @@ public class GuestFS {
    * be specified either by its mountpoint (path) or the
    * device which contains the filesystem.
    * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
    * @throws LibGuestFSException
    */
-  public void umount (String pathordevice)
+  public void umount (String pathordevice, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("umount: handle is closed");
 
-    _umount (g, pathordevice);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean force = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("force");
+    if (_optobj != null) {
+      force = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean lazyunmount = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("lazyunmount");
+    if (_optobj != null) {
+      lazyunmount = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+
+    _umount (g, pathordevice, _optargs_bitmask, force, lazyunmount);
   }
 
-  private native void _umount (long g, String pathordevice)
+  public void umount (String pathordevice)
+    throws LibGuestFSException
+  {
+    umount (pathordevice, null);
+  }
+
+  public void umount_opts (String pathordevice, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    umount (pathordevice, optargs);
+  }
+
+  public void umount_opts (String pathordevice)
+    throws LibGuestFSException
+  {
+    umount (pathordevice, null);
+  }
+
+  private native void _umount (long g, String pathordevice, long _optargs_bitmask, boolean force, boolean lazyunmount)
     throws LibGuestFSException;
 
   /**
@@ -4893,23 +6349,63 @@ public class GuestFS {
    * unpack tarfile to directory
    * <p>
    * This command uploads and unpacks local file "tarfile"
-   * (an *uncompressed* tar file) into "directory".
+   * into "directory".
    * <p>
-   * To upload a compressed tarball, use "g.tgz_in" or
-   * "g.txz_in".
+   * The optional "compress" flag controls compression. If
+   * not given, then the input should be an uncompressed tar
+   * file. Otherwise one of the following strings may be
+   * given to select the compression type of the input file:
+   * "compress", "gzip", "bzip2", "xz", "lzop". (Note that
+   * not all builds of libguestfs will support all of these
+   * compression types).
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public void tar_in (String tarfile, String directory)
+  public void tar_in (String tarfile, String directory, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("tar_in: handle is closed");
 
-    _tar_in (g, tarfile, directory);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String compress = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compress");
+    if (_optobj != null) {
+      compress = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+
+    _tar_in (g, tarfile, directory, _optargs_bitmask, compress);
   }
 
-  private native void _tar_in (long g, String tarfile, String directory)
+  public void tar_in (String tarfile, String directory)
+    throws LibGuestFSException
+  {
+    tar_in (tarfile, directory, null);
+  }
+
+  public void tar_in_opts (String tarfile, String directory, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    tar_in (tarfile, directory, optargs);
+  }
+
+  public void tar_in_opts (String tarfile, String directory)
+    throws LibGuestFSException
+  {
+    tar_in (tarfile, directory, null);
+  }
+
+  private native void _tar_in (long g, String tarfile, String directory, long _optargs_bitmask, String compress)
     throws LibGuestFSException;
 
   /**
@@ -4918,21 +6414,87 @@ public class GuestFS {
    * This command packs the contents of "directory" and
    * downloads it to local file "tarfile".
    * <p>
-   * To download a compressed tarball, use "g.tgz_out" or
-   * "g.txz_out".
+   * The optional "compress" flag controls compression. If
+   * not given, then the output will be an uncompressed tar
+   * file. Otherwise one of the following strings may be
+   * given to select the compression type of the output file:
+   * "compress", "gzip", "bzip2", "xz", "lzop". (Note that
+   * not all builds of libguestfs will support all of these
+   * compression types).
+   * <p>
+   * The other optional arguments are:
+   * <p>
+   * "excludes"
+   * A list of wildcards. Files are excluded if they
+   * match any of the wildcards.
+   * <p>
+   * "numericowner"
+   * If set to true, the output tar file will contain
+   * UID/GID numbers instead of user/group names.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public void tar_out (String directory, String tarfile)
+  public void tar_out (String directory, String tarfile, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("tar_out: handle is closed");
 
-    _tar_out (g, directory, tarfile);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String compress = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compress");
+    if (_optobj != null) {
+      compress = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+    boolean numericowner = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("numericowner");
+    if (_optobj != null) {
+      numericowner = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    String[] excludes = new String[]{};
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("excludes");
+    if (_optobj != null) {
+      excludes = ((String[]) _optobj);
+      _optargs_bitmask |= 4L;
+    }
+
+    _tar_out (g, directory, tarfile, _optargs_bitmask, compress, numericowner, excludes);
   }
 
-  private native void _tar_out (long g, String directory, String tarfile)
+  public void tar_out (String directory, String tarfile)
+    throws LibGuestFSException
+  {
+    tar_out (directory, tarfile, null);
+  }
+
+  public void tar_out_opts (String directory, String tarfile, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    tar_out (directory, tarfile, optargs);
+  }
+
+  public void tar_out_opts (String directory, String tarfile)
+    throws LibGuestFSException
+  {
+    tar_out (directory, tarfile, null);
+  }
+
+  private native void _tar_out (long g, String directory, String tarfile, long _optargs_bitmask, String compress, boolean numericowner, String[] excludes)
     throws LibGuestFSException;
 
   /**
@@ -4941,7 +6503,12 @@ public class GuestFS {
    * This command uploads and unpacks local file "tarball" (a
    * *gzip compressed* tar file) into "directory".
    * <p>
-   * To upload an uncompressed tarball, use "g.tar_in".
+   * *This function is deprecated.* In new code, use the
+   * "tar_in" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4963,7 +6530,12 @@ public class GuestFS {
    * This command packs the contents of "directory" and
    * downloads it to local file "tarball".
    * <p>
-   * To download an uncompressed tarball, use "g.tar_out".
+   * *This function is deprecated.* In new code, use the
+   * "tar_out" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -5859,55 +7431,6 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * find all files and directories
-   * <p>
-   * This command lists out all files and directories,
-   * recursively, starting at "directory". It is essentially
-   * equivalent to running the shell command "find directory
-   * -print" but some post-processing happens on the output,
-   * described below.
-   * <p>
-   * This returns a list of strings *without any prefix*.
-   * Thus if the directory structure was:
-   * <p>
-   * /tmp/a
-   * /tmp/b
-   * /tmp/c/d
-   * <p>
-   * then the returned list from "g.find" "/tmp" would be 4
-   * elements:
-   * <p>
-   * a
-   * b
-   * c
-   * c/d
-   * <p>
-   * If "directory" is not a directory, then this command
-   * returns an error.
-   * <p>
-   * The returned list is sorted.
-   * <p>
-   * See also "g.find0".
-   * <p>
-   * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
-   * LIMITS" in guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public String[] find (String directory)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("find: handle is closed");
-
-    return _find (g, directory);
-  }
-
-  private native String[] _find (long g, String directory)
-    throws LibGuestFSException;
-
-  /**
    * check an ext2/ext3 filesystem
    * <p>
    * This runs "e2fsck -p -f device", ie. runs the ext2/ext3
@@ -6477,20 +8000,66 @@ public class GuestFS {
   /**
    * create a swap partition
    * <p>
-   * Create a swap partition on "device".
+   * Create a Linux swap partition on "device".
+   * <p>
+   * The option arguments "label" and "uuid" allow you to set
+   * the label and/or UUID of the new swap partition.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public void mkswap (String device)
+  public void mkswap (String device, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mkswap: handle is closed");
 
-    _mkswap (g, device);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+    String uuid = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("uuid");
+    if (_optobj != null) {
+      uuid = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+
+    _mkswap (g, device, _optargs_bitmask, label, uuid);
   }
 
-  private native void _mkswap (long g, String device)
+  public void mkswap (String device)
+    throws LibGuestFSException
+  {
+    mkswap (device, null);
+  }
+
+  public void mkswap_opts (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    mkswap (device, optargs);
+  }
+
+  public void mkswap_opts (String device)
+    throws LibGuestFSException
+  {
+    mkswap (device, null);
+  }
+
+  private native void _mkswap (long g, String device, long _optargs_bitmask, String label, String uuid)
     throws LibGuestFSException;
 
   /**
@@ -6501,6 +8070,13 @@ public class GuestFS {
    * Note that you cannot attach a swap label to a block
    * device (eg. "/dev/sda"), just to a partition. This
    * appears to be a limitation of the kernel or swap tools.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mkswap" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -6520,6 +8096,13 @@ public class GuestFS {
    * create a swap partition with an explicit UUID
    * <p>
    * Create a swap partition on "device" with UUID "uuid".
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mkswap" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -6710,6 +8293,10 @@ public class GuestFS {
    * This function is primarily intended for use by programs.
    * To get a simple list of names, use "g.ls". To get a
    * printable directory for human consumption, use "g.ll".
+   * <p>
+   * Because of the message protocol, there is a transfer
+   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+   * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -7032,56 +8619,104 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * read a file
-   * <p>
-   * This calls returns the contents of the file "path" as a
-   * buffer.
-   * <p>
-   * Unlike "g.cat", this function can correctly handle files
-   * that contain embedded ASCII NUL characters. However
-   * unlike "g.download", this function is limited in the
-   * total size of file that can be handled.
-   * <p>
-   * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
-   * LIMITS" in guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public String read_file (String path)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("read_file: handle is closed");
-
-    return _read_file (g, path);
-  }
-
-  private native String _read_file (long g, String path)
-    throws LibGuestFSException;
-
-  /**
    * return lines matching a pattern
    * <p>
    * This calls the external "grep" program and returns the
    * matching lines.
    * <p>
+   * The optional flags are:
+   * <p>
+   * "extended"
+   * Use extended regular expressions. This is the same
+   * as using the *-E* flag.
+   * <p>
+   * "fixed"
+   * Match fixed (don't use regular expressions). This is
+   * the same as using the *-F* flag.
+   * <p>
+   * "insensitive"
+   * Match case-insensitive. This is the same as using
+   * the *-i* flag.
+   * <p>
+   * "compressed"
+   * Use "zgrep" instead of "grep". This allows the input
+   * to be compress- or gzip-compressed.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
-  public String[] grep (String regex, String path)
+  public String[] grep (String regex, String path, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("grep: handle is closed");
 
-    return _grep (g, regex, path);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean extended = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("extended");
+    if (_optobj != null) {
+      extended = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean fixed = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("fixed");
+    if (_optobj != null) {
+      fixed = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    boolean insensitive = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("insensitive");
+    if (_optobj != null) {
+      insensitive = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+    boolean compressed = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("compressed");
+    if (_optobj != null) {
+      compressed = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
+
+    return _grep (g, regex, path, _optargs_bitmask, extended, fixed, insensitive, compressed);
   }
 
-  private native String[] _grep (long g, String regex, String path)
+  public String[] grep (String regex, String path)
+    throws LibGuestFSException
+  {
+    return grep (regex, path, null);
+  }
+
+  public String[] grep_opts (String regex, String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return grep (regex, path, optargs);
+  }
+
+  public String[] grep_opts (String regex, String path)
+    throws LibGuestFSException
+  {
+    return grep (regex, path, null);
+  }
+
+  private native String[] _grep (long g, String regex, String path, long _optargs_bitmask, boolean extended, boolean fixed, boolean insensitive, boolean compressed)
     throws LibGuestFSException;
 
   /**
@@ -7093,6 +8728,13 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7118,6 +8760,13 @@ public class GuestFS {
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public String[] fgrep (String pattern, String path)
@@ -7141,6 +8790,13 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7166,6 +8822,13 @@ public class GuestFS {
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public String[] egrepi (String regex, String path)
@@ -7189,6 +8852,13 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7214,6 +8884,13 @@ public class GuestFS {
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public String[] zgrep (String regex, String path)
@@ -7237,6 +8914,13 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7262,6 +8946,13 @@ public class GuestFS {
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public String[] zfgrep (String pattern, String path)
@@ -7285,6 +8976,13 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7310,6 +9008,13 @@ public class GuestFS {
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public String[] zegrepi (String regex, String path)
@@ -7333,6 +9038,13 @@ public class GuestFS {
    * Because of the message protocol, there is a transfer
    * limit of somewhere between 2MB and 4MB. See "PROTOCOL
    * LIMITS" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "grep" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -7918,7 +9630,7 @@ public class GuestFS {
    * as the requested cluster size.
    * <p>
    * *This function is deprecated.* In new code, use the
-   * "mkfs_opts" call instead.
+   * "mkfs" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
    * but the fact that they are deprecated indicates that
@@ -7946,6 +9658,13 @@ public class GuestFS {
    * <p>
    * mke2fs -O journal_dev -b blocksize device
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mke2fs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mke2journal (int blocksize, String device)
@@ -7966,6 +9685,13 @@ public class GuestFS {
    * This creates an ext2 external journal on "device" with
    * label "label".
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mke2fs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mke2journal_L (int blocksize, String label, String device)
@@ -7985,6 +9711,13 @@ public class GuestFS {
    * <p>
    * This creates an ext2 external journal on "device" with
    * UUID "uuid".
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mke2fs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -8011,6 +9744,13 @@ public class GuestFS {
    * <p>
    * See also "g.mke2journal".
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mke2fs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mke2fs_J (String fstype, int blocksize, String device, String journal)
@@ -8033,6 +9773,13 @@ public class GuestFS {
    * <p>
    * See also "g.mke2journal_L".
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mke2fs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void mke2fs_JL (String fstype, int blocksize, String device, String label)
@@ -8054,6 +9801,13 @@ public class GuestFS {
    * external journal on the journal with UUID "uuid".
    * <p>
    * See also "g.mke2journal_U".
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "mke2fs" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -8132,9 +9886,6 @@ public class GuestFS {
    * <p>
    * *   Items (filenames) in the result are separated by
    * "\0" characters. See find(1) option *-print0*.
-   * <p>
-   * *   This command is not limited in the number of names
-   * that it can return.
    * <p>
    * *   The result list is not sorted.
    * <p>
@@ -8363,122 +10114,40 @@ public class GuestFS {
   private native void _lchown (long g, int owner, int group, String path)
     throws LibGuestFSException;
 
-  /**
-   * lstat on multiple files
-   * <p>
-   * This call allows you to perform the "g.lstat" operation
-   * on multiple files, where all files are in the directory
-   * "path". "names" is the list of files from this
-   * directory.
-   * <p>
-   * On return you get a list of stat structs, with a
-   * one-to-one correspondence to the "names" list. If any
-   * name did not exist or could not be lstat'd, then the
-   * "ino" field of that structure is set to -1.
-   * <p>
-   * This call is intended for programs that want to
-   * efficiently list a directory contents without making
-   * many round-trips. See also "g.lxattrlist" for a
-   * similarly efficient call for getting extended
-   * attributes. Very long directory listings might cause the
-   * protocol message size to be exceeded, causing this call
-   * to fail. The caller must split up such requests into
-   * smaller groups of names.
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public Stat[] lstatlist (String path, String[] names)
+  public Stat[] internal_lstatlist (String path, String[] names)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("lstatlist: handle is closed");
+      throw new LibGuestFSException ("internal_lstatlist: handle is closed");
 
-    return _lstatlist (g, path, names);
+    return _internal_lstatlist (g, path, names);
   }
 
-  private native Stat[] _lstatlist (long g, String path, String[] names)
+  private native Stat[] _internal_lstatlist (long g, String path, String[] names)
     throws LibGuestFSException;
 
-  /**
-   * lgetxattr on multiple files
-   * <p>
-   * This call allows you to get the extended attributes of
-   * multiple files, where all files are in the directory
-   * "path". "names" is the list of files from this
-   * directory.
-   * <p>
-   * On return you get a flat list of xattr structs which
-   * must be interpreted sequentially. The first xattr struct
-   * always has a zero-length "attrname". "attrval" in this
-   * struct is zero-length to indicate there was an error
-   * doing "lgetxattr" for this file, *or* is a C string
-   * which is a decimal number (the number of following
-   * attributes for this file, which could be "0"). Then
-   * after the first xattr struct are the zero or more
-   * attributes for the first named file. This repeats for
-   * the second and subsequent files.
-   * <p>
-   * This call is intended for programs that want to
-   * efficiently list a directory contents without making
-   * many round-trips. See also "g.lstatlist" for a similarly
-   * efficient call for getting standard stats. Very long
-   * directory listings might cause the protocol message size
-   * to be exceeded, causing this call to fail. The caller
-   * must split up such requests into smaller groups of
-   * names.
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public XAttr[] lxattrlist (String path, String[] names)
+  public XAttr[] internal_lxattrlist (String path, String[] names)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("lxattrlist: handle is closed");
+      throw new LibGuestFSException ("internal_lxattrlist: handle is closed");
 
-    return _lxattrlist (g, path, names);
+    return _internal_lxattrlist (g, path, names);
   }
 
-  private native XAttr[] _lxattrlist (long g, String path, String[] names)
+  private native XAttr[] _internal_lxattrlist (long g, String path, String[] names)
     throws LibGuestFSException;
 
-  /**
-   * readlink on multiple files
-   * <p>
-   * This call allows you to do a "readlink" operation on
-   * multiple files, where all files are in the directory
-   * "path". "names" is the list of files from this
-   * directory.
-   * <p>
-   * On return you get a list of strings, with a one-to-one
-   * correspondence to the "names" list. Each string is the
-   * value of the symbolic link.
-   * <p>
-   * If the readlink(2) operation fails on any name, then the
-   * corresponding result string is the empty string "".
-   * However the whole operation is completed even if there
-   * were readlink(2) errors, and so you can call this
-   * function with names where you don't know if they are
-   * symbolic links already (albeit slightly less efficient).
-   * <p>
-   * This call is intended for programs that want to
-   * efficiently list a directory contents without making
-   * many round-trips. Very long directory listings might
-   * cause the protocol message size to be exceeded, causing
-   * this call to fail. The caller must split up such
-   * requests into smaller groups of names.
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public String[] readlinklist (String path, String[] names)
+  public String[] internal_readlinklist (String path, String[] names)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("readlinklist: handle is closed");
+      throw new LibGuestFSException ("internal_readlinklist: handle is closed");
 
-    return _readlinklist (g, path, names);
+    return _internal_readlinklist (g, path, names);
   }
 
-  private native String[] _readlinklist (long g, String path, String[] names)
+  private native String[] _internal_readlinklist (long g, String path, String[] names)
     throws LibGuestFSException;
 
   /**
@@ -8823,6 +10492,8 @@ public class GuestFS {
    * speculatively execute a command to find out if the
    * daemon implemented it. See also "g.version".
    * <p>
+   * See also "g.filesystem_available".
+   * <p>
    * @throws LibGuestFSException
    */
   public void available (String[] groups)
@@ -9138,6 +10809,13 @@ public class GuestFS {
    * This command uploads and unpacks local file "tarball"
    * (an *xz compressed* tar file) into "directory".
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "tar_in" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void txz_in (String tarball, String directory)
@@ -9159,6 +10837,13 @@ public class GuestFS {
    * downloads it to local file "tarball" (as an xz
    * compressed tar archive).
    * <p>
+   * *This function is deprecated.* In new code, use the
+   * "tar_out" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
+   * <p>
    * @throws LibGuestFSException
    */
   public void txz_out (String directory, String tarball)
@@ -9171,44 +10856,6 @@ public class GuestFS {
   }
 
   private native void _txz_out (long g, String directory, String tarball)
-    throws LibGuestFSException;
-
-  /**
-   * resize an NTFS filesystem
-   * <p>
-   * This command resizes an NTFS filesystem, expanding or
-   * shrinking it to the size of the underlying device.
-   * <p>
-   * *Note:* After the resize operation, the filesystem is
-   * marked as requiring a consistency check (for safety).
-   * You have to boot into Windows to perform this check and
-   * clear this condition. Furthermore, ntfsresize refuses to
-   * resize filesystems which have been marked in this way.
-   * So in effect it is not possible to call ntfsresize
-   * multiple times on a single filesystem without booting
-   * into Windows between each resize.
-   * <p>
-   * See also ntfsresize(8).
-   * <p>
-   * *This function is deprecated.* In new code, use the
-   * "ntfsresize_opts" call instead.
-   * <p>
-   * Deprecated functions will not be removed from the API,
-   * but the fact that they are deprecated indicates that
-   * there are problems with correct use of these functions.
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void ntfsresize (String device)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("ntfsresize: handle is closed");
-
-    _ntfsresize (g, device);
-  }
-
-  private native void _ntfsresize (long g, String device)
     throws LibGuestFSException;
 
   /**
@@ -9517,31 +11164,16 @@ public class GuestFS {
   private native void _fill_pattern (long g, String pattern, int len, String path)
     throws LibGuestFSException;
 
-  /**
-   * create a new file
-   * <p>
-   * This call creates a file called "path". The content of
-   * the file is the string "content" (which can contain any
-   * 8 bit data).
-   * <p>
-   * See also "g.write_append".
-   * <p>
-   * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
-   * LIMITS" in guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void write (String path, byte[] content)
+  public void internal_write (String path, byte[] content)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("write: handle is closed");
+      throw new LibGuestFSException ("internal_write: handle is closed");
 
-    _write (g, path, content);
+    _internal_write (g, path, content);
   }
 
-  private native void _write (long g, String path, byte[] content)
+  private native void _internal_write (long g, String path, byte[] content)
     throws LibGuestFSException;
 
   /**
@@ -9630,7 +11262,7 @@ public class GuestFS {
    * explicitly.
    * <p>
    * *This function is deprecated.* In new code, use the
-   * "ntfsresize_opts" call instead.
+   * "ntfsresize" call instead.
    * <p>
    * Deprecated functions will not be removed from the API,
    * but the fact that they are deprecated indicates that
@@ -10332,7 +11964,7 @@ public class GuestFS {
    * This command returns an error if the "lvname" parameter
    * does not refer to a logical volume.
    * <p>
-   * See also "g.is_lv".
+   * See also "g.is_lv", "g.canonical_device_name".
    * <p>
    * @throws LibGuestFSException
    */
@@ -10394,11 +12026,11 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mkfs_opts (String fstype, String device, Map<String, Object> optargs)
+  public void mkfs (String fstype, String device, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("mkfs_opts: handle is closed");
+      throw new LibGuestFSException ("mkfs: handle is closed");
 
     /* Unpack optional args. */
     Object _optobj;
@@ -10436,16 +12068,28 @@ public class GuestFS {
       _optargs_bitmask |= 8L;
     }
 
-    _mkfs_opts (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize);
+    _mkfs (g, fstype, device, _optargs_bitmask, blocksize, features, inode, sectorsize);
+  }
+
+  public void mkfs (String fstype, String device)
+    throws LibGuestFSException
+  {
+    mkfs (fstype, device, null);
+  }
+
+  public void mkfs_opts (String fstype, String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    mkfs (fstype, device, optargs);
   }
 
   public void mkfs_opts (String fstype, String device)
     throws LibGuestFSException
   {
-    mkfs_opts (fstype, device, null);
+    mkfs (fstype, device, null);
   }
 
-  private native void _mkfs_opts (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize)
+  private native void _mkfs (long g, String fstype, String device, long _optargs_bitmask, int blocksize, String features, int inode, int sectorsize)
     throws LibGuestFSException;
 
   /**
@@ -10719,7 +12363,7 @@ public class GuestFS {
    * safety). You have to boot into Windows to perform
    * this check and clear this condition. If you *don't*
    * set the "force" option then it is not possible to
-   * call "g.ntfsresize_opts" multiple times on a single
+   * call "g.ntfsresize" multiple times on a single
    * filesystem without booting into Windows between each
    * resize.
    * <p>
@@ -10732,11 +12376,11 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void ntfsresize_opts (String device, Map<String, Object> optargs)
+  public void ntfsresize (String device, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("ntfsresize_opts: handle is closed");
+      throw new LibGuestFSException ("ntfsresize: handle is closed");
 
     /* Unpack optional args. */
     Object _optobj;
@@ -10758,16 +12402,28 @@ public class GuestFS {
       _optargs_bitmask |= 2L;
     }
 
-    _ntfsresize_opts (g, device, _optargs_bitmask, size, force);
+    _ntfsresize (g, device, _optargs_bitmask, size, force);
+  }
+
+  public void ntfsresize (String device)
+    throws LibGuestFSException
+  {
+    ntfsresize (device, null);
+  }
+
+  public void ntfsresize_opts (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    ntfsresize (device, optargs);
   }
 
   public void ntfsresize_opts (String device)
     throws LibGuestFSException
   {
-    ntfsresize_opts (device, null);
+    ntfsresize (device, null);
   }
 
-  private native void _ntfsresize_opts (long g, String device, long _optargs_bitmask, long size, boolean force)
+  private native void _ntfsresize (long g, String device, long _optargs_bitmask, long size, boolean force)
     throws LibGuestFSException;
 
   /**
@@ -10825,30 +12481,16 @@ public class GuestFS {
   private native void _btrfs_filesystem_resize (long g, String mountpoint, long _optargs_bitmask, long size)
     throws LibGuestFSException;
 
-  /**
-   * append content to end of file
-   * <p>
-   * This call appends "content" to the end of file "path".
-   * If "path" does not exist, then a new file is created.
-   * <p>
-   * See also "g.write".
-   * <p>
-   * Because of the message protocol, there is a transfer
-   * limit of somewhere between 2MB and 4MB. See "PROTOCOL
-   * LIMITS" in guestfs(3).
-   * <p>
-   * @throws LibGuestFSException
-   */
-  public void write_append (String path, byte[] content)
+  public void internal_write_append (String path, byte[] content)
     throws LibGuestFSException
   {
     if (g == 0)
-      throw new LibGuestFSException ("write_append: handle is closed");
+      throw new LibGuestFSException ("internal_write_append: handle is closed");
 
-    _write_append (g, path, content);
+    _internal_write_append (g, path, content);
   }
 
-  private native void _write_append (long g, String path, byte[] content)
+  private native void _internal_write_append (long g, String path, byte[] content)
     throws LibGuestFSException;
 
   /**
@@ -11969,8 +13611,9 @@ public class GuestFS {
    * The filesystem contents are not affected, but any free
    * space in the filesystem is freed.
    * <p>
-   * In future (but not currently) these zeroed blocks will
-   * be "sparsified" - that is, given back to the host.
+   * Free space is not "trimmed". You may want to call
+   * "g.fstrim" either as an alternative to this, or after
+   * calling this, depending on your requirements.
    * <p>
    * @throws LibGuestFSException
    */
@@ -12142,7 +13785,7 @@ public class GuestFS {
    * Since btrfs filesystems can span multiple devices, this
    * takes a non-empty list of devices.
    * <p>
-   * To create general filesystems, use "g.mkfs_opts".
+   * To create general filesystems, use "g.mkfs".
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
@@ -12696,6 +14339,112 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * check if filesystem is available
+   * <p>
+   * Check whether libguestfs supports the named filesystem.
+   * The argument "filesystem" is a filesystem name, such as
+   * "ext3".
+   * <p>
+   * You must call "g.launch" before using this command.
+   * <p>
+   * This is mainly useful as a negative test. If this
+   * returns true, it doesn't mean that a particular
+   * filesystem can be mounted, since filesystems can fail
+   * for other reasons such as it being a later version of
+   * the filesystem, or having incompatible features.
+   * <p>
+   * See also "g.available", "AVAILABILITY" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean filesystem_available (String filesystem)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("filesystem_available: handle is closed");
+
+    return _filesystem_available (g, filesystem);
+  }
+
+  private native boolean _filesystem_available (long g, String filesystem)
+    throws LibGuestFSException;
+
+  /**
+   * trim free space in a filesystem
+   * <p>
+   * Trim the free space in the filesystem mounted on
+   * "mountpoint". The filesystem must be mounted read-write.
+   * <p>
+   * The filesystem contents are not affected, but any free
+   * space in the filesystem is "trimmed", that is, given
+   * back to the host device, thus making disk images more
+   * sparse, allowing unused space in qcow2 files to be
+   * reused, etc.
+   * <p>
+   * This operation requires support in libguestfs, the
+   * mounted filesystem, the host filesystem, qemu and the
+   * host kernel. If this support isn't present it may give
+   * an error or even appear to run but do nothing.
+   * <p>
+   * See also "g.zero_free_space". That is a slightly
+   * different operation that turns free space in the
+   * filesystem into zeroes. It is valid to call "g.fstrim"
+   * either instead of, or after calling "g.zero_free_space".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void fstrim (String mountpoint, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fstrim: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long offset = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("offset");
+    if (_optobj != null) {
+      offset = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1L;
+    }
+    long length = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("length");
+    if (_optobj != null) {
+      length = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2L;
+    }
+    long minimumfreeextent = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("minimumfreeextent");
+    if (_optobj != null) {
+      minimumfreeextent = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 4L;
+    }
+
+    _fstrim (g, mountpoint, _optargs_bitmask, offset, length, minimumfreeextent);
+  }
+
+  public void fstrim (String mountpoint)
+    throws LibGuestFSException
+  {
+    fstrim (mountpoint, null);
+  }
+
+  private native void _fstrim (long g, String mountpoint, long _optargs_bitmask, long offset, long length, long minimumfreeextent)
+    throws LibGuestFSException;
+
+  /**
    * convert device to index
    * <p>
    * This function takes a device name (eg. "/dev/sdb") and
@@ -12742,6 +14491,2045 @@ public class GuestFS {
   }
 
   private native int _nr_devices (long g)
+    throws LibGuestFSException;
+
+  /**
+   * get geometry of XFS filesystem
+   * <p>
+   * "pathordevice" is a mounted XFS filesystem or a device
+   * containing an XFS filesystem. This command returns the
+   * geometry of the filesystem.
+   * <p>
+   * The returned struct contains geometry information.
+   * Missing fields are returned as -1 (for numeric fields)
+   * or empty string.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public XFSInfo xfs_info (String pathordevice)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("xfs_info: handle is closed");
+
+    return _xfs_info (g, pathordevice);
+  }
+
+  private native XFSInfo _xfs_info (long g, String pathordevice)
+    throws LibGuestFSException;
+
+  /**
+   * generate a new random UUID for a physical volume
+   * <p>
+   * Generate a new random UUID for the physical volume
+   * "device".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void pvchange_uuid (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pvchange_uuid: handle is closed");
+
+    _pvchange_uuid (g, device);
+  }
+
+  private native void _pvchange_uuid (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * generate new random UUIDs for all physical volumes
+   * <p>
+   * Generate new random UUIDs for all physical volumes.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void pvchange_uuid_all ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("pvchange_uuid_all: handle is closed");
+
+    _pvchange_uuid_all (g);
+  }
+
+  private native void _pvchange_uuid_all (long g)
+    throws LibGuestFSException;
+
+  /**
+   * generate a new random UUID for a volume group
+   * <p>
+   * Generate a new random UUID for the volume group "vg".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void vgchange_uuid (String vg)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vgchange_uuid: handle is closed");
+
+    _vgchange_uuid (g, vg);
+  }
+
+  private native void _vgchange_uuid (long g, String vg)
+    throws LibGuestFSException;
+
+  /**
+   * generate new random UUIDs for all volume groups
+   * <p>
+   * Generate new random UUIDs for all volume groups.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void vgchange_uuid_all ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("vgchange_uuid_all: handle is closed");
+
+    _vgchange_uuid_all (g);
+  }
+
+  private native void _vgchange_uuid_all (long g)
+    throws LibGuestFSException;
+
+  /**
+   * appliance kernel version
+   * <p>
+   * This returns the kernel version of the appliance, where
+   * this is available. This information is only useful for
+   * debugging. Nothing in the returned structure is defined
+   * by the API.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public UTSName utsname ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("utsname: handle is closed");
+
+    return _utsname (g);
+  }
+
+  private native UTSName _utsname (long g)
+    throws LibGuestFSException;
+
+  /**
+   * expand an existing XFS filesystem
+   * <p>
+   * Grow the XFS filesystem mounted at "path".
+   * <p>
+   * The returned struct contains geometry information.
+   * Missing fields are returned as -1 (for numeric fields)
+   * or empty string.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void xfs_growfs (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("xfs_growfs: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean datasec = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("datasec");
+    if (_optobj != null) {
+      datasec = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean logsec = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("logsec");
+    if (_optobj != null) {
+      logsec = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    boolean rtsec = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("rtsec");
+    if (_optobj != null) {
+      rtsec = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+    long datasize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("datasize");
+    if (_optobj != null) {
+      datasize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 8L;
+    }
+    long logsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("logsize");
+    if (_optobj != null) {
+      logsize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 16L;
+    }
+    long rtsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("rtsize");
+    if (_optobj != null) {
+      rtsize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 32L;
+    }
+    long rtextsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("rtextsize");
+    if (_optobj != null) {
+      rtextsize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 64L;
+    }
+    int maxpct = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("maxpct");
+    if (_optobj != null) {
+      maxpct = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 128L;
+    }
+
+    _xfs_growfs (g, path, _optargs_bitmask, datasec, logsec, rtsec, datasize, logsize, rtsize, rtextsize, maxpct);
+  }
+
+  public void xfs_growfs (String path)
+    throws LibGuestFSException
+  {
+    xfs_growfs (path, null);
+  }
+
+  private native void _xfs_growfs (long g, String path, long _optargs_bitmask, boolean datasec, boolean logsec, boolean rtsec, long datasize, long logsize, long rtsize, long rtextsize, int maxpct)
+    throws LibGuestFSException;
+
+  /**
+   * synchronize the contents of two directories
+   * <p>
+   * This call may be used to copy or synchronize two
+   * directories under the same libguestfs handle. This uses
+   * the rsync(1) program which uses a fast algorithm that
+   * avoids copying files unnecessarily.
+   * <p>
+   * "src" and "dest" are the source and destination
+   * directories. Files are copied from "src" to "dest".
+   * <p>
+   * The optional arguments are:
+   * <p>
+   * "archive"
+   * Turns on archive mode. This is the same as passing
+   * the *--archive* flag to "rsync".
+   * <p>
+   * "deletedest"
+   * Delete files at the destination that do not exist at
+   * the source.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void rsync (String src, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("rsync: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean archive = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("archive");
+    if (_optobj != null) {
+      archive = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean deletedest = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("deletedest");
+    if (_optobj != null) {
+      deletedest = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+
+    _rsync (g, src, dest, _optargs_bitmask, archive, deletedest);
+  }
+
+  public void rsync (String src, String dest)
+    throws LibGuestFSException
+  {
+    rsync (src, dest, null);
+  }
+
+  private native void _rsync (long g, String src, String dest, long _optargs_bitmask, boolean archive, boolean deletedest)
+    throws LibGuestFSException;
+
+  /**
+   * synchronize host or remote filesystem with filesystem
+   * <p>
+   * This call may be used to copy or synchronize the
+   * filesystem on the host or on a remote computer with the
+   * filesystem within libguestfs. This uses the rsync(1)
+   * program which uses a fast algorithm that avoids copying
+   * files unnecessarily.
+   * <p>
+   * This call only works if the network is enabled. See
+   * "g.set_network" or the *--network* option to various
+   * tools like guestfish(1).
+   * <p>
+   * Files are copied from the remote server and directory
+   * specified by "remote" to the destination directory
+   * "dest".
+   * <p>
+   * The format of the remote server string is defined by
+   * rsync(1). Note that there is no way to supply a password
+   * or passphrase so the target must be set up not to
+   * require one.
+   * <p>
+   * The optional arguments are the same as those of
+   * "g.rsync".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void rsync_in (String remote, String dest, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("rsync_in: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean archive = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("archive");
+    if (_optobj != null) {
+      archive = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean deletedest = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("deletedest");
+    if (_optobj != null) {
+      deletedest = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+
+    _rsync_in (g, remote, dest, _optargs_bitmask, archive, deletedest);
+  }
+
+  public void rsync_in (String remote, String dest)
+    throws LibGuestFSException
+  {
+    rsync_in (remote, dest, null);
+  }
+
+  private native void _rsync_in (long g, String remote, String dest, long _optargs_bitmask, boolean archive, boolean deletedest)
+    throws LibGuestFSException;
+
+  /**
+   * synchronize filesystem with host or remote filesystem
+   * <p>
+   * This call may be used to copy or synchronize the
+   * filesystem within libguestfs with a filesystem on the
+   * host or on a remote computer. This uses the rsync(1)
+   * program which uses a fast algorithm that avoids copying
+   * files unnecessarily.
+   * <p>
+   * This call only works if the network is enabled. See
+   * "g.set_network" or the *--network* option to various
+   * tools like guestfish(1).
+   * <p>
+   * Files are copied from the source directory "src" to the
+   * remote server and directory specified by "remote".
+   * <p>
+   * The format of the remote server string is defined by
+   * rsync(1). Note that there is no way to supply a password
+   * or passphrase so the target must be set up not to
+   * require one.
+   * <p>
+   * The optional arguments are the same as those of
+   * "g.rsync".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void rsync_out (String src, String remote, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("rsync_out: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean archive = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("archive");
+    if (_optobj != null) {
+      archive = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean deletedest = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("deletedest");
+    if (_optobj != null) {
+      deletedest = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+
+    _rsync_out (g, src, remote, _optargs_bitmask, archive, deletedest);
+  }
+
+  public void rsync_out (String src, String remote)
+    throws LibGuestFSException
+  {
+    rsync_out (src, remote, null);
+  }
+
+  private native void _rsync_out (long g, String src, String remote, long _optargs_bitmask, boolean archive, boolean deletedest)
+    throws LibGuestFSException;
+
+  /**
+   * get list of files in a directory
+   * <p>
+   * This specialized command is used to get a listing of the
+   * filenames in the directory "dir". The list of filenames
+   * is written to the local file "filenames" (on the host).
+   * <p>
+   * In the output file, the filenames are separated by "\0"
+   * characters.
+   * <p>
+   * "." and ".." are not returned. The filenames are not
+   * sorted.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ls0 (String dir, String filenames)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ls0: handle is closed");
+
+    _ls0 (g, dir, filenames);
+  }
+
+  private native void _ls0 (long g, String dir, String filenames)
+    throws LibGuestFSException;
+
+  /**
+   * fill a directory with empty files
+   * <p>
+   * This function, useful for testing filesystems, creates
+   * "nr" empty files in the directory "dir" with names
+   * 00000000 through "nr-1" (ie. each file name is 8 digits
+   * long padded with zeroes).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void fill_dir (String dir, int nr)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("fill_dir: handle is closed");
+
+    _fill_dir (g, dir, nr);
+  }
+
+  private native void _fill_dir (long g, String dir, int nr)
+    throws LibGuestFSException;
+
+  /**
+   * change parameters of an XFS filesystem
+   * <p>
+   * Change the parameters of the XFS filesystem on "device".
+   * <p>
+   * Devices that are mounted cannot be modified.
+   * Administrators must unmount filesystems before this call
+   * can modify parameters.
+   * <p>
+   * Some of the parameters of a mounted filesystem can be
+   * examined and modified using the "g.xfs_info" and
+   * "g.xfs_growfs" calls.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void xfs_admin (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("xfs_admin: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean extunwritten = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("extunwritten");
+    if (_optobj != null) {
+      extunwritten = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean imgfile = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("imgfile");
+    if (_optobj != null) {
+      imgfile = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    boolean v2log = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("v2log");
+    if (_optobj != null) {
+      v2log = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+    boolean projid32bit = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("projid32bit");
+    if (_optobj != null) {
+      projid32bit = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
+    boolean lazycounter = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("lazycounter");
+    if (_optobj != null) {
+      lazycounter = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16L;
+    }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 32L;
+    }
+    String uuid = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("uuid");
+    if (_optobj != null) {
+      uuid = ((String) _optobj);
+      _optargs_bitmask |= 64L;
+    }
+
+    _xfs_admin (g, device, _optargs_bitmask, extunwritten, imgfile, v2log, projid32bit, lazycounter, label, uuid);
+  }
+
+  public void xfs_admin (String device)
+    throws LibGuestFSException
+  {
+    xfs_admin (device, null);
+  }
+
+  private native void _xfs_admin (long g, String device, long _optargs_bitmask, boolean extunwritten, boolean imgfile, boolean v2log, boolean projid32bit, boolean lazycounter, String label, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * open a Windows Registry hive file
+   * <p>
+   * Open the Windows Registry hive file named "filename". If
+   * there was any previous hivex handle associated with this
+   * guestfs session, then it is closed.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void hivex_open (String filename, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_open: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean verbose = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("verbose");
+    if (_optobj != null) {
+      verbose = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean debug = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("debug");
+    if (_optobj != null) {
+      debug = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    boolean write = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("write");
+    if (_optobj != null) {
+      write = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+
+    _hivex_open (g, filename, _optargs_bitmask, verbose, debug, write);
+  }
+
+  public void hivex_open (String filename)
+    throws LibGuestFSException
+  {
+    hivex_open (filename, null);
+  }
+
+  private native void _hivex_open (long g, String filename, long _optargs_bitmask, boolean verbose, boolean debug, boolean write)
+    throws LibGuestFSException;
+
+  /**
+   * close the current hivex handle
+   * <p>
+   * Close the current hivex handle.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void hivex_close ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_close: handle is closed");
+
+    _hivex_close (g);
+  }
+
+  private native void _hivex_close (long g)
+    throws LibGuestFSException;
+
+  /**
+   * return the root node of the hive
+   * <p>
+   * Return the root node of the hive.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long hivex_root ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_root: handle is closed");
+
+    return _hivex_root (g);
+  }
+
+  private native long _hivex_root (long g)
+    throws LibGuestFSException;
+
+  /**
+   * return the name of the node
+   * <p>
+   * Return the name of "nodeh".
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String hivex_node_name (long nodeh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_name: handle is closed");
+
+    return _hivex_node_name (g, nodeh);
+  }
+
+  private native String _hivex_node_name (long g, long nodeh)
+    throws LibGuestFSException;
+
+  /**
+   * return list of nodes which are subkeys of node
+   * <p>
+   * Return the list of nodes which are subkeys of "nodeh".
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public HivexNode[] hivex_node_children (long nodeh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_children: handle is closed");
+
+    return _hivex_node_children (g, nodeh);
+  }
+
+  private native HivexNode[] _hivex_node_children (long g, long nodeh)
+    throws LibGuestFSException;
+
+  /**
+   * return the named child of node
+   * <p>
+   * Return the child of "nodeh" with the name "name", if it
+   * exists. This can return 0 meaning the name was not
+   * found.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long hivex_node_get_child (long nodeh, String name)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_get_child: handle is closed");
+
+    return _hivex_node_get_child (g, nodeh, name);
+  }
+
+  private native long _hivex_node_get_child (long g, long nodeh, String name)
+    throws LibGuestFSException;
+
+  /**
+   * return the parent of node
+   * <p>
+   * Return the parent node of "nodeh".
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long hivex_node_parent (long nodeh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_parent: handle is closed");
+
+    return _hivex_node_parent (g, nodeh);
+  }
+
+  private native long _hivex_node_parent (long g, long nodeh)
+    throws LibGuestFSException;
+
+  /**
+   * return list of values attached to node
+   * <p>
+   * Return the array of (key, datatype, data) tuples
+   * attached to "nodeh".
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public HivexValue[] hivex_node_values (long nodeh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_values: handle is closed");
+
+    return _hivex_node_values (g, nodeh);
+  }
+
+  private native HivexValue[] _hivex_node_values (long g, long nodeh)
+    throws LibGuestFSException;
+
+  /**
+   * return the named value
+   * <p>
+   * Return the value attached to "nodeh" which has the name
+   * "key", if it exists. This can return 0 meaning the key
+   * was not found.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long hivex_node_get_value (long nodeh, String key)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_get_value: handle is closed");
+
+    return _hivex_node_get_value (g, nodeh, key);
+  }
+
+  private native long _hivex_node_get_value (long g, long nodeh, String key)
+    throws LibGuestFSException;
+
+  /**
+   * return the key field from the (key, datatype, data) tuple
+   * <p>
+   * Return the key (name) field of a (key, datatype, data)
+   * tuple.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String hivex_value_key (long valueh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_value_key: handle is closed");
+
+    return _hivex_value_key (g, valueh);
+  }
+
+  private native String _hivex_value_key (long g, long valueh)
+    throws LibGuestFSException;
+
+  /**
+   * return the data type from the (key, datatype, data) tuple
+   * <p>
+   * Return the data type field from a (key, datatype, data)
+   * tuple.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long hivex_value_type (long valueh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_value_type: handle is closed");
+
+    return _hivex_value_type (g, valueh);
+  }
+
+  private native long _hivex_value_type (long g, long valueh)
+    throws LibGuestFSException;
+
+  /**
+   * return the data field from the (key, datatype, data) tuple
+   * <p>
+   * Return the data field of a (key, datatype, data) tuple.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * See also: "g.hivex_value_utf8".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String hivex_value_value (long valueh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_value_value: handle is closed");
+
+    return _hivex_value_value (g, valueh);
+  }
+
+  private native String _hivex_value_value (long g, long valueh)
+    throws LibGuestFSException;
+
+  /**
+   * commit (write) changes back to the hive
+   * <p>
+   * Commit (write) changes to the hive.
+   * <p>
+   * If the optional "filename" parameter is null, then the
+   * changes are written back to the same hive that was
+   * opened. If this is not null then they are written to the
+   * alternate filename given and the original hive is left
+   * untouched.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void hivex_commit (String filename)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_commit: handle is closed");
+
+    _hivex_commit (g, filename);
+  }
+
+  private native void _hivex_commit (long g, String filename)
+    throws LibGuestFSException;
+
+  /**
+   * add a child node
+   * <p>
+   * Add a child node to "parent" named "name".
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long hivex_node_add_child (long parent, String name)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_add_child: handle is closed");
+
+    return _hivex_node_add_child (g, parent, name);
+  }
+
+  private native long _hivex_node_add_child (long g, long parent, String name)
+    throws LibGuestFSException;
+
+  /**
+   * delete a node (recursively)
+   * <p>
+   * Delete "nodeh", recursively if necessary.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void hivex_node_delete_child (long nodeh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_delete_child: handle is closed");
+
+    _hivex_node_delete_child (g, nodeh);
+  }
+
+  private native void _hivex_node_delete_child (long g, long nodeh)
+    throws LibGuestFSException;
+
+  /**
+   * set or replace a single value in a node
+   * <p>
+   * Set or replace a single value under the node "nodeh".
+   * The "key" is the name, "t" is the type, and "val" is the
+   * data.
+   * <p>
+   * This is a wrapper around the hivex(3) call of the same
+   * name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void hivex_node_set_value (long nodeh, String key, long t, byte[] val)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("hivex_node_set_value: handle is closed");
+
+    _hivex_node_set_value (g, nodeh, key, t, val);
+  }
+
+  private native void _hivex_node_set_value (long g, long nodeh, String key, long t, byte[] val)
+    throws LibGuestFSException;
+
+  /**
+   * repair an XFS filesystem
+   * <p>
+   * Repair corrupt or damaged XFS filesystem on "device".
+   * <p>
+   * The filesystem is specified using the "device" argument
+   * which should be the device name of the disk partition or
+   * volume containing the filesystem. If given the name of a
+   * block device, "xfs_repair" will attempt to find the raw
+   * device associated with the specified block device and
+   * will use the raw device instead.
+   * <p>
+   * Regardless, the filesystem to be repaired must be
+   * unmounted, otherwise, the resulting filesystem may be
+   * inconsistent or corrupt.
+   * <p>
+   * The returned status indicates whether filesystem
+   * corruption was detected (returns 1) or was not detected
+   * (returns 0).
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public int xfs_repair (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("xfs_repair: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean forcelogzero = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("forcelogzero");
+    if (_optobj != null) {
+      forcelogzero = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+    boolean nomodify = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("nomodify");
+    if (_optobj != null) {
+      nomodify = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2L;
+    }
+    boolean noprefetch = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("noprefetch");
+    if (_optobj != null) {
+      noprefetch = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4L;
+    }
+    boolean forcegeometry = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("forcegeometry");
+    if (_optobj != null) {
+      forcegeometry = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
+    long maxmem = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("maxmem");
+    if (_optobj != null) {
+      maxmem = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 16L;
+    }
+    long ihashsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("ihashsize");
+    if (_optobj != null) {
+      ihashsize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 32L;
+    }
+    long bhashsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("bhashsize");
+    if (_optobj != null) {
+      bhashsize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 64L;
+    }
+    long agstride = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("agstride");
+    if (_optobj != null) {
+      agstride = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 128L;
+    }
+    String logdev = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("logdev");
+    if (_optobj != null) {
+      logdev = ((String) _optobj);
+      _optargs_bitmask |= 256L;
+    }
+    String rtdev = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("rtdev");
+    if (_optobj != null) {
+      rtdev = ((String) _optobj);
+      _optargs_bitmask |= 512L;
+    }
+
+    return _xfs_repair (g, device, _optargs_bitmask, forcelogzero, nomodify, noprefetch, forcegeometry, maxmem, ihashsize, bhashsize, agstride, logdev, rtdev);
+  }
+
+  public int xfs_repair (String device)
+    throws LibGuestFSException
+  {
+    return xfs_repair (device, null);
+  }
+
+  private native int _xfs_repair (long g, String device, long _optargs_bitmask, boolean forcelogzero, boolean nomodify, boolean noprefetch, boolean forcegeometry, long maxmem, long ihashsize, long bhashsize, long agstride, String logdev, String rtdev)
+    throws LibGuestFSException;
+
+  /**
+   * remove a file ignoring errors
+   * <p>
+   * Remove the file "path".
+   * <p>
+   * If the file doesn't exist, that error is ignored. (Other
+   * errors, eg. I/O errors or bad paths, are not ignored)
+   * <p>
+   * This call cannot remove directories. Use "g.rmdir" to
+   * remove an empty directory, or "g.rm_rf" to remove
+   * directories recursively.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void rm_f (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("rm_f: handle is closed");
+
+    _rm_f (g, path);
+  }
+
+  private native void _rm_f (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * create an ext2/ext3/ext4 filesystem on device
+   * <p>
+   * "mke2fs" is used to create an ext2, ext3, or ext4
+   * filesystem on "device". The optional "blockscount" is
+   * the size of the filesystem in blocks. If omitted it
+   * defaults to the size of "device".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mke2fs (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mke2fs: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    long blockscount = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("blockscount");
+    if (_optobj != null) {
+      blockscount = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1L;
+    }
+    long blocksize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("blocksize");
+    if (_optobj != null) {
+      blocksize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2L;
+    }
+    long fragsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("fragsize");
+    if (_optobj != null) {
+      fragsize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 4L;
+    }
+    long blockspergroup = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("blockspergroup");
+    if (_optobj != null) {
+      blockspergroup = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 8L;
+    }
+    long numberofgroups = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("numberofgroups");
+    if (_optobj != null) {
+      numberofgroups = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 16L;
+    }
+    long bytesperinode = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("bytesperinode");
+    if (_optobj != null) {
+      bytesperinode = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 32L;
+    }
+    long inodesize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("inodesize");
+    if (_optobj != null) {
+      inodesize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 64L;
+    }
+    long journalsize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("journalsize");
+    if (_optobj != null) {
+      journalsize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 128L;
+    }
+    long numberofinodes = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("numberofinodes");
+    if (_optobj != null) {
+      numberofinodes = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 256L;
+    }
+    long stridesize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("stridesize");
+    if (_optobj != null) {
+      stridesize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 512L;
+    }
+    long stripewidth = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("stripewidth");
+    if (_optobj != null) {
+      stripewidth = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 1024L;
+    }
+    long maxonlineresize = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("maxonlineresize");
+    if (_optobj != null) {
+      maxonlineresize = ((Long) _optobj).longValue();
+      _optargs_bitmask |= 2048L;
+    }
+    int reservedblockspercentage = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("reservedblockspercentage");
+    if (_optobj != null) {
+      reservedblockspercentage = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 4096L;
+    }
+    int mmpupdateinterval = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("mmpupdateinterval");
+    if (_optobj != null) {
+      mmpupdateinterval = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 8192L;
+    }
+    String journaldevice = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("journaldevice");
+    if (_optobj != null) {
+      journaldevice = ((String) _optobj);
+      _optargs_bitmask |= 16384L;
+    }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 32768L;
+    }
+    String lastmounteddir = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("lastmounteddir");
+    if (_optobj != null) {
+      lastmounteddir = ((String) _optobj);
+      _optargs_bitmask |= 65536L;
+    }
+    String creatoros = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("creatoros");
+    if (_optobj != null) {
+      creatoros = ((String) _optobj);
+      _optargs_bitmask |= 131072L;
+    }
+    String fstype = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("fstype");
+    if (_optobj != null) {
+      fstype = ((String) _optobj);
+      _optargs_bitmask |= 262144L;
+    }
+    String usagetype = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("usagetype");
+    if (_optobj != null) {
+      usagetype = ((String) _optobj);
+      _optargs_bitmask |= 524288L;
+    }
+    String uuid = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("uuid");
+    if (_optobj != null) {
+      uuid = ((String) _optobj);
+      _optargs_bitmask |= 1048576L;
+    }
+    boolean forcecreate = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("forcecreate");
+    if (_optobj != null) {
+      forcecreate = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2097152L;
+    }
+    boolean writesbandgrouponly = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("writesbandgrouponly");
+    if (_optobj != null) {
+      writesbandgrouponly = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4194304L;
+    }
+    boolean lazyitableinit = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("lazyitableinit");
+    if (_optobj != null) {
+      lazyitableinit = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8388608L;
+    }
+    boolean lazyjournalinit = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("lazyjournalinit");
+    if (_optobj != null) {
+      lazyjournalinit = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 16777216L;
+    }
+    boolean testfs = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("testfs");
+    if (_optobj != null) {
+      testfs = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 33554432L;
+    }
+    boolean discard = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("discard");
+    if (_optobj != null) {
+      discard = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 67108864L;
+    }
+    boolean quotatype = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("quotatype");
+    if (_optobj != null) {
+      quotatype = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 134217728L;
+    }
+    boolean extent = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("extent");
+    if (_optobj != null) {
+      extent = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 268435456L;
+    }
+    boolean filetype = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("filetype");
+    if (_optobj != null) {
+      filetype = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 536870912L;
+    }
+    boolean flexbg = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("flexbg");
+    if (_optobj != null) {
+      flexbg = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1073741824L;
+    }
+    boolean hasjournal = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("hasjournal");
+    if (_optobj != null) {
+      hasjournal = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 2147483648L;
+    }
+    boolean journaldev = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("journaldev");
+    if (_optobj != null) {
+      journaldev = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 4294967296L;
+    }
+    boolean largefile = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("largefile");
+    if (_optobj != null) {
+      largefile = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8589934592L;
+    }
+    boolean quota = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("quota");
+    if (_optobj != null) {
+      quota = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 17179869184L;
+    }
+    boolean resizeinode = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("resizeinode");
+    if (_optobj != null) {
+      resizeinode = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 34359738368L;
+    }
+    boolean sparsesuper = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparsesuper");
+    if (_optobj != null) {
+      sparsesuper = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 68719476736L;
+    }
+    boolean uninitbg = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("uninitbg");
+    if (_optobj != null) {
+      uninitbg = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 137438953472L;
+    }
+
+    _mke2fs (g, device, _optargs_bitmask, blockscount, blocksize, fragsize, blockspergroup, numberofgroups, bytesperinode, inodesize, journalsize, numberofinodes, stridesize, stripewidth, maxonlineresize, reservedblockspercentage, mmpupdateinterval, journaldevice, label, lastmounteddir, creatoros, fstype, usagetype, uuid, forcecreate, writesbandgrouponly, lazyitableinit, lazyjournalinit, testfs, discard, quotatype, extent, filetype, flexbg, hasjournal, journaldev, largefile, quota, resizeinode, sparsesuper, uninitbg);
+  }
+
+  public void mke2fs (String device)
+    throws LibGuestFSException
+  {
+    mke2fs (device, null);
+  }
+
+  private native void _mke2fs (long g, String device, long _optargs_bitmask, long blockscount, long blocksize, long fragsize, long blockspergroup, long numberofgroups, long bytesperinode, long inodesize, long journalsize, long numberofinodes, long stridesize, long stripewidth, long maxonlineresize, int reservedblockspercentage, int mmpupdateinterval, String journaldevice, String label, String lastmounteddir, String creatoros, String fstype, String usagetype, String uuid, boolean forcecreate, boolean writesbandgrouponly, boolean lazyitableinit, boolean lazyjournalinit, boolean testfs, boolean discard, boolean quotatype, boolean extent, boolean filetype, boolean flexbg, boolean hasjournal, boolean journaldev, boolean largefile, boolean quota, boolean resizeinode, boolean sparsesuper, boolean uninitbg)
+    throws LibGuestFSException;
+
+  /**
+   * mapping of disk labels to devices
+   * <p>
+   * If you add drives using the optional "label" parameter
+   * of "g.add_drive_opts", you can use this call to map
+   * between disk labels, and raw block device and partition
+   * names (like "/dev/sda" and "/dev/sda1").
+   * <p>
+   * This returns a hashtable, where keys are the disk labels
+   * (*without* the "/dev/disk/guestfs" prefix), and the
+   * values are the full raw block device and partition names
+   * (eg. "/dev/sda" and "/dev/sda1").
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public Map<String,String> list_disk_labels ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("list_disk_labels: handle is closed");
+
+    String[] r = _list_disk_labels (g);
+
+    HashMap<String, String> rhash = new HashMap<String, String> ();
+    for (int i = 0; i < r.length; i += 2)
+      rhash.put (r[i], r[i+1]);
+    return rhash;
+  }
+
+  private native String[] _list_disk_labels (long g)
+    throws LibGuestFSException;
+
+  public void internal_hot_add_drive (String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_hot_add_drive: handle is closed");
+
+    _internal_hot_add_drive (g, label);
+  }
+
+  private native void _internal_hot_add_drive (long g, String label)
+    throws LibGuestFSException;
+
+  public void internal_hot_remove_drive_precheck (String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_hot_remove_drive_precheck: handle is closed");
+
+    _internal_hot_remove_drive_precheck (g, label);
+  }
+
+  private native void _internal_hot_remove_drive_precheck (long g, String label)
+    throws LibGuestFSException;
+
+  public void internal_hot_remove_drive (String label)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("internal_hot_remove_drive: handle is closed");
+
+    _internal_hot_remove_drive (g, label);
+  }
+
+  private native void _internal_hot_remove_drive (long g, String label)
+    throws LibGuestFSException;
+
+  /**
+   * create a temporary file
+   * <p>
+   * This command creates a temporary file. The "tmpl"
+   * parameter should be a full pathname for the temporary
+   * directory name with the final six characters being
+   * "XXXXXX".
+   * <p>
+   * For example: "/tmp/myprogXXXXXX" or
+   * "/Temp/myprogXXXXXX", the second one being suitable for
+   * Windows filesystems.
+   * <p>
+   * The name of the temporary file that was created is
+   * returned.
+   * <p>
+   * The temporary file is created with mode 0600 and is
+   * owned by root.
+   * <p>
+   * The caller is responsible for deleting the temporary
+   * file after use.
+   * <p>
+   * If the optional "suffix" parameter is given, then the
+   * suffix (eg. ".txt") is appended to the temporary name.
+   * <p>
+   * See also: "g.mkdtemp".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String mktemp (String tmpl, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mktemp: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String suffix = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("suffix");
+    if (_optobj != null) {
+      suffix = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+
+    return _mktemp (g, tmpl, _optargs_bitmask, suffix);
+  }
+
+  public String mktemp (String tmpl)
+    throws LibGuestFSException
+  {
+    return mktemp (tmpl, null);
+  }
+
+  private native String _mktemp (long g, String tmpl, long _optargs_bitmask, String suffix)
+    throws LibGuestFSException;
+
+  /**
+   * make lost+found directory on an ext2/3/4 filesystem
+   * <p>
+   * Make the "lost+found" directory, normally in the root
+   * directory of an ext2/3/4 filesystem. "mountpoint" is the
+   * directory under which we try to create the "lost+found"
+   * directory.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void mklost_and_found (String mountpoint)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("mklost_and_found: handle is closed");
+
+    _mklost_and_found (g, mountpoint);
+  }
+
+  private native void _mklost_and_found (long g, String mountpoint)
+    throws LibGuestFSException;
+
+  /**
+   * get the POSIX ACL attached to a file
+   * <p>
+   * This function returns the POSIX Access Control List
+   * (ACL) attached to "path". The ACL is returned in "long
+   * text form" (see acl(5)).
+   * <p>
+   * The "acltype" parameter may be:
+   * <p>
+   * "access"
+   * Return the ordinary (access) ACL for any file,
+   * directory or other filesystem object.
+   * <p>
+   * "default"
+   * Return the default ACL. Normally this only makes
+   * sense if "path" is a directory.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String acl_get_file (String path, String acltype)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("acl_get_file: handle is closed");
+
+    return _acl_get_file (g, path, acltype);
+  }
+
+  private native String _acl_get_file (long g, String path, String acltype)
+    throws LibGuestFSException;
+
+  /**
+   * set the POSIX ACL attached to a file
+   * <p>
+   * This function sets the POSIX Access Control List (ACL)
+   * attached to "path". The "acl" parameter is the new ACL
+   * in either "long text form" or "short text form" (see
+   * acl(5)).
+   * <p>
+   * The "acltype" parameter may be:
+   * <p>
+   * "access"
+   * Set the ordinary (access) ACL for any file,
+   * directory or other filesystem object.
+   * <p>
+   * "default"
+   * Set the default ACL. Normally this only makes sense
+   * if "path" is a directory.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void acl_set_file (String path, String acltype, String acl)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("acl_set_file: handle is closed");
+
+    _acl_set_file (g, path, acltype, acl);
+  }
+
+  private native void _acl_set_file (long g, String path, String acltype, String acl)
+    throws LibGuestFSException;
+
+  /**
+   * delete the default POSIX ACL of a directory
+   * <p>
+   * This function deletes the default POSIX Access Control
+   * List (ACL) attached to directory "dir".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void acl_delete_def_file (String dir)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("acl_delete_def_file: handle is closed");
+
+    _acl_delete_def_file (g, dir);
+  }
+
+  private native void _acl_delete_def_file (long g, String dir)
+    throws LibGuestFSException;
+
+  /**
+   * get the Linux capabilities attached to a file
+   * <p>
+   * This function returns the Linux capabilities attached to
+   * "path". The capabilities set is returned in text form
+   * (see cap_to_text(3)).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String cap_get_file (String path)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("cap_get_file: handle is closed");
+
+    return _cap_get_file (g, path);
+  }
+
+  private native String _cap_get_file (long g, String path)
+    throws LibGuestFSException;
+
+  /**
+   * set the Linux capabilities attached to a file
+   * <p>
+   * This function sets the Linux capabilities attached to
+   * "path". The capabilities set "cap" should be passed in
+   * text form (see cap_from_text(3)).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void cap_set_file (String path, String cap)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("cap_set_file: handle is closed");
+
+    _cap_set_file (g, path, cap);
+  }
+
+  private native void _cap_set_file (long g, String path, String cap)
+    throws LibGuestFSException;
+
+  /**
+   * list all Windows dynamic disk volumes
+   * <p>
+   * This function returns all Windows dynamic disk volumes
+   * that were found at launch time. It returns a list of
+   * device names.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] list_ldm_volumes ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("list_ldm_volumes: handle is closed");
+
+    return _list_ldm_volumes (g);
+  }
+
+  private native String[] _list_ldm_volumes (long g)
+    throws LibGuestFSException;
+
+  /**
+   * list all Windows dynamic disk partitions
+   * <p>
+   * This function returns all Windows dynamic disk
+   * partitions that were found at launch time. It returns a
+   * list of device names.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] list_ldm_partitions ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("list_ldm_partitions: handle is closed");
+
+    return _list_ldm_partitions (g);
+  }
+
+  private native String[] _list_ldm_partitions (long g)
+    throws LibGuestFSException;
+
+  /**
+   * scan and create Windows dynamic disk volumes
+   * <p>
+   * This function scans all block devices looking for
+   * Windows dynamic disk volumes and partitions, and creates
+   * devices for any that were found.
+   * <p>
+   * Call "g.list_ldm_volumes" and "g.list_ldm_partitions" to
+   * return all devices.
+   * <p>
+   * Note that you don't normally need to call this
+   * explicitly, since it is done automatically at "g.launch"
+   * time. However you might want to call this function if
+   * you have hotplugged disks or have just created a Windows
+   * dynamic disk.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ldmtool_create_all ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_create_all: handle is closed");
+
+    _ldmtool_create_all (g);
+  }
+
+  private native void _ldmtool_create_all (long g)
+    throws LibGuestFSException;
+
+  /**
+   * remove all Windows dynamic disk volumes
+   * <p>
+   * This is essentially the opposite of
+   * "g.ldmtool_create_all". It removes the device mapper
+   * mappings for all Windows dynamic disk volumes
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void ldmtool_remove_all ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_remove_all: handle is closed");
+
+    _ldmtool_remove_all (g);
+  }
+
+  private native void _ldmtool_remove_all (long g)
+    throws LibGuestFSException;
+
+  /**
+   * scan for Windows dynamic disks
+   * <p>
+   * This function scans for Windows dynamic disks. It
+   * returns a list of identifiers (GUIDs) for all disk
+   * groups that were found. These identifiers can be passed
+   * to other "g.ldmtool_*" functions.
+   * <p>
+   * This function scans all block devices. To scan a subset
+   * of block devices, call "g.ldmtool_scan_devices" instead.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] ldmtool_scan ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_scan: handle is closed");
+
+    return _ldmtool_scan (g);
+  }
+
+  private native String[] _ldmtool_scan (long g)
+    throws LibGuestFSException;
+
+  /**
+   * scan for Windows dynamic disks
+   * <p>
+   * This function scans for Windows dynamic disks. It
+   * returns a list of identifiers (GUIDs) for all disk
+   * groups that were found. These identifiers can be passed
+   * to other "g.ldmtool_*" functions.
+   * <p>
+   * The parameter "devices" is a list of block devices which
+   * are scanned. If this list is empty, all block devices
+   * are scanned.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] ldmtool_scan_devices (String[] devices)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_scan_devices: handle is closed");
+
+    return _ldmtool_scan_devices (g, devices);
+  }
+
+  private native String[] _ldmtool_scan_devices (long g, String[] devices)
+    throws LibGuestFSException;
+
+  /**
+   * return the name of a Windows dynamic disk group
+   * <p>
+   * Return the name of a Windows dynamic disk group. The
+   * "diskgroup" parameter should be the GUID of a disk
+   * group, one element from the list returned by
+   * "g.ldmtool_scan".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String ldmtool_diskgroup_name (String diskgroup)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_diskgroup_name: handle is closed");
+
+    return _ldmtool_diskgroup_name (g, diskgroup);
+  }
+
+  private native String _ldmtool_diskgroup_name (long g, String diskgroup)
+    throws LibGuestFSException;
+
+  /**
+   * return the volumes in a Windows dynamic disk group
+   * <p>
+   * Return the volumes in a Windows dynamic disk group. The
+   * "diskgroup" parameter should be the GUID of a disk
+   * group, one element from the list returned by
+   * "g.ldmtool_scan".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] ldmtool_diskgroup_volumes (String diskgroup)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_diskgroup_volumes: handle is closed");
+
+    return _ldmtool_diskgroup_volumes (g, diskgroup);
+  }
+
+  private native String[] _ldmtool_diskgroup_volumes (long g, String diskgroup)
+    throws LibGuestFSException;
+
+  /**
+   * return the disks in a Windows dynamic disk group
+   * <p>
+   * Return the disks in a Windows dynamic disk group. The
+   * "diskgroup" parameter should be the GUID of a disk
+   * group, one element from the list returned by
+   * "g.ldmtool_scan".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] ldmtool_diskgroup_disks (String diskgroup)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_diskgroup_disks: handle is closed");
+
+    return _ldmtool_diskgroup_disks (g, diskgroup);
+  }
+
+  private native String[] _ldmtool_diskgroup_disks (long g, String diskgroup)
+    throws LibGuestFSException;
+
+  /**
+   * return the type of a Windows dynamic disk volume
+   * <p>
+   * Return the type of the volume named "volume" in the disk
+   * group with GUID <diskgroup>.
+   * <p>
+   * Possible volume types that can be returned here include:
+   * "simple", "spanned", "striped", "mirrored", "raid5".
+   * Other types may also be returned.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String ldmtool_volume_type (String diskgroup, String volume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_volume_type: handle is closed");
+
+    return _ldmtool_volume_type (g, diskgroup, volume);
+  }
+
+  private native String _ldmtool_volume_type (long g, String diskgroup, String volume)
+    throws LibGuestFSException;
+
+  /**
+   * return the hint field of a Windows dynamic disk volume
+   * <p>
+   * Return the hint field of the volume named "volume" in
+   * the disk group with GUID <diskgroup>. This may not be
+   * defined, in which case the empty string is returned. The
+   * hint field is often, though not always, the name of a
+   * Windows drive, eg. "E:".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String ldmtool_volume_hint (String diskgroup, String volume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_volume_hint: handle is closed");
+
+    return _ldmtool_volume_hint (g, diskgroup, volume);
+  }
+
+  private native String _ldmtool_volume_hint (long g, String diskgroup, String volume)
+    throws LibGuestFSException;
+
+  /**
+   * return the partitions in a Windows dynamic disk volume
+   * <p>
+   * Return the list of partitions in the volume named
+   * "volume" in the disk group with GUID <diskgroup>.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String[] ldmtool_volume_partitions (String diskgroup, String volume)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("ldmtool_volume_partitions: handle is closed");
+
+    return _ldmtool_volume_partitions (g, diskgroup, volume);
+  }
+
+  private native String[] _ldmtool_volume_partitions (long g, String diskgroup, String volume)
     throws LibGuestFSException;
 
 }

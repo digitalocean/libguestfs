@@ -153,7 +153,7 @@ into another program or stored in another Registry.
 =head1 サポートされるシステム
 
 The program currently supports Windows NT-derived guests starting with
-Windows XP through to at least Windows 7.
+Windows XP through to at least Windows 8.
 
 以下のレジストリキーがサポートされます:
 
@@ -184,6 +184,12 @@ C<HKEY_USERS>.
 
 The literal keys C<HKEY_USERS\$SID> and C<HKEY_CURRENT_USER> are not
 supported (there is no "current user").
+
+=head2 WINDOWS 8
+
+Windows 8 "fast startup" can prevent virt-win-reg from being able to edit
+the Registry.  See L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST
+STARTUP>.
 
 =head1 エンコーディング
 
@@ -236,7 +242,7 @@ to look at the C<HKLM\SYSTEM\Select> key:
 
 Similarly, other C<Current...> keys in the path may need to be replaced.
 
-=head1 DELETING REGISTRY KEYS AND VALUES
+=head1 レジストリーキーおよび値の削除方法
 
 レジストリキー全体を削除するには、この構文を使用します:
 
@@ -328,7 +334,7 @@ privileged account.
 
 =item *
 
-For the meaning of the magic numbers, see this Microsoft KB article:
+マジックナンバーの意味は次の Microsoft KB 記事を参照してください:
 L<http://support.microsoft.com/kb/103000>.
 
 =back

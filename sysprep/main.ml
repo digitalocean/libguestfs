@@ -161,7 +161,7 @@ read the man page virt-sysprep(1).
       fun g readonly ->
         List.iter (
           fun (file, format) ->
-            g#add_drive_opts ~readonly ?format file
+            g#add_drive ~readonly ?format file
         ) files
   in
 
@@ -207,9 +207,10 @@ let do_sysprep () =
             with Guestfs.Error msg -> eprintf (f_"%s (ignored)\n") msg
         ) mps;
 
-        (* Perform the operations. *)
+        (* Perform the filesystem operations. *)
         let flags =
-          Sysprep_operation.perform_operations ?operations ~quiet g root in
+          Sysprep_operation.perform_operations_on_filesystems
+            ?operations ~quiet g root in
 
         (* Parse flags. *)
         let relabel = ref false in
@@ -234,7 +235,15 @@ let do_sysprep () =
         );
 
         (* Unmount everything in this guest. *)
-        g#umount_all ()
+        g#umount_all ();
+
+        (* Perform the block device operations. *)
+        let flags =
+          Sysprep_operation.perform_operations_on_devices
+            ?operations ~quiet g root in
+
+        (* At present we don't support any flags from perform_on_devices. *)
+        assert (flags = [])
     ) roots
 
 (* Finished. *)

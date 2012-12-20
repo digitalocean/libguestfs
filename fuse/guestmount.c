@@ -219,9 +219,10 @@ main (int argc, char *argv[])
         dir_cache_timeout = atoi (optarg);
       else if (STREQ (long_options[option_index].name, "fuse-help"))
         fuse_help ();
-      else if (STREQ (long_options[option_index].name, "selinux"))
-        guestfs_set_selinux (g, 1);
-      else if (STREQ (long_options[option_index].name, "format")) {
+      else if (STREQ (long_options[option_index].name, "selinux")) {
+        if (guestfs_set_selinux (g, 1) == -1)
+          exit (EXIT_FAILURE);
+      } else if (STREQ (long_options[option_index].name, "format")) {
         if (!optarg || STREQ (optarg, ""))
           format = NULL;
         else
@@ -357,7 +358,8 @@ main (int argc, char *argv[])
   }
 
   /* If we're forking, we can't use the recovery process. */
-  guestfs_set_recovery_proc (g, !do_fork);
+  if (guestfs_set_recovery_proc (g, !do_fork) == -1)
+    exit (EXIT_FAILURE);
 
   /* Do the guest drives and mountpoints. */
   add_drives (drvs, 'a');
@@ -394,13 +396,6 @@ main (int argc, char *argv[])
 
   if (guestfs_mount_local_argv (g, argv[optind], &optargs) == -1)
     exit (EXIT_FAILURE);
-
-  /* At the last minute, remove the libguestfs error handler.  In code
-   * above this point, the default error handler has been used which
-   * sends all errors to stderr.  From now on, the FUSE code will
-   * convert errors into error codes (errnos) when appropriate.
-   */
-  guestfs_set_error_handler (g, NULL, NULL);
 
   /* Daemonize. */
   if (do_fork) {
@@ -443,8 +438,17 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
   }
 
+  /* At the last minute, remove the libguestfs error handler.  In code
+   * above this point, the default error handler has been used which
+   * sends all errors to stderr.  From now on, the FUSE code will
+   * convert errors into error codes (errnos) when appropriate.
+   */
+  guestfs_push_error_handler (g, NULL, NULL);
+
   /* Main loop. */
   r = guestfs_mount_local_run (g);
+
+  guestfs_pop_error_handler (g);
 
   /* Cleanup. */
   if (guestfs_shutdown (g) == -1)

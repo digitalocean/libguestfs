@@ -47,6 +47,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 VPATH = @srcdir@
 am__make_dryrun = \
   { \
@@ -84,8 +85,8 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/podwrapper.pl.in $(srcdir)/run.in \
-	$(top_srcdir)/build-aux/compile \
+	$(srcdir)/pick-guests.pl.in $(srcdir)/podwrapper.pl.in \
+	$(srcdir)/run.in $(top_srcdir)/build-aux/compile \
 	$(top_srcdir)/build-aux/config.guess \
 	$(top_srcdir)/build-aux/config.rpath \
 	$(top_srcdir)/build-aux/config.sub \
@@ -94,17 +95,20 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/build-aux/missing $(top_srcdir)/configure \
 	$(top_srcdir)/subdir-rules.mk AUTHORS COPYING COPYING.LIB TODO \
 	build-aux/compile build-aux/config.guess \
-	build-aux/config.rpath build-aux/config.sub build-aux/depcomp \
+	build-aux/config.rpath build-aux/config.sub \
 	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
 @ENABLE_DAEMON_TRUE@am__append_1 = daemon
 
 # Tests - order is important.
 @ENABLE_APPLIANCE_TRUE@am__append_2 = appliance tests/qemu \
-@ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/protocol \
-@ENABLE_APPLIANCE_TRUE@	tests/lvm tests/luks tests/md \
-@ENABLE_APPLIANCE_TRUE@	tests/ntfsclone tests/btrfs \
-@ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
-@ENABLE_APPLIANCE_TRUE@	tests/regressions
+@ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/tmpdirs \
+@ENABLE_APPLIANCE_TRUE@	tests/protocol tests/parallel \
+@ENABLE_APPLIANCE_TRUE@	tests/disks tests/lvm tests/luks \
+@ENABLE_APPLIANCE_TRUE@	tests/md tests/selinux tests/ntfsclone \
+@ENABLE_APPLIANCE_TRUE@	tests/btrfs tests/charsets tests/xml \
+@ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
+@ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
+@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/regressions
 
 # Language bindings.
 @HAVE_PERL_TRUE@am__append_3 = perl perl/examples
@@ -115,19 +119,20 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @HAVE_HASKELL_TRUE@am__append_8 = haskell
 @HAVE_PHP_TRUE@am__append_9 = php
 @HAVE_ERLANG_TRUE@am__append_10 = erlang erlang/examples
-@HAVE_GOBJECT_TRUE@am__append_11 = gobject
+@HAVE_LUA_TRUE@am__append_11 = lua lua/examples
+@HAVE_GOBJECT_TRUE@am__append_12 = gobject
 
 # OCaml tools.
-@HAVE_OCAML_TRUE@am__append_12 = resize sparsify sysprep
+@HAVE_OCAML_TRUE@am__append_13 = resize sparsify sysprep
 
 # Perl tools.
-@HAVE_TOOLS_TRUE@am__append_13 = tools
+@HAVE_TOOLS_TRUE@am__append_14 = tools
 
 # guestmount
-@HAVE_FUSE_TRUE@am__append_14 = fuse
+@HAVE_FUSE_TRUE@am__append_15 = fuse
 
 # po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_15 = po-docs
+@HAVE_PO4A_TRUE@am__append_16 = po-docs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -169,30 +174,29 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
-	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
-	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
+	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
+	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -200,32 +204,32 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
 	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
 	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
-	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
-	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
-	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
-	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/signal_h.m4 \
-	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
-	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
-	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
-	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
-	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
-	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
-	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
-	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
-	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
-	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
-	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
-	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
-	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
-	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
-	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
-	$(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/pread.m4 \
+	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/putenv.m4 \
+	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
+	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
+	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
+	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/signal_h.m4 $(top_srcdir)/m4/size_max.m4 \
+	$(top_srcdir)/m4/sleep.m4 $(top_srcdir)/m4/snprintf.m4 \
+	$(top_srcdir)/m4/socketlib.m4 $(top_srcdir)/m4/sockets.m4 \
+	$(top_srcdir)/m4/socklen.m4 $(top_srcdir)/m4/sockpfaf.m4 \
+	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
+	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
+	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
+	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
+	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
+	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
+	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
+	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
+	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
+	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
+	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
+	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -252,7 +256,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = podwrapper.pl run
+CONFIG_CLEAN_FILES = pick-guests.pl podwrapper.pl run
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -280,6 +284,38 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+man1dir = $(mandir)/man1
+am__installdirs = "$(DESTDIR)$(man1dir)"
+NROFF = nroff
+MANS = $(man_MANS)
+DATA = $(noinst_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
@@ -290,13 +326,16 @@ CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	examples po daemon appliance tests/qemu tests/guests \
-	tests/c-api tests/protocol tests/lvm tests/luks tests/md \
+	tests/c-api tests/tmpdirs tests/protocol tests/parallel \
+	tests/disks tests/lvm tests/luks tests/md tests/selinux \
 	tests/ntfsclone tests/btrfs tests/charsets tests/xml \
-	tests/regressions tests/extra test-tool fish align cat df edit \
-	format inspector rescue perl perl/examples ocaml \
-	ocaml/examples python python/examples ruby ruby/examples java \
-	java/examples haskell php erlang erlang/examples gobject \
-	csharp resize sparsify sysprep tools fuse po-docs
+	tests/mount-local tests/9p tests/rsync tests/bigdirs \
+	tests/disk-labels tests/hotplug tests/regressions test-tool \
+	fish align cat df edit format inspector rescue perl \
+	perl/examples ocaml ocaml/examples python python/examples ruby \
+	ruby/examples java java/examples haskell php erlang \
+	erlang/examples lua lua/examples gobject csharp resize \
+	sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -341,6 +380,7 @@ am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
 distcleancheck_listfiles = find . -type f -print
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
+ACL_LIBS = @ACL_LIBS@
 ALLOCA = @ALLOCA@
 ALLOCA_H = @ALLOCA_H@
 AMTAR = @AMTAR@
@@ -361,6 +401,7 @@ BITSIZEOF_WCHAR_T = @BITSIZEOF_WCHAR_T@
 BITSIZEOF_WINT_T = @BITSIZEOF_WINT_T@
 BMPTOPNM = @BMPTOPNM@
 BYTESWAP_H = @BYTESWAP_H@
+CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -409,6 +450,7 @@ FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
+GCOV_CFLAGS = @GCOV_CFLAGS@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
@@ -700,6 +742,7 @@ GNULIB__EXIT = @GNULIB__EXIT@
 GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
+GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
@@ -1011,6 +1054,10 @@ LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBPTH = @LTLIBPTH@
 LTLIBTHREAD = @LTLIBTHREAD@
+LUA = @LUA@
+LUA_CFLAGS = @LUA_CFLAGS@
+LUA_LIBS = @LUA_LIBS@
+LUA_VERSION = @LUA_VERSION@
 MAGIC_LIBS = @MAGIC_LIBS@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -1095,6 +1142,7 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_GCOV_LDFLAGS = @OCAML_GCOV_LDFLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
@@ -1213,6 +1261,7 @@ REPLACE_PREAD = @REPLACE_PREAD@
 REPLACE_PRINTF = @REPLACE_PRINTF@
 REPLACE_PSELECT = @REPLACE_PSELECT@
 REPLACE_PTHREAD_SIGMASK = @REPLACE_PTHREAD_SIGMASK@
+REPLACE_PTSNAME = @REPLACE_PTSNAME@
 REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
 REPLACE_PUTENV = @REPLACE_PUTENV@
 REPLACE_PWRITE = @REPLACE_PWRITE@
@@ -1312,6 +1361,8 @@ WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
+YAJL_CFLAGS = @YAJL_CFLAGS@
+YAJL_LIBS = @YAJL_LIBS@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
@@ -1355,6 +1406,7 @@ infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+libvirt_ro_uri = @libvirt_ro_uri@
 lispdir = @lispdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -1379,8 +1431,6 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Basic source for the library.
 
-# Extra tests don't run by default.  You have to do 'make extra-tests'.
-
 # libguestfs-test-tool
 
 # Guestfish.
@@ -1389,17 +1439,18 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Unconditional because nothing is built yet.
 SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
-	$(am__append_1) $(am__append_2) tests/extra test-tool fish \
-	align cat df edit format inspector rescue $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) csharp $(am__append_12) \
-	$(am__append_13) $(am__append_14) $(am__append_15)
+	$(am__append_1) $(am__append_2) test-tool fish align cat df \
+	edit format inspector rescue $(am__append_3) $(am__append_4) \
+	$(am__append_5) $(am__append_6) $(am__append_7) \
+	$(am__append_8) $(am__append_9) $(am__append_10) \
+	$(am__append_11) $(am__append_12) csharp $(am__append_13) \
+	$(am__append_14) $(am__append_15) $(am__append_16)
 EXTRA_DIST = \
 	$(generator_built) \
-	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
+	BUGS HACKING ROADMAP TODO \
 	.gitignore \
 	.lvimrc \
+	.mailmap \
 	.tx/config \
 	bugs-in-changelog.sh \
 	autogen.sh \
@@ -1429,12 +1480,18 @@ EXTRA_DIST = \
 	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
 	contrib/visualize-alignment/README \
 	contrib/visualize-alignment/tracetops.ml \
+	guestfs-release-notes.pod \
+	guestfs-release-notes.txt \
+	html/draft.png \
+	html/draft.svg \
 	html/pod.css \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
 	m4/.gitignore \
+	tmp/.gitignore \
 	tx-pull.sh \
-	update-bugs.sh
+	update-bugs.sh \
+	valgrind-suppressions
 
 
 # The website.
@@ -1444,13 +1501,16 @@ HTMLFILES = \
 	html/guestfs-erlang.3.html \
 	html/guestfs-faq.1.html \
 	html/guestfs-java.3.html \
+	html/guestfs-lua.3.html \
 	html/guestfs-ocaml.3.html \
 	html/guestfs-performance.1.html \
 	html/guestfs-perl.3.html \
 	html/guestfs-python.3.html \
 	html/guestfs-recipes.1.html \
+	html/guestfs-release-notes.1.html \
 	html/guestfs-ruby.3.html \
 	html/guestfs-testing.1.html \
+	html/guestfsd.8.html \
 	html/guestfish.1.html \
 	html/guestmount.1.html \
 	html/libguestfs-make-fixed-appliance.1.html \
@@ -1477,17 +1537,28 @@ HTMLFILES = \
 	html/virt-tar-out.1.html \
 	html/virt-win-reg.1.html
 
-TEXTFILES = BUGS README RELEASE-NOTES ROADMAP TODO
+HTMLSUPPORTFILES = html/draft.png html/pod.css
+TEXTFILES = BUGS README ROADMAP TODO
 WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
+
+# Manual pages in top level directory.
+man_MANS = \
+	guestfs-release-notes.1
+
+noinst_DATA = \
+	$(top_builddir)/html/guestfs-release-notes.1.html
+
 
 # Make clean.
 CLEANFILES = \
+	html/*.html \
 	pod2htm?.tmp \
-	html/*.html
+	qemu-wrapper.sh \
+	stamp-guestfs-release-notes.pod
 
-
-# Make binary distribution.
-BINTMPDIR = /tmp/libguestfs-bin
+QEMUDIR = $(HOME)/d/qemu
+QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
+LIBVIRTDIR = $(HOME)/d/libvirt
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -1542,6 +1613,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+pick-guests.pl: $(top_builddir)/config.status $(srcdir)/pick-guests.pl.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 podwrapper.pl: $(top_builddir)/config.status $(srcdir)/podwrapper.pl.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 run: $(top_builddir)/config.status $(srcdir)/run.in
@@ -1555,6 +1628,49 @@ clean-libtool:
 
 distclean-libtool:
 	-rm -f libtool config.lt
+install-man1: $(man_MANS)
+	@$(NORMAL_INSTALL)
+	@list1=''; \
+	list2='$(man_MANS)'; \
+	test -n "$(man1dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.1[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list=''; test -n "$(man1dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.1[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -1693,6 +1809,19 @@ distclean-tags:
 	-rm -f cscope.out cscope.in.out cscope.po.out cscope.files
 
 distdir: $(DISTFILES)
+	@list='$(MANS)'; if test -n "$$list"; then \
+	  list=`for p in $$list; do \
+	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	    if test -f "$$d$$p"; then echo "$$d$$p"; else :; fi; done`; \
+	  if test -n "$$list" && \
+	    grep 'ab help2man is required to generate this page' $$list >/dev/null; then \
+	    echo "error: found man pages containing the 'missing help2man' replacement text:" >&2; \
+	    grep -l 'ab help2man is required to generate this page' $$list | sed 's/^/         /' >&2; \
+	    echo "       to fix them, install help2man, remove and regenerate the man pages;" >&2; \
+	    echo "       typically 'make maintainer-clean' will remove them" >&2; \
+	    exit 1; \
+	  else :; fi; \
+	else :; fi
 	$(am__remove_distdir)
 	test -d "$(distdir)" || mkdir "$(distdir)"
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -1878,9 +2007,12 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile config.h all-local
+all-am: Makefile $(MANS) $(DATA) config.h all-local
 installdirs: installdirs-recursive
 installdirs-am:
+	for dir in "$(DESTDIR)$(man1dir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
@@ -1934,7 +2066,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-man
 
 install-dvi: install-dvi-recursive
 
@@ -1950,7 +2082,7 @@ install-info: install-info-recursive
 
 install-info-am:
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-recursive
 
@@ -1980,7 +2112,9 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-man
+
+uninstall-man: uninstall-man1
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all \
 	cscopelist-recursive ctags-recursive install-am install-strip \
@@ -1997,12 +2131,12 @@ uninstall-am:
 	info-am install install-am install-data install-data-am \
 	install-dvi install-dvi-am install-exec install-exec-am \
 	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
+	install-man install-man1 install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am
+	uninstall uninstall-am uninstall-man uninstall-man1
 
 
 -include $(top_builddir)/localenv
@@ -2026,7 +2160,7 @@ appliance: force
 website: $(HTMLFILES) $(TEXTFILES)
 	find -name 'stamp-*.pod' -delete
 	$(MAKE)
-	cp $(HTMLFILES) $(WEBSITEDIR)
+	cp $(HTMLFILES) $(HTMLSUPPORTFILES) $(WEBSITEDIR)
 	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
 	cd $(WEBSITEDIR) && \
 	date=`date +%F`; \
@@ -2041,10 +2175,7 @@ dist-hook:
 	$(top_srcdir)/update-bugs.sh > BUGS-t
 	mv BUGS-t BUGS
 	cp BUGS $(distdir)/BUGS
-	git log --pretty="format:%an <%ae>" | sort -u | uniq -w 10 | \
-		grep -v rjones | \
-		grep -v "Richard Jones" \
-		> AUTHORS-t
+	git shortlog -se | awk -F'\t' '{print $$2}' > AUTHORS-t
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 
@@ -2072,6 +2203,18 @@ all-local:
 	find resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
+guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod
+
+stamp-guestfs-release-notes.pod: guestfs-release-notes.pod
+	$(PODWRAPPER) \
+	  --section 1 \
+	  --man guestfs-release-notes.1 \
+	  --text guestfs-release-notes.txt \
+	  --html $(top_builddir)/html/guestfs-release-notes.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
 # is NOT a substitute for proper testing!
@@ -2079,18 +2222,110 @@ all-local:
 quickcheck:
 	$(top_builddir)/run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
 
-# Run extra-tests in tests/extra/ subdirectory.
+# Non-standard tests.
 
 extra-tests:
-	make -C tests/extra $@
-bindist:
-	rm -rf $(BINTMPDIR)
-	mkdir $(BINTMPDIR)
-	$(MAKE)
-	$(MAKE) DESTDIR=$(BINTMPDIR) install
-	-find $(BINTMPDIR) -type d -exec rmdir --ignore-fail-on-non-empty {} \;
-	(cd $(BINTMPDIR) && tar cf - .) | \
-	  gzip -c -9 > libguestfs-$(VERSION)-$(DISTRO)-$(host_cpu).tar.gz
+	$(MAKE) -j1 \
+	  valgrind \
+	  valgrind-local-guests \
+	  check-with-appliance \
+	  check-with-upstream-qemu \
+	  check-with-upstream-libvirt \
+	  check-slow
+
+check-valgrind: build-test-guests
+	@for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) -C `dirname $$f` $@; \
+	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
+	done
+
+check-valgrind-local-guests:
+	@GUESTS=`$(top_builddir)/run ./pick-guests.pl 5`; \
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@; \
+	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || exit $$?; \
+	done
+
+check-slow: build-test-guests
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) -C `dirname $$f` $@; \
+	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
+	done
+
+build-test-guests:
+	$(MAKE) -C tests/guests check
+
+check-with-appliance:
+	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
+	if [ "$$method" != "appliance" ]; then \
+	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check || exit $$?; \
+	fi
+
+check-with-upstream-qemu:
+	@if $(QEMUBINARY) --help >/dev/null 2>&1; then \
+	  $(MAKE) check-with-upstream-qemu-1 || exit $$?; \
+	fi
+
+check-with-upstream-qemu-1: $(top_builddir)/qemu-wrapper.sh
+	$(QEMUBINARY) --version
+	$(MAKE) LIBGUESTFS_QEMU=$(abs_top_builddir)/qemu-wrapper.sh check
+
+$(top_builddir)/qemu-wrapper.sh: Makefile
+	rm -f $@ $@-t
+	echo -e "#!/bin/sh\nexec" "$(QEMUBINARY)" -L "$(QEMUDIR)/pc-bios" \"\$$@\" > $@-t
+	chmod +x,-w $@-t
+	mv $@-t $@
+
+check-with-upstream-libvirt:
+	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
+	if [ "$$method" = "libvirt" ] && [ -x "$(LIBVIRTDIR)/run" ]; then \
+	  $(LIBVIRTDIR)/run $(MAKE) check || exit $$?; \
+	fi
+
+# Print subdirs.
+#
+# If you want to selectively run tests, or if the test suite fails half
+# way through, use:
+#
+#   make print-subdirs
+#
+# to print the subdirectories, select the ones you want to run / the
+# remaining ones, and do:
+#
+#   make check SUBDIRS="..."
+
+print-subdirs:
+	@echo $(SUBDIRS)
+
+# Provide help on common Makefile targets.
+
+help:
+	@echo
+	@echo "make                              Build everything."
+	@echo
+	@echo "make check                        Run the standard tests"
+	@echo "make -k check                       ... and display all errors at once."
+	@echo
+	@echo "make extra-tests                  ... runs all of the following tests:"
+	@echo "  make check-valgrind               Run a subset of the tests under valgrind."
+	@echo "  make check-valgrind-local-guests  Test under valgrind using local guests."
+	@echo "  make check-with-appliance         Test using appliance attach-method."
+	@echo "  make check-with-upstream-qemu     Test using upstream qemu."
+	@echo "  make check-with-upstream-libvirt  Test using upstream libvirt."
+	@echo "  make check-slow                   Slow/long-running tests."
+	@echo
+	@echo "make syntax-check                 Check syntax and style problems in the code."
+	@echo "make print-subdirs                Print subdirectories."
+	@echo
+	@echo "make install                      Install everything."
+	@echo
+	@echo "make clean                        Clean everything."
+	@echo
+	@echo "To run programs without installing:"
+	@echo "  ./run ./fish/guestfish [or any other program]"
+	@echo
+	@echo "For more information, see EXTENDING LIBGUESTFS in guestfs(3); and README."
+	@echo
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

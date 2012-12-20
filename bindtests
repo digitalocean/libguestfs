@@ -9,8 +9,9 @@ false
 <61><62><63><00><61><62><63>
 obool: true
 oint: 1
-oint64: unset
+oint64: 9223372036854775807
 ostring: unset
+ostringlist: unset
 abc
 null
 []
@@ -24,6 +25,7 @@ obool: unset
 oint: unset
 oint64: 1
 ostring: string
+ostringlist: unset
 
 def
 []
@@ -35,8 +37,9 @@ false
 <61><62><63><00><61><62><63>
 obool: false
 oint: unset
-oint64: unset
+oint64: -9223372036854775808
 ostring: unset
+ostringlist: unset
 
 
 []
@@ -50,6 +53,7 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
@@ -63,6 +67,7 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1", "2"]
@@ -76,6 +81,7 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
@@ -89,6 +95,7 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
@@ -102,6 +109,7 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
@@ -115,6 +123,7 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
@@ -128,6 +137,7 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
@@ -141,12 +151,13 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
 false
 4095
-4095
+9223372036854775807
 123
 456
 <61><62><63><00><61><62><63>
@@ -154,12 +165,13 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
 abc
 def
 ["1"]
 false
 0
-0
+-9223372036854775808
 
 
 <61><62><63><00><61><62><63>
@@ -167,4 +179,61 @@ obool: unset
 oint: unset
 oint64: unset
 ostring: unset
+ostringlist: unset
+abc
+def
+[]
+false
+0
+0
+123
+456
+<61><62><63><00><61><62><63>
+obool: unset
+oint: unset
+oint64: unset
+ostring: unset
+ostringlist: []
+abc
+def
+[]
+false
+0
+0
+123
+456
+<61><62><63><00><61><62><63>
+obool: unset
+oint: unset
+oint64: unset
+ostring: unset
+ostringlist: ["optelem1"]
+abc
+def
+[]
+false
+0
+0
+123
+456
+<61><62><63><00><61><62><63>
+obool: unset
+oint: unset
+oint64: unset
+ostring: unset
+ostringlist: ["optelem1", "optelem2"]
+abc
+def
+[]
+false
+0
+0
+123
+456
+<61><62><63><00><61><62><63>
+obool: unset
+oint: unset
+oint64: unset
+ostring: unset
+ostringlist: ["optelem1", "optelem2", "optelem3"]
 EOF

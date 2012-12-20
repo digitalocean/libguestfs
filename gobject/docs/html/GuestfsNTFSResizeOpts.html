@@ -35,7 +35,7 @@
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="GuestfsNTFSResizeOpts.top_of_page"></a>GuestfsNTFSResizeOpts</span></h2>
-<p>GuestfsNTFSResizeOpts — An object encapsulating optional arguments for guestfs_session_ntfsresize_opts</p>
+<p>GuestfsNTFSResizeOpts — An object encapsulating optional arguments for guestfs_session_ntfsresize</p>
 </td>
 <td valign="top" align="right"></td>
 </tr></table></div>
@@ -46,7 +46,8 @@
 
 struct              <a class="link" href="GuestfsNTFSResizeOpts.html#GuestfsNTFSResizeOpts-struct" title="struct GuestfsNTFSResizeOpts">GuestfsNTFSResizeOpts</a>;
 struct              <a class="link" href="GuestfsNTFSResizeOpts.html#GuestfsNTFSResizeOptsClass" title="struct GuestfsNTFSResizeOptsClass">GuestfsNTFSResizeOptsClass</a>;
-<a class="link" href="GuestfsNTFSResizeOpts.html" title="GuestfsNTFSResizeOpts"><span class="returnvalue">GuestfsNTFSResizeOpts</span></a> * <a class="link" href="GuestfsNTFSResizeOpts.html#guestfs-ntfsresize-opts-new" title="guestfs_ntfsresize_opts_new ()">guestfs_ntfsresize_opts_new</a>     (<em class="parameter"><code><span class="type">void</span></code></em>);
+                    <a class="link" href="GuestfsNTFSResizeOpts.html#GuestfsNTFSResizeOptsPrivate" title="GuestfsNTFSResizeOptsPrivate">GuestfsNTFSResizeOptsPrivate</a>;
+<a class="link" href="GuestfsNTFSResizeOpts.html" title="GuestfsNTFSResizeOpts"><span class="returnvalue">GuestfsNTFSResizeOpts</span></a> * <a class="link" href="GuestfsNTFSResizeOpts.html#guestfs-ntfsresize-new" title="guestfs_ntfsresize_new ()">guestfs_ntfsresize_new</a>          (<em class="parameter"><code><span class="type">void</span></code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -66,7 +67,7 @@ struct              <a class="link" href="GuestfsNTFSResizeOpts.html#GuestfsNTFS
 <div class="refsect1">
 <a name="GuestfsNTFSResizeOpts.description"></a><h2>Description</h2>
 <p>
-An object encapsulating optional arguments for guestfs_session_ntfsresize_opts
+An object encapsulating optional arguments for guestfs_session_ntfsresize
 </p>
 </div>
 <div class="refsect1">
@@ -75,7 +76,7 @@ An object encapsulating optional arguments for guestfs_session_ntfsresize_opts
 <a name="GuestfsNTFSResizeOpts-struct"></a><h3>struct GuestfsNTFSResizeOpts</h3>
 <pre class="programlisting">struct GuestfsNTFSResizeOpts;</pre>
 <p>
-An object encapsulating optional arguments for guestfs_session_ntfsresize_opts.
+An object encapsulating optional arguments for guestfs_session_ntfsresize.
 </p>
 </div>
 <hr>
@@ -101,8 +102,15 @@ A class metadata object for GuestfsNTFSResizeOpts.
 </div>
 <hr>
 <div class="refsect2">
-<a name="guestfs-ntfsresize-opts-new"></a><h3>guestfs_ntfsresize_opts_new ()</h3>
-<pre class="programlisting"><a class="link" href="GuestfsNTFSResizeOpts.html" title="GuestfsNTFSResizeOpts"><span class="returnvalue">GuestfsNTFSResizeOpts</span></a> * guestfs_ntfsresize_opts_new     (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<a name="GuestfsNTFSResizeOptsPrivate"></a><h3>GuestfsNTFSResizeOptsPrivate</h3>
+<pre class="programlisting">typedef struct _GuestfsNTFSResizeOptsPrivate GuestfsNTFSResizeOptsPrivate;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-ntfsresize-new"></a><h3>guestfs_ntfsresize_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsNTFSResizeOpts.html" title="GuestfsNTFSResizeOpts"><span class="returnvalue">GuestfsNTFSResizeOpts</span></a> * guestfs_ntfsresize_new          (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>
 Create a new GuestfsNTFSResizeOpts object
 </p>

@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -69,38 +69,38 @@ guestfs_mkfs_btrfs_set_property(GObject *object, guint property_id, const GValue
 
   switch (property_id) {
     case PROP_GUESTFS_MKFS_BTRFS_ALLOCSTART:
-      priv->allocstart = g_value_get_int64(value);
+      priv->allocstart = g_value_get_int64 (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_BYTECOUNT:
-      priv->bytecount = g_value_get_int64(value);
+      priv->bytecount = g_value_get_int64 (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_DATATYPE:
       g_free(priv->datatype);
-      priv->datatype = g_value_dup_string(value);
+      priv->datatype = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_LEAFSIZE:
-      priv->leafsize = g_value_get_int(value);
+      priv->leafsize = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_LABEL:
       g_free(priv->label);
-      priv->label = g_value_dup_string(value);
+      priv->label = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_METADATA:
       g_free(priv->metadata);
-      priv->metadata = g_value_dup_string(value);
+      priv->metadata = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_NODESIZE:
-      priv->nodesize = g_value_get_int(value);
+      priv->nodesize = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_MKFS_BTRFS_SECTORSIZE:
-      priv->sectorsize = g_value_get_int(value);
+      priv->sectorsize = g_value_get_int (value);
       break;
 
     default:

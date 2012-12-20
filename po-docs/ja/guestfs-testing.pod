@@ -27,14 +27,13 @@ L<https://www.redhat.com/mailman/listinfo/libguestfs>
 
 =head1 テスト
 
-=head2 Run libguestfs-test-tool
+=head2 libguestfs-test-tool の実行
 
 次を実行します:
 
  libguestfs-test-tool
 
-This command does a very simple, non-destructive test that basic libguestfs
-is functioning.  You don't need to run it as root.
+このコマンドは、基本的な libguestfs が機能しているか、非常に簡単かつ非破壊的なテストを実行します。root として実行する必要がありません。
 
 If it I<doesn't> print C<===== TEST FINISHED OK =====>, report it as a bug.
 It is very important that you include the B<complete, unedited> output of
@@ -52,7 +51,7 @@ command a few times:
 After a few runs, the time should settle down to a few seconds (under 5
 seconds on fast 64 bit hardware).
 
-How to check for hardware virt:
+ハードウェア仮想化を確認する方法:
 
 L<http://virt-tools.org/learning/check-hardware-virt/>
 
@@ -85,8 +84,7 @@ C<D:>, C<E:> etc paths work correctly?
 
 =head2 B<*> Copy some files into a B<shut off> guest.
 
-L<virt-copy-in(1)> can recursively copy files and directories into a guest
-or disk image.
+L<virt-copy-in(1)> は仮想マシンまたはディスクイメージの中にあるファイルおよびディレクトリーを再帰的にコピーできます。
 
  virt-copy-in -d Guest /etc /tmp
 
@@ -122,11 +120,11 @@ but there are some provisos:
 
 =item *
 
-The guest must be idle.
+仮想マシンはアイドル状態にある必要があります。
 
 =item *
 
-The guest disks must be synched using L<sync(1)>.
+仮想マシンのディスクは L<sync(1)> を使用して同期する必要があります。
 
 =item *
 

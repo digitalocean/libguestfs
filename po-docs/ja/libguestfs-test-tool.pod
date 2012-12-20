@@ -39,7 +39,7 @@ L<http://libguestfs.org/> website.
 
 =item B<--help>
 
-Display short usage information and exit.
+簡単な使用法を表示して終了します。
 
 =item B<--qemu qemu_binary>
 
@@ -100,8 +100,7 @@ I<1> if there was an error.
 
 =head1 環境変数
 
-For the full list of environment variables which may affect libguestfs,
-please see the L<guestfs(3)> manual page.
+libguestfs に影響する環境変数の完全な一覧は L<guestfs(3)> マニュアルページを参照してください。
 
 =head1 関連項目
 

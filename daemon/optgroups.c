@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -26,10 +26,15 @@
 #include "optgroups.h"
 
 struct optgroup optgroups[] = {
+  { "acl", optgroup_acl_available },
   { "augeas", optgroup_augeas_available },
   { "btrfs", optgroup_btrfs_available },
+  { "fstrim", optgroup_fstrim_available },
   { "grub", optgroup_grub_available },
+  { "hivex", optgroup_hivex_available },
   { "inotify", optgroup_inotify_available },
+  { "ldm", optgroup_ldm_available },
+  { "linuxcaps", optgroup_linuxcaps_available },
   { "linuxfsuuid", optgroup_linuxfsuuid_available },
   { "linuxmodules", optgroup_linuxmodules_available },
   { "linuxxattrs", optgroup_linuxxattrs_available },
@@ -40,9 +45,11 @@ struct optgroup optgroups[] = {
   { "ntfs3g", optgroup_ntfs3g_available },
   { "ntfsprogs", optgroup_ntfsprogs_available },
   { "realpath", optgroup_realpath_available },
+  { "rsync", optgroup_rsync_available },
   { "scrub", optgroup_scrub_available },
   { "selinux", optgroup_selinux_available },
   { "wipefs", optgroup_wipefs_available },
+  { "xfs", optgroup_xfs_available },
   { "xz", optgroup_xz_available },
   { "zerofree", optgroup_zerofree_available },
   { NULL, NULL }

@@ -30,6 +30,8 @@
 #include "daemon.h"
 #include "actions.h"
 
+GUESTFSD_EXT_CMD(str_isoinfo, isoinfo);
+
 static int
 parse_uint32 (uint32_t *ret, const char *str)
 {
@@ -55,7 +57,8 @@ parse_time_t (int64_t *ret, const char *str)
   struct tm tm;
   time_t r;
 
-  if (STREQ (str, "0000 00 00 00:00:00.00")) {
+  if (STREQ (str, "0000 00 00 00:00:00.00") ||
+      STREQ (str, "             :  :  .  ")) {
     *ret = -1;
     return 0;
   }
@@ -244,7 +247,7 @@ isoinfo (const char *path)
   /* --debug is necessary to get additional fields, in particular
    * the date & time fields.
    */
-  r = command (&out, &err, "isoinfo", "--debug", "-d", "-i", path, NULL);
+  r = command (&out, &err, str_isoinfo, "--debug", "-d", "-i", path, NULL);
   if (r == -1) {
     reply_with_error ("%s", err);
     goto done;

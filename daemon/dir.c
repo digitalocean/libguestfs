@@ -29,6 +29,8 @@
 #include "daemon.h"
 #include "actions.h"
 
+GUESTFSD_EXT_CMD(str_rm, rm);
+
 int
 do_rmdir (const char *path)
 {
@@ -67,7 +69,7 @@ do_rm_rf (const char *path)
     return -1;
   }
 
-  r = command (NULL, &err, "rm", "-rf", buf, NULL);
+  r = command (NULL, &err, str_rm, "-rf", buf, NULL);
   free (buf);
 
   /* rm -rf is never supposed to fail.  I/O errors perhaps? */
@@ -188,25 +190,4 @@ do_mkdir_p (const char *path)
   }
 
   return 0;
-}
-
-char *
-do_mkdtemp (const char *template)
-{
-  char *writable = strdup (template);
-  if (writable == NULL) {
-    reply_with_perror ("strdup");
-    return NULL;
-  }
-
-  CHROOT_IN;
-  char *r = mkdtemp (writable);
-  CHROOT_OUT;
-
-  if (r == NULL) {
-    reply_with_perror ("%s", template);
-    free (writable);
-  }
-
-  return r;
 }

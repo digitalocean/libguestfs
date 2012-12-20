@@ -1,6 +1,6 @@
 // libguestfs generated file
 // WARNING: THIS FILE IS GENERATED FROM:
-//   generator/generator_*.ml
+//   generator/ *.ml
 // ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 //
 // Copyright (C) 2009-2012 Red Hat Inc.
@@ -244,6 +244,27 @@ namespace Guestfs
     }
 
     [StructLayout (LayoutKind.Sequential)]
+    public class _application2 {
+      string app2_name;
+      string app2_display_name;
+      int app2_epoch;
+      string app2_version;
+      string app2_release;
+      string app2_arch;
+      string app2_install_path;
+      string app2_trans_path;
+      string app2_publisher;
+      string app2_url;
+      string app2_source_package;
+      string app2_summary;
+      string app2_description;
+      string app2_spare1;
+      string app2_spare2;
+      string app2_spare3;
+      string app2_spare4;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
     public class _isoinfo {
       string iso_system_id;
       string iso_volume_id;
@@ -278,6 +299,96 @@ namespace Guestfs
       string btrfssubvolume_path;
     }
 
+    [StructLayout (LayoutKind.Sequential)]
+    public class _xfsinfo {
+      string xfs_mntpoint;
+      uint xfs_inodesize;
+      uint xfs_agcount;
+      uint xfs_agsize;
+      uint xfs_sectsize;
+      uint xfs_attr;
+      uint xfs_blocksize;
+      ulong xfs_datablocks;
+      uint xfs_imaxpct;
+      uint xfs_sunit;
+      uint xfs_swidth;
+      uint xfs_dirversion;
+      uint xfs_dirblocksize;
+      uint xfs_cimode;
+      string xfs_logname;
+      uint xfs_logblocksize;
+      uint xfs_logblocks;
+      uint xfs_logversion;
+      uint xfs_logsectsize;
+      uint xfs_logsunit;
+      uint xfs_lazycount;
+      string xfs_rtname;
+      uint xfs_rtextsize;
+      ulong xfs_rtblocks;
+      ulong xfs_rtextents;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _utsname {
+      string uts_sysname;
+      string uts_release;
+      string uts_version;
+      string uts_machine;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _hivex_node {
+      long hivex_node_h;
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    public class _hivex_value {
+      long hivex_value_h;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_acl_delete_def_file (IntPtr h, [In] string dir);
+
+    /// <summary>
+    /// delete the default POSIX ACL of a directory
+    /// </summary>
+    public void acl_delete_def_file (string dir)
+    {
+      int r;
+      r = guestfs_acl_delete_def_file (_handle, dir);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_acl_get_file (IntPtr h, [In] string path, [In] string acltype);
+
+    /// <summary>
+    /// get the POSIX ACL attached to a file
+    /// </summary>
+    public string acl_get_file (string path, string acltype)
+    {
+      string r;
+      r = guestfs_acl_get_file (_handle, path, acltype);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_acl_set_file (IntPtr h, [In] string path, [In] string acltype, [In] string acl);
+
+    /// <summary>
+    /// set the POSIX ACL attached to a file
+    /// </summary>
+    public void acl_set_file (string path, string acltype, string acl)
+    {
+      int r;
+      r = guestfs_acl_set_file (_handle, path, acltype, acl);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
     [DllImport ("libguestfs.so.0")]
     static extern int guestfs_add_cdrom (IntPtr h, [In] string filename);
 
@@ -293,7 +404,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_add_domain (IntPtr h, [In] string dom);
+    static extern int guestfs_add_domain_argv (IntPtr h, [In] string dom, void *);
 
     /// <summary>
     /// add the disk(s) from a named libvirt domain
@@ -301,14 +412,14 @@ namespace Guestfs
     public int add_domain (string dom)
     {
       int r;
-      r = guestfs_add_domain (_handle, dom);
+      r = guestfs_add_domain_argv (_handle, dom, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r;
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_add_drive (IntPtr h, [In] string filename);
+    static extern int guestfs_add_drive_opts_argv (IntPtr h, [In] string filename, void *);
 
     /// <summary>
     /// add an image to examine or modify
@@ -316,23 +427,14 @@ namespace Guestfs
     public void add_drive (string filename)
     {
       int r;
-      r = guestfs_add_drive (_handle, filename);
+      r = guestfs_add_drive_opts_argv (_handle, filename, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_add_drive_opts (IntPtr h, [In] string filename);
-
-    /// <summary>
-    /// add an image to examine or modify
-    /// </summary>
     public void add_drive_opts (string filename)
     {
-      int r;
-      r = guestfs_add_drive_opts (_handle, filename);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
+      add_drive (filename);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -842,7 +944,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_btrfs_filesystem_resize (IntPtr h, [In] string mountpoint);
+    static extern int guestfs_btrfs_filesystem_resize_argv (IntPtr h, [In] string mountpoint, void *);
 
     /// <summary>
     /// resize a btrfs filesystem
@@ -850,7 +952,7 @@ namespace Guestfs
     public void btrfs_filesystem_resize (string mountpoint)
     {
       int r;
-      r = guestfs_btrfs_filesystem_resize (_handle, mountpoint);
+      r = guestfs_btrfs_filesystem_resize_argv (_handle, mountpoint, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -870,7 +972,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_btrfs_fsck (IntPtr h, [In] string device);
+    static extern int guestfs_btrfs_fsck_argv (IntPtr h, [In] string device, void *);
 
     /// <summary>
     /// check a btrfs filesystem
@@ -878,7 +980,7 @@ namespace Guestfs
     public void btrfs_fsck (string device)
     {
       int r;
-      r = guestfs_btrfs_fsck (_handle, device);
+      r = guestfs_btrfs_fsck_argv (_handle, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -964,6 +1066,50 @@ namespace Guestfs
     {
       int r;
       r = guestfs_btrfs_subvolume_snapshot (_handle, source, dest);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_canonical_device_name (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// return canonical device name
+    /// </summary>
+    public string canonical_device_name (string device)
+    {
+      string r;
+      r = guestfs_canonical_device_name (_handle, device);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_cap_get_file (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// get the Linux capabilities attached to a file
+    /// </summary>
+    public string cap_get_file (string path)
+    {
+      string r;
+      r = guestfs_cap_get_file (_handle, path);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_cap_set_file (IntPtr h, [In] string path, [In] string cap);
+
+    /// <summary>
+    /// set the Linux capabilities attached to a file
+    /// </summary>
+    public void cap_set_file (string path, string cap)
+    {
+      int r;
+      r = guestfs_cap_set_file (_handle, path, cap);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1101,7 +1247,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_compress_device_out (IntPtr h, [In] string ctype, [In] string device, [In] string zdevice);
+    static extern int guestfs_compress_device_out_argv (IntPtr h, [In] string ctype, [In] string device, [In] string zdevice, void *);
 
     /// <summary>
     /// output compressed device
@@ -1109,13 +1255,13 @@ namespace Guestfs
     public void compress_device_out (string ctype, string device, string zdevice)
     {
       int r;
-      r = guestfs_compress_device_out (_handle, ctype, device, zdevice);
+      r = guestfs_compress_device_out_argv (_handle, ctype, device, zdevice, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_compress_out (IntPtr h, [In] string ctype, [In] string file, [In] string zfile);
+    static extern int guestfs_compress_out_argv (IntPtr h, [In] string ctype, [In] string file, [In] string zfile, void *);
 
     /// <summary>
     /// output compressed file
@@ -1123,7 +1269,7 @@ namespace Guestfs
     public void compress_out (string ctype, string file, string zfile)
     {
       int r;
-      r = guestfs_compress_out (_handle, ctype, file, zfile);
+      r = guestfs_compress_out_argv (_handle, ctype, file, zfile, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1143,7 +1289,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_copy_device_to_device (IntPtr h, [In] string src, [In] string dest);
+    static extern int guestfs_copy_device_to_device_argv (IntPtr h, [In] string src, [In] string dest, void *);
 
     /// <summary>
     /// copy from source device to destination device
@@ -1151,13 +1297,13 @@ namespace Guestfs
     public void copy_device_to_device (string src, string dest)
     {
       int r;
-      r = guestfs_copy_device_to_device (_handle, src, dest);
+      r = guestfs_copy_device_to_device_argv (_handle, src, dest, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_copy_device_to_file (IntPtr h, [In] string src, [In] string dest);
+    static extern int guestfs_copy_device_to_file_argv (IntPtr h, [In] string src, [In] string dest, void *);
 
     /// <summary>
     /// copy from source device to destination file
@@ -1165,13 +1311,13 @@ namespace Guestfs
     public void copy_device_to_file (string src, string dest)
     {
       int r;
-      r = guestfs_copy_device_to_file (_handle, src, dest);
+      r = guestfs_copy_device_to_file_argv (_handle, src, dest, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_copy_file_to_device (IntPtr h, [In] string src, [In] string dest);
+    static extern int guestfs_copy_file_to_device_argv (IntPtr h, [In] string src, [In] string dest, void *);
 
     /// <summary>
     /// copy from source file to destination device
@@ -1179,13 +1325,13 @@ namespace Guestfs
     public void copy_file_to_device (string src, string dest)
     {
       int r;
-      r = guestfs_copy_file_to_device (_handle, src, dest);
+      r = guestfs_copy_file_to_device_argv (_handle, src, dest, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_copy_file_to_file (IntPtr h, [In] string src, [In] string dest);
+    static extern int guestfs_copy_file_to_file_argv (IntPtr h, [In] string src, [In] string dest, void *);
 
     /// <summary>
     /// copy from source file to destination file
@@ -1193,7 +1339,7 @@ namespace Guestfs
     public void copy_file_to_file (string src, string dest)
     {
       int r;
-      r = guestfs_copy_file_to_file (_handle, src, dest);
+      r = guestfs_copy_file_to_file_argv (_handle, src, dest, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1264,21 +1410,6 @@ namespace Guestfs
     {
       string r;
       r = guestfs_debug (_handle, subcmd, extraargs);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_debug_cmdline (IntPtr h);
-
-    /// <summary>
-    /// debug the QEMU command line (internal use only)
-    /// </summary>
-    public string[] debug_cmdline ()
-    {
-      string[] r;
-      r = guestfs_debug_cmdline (_handle);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -1359,6 +1490,51 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_disk_format (IntPtr h, [In] string filename);
+
+    /// <summary>
+    /// detect the disk format of a disk image
+    /// </summary>
+    public string disk_format (string filename)
+    {
+      string r;
+      r = guestfs_disk_format (_handle, filename);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_disk_has_backing_file (IntPtr h, [In] string filename);
+
+    /// <summary>
+    /// return whether disk has a backing file
+    /// </summary>
+    public bool disk_has_backing_file (string filename)
+    {
+      int r;
+      r = guestfs_disk_has_backing_file (_handle, filename);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_disk_virtual_size (IntPtr h, [In] string filename);
+
+    /// <summary>
+    /// return virtual size of a disk
+    /// </summary>
+    public long disk_virtual_size (string filename)
+    {
+      long r;
+      r = guestfs_disk_virtual_size (_handle, filename);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_dmesg (IntPtr h);
 
     /// <summary>
@@ -1431,7 +1607,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_e2fsck (IntPtr h, [In] string device);
+    static extern int guestfs_e2fsck_argv (IntPtr h, [In] string device, void *);
 
     /// <summary>
     /// check an ext2/ext3 filesystem
@@ -1439,7 +1615,7 @@ namespace Guestfs
     public void e2fsck (string device)
     {
       int r;
-      r = guestfs_e2fsck (_handle, device);
+      r = guestfs_e2fsck_argv (_handle, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1637,6 +1813,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_filesystem_available (IntPtr h, [In] string filesystem);
+
+    /// <summary>
+    /// check if filesystem is available
+    /// </summary>
+    public bool filesystem_available (string filesystem)
+    {
+      int r;
+      r = guestfs_filesystem_available (_handle, filesystem);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_fill (IntPtr h, int c, int len, [In] string path);
 
     /// <summary>
@@ -1646,6 +1837,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_fill (_handle, c, len, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_fill_dir (IntPtr h, [In] string dir, int nr);
+
+    /// <summary>
+    /// fill a directory with empty files
+    /// </summary>
+    public void fill_dir (string dir, int nr)
+    {
+      int r;
+      r = guestfs_fill_dir (_handle, dir, nr);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -1739,6 +1944,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_fstrim_argv (IntPtr h, [In] string mountpoint, void *);
+
+    /// <summary>
+    /// trim free space in a filesystem
+    /// </summary>
+    public void fstrim (string mountpoint)
+    {
+      int r;
+      r = guestfs_fstrim_argv (_handle, mountpoint, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_get_append (IntPtr h);
 
     /// <summary>
@@ -1781,6 +2000,21 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_cachedir (IntPtr h);
+
+    /// <summary>
+    /// get the appliance cache directory
+    /// </summary>
+    public string get_cachedir ()
+    {
+      string r;
+      r = guestfs_get_cachedir (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -1853,6 +2087,66 @@ namespace Guestfs
     {
       string r;
       r = guestfs_get_e2uuid (_handle, device);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_libvirt_requested_credential_challenge (IntPtr h, int index);
+
+    /// <summary>
+    /// challenge of i'th requested credential
+    /// </summary>
+    public string get_libvirt_requested_credential_challenge (int index)
+    {
+      string r;
+      r = guestfs_get_libvirt_requested_credential_challenge (_handle, index);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_libvirt_requested_credential_defresult (IntPtr h, int index);
+
+    /// <summary>
+    /// default result of i'th requested credential
+    /// </summary>
+    public string get_libvirt_requested_credential_defresult (int index)
+    {
+      string r;
+      r = guestfs_get_libvirt_requested_credential_defresult (_handle, index);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_libvirt_requested_credential_prompt (IntPtr h, int index);
+
+    /// <summary>
+    /// prompt of i'th requested credential
+    /// </summary>
+    public string get_libvirt_requested_credential_prompt (int index)
+    {
+      string r;
+      r = guestfs_get_libvirt_requested_credential_prompt (_handle, index);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_get_libvirt_requested_credentials (IntPtr h);
+
+    /// <summary>
+    /// get list of credentials requested by libvirt
+    /// </summary>
+    public string[] get_libvirt_requested_credentials ()
+    {
+      string[] r;
+      r = guestfs_get_libvirt_requested_credentials (_handle);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -2009,6 +2303,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_tmpdir (IntPtr h);
+
+    /// <summary>
+    /// get the temporary directory
+    /// </summary>
+    public string get_tmpdir ()
+    {
+      string r;
+      r = guestfs_get_tmpdir (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_get_trace (IntPtr h);
 
     /// <summary>
@@ -2114,7 +2423,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_grep (IntPtr h, [In] string regex, [In] string path);
+    static extern string[] guestfs_grep_opts_argv (IntPtr h, [In] string regex, [In] string path, void *);
 
     /// <summary>
     /// return lines matching a pattern
@@ -2122,10 +2431,15 @@ namespace Guestfs
     public string[] grep (string regex, string path)
     {
       string[] r;
-      r = guestfs_grep (_handle, regex, path);
+      r = guestfs_grep_opts_argv (_handle, regex, path, NULL);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    public string[] grep_opts (string regex, string path)
+    {
+      return grep (regex, path);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -2197,6 +2511,256 @@ namespace Guestfs
     {
       string r;
       r = guestfs_hexdump (_handle, path);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_hivex_close (IntPtr h);
+
+    /// <summary>
+    /// close the current hivex handle
+    /// </summary>
+    public void hivex_close ()
+    {
+      int r;
+      r = guestfs_hivex_close (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_hivex_commit (IntPtr h, [In] string filename);
+
+    /// <summary>
+    /// commit (write) changes back to the hive
+    /// </summary>
+    public void hivex_commit (string filename)
+    {
+      int r;
+      r = guestfs_hivex_commit (_handle, filename);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_hivex_node_add_child (IntPtr h, long parent, [In] string name);
+
+    /// <summary>
+    /// add a child node
+    /// </summary>
+    public long hivex_node_add_child (long parent, string name)
+    {
+      long r;
+      r = guestfs_hivex_node_add_child (_handle, parent, name);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _hivex_node[] guestfs_hivex_node_children (IntPtr h, long nodeh);
+
+    /// <summary>
+    /// return list of nodes which are subkeys of node
+    /// </summary>
+    public _hivex_node[] hivex_node_children (long nodeh)
+    {
+      _hivex_node[] r;
+      r = guestfs_hivex_node_children (_handle, nodeh);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_hivex_node_delete_child (IntPtr h, long nodeh);
+
+    /// <summary>
+    /// delete a node (recursively)
+    /// </summary>
+    public void hivex_node_delete_child (long nodeh)
+    {
+      int r;
+      r = guestfs_hivex_node_delete_child (_handle, nodeh);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_hivex_node_get_child (IntPtr h, long nodeh, [In] string name);
+
+    /// <summary>
+    /// return the named child of node
+    /// </summary>
+    public long hivex_node_get_child (long nodeh, string name)
+    {
+      long r;
+      r = guestfs_hivex_node_get_child (_handle, nodeh, name);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_hivex_node_get_value (IntPtr h, long nodeh, [In] string key);
+
+    /// <summary>
+    /// return the named value
+    /// </summary>
+    public long hivex_node_get_value (long nodeh, string key)
+    {
+      long r;
+      r = guestfs_hivex_node_get_value (_handle, nodeh, key);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_hivex_node_name (IntPtr h, long nodeh);
+
+    /// <summary>
+    /// return the name of the node
+    /// </summary>
+    public string hivex_node_name (long nodeh)
+    {
+      string r;
+      r = guestfs_hivex_node_name (_handle, nodeh);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_hivex_node_parent (IntPtr h, long nodeh);
+
+    /// <summary>
+    /// return the parent of node
+    /// </summary>
+    public long hivex_node_parent (long nodeh)
+    {
+      long r;
+      r = guestfs_hivex_node_parent (_handle, nodeh);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_hivex_node_set_value (IntPtr h, long nodeh, [In] string key, long t, [In] string val);
+
+    /// <summary>
+    /// set or replace a single value in a node
+    /// </summary>
+    public void hivex_node_set_value (long nodeh, string key, long t, string val)
+    {
+      int r;
+      r = guestfs_hivex_node_set_value (_handle, nodeh, key, t, val);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _hivex_value[] guestfs_hivex_node_values (IntPtr h, long nodeh);
+
+    /// <summary>
+    /// return list of values attached to node
+    /// </summary>
+    public _hivex_value[] hivex_node_values (long nodeh)
+    {
+      _hivex_value[] r;
+      r = guestfs_hivex_node_values (_handle, nodeh);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_hivex_open_argv (IntPtr h, [In] string filename, void *);
+
+    /// <summary>
+    /// open a Windows Registry hive file
+    /// </summary>
+    public void hivex_open (string filename)
+    {
+      int r;
+      r = guestfs_hivex_open_argv (_handle, filename, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_hivex_root (IntPtr h);
+
+    /// <summary>
+    /// return the root node of the hive
+    /// </summary>
+    public long hivex_root ()
+    {
+      long r;
+      r = guestfs_hivex_root (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_hivex_value_key (IntPtr h, long valueh);
+
+    /// <summary>
+    /// return the key field from the (key, datatype, data) tuple
+    /// </summary>
+    public string hivex_value_key (long valueh)
+    {
+      string r;
+      r = guestfs_hivex_value_key (_handle, valueh);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_hivex_value_type (IntPtr h, long valueh);
+
+    /// <summary>
+    /// return the data type from the (key, datatype, data) tuple
+    /// </summary>
+    public long hivex_value_type (long valueh)
+    {
+      long r;
+      r = guestfs_hivex_value_type (_handle, valueh);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_hivex_value_utf8 (IntPtr h, long valueh);
+
+    /// <summary>
+    /// return the data field from the (key, datatype, data) tuple
+    /// </summary>
+    public string hivex_value_utf8 (long valueh)
+    {
+      string r;
+      r = guestfs_hivex_value_utf8 (_handle, valueh);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_hivex_value_value (IntPtr h, long valueh);
+
+    /// <summary>
+    /// return the data field from the (key, datatype, data) tuple
+    /// </summary>
+    public string hivex_value_value (long valueh)
+    {
+      string r;
+      r = guestfs_hivex_value_value (_handle, valueh);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -2413,7 +2977,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_inspect_get_icon (IntPtr h, [In] string root);
+    static extern string guestfs_inspect_get_icon_argv (IntPtr h, [In] string root, void *);
 
     /// <summary>
     /// get the icon corresponding to this operating system
@@ -2421,7 +2985,7 @@ namespace Guestfs
     public string inspect_get_icon (string root)
     {
       string r;
-      r = guestfs_inspect_get_icon (_handle, root);
+      r = guestfs_inspect_get_icon_argv (_handle, root, NULL);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
@@ -2656,6 +3220,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern _application2[] guestfs_inspect_list_applications2 (IntPtr h, [In] string root);
+
+    /// <summary>
+    /// get list of applications installed in the operating system
+    /// </summary>
+    public _application2[] inspect_list_applications2 (string root)
+    {
+      _application2[] r;
+      r = guestfs_inspect_list_applications2 (_handle, root);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string[] guestfs_inspect_os (IntPtr h);
 
     /// <summary>
@@ -2680,6 +3259,527 @@ namespace Guestfs
     {
       int r;
       r = guestfs_internal_autosync (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_hot_add_drive (IntPtr h, [In] string label);
+
+    /// <summary>
+    /// internal hotplugging operation
+    /// </summary>
+    public void internal_hot_add_drive (string label)
+    {
+      int r;
+      r = guestfs_internal_hot_add_drive (_handle, label);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_hot_remove_drive (IntPtr h, [In] string label);
+
+    /// <summary>
+    /// internal hotplugging operation
+    /// </summary>
+    public void internal_hot_remove_drive (string label)
+    {
+      int r;
+      r = guestfs_internal_hot_remove_drive (_handle, label);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_hot_remove_drive_precheck (IntPtr h, [In] string label);
+
+    /// <summary>
+    /// internal hotplugging operation
+    /// </summary>
+    public void internal_hot_remove_drive_precheck (string label)
+    {
+      int r;
+      r = guestfs_internal_hot_remove_drive_precheck (_handle, label);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _stat[] guestfs_internal_lstatlist (IntPtr h, [In] string path, [In] string[] names);
+
+    /// <summary>
+    /// lstat on multiple files
+    /// </summary>
+    public _stat[] internal_lstatlist (string path, string[] names)
+    {
+      _stat[] r;
+      r = guestfs_internal_lstatlist (_handle, path, names);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _xattr[] guestfs_internal_lxattrlist (IntPtr h, [In] string path, [In] string[] names);
+
+    /// <summary>
+    /// lgetxattr on multiple files
+    /// </summary>
+    public _xattr[] internal_lxattrlist (string path, string[] names)
+    {
+      _xattr[] r;
+      r = guestfs_internal_lxattrlist (_handle, path, names);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_internal_readlinklist (IntPtr h, [In] string path, [In] string[] names);
+
+    /// <summary>
+    /// readlink on multiple files
+    /// </summary>
+    public string[] internal_readlinklist (string path, string[] names)
+    {
+      string[] r;
+      r = guestfs_internal_readlinklist (_handle, path, names);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_argv (IntPtr h, [In] string str, [In] string optstr, [In] string[] strlist, bool b, int integer, long integer64, [In] string filein, [In] string fileout, [In] string bufferin, void *);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public void internal_test (string str, string optstr, string[] strlist, bool b, int integer, long integer64, string filein, string fileout, string bufferin)
+    {
+      int r;
+      r = guestfs_internal_test_argv (_handle, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_63_optargs_argv (IntPtr h, void *);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public void internal_test_63_optargs ()
+    {
+      int r;
+      r = guestfs_internal_test_63_optargs_argv (_handle, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_close_output (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public void internal_test_close_output ()
+    {
+      int r;
+      r = guestfs_internal_test_close_output (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_only_optargs_argv (IntPtr h, void *);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public void internal_test_only_optargs ()
+    {
+      int r;
+      r = guestfs_internal_test_only_optargs_argv (_handle, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_rbool (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public bool internal_test_rbool (string val)
+    {
+      int r;
+      r = guestfs_internal_test_rbool (_handle, val);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_rboolerr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public bool internal_test_rboolerr ()
+    {
+      int r;
+      r = guestfs_internal_test_rboolerr (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rbufferout (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rbufferout (string val)
+    {
+      string r;
+      r = guestfs_internal_test_rbufferout (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rbufferouterr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rbufferouterr ()
+    {
+      string r;
+      r = guestfs_internal_test_rbufferouterr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rconstoptstring (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rconstoptstring (string val)
+    {
+      string r;
+      r = guestfs_internal_test_rconstoptstring (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rconstoptstringerr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rconstoptstringerr ()
+    {
+      string r;
+      r = guestfs_internal_test_rconstoptstringerr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rconststring (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rconststring (string val)
+    {
+      string r;
+      r = guestfs_internal_test_rconststring (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rconststringerr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rconststringerr ()
+    {
+      string r;
+      r = guestfs_internal_test_rconststringerr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_internal_test_rhashtable (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public Hashtable internal_test_rhashtable (string val)
+    {
+      string[] r;
+      r = guestfs_internal_test_rhashtable (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      Hashtable rr = new Hashtable ();
+      for (size_t i = 0; i < r.Length; i += 2)
+        rr.Add (r[i], r[i+1]);
+      return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_internal_test_rhashtableerr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public Hashtable internal_test_rhashtableerr ()
+    {
+      string[] r;
+      r = guestfs_internal_test_rhashtableerr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      Hashtable rr = new Hashtable ();
+      for (size_t i = 0; i < r.Length; i += 2)
+        rr.Add (r[i], r[i+1]);
+      return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_rint (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public int internal_test_rint (string val)
+    {
+      int r;
+      r = guestfs_internal_test_rint (_handle, val);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_internal_test_rint64 (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public long internal_test_rint64 (string val)
+    {
+      long r;
+      r = guestfs_internal_test_rint64 (_handle, val);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_internal_test_rint64err (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public long internal_test_rint64err ()
+    {
+      long r;
+      r = guestfs_internal_test_rint64err (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_rinterr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public int internal_test_rinterr ()
+    {
+      int r;
+      r = guestfs_internal_test_rinterr (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rstring (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rstring (string val)
+    {
+      string r;
+      r = guestfs_internal_test_rstring (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_internal_test_rstringerr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string internal_test_rstringerr ()
+    {
+      string r;
+      r = guestfs_internal_test_rstringerr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_internal_test_rstringlist (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string[] internal_test_rstringlist (string val)
+    {
+      string[] r;
+      r = guestfs_internal_test_rstringlist (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_internal_test_rstringlisterr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public string[] internal_test_rstringlisterr ()
+    {
+      string[] r;
+      r = guestfs_internal_test_rstringlisterr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _lvm_pv guestfs_internal_test_rstruct (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public _lvm_pv internal_test_rstruct (string val)
+    {
+      _lvm_pv r;
+      r = guestfs_internal_test_rstruct (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _lvm_pv guestfs_internal_test_rstructerr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public _lvm_pv internal_test_rstructerr ()
+    {
+      _lvm_pv r;
+      r = guestfs_internal_test_rstructerr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _lvm_pv[] guestfs_internal_test_rstructlist (IntPtr h, [In] string val);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public _lvm_pv[] internal_test_rstructlist (string val)
+    {
+      _lvm_pv[] r;
+      r = guestfs_internal_test_rstructlist (_handle, val);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _lvm_pv[] guestfs_internal_test_rstructlisterr (IntPtr h);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public _lvm_pv[] internal_test_rstructlisterr ()
+    {
+      _lvm_pv[] r;
+      r = guestfs_internal_test_rstructlisterr (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_test_set_output (IntPtr h, [In] string filename);
+
+    /// <summary>
+    /// internal test function - do not use
+    /// </summary>
+    public void internal_test_set_output (string filename)
+    {
+      int r;
+      r = guestfs_internal_test_set_output (_handle, filename);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_write (IntPtr h, [In] string path, [In] string content);
+
+    /// <summary>
+    /// create a new file
+    /// </summary>
+    public void internal_write (string path, string content)
+    {
+      int r;
+      r = guestfs_internal_write (_handle, path, content);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_internal_write_append (IntPtr h, [In] string path, [In] string content);
+
+    /// <summary>
+    /// append content to end of file
+    /// </summary>
+    public void internal_write_append (string path, string content)
+    {
+      int r;
+      r = guestfs_internal_write_append (_handle, path, content);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -2967,6 +4067,154 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ldmtool_create_all (IntPtr h);
+
+    /// <summary>
+    /// scan and create Windows dynamic disk volumes
+    /// </summary>
+    public void ldmtool_create_all ()
+    {
+      int r;
+      r = guestfs_ldmtool_create_all (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_ldmtool_diskgroup_disks (IntPtr h, [In] string diskgroup);
+
+    /// <summary>
+    /// return the disks in a Windows dynamic disk group
+    /// </summary>
+    public string[] ldmtool_diskgroup_disks (string diskgroup)
+    {
+      string[] r;
+      r = guestfs_ldmtool_diskgroup_disks (_handle, diskgroup);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_ldmtool_diskgroup_name (IntPtr h, [In] string diskgroup);
+
+    /// <summary>
+    /// return the name of a Windows dynamic disk group
+    /// </summary>
+    public string ldmtool_diskgroup_name (string diskgroup)
+    {
+      string r;
+      r = guestfs_ldmtool_diskgroup_name (_handle, diskgroup);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_ldmtool_diskgroup_volumes (IntPtr h, [In] string diskgroup);
+
+    /// <summary>
+    /// return the volumes in a Windows dynamic disk group
+    /// </summary>
+    public string[] ldmtool_diskgroup_volumes (string diskgroup)
+    {
+      string[] r;
+      r = guestfs_ldmtool_diskgroup_volumes (_handle, diskgroup);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ldmtool_remove_all (IntPtr h);
+
+    /// <summary>
+    /// remove all Windows dynamic disk volumes
+    /// </summary>
+    public void ldmtool_remove_all ()
+    {
+      int r;
+      r = guestfs_ldmtool_remove_all (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_ldmtool_scan (IntPtr h);
+
+    /// <summary>
+    /// scan for Windows dynamic disks
+    /// </summary>
+    public string[] ldmtool_scan ()
+    {
+      string[] r;
+      r = guestfs_ldmtool_scan (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_ldmtool_scan_devices (IntPtr h, [In] string[] devices);
+
+    /// <summary>
+    /// scan for Windows dynamic disks
+    /// </summary>
+    public string[] ldmtool_scan_devices (string[] devices)
+    {
+      string[] r;
+      r = guestfs_ldmtool_scan_devices (_handle, devices);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_ldmtool_volume_hint (IntPtr h, [In] string diskgroup, [In] string volume);
+
+    /// <summary>
+    /// return the hint field of a Windows dynamic disk volume
+    /// </summary>
+    public string ldmtool_volume_hint (string diskgroup, string volume)
+    {
+      string r;
+      r = guestfs_ldmtool_volume_hint (_handle, diskgroup, volume);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_ldmtool_volume_partitions (IntPtr h, [In] string diskgroup, [In] string volume);
+
+    /// <summary>
+    /// return the partitions in a Windows dynamic disk volume
+    /// </summary>
+    public string[] ldmtool_volume_partitions (string diskgroup, string volume)
+    {
+      string[] r;
+      r = guestfs_ldmtool_volume_partitions (_handle, diskgroup, volume);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_ldmtool_volume_type (IntPtr h, [In] string diskgroup, [In] string volume);
+
+    /// <summary>
+    /// return the type of a Windows dynamic disk volume
+    /// </summary>
+    public string ldmtool_volume_type (string diskgroup, string volume)
+    {
+      string r;
+      r = guestfs_ldmtool_volume_type (_handle, diskgroup, volume);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_lgetxattr (IntPtr h, [In] string path, [In] string name);
 
     /// <summary>
@@ -3027,6 +4275,24 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_list_disk_labels (IntPtr h);
+
+    /// <summary>
+    /// mapping of disk labels to devices
+    /// </summary>
+    public Hashtable list_disk_labels ()
+    {
+      string[] r;
+      r = guestfs_list_disk_labels (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      Hashtable rr = new Hashtable ();
+      for (size_t i = 0; i < r.Length; i += 2)
+        rr.Add (r[i], r[i+1]);
+      return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string[] guestfs_list_dm_devices (IntPtr h);
 
     /// <summary>
@@ -3057,6 +4323,36 @@ namespace Guestfs
       for (size_t i = 0; i < r.Length; i += 2)
         rr.Add (r[i], r[i+1]);
       return rr;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_list_ldm_partitions (IntPtr h);
+
+    /// <summary>
+    /// list all Windows dynamic disk partitions
+    /// </summary>
+    public string[] list_ldm_partitions ()
+    {
+      string[] r;
+      r = guestfs_list_ldm_partitions (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string[] guestfs_list_ldm_volumes (IntPtr h);
+
+    /// <summary>
+    /// list all Windows dynamic disk volumes
+    /// </summary>
+    public string[] list_ldm_volumes ()
+    {
+      string[] r;
+      r = guestfs_list_ldm_volumes (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3202,6 +4498,20 @@ namespace Guestfs
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_ls0 (IntPtr h, [In] string dir, [In] string filenames);
+
+    /// <summary>
+    /// get list of files in a directory
+    /// </summary>
+    public void ls0 (string dir, string filenames)
+    {
+      int r;
+      r = guestfs_ls0 (_handle, dir, filenames);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3548,7 +4858,22 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_md_create (IntPtr h, [In] string name, [In] string[] devices);
+    static extern int guestfs_max_disks (IntPtr h);
+
+    /// <summary>
+    /// maximum number of disks that may be added
+    /// </summary>
+    public int max_disks ()
+    {
+      int r;
+      r = guestfs_max_disks (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_md_create_argv (IntPtr h, [In] string name, [In] string[] devices, void *);
 
     /// <summary>
     /// create a Linux md (RAID) device
@@ -3556,7 +4881,7 @@ namespace Guestfs
     public void md_create (string name, string[] devices)
     {
       int r;
-      r = guestfs_md_create (_handle, name, devices);
+      r = guestfs_md_create_argv (_handle, name, devices, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -3666,6 +4991,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_mke2fs_argv (IntPtr h, [In] string device, void *);
+
+    /// <summary>
+    /// create an ext2/ext3/ext4 filesystem on device
+    /// </summary>
+    public void mke2fs (string device)
+    {
+      int r;
+      r = guestfs_mke2fs_argv (_handle, device, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_mke2fs_J (IntPtr h, [In] string fstype, int blocksize, [In] string device, [In] string journal);
 
     /// <summary>
@@ -3764,7 +5103,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mkfs (IntPtr h, [In] string fstype, [In] string device);
+    static extern int guestfs_mkfs_opts_argv (IntPtr h, [In] string fstype, [In] string device, void *);
 
     /// <summary>
     /// make a filesystem
@@ -3772,9 +5111,14 @@ namespace Guestfs
     public void mkfs (string fstype, string device)
     {
       int r;
-      r = guestfs_mkfs (_handle, fstype, device);
+      r = guestfs_mkfs_opts_argv (_handle, fstype, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    public void mkfs_opts (string fstype, string device)
+    {
+      mkfs (fstype, device);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3792,7 +5136,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mkfs_btrfs (IntPtr h, [In] string[] devices);
+    static extern int guestfs_mkfs_btrfs_argv (IntPtr h, [In] string[] devices, void *);
 
     /// <summary>
     /// create a btrfs filesystem
@@ -3800,21 +5144,21 @@ namespace Guestfs
     public void mkfs_btrfs (string[] devices)
     {
       int r;
-      r = guestfs_mkfs_btrfs (_handle, devices);
+      r = guestfs_mkfs_btrfs_argv (_handle, devices, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mkfs_opts (IntPtr h, [In] string fstype, [In] string device);
+    static extern int guestfs_mklost_and_found (IntPtr h, [In] string mountpoint);
 
     /// <summary>
-    /// make a filesystem
+    /// make lost+found directory on an ext2/3/4 filesystem
     /// </summary>
-    public void mkfs_opts (string fstype, string device)
+    public void mklost_and_found (string mountpoint)
     {
       int r;
-      r = guestfs_mkfs_opts (_handle, fstype, device);
+      r = guestfs_mklost_and_found (_handle, mountpoint);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -3876,7 +5220,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mkswap (IntPtr h, [In] string device);
+    static extern int guestfs_mkswap_opts_argv (IntPtr h, [In] string device, void *);
 
     /// <summary>
     /// create a swap partition
@@ -3884,9 +5228,14 @@ namespace Guestfs
     public void mkswap (string device)
     {
       int r;
-      r = guestfs_mkswap (_handle, device);
+      r = guestfs_mkswap_opts_argv (_handle, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    public void mkswap_opts (string device)
+    {
+      mkswap (device);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3932,6 +5281,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_mktemp_argv (IntPtr h, [In] string tmpl, void *);
+
+    /// <summary>
+    /// create a temporary file
+    /// </summary>
+    public string mktemp (string tmpl)
+    {
+      string r;
+      r = guestfs_mktemp_argv (_handle, tmpl, NULL);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_modprobe (IntPtr h, [In] string modulename);
 
     /// <summary>
@@ -3960,7 +5324,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mount_9p (IntPtr h, [In] string mounttag, [In] string mountpoint);
+    static extern int guestfs_mount_9p_argv (IntPtr h, [In] string mounttag, [In] string mountpoint, void *);
 
     /// <summary>
     /// mount 9p filesystem
@@ -3968,13 +5332,13 @@ namespace Guestfs
     public void mount_9p (string mounttag, string mountpoint)
     {
       int r;
-      r = guestfs_mount_9p (_handle, mounttag, mountpoint);
+      r = guestfs_mount_9p_argv (_handle, mounttag, mountpoint, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mount_local (IntPtr h, [In] string localmountpoint);
+    static extern int guestfs_mount_local_argv (IntPtr h, [In] string localmountpoint, void *);
 
     /// <summary>
     /// mount on the local filesystem
@@ -3982,7 +5346,7 @@ namespace Guestfs
     public void mount_local (string localmountpoint)
     {
       int r;
-      r = guestfs_mount_local (_handle, localmountpoint);
+      r = guestfs_mount_local_argv (_handle, localmountpoint, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -4149,7 +5513,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_ntfsclone_out (IntPtr h, [In] string device, [In] string backupfile);
+    static extern int guestfs_ntfsclone_out_argv (IntPtr h, [In] string device, [In] string backupfile, void *);
 
     /// <summary>
     /// save NTFS to backup file
@@ -4157,13 +5521,13 @@ namespace Guestfs
     public void ntfsclone_out (string device, string backupfile)
     {
       int r;
-      r = guestfs_ntfsclone_out (_handle, device, backupfile);
+      r = guestfs_ntfsclone_out_argv (_handle, device, backupfile, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_ntfsfix (IntPtr h, [In] string device);
+    static extern int guestfs_ntfsfix_argv (IntPtr h, [In] string device, void *);
 
     /// <summary>
     /// fix common errors and force Windows to check NTFS
@@ -4171,13 +5535,13 @@ namespace Guestfs
     public void ntfsfix (string device)
     {
       int r;
-      r = guestfs_ntfsfix (_handle, device);
+      r = guestfs_ntfsfix_argv (_handle, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_ntfsresize (IntPtr h, [In] string device);
+    static extern int guestfs_ntfsresize_opts_argv (IntPtr h, [In] string device, void *);
 
     /// <summary>
     /// resize an NTFS filesystem
@@ -4185,23 +5549,14 @@ namespace Guestfs
     public void ntfsresize (string device)
     {
       int r;
-      r = guestfs_ntfsresize (_handle, device);
+      r = guestfs_ntfsresize_opts_argv (_handle, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_ntfsresize_opts (IntPtr h, [In] string device);
-
-    /// <summary>
-    /// resize an NTFS filesystem
-    /// </summary>
     public void ntfsresize_opts (string device)
     {
-      int r;
-      r = guestfs_ntfsresize_opts (_handle, device);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
+      ntfsresize (device);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -4214,6 +5569,34 @@ namespace Guestfs
     {
       int r;
       r = guestfs_ntfsresize_size (_handle, device, size);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_parse_environment (IntPtr h);
+
+    /// <summary>
+    /// parse the environment and set handle flags accordingly
+    /// </summary>
+    public void parse_environment ()
+    {
+      int r;
+      r = guestfs_parse_environment (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_parse_environment_list (IntPtr h, [In] string[] environment);
+
+    /// <summary>
+    /// parse the environment and set handle flags accordingly
+    /// </summary>
+    public void parse_environment_list (string[] environment)
+    {
+      int r;
+      r = guestfs_parse_environment_list (_handle, environment);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -4451,6 +5834,34 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_pvchange_uuid (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// generate a new random UUID for a physical volume
+    /// </summary>
+    public void pvchange_uuid (string device)
+    {
+      int r;
+      r = guestfs_pvchange_uuid (_handle, device);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_pvchange_uuid_all (IntPtr h);
+
+    /// <summary>
+    /// generate new random UUIDs for all physical volumes
+    /// </summary>
+    public void pvchange_uuid_all ()
+    {
+      int r;
+      r = guestfs_pvchange_uuid_all (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_pvcreate (IntPtr h, [In] string device);
 
     /// <summary>
@@ -4672,6 +6083,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_remove_drive (IntPtr h, [In] string label);
+
+    /// <summary>
+    /// remove a disk image
+    /// </summary>
+    public void remove_drive (string label)
+    {
+      int r;
+      r = guestfs_remove_drive (_handle, label);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_removexattr (IntPtr h, [In] string xattr, [In] string path);
 
     /// <summary>
@@ -4742,6 +6167,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_rm_f (IntPtr h, [In] string path);
+
+    /// <summary>
+    /// remove a file ignoring errors
+    /// </summary>
+    public void rm_f (string path)
+    {
+      int r;
+      r = guestfs_rm_f (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_rm_rf (IntPtr h, [In] string path);
 
     /// <summary>
@@ -4779,6 +6218,48 @@ namespace Guestfs
     {
       int r;
       r = guestfs_rmmountpoint (_handle, exemptpath);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_rsync_argv (IntPtr h, [In] string src, [In] string dest, void *);
+
+    /// <summary>
+    /// synchronize the contents of two directories
+    /// </summary>
+    public void rsync (string src, string dest)
+    {
+      int r;
+      r = guestfs_rsync_argv (_handle, src, dest, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_rsync_in_argv (IntPtr h, [In] string remote, [In] string dest, void *);
+
+    /// <summary>
+    /// synchronize host or remote filesystem with filesystem
+    /// </summary>
+    public void rsync_in (string remote, string dest)
+    {
+      int r;
+      r = guestfs_rsync_in_argv (_handle, remote, dest, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_rsync_out_argv (IntPtr h, [In] string src, [In] string remote, void *);
+
+    /// <summary>
+    /// synchronize filesystem with host or remote filesystem
+    /// </summary>
+    public void rsync_out (string src, string remote)
+    {
+      int r;
+      r = guestfs_rsync_out_argv (_handle, src, remote, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -4868,6 +6349,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_cachedir (IntPtr h, [In] string cachedir);
+
+    /// <summary>
+    /// set the appliance cache directory
+    /// </summary>
+    public void set_cachedir (string cachedir)
+    {
+      int r;
+      r = guestfs_set_cachedir (_handle, cachedir);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_set_direct (IntPtr h, bool direct);
 
     /// <summary>
@@ -4882,7 +6377,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_set_e2attrs (IntPtr h, [In] string file, [In] string attrs);
+    static extern int guestfs_set_e2attrs_argv (IntPtr h, [In] string file, [In] string attrs, void *);
 
     /// <summary>
     /// set ext2 file attributes of a file
@@ -4890,7 +6385,7 @@ namespace Guestfs
     public void set_e2attrs (string file, string attrs)
     {
       int r;
-      r = guestfs_set_e2attrs (_handle, file, attrs);
+      r = guestfs_set_e2attrs_argv (_handle, file, attrs, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -4947,6 +6442,34 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_label (_handle, device, label);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_libvirt_requested_credential (IntPtr h, int index, [In] string cred);
+
+    /// <summary>
+    /// pass requested credential back to libvirt
+    /// </summary>
+    public void set_libvirt_requested_credential (int index, string cred)
+    {
+      int r;
+      r = guestfs_set_libvirt_requested_credential (_handle, index, cred);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_libvirt_supported_credentials (IntPtr h, [In] string[] creds);
+
+    /// <summary>
+    /// set libvirt credentials supported by calling program
+    /// </summary>
+    public void set_libvirt_supported_credentials (string[] creds)
+    {
+      int r;
+      r = guestfs_set_libvirt_supported_credentials (_handle, creds);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -5059,6 +6582,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_smp (_handle, smp);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_tmpdir (IntPtr h, [In] string tmpdir);
+
+    /// <summary>
+    /// set the temporary directory
+    /// </summary>
+    public void set_tmpdir (string tmpdir)
+    {
+      int r;
+      r = guestfs_set_tmpdir (_handle, tmpdir);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -5481,7 +7018,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_tar_in (IntPtr h, [In] string tarfile, [In] string directory);
+    static extern int guestfs_tar_in_opts_argv (IntPtr h, [In] string tarfile, [In] string directory, void *);
 
     /// <summary>
     /// unpack tarfile to directory
@@ -5489,13 +7026,18 @@ namespace Guestfs
     public void tar_in (string tarfile, string directory)
     {
       int r;
-      r = guestfs_tar_in (_handle, tarfile, directory);
+      r = guestfs_tar_in_opts_argv (_handle, tarfile, directory, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
+    public void tar_in_opts (string tarfile, string directory)
+    {
+      tar_in (tarfile, directory);
+    }
+
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_tar_out (IntPtr h, [In] string directory, [In] string tarfile);
+    static extern int guestfs_tar_out_opts_argv (IntPtr h, [In] string directory, [In] string tarfile, void *);
 
     /// <summary>
     /// pack directory into tarfile
@@ -5503,359 +7045,14 @@ namespace Guestfs
     public void tar_out (string directory, string tarfile)
     {
       int r;
-      r = guestfs_tar_out (_handle, directory, tarfile);
+      r = guestfs_tar_out_opts_argv (_handle, directory, tarfile, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_test0 (IntPtr h, [In] string str, [In] string optstr, [In] string[] strlist, bool b, int integer, long integer64, [In] string filein, [In] string fileout, [In] string bufferin);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public void test0 (string str, string optstr, string[] strlist, bool b, int integer, long integer64, string filein, string fileout, string bufferin)
+    public void tar_out_opts (string directory, string tarfile)
     {
-      int r;
-      r = guestfs_test0 (_handle, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_test0rbool (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public bool test0rbool (string val)
-    {
-      int r;
-      r = guestfs_test0rbool (_handle, val);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-      return r != 0 ? true : false;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_test0rboolerr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public bool test0rboolerr ()
-    {
-      int r;
-      r = guestfs_test0rboolerr (_handle);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-      return r != 0 ? true : false;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rbufferout (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rbufferout (string val)
-    {
-      string r;
-      r = guestfs_test0rbufferout (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rbufferouterr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rbufferouterr ()
-    {
-      string r;
-      r = guestfs_test0rbufferouterr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rconstoptstring (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rconstoptstring (string val)
-    {
-      string r;
-      r = guestfs_test0rconstoptstring (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rconstoptstringerr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rconstoptstringerr ()
-    {
-      string r;
-      r = guestfs_test0rconstoptstringerr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rconststring (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rconststring (string val)
-    {
-      string r;
-      r = guestfs_test0rconststring (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rconststringerr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rconststringerr ()
-    {
-      string r;
-      r = guestfs_test0rconststringerr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_test0rhashtable (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public Hashtable test0rhashtable (string val)
-    {
-      string[] r;
-      r = guestfs_test0rhashtable (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      Hashtable rr = new Hashtable ();
-      for (size_t i = 0; i < r.Length; i += 2)
-        rr.Add (r[i], r[i+1]);
-      return rr;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_test0rhashtableerr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public Hashtable test0rhashtableerr ()
-    {
-      string[] r;
-      r = guestfs_test0rhashtableerr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      Hashtable rr = new Hashtable ();
-      for (size_t i = 0; i < r.Length; i += 2)
-        rr.Add (r[i], r[i+1]);
-      return rr;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_test0rint (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public int test0rint (string val)
-    {
-      int r;
-      r = guestfs_test0rint (_handle, val);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern long guestfs_test0rint64 (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public long test0rint64 (string val)
-    {
-      long r;
-      r = guestfs_test0rint64 (_handle, val);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern long guestfs_test0rint64err (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public long test0rint64err ()
-    {
-      long r;
-      r = guestfs_test0rint64err (_handle);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_test0rinterr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public int test0rinterr ()
-    {
-      int r;
-      r = guestfs_test0rinterr (_handle);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rstring (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rstring (string val)
-    {
-      string r;
-      r = guestfs_test0rstring (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_test0rstringerr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string test0rstringerr ()
-    {
-      string r;
-      r = guestfs_test0rstringerr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_test0rstringlist (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string[] test0rstringlist (string val)
-    {
-      string[] r;
-      r = guestfs_test0rstringlist (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_test0rstringlisterr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public string[] test0rstringlisterr ()
-    {
-      string[] r;
-      r = guestfs_test0rstringlisterr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern _lvm_pv guestfs_test0rstruct (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public _lvm_pv test0rstruct (string val)
-    {
-      _lvm_pv r;
-      r = guestfs_test0rstruct (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern _lvm_pv guestfs_test0rstructerr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public _lvm_pv test0rstructerr ()
-    {
-      _lvm_pv r;
-      r = guestfs_test0rstructerr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern _lvm_pv[] guestfs_test0rstructlist (IntPtr h, [In] string val);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public _lvm_pv[] test0rstructlist (string val)
-    {
-      _lvm_pv[] r;
-      r = guestfs_test0rstructlist (_handle, val);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern _lvm_pv[] guestfs_test0rstructlisterr (IntPtr h);
-
-    /// <summary>
-    /// internal test function - do not use
-    /// </summary>
-    public _lvm_pv[] test0rstructlisterr ()
-    {
-      _lvm_pv[] r;
-      r = guestfs_test0rstructlisterr (_handle);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
+      tar_out (directory, tarfile);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -5929,7 +7126,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_tune2fs (IntPtr h, [In] string device);
+    static extern int guestfs_tune2fs_argv (IntPtr h, [In] string device, void *);
 
     /// <summary>
     /// adjust ext2/ext3/ext4 filesystem parameters
@@ -5937,7 +7134,7 @@ namespace Guestfs
     public void tune2fs (string device)
     {
       int r;
-      r = guestfs_tune2fs (_handle, device);
+      r = guestfs_tune2fs_argv (_handle, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -6004,7 +7201,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_umount (IntPtr h, [In] string pathordevice);
+    static extern int guestfs_umount_opts_argv (IntPtr h, [In] string pathordevice, void *);
 
     /// <summary>
     /// unmount a filesystem
@@ -6012,9 +7209,14 @@ namespace Guestfs
     public void umount (string pathordevice)
     {
       int r;
-      r = guestfs_umount (_handle, pathordevice);
+      r = guestfs_umount_opts_argv (_handle, pathordevice, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    public void umount_opts (string pathordevice)
+    {
+      umount (pathordevice);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -6032,7 +7234,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_umount_local (IntPtr h);
+    static extern int guestfs_umount_local_argv (IntPtr h, void *);
 
     /// <summary>
     /// unmount a locally mounted filesystem
@@ -6040,7 +7242,7 @@ namespace Guestfs
     public void umount_local ()
     {
       int r;
-      r = guestfs_umount_local (_handle);
+      r = guestfs_umount_local_argv (_handle, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -6085,6 +7287,21 @@ namespace Guestfs
       r = guestfs_utimens (_handle, path, atsecs, atnsecs, mtsecs, mtnsecs);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _utsname guestfs_utsname (IntPtr h);
+
+    /// <summary>
+    /// appliance kernel version
+    /// </summary>
+    public _utsname utsname ()
+    {
+      _utsname r;
+      r = guestfs_utsname (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -6171,6 +7388,34 @@ namespace Guestfs
     {
       int r;
       r = guestfs_vg_activate_all (_handle, activate);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_vgchange_uuid (IntPtr h, [In] string vg);
+
+    /// <summary>
+    /// generate a new random UUID for a volume group
+    /// </summary>
+    public void vgchange_uuid (string vg)
+    {
+      int r;
+      r = guestfs_vgchange_uuid (_handle, vg);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_vgchange_uuid_all (IntPtr h);
+
+    /// <summary>
+    /// generate new random UUIDs for all volume groups
+    /// </summary>
+    public void vgchange_uuid_all ()
+    {
+      int r;
+      r = guestfs_vgchange_uuid_all (_handle);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -6434,6 +7679,64 @@ namespace Guestfs
       r = guestfs_write_file (_handle, path, content, size);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_xfs_admin_argv (IntPtr h, [In] string device, void *);
+
+    /// <summary>
+    /// change parameters of an XFS filesystem
+    /// </summary>
+    public void xfs_admin (string device)
+    {
+      int r;
+      r = guestfs_xfs_admin_argv (_handle, device, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_xfs_growfs_argv (IntPtr h, [In] string path, void *);
+
+    /// <summary>
+    /// expand an existing XFS filesystem
+    /// </summary>
+    public void xfs_growfs (string path)
+    {
+      int r;
+      r = guestfs_xfs_growfs_argv (_handle, path, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _xfsinfo guestfs_xfs_info (IntPtr h, [In] string pathordevice);
+
+    /// <summary>
+    /// get geometry of XFS filesystem
+    /// </summary>
+    public _xfsinfo xfs_info (string pathordevice)
+    {
+      _xfsinfo r;
+      r = guestfs_xfs_info (_handle, pathordevice);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_xfs_repair_argv (IntPtr h, [In] string device, void *);
+
+    /// <summary>
+    /// repair an XFS filesystem
+    /// </summary>
+    public int xfs_repair (string device)
+    {
+      int r;
+      r = guestfs_xfs_repair_argv (_handle, device, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]

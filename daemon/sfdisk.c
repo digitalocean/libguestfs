@@ -28,6 +28,9 @@
 #include "daemon.h"
 #include "actions.h"
 
+GUESTFSD_EXT_CMD(str_sfdisk, sfdisk);
+GUESTFSD_EXT_CMD(str_blockdev, blockdev);
+
 static int
 sfdisk (const char *device, int n, int cyls, int heads, int sectors,
         const char *extra_flag,
@@ -37,7 +40,7 @@ sfdisk (const char *device, int n, int cyls, int heads, int sectors,
   char buf[256];
   int i;
 
-  strcpy (buf, "sfdisk");
+  strcpy (buf, str_sfdisk);
 
   if (n > 0)
     sprintf (buf + strlen (buf), " -N %d", n);
@@ -100,7 +103,7 @@ sfdisk (const char *device, int n, int cyls, int heads, int sectors,
    * other component.  In any case, reread the partition table
    * unconditionally here.
    */
-  (void) command (NULL, NULL, "blockdev", "--rereadpt", device, NULL);
+  (void) command (NULL, NULL, str_blockdev, "--rereadpt", device, NULL);
 
   udev_settle ();
 
@@ -135,7 +138,7 @@ sfdisk_flag (const char *device, const char *flag)
   char *out, *err;
   int r;
 
-  r = command (&out, &err, "sfdisk", flag, device, NULL);
+  r = command (&out, &err, str_sfdisk, flag, device, NULL);
   if (r == -1) {
     reply_with_error ("%s: %s", device, err);
     free (out);

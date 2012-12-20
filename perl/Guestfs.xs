@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -155,7 +155,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (SV *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (SV *) * (*len_rtn));
 
   i = 0;
   cb = guestfs_first_private (g, &key);
@@ -196,9 +196,10 @@ MODULE = Sys::Guestfs  PACKAGE = Sys::Guestfs
 PROTOTYPES: ENABLE
 
 guestfs_h *
-_create ()
+_create (flags)
+      unsigned flags;
    CODE:
-      RETVAL = guestfs_create ();
+      RETVAL = guestfs_create_flags (flags);
       if (!RETVAL)
         croak ("could not create guestfs handle");
       guestfs_set_error_handler (RETVAL, NULL, NULL);
@@ -292,7 +293,7 @@ user_cancel (g)
       guestfs_user_cancel (g);
 
 void
-test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, ...)
+internal_test (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, ...)
       guestfs_h *g;
       char *str;
       char *optstr = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
@@ -306,8 +307,8 @@ test0 (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin
       size_t bufferin_size = SvCUR (ST(9));
 PREINIT:
       int r;
-      struct guestfs_test0_argv optargs_s = { .bitmask = 0 };
-      struct guestfs_test0_argv *optargs = &optargs_s;
+      struct guestfs_internal_test_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_internal_test_argv *optargs = &optargs_s;
       size_t items_i;
  PPCODE:
       if (((items - 10) & 1) != 0)
@@ -319,19 +320,40 @@ PREINIT:
         this_arg = SvPV_nolen (ST (items_i));
         if (STREQ (this_arg, "obool")) {
           optargs_s.obool = SvIV (ST (items_i+1));
-          this_mask = GUESTFS_TEST0_OBOOL_BITMASK;
+          this_mask = GUESTFS_INTERNAL_TEST_OBOOL_BITMASK;
         }
         else if (STREQ (this_arg, "oint")) {
           optargs_s.oint = SvIV (ST (items_i+1));
-          this_mask = GUESTFS_TEST0_OINT_BITMASK;
+          this_mask = GUESTFS_INTERNAL_TEST_OINT_BITMASK;
         }
         else if (STREQ (this_arg, "oint64")) {
           optargs_s.oint64 = my_SvIV64 (ST (items_i+1));
-          this_mask = GUESTFS_TEST0_OINT64_BITMASK;
+          this_mask = GUESTFS_INTERNAL_TEST_OINT64_BITMASK;
         }
         else if (STREQ (this_arg, "ostring")) {
           optargs_s.ostring = SvPV_nolen (ST (items_i+1));
-          this_mask = GUESTFS_TEST0_OSTRING_BITMASK;
+          this_mask = GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
+        }
+        else if (STREQ (this_arg, "ostringlist")) {
+          size_t i, len;
+          char **r;
+          AV *av;
+          SV **svp;
+
+          /* XXX More checking required here. */
+          av = (AV *) SvRV (ST (items_i+1));
+
+          /* Note av_len returns index of final element. */
+          len = av_len (av) + 1;
+
+          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
+          for (i = 0; i < len; ++i) {
+            svp = av_fetch (av, i, 0);
+            r[i] = SvPV_nolen (*svp);
+          }
+          r[i] = NULL;
+          optargs_s.ostringlist = r;
+          this_mask = GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -340,19 +362,329 @@ PREINIT:
         optargs_s.bitmask |= this_mask;
       }
 
-      r = guestfs_test0_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
+      r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
       free (strlist);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+void
+internal_test_only_optargs (g, ...)
+      guestfs_h *g;
+PREINIT:
+      int r;
+      struct guestfs_internal_test_only_optargs_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_internal_test_only_optargs_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 1) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 1; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "test")) {
+          optargs_s.test = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_internal_test_only_optargs_argv (g, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+internal_test_63_optargs (g, ...)
+      guestfs_h *g;
+PREINIT:
+      int r;
+      struct guestfs_internal_test_63_optargs_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_internal_test_63_optargs_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 1) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 1; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "opt1")) {
+          optargs_s.opt1 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt2")) {
+          optargs_s.opt2 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt3")) {
+          optargs_s.opt3 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt4")) {
+          optargs_s.opt4 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt5")) {
+          optargs_s.opt5 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt6")) {
+          optargs_s.opt6 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt7")) {
+          optargs_s.opt7 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt8")) {
+          optargs_s.opt8 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt9")) {
+          optargs_s.opt9 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt10")) {
+          optargs_s.opt10 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt11")) {
+          optargs_s.opt11 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt12")) {
+          optargs_s.opt12 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt13")) {
+          optargs_s.opt13 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt14")) {
+          optargs_s.opt14 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt15")) {
+          optargs_s.opt15 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt16")) {
+          optargs_s.opt16 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt17")) {
+          optargs_s.opt17 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt18")) {
+          optargs_s.opt18 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt19")) {
+          optargs_s.opt19 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt20")) {
+          optargs_s.opt20 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt21")) {
+          optargs_s.opt21 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt22")) {
+          optargs_s.opt22 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt23")) {
+          optargs_s.opt23 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt24")) {
+          optargs_s.opt24 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt25")) {
+          optargs_s.opt25 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt26")) {
+          optargs_s.opt26 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt27")) {
+          optargs_s.opt27 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt28")) {
+          optargs_s.opt28 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt29")) {
+          optargs_s.opt29 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt30")) {
+          optargs_s.opt30 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt31")) {
+          optargs_s.opt31 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt32")) {
+          optargs_s.opt32 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt33")) {
+          optargs_s.opt33 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt34")) {
+          optargs_s.opt34 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt35")) {
+          optargs_s.opt35 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt36")) {
+          optargs_s.opt36 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt37")) {
+          optargs_s.opt37 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt38")) {
+          optargs_s.opt38 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt39")) {
+          optargs_s.opt39 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt40")) {
+          optargs_s.opt40 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt41")) {
+          optargs_s.opt41 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt42")) {
+          optargs_s.opt42 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt43")) {
+          optargs_s.opt43 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt44")) {
+          optargs_s.opt44 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt45")) {
+          optargs_s.opt45 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt46")) {
+          optargs_s.opt46 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt47")) {
+          optargs_s.opt47 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt48")) {
+          optargs_s.opt48 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt49")) {
+          optargs_s.opt49 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt50")) {
+          optargs_s.opt50 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt51")) {
+          optargs_s.opt51 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt52")) {
+          optargs_s.opt52 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt53")) {
+          optargs_s.opt53 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt54")) {
+          optargs_s.opt54 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt55")) {
+          optargs_s.opt55 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt56")) {
+          optargs_s.opt56 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt57")) {
+          optargs_s.opt57 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt58")) {
+          optargs_s.opt58 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt59")) {
+          optargs_s.opt59 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt60")) {
+          optargs_s.opt60 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt61")) {
+          optargs_s.opt61 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt62")) {
+          optargs_s.opt62 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK;
+        }
+        else if (STREQ (this_arg, "opt63")) {
+          optargs_s.opt63 = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_internal_test_63_optargs_argv (g, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
 SV *
-test0rint (g, val)
+internal_test_rint (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       int r;
    CODE:
-      r = guestfs_test0rint (g, val);
+      r = guestfs_internal_test_rint (g, val);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -360,12 +692,12 @@ PREINIT:
       RETVAL
 
 SV *
-test0rinterr (g)
+internal_test_rinterr (g)
       guestfs_h *g;
 PREINIT:
       int r;
    CODE:
-      r = guestfs_test0rinterr (g);
+      r = guestfs_internal_test_rinterr (g);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -373,13 +705,13 @@ PREINIT:
       RETVAL
 
 SV *
-test0rint64 (g, val)
+internal_test_rint64 (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       int64_t r;
    CODE:
-      r = guestfs_test0rint64 (g, val);
+      r = guestfs_internal_test_rint64 (g, val);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = my_newSVll (r);
@@ -387,12 +719,12 @@ PREINIT:
       RETVAL
 
 SV *
-test0rint64err (g)
+internal_test_rint64err (g)
       guestfs_h *g;
 PREINIT:
       int64_t r;
    CODE:
-      r = guestfs_test0rint64err (g);
+      r = guestfs_internal_test_rint64err (g);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = my_newSVll (r);
@@ -400,13 +732,13 @@ PREINIT:
       RETVAL
 
 SV *
-test0rbool (g, val)
+internal_test_rbool (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       int r;
    CODE:
-      r = guestfs_test0rbool (g, val);
+      r = guestfs_internal_test_rbool (g, val);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -414,12 +746,12 @@ PREINIT:
       RETVAL
 
 SV *
-test0rboolerr (g)
+internal_test_rboolerr (g)
       guestfs_h *g;
 PREINIT:
       int r;
    CODE:
-      r = guestfs_test0rboolerr (g);
+      r = guestfs_internal_test_rboolerr (g);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -427,13 +759,13 @@ PREINIT:
       RETVAL
 
 SV *
-test0rconststring (g, val)
+internal_test_rconststring (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       const char *r;
    CODE:
-      r = guestfs_test0rconststring (g, val);
+      r = guestfs_internal_test_rconststring (g, val);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -441,12 +773,12 @@ PREINIT:
       RETVAL
 
 SV *
-test0rconststringerr (g)
+internal_test_rconststringerr (g)
       guestfs_h *g;
 PREINIT:
       const char *r;
    CODE:
-      r = guestfs_test0rconststringerr (g);
+      r = guestfs_internal_test_rconststringerr (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -454,13 +786,13 @@ PREINIT:
       RETVAL
 
 SV *
-test0rconstoptstring (g, val)
+internal_test_rconstoptstring (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       const char *r;
    CODE:
-      r = guestfs_test0rconstoptstring (g, val);
+      r = guestfs_internal_test_rconstoptstring (g, val);
       if (r == NULL)
         RETVAL = &PL_sv_undef;
       else
@@ -469,12 +801,12 @@ PREINIT:
       RETVAL
 
 SV *
-test0rconstoptstringerr (g)
+internal_test_rconstoptstringerr (g)
       guestfs_h *g;
 PREINIT:
       const char *r;
    CODE:
-      r = guestfs_test0rconstoptstringerr (g);
+      r = guestfs_internal_test_rconstoptstringerr (g);
       if (r == NULL)
         RETVAL = &PL_sv_undef;
       else
@@ -483,13 +815,13 @@ PREINIT:
       RETVAL
 
 SV *
-test0rstring (g, val)
+internal_test_rstring (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_test0rstring (g, val);
+      r = guestfs_internal_test_rstring (g, val);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -498,12 +830,12 @@ PREINIT:
       RETVAL
 
 SV *
-test0rstringerr (g)
+internal_test_rstringerr (g)
       guestfs_h *g;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_test0rstringerr (g);
+      r = guestfs_internal_test_rstringerr (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -512,14 +844,14 @@ PREINIT:
       RETVAL
 
 void
-test0rstringlist (g, val)
+internal_test_rstringlist (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       char **r;
       size_t i, n;
  PPCODE:
-      r = guestfs_test0rstringlist (g, val);
+      r = guestfs_internal_test_rstringlist (g, val);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       for (n = 0; r[n] != NULL; ++n) /**/;
@@ -531,13 +863,13 @@ PREINIT:
       free (r);
 
 void
-test0rstringlisterr (g)
+internal_test_rstringlisterr (g)
       guestfs_h *g;
 PREINIT:
       char **r;
       size_t i, n;
  PPCODE:
-      r = guestfs_test0rstringlisterr (g);
+      r = guestfs_internal_test_rstringlisterr (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       for (n = 0; r[n] != NULL; ++n) /**/;
@@ -549,13 +881,13 @@ PREINIT:
       free (r);
 
 void
-test0rstruct (g, val)
+internal_test_rstruct (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       struct guestfs_lvm_pv *r;
  PPCODE:
-      r = guestfs_test0rstruct (g, val);
+      r = guestfs_internal_test_rstruct (g, val);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 14);
@@ -590,12 +922,12 @@ PREINIT:
       free (r);
 
 void
-test0rstructerr (g)
+internal_test_rstructerr (g)
       guestfs_h *g;
 PREINIT:
       struct guestfs_lvm_pv *r;
  PPCODE:
-      r = guestfs_test0rstructerr (g);
+      r = guestfs_internal_test_rstructerr (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, 2 * 14);
@@ -630,7 +962,7 @@ PREINIT:
       free (r);
 
 void
-test0rstructlist (g, val)
+internal_test_rstructlist (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
@@ -638,7 +970,7 @@ PREINIT:
       size_t i;
       HV *hv;
  PPCODE:
-      r = guestfs_test0rstructlist (g, val);
+      r = guestfs_internal_test_rstructlist (g, val);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, r->len);
@@ -663,14 +995,14 @@ PREINIT:
       guestfs_free_lvm_pv_list (r);
 
 void
-test0rstructlisterr (g)
+internal_test_rstructlisterr (g)
       guestfs_h *g;
 PREINIT:
       struct guestfs_lvm_pv_list *r;
       size_t i;
       HV *hv;
  PPCODE:
-      r = guestfs_test0rstructlisterr (g);
+      r = guestfs_internal_test_rstructlisterr (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       EXTEND (SP, r->len);
@@ -695,14 +1027,14 @@ PREINIT:
       guestfs_free_lvm_pv_list (r);
 
 void
-test0rhashtable (g, val)
+internal_test_rhashtable (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       char **r;
       size_t i, n;
  PPCODE:
-      r = guestfs_test0rhashtable (g, val);
+      r = guestfs_internal_test_rhashtable (g, val);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       for (n = 0; r[n] != NULL; ++n) /**/;
@@ -714,13 +1046,13 @@ PREINIT:
       free (r);
 
 void
-test0rhashtableerr (g)
+internal_test_rhashtableerr (g)
       guestfs_h *g;
 PREINIT:
       char **r;
       size_t i, n;
  PPCODE:
-      r = guestfs_test0rhashtableerr (g);
+      r = guestfs_internal_test_rhashtableerr (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       for (n = 0; r[n] != NULL; ++n) /**/;
@@ -732,14 +1064,14 @@ PREINIT:
       free (r);
 
 SV *
-test0rbufferout (g, val)
+internal_test_rbufferout (g, val)
       guestfs_h *g;
       char *val;
 PREINIT:
       char *r;
       size_t size;
    CODE:
-      r = guestfs_test0rbufferout (g, val, &size);
+      r = guestfs_internal_test_rbufferout (g, val, &size);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpvn (r, size);
@@ -748,19 +1080,40 @@ PREINIT:
       RETVAL
 
 SV *
-test0rbufferouterr (g)
+internal_test_rbufferouterr (g)
       guestfs_h *g;
 PREINIT:
       char *r;
       size_t size;
    CODE:
-      r = guestfs_test0rbufferouterr (g, &size);
+      r = guestfs_internal_test_rbufferouterr (g, &size);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpvn (r, size);
       free (r);
  OUTPUT:
       RETVAL
+
+void
+internal_test_set_output (g, filename)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_internal_test_set_output (g, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+internal_test_close_output (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_internal_test_close_output (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 
 void
 launch (g)
@@ -789,17 +1142,6 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_kill_subprocess (g);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
-void
-add_drive (g, filename)
-      guestfs_h *g;
-      char *filename;
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_add_drive (g, filename);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -1402,7 +1744,7 @@ PREINIT:
       free (r);
 
 void
-add_drive_opts (g, filename, ...)
+add_drive (g, filename, ...)
       guestfs_h *g;
       char *filename;
 PREINIT:
@@ -1433,6 +1775,10 @@ PREINIT:
         else if (STREQ (this_arg, "name")) {
           optargs_s.name = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
+        }
+        else if (STREQ (this_arg, "label")) {
+          optargs_s.label = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -1468,24 +1814,6 @@ PREINIT:
       size_t i, n;
  PPCODE:
       r = guestfs_inspect_get_roots (g);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      for (n = 0; r[n] != NULL; ++n) /**/;
-      EXTEND (SP, n);
-      for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
-        free (r[i]);
-      }
-      free (r);
-
-void
-debug_cmdline (g)
-      guestfs_h *g;
-PREINIT:
-      char **r;
-      size_t i, n;
- PPCODE:
-      r = guestfs_debug_cmdline (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       for (n = 0; r[n] != NULL; ++n) /**/;
@@ -1629,6 +1957,42 @@ PREINIT:
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
       guestfs_free_application_list (r);
+
+void
+inspect_list_applications2 (g, root)
+      guestfs_h *g;
+      char *root;
+PREINIT:
+      struct guestfs_application2_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_inspect_list_applications2 (g, root);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "app2_name", 9, newSVpv (r->val[i].app2_name, 0), 0);
+        (void) hv_store (hv, "app2_display_name", 17, newSVpv (r->val[i].app2_display_name, 0), 0);
+        (void) hv_store (hv, "app2_epoch", 10, newSVnv (r->val[i].app2_epoch), 0);
+        (void) hv_store (hv, "app2_version", 12, newSVpv (r->val[i].app2_version, 0), 0);
+        (void) hv_store (hv, "app2_release", 12, newSVpv (r->val[i].app2_release, 0), 0);
+        (void) hv_store (hv, "app2_arch", 9, newSVpv (r->val[i].app2_arch, 0), 0);
+        (void) hv_store (hv, "app2_install_path", 17, newSVpv (r->val[i].app2_install_path, 0), 0);
+        (void) hv_store (hv, "app2_trans_path", 15, newSVpv (r->val[i].app2_trans_path, 0), 0);
+        (void) hv_store (hv, "app2_publisher", 14, newSVpv (r->val[i].app2_publisher, 0), 0);
+        (void) hv_store (hv, "app2_url", 8, newSVpv (r->val[i].app2_url, 0), 0);
+        (void) hv_store (hv, "app2_source_package", 19, newSVpv (r->val[i].app2_source_package, 0), 0);
+        (void) hv_store (hv, "app2_summary", 12, newSVpv (r->val[i].app2_summary, 0), 0);
+        (void) hv_store (hv, "app2_description", 16, newSVpv (r->val[i].app2_description, 0), 0);
+        (void) hv_store (hv, "app2_spare1", 11, newSVpv (r->val[i].app2_spare1, 0), 0);
+        (void) hv_store (hv, "app2_spare2", 11, newSVpv (r->val[i].app2_spare2, 0), 0);
+        (void) hv_store (hv, "app2_spare3", 11, newSVpv (r->val[i].app2_spare3, 0), 0);
+        (void) hv_store (hv, "app2_spare4", 11, newSVpv (r->val[i].app2_spare4, 0), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_application2_list (r);
 
 SV *
 inspect_get_hostname (g, root)
@@ -1950,6 +2314,34 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+SV *
+max_disks (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_max_disks (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+canonical_device_name (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_canonical_device_name (g, device);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
 void
 shutdown (g)
       guestfs_h *g;
@@ -1959,6 +2351,427 @@ PREINIT:
       r = guestfs_shutdown (g);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
+
+SV *
+cat (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_cat (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+find (g, directory)
+      guestfs_h *g;
+      char *directory;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_find (g, directory);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+SV *
+read_file (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      char *r;
+      size_t size;
+   CODE:
+      r = guestfs_read_file (g, path, &size);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpvn (r, size);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+read_lines (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_read_lines (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+write (g, path, content)
+      guestfs_h *g;
+      char *path;
+      char *content;
+      size_t content_size = SvCUR (ST(2));
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_write (g, path, content, content_size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+write_append (g, path, content)
+      guestfs_h *g;
+      char *path;
+      char *content;
+      size_t content_size = SvCUR (ST(2));
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_write_append (g, path, content, content_size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+lstatlist (g, path, names)
+      guestfs_h *g;
+      char *path;
+      char **names;
+PREINIT:
+      struct guestfs_stat_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_lstatlist (g, path, names);
+      free (names);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "dev", 3, my_newSVll (r->val[i].dev), 0);
+        (void) hv_store (hv, "ino", 3, my_newSVll (r->val[i].ino), 0);
+        (void) hv_store (hv, "mode", 4, my_newSVll (r->val[i].mode), 0);
+        (void) hv_store (hv, "nlink", 5, my_newSVll (r->val[i].nlink), 0);
+        (void) hv_store (hv, "uid", 3, my_newSVll (r->val[i].uid), 0);
+        (void) hv_store (hv, "gid", 3, my_newSVll (r->val[i].gid), 0);
+        (void) hv_store (hv, "rdev", 4, my_newSVll (r->val[i].rdev), 0);
+        (void) hv_store (hv, "size", 4, my_newSVll (r->val[i].size), 0);
+        (void) hv_store (hv, "blksize", 7, my_newSVll (r->val[i].blksize), 0);
+        (void) hv_store (hv, "blocks", 6, my_newSVll (r->val[i].blocks), 0);
+        (void) hv_store (hv, "atime", 5, my_newSVll (r->val[i].atime), 0);
+        (void) hv_store (hv, "mtime", 5, my_newSVll (r->val[i].mtime), 0);
+        (void) hv_store (hv, "ctime", 5, my_newSVll (r->val[i].ctime), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_stat_list (r);
+
+void
+lxattrlist (g, path, names)
+      guestfs_h *g;
+      char *path;
+      char **names;
+PREINIT:
+      struct guestfs_xattr_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_lxattrlist (g, path, names);
+      free (names);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "attrname", 8, newSVpv (r->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpvn (r->val[i].attrval, r->val[i].attrval_len), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_xattr_list (r);
+
+void
+readlinklist (g, path, names)
+      guestfs_h *g;
+      char *path;
+      char **names;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_readlinklist (g, path, names);
+      free (names);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+ls (g, directory)
+      guestfs_h *g;
+      char *directory;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_ls (g, directory);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+SV *
+hivex_value_utf8 (g, valueh)
+      guestfs_h *g;
+      int64_t valueh;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_hivex_value_utf8 (g, valueh);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+disk_format (g, filename)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_disk_format (g, filename);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+disk_virtual_size (g, filename)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_disk_virtual_size (g, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+disk_has_backing_file (g, filename)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_disk_has_backing_file (g, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+remove_drive (g, label)
+      guestfs_h *g;
+      char *label;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_remove_drive (g, label);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+set_libvirt_supported_credentials (g, creds)
+      guestfs_h *g;
+      char **creds;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_libvirt_supported_credentials (g, creds);
+      free (creds);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+get_libvirt_requested_credentials (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_get_libvirt_requested_credentials (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+SV *
+get_libvirt_requested_credential_prompt (g, index)
+      guestfs_h *g;
+      int index;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_libvirt_requested_credential_prompt (g, index);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+get_libvirt_requested_credential_challenge (g, index)
+      guestfs_h *g;
+      int index;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_libvirt_requested_credential_challenge (g, index);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+get_libvirt_requested_credential_defresult (g, index)
+      guestfs_h *g;
+      int index;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_libvirt_requested_credential_defresult (g, index);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+set_libvirt_requested_credential (g, index, cred)
+      guestfs_h *g;
+      int index;
+      char *cred;
+      size_t cred_size = SvCUR (ST(2));
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_libvirt_requested_credential (g, index, cred, cred_size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+parse_environment (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_parse_environment (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+parse_environment_list (g, environment)
+      guestfs_h *g;
+      char **environment;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_parse_environment_list (g, environment);
+      free (environment);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+set_tmpdir (g, tmpdir)
+      guestfs_h *g;
+      char *tmpdir = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_tmpdir (g, tmpdir);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_tmpdir (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_tmpdir (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+set_cachedir (g, cachedir)
+      guestfs_h *g;
+      char *cachedir = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_cachedir (g, cachedir);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_cachedir (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_cachedir (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
 
 void
 mount (g, device, mountpoint)
@@ -1994,21 +2807,6 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 SV *
-cat (g, path)
-      guestfs_h *g;
-      char *path;
-PREINIT:
-      char *r;
-   CODE:
-      r = guestfs_cat (g, path);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpv (r, 0);
-      free (r);
- OUTPUT:
-      RETVAL
-
-SV *
 ll (g, directory)
       guestfs_h *g;
       char *directory;
@@ -2022,25 +2820,6 @@ PREINIT:
       free (r);
  OUTPUT:
       RETVAL
-
-void
-ls (g, directory)
-      guestfs_h *g;
-      char *directory;
-PREINIT:
-      char **r;
-      size_t i, n;
- PPCODE:
-      r = guestfs_ls (g, directory);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      for (n = 0; r[n] != NULL; ++n) /**/;
-      EXTEND (SP, n);
-      for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
-        free (r[i]);
-      }
-      free (r);
 
 void
 list_devices (g)
@@ -2234,25 +3013,6 @@ PREINIT:
         PUSHs (sv_2mortal (newRV ((SV *) hv)));
       }
       guestfs_free_lvm_lv_list (r);
-
-void
-read_lines (g, path)
-      guestfs_h *g;
-      char *path;
-PREINIT:
-      char **r;
-      size_t i, n;
- PPCODE:
-      r = guestfs_read_lines (g, path);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      for (n = 0; r[n] != NULL; ++n) /**/;
-      EXTEND (SP, n);
-      for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
-        free (r[i]);
-      }
-      free (r);
 
 void
 aug_init (g, root, flags)
@@ -2594,18 +3354,6 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-mkfs (g, fstype, device)
-      guestfs_h *g;
-      char *fstype;
-      char *device;
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_mkfs (g, fstype, device);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
-void
 sfdisk (g, device, cyls, heads, sectors, lines)
       guestfs_h *g;
       char *device;
@@ -2635,13 +3383,38 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-umount (g, pathordevice)
+umount (g, pathordevice, ...)
       guestfs_h *g;
       char *pathordevice;
 PREINIT:
       int r;
+      struct guestfs_umount_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_umount_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_umount (g, pathordevice);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "force")) {
+          optargs_s.force = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
+        }
+        else if (STREQ (this_arg, "lazyunmount")) {
+          optargs_s.lazyunmount = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_umount_opts_argv (g, pathordevice, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -3033,26 +3806,93 @@ PREINIT:
       RETVAL
 
 void
-tar_in (g, tarfile, directory)
+tar_in (g, tarfile, directory, ...)
       guestfs_h *g;
       char *tarfile;
       char *directory;
 PREINIT:
       int r;
+      struct guestfs_tar_in_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_tar_in (g, tarfile, directory);
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "compress")) {
+          optargs_s.compress = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_tar_in_opts_argv (g, tarfile, directory, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
 void
-tar_out (g, directory, tarfile)
+tar_out (g, directory, tarfile, ...)
       guestfs_h *g;
       char *directory;
       char *tarfile;
 PREINIT:
       int r;
+      struct guestfs_tar_out_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_tar_out (g, directory, tarfile);
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "compress")) {
+          optargs_s.compress = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK;
+        }
+        else if (STREQ (this_arg, "numericowner")) {
+          optargs_s.numericowner = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
+        }
+        else if (STREQ (this_arg, "excludes")) {
+          size_t i, len;
+          char **r;
+          AV *av;
+          SV **svp;
+
+          /* XXX More checking required here. */
+          av = (AV *) SvRV (ST (items_i+1));
+
+          /* Note av_len returns index of final element. */
+          len = av_len (av) + 1;
+
+          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
+          for (i = 0; i < len; ++i) {
+            svp = av_fetch (av, i, 0);
+            r[i] = SvPV_nolen (*svp);
+          }
+          r[i] = NULL;
+          optargs_s.excludes = r;
+          this_mask = GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_tar_out_opts_argv (g, directory, tarfile, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -3532,25 +4372,6 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-find (g, directory)
-      guestfs_h *g;
-      char *directory;
-PREINIT:
-      char **r;
-      size_t i, n;
- PPCODE:
-      r = guestfs_find (g, directory);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      for (n = 0; r[n] != NULL; ++n) /**/;
-      EXTEND (SP, n);
-      for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
-        free (r[i]);
-      }
-      free (r);
-
-void
 e2fsck_f (g, device)
       guestfs_h *g;
       char *device;
@@ -3882,13 +4703,38 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-mkswap (g, device)
+mkswap (g, device, ...)
       guestfs_h *g;
       char *device;
 PREINIT:
       int r;
+      struct guestfs_mkswap_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_mkswap (g, device);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "label")) {
+          optargs_s.label = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKSWAP_OPTS_LABEL_BITMASK;
+        }
+        else if (STREQ (this_arg, "uuid")) {
+          optargs_s.uuid = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKSWAP_OPTS_UUID_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_mkswap_opts_argv (g, device, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -4169,32 +5015,49 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
-SV *
-read_file (g, path)
-      guestfs_h *g;
-      char *path;
-PREINIT:
-      char *r;
-      size_t size;
-   CODE:
-      r = guestfs_read_file (g, path, &size);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      RETVAL = newSVpvn (r, size);
-      free (r);
- OUTPUT:
-      RETVAL
-
 void
-grep (g, regex, path)
+grep (g, regex, path, ...)
       guestfs_h *g;
       char *regex;
       char *path;
 PREINIT:
       char **r;
       size_t i, n;
+      struct guestfs_grep_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_grep_opts_argv *optargs = &optargs_s;
+      size_t items_i;
  PPCODE:
-      r = guestfs_grep (g, regex, path);
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "extended")) {
+          optargs_s.extended = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
+        }
+        else if (STREQ (this_arg, "fixed")) {
+          optargs_s.fixed = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_GREP_OPTS_FIXED_BITMASK;
+        }
+        else if (STREQ (this_arg, "insensitive")) {
+          optargs_s.insensitive = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
+        }
+        else if (STREQ (this_arg, "compressed")) {
+          optargs_s.compressed = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_grep_opts_argv (g, regex, path, optargs);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       for (n = 0; r[n] != NULL; ++n) /**/;
@@ -4952,7 +5815,7 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-lstatlist (g, path, names)
+internal_lstatlist (g, path, names)
       guestfs_h *g;
       char *path;
       char **names;
@@ -4961,7 +5824,7 @@ PREINIT:
       size_t i;
       HV *hv;
  PPCODE:
-      r = guestfs_lstatlist (g, path, names);
+      r = guestfs_internal_lstatlist (g, path, names);
       free (names);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
@@ -4986,7 +5849,7 @@ PREINIT:
       guestfs_free_stat_list (r);
 
 void
-lxattrlist (g, path, names)
+internal_lxattrlist (g, path, names)
       guestfs_h *g;
       char *path;
       char **names;
@@ -4995,7 +5858,7 @@ PREINIT:
       size_t i;
       HV *hv;
  PPCODE:
-      r = guestfs_lxattrlist (g, path, names);
+      r = guestfs_internal_lxattrlist (g, path, names);
       free (names);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
@@ -5009,7 +5872,7 @@ PREINIT:
       guestfs_free_xattr_list (r);
 
 void
-readlinklist (g, path, names)
+internal_readlinklist (g, path, names)
       guestfs_h *g;
       char *path;
       char **names;
@@ -5017,7 +5880,7 @@ PREINIT:
       char **r;
       size_t i, n;
  PPCODE:
-      r = guestfs_readlinklist (g, path, names);
+      r = guestfs_internal_readlinklist (g, path, names);
       free (names);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
@@ -5373,17 +6236,6 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-ntfsresize (g, device)
-      guestfs_h *g;
-      char *device;
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_ntfsresize (g, device);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
-void
 vgscan (g)
       guestfs_h *g;
 PREINIT:
@@ -5564,7 +6416,7 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-write (g, path, content)
+internal_write (g, path, content)
       guestfs_h *g;
       char *path;
       char *content;
@@ -5572,7 +6424,7 @@ write (g, path, content)
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_write (g, path, content, content_size);
+      r = guestfs_internal_write (g, path, content, content_size);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -6009,7 +6861,7 @@ PREINIT:
       RETVAL
 
 void
-mkfs_opts (g, fstype, device, ...)
+mkfs (g, fstype, device, ...)
       guestfs_h *g;
       char *fstype;
       char *device;
@@ -6206,7 +7058,7 @@ PREINIT:
       free (r);
 
 void
-ntfsresize_opts (g, device, ...)
+ntfsresize (g, device, ...)
       guestfs_h *g;
       char *device;
 PREINIT:
@@ -6274,7 +7126,7 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-write_append (g, path, content)
+internal_write_append (g, path, content)
       guestfs_h *g;
       char *path;
       char *content;
@@ -6282,7 +7134,7 @@ write_append (g, path, content)
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_write_append (g, path, content, content_size);
+      r = guestfs_internal_write_append (g, path, content, content_size);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -7340,6 +8192,60 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 SV *
+filesystem_available (g, filesystem)
+      guestfs_h *g;
+      char *filesystem;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_filesystem_available (g, filesystem);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+fstrim (g, mountpoint, ...)
+      guestfs_h *g;
+      char *mountpoint;
+PREINIT:
+      int r;
+      struct guestfs_fstrim_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_fstrim_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "offset")) {
+          optargs_s.offset = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_FSTRIM_OFFSET_BITMASK;
+        }
+        else if (STREQ (this_arg, "length")) {
+          optargs_s.length = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_FSTRIM_LENGTH_BITMASK;
+        }
+        else if (STREQ (this_arg, "minimumfreeextent")) {
+          optargs_s.minimumfreeextent = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_fstrim_argv (g, mountpoint, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
 device_index (g, device)
       guestfs_h *g;
       char *device;
@@ -7365,4 +8271,1265 @@ PREINIT:
       RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
+
+void
+xfs_info (g, pathordevice)
+      guestfs_h *g;
+      char *pathordevice;
+PREINIT:
+      struct guestfs_xfsinfo *r;
+ PPCODE:
+      r = guestfs_xfs_info (g, pathordevice);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, 2 * 25);
+      PUSHs (sv_2mortal (newSVpv ("xfs_mntpoint", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->xfs_mntpoint, 0)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_inodesize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_inodesize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_agcount", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_agcount)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_agsize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_agsize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_sectsize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_sectsize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_attr", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_attr)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_blocksize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_blocksize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_datablocks", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->xfs_datablocks)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_imaxpct", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_imaxpct)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_sunit", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_sunit)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_swidth", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_swidth)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_dirversion", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_dirversion)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_dirblocksize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_dirblocksize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_cimode", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_cimode)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_logname", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->xfs_logname, 0)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_logblocksize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_logblocksize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_logblocks", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_logblocks)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_logversion", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_logversion)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_logsectsize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_logsectsize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_logsunit", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_logsunit)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_lazycount", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_lazycount)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_rtname", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->xfs_rtname, 0)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_rtextsize", 0)));
+      PUSHs (sv_2mortal (newSVnv (r->xfs_rtextsize)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_rtblocks", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->xfs_rtblocks)));
+      PUSHs (sv_2mortal (newSVpv ("xfs_rtextents", 0)));
+      PUSHs (sv_2mortal (my_newSVull (r->xfs_rtextents)));
+      free (r);
+
+void
+pvchange_uuid (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_pvchange_uuid (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+pvchange_uuid_all (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_pvchange_uuid_all (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+vgchange_uuid (g, vg)
+      guestfs_h *g;
+      char *vg;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_vgchange_uuid (g, vg);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+vgchange_uuid_all (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_vgchange_uuid_all (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+utsname (g)
+      guestfs_h *g;
+PREINIT:
+      struct guestfs_utsname *r;
+ PPCODE:
+      r = guestfs_utsname (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, 2 * 4);
+      PUSHs (sv_2mortal (newSVpv ("uts_sysname", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->uts_sysname, 0)));
+      PUSHs (sv_2mortal (newSVpv ("uts_release", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->uts_release, 0)));
+      PUSHs (sv_2mortal (newSVpv ("uts_version", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->uts_version, 0)));
+      PUSHs (sv_2mortal (newSVpv ("uts_machine", 0)));
+      PUSHs (sv_2mortal (newSVpv (r->uts_machine, 0)));
+      free (r);
+
+void
+xfs_growfs (g, path, ...)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+      struct guestfs_xfs_growfs_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "datasec")) {
+          optargs_s.datasec = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
+        }
+        else if (STREQ (this_arg, "logsec")) {
+          optargs_s.logsec = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
+        }
+        else if (STREQ (this_arg, "rtsec")) {
+          optargs_s.rtsec = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
+        }
+        else if (STREQ (this_arg, "datasize")) {
+          optargs_s.datasize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_DATASIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "logsize")) {
+          optargs_s.logsize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "rtsize")) {
+          optargs_s.rtsize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_RTSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "rtextsize")) {
+          optargs_s.rtextsize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "maxpct")) {
+          optargs_s.maxpct = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_GROWFS_MAXPCT_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_xfs_growfs_argv (g, path, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+rsync (g, src, dest, ...)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+PREINIT:
+      int r;
+      struct guestfs_rsync_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_rsync_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "archive")) {
+          optargs_s.archive = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_RSYNC_ARCHIVE_BITMASK;
+        }
+        else if (STREQ (this_arg, "deletedest")) {
+          optargs_s.deletedest = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_RSYNC_DELETEDEST_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_rsync_argv (g, src, dest, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+rsync_in (g, remote, dest, ...)
+      guestfs_h *g;
+      char *remote;
+      char *dest;
+PREINIT:
+      int r;
+      struct guestfs_rsync_in_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_rsync_in_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "archive")) {
+          optargs_s.archive = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
+        }
+        else if (STREQ (this_arg, "deletedest")) {
+          optargs_s.deletedest = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_rsync_in_argv (g, remote, dest, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+rsync_out (g, src, remote, ...)
+      guestfs_h *g;
+      char *src;
+      char *remote;
+PREINIT:
+      int r;
+      struct guestfs_rsync_out_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_rsync_out_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 3) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 3; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "archive")) {
+          optargs_s.archive = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
+        }
+        else if (STREQ (this_arg, "deletedest")) {
+          optargs_s.deletedest = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_rsync_out_argv (g, src, remote, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+ls0 (g, dir, filenames)
+      guestfs_h *g;
+      char *dir;
+      char *filenames;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_ls0 (g, dir, filenames);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+fill_dir (g, dir, nr)
+      guestfs_h *g;
+      char *dir;
+      int nr;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_fill_dir (g, dir, nr);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+xfs_admin (g, device, ...)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+      struct guestfs_xfs_admin_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_xfs_admin_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "extunwritten")) {
+          optargs_s.extunwritten = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
+        }
+        else if (STREQ (this_arg, "imgfile")) {
+          optargs_s.imgfile = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
+        }
+        else if (STREQ (this_arg, "v2log")) {
+          optargs_s.v2log = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
+        }
+        else if (STREQ (this_arg, "projid32bit")) {
+          optargs_s.projid32bit = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
+        }
+        else if (STREQ (this_arg, "lazycounter")) {
+          optargs_s.lazycounter = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
+        }
+        else if (STREQ (this_arg, "label")) {
+          optargs_s.label = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_XFS_ADMIN_LABEL_BITMASK;
+        }
+        else if (STREQ (this_arg, "uuid")) {
+          optargs_s.uuid = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_XFS_ADMIN_UUID_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_xfs_admin_argv (g, device, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+hivex_open (g, filename, ...)
+      guestfs_h *g;
+      char *filename;
+PREINIT:
+      int r;
+      struct guestfs_hivex_open_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_hivex_open_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "verbose")) {
+          optargs_s.verbose = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
+        }
+        else if (STREQ (this_arg, "debug")) {
+          optargs_s.debug = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
+        }
+        else if (STREQ (this_arg, "write")) {
+          optargs_s.write = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_hivex_open_argv (g, filename, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+hivex_close (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_hivex_close (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+hivex_root (g)
+      guestfs_h *g;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_hivex_root (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+hivex_node_name (g, nodeh)
+      guestfs_h *g;
+      int64_t nodeh;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_hivex_node_name (g, nodeh);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+hivex_node_children (g, nodeh)
+      guestfs_h *g;
+      int64_t nodeh;
+PREINIT:
+      struct guestfs_hivex_node_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_hivex_node_children (g, nodeh);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "hivex_node_h", 12, my_newSVll (r->val[i].hivex_node_h), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_hivex_node_list (r);
+
+SV *
+hivex_node_get_child (g, nodeh, name)
+      guestfs_h *g;
+      int64_t nodeh;
+      char *name;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_hivex_node_get_child (g, nodeh, name);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+hivex_node_parent (g, nodeh)
+      guestfs_h *g;
+      int64_t nodeh;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_hivex_node_parent (g, nodeh);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+void
+hivex_node_values (g, nodeh)
+      guestfs_h *g;
+      int64_t nodeh;
+PREINIT:
+      struct guestfs_hivex_value_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_hivex_node_values (g, nodeh);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "hivex_value_h", 13, my_newSVll (r->val[i].hivex_value_h), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_hivex_value_list (r);
+
+SV *
+hivex_node_get_value (g, nodeh, key)
+      guestfs_h *g;
+      int64_t nodeh;
+      char *key;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_hivex_node_get_value (g, nodeh, key);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+hivex_value_key (g, valueh)
+      guestfs_h *g;
+      int64_t valueh;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_hivex_value_key (g, valueh);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+hivex_value_type (g, valueh)
+      guestfs_h *g;
+      int64_t valueh;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_hivex_value_type (g, valueh);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+hivex_value_value (g, valueh)
+      guestfs_h *g;
+      int64_t valueh;
+PREINIT:
+      char *r;
+      size_t size;
+   CODE:
+      r = guestfs_hivex_value_value (g, valueh, &size);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpvn (r, size);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+hivex_commit (g, filename)
+      guestfs_h *g;
+      char *filename = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_hivex_commit (g, filename);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+hivex_node_add_child (g, parent, name)
+      guestfs_h *g;
+      int64_t parent;
+      char *name;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_hivex_node_add_child (g, parent, name);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+void
+hivex_node_delete_child (g, nodeh)
+      guestfs_h *g;
+      int64_t nodeh;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_hivex_node_delete_child (g, nodeh);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+hivex_node_set_value (g, nodeh, key, t, val)
+      guestfs_h *g;
+      int64_t nodeh;
+      char *key;
+      int64_t t;
+      char *val;
+      size_t val_size = SvCUR (ST(4));
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_hivex_node_set_value (g, nodeh, key, t, val, val_size);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+xfs_repair (g, device, ...)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+      struct guestfs_xfs_repair_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_xfs_repair_argv *optargs = &optargs_s;
+      size_t items_i;
+   CODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "forcelogzero")) {
+          optargs_s.forcelogzero = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
+        }
+        else if (STREQ (this_arg, "nomodify")) {
+          optargs_s.nomodify = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
+        }
+        else if (STREQ (this_arg, "noprefetch")) {
+          optargs_s.noprefetch = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
+        }
+        else if (STREQ (this_arg, "forcegeometry")) {
+          optargs_s.forcegeometry = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
+        }
+        else if (STREQ (this_arg, "maxmem")) {
+          optargs_s.maxmem = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_MAXMEM_BITMASK;
+        }
+        else if (STREQ (this_arg, "ihashsize")) {
+          optargs_s.ihashsize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "bhashsize")) {
+          optargs_s.bhashsize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "agstride")) {
+          optargs_s.agstride = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK;
+        }
+        else if (STREQ (this_arg, "logdev")) {
+          optargs_s.logdev = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
+        }
+        else if (STREQ (this_arg, "rtdev")) {
+          optargs_s.rtdev = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_xfs_repair_argv (g, device, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+rm_f (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_rm_f (g, path);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+mke2fs (g, device, ...)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+      struct guestfs_mke2fs_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_mke2fs_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "blockscount")) {
+          optargs_s.blockscount = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK;
+        }
+        else if (STREQ (this_arg, "blocksize")) {
+          optargs_s.blocksize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_BLOCKSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "fragsize")) {
+          optargs_s.fragsize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_FRAGSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "blockspergroup")) {
+          optargs_s.blockspergroup = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK;
+        }
+        else if (STREQ (this_arg, "numberofgroups")) {
+          optargs_s.numberofgroups = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK;
+        }
+        else if (STREQ (this_arg, "bytesperinode")) {
+          optargs_s.bytesperinode = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_BYTESPERINODE_BITMASK;
+        }
+        else if (STREQ (this_arg, "inodesize")) {
+          optargs_s.inodesize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_INODESIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "journalsize")) {
+          optargs_s.journalsize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_JOURNALSIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "numberofinodes")) {
+          optargs_s.numberofinodes = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK;
+        }
+        else if (STREQ (this_arg, "stridesize")) {
+          optargs_s.stridesize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_STRIDESIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "stripewidth")) {
+          optargs_s.stripewidth = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK;
+        }
+        else if (STREQ (this_arg, "maxonlineresize")) {
+          optargs_s.maxonlineresize = my_SvIV64 (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "reservedblockspercentage")) {
+          optargs_s.reservedblockspercentage = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+        }
+        else if (STREQ (this_arg, "mmpupdateinterval")) {
+          optargs_s.mmpupdateinterval = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK;
+        }
+        else if (STREQ (this_arg, "journaldevice")) {
+          optargs_s.journaldevice = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK;
+        }
+        else if (STREQ (this_arg, "label")) {
+          optargs_s.label = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_LABEL_BITMASK;
+        }
+        else if (STREQ (this_arg, "lastmounteddir")) {
+          optargs_s.lastmounteddir = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK;
+        }
+        else if (STREQ (this_arg, "creatoros")) {
+          optargs_s.creatoros = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_CREATOROS_BITMASK;
+        }
+        else if (STREQ (this_arg, "fstype")) {
+          optargs_s.fstype = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_FSTYPE_BITMASK;
+        }
+        else if (STREQ (this_arg, "usagetype")) {
+          optargs_s.usagetype = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_USAGETYPE_BITMASK;
+        }
+        else if (STREQ (this_arg, "uuid")) {
+          optargs_s.uuid = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_UUID_BITMASK;
+        }
+        else if (STREQ (this_arg, "forcecreate")) {
+          optargs_s.forcecreate = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_FORCECREATE_BITMASK;
+        }
+        else if (STREQ (this_arg, "writesbandgrouponly")) {
+          optargs_s.writesbandgrouponly = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
+        }
+        else if (STREQ (this_arg, "lazyitableinit")) {
+          optargs_s.lazyitableinit = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
+        }
+        else if (STREQ (this_arg, "lazyjournalinit")) {
+          optargs_s.lazyjournalinit = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
+        }
+        else if (STREQ (this_arg, "testfs")) {
+          optargs_s.testfs = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_TESTFS_BITMASK;
+        }
+        else if (STREQ (this_arg, "discard")) {
+          optargs_s.discard = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_DISCARD_BITMASK;
+        }
+        else if (STREQ (this_arg, "quotatype")) {
+          optargs_s.quotatype = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
+        }
+        else if (STREQ (this_arg, "extent")) {
+          optargs_s.extent = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_EXTENT_BITMASK;
+        }
+        else if (STREQ (this_arg, "filetype")) {
+          optargs_s.filetype = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_FILETYPE_BITMASK;
+        }
+        else if (STREQ (this_arg, "flexbg")) {
+          optargs_s.flexbg = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_FLEXBG_BITMASK;
+        }
+        else if (STREQ (this_arg, "hasjournal")) {
+          optargs_s.hasjournal = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
+        }
+        else if (STREQ (this_arg, "journaldev")) {
+          optargs_s.journaldev = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
+        }
+        else if (STREQ (this_arg, "largefile")) {
+          optargs_s.largefile = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_LARGEFILE_BITMASK;
+        }
+        else if (STREQ (this_arg, "quota")) {
+          optargs_s.quota = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_QUOTA_BITMASK;
+        }
+        else if (STREQ (this_arg, "resizeinode")) {
+          optargs_s.resizeinode = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
+        }
+        else if (STREQ (this_arg, "sparsesuper")) {
+          optargs_s.sparsesuper = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
+        }
+        else if (STREQ (this_arg, "uninitbg")) {
+          optargs_s.uninitbg = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_MKE2FS_UNINITBG_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_mke2fs_argv (g, device, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+list_disk_labels (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_list_disk_labels (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+internal_hot_add_drive (g, label)
+      guestfs_h *g;
+      char *label;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_internal_hot_add_drive (g, label);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+internal_hot_remove_drive_precheck (g, label)
+      guestfs_h *g;
+      char *label;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_internal_hot_remove_drive_precheck (g, label);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+internal_hot_remove_drive (g, label)
+      guestfs_h *g;
+      char *label;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_internal_hot_remove_drive (g, label);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+mktemp (g, tmpl, ...)
+      guestfs_h *g;
+      char *tmpl;
+PREINIT:
+      char *r;
+      struct guestfs_mktemp_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_mktemp_argv *optargs = &optargs_s;
+      size_t items_i;
+   CODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "suffix")) {
+          optargs_s.suffix = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_MKTEMP_SUFFIX_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_mktemp_argv (g, tmpl, optargs);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+mklost_and_found (g, mountpoint)
+      guestfs_h *g;
+      char *mountpoint;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_mklost_and_found (g, mountpoint);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+acl_get_file (g, path, acltype)
+      guestfs_h *g;
+      char *path;
+      char *acltype;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_acl_get_file (g, path, acltype);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+acl_set_file (g, path, acltype, acl)
+      guestfs_h *g;
+      char *path;
+      char *acltype;
+      char *acl;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_acl_set_file (g, path, acltype, acl);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+acl_delete_def_file (g, dir)
+      guestfs_h *g;
+      char *dir;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_acl_delete_def_file (g, dir);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+cap_get_file (g, path)
+      guestfs_h *g;
+      char *path;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_cap_get_file (g, path);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+cap_set_file (g, path, cap)
+      guestfs_h *g;
+      char *path;
+      char *cap;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_cap_set_file (g, path, cap);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+list_ldm_volumes (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_list_ldm_volumes (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+list_ldm_partitions (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_list_ldm_partitions (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+ldmtool_create_all (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_ldmtool_create_all (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+ldmtool_remove_all (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_ldmtool_remove_all (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+ldmtool_scan (g)
+      guestfs_h *g;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_ldmtool_scan (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+ldmtool_scan_devices (g, devices)
+      guestfs_h *g;
+      char **devices;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_ldmtool_scan_devices (g, devices);
+      free (devices);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+SV *
+ldmtool_diskgroup_name (g, diskgroup)
+      guestfs_h *g;
+      char *diskgroup;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_ldmtool_diskgroup_name (g, diskgroup);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+ldmtool_diskgroup_volumes (g, diskgroup)
+      guestfs_h *g;
+      char *diskgroup;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_ldmtool_diskgroup_volumes (g, diskgroup);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+void
+ldmtool_diskgroup_disks (g, diskgroup)
+      guestfs_h *g;
+      char *diskgroup;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_ldmtool_diskgroup_disks (g, diskgroup);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
+
+SV *
+ldmtool_volume_type (g, diskgroup, volume)
+      guestfs_h *g;
+      char *diskgroup;
+      char *volume;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_ldmtool_volume_type (g, diskgroup, volume);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+ldmtool_volume_hint (g, diskgroup, volume)
+      guestfs_h *g;
+      char *diskgroup;
+      char *volume;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_ldmtool_volume_hint (g, diskgroup, volume);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+ldmtool_volume_partitions (g, diskgroup, volume)
+      guestfs_h *g;
+      char *diskgroup;
+      char *volume;
+PREINIT:
+      char **r;
+      size_t i, n;
+ PPCODE:
+      r = guestfs_ldmtool_volume_partitions (g, diskgroup, volume);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      for (n = 0; r[n] != NULL; ++n) /**/;
+      EXTEND (SP, n);
+      for (i = 0; i < n; ++i) {
+        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
+        free (r[i]);
+      }
+      free (r);
 

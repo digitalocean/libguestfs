@@ -173,7 +173,7 @@ read the man page virt-resize(1).
     printf "alignment\n";
     printf "align-first\n";
     let g = new G.guestfs () in
-    g#add_drive_opts "/dev/null";
+    g#add_drive "/dev/null";
     g#launch ();
     if feature_available g [| "ntfsprogs"; "ntfs3g" |] then
       printf "ntfs\n";
@@ -209,8 +209,8 @@ let btrfs_available = ref true
 let connect_both_disks () =
   let g = new G.guestfs () in
   if debug then g#set_trace true;
-  g#add_drive_opts ?format ~readonly:true infile;
-  g#add_drive_opts ?format:output_format ~readonly:false outfile;
+  g#add_drive ?format ~readonly:true infile;
+  g#add_drive ?format:output_format ~readonly:false outfile;
   if not quiet then Progress.set_up_progress_bar ~machine_readable g;
   g#launch ();
 
@@ -348,7 +348,7 @@ let get_partition_content =
           | [] ->
               error (f_"%s: physical volume not returned by pvs_full")
                 dev
-          | pv :: _ when canonicalize pv.G.pv_name = dev ->
+          | pv :: _ when g#canonical_device_name pv.G.pv_name = dev ->
               ContentPV pv.G.pv_size
           | _ :: pvs -> loop pvs
         in
@@ -529,7 +529,7 @@ let find_partition =
         "/dev/" ^ name
       else
         name in
-    let name = canonicalize name in
+    let name = g#canonical_device_name name in
 
     let partition =
       try Hashtbl.find hash name
@@ -1125,7 +1125,7 @@ let g =
 
     let g = new G.guestfs () in
     if debug then g#set_trace true;
-    g#add_drive_opts ?format:output_format ~readonly:false outfile;
+    g#add_drive ?format:output_format ~readonly:false outfile;
     if not quiet then Progress.set_up_progress_bar ~machine_readable g;
     g#launch ();
 
@@ -1139,13 +1139,13 @@ let () =
     let do_expand_content target = function
       | PVResize -> g#pvresize target
       | Resize2fs -> g#resize2fs target
-      | NTFSResize -> g#ntfsresize_opts ~force:ntfsresize_force target
+      | NTFSResize -> g#ntfsresize ~force:ntfsresize_force target
       | BtrfsFilesystemResize ->
           (* Complicated ...  Btrfs forces us to mount the filesystem
            * in order to resize it.
            *)
           assert (Array.length (g#mounts ()) = 0);
-          g#mount_options "" target "/";
+          g#mount target "/";
           g#btrfs_filesystem_resize "/";
           g#umount "/"
     in

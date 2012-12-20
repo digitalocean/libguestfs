@@ -25,6 +25,8 @@ let package_manager_cache_perform g root =
   let packager = g#inspect_get_package_management root in
   let cache_dirs =
     match packager with
+    | "zypper" ->
+      Some (g#glob_expand "/var/cache/zypp*/*")
     | "yum" ->
       Some (g#glob_expand "/var/cache/yum/*")
     | "apt" ->
@@ -40,7 +42,8 @@ let package_manager_cache_op = {
   heading = s_"Remove package manager cache";
   pod_description = None;
   extra_args = [];
-  perform = package_manager_cache_perform;
+  perform_on_filesystems = Some package_manager_cache_perform;
+  perform_on_devices = None;
 }
 
 let () = register_operation package_manager_cache_op

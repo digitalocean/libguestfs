@@ -30,6 +30,8 @@
 #include "actions.h"
 #include "optgroups.h"
 
+GUESTFSD_EXT_CMD(str_tar, tar);
+
 int
 optgroup_xz_available (void)
 {
@@ -113,9 +115,11 @@ write_cb (void *fd_ptr, const void *buf, size_t len)
 }
 
 /* Has one FileIn parameter. */
-static int
-do_tXz_in (const char *dir, const char *filter)
+/* Takes optional arguments, consult optargs_bitmask. */
+int
+do_tar_in (const char *dir, const char *compress)
 {
+  const char *filter;
   int err, r;
   FILE *fp;
   char *cmd;
@@ -126,6 +130,24 @@ do_tXz_in (const char *dir, const char *filter)
   if (chown_supported == -1)
     return -1;
 
+  if ((optargs_bitmask & GUESTFS_TAR_IN_COMPRESS_BITMASK)) {
+    if (STREQ (compress, "compress"))
+      filter = " --compress";
+    else if (STREQ (compress, "gzip"))
+      filter = " --gzip";
+    else if (STREQ (compress, "bzip2"))
+      filter = " --bzip2";
+    else if (STREQ (compress, "xz"))
+      filter = " --xz";
+    else if (STREQ (compress, "lzop"))
+      filter = " --lzop";
+    else {
+      reply_with_error ("unknown compression type: %s", compress);
+      return -1;
+    }
+  } else
+    filter = "";
+
   fd = mkstemp (error_file);
   if (fd == -1) {
     reply_with_perror ("mkstemp");
@@ -135,7 +157,8 @@ do_tXz_in (const char *dir, const char *filter)
   close (fd);
 
   /* "tar -C /sysroot%s -xf -" but we have to quote the dir. */
-  if (asprintf_nowarn (&cmd, "tar -C %R -%sxf - %s2> %s",
+  if (asprintf_nowarn (&cmd, "%s -C %R%s -xf - %s2> %s",
+                       str_tar,
                        dir, filter,
                        chown_supported ? "" : "--no-same-owner ",
                        error_file) == -1) {
@@ -203,39 +226,114 @@ do_tXz_in (const char *dir, const char *filter)
 
 /* Has one FileIn parameter. */
 int
-do_tar_in (const char *dir)
-{
-  return do_tXz_in (dir, "");
-}
-
-/* Has one FileIn parameter. */
-int
 do_tgz_in (const char *dir)
 {
-  return do_tXz_in (dir, "z");
+  optargs_bitmask = GUESTFS_TAR_IN_COMPRESS_BITMASK;
+  return do_tar_in (dir, "gzip");
 }
 
 /* Has one FileIn parameter. */
 int
 do_txz_in (const char *dir)
 {
-  return do_tXz_in (dir, "J");
+  optargs_bitmask = GUESTFS_TAR_IN_COMPRESS_BITMASK;
+  return do_tar_in (dir, "xz");
+}
+
+/* Turn list 'excludes' into list of " --excludes=..." strings, all
+ * properly quoted.  Caller must free the returned string.
+ */
+static char *
+make_excludes_args (char *const *excludes)
+{
+  DECLARE_STRINGSBUF (strings);
+  size_t i;
+  char *s, *ret;
+
+  for (i = 0; excludes[i] != NULL; ++i) {
+    if (asprintf_nowarn (&s, " --exclude=%Q", excludes[i]) == -1) {
+      reply_with_perror ("asprintf");
+      free_stringslen (strings.argv, strings.size);
+      return NULL;
+    }
+    if (add_string_nodup (&strings, s) == -1) {
+      free (s);
+      return NULL;
+    }
+  }
+
+  if (end_stringsbuf (&strings) == -1)
+    return NULL;
+
+  ret = concat_strings (strings.argv);
+  if (!ret) {
+    reply_with_perror ("concat");
+    free_stringslen (strings.argv, strings.size);
+    return NULL;
+  }
+
+  free_stringslen (strings.argv, strings.size);
+
+  return ret;
 }
 
 /* Has one FileOut parameter. */
-static int
-do_tXz_out (const char *dir, const char *filter)
+/* Takes optional arguments, consult optargs_bitmask. */
+int
+do_tar_out (const char *dir, const char *compress, int numericowner,
+            char *const *excludes)
 {
+  const char *filter;
   int r;
   FILE *fp;
+  char *excludes_args;
   char *cmd;
   char buf[GUESTFS_MAX_CHUNK_SIZE];
 
-  /* "tar -C /sysroot%s -zcf - ." but we have to quote the dir. */
-  if (asprintf_nowarn (&cmd, "tar -C %R -%scf - .", dir, filter) == -1) {
+  if ((optargs_bitmask & GUESTFS_TAR_OUT_COMPRESS_BITMASK)) {
+    if (STREQ (compress, "compress"))
+      filter = " --compress";
+    else if (STREQ (compress, "gzip"))
+      filter = " --gzip";
+    else if (STREQ (compress, "bzip2"))
+      filter = " --bzip2";
+    else if (STREQ (compress, "xz"))
+      filter = " --xz";
+    else if (STREQ (compress, "lzop"))
+      filter = " --lzop";
+    else {
+      reply_with_error ("unknown compression type: %s", compress);
+      return -1;
+    }
+  } else
+    filter = "";
+
+  if (!(optargs_bitmask & GUESTFS_TAR_OUT_NUMERICOWNER_BITMASK))
+    numericowner = 0;
+
+  if ((optargs_bitmask & GUESTFS_TAR_OUT_EXCLUDES_BITMASK)) {
+    excludes_args = make_excludes_args (excludes);
+    if (!excludes_args)
+      return -1;
+  } else {
+    excludes_args = strdup ("");
+    if (excludes_args == NULL) {
+      reply_with_perror ("strdup");
+      return -1;
+    }
+  }
+
+  /* "tar -C /sysroot%s -cf - ." but we have to quote the dir. */
+  if (asprintf_nowarn (&cmd, "%s -C %R%s%s%s -cf - .",
+                       str_tar,
+                       dir, filter,
+                       numericowner ? " --numeric-owner" : "",
+                       excludes_args) == -1) {
     reply_with_perror ("asprintf");
+    free (excludes_args);
     return -1;
   }
+  free (excludes_args);
 
   if (verbose)
     fprintf (stderr, "%s\n", cmd);
@@ -282,21 +380,16 @@ do_tXz_out (const char *dir, const char *filter)
 
 /* Has one FileOut parameter. */
 int
-do_tar_out (const char *dir)
-{
-  return do_tXz_out (dir, "");
-}
-
-/* Has one FileOut parameter. */
-int
 do_tgz_out (const char *dir)
 {
-  return do_tXz_out (dir, "z");
+  optargs_bitmask = GUESTFS_TAR_OUT_COMPRESS_BITMASK;
+  return do_tar_out (dir, "gzip", 0, NULL);
 }
 
 /* Has one FileOut parameter. */
 int
 do_txz_out (const char *dir)
 {
-  return do_tXz_out (dir, "J");
+  optargs_bitmask = GUESTFS_TAR_OUT_COMPRESS_BITMASK;
+  return do_tar_out (dir, "bzip2", 0, NULL);
 }

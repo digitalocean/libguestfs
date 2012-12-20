@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsUmount</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsUmountLocal.html" title="GuestfsUmountLocal">
+<link rel="next" href="GuestfsTarIn.html" title="GuestfsTarIn">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsUmountLocal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsTarIn.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsUmount.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsUmount.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsUmount.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsUmount.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsUmount"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsUmount.top_of_page"></a>GuestfsUmount</span></h2>
+<p>GuestfsUmount — An object encapsulating optional arguments for guestfs_session_umount</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsUmount.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsUmount.html#GuestfsUmount-struct" title="struct GuestfsUmount">GuestfsUmount</a>;
+struct              <a class="link" href="GuestfsUmount.html#GuestfsUmountClass" title="struct GuestfsUmountClass">GuestfsUmountClass</a>;
+<a class="link" href="GuestfsUmount.html" title="GuestfsUmount"><span class="returnvalue">GuestfsUmount</span></a> *     <a class="link" href="GuestfsUmount.html#guestfs-umount-new" title="guestfs_umount_new ()">guestfs_umount_new</a>                  (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsUmount.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsUmount
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsUmount.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsUmount.html#GuestfsUmount--force" title='The "force" property'>force</a>"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsUmount.html#GuestfsUmount--lazyunmount" title='The "lazyunmount" property'>lazyunmount</a>"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsUmount.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_umount
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsUmount.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsUmount-struct"></a><h3>struct GuestfsUmount</h3>
+<pre class="programlisting">struct GuestfsUmount;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_umount.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsUmountClass"></a><h3>struct GuestfsUmountClass</h3>
+<pre class="programlisting">struct GuestfsUmountClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsUmount.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsUmountClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsUmountClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-umount-new"></a><h3>guestfs_umount_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsUmount.html" title="GuestfsUmount"><span class="returnvalue">GuestfsUmount</span></a> *     guestfs_umount_new                  (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsUmount object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsUmount object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsUmount.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsUmount--force"></a><h3>The <code class="literal">"force"</code> property</h3>
+<pre class="programlisting">  "force"                    <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsUmount--lazyunmount"></a><h3>The <code class="literal">"lazyunmount"</code> property</h3>
+<pre class="programlisting">  "lazyunmount"              <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

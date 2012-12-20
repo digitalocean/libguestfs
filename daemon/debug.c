@@ -32,6 +32,15 @@
 #include "daemon.h"
 #include "actions.h"
 
+GUESTFSD_EXT_CMD(str_printenv, printenv);
+GUESTFSD_EXT_CMD(str_ldd, ldd);
+GUESTFSD_EXT_CMD(str_ls, ls);
+GUESTFSD_EXT_CMD(str_find, find);
+GUESTFSD_EXT_CMD(str_xargs, xargs);
+GUESTFSD_EXT_CMD(str_file, file);
+GUESTFSD_EXT_CMD(str_grep, grep);
+GUESTFSD_EXT_CMD(str_gawk, gawk);
+
 /* This command exposes debugging information, internals and
  * status.  There is no comprehensive documentation for this
  * command.  You have to look at the source code in this file
@@ -61,6 +70,7 @@ static char *debug_ll (const char *subcmd, size_t argc, char *const *const argv)
 static char *debug_progress (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_qtrace (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_segv (const char *subcmd, size_t argc, char *const *const argv);
+static char *debug_setenv (const char *subcmd, size_t argc, char *const *const argv);
 static char *debug_sh (const char *subcmd, size_t argc, char *const *const argv);
 
 static struct cmd cmds[] = {
@@ -75,6 +85,7 @@ static struct cmd cmds[] = {
   { "progress", debug_progress },
   { "qtrace", debug_qtrace },
   { "segv", debug_segv },
+  { "setenv", debug_setenv },
   { "sh", debug_sh },
   { NULL, NULL }
 };
@@ -273,7 +284,7 @@ debug_env (const char *subcmd, size_t argc, char *const *const argv)
   int r;
   char *out, *err;
 
-  r = command (&out, &err, "printenv", NULL);
+  r = command (&out, &err, str_printenv, NULL);
   if (r == -1) {
     reply_with_error ("printenv: %s", err);
     free (out);
@@ -286,6 +297,28 @@ debug_env (const char *subcmd, size_t argc, char *const *const argv)
   return out;
 }
 
+/* Set an environment variable in the daemon and future subprocesses. */
+static char *
+debug_setenv (const char *subcmd, size_t argc, char *const *const argv)
+{
+  char *ret;
+
+  if (argc != 2) {
+    reply_with_error ("setenv: two arguments expected");
+    return NULL;
+  }
+
+  setenv (argv[0], argv[1], 1);
+
+  ret = strdup ("ok");
+  if (NULL == ret) {
+    reply_with_perror ("strdup");
+    return NULL;
+  }
+
+  return ret;
+}
+
 /* Return binaries in the appliance.
  * See tests/regressions/rhbz727178.sh
  */
@@ -294,12 +327,14 @@ debug_binaries (const char *subcmd, size_t argc, char *const *const argv)
 {
   int r;
   char *out, *err;
+  char cmd[256];
 
-  const char cmd[] =
-    "find / -xdev -type f -executable "
-    "| xargs file -i "
-    "| grep application/x-executable "
-    "| gawk -F: '{print $1}'";
+  snprintf (cmd, sizeof (cmd),
+            "%s / -xdev -type f -executable "
+            "| %s %s -i "
+            "| %s application/x-executable "
+            "| %s -F: '{print $1}'",
+            str_find, str_xargs, str_file, str_grep, str_gawk);
 
   r = command (&out, &err, "sh", "-c", cmd, NULL);
   if (r == -1) {
@@ -334,7 +369,7 @@ debug_ldd (const char *subcmd, size_t argc, char *const *const argv)
    * Also 'ldd' randomly sends messages to stderr and errors to stdout
    * depending on the phase of the moon.
    */
-  r = command (&out, &err, "ldd", "-r", argv[0], NULL);
+  r = command (&out, &err, str_ldd, "-r", argv[0], NULL);
   if (r == -1) {
     reply_with_error ("ldd: %s: %s", argv[0], err);
     free (out);
@@ -365,7 +400,7 @@ debug_ls (const char *subcmd, size_t argc, char *const *const argv)
   const char *cargv[len+3];
   size_t i;
 
-  cargv[0] = "ls";
+  cargv[0] = str_ls;
   cargv[1] = "-a";
   for (i = 0; i < len; ++i)
     cargv[2+i] = argv[i];
@@ -395,7 +430,7 @@ debug_ll (const char *subcmd, size_t argc, char *const *const argv)
   const char *cargv[len+3];
   size_t i;
 
-  cargv[0] = "ls";
+  cargv[0] = str_ls;
   cargv[1] = "-la";
   for (i = 0; i < len; ++i)
     cargv[2+i] = argv[i];

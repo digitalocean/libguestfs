@@ -39,7 +39,7 @@ g.connect('trace', function(session, params) {
   }
 });
 
-g.add_drive('../tests/guests/fedora.img');
+g.add_drive('../tests/guests/fedora.img', null);
 g.set_trace(true);
 g.launch();
 // Fake progress messages for a 5 second event. We do this as launch() will not
@@ -58,7 +58,7 @@ if (!progress_detected) {
 g.close();
 var threw = false;
 try {
-  var v = g.test0rconstoptstring('1');
+  var v = g.internal_test_rconstoptstring('1');
 } catch (error) {
   threw = true;
   if (!error.message.match(/closed/)) {

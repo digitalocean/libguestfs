@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -35,42 +35,64 @@ public class Bindtests {
             o = new HashMap<String, Object>() {{
               put("obool", Boolean.TRUE);
               put("oint", 1);
+              put("oint64", 9223372036854775807L);
             }};
 
-            g.test0 ("abc", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = new HashMap<String, Object>() {{
               put("oint64", 1L);
               put("ostring", "string");
             }};
 
-            g.test0 ("abc", null, new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", null, new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = new HashMap<String, Object>() {{
               put("obool", Boolean.FALSE);
+              put("oint64", -9223372036854775808L);
             }};
 
-            g.test0 ("", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = new HashMap<String, Object>() {{
             }};
 
-            g.test0 ("", "", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("", "", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1","2"}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1","2"}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, true, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, true, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, -1, -1L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, false, -1, -1L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, -2, -2L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, false, -2, -2L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 1, 1L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, false, 1, 1L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 2, 2L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, false, 2, 2L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 4095, 4095L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, false, 4095, 9223372036854775807L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
             o = null;
-            g.test0 ("abc", "def", new String[]{"1"}, false, 0, 0L, "", "", new byte[] { 97,98,99,0,97,98,99 }, o);
+            g.internal_test ("abc", "def", new String[]{"1"}, false, 0, -9223372036854775808L, "", "", new byte[] { 97,98,99,0,97,98,99 }, o);
+            o = new HashMap<String, Object>() {{
+              put("ostringlist", new String[]{});
+            }};
+
+            g.internal_test ("abc", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            o = new HashMap<String, Object>() {{
+              put("ostringlist", new String[]{"optelem1"});
+            }};
+
+            g.internal_test ("abc", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            o = new HashMap<String, Object>() {{
+              put("ostringlist", new String[]{"optelem1","optelem2"});
+            }};
+
+            g.internal_test ("abc", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
+            o = new HashMap<String, Object>() {{
+              put("ostringlist", new String[]{"optelem1","optelem2","optelem3"});
+            }};
+
+            g.internal_test ("abc", "def", new String[]{}, false, 0, 0L, "123", "456", new byte[] { 97,98,99,0,97,98,99 }, o);
 
             System.out.println ("EOF");
         }

@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -56,7 +56,7 @@ guestfs_mount_9p_set_property(GObject *object, guint property_id, const GValue *
   switch (property_id) {
     case PROP_GUESTFS_MOUNT_9P_OPTIONS:
       g_free(priv->options);
-      priv->options = g_value_dup_string(value);
+      priv->options = g_value_dup_string (value);
       break;
 
     default:

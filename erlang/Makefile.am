@@ -18,11 +18,14 @@
 include $(top_srcdir)/subdir-rules.mk
 
 generator_built = \
-	guestfs.erl \
-	erl-guestfs.c
+	bindtests.erl \
+	erl-guestfs.c \
+	guestfs.erl
 
 EXTRA_DIST = \
 	$(generator_built) \
+	run-bindtests \
+	tests/*.erl \
 	README
 
 if HAVE_ERLANG
@@ -42,7 +45,8 @@ erl_guestfs_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-I$(ERLANG_LIB_DIR_erl_interface)/include \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 erl_guestfs_LDADD = \
 	$(ERLANG_LIB_DIR_erl_interface)/lib/liberl_interface.a \
@@ -50,5 +54,18 @@ erl_guestfs_LDADD = \
 	-lpthread \
 	$(top_builddir)/src/libguestfs.la \
 	../gnulib/lib/libgnu.la
+
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+
+TESTS = run-bindtests
+
+if ENABLE_APPLIANCE
+TESTS += \
+	tests/010-load.erl \
+	tests/030-config.erl \
+	tests/050-lvcreate.erl \
+	tests/060-readdir.erl \
+	tests/070-optargs.erl
+endif
 
 endif

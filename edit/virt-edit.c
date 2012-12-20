@@ -307,9 +307,11 @@ static void
 edit (const char *filename, const char *root)
 {
   char *filename_to_free = NULL;
-  const char *tmpdir = guestfs_tmpdir ();
+  char *tmpdir = guestfs_get_tmpdir (g);
   char tmpfile[strlen (tmpdir) + 32];
   sprintf (tmpfile, "%s/virteditXXXXXX", tmpdir);
+  free (tmpdir);
+
   int fd;
   char fdbuf[32];
   char *upload_from = NULL;
@@ -534,16 +536,13 @@ copy_attributes (const char *src, const char *dest)
    * attributes too?
    */
   if (has_linuxxattrs) {
-    guestfs_error_handler_cb old_error_cb;
-    void *old_error_data;
-    old_error_cb = guestfs_get_error_handler (g, &old_error_data);
-    guestfs_set_error_handler (g, NULL, NULL);
+    guestfs_push_error_handler (g, NULL, NULL);
 
     selinux_context = guestfs_getxattr (g, src, "security.selinux",
                                         &selinux_context_size);
     /* selinux_context could be NULL.  This isn't an error. */
 
-    guestfs_set_error_handler (g, old_error_cb, old_error_data);
+    guestfs_pop_error_handler (g);
   }
 
   /* Set the permissions (inc. sticky and set*id bits), UID, GID. */
@@ -576,15 +575,12 @@ feature_available (guestfs_h *g, const char *feature)
   /* If there's an error we should ignore it, so to do that we have to
    * temporarily replace the error handler with a null one.
    */
-  guestfs_error_handler_cb old_error_cb;
-  void *old_error_data;
-  old_error_cb = guestfs_get_error_handler (g, &old_error_data);
-  guestfs_set_error_handler (g, NULL, NULL);
+  guestfs_push_error_handler (g, NULL, NULL);
 
   const char *groups[] = { feature, NULL };
   int r = guestfs_available (g, (char * const *) groups);
 
-  guestfs_set_error_handler (g, old_error_cb, old_error_data);
+  guestfs_pop_error_handler (g);
 
   return r == 0 ? 1 : 0;
 }
@@ -685,7 +681,7 @@ mount_drive_letter (char drive_letter, const char *root)
   if (guestfs_umount_all (g) == -1)
     exit (EXIT_FAILURE);
 
-  if (guestfs_mount_options (g, "", device, "/") == -1)
+  if (guestfs_mount (g, device, "/") == -1)
     exit (EXIT_FAILURE);
 
   for (i = 0; drives[i] != NULL; ++i)

@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -63,24 +63,24 @@ guestfs_md_create_set_property(GObject *object, guint property_id, const GValue 
 
   switch (property_id) {
     case PROP_GUESTFS_MD_CREATE_MISSINGBITMAP:
-      priv->missingbitmap = g_value_get_int64(value);
+      priv->missingbitmap = g_value_get_int64 (value);
       break;
 
     case PROP_GUESTFS_MD_CREATE_NRDEVICES:
-      priv->nrdevices = g_value_get_int(value);
+      priv->nrdevices = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_MD_CREATE_SPARE:
-      priv->spare = g_value_get_int(value);
+      priv->spare = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_MD_CREATE_CHUNK:
-      priv->chunk = g_value_get_int64(value);
+      priv->chunk = g_value_get_int64 (value);
       break;
 
     case PROP_GUESTFS_MD_CREATE_LEVEL:
       g_free(priv->level);
-      priv->level = g_value_dup_string(value);
+      priv->level = g_value_dup_string (value);
       break;
 
     default:

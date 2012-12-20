@@ -49,9 +49,7 @@ if HAVE_RUBY
 
 TESTS = run-bindtests run-ruby-tests
 
-TESTS_ENVIRONMENT = \
-	RUBY=$(RUBY) \
-	$(top_builddir)/run
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 all: $(generator_built)
 	$(RAKE) build

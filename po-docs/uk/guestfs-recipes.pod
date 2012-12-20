@@ -80,11 +80,11 @@ images.  The useful guide below explains the options available.
 
 L<https://rwmj.wordpress.com/2010/09/08/new-guestfish-n-options-in-1-5-9/#content>
 
-=head1 Delete a file (or other simple file operations)
+=head1 Вилучення файлів (або інші прості дії з файлами)
 
-Use guestfish.  To delete a file:
+Скористайтеся guestfish. Вилучення файла:
 
- guestfish -a disk.img -i rm /file/to/delete
+ guestfish -a диск.img -i rm /файл/який/слід/вилучити
 
 To touch a file (bring it up to date or create it):
 
@@ -124,7 +124,7 @@ To download to stdout, replace the filename with a C<-> character:
 
 To list the filesystems in a disk image, use L<virt-filesystems(1)>.
 
-See also L</Uploading raw filesystem content>.
+Див. також L</Вивантаження даних на файлові системи без обробки>.
 
 =head1 Edit grub configuration in a VM
 
@@ -334,6 +334,9 @@ to install vital security updates in an offline guest.
 
 L<https://rwmj.wordpress.com/2010/12/01/tip-install-rpms-in-a-guest/#content>
 
+Since libguestfs 1.20, L<virt-sysprep(1)> has an option for installing
+firstboot scripts in Linux guests.
+
 =head1 Показати список програм, встановлених у віртуальній машині
 
 Save the following to a file C<list-apps.sh>:
@@ -452,7 +455,7 @@ downloading (copying out) files from VMs.
 
 L<https://rwmj.wordpress.com/2010/12/02/tip-uploading-and-downloading/#content>
 
-=head1 Uploading raw filesystem content
+=head1 Вивантаження даних на файлові системи без обробки
 
 You can use L<guestfish(1)> to upload whole filesystems into a VM, even into
 a filesystem which is encrypted or buried inside an LV or RAID device:
@@ -483,9 +486,9 @@ L<https://rwmj.wordpress.com/2011/05/10/tip-use-libguestfs-on-vmware-esx-guests/
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
 L<guestfs(3)>, L<guestfish(1)>, L<guestfs-examples(3)>,
-L<guestfs-erlang(3)>, L<guestfs-java(3)>, L<guestfs-ocaml(3)>,
-L<guestfs-perl(3)>, L<guestfs-python(3)>, L<guestfs-ruby(3)>,
-L<http://libguestfs.org/>.
+L<guestfs-erlang(3)>, L<guestfs-java(3)>, L<guestfs-lua(3)>,
+L<guestfs-ocaml(3)>, L<guestfs-perl(3)>, L<guestfs-python(3)>,
+L<guestfs-ruby(3)>, L<http://libguestfs.org/>.
 
 =head1 АВТОРИ
 

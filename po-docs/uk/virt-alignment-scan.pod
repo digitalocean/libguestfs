@@ -74,9 +74,9 @@ virt-alignment-scan без параметрів I<-a> та I<-d>.
 Назва пристрою і розділу (наприклад, C</dev/sda1> означає перший розділ на
 першому блоковому пристрої).
 
-When listing all libvirt domains (no I<-a> or I<-d> option given) this
-column is prefixed by the libvirt name or UUID (if I<--uuid> is given).  eg:
-C<WinXP:/dev/sda1>
+У пунктах списків всіх доменів libvirt (без вказаного параметра I<-a> або
+I<-d>) записи у цьому стовпчику матимуть префікс назви libvirt або UUID
+(якщо вказано I<--uuid>). Приклад: C<WinXP:/dev/sda1>
 
 =item стовпчик 2
 
@@ -98,7 +98,7 @@ C<ok>, якщо вирівнювання є оптимальним з огляд
 =back
 
 Код виходу програми залежить від того, чи буде знайдено розділи з помилковим
-вирівнюванням.  Див. розділ L</EXIT STATUS> нижче.
+вирівнюванням.  Див. розділ L</СТАН ВИХОДУ> нижче.
 
 Якщо вам потрібен лише код виходу без виведення даних, скористайтеся
 параметром I<-q>.
@@ -117,15 +117,16 @@ C<ok>, якщо вирівнювання є оптимальним з огляд
 
 Додати I<файл>, який має бути образом диска з віртуальної машини.
 
-The format of the disk image is auto-detected.  To override this and force a
-particular format use the I<--format=..> option.
+Формат образу диска визначається автоматично. Щоб перевизначити його і
+примусово використати певний формат, скористайтеся параметром
+I<--format=..>.
 
 =item B<-c> адреса
 
 =item B<--connect> адреса
 
-If using libvirt, connect to the given I<URI>.  If omitted, then we connect
-to the default libvirt hypervisor.
+Якщо використовується libvirt, встановити з’єднання з вказаним I<URI>. Якщо
+пропущено, з’єднання буде встановлено з типовим гіпервізором libvirt.
 
 Якщо вказати блокові пристрої гостьових систем безпосередньо (I<-a>),
 libvirt не буде використовуватися взагалі.
@@ -150,12 +151,13 @@ auto-detection for subsequent I<-a> options.
 
  virt-alignment-scan --format=raw -a disk.img
 
-forces raw format (no auto-detection) for C<disk.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img>.
 
  virt-cat --format=raw -a disk.img --format -a another.img file
 
-forces raw format (no auto-detection) for C<disk.img> and reverts to
-auto-detection for C<another.img>.
+примусове встановлення формату без обробки (без автоматичного визначення)
+для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
@@ -165,8 +167,8 @@ with malicious guests (CVE-2010-3851).
 
 =item B<--quiet>
 
-Don't produce any output.  Just set the exit code (see L</EXIT STATUS>
-below).
+Не виводити ніяких даних. Просто встановити значення коду виходу
+(див. L</СТАН ВИХОДУ> нижче).
 
 =item B<--uuid>
 
@@ -228,7 +230,7 @@ some NetApp hardware.
 
 =item * 1 мегабайт
 
-see L</1 MB PARTITION ALIGNMENT> below.
+див. L</ВИРІВНЮВАННЯ РОЗДІЛІВ НА ПОЗНАЧКИ 1 МБ> нижче.
 
 =back
 

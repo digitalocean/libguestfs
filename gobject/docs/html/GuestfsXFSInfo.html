@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsXFSInfo</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsBTRFSSubvolume.html" title="GuestfsBTRFSSubvolume">
+<link rel="next" href="GuestfsUTSName.html" title="GuestfsUTSName">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsBTRFSSubvolume.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsUTSName.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsXFSInfo.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsXFSInfo.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsXFSInfo.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsXFSInfo"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsXFSInfo.top_of_page"></a>GuestfsXFSInfo</span></h2>
+<p>GuestfsXFSInfo</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsXFSInfo.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsXFSInfo.html#GuestfsXFSInfo-struct" title="struct GuestfsXFSInfo">GuestfsXFSInfo</a>;
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXFSInfo.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GBoxed
+   +----GuestfsXFSInfo
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsXFSInfo.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="GuestfsXFSInfo.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsXFSInfo-struct"></a><h3>struct GuestfsXFSInfo</h3>
+<pre class="programlisting">struct GuestfsXFSInfo {
+  gchar *xfs_mntpoint;
+  guint32 xfs_inodesize;
+  guint32 xfs_agcount;
+  guint32 xfs_agsize;
+  guint32 xfs_sectsize;
+  guint32 xfs_attr;
+  guint32 xfs_blocksize;
+  guint64 xfs_datablocks;
+  guint32 xfs_imaxpct;
+  guint32 xfs_sunit;
+  guint32 xfs_swidth;
+  guint32 xfs_dirversion;
+  guint32 xfs_dirblocksize;
+  guint32 xfs_cimode;
+  gchar *xfs_logname;
+  guint32 xfs_logblocksize;
+  guint32 xfs_logblocks;
+  guint32 xfs_logversion;
+  guint32 xfs_logsectsize;
+  guint32 xfs_logsunit;
+  guint32 xfs_lazycount;
+  gchar *xfs_rtname;
+  guint32 xfs_rtextsize;
+  guint64 xfs_rtblocks;
+  guint64 xfs_rtextents;
+};
+</pre>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-mntpoint"></a>xfs_mntpoint</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-inodesize"></a>xfs_inodesize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-agcount"></a>xfs_agcount</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-agsize"></a>xfs_agsize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-sectsize"></a>xfs_sectsize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-attr"></a>xfs_attr</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-blocksize"></a>xfs_blocksize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-datablocks"></a>xfs_datablocks</code></em>;</span></p></td>
+<td>An unsigned 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-imaxpct"></a>xfs_imaxpct</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-sunit"></a>xfs_sunit</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-swidth"></a>xfs_swidth</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-dirversion"></a>xfs_dirversion</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-dirblocksize"></a>xfs_dirblocksize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-cimode"></a>xfs_cimode</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-logname"></a>xfs_logname</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-logblocksize"></a>xfs_logblocksize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-logblocks"></a>xfs_logblocks</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-logversion"></a>xfs_logversion</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-logsectsize"></a>xfs_logsectsize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-logsunit"></a>xfs_logsunit</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-lazycount"></a>xfs_lazycount</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gchar</span> *<em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-rtname"></a>xfs_rtname</code></em>;</span></p></td>
+<td>A NULL-terminated string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-rtextsize"></a>xfs_rtextsize</code></em>;</span></p></td>
+<td>An unsigned 32-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-rtblocks"></a>xfs_rtblocks</code></em>;</span></p></td>
+<td>An unsigned 64-bit integer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint64</span> <em class="structfield"><code><a name="GuestfsXFSInfo-struct.xfs-rtextents"></a>xfs_rtextents</code></em>;</span></p></td>
+<td>An unsigned 64-bit integer</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

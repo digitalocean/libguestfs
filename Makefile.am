@@ -39,19 +39,26 @@ if ENABLE_APPLIANCE
 SUBDIRS += tests/qemu
 SUBDIRS += tests/guests
 SUBDIRS += tests/c-api
+SUBDIRS += tests/tmpdirs
 SUBDIRS += tests/protocol
+SUBDIRS += tests/parallel
+SUBDIRS += tests/disks
 SUBDIRS += tests/lvm
 SUBDIRS += tests/luks
 SUBDIRS += tests/md
+SUBDIRS += tests/selinux
 SUBDIRS += tests/ntfsclone
 SUBDIRS += tests/btrfs
 SUBDIRS += tests/charsets
 SUBDIRS += tests/xml
+SUBDIRS += tests/mount-local
+SUBDIRS += tests/9p
+SUBDIRS += tests/rsync
+SUBDIRS += tests/bigdirs
+SUBDIRS += tests/disk-labels
+SUBDIRS += tests/hotplug
 SUBDIRS += tests/regressions
 endif
-
-# Extra tests don't run by default.  You have to do 'make extra-tests'.
-SUBDIRS += tests/extra
 
 # libguestfs-test-tool
 SUBDIRS += test-tool
@@ -87,6 +94,9 @@ endif
 if HAVE_ERLANG
 SUBDIRS += erlang erlang/examples
 endif
+if HAVE_LUA
+SUBDIRS += lua lua/examples
+endif
 if HAVE_GOBJECT
 SUBDIRS += gobject
 endif
@@ -116,9 +126,10 @@ endif
 
 EXTRA_DIST = \
 	$(generator_built) \
-	BUGS HACKING RELEASE-NOTES ROADMAP TODO \
+	BUGS HACKING ROADMAP TODO \
 	.gitignore \
 	.lvimrc \
+	.mailmap \
 	.tx/config \
 	bugs-in-changelog.sh \
 	autogen.sh \
@@ -148,12 +159,18 @@ EXTRA_DIST = \
 	contrib/visualize-alignment/qemu-0.13-trace-block-device-access.patch \
 	contrib/visualize-alignment/README \
 	contrib/visualize-alignment/tracetops.ml \
+	guestfs-release-notes.pod \
+	guestfs-release-notes.txt \
+	html/draft.png \
+	html/draft.svg \
 	html/pod.css \
 	libtool-kill-dependency_libs.sh \
 	logo/fish.svg logo/fish.png \
 	m4/.gitignore \
+	tmp/.gitignore \
 	tx-pull.sh \
-	update-bugs.sh
+	update-bugs.sh \
+	valgrind-suppressions
 
 # The website.
 HTMLFILES = \
@@ -162,13 +179,16 @@ HTMLFILES = \
 	html/guestfs-erlang.3.html \
 	html/guestfs-faq.1.html \
 	html/guestfs-java.3.html \
+	html/guestfs-lua.3.html \
 	html/guestfs-ocaml.3.html \
 	html/guestfs-performance.1.html \
 	html/guestfs-perl.3.html \
 	html/guestfs-python.3.html \
 	html/guestfs-recipes.1.html \
+	html/guestfs-release-notes.1.html \
 	html/guestfs-ruby.3.html \
 	html/guestfs-testing.1.html \
+	html/guestfsd.8.html \
 	html/guestfish.1.html \
 	html/guestmount.1.html \
 	html/libguestfs-make-fixed-appliance.1.html \
@@ -195,7 +215,9 @@ HTMLFILES = \
 	html/virt-tar-out.1.html \
 	html/virt-win-reg.1.html
 
-TEXTFILES = BUGS README RELEASE-NOTES ROADMAP TODO
+HTMLSUPPORTFILES = html/draft.png html/pod.css
+
+TEXTFILES = BUGS README ROADMAP TODO
 
 WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
 
@@ -204,7 +226,7 @@ WEBSITEDIR = $(HOME)/d/redhat/websites/libguestfs
 website: $(HTMLFILES) $(TEXTFILES)
 	find -name 'stamp-*.pod' -delete
 	$(MAKE)
-	cp $(HTMLFILES) $(WEBSITEDIR)
+	cp $(HTMLFILES) $(HTMLSUPPORTFILES) $(WEBSITEDIR)
 	for f in $(TEXTFILES); do cp $$f $(WEBSITEDIR)/$$f.txt; done
 	cd $(WEBSITEDIR) && \
 	date=`date +%F`; \
@@ -219,10 +241,7 @@ dist-hook:
 	$(top_srcdir)/update-bugs.sh > BUGS-t
 	mv BUGS-t BUGS
 	cp BUGS $(distdir)/BUGS
-	git log --pretty="format:%an <%ae>" | sort -u | uniq -w 10 | \
-		grep -v rjones | \
-		grep -v "Richard Jones" \
-		> AUTHORS-t
+	git shortlog -se | awk -F'\t' '{print $$2}' > AUTHORS-t
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 
@@ -250,11 +269,32 @@ all-local:
 	find resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
 
+# Manual pages in top level directory.
+
+man_MANS = \
+	guestfs-release-notes.1
+noinst_DATA = \
+	$(top_builddir)/html/guestfs-release-notes.1.html
+
+guestfs-release-notes.1 guestfs-release-notes.txt $(top_builddir)/html/guestfs-release-notes.1.html: stamp-guestfs-release-notes.pod
+
+stamp-guestfs-release-notes.pod: guestfs-release-notes.pod
+	$(PODWRAPPER) \
+	  --section 1 \
+	  --man guestfs-release-notes.1 \
+	  --text guestfs-release-notes.txt \
+	  --html $(top_builddir)/html/guestfs-release-notes.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
+
 # Make clean.
 
 CLEANFILES = \
+	html/*.html \
 	pod2htm?.tmp \
-	html/*.html
+	qemu-wrapper.sh \
+	stamp-guestfs-release-notes.pod
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
@@ -263,19 +303,112 @@ CLEANFILES = \
 quickcheck:
 	$(top_builddir)/run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
 
-# Run extra-tests in tests/extra/ subdirectory.
+# Non-standard tests.
 
 extra-tests:
-	make -C tests/extra $@
+	$(MAKE) -j1 \
+	  valgrind \
+	  valgrind-local-guests \
+	  check-with-appliance \
+	  check-with-upstream-qemu \
+	  check-with-upstream-libvirt \
+	  check-slow
 
-# Make binary distribution.
+check-valgrind: build-test-guests
+	@for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) -C `dirname $$f` $@; \
+	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
+	done
 
-BINTMPDIR = /tmp/libguestfs-bin
-bindist:
-	rm -rf $(BINTMPDIR)
-	mkdir $(BINTMPDIR)
-	$(MAKE)
-	$(MAKE) DESTDIR=$(BINTMPDIR) install
-	-find $(BINTMPDIR) -type d -exec rmdir --ignore-fail-on-non-empty {} \;
-	(cd $(BINTMPDIR) && tar cf - .) | \
-	  gzip -c -9 > libguestfs-$(VERSION)-$(DISTRO)-$(host_cpu).tar.gz
+check-valgrind-local-guests:
+	@GUESTS=`$(top_builddir)/run ./pick-guests.pl 5`; \
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@; \
+	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || exit $$?; \
+	done
+
+check-slow: build-test-guests
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) -C `dirname $$f` $@; \
+	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
+	done
+
+build-test-guests:
+	$(MAKE) -C tests/guests check
+
+check-with-appliance:
+	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
+	if [ "$$method" != "appliance" ]; then \
+	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check || exit $$?; \
+	fi
+
+QEMUDIR = $(HOME)/d/qemu
+QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
+
+check-with-upstream-qemu:
+	@if $(QEMUBINARY) --help >/dev/null 2>&1; then \
+	  $(MAKE) check-with-upstream-qemu-1 || exit $$?; \
+	fi
+
+check-with-upstream-qemu-1: $(top_builddir)/qemu-wrapper.sh
+	$(QEMUBINARY) --version
+	$(MAKE) LIBGUESTFS_QEMU=$(abs_top_builddir)/qemu-wrapper.sh check
+
+$(top_builddir)/qemu-wrapper.sh: Makefile
+	rm -f $@ $@-t
+	echo -e "#!/bin/sh\nexec" "$(QEMUBINARY)" -L "$(QEMUDIR)/pc-bios" \"\$$@\" > $@-t
+	chmod +x,-w $@-t
+	mv $@-t $@
+
+LIBVIRTDIR = $(HOME)/d/libvirt
+
+check-with-upstream-libvirt:
+	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
+	if [ "$$method" = "libvirt" ] && [ -x "$(LIBVIRTDIR)/run" ]; then \
+	  $(LIBVIRTDIR)/run $(MAKE) check || exit $$?; \
+	fi
+
+# Print subdirs.
+#
+# If you want to selectively run tests, or if the test suite fails half
+# way through, use:
+#
+#   make print-subdirs
+#
+# to print the subdirectories, select the ones you want to run / the
+# remaining ones, and do:
+#
+#   make check SUBDIRS="..."
+
+print-subdirs:
+	@echo $(SUBDIRS)
+
+# Provide help on common Makefile targets.
+
+help:
+	@echo
+	@echo "make                              Build everything."
+	@echo
+	@echo "make check                        Run the standard tests"
+	@echo "make -k check                       ... and display all errors at once."
+	@echo
+	@echo "make extra-tests                  ... runs all of the following tests:"
+	@echo "  make check-valgrind               Run a subset of the tests under valgrind."
+	@echo "  make check-valgrind-local-guests  Test under valgrind using local guests."
+	@echo "  make check-with-appliance         Test using appliance attach-method."
+	@echo "  make check-with-upstream-qemu     Test using upstream qemu."
+	@echo "  make check-with-upstream-libvirt  Test using upstream libvirt."
+	@echo "  make check-slow                   Slow/long-running tests."
+	@echo
+	@echo "make syntax-check                 Check syntax and style problems in the code."
+	@echo "make print-subdirs                Print subdirectories."
+	@echo
+	@echo "make install                      Install everything."
+	@echo
+	@echo "make clean                        Clean everything."
+	@echo
+	@echo "To run programs without installing:"
+	@echo "  ./run ./fish/guestfish [or any other program]"
+	@echo
+	@echo "For more information, see EXTENDING LIBGUESTFS in guestfs(3); and README."
+	@echo

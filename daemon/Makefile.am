@@ -17,6 +17,8 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+CLEANFILES = stamp-guestfsd.pod
+
 libsrcdir = $(top_builddir)/src
 
 generator_built = \
@@ -33,7 +35,9 @@ BUILT_SOURCES = \
 	errnostring.c \
 	errnostring.h
 
-EXTRA_DIST = $(BUILT_SOURCES)
+EXTRA_DIST = \
+	$(BUILT_SOURCES) \
+	guestfsd.pod
 
 noinst_LIBRARIES = libprotocol.a
 
@@ -84,6 +88,7 @@ endif
 
 guestfsd_SOURCES = \
 	9p.c \
+	acl.c \
 	actions.h \
 	available.c \
 	augeas.c \
@@ -91,6 +96,7 @@ guestfsd_SOURCES = \
 	blkid.c \
 	blockdev.c \
 	btrfs.c \
+	cap.c \
 	checksum.c \
 	cmp.c \
 	command.c \
@@ -114,12 +120,15 @@ guestfsd_SOURCES = \
 	fill.c \
 	find.c \
 	fsck.c \
+	fstrim.c \
 	glob.c \
 	grep.c \
 	grub.c \
 	guestfsd.c \
 	headtail.c \
 	hexdump.c \
+	hotplug.c \
+	hivex.c \
 	htonl.c \
 	initrd.c \
 	inotify.c \
@@ -127,6 +136,7 @@ guestfsd_SOURCES = \
 	is.c \
 	isoinfo.c \
 	labels.c \
+	ldm.c \
 	link.c \
 	ls.c \
 	luks.c \
@@ -135,6 +145,7 @@ guestfsd_SOURCES = \
 	md.c \
 	mkfs.c \
 	mknod.c \
+	mktemp.c \
 	modprobe.c \
 	mount.c \
 	names.c \
@@ -147,6 +158,7 @@ guestfsd_SOURCES = \
 	proto.c \
 	readdir.c \
 	realpath.c \
+	rsync.c \
 	scrub.c \
 	selinux.c \
 	sfdisk.c \
@@ -162,15 +174,22 @@ guestfsd_SOURCES = \
 	umask.c \
 	upload.c \
 	utimens.c \
+	utsname.c \
 	wc.c \
 	xattr.c \
+	xfs.c \
 	zero.c \
 	zerofree.c
+
 guestfsd_LDADD = \
 	liberrnostring.a \
 	libprotocol.a \
+	$(ACL_LIBS) \
+	$(CAP_LIBS) \
+	$(YAJL_LIBS) \
 	$(SELINUX_LIB) \
 	$(AUGEAS_LIBS) \
+	$(HIVEX_LIBS) \
 	$(top_builddir)/gnulib/lib/.libs/libgnu.a \
 	$(GETADDRINFO_LIB) \
 	$(HOSTENT_LIB) \
@@ -181,6 +200,25 @@ guestfsd_LDADD = \
 	$(SERVENT_LIB)
 
 guestfsd_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
-guestfsd_CFLAGS = $(WARN_CFLAGS) $(WERROR_CFLAGS) $(AUGEAS_CFLAGS)
+guestfsd_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(AUGEAS_CFLAGS) \
+	$(HIVEX_CFLAGS) \
+	$(YAJL_CFLAGS)
+
+# Manual pages and HTML files for the website.
+man_MANS = guestfsd.8
+noinst_DATA = $(top_builddir)/html/guestfsd.8.html
+
+guestfsd.8 $(top_builddir)/html/guestfsd.8.html: stamp-guestfsd.pod
+
+stamp-guestfsd.pod: guestfsd.pod
+	$(PODWRAPPER) \
+	  --section 8 \
+	  --man guestfsd.8 \
+	  --html $(top_builddir)/html/guestfsd.8.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
 
 .PHONY: force

@@ -18,9 +18,6 @@
 
 # Test remote events in guestfish.
 
-# DISABLE FOR STABLE-1.18 BRANCH.
-exit 77
-
 set -e
 
 eval "$(./guestfish --listen)"
@@ -38,7 +35,7 @@ fi
 # Test close event (RHBZ#802389).
 output="$(./guestfish --remote quit)"
 
-if [ "$output" != 'closed' ]; then
+if [ "$output" != "closed" ]; then
     echo "$0: close event failed:"
     echo "$output"
     exit 1

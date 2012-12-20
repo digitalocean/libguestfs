@@ -34,10 +34,6 @@
 
 #include <pcre.h>
 
-#ifdef HAVE_HIVEX
-#include <hivex.h>
-#endif
-
 #include "xstrtol.h"
 
 #include "guestfs.h"
@@ -45,7 +41,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
-#if defined(HAVE_HIVEX)
+static int parent_device_already_probed (guestfs_h *g, const char *partition);
 
 /* The main inspection code. */
 char **
@@ -84,6 +80,9 @@ guestfs__inspect_os (guestfs_h *g)
   }
 
   for (i = 0; partitions[i] != NULL; ++i) {
+    if (parent_device_already_probed (g, partitions[i]))
+      continue;
+
     if (guestfs___check_for_filesystem_on (g, partitions[i], 0, i+1) == -1) {
       guestfs___free_string_list (partitions);
       guestfs___free_inspect_info (g);
@@ -136,6 +135,32 @@ guestfs__inspect_os (guestfs_h *g)
   if (ret == NULL)
     guestfs___free_inspect_info (g);
   return ret;
+}
+
+/* If we found a filesystem on the parent device then ignore the
+ * partitions within.
+ */
+static int
+parent_device_already_probed (guestfs_h *g, const char *partition)
+{
+  char *device;
+  size_t i;
+
+  guestfs_push_error_handler (g, NULL, NULL);
+  device = guestfs_part_to_dev (g, partition);
+  guestfs_pop_error_handler (g);
+  if (!device)
+    return 0;
+
+  for (i = 0; i < g->nr_fses; ++i) {
+    if (STREQ (device, g->fses[i].device)) {
+      free (device);
+      return 1;
+    }
+  }
+
+  free (device);
+  return 0;
 }
 
 static int
@@ -194,6 +219,7 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
   case OS_TYPE_HURD: ret = safe_strdup (g, "hurd"); break;
   case OS_TYPE_LINUX: ret = safe_strdup (g, "linux"); break;
   case OS_TYPE_NETBSD: ret = safe_strdup (g, "netbsd"); break;
+  case OS_TYPE_OPENBSD: ret = safe_strdup (g, "openbsd"); break;
   case OS_TYPE_WINDOWS: ret = safe_strdup (g, "windows"); break;
   case OS_TYPE_UNKNOWN: default: ret = safe_strdup (g, "unknown"); break;
   }
@@ -232,12 +258,15 @@ guestfs__inspect_get_distro (guestfs_h *g, const char *root)
   case OS_DISTRO_MAGEIA: ret = safe_strdup (g, "mageia"); break;
   case OS_DISTRO_MANDRIVA: ret = safe_strdup (g, "mandriva"); break;
   case OS_DISTRO_MEEGO: ret = safe_strdup (g, "meego"); break;
+  case OS_DISTRO_OPENBSD: ret = safe_strdup (g, "openbsd"); break;
   case OS_DISTRO_OPENSUSE: ret = safe_strdup (g, "opensuse"); break;
   case OS_DISTRO_PARDUS: ret = safe_strdup (g, "pardus"); break;
   case OS_DISTRO_REDHAT_BASED: ret = safe_strdup (g, "redhat-based"); break;
   case OS_DISTRO_RHEL: ret = safe_strdup (g, "rhel"); break;
   case OS_DISTRO_SCIENTIFIC_LINUX: ret = safe_strdup (g, "scientificlinux"); break;
   case OS_DISTRO_SLACKWARE: ret = safe_strdup (g, "slackware"); break;
+  case OS_DISTRO_SLES: ret = safe_strdup (g, "sles"); break;
+  case OS_DISTRO_SUSE_BASED: ret = safe_strdup (g, "suse-based"); break;
   case OS_DISTRO_TTYLINUX: ret = safe_strdup (g, "ttylinux"); break;
   case OS_DISTRO_WINDOWS: ret = safe_strdup (g, "windows"); break;
   case OS_DISTRO_UBUNTU: ret = safe_strdup (g, "ubuntu"); break;
@@ -538,143 +567,6 @@ guestfs__inspect_get_hostname (guestfs_h *g, const char *root)
   return safe_strdup (g, fs->hostname ? : "unknown");
 }
 
-#else /* no hivex at compile time */
-
-/* XXX These functions should be in an optgroup. */
-
-#define NOT_IMPL(r)                                                     \
-  guestfs_error_errno (g, ENOTSUP, _("inspection API not available since this version of libguestfs was compiled without the hivex library")); \
-  return r
-
-char **
-guestfs__inspect_os (guestfs_h *g)
-{
-  NOT_IMPL(NULL);
-}
-
-char **
-guestfs__inspect_get_roots (guestfs_h *g)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_type (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_arch (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_distro (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-int
-guestfs__inspect_get_major_version (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(-1);
-}
-
-int
-guestfs__inspect_get_minor_version (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(-1);
-}
-
-char *
-guestfs__inspect_get_product_name (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_product_variant (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_windows_systemroot (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_windows_current_control_set (guestfs_h *g,
-                                                  const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char **
-guestfs__inspect_get_mountpoints (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char **
-guestfs__inspect_get_filesystems (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char **
-guestfs__inspect_get_drive_mappings (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_package_format (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_package_management (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_hostname (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-char *
-guestfs__inspect_get_format (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(NULL);
-}
-
-int
-guestfs__inspect_is_live (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(-1);
-}
-
-int
-guestfs__inspect_is_netinst (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(-1);
-}
-
-int
-guestfs__inspect_is_multipart (guestfs_h *g, const char *root)
-{
-  NOT_IMPL(-1);
-}
-
-#endif /* no hivex at compile time */
-
 void
 guestfs___free_inspect_info (guestfs_h *g)
 {
@@ -705,16 +597,15 @@ guestfs___free_inspect_info (guestfs_h *g)
 int
 guestfs___feature_available (guestfs_h *g, const char *feature)
 {
+  const char *groups[] = { feature, NULL };
+  int r;
+
   /* If there's an error we should ignore it, so to do that we have to
    * temporarily replace the error handler with a null one.
    */
-  guestfs_error_handler_cb old_error_cb = g->error_cb;
-  g->error_cb = NULL;
-
-  const char *groups[] = { feature, NULL };
-  int r = guestfs_available (g, (char * const *) groups);
-
-  g->error_cb = old_error_cb;
+  guestfs_push_error_handler (g, NULL, NULL);
+  r = guestfs_available (g, (char * const *) groups);
+  guestfs_pop_error_handler (g);
 
   return r == 0 ? 1 : 0;
 }

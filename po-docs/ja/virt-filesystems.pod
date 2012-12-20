@@ -35,7 +35,7 @@ I<-a> または I<-d> オプションを与える必要があります。単に�
  /dev/sda1
  /dev/vg_guest/lv_root
 
-If you add I<-l> or I<--long> then the output includes extra information:
+I<-l> または I<--long> を追加すると、追加の情報が出力に含まれます:
 
  $ virt-filesystems -a disk.img -l
  名前                   種類         VFS   ラベル 容量
@@ -151,8 +151,7 @@ or contain unknown data.
 
 =item B<--filesystems>
 
-Display mountable filesystems.  If no display option was selected then this
-option is implied.
+マウント可能なファイルシステムを表示します。表示オプションが選択されていなければ、このオプションが暗に指定されます。
 
 I<--extra> を用いると、マウントできないファイルシステムも表示されます。
 
@@ -185,8 +184,8 @@ I<--long> モードでは、読みやすい形式で容量を表示します。
 
 =item B<--keys-from-stdin>
 
-Read key or passphrase parameters from stdin.  The default is to try to read
-passphrases from the user by opening C</dev/tty>.
+標準入力からキーまたはパスフレーズのパラメーターを読み込みます。標準で C</dev/tty>
+を開いているユーザーからパスフレーズを読み込もうとします。
 
 =item B<-l>
 
@@ -278,9 +277,8 @@ libguestfs API 呼び出しのトレースを有効にします。
 
 ファイルシステム、パーティション、ブロックデバイスまたは LVM の名前。
 
-For device and partition names these are displayed as canonical libguestfs
-names, so that for example C</dev/sda2> is the second partition on the first
-device.
+これらは、デバイスとパーティションに対して、正規化された libguestfs 名として表示されます。そのため、たとえば、 C</dev/sda2>
+は最初のデバイスにある 2 番目のパーティションです。
 
 I<--long> オプションが指定されてB<いない>と、名前の列のみが出力に表示されます。
 
@@ -290,35 +288,30 @@ I<--long> オプションが指定されてB<いない>と、名前の列のみ�
 
 =item B<VFS>
 
-If there is a filesystem, then this column displays the filesystem type if
-one could be detected, eg. C<ext4>.
+ファイルシステムがあれば、この列は最初に検知されたファイルシステムの形式を表示します。例: C<ext4>。
 
 =item B<ラベル>
 
-If the object has a label (used for identifying and mounting filesystems)
-then this column contains the label.
+（ファイルシステムの識別とマウントのために使用される）ラベルがオブジェクトにあれば、この列はラベルを含みます。
 
 =item B<MBR>
 
-The partition type byte, displayed as a two digit hexadecimal number.  A
-comprehensive list of partition types can be found here:
+パーティション形式のバイト、2 桁の 16 進数として表示されます。パーティション形式の完全な一覧は次のところにあります:
 L<http://www.win.tue.nl/~aeb/partitions/partition_types-1.html>
 
 これは DOS (MBR) パーティションに対してのみ適用できます。
 
 =item B<容量>
 
-The size of the object in bytes.  If the I<--human> option is used then the
-size is displayed in a human-readable form.
+オブジェクトのバイト単位の容量。I<--human> オプションが使用されていると、容量が人間可読な形式で表示されます。
 
-=item B<Parent>
+=item B<親>
 
 親カラムはオブジェクト間の親子関係を記録します。
 
 たとえば、オブジェクトがパーティションならば、このカラムは含んでいるデバイスの名前が含まれます。オブジェクトが論理ボリュームならば、このカラムはボリュームグループの名前です。
 
-If there is more than one parent, then this column is (internal to the
-column) a comma-separated list, eg. C</dev/sda,/dev/sdb>.
+複数の親があると、この列は (内部に列を持つ) カンマ区切りの一覧になります。例: C</dev/sda,/dev/sdb>。
 
 =item B<UUID>
 
@@ -334,13 +327,11 @@ I<--uuid> オプションが指定されると、 UUID のみが表示されま�
 Comma-separated values (CSV) is a deceptive format.  It I<seems> like it
 should be easy to parse, but it is definitely not easy to parse.
 
-Myth: Just split fields at commas.  Reality: This does I<not> work
-reliably.  This example has two columns:
+神話: ただコンマで項目を区切る。 真実: これは正しく動き I<ません>。この例は 2 つの列があります:
 
  "foo,bar",baz
 
-Myth: Read the file one line at a time.  Reality: This does I<not> work
-reliably.  This example has one row:
+神話: 同時にファイルの 1 行を読み込みます。 真実: これは正しく動き I<ません>。この例は 1 つの行があります:
 
  "foo
  bar",baz

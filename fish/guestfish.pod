@@ -253,7 +253,7 @@ auto-detection for C<another.img>.
 If you have untrusted raw-format guest disk images, you should use
 this option to specify the disk format.  This avoids a possible
 security problem with malicious guests (CVE-2010-3851).  See also
-L</add-drive-opts>.
+L</add>.
 
 =item B<-i>
 
@@ -332,12 +332,9 @@ filesystem can support them:
 
 Using this flag is equivalent to using the C<mount-options> command.
 
-=item B<-n>
+=item B<--network>
 
-=item B<--no-sync>
-
-Disable autosync.  This is enabled by default.  See the discussion
-of autosync in the L<guestfs(3)> manpage.
+Enable QEMU user networking in the guest.
 
 =item B<-N type>
 
@@ -349,6 +346,13 @@ Prepare a fresh disk image formatted as "type".  This is an
 alternative to the I<-a> option: whereas I<-a> adds an existing disk,
 I<-N> creates a preformatted disk with a filesystem and adds it.
 See L</PREPARED DISK IMAGES> below.
+
+=item B<-n>
+
+=item B<--no-sync>
+
+Disable autosync.  This is enabled by default.  See the discussion
+of autosync in the L<guestfs(3)> manpage.
 
 =item B<--pipe-error>
 
@@ -594,11 +598,11 @@ Some commands take optional arguments.  These arguments appear in this
 documentation as C<[argname:..]>.  You can use them as in these
 examples:
 
- add-drive-opts filename
+ add filename
 
- add-drive-opts filename readonly:true
+ add filename readonly:true
 
- add-drive-opts filename format:qcow2 readonly:false
+ add filename format:qcow2 readonly:false
 
 Each optional argument can appear at most once.  All optional
 arguments must appear after the required ones.
@@ -1099,6 +1103,77 @@ interactively.  You can enable them even for non-interactive modes
 using I<--progress-bars>, and you can disable them completely using
 I<--no-progress-bars>.
 
+=head1 PROMPT
+
+You can change or add colours to the default prompt
+(C<E<gt>E<lt>fsE<gt>>) by setting the C<GUESTFISH_PS1> environment
+variable.  A simple prompt can be set by setting this to an alternate
+string:
+
+ $ GUESTFISH_PS1='(type a command) '
+ $ export GUESTFISH_PS1
+ $ guestfish
+ [...]
+ (type a command) ▂
+
+You can also use special escape sequences, as described in the table
+below:
+
+=over 4
+
+=item \\
+
+A literal backslash character.
+
+=item \[
+
+=item \]
+
+Place non-printing characters (eg. terminal control codes for colours)
+between C<\[...\]>.  What this does it to tell the L<readline(3)>
+library that it should treat this subsequence as zero-width, so that
+command-line redisplay, editing etc works.
+
+=item \a
+
+A bell character.
+
+=item \e
+
+An ASCII ESC (escape) character.
+
+=item \n
+
+A newline.
+
+=item \r
+
+A carriage return.
+
+=item \NNN
+
+The ASCII character whose code is the octal value NNN.
+
+=item \xNN
+
+The ASCII character whose code is the hex value NN.
+
+=back
+
+=head2 EXAMPLES OF PROMPTS
+
+Note these these require a terminal that supports ANSI escape codes.
+
+ GUESTFISH_PS1='\[\e[1;30m\]><fs>\[\e[0;30m\] '
+
+A bold black version of the ordinary prompt.
+
+=head1 WINDOWS 8
+
+Windows 8 "fast startup" can prevent guestfish from mounting NTFS
+partitions.  See
+L<guestfs(3)/WINDOWS HIBERNATION AND WINDOWS 8 FAST STARTUP>.
+
 =head1 GUESTFISH COMMANDS
 
 The commands in this section are guestfish convenience commands, in
@@ -1113,7 +1188,9 @@ Without any parameter, this provides general help.
 
 With a C<cmd> parameter, this displays detailed help for that command.
 
-=head2 quit | exit
+=head2 exit
+
+=head2 quit
 
 This exits guestfish.  You can also use C<^D> key.
 
@@ -1158,6 +1235,10 @@ Used with the I<--remote> option to specify the remote guestfish
 process to control.  See section
 L</REMOTE CONTROL GUESTFISH OVER A SOCKET>.
 
+=item GUESTFISH_PS1
+
+Set the command prompt.  See L</PROMPT>.
+
 =item HEXEDITOR
 
 The L</hexedit> command uses C<$HEXEDITOR> as the external hex
@@ -1172,6 +1253,22 @@ home directory can be used.  See L</FILES>.
 =item LIBGUESTFS_APPEND
 
 Pass additional options to the guest kernel.
+
+=item LIBGUESTFS_ATTACH_METHOD
+
+Choose the default way to create the appliance.  See
+L<guestfs(3)/guestfs_set_attach_method>.
+
+=item LIBGUESTFS_CACHEDIR
+
+The location where libguestfs will cache its appliance, when
+using a supermin appliance.  The appliance is cached and shared
+between all handles which have the same effective user ID.
+
+If C<LIBGUESTFS_CACHEDIR> is not set, then C<TMPDIR> is used.  If
+C<TMPDIR> is not set, then C</var/tmp> is used.
+
+See also L</LIBGUESTFS_TMPDIR>, L</set-cachedir>.
 
 =item LIBGUESTFS_DEBUG
 
@@ -1196,6 +1293,16 @@ Set the default qemu binary that libguestfs uses.  If not set, then
 the qemu which was found at compile time by the configure script is
 used.
 
+=item LIBGUESTFS_TMPDIR
+
+The location where libguestfs will store temporary files used
+by each handle.
+
+If C<LIBGUESTFS_TMPDIR> is not set, then C<TMPDIR> is used.  If
+C<TMPDIR> is not set, then C</tmp> is used.
+
+See also L</LIBGUESTFS_CACHEDIR>, L</set-tmpdir>.
+
 =item LIBGUESTFS_TRACE
 
 Set C<LIBGUESTFS_TRACE=1> to enable command traces.
@@ -1207,14 +1314,7 @@ set, it uses C<more>.
 
 =item TMPDIR
 
-Location of temporary directory, defaults to C</tmp> except for the
-cached supermin appliance which defaults to C</var/tmp>.
-
-If libguestfs was compiled to use the supermin appliance then the
-real appliance is cached in this directory, shared between all
-handles belonging to the same EUID.  You can use C<$TMPDIR> to
-configure another directory to use in case C</var/tmp> is not large
-enough.
+See L</LIBGUESTFS_CACHEDIR>, L</LIBGUESTFS_TMPDIR>.
 
 =back
 

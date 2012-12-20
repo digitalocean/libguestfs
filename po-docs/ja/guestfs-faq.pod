@@ -2,7 +2,7 @@
 
 =head1 名前
 
-guestfs-faq - libguestfs Frequently Asked Questions (FAQ)
+guestfs-faq - libguestfs のよくある質問 (FAQ)
 
 =head1 libguestfs について
 
@@ -25,11 +25,11 @@ source projects.  So virt tools is a superset of libguestfs.  However
 libguestfs comes with many important tools.  See L<http://libguestfs.org>
 for a full list.
 
-=head2 Does libguestfs need { libvirt / KVM / Red Hat / Fedora }?
+=head2 libguestfs は { libvirt / KVM / Red Hat / Fedora } が必要ですか?
 
-No!
+いいえ！
 
-libvirt is not a requirement for libguestfs.
+libvirt は libguestfs に必須ではありません。
 
 libguestfs works with any disk image, including ones created in VMware, KVM,
 qemu, VirtualBox, Xen, and many other hypervisors, and ones which you have
@@ -84,7 +84,7 @@ features through the libguestfs API.
 
 =head2 How do I know what version I'm using?
 
-The simplest method is:
+最も簡単な方法は次のとおりです:
 
  guestfish --version
 
@@ -111,9 +111,9 @@ For other virt tools (not ones supplied with libguestfs) there is a general
 virt tools mailing list:
 L<https://www.redhat.com/mailman/listinfo/virt-tools-list>
 
-=head2 How do I report bugs?
+=head2 どのようにバグを報告しますか?
 
-Please use the following link to enter a bug in Bugzilla:
+Bugzilla にバグを入力するには、以下のリンクを使用してください:
 
 L<https://bugzilla.redhat.com/enter_bug.cgi?component=libguestfs&product=Virtualization+Tools>
 
@@ -121,7 +121,7 @@ Include as much detail as you can and a way to reproduce the problem.
 
 Include the full output of L<libguestfs-test-tool(1)>.
 
-=head1 COMMON PROBLEMS
+=head1 一般的な問題
 
 See also L<guestfs(3)/LIBGUESTFS GOTCHAS> for some "gotchas" with using the
 libguestfs API.
@@ -167,16 +167,16 @@ Therefore you have to tell the kernel what translation you want done when
 you mount the filesystem.  The two methods are the C<iocharset> parameter
 (which is not relevant to libguestfs) and the C<utf8> flag.
 
-So to use a VFAT filesystem you must add the C<utf8> flag when mounting.
-From guestfish, use:
+そのため、VFAT ファイルシステムを使用するには、マウント時に C<utf8> フラグを追加する必要があります。guestfish
+から、次のように使用します:
 
  ><fs> mount-options utf8 /dev/sda1 /
 
-or on the guestfish command line:
+または guestfish コマンドラインにおいて:
 
  guestfish [...] -m /dev/sda1:/:utf8
 
-or from the API:
+または API から:
 
  guestfs_mount_options (g, "utf8", "/dev/sda1", "/");
 
@@ -212,21 +212,21 @@ filesystem.
 
 =begin HTML
 
-<!-- old anchor for the next section --> <a name="binaries"/>
+<!-- 次のセクション向け古いアンカー --> <a name="binaries"/>
 
 =end HTML
 
-=head2 Where can I get the latest binaries for ...?
+=head2 どこから最新のバイナリーを入手できますか ...?
 
 =over 4
 
 =item Fedora E<ge> 11
 
-Use:
+こうします:
 
  yum install '*guestf*'
 
-For the latest builds, see:
+最新版は次を参照してください:
 L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 
 =item Red Hat Enterprise Linux
@@ -235,50 +235,48 @@ L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 
 =item RHEL 5
 
-Use the package from EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
+EPEL 5 からパッケージを使用してください: L<https://fedoraproject.org/wiki/EPEL>
 
 =item RHEL 6.2-6.3
 
-It is part of the default install.  On RHEL 6 (only) you have to install
-C<libguestfs-winsupport> to get Windows guest support.
+標準インストールの一部です。RHEL 6 (のみ) において、Windows ゲストをサポートするには、C<libguestfs-winsupport>
+をインストールする必要があります。
 
 =item RHEL 6.4
 
-A preview repository is available.  See the announcement here:
+プレビューのリポジトリが利用可能です。次のアナウンスを参照してください:
 L<https://www.redhat.com/archives/libguestfs/2012-September/msg00074.html>
 
 =item RHEL 7
 
-It will be part of the default install, and based on libguestfs 1.20.  As
-with RHEL 6 you will need to install C<libguestfs-winsupport> separately to
-get Windows guest support.
+標準インストールの一部で、libguestfs 1.20 に基づいています。RHEL 6 と同じように、Windows ゲストをサポートするには
+C<libguestfs-winsupport> をインストールする必要があります。
 
 =back
 
-=item Debian and Ubuntu
+=item Debian および Ubuntu
 
 =over 4
 
 =item Debian Squeeze (6)
 
-Use Hilko Bengen's backport repository:
+Hilko Bengen 氏のバックポート・リポジトリーを使用してください:
 L<http://people.debian.org/~bengen/libguestfs/>
 
-=item Debian Wheezy and later (7+)
+=item Debian Wheezy およびそれ以降 (7+)
 
-Official Debian packages are available:
-L<http://packages.debian.org/search?keywords=libguestfs> (thanks Hilko
-Bengen).
+公式な Debian パッケージが利用可能です:
+L<http://packages.debian.org/search?keywords=libguestfs> (Hilko Bengen
+氏に感謝)。
 
 =item Ubuntu
 
-We don't have a full time Ubuntu maintainer, and the packages supplied by
-Canonical (which are outside our control) are sometimes broken.
+私たちはフルタイムの Ubuntu メンテナーではありません。また、Canonical (私たちの管理外)
+により提供されるパッケージはときどき壊れています。
 
-Canonical decided to change the permissions on the kernel so that it's not
-readable except by root.  This is completely stupid, but they won't change
-it (L<https://bugs.launchpad.net/ubuntu/+source/linux/+bug/759725>).  So
-every user should do this:
+Canonical はカーネルにおけるパーミッションを変更することを決定したため、これは root
+により読み込めません。これは完全におかしいですが、変更しようとはしません
+(L<https://bugs.launchpad.net/ubuntu/+source/linux/+bug/759725>)。そのため、すべてのユーザーはこうする必要があります:
 
  sudo chmod 0644 /boot/vmlinuz*
 
@@ -288,21 +286,21 @@ every user should do this:
 
 =item Ubuntu 12.04
 
-libguestfs in this version of Ubuntu works, but you need to update
-febootstrap and seabios to the latest versions.
+このバージョンの Ubuntu にある libguestfs が動作しますが、febootstrap および seabios
+を最新バージョンに更新する必要があります。
 
-You need febootstrap E<ge> 3.14-2 from:
+次のところにある febootstrap E<ge> 3.14-2 が必要です:
 L<http://packages.ubuntu.com/precise/febootstrap>
 
-After installing or updating febootstrap, rebuild the appliance:
+febootstrap のインストールまたは更新後、アプライアンスを再構築します:
 
  sudo update-guestfs-appliance
 
-You need seabios E<ge> 0.6.2-0ubuntu2.1 or E<ge> 0.6.2-0ubuntu3 from:
-L<http://packages.ubuntu.com/precise-updates/seabios> or
+次のところにある seabios E<ge> 0.6.2-0ubuntu2.1 または E<ge> 0.6.2-0ubuntu3 が必要です:
+L<http://packages.ubuntu.com/precise-updates/seabios> または
 L<http://packages.ubuntu.com/quantal/seabios>
 
-Also you need to do (see above):
+次のことも実行する必要があります (上述、参照):
 
  sudo chmod 0644 /boot/vmlinuz*
 
@@ -310,7 +308,7 @@ Also you need to do (see above):
 
 =item Gentoo
 
-Libguestfs was added to Gentoo in 2012-07.  Do:
+libguestfs は Gentoo の 2012-07 に追加されました。次のようにします:
 
  emerge libguestfs
 
@@ -320,7 +318,7 @@ Libguestfs was added to Gentoo in 2012-07.  Do:
 
 =item 他の非 Linux ディストリビューション
 
-You'll have to compile from source, and port it.
+ソースからコンパイルして、取り込む必要があります。
 
 =back
 
@@ -354,11 +352,11 @@ network.  Put the following line into a file called C<$HOME/.rpmmacros>:
 
  %libguestfs_buildnet   1
 
-If you are using mock, do:
+mock を使用しているならば、次を実行します:
 
  mock -D '%libguestfs_buildnet 1' [etc]
 
-=head2 How can I add support for sVirt?
+=head2 どのように sVirt をサポートしますか?
 
 Note: We are planning to make this configuration the default in S<Fedora
 18>.  If you find any problems, please let us know or file a bug.
@@ -380,7 +378,7 @@ Once you have the requirements, do:
  ./configure --with-default-attach-method=libvirt
  make
 
-Enable SELinux, and sVirt should be used automatically.
+SELinux を有効にすると、sVirt が自動的に使用されます。
 
 All, or almost all, features of libguestfs should work under sVirt.  There
 is one known shortcoming: L<virt-rescue(1)> will not use libvirt (hence
@@ -408,6 +406,12 @@ C<$http_proxy> and C<$ftp_proxy> are pointing to it.
 
 With Squid running and correctly configured, appliance builds should be
 reduced to a few minutes.
+
+=head3 How can I speed up libguestfs builds (Debian)?
+
+Hilko Bengen suggests using "approx" which is a Debian archive proxy
+(L<http://packages.debian.org/approx>).  This tool is documented on Debian
+in the approx(8) manual page.
 
 =head1 SPEED, DISK SPACE USED BY LIBGUESTFS
 
@@ -439,13 +443,11 @@ libguestfs caches a large-ish appliance in:
 
  /var/tmp/.guestfs-<UID>
 
-If the environment variable C<TMPDIR> is defined, then
-C<$TMPDIR/.guestfs-E<lt>UIDE<gt>> is used instead.
+環境変数 C<TMPDIR> が定義されていると、代わりに C<$TMPDIR/.guestfs-E<lt>UIDE<gt>> が使用されます。
 
-It is safe to delete this directory when you are not using libguestfs.
+libguestfs を使用していないとき、このディレクトリーを安全に削除できます。
 
-=head2 virt-sparsify seems to make the image grow to the full size of the virtual
-disk
+=head2 virt-sparsify は仮想ディスクの全容量までイメージを拡大します。
 
 If the input to L<virt-sparsify(1)> is raw, then the output will be raw
 sparse.  Make sure you are measuring the output with a tool which
@@ -456,7 +458,7 @@ understands sparseness such as C<du-sh>.  It can make a huge difference:
  $ du -sh test1.img
  3.6M	test1.img
 
-(Compare the apparent size B<100M> vs the actual size B<3.6M>)
+(見た目の容量 B<100M> と実際の容量 B<3.6M> を比較します)
 
 If all this confuses you, use a non-sparse output by specifying the
 I<--convert> option, eg:
@@ -541,9 +543,9 @@ You can use the same environment variables above.  Alternatively use the
 guestfish options -x (to trace commands) or -v (to get the full debug
 output), or both.
 
-For further information, see: L<guestfish(1)>.
+詳細は L<guestfish(1)> を参照してください。
 
-=head2 How do I debug when using the API?
+=head2 API を使用するとき、どのようにデバッグしますか?
 
 Call L<guestfs(3)/guestfs_set_trace> to enable command traces, and/or
 L<guestfs(3)/guestfs_set_verbose> to enable debug messages.
@@ -645,18 +647,17 @@ Note also that there is a regression test for this when building libguestfs
 (in C<tests/qemu>).  This is one reason why it's important for packagers to
 run the test suite.
 
-=head2 Does C<--ro> make all disks read-only?
+=head2 C<--ro> はすべてのディスクを読み込み専用にしますか?
 
-I<No!> The C<--ro> option only affects disks added on the command line,
-ie. using C<-a> and C<-d> options.
+I<いいえ!> C<--ro> オプションはコマンドラインにおいて、つまり C<-a> および C<-d>
+オプションを使用して追加されたディスクのみに影響します。
 
 In guestfish, if you use the C<add> command, then disk is added read-write
 (unless you specify the C<readonly:true> flag explicitly with the command).
 
-=head2 What's the difference between guestfish and virt-rescue?
+=head2 guestfish と virt-rescue の違いは何でしょうか?
 
-A lot of people are confused by the two superficially similar tools we
-provide:
+多くの人々が私たちの提供している 2 つの似たツールにより混乱しています:
 
  $ guestfish --ro -a guest.img
  ><fs> run

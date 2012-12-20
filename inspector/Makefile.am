@@ -20,7 +20,7 @@ builddir ?= .
 
 include $(top_srcdir)/subdir-rules.mk
 
-EXAMPLE_XML = \
+export EXAMPLE_XML = \
 	example-debian.xml \
 	example-fedora.xml \
 	example-ubuntu.xml \
@@ -36,6 +36,8 @@ EXAMPLE_XML = \
 	example-windows-xp-cd.xml
 
 EXTRA_DIST = \
+	test-virt-inspector.sh \
+	test-xmllint.sh.in \
 	virt-inspector.pod
 
 CLEANFILES = stamp-virt-inspector.pod
@@ -67,9 +69,10 @@ virt_inspector_CFLAGS = \
 	-I$(top_srcdir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBXML2_CFLAGS) \
-	$(LIBCONFIG_CFLAGS) \
-	$(WARN_CFLAGS) $(WERROR_CFLAGS)
+	$(LIBCONFIG_CFLAGS)
 
 virt_inspector_LDADD = \
 	$(LIBCONFIG_LIBS) \
@@ -91,12 +94,19 @@ stamp-virt-inspector.pod: virt-inspector.pod
 	  $<
 	touch $@
 
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+TESTS = test-virt-inspector.sh
 if HAVE_XMLLINT
-
-TESTS = $(EXAMPLE_XML)
-TESTS_ENVIRONMENT = $(XMLLINT) --noout --relaxng $(srcdir)/virt-inspector.rng
-
+TESTS += test-xmllint.sh
 endif
+
+check-valgrind:
+	$(MAKE) TESTS="test-virt-inspector.sh" VG="$(top_builddir)/run @VG@" check
+
+check-valgrind-local-guests:
+	for g in $(GUESTS); do \
+	  $(top_builddir)/run --test @VG@ ./virt-inspector -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
+	done
 
 endif
 
@@ -105,18 +115,22 @@ endif
 
 example-debian.xml:
 	rm -f $@ $@-t
-	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/debian.img > $@-t
+	$(top_builddir)/run --test \
+	    $(builddir)/virt-inspector ../tests/guests/debian.img > $@-t
 	mv $@-t $@
 example-fedora.xml:
 	rm -f $@ $@-t
-	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/fedora.img > $@-t
+	$(top_builddir)/run --test \
+	    $(builddir)/virt-inspector ../tests/guests/fedora.img > $@-t
 	mv $@-t $@
 example-ubuntu.xml:
 	rm -f $@ $@-t
-	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/ubuntu.img > $@-t
+	$(top_builddir)/run --test \
+	    $(builddir)/virt-inspector ../tests/guests/ubuntu.img > $@-t
 	mv $@-t $@
 example-windows.xml:
 	rm -f $@ $@-t
-	$(top_builddir)/run $(builddir)/virt-inspector ../tests/guests/windows.img | \
+	$(top_builddir)/run --test \
+	    $(builddir)/virt-inspector ../tests/guests/windows.img | \
 	    fgrep -v '<uuid>' > $@-t
 	mv $@-t $@

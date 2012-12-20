@@ -129,6 +129,13 @@ to build another image from scratch.
 
 Увімкнути виведення діагностичних даних.
 
+=item B<--floppy>
+
+Create a virtual floppy disk.
+
+Currently this preselects the size (1440K), partition type (MBR) and
+filesystem type (VFAT).  In future it may also choose the geometry.
+
 =item B<--size=E<lt>NE<gt>>
 
 =item B<--size=+E<lt>NE<gt>>

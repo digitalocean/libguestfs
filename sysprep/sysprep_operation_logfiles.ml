@@ -38,6 +38,10 @@ let globs = List.sort compare [
   "/var/log/spooler*";
   "/var/log/tallylog*";
   "/var/log/wtmp*";
+  "/var/log/apache2/*_log";
+  "/var/log/apache2/*_log-*";
+  "/var/log/audit/audit.log";
+  "/var/log/ntp";
 
   (* logfiles configured by /etc/logrotate.d/* *)
   "/var/log/BackupPC/LOG";
@@ -54,7 +58,6 @@ let globs = List.sort compare [
   "/var/log/libvirt/uml/*.log";
   "/var/named/data/named.run";
   "/var/log/ppp/connect-errors";
-  "/var/account/pacct";
   "/var/log/setroubleshoot/*.log";
   "/var/log/squid/*.log";
   (* And the status file of logrotate *)
@@ -68,7 +71,15 @@ let globs = List.sort compare [
   (* GDM and session preferences. *)
   "/var/cache/gdm/*";
   "/var/lib/AccountService/users/*";
-  "/var/lib/fprint/*";                  (* Fingerprint service files *)
+
+  (* Fingerprint service files *)
+  "/var/lib/fprint/*";
+
+  (* fontconfig caches *)
+  "/var/cache/fontconfig/*";
+
+  (* man pages cache *)
+  "/var/cache/man/*";
 ]
 let globs_as_pod = String.concat "\n" (List.map ((^) " ") globs)
 
@@ -89,7 +100,8 @@ On Linux the following files are removed:
 
 %s") globs_as_pod);
   extra_args = [];
-  perform = logfiles_perform;
+  perform_on_filesystems = Some logfiles_perform;
+  perform_on_devices = None;
 }
 
 let () = register_operation logfiles_op

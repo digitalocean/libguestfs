@@ -1,5 +1,10 @@
 =encoding utf8
 
+=item B<--firstboot> firstboot (see C<firstboot> below)
+
+Run script(s) once next time the guest boots.  You can supply the
+I<--firstboot> option as many times as needed.
+
 =item B<--hostname> hostname (see C<hostname> below)
 
 Змінити назву вузла. Якщо не вказано, використовувати типове

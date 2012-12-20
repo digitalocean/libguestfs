@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -73,45 +73,45 @@ guestfs_tune2fs_set_property(GObject *object, guint property_id, const GValue *v
 
   switch (property_id) {
     case PROP_GUESTFS_TUNE2FS_FORCE:
-      priv->force = g_value_get_enum(value);
+      priv->force = g_value_get_enum (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_MAXMOUNTCOUNT:
-      priv->maxmountcount = g_value_get_int(value);
+      priv->maxmountcount = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_MOUNTCOUNT:
-      priv->mountcount = g_value_get_int(value);
+      priv->mountcount = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_ERRORBEHAVIOR:
       g_free(priv->errorbehavior);
-      priv->errorbehavior = g_value_dup_string(value);
+      priv->errorbehavior = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_GROUP:
-      priv->group = g_value_get_int64(value);
+      priv->group = g_value_get_int64 (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS:
-      priv->intervalbetweenchecks = g_value_get_int(value);
+      priv->intervalbetweenchecks = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE:
-      priv->reservedblockspercentage = g_value_get_int(value);
+      priv->reservedblockspercentage = g_value_get_int (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY:
       g_free(priv->lastmounteddirectory);
-      priv->lastmounteddirectory = g_value_dup_string(value);
+      priv->lastmounteddirectory = g_value_dup_string (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT:
-      priv->reservedblockscount = g_value_get_int64(value);
+      priv->reservedblockscount = g_value_get_int64 (value);
       break;
 
     case PROP_GUESTFS_TUNE2FS_USER:
-      priv->user = g_value_get_int64(value);
+      priv->user = g_value_get_int64 (value);
       break;
 
     default:

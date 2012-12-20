@@ -19,6 +19,7 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <limits.h>
 #include <unistd.h>
 
 #include "guestfs_protocol.h"
@@ -174,6 +175,12 @@ getxattrs (const char *path,
       goto error;
     }
 
+    if (vlen > XATTR_SIZE_MAX) {
+      /* The next call to getxattr will fail anyway, so ... */
+      reply_with_error ("extended attribute is too large");
+      goto error;
+    }
+
     r->guestfs_int_xattr_list_val[j].attrname = strdup (&buf[i]);
     r->guestfs_int_xattr_list_val[j].attrval.attrval_val = malloc (vlen);
     r->guestfs_int_xattr_list_val[j].attrval.attrval_len = vlen;
@@ -222,6 +229,11 @@ _setxattr (const char *xattr, const char *val, int vallen, const char *path,
 {
   int r;
 
+  if (vallen > XATTR_SIZE_MAX) {
+    reply_with_error ("extended attribute is too large");
+    return -1;
+  }
+
   CHROOT_IN;
   r = setxattr (path, xattr, val, vallen, 0);
   CHROOT_OUT;
@@ -251,7 +263,7 @@ _removexattr (const char *xattr, const char *path,
 }
 
 guestfs_int_xattr_list *
-do_lxattrlist (const char *path, char *const *names)
+do_internal_lxattrlist (const char *path, char *const *names)
 {
 #if defined(HAVE_LLISTXATTR) && defined(HAVE_LGETXATTR)
   /* XXX This would be easier if the kernel had lgetxattrat.  In the
@@ -372,6 +384,11 @@ do_lxattrlist (const char *path, char *const *names)
         goto error;
       }
 
+      if (vlen > XATTR_SIZE_MAX) {
+        reply_with_error ("extended attribute is too large");
+        goto error;
+      }
+
       entry[j+1].attrname = strdup (&buf[i]);
       entry[j+1].attrval.attrval_val = malloc (vlen);
       entry[j+1].attrval.attrval_len = vlen;
@@ -442,6 +459,12 @@ do_getxattr (const char *path, const char *name, size_t *size_r)
   }
 
   len = r;
+
+  if (len > XATTR_SIZE_MAX) {
+    reply_with_error ("extended attribute is too large");
+    return NULL;
+  }
+
   buf = malloc (len);
   if (buf == NULL) {
     reply_with_perror ("malloc");
@@ -484,6 +507,12 @@ do_lgetxattr (const char *path, const char *name, size_t *size_r)
   }
 
   len = r;
+
+  if (len > XATTR_SIZE_MAX) {
+    reply_with_error ("extended attribute is too large");
+    return NULL;
+  }
+
   buf = malloc (len);
   if (buf == NULL) {
     reply_with_perror ("malloc");
@@ -512,68 +541,6 @@ do_lgetxattr (const char *path, const char *name, size_t *size_r)
 
 #else /* no xattr.h */
 
-/* Note that the wrapper code (daemon/stubs.c) ensures that the
- * functions below are never called because
- * optgroup_linuxxattrs_available returns false.
- */
-int
-optgroup_linuxxattrs_available (void)
-{
-  return 0;
-}
-
-guestfs_int_xattr_list *
-do_getxattrs (const char *path)
-{
-  abort ();
-}
-
-guestfs_int_xattr_list *
-do_lgetxattrs (const char *path)
-{
-  abort ();
-}
-
-int
-do_setxattr (const char *xattr, const char *val, int vallen, const char *path)
-{
-  abort ();
-}
-
-int
-do_lsetxattr (const char *xattr, const char *val, int vallen, const char *path)
-{
-  abort ();
-}
-
-int
-do_removexattr (const char *xattr, const char *path)
-{
-  abort ();
-}
-
-int
-do_lremovexattr (const char *xattr, const char *path)
-{
-  abort ();
-}
-
-guestfs_int_xattr_list *
-do_lxattrlist (const char *path, char *const *names)
-{
-  abort ();
-}
-
-char *
-do_getxattr (const char *path, const char *name, size_t *size_r)
-{
-  abort ();
-}
-
-char *
-do_lgetxattr (const char *path, const char *name, size_t *size_r)
-{
-  abort ();
-}
+OPTGROUP_LINUXXATTRS_NOT_AVAILABLE
 
 #endif /* no xattr.h */

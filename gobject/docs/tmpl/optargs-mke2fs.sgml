@@ -1,0 +1,236 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMke2fs
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMke2fs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMke2fs:blockscount ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:blocksize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:blockspergroup ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:bytesperinode ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:creatoros ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:discard ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:extent ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:filetype ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:flexbg ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:forcecreate ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:fragsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:fstype ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:hasjournal ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:inodesize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:journaldev ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:journaldevice ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:journalsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:label ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:largefile ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:lastmounteddir ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:lazyitableinit ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:lazyjournalinit ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:maxonlineresize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:mmpupdateinterval ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:numberofgroups ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:numberofinodes ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:quota ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:quotatype ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:reservedblockspercentage ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:resizeinode ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:sparsesuper ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:stridesize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:stripewidth ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:testfs ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:uninitbg ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:usagetype ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:uuid ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsMke2fs:writesbandgrouponly ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMke2fsClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mke2fs_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

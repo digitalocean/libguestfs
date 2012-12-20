@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsRsync</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsXfsGrowfs.html" title="GuestfsXfsGrowfs">
+<link rel="next" href="GuestfsRsyncIn.html" title="GuestfsRsyncIn">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsXfsGrowfs.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsRsyncIn.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsRsync.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsRsync.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsRsync.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsRsync.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsRsync"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsRsync.top_of_page"></a>GuestfsRsync</span></h2>
+<p>GuestfsRsync — An object encapsulating optional arguments for guestfs_session_rsync</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsRsync.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsRsync.html#GuestfsRsync-struct" title="struct GuestfsRsync">GuestfsRsync</a>;
+struct              <a class="link" href="GuestfsRsync.html#GuestfsRsyncClass" title="struct GuestfsRsyncClass">GuestfsRsyncClass</a>;
+<a class="link" href="GuestfsRsync.html" title="GuestfsRsync"><span class="returnvalue">GuestfsRsync</span></a> *      <a class="link" href="GuestfsRsync.html#guestfs-rsync-new" title="guestfs_rsync_new ()">guestfs_rsync_new</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsRsync.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsRsync
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsRsync.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsRsync.html#GuestfsRsync--archive" title='The "archive" property'>archive</a>"                  <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsRsync.html#GuestfsRsync--deletedest" title='The "deletedest" property'>deletedest</a>"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsRsync.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_rsync
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsRsync.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsRsync-struct"></a><h3>struct GuestfsRsync</h3>
+<pre class="programlisting">struct GuestfsRsync;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_rsync.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsRsyncClass"></a><h3>struct GuestfsRsyncClass</h3>
+<pre class="programlisting">struct GuestfsRsyncClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsRsync.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsRsyncClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsRsyncClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-rsync-new"></a><h3>guestfs_rsync_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsRsync.html" title="GuestfsRsync"><span class="returnvalue">GuestfsRsync</span></a> *      guestfs_rsync_new                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsRsync object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsRsync object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsRsync.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsRsync--archive"></a><h3>The <code class="literal">"archive"</code> property</h3>
+<pre class="programlisting">  "archive"                  <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsRsync--deletedest"></a><h3>The <code class="literal">"deletedest"</code> property</h3>
+<pre class="programlisting">  "deletedest"               <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

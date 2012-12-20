@@ -23,11 +23,19 @@ generator_built = \
 	guestfs_protocol.x \
 	guestfs.h \
 	guestfs-internal-actions.h \
-	actions.c \
+	actions-0.c \
+	actions-1.c \
+	actions-2.c \
+	actions-3.c \
+	actions-4.c \
+	actions-5.c \
+	actions-6.c \
+	actions-variants.c \
 	bindtests.c \
 	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h \
+	free-structs.c \
 	guestfs-actions.pod \
 	guestfs-availability.pod \
 	guestfs-structs.pod \
@@ -118,17 +126,32 @@ libguestfs_la_LDFLAGS = -version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR)
 libguestfs_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
 
 libguestfs_la_SOURCES = \
-	guestfs.c \
 	guestfs.h \
 	guestfs-internal.h \
 	guestfs_protocol.h \
-	actions.c \
+	actions-0.c \
+	actions-1.c \
+	actions-2.c \
+	actions-3.c \
+	actions-4.c \
+	actions-5.c \
+	actions-6.c \
+	actions-support.c \
+	actions-variants.c \
+	alloc.c \
 	appliance.c \
 	bindtests.c \
+	command.c \
+	canonical-name.c \
 	dbdump.c \
+	errors.c \
 	events.c \
+	file.c \
 	filearch.c \
+	free-structs.c \
 	fuse.c \
+	handle.c \
+	info.c \
 	inspect.c \
 	inspect-apps.c \
 	inspect-fs.c \
@@ -137,14 +160,23 @@ libguestfs_la_SOURCES = \
 	inspect-fs-windows.c \
 	inspect-icon.c \
 	launch.c \
-	libvirtdomain.c \
+	launch-appliance.c \
+	launch-libvirt.c \
+	launch-unix.c \
+	libvirt-auth.c \
+	libvirt-domain.c \
 	listfs.c \
+	lpj.c \
 	match.c \
+	osinfo.c \
+	private-data.c \
 	proto.c \
+	tmpdirs.c \
+	utils.c \
 	libguestfs.syms
 
 libguestfs_la_LIBADD = \
-	$(HIVEX_LIBS) $(PCRE_LIBS) $(MAGIC_LIBS) \
+	$(PCRE_LIBS) $(MAGIC_LIBS) \
 	$(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(GETADDRINFO_LIB) \
@@ -161,19 +193,23 @@ noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
 libguestfs_la_LIBADD += liberrnostring.la libprotocol.la
 
 libguestfs_la_CFLAGS = \
-  -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
-  -DGUESTFS_WARN_DEPRECATED=1 \
-  $(HIVEX_CFLAGS) $(PCRE_CFLAGS) \
-  $(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) \
-  $(WARN_CFLAGS) $(WERROR_CFLAGS) \
-  $(GCC_VISIBILITY_HIDDEN)
+	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
+	-DLIBOSINFO_DB_PATH='"$(datadir)/libosinfo/db"' \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
+	$(GCC_VISIBILITY_HIDDEN) \
+	$(PCRE_CFLAGS) \
+	$(LIBVIRT_CFLAGS) \
+	$(LIBXML2_CFLAGS)
 
 libguestfs_la_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 
 if HAVE_FUSE
 # XXX Unfortunately FUSE_CFLAGS defines _FILE_OFFSET_BITS=64.
 libguestfs_la_CFLAGS += $(FUSE_CFLAGS)
-libguestfs_la_LIBADD += $(FUSE_LIBS) -lulockmgr
+libguestfs_la_LIBADD += $(FUSE_LIBS)
 endif
 
 if HAVE_RPCGEN

@@ -1,0 +1,96 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsXfsRepair
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsXfsRepair ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsXfsRepair:agstride ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:bhashsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:forcegeometry ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:forcelogzero ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:ihashsize ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:logdev ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:maxmem ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:nomodify ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:noprefetch ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsXfsRepair:rtdev ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsXfsRepairClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_xfs_repair_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

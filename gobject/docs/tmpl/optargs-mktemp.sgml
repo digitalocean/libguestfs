@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsMktemp
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsMktemp ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsMktemp:suffix ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsMktempClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_mktemp_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

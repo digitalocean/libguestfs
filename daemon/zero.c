@@ -30,6 +30,8 @@
 #include "actions.h"
 #include "optgroups.h"
 
+GUESTFSD_EXT_CMD(str_wipefs, wipefs);
+
 static const char zero_buf[4096];
 
 int
@@ -77,7 +79,7 @@ do_zero (const char *device)
 int
 optgroup_wipefs_available (void)
 {
-  return prog_exists ("wipefs");
+  return prog_exists (str_wipefs);
 }
 
 /* See RHBZ#872831 */
@@ -118,7 +120,7 @@ do_wipefs (const char *device)
   if (force == -1)
     return -1;
 
-  ADD_ARG (argv, i, "wipefs");
+  ADD_ARG (argv, i, str_wipefs);
   ADD_ARG (argv, i, "-a");
   if (force)
     ADD_ARG (argv, i, "--force");

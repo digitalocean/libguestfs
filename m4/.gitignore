@@ -54,8 +54,8 @@
 /fpurge.m4
 /freading.m4
 /fseeko.m4
-/fstat.m4
 /fstatat.m4
+/fstat.m4
 /fsusage.m4
 /ftell.m4
 /ftello.m4
@@ -90,7 +90,6 @@
 /include_next.m4
 /inet_ntop.m4
 /inet_pton.m4
-/inline.m4
 /intdiv0.m4
 /intldir.m4
 /intl.m4
@@ -126,7 +125,6 @@
 /malloca.m4
 /malloc.m4
 /manywarnings.m4
-/memmem.m4
 /math_h.m4
 /mbrtowc.m4
 /mbsinit.m4
@@ -134,6 +132,7 @@
 /mbstate_t.m4
 /mbtowc.m4
 /memchr.m4
+/memmem.m4
 /mempcpy.m4
 /memrchr.m4
 /mgetgroups.m4
@@ -155,6 +154,7 @@
 /open.m4
 /pathmax.m4
 /perror.m4
+/pipe2.m4
 /pipe.m4
 /po.m4
 /pread.m4

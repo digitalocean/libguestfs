@@ -1,0 +1,71 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsAddDrive
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsAddDrive ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsAddDrive:format ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDrive:iface ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDrive:label ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDrive:name ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDrive:readonly ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsAddDriveClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_add_drive_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

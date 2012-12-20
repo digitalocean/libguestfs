@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -111,7 +111,7 @@ ruby_guestfs_free (void *gvp)
 
 /*
  * call-seq:
- *   Guestfs::Guestfs.new() -> Guestfs::Guestfs
+ *   Guestfs::Guestfs.new([{:environment => false, :close_on_exit => false}]) -> Guestfs::Guestfs
  *
  * Call
  * +guestfs_create+[http://libguestfs.org/guestfs.3.html#guestfs_create]
@@ -119,11 +119,26 @@ ruby_guestfs_free (void *gvp)
  * Ruby as an instance of the Guestfs::Guestfs class.
  */
 static VALUE
-ruby_guestfs_create (VALUE m)
+ruby_guestfs_create (int argc, VALUE *argv, VALUE m)
 {
   guestfs_h *g;
 
-  g = guestfs_create ();
+  if (argc > 1)
+    rb_raise (rb_eArgError, "expecting 0 or 1 arguments");
+
+  volatile VALUE optargsv = argc == 1 ? argv[0] : rb_hash_new ();
+  Check_Type (optargsv, T_HASH);
+
+  unsigned flags = 0;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("environment")));
+  if (v != Qnil && !RTEST (v))
+    flags |= GUESTFS_CREATE_NO_ENVIRONMENT;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("close_on_exit")));
+  if (v != Qnil && !RTEST (v))
+    flags |= GUESTFS_CREATE_NO_CLOSE_ON_EXIT;
+
+  g = guestfs_create_flags (flags);
   if (!g)
     rb_raise (e_Error, "failed to create guestfs handle");
 
@@ -177,7 +192,7 @@ ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
 
   event_bitmask = NUM2ULL (event_bitmaskv);
 
-  root = guestfs_safe_malloc (g, sizeof *root);
+  root = guestfs___safe_malloc (g, sizeof *root);
   *root = cbv;
 
   eh = guestfs_set_event_callback (g, ruby_event_callback_wrapper,
@@ -322,7 +337,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
 
   i = 0;
   root = guestfs_first_private (g, &key);
@@ -358,12 +373,12 @@ ruby_user_cancel (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0 (int argc, VALUE *argv, VALUE gv)
+ruby_guestfs_internal_test (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test");
 
   if (argc < 9 || argc > 10)
     rb_raise (rb_eArgError, "expecting 9 or 10 arguments");
@@ -402,37 +417,55 @@ ruby_guestfs_test0 (int argc, VALUE *argv, VALUE gv)
   const char *bufferin = RSTRING_PTR (bufferinv);
   if (!bufferin)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
-              "bufferin", "test0");
+              "bufferin", "internal_test");
   size_t bufferin_size = RSTRING_LEN (bufferinv);
 
   Check_Type (optargsv, T_HASH);
-  struct guestfs_test0_argv optargs_s = { .bitmask = 0 };
-  struct guestfs_test0_argv *optargs = &optargs_s;
+  struct guestfs_internal_test_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_internal_test_argv *optargs = &optargs_s;
   volatile VALUE v;
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("obool")));
   if (v != Qnil) {
     optargs_s.obool = RTEST (v);
-    optargs_s.bitmask |= GUESTFS_TEST0_OBOOL_BITMASK;
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OBOOL_BITMASK;
   }
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("oint")));
   if (v != Qnil) {
     optargs_s.oint = NUM2INT (v);
-    optargs_s.bitmask |= GUESTFS_TEST0_OINT_BITMASK;
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OINT_BITMASK;
   }
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("oint64")));
   if (v != Qnil) {
     optargs_s.oint64 = NUM2LL (v);
-    optargs_s.bitmask |= GUESTFS_TEST0_OINT64_BITMASK;
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OINT64_BITMASK;
   }
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("ostring")));
   if (v != Qnil) {
     optargs_s.ostring = StringValueCStr (v);
-    optargs_s.bitmask |= GUESTFS_TEST0_OSTRING_BITMASK;
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("ostringlist")));
+  if (v != Qnil) {
+  Check_Type (v, T_ARRAY);
+  {
+    size_t i, len;
+    char **r;
+
+    len = RARRAY_LEN (v);
+    r = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE sv = rb_ary_entry (v, i);
+      r[i] = StringValueCStr (sv);
+    }
+    r[len] = NULL;
+    optargs_s.ostringlist = r;
+  }
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK;
   }
 
   int r;
 
-  r = guestfs_test0_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
+  r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
   free (strlist);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
@@ -441,18 +474,394 @@ ruby_guestfs_test0 (int argc, VALUE *argv, VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rint (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_only_optargs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rint");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_only_optargs");
+
+  if (argc < 0 || argc > 1)
+    rb_raise (rb_eArgError, "expecting 0 or 1 arguments");
+
+  volatile VALUE optargsv = argc > 0 ? argv[0] : rb_hash_new ();
+
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_internal_test_only_optargs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_internal_test_only_optargs_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("test")));
+  if (v != Qnil) {
+    optargs_s.test = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_internal_test_only_optargs_argv (g, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE
+ruby_guestfs_internal_test_63_optargs (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_63_optargs");
+
+  if (argc < 0 || argc > 1)
+    rb_raise (rb_eArgError, "expecting 0 or 1 arguments");
+
+  volatile VALUE optargsv = argc > 0 ? argv[0] : rb_hash_new ();
+
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_internal_test_63_optargs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_internal_test_63_optargs_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt1")));
+  if (v != Qnil) {
+    optargs_s.opt1 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt2")));
+  if (v != Qnil) {
+    optargs_s.opt2 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt3")));
+  if (v != Qnil) {
+    optargs_s.opt3 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt4")));
+  if (v != Qnil) {
+    optargs_s.opt4 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt5")));
+  if (v != Qnil) {
+    optargs_s.opt5 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt6")));
+  if (v != Qnil) {
+    optargs_s.opt6 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt7")));
+  if (v != Qnil) {
+    optargs_s.opt7 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt8")));
+  if (v != Qnil) {
+    optargs_s.opt8 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt9")));
+  if (v != Qnil) {
+    optargs_s.opt9 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt10")));
+  if (v != Qnil) {
+    optargs_s.opt10 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt11")));
+  if (v != Qnil) {
+    optargs_s.opt11 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt12")));
+  if (v != Qnil) {
+    optargs_s.opt12 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt13")));
+  if (v != Qnil) {
+    optargs_s.opt13 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt14")));
+  if (v != Qnil) {
+    optargs_s.opt14 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt15")));
+  if (v != Qnil) {
+    optargs_s.opt15 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt16")));
+  if (v != Qnil) {
+    optargs_s.opt16 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt17")));
+  if (v != Qnil) {
+    optargs_s.opt17 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt18")));
+  if (v != Qnil) {
+    optargs_s.opt18 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt19")));
+  if (v != Qnil) {
+    optargs_s.opt19 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt20")));
+  if (v != Qnil) {
+    optargs_s.opt20 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt21")));
+  if (v != Qnil) {
+    optargs_s.opt21 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt22")));
+  if (v != Qnil) {
+    optargs_s.opt22 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt23")));
+  if (v != Qnil) {
+    optargs_s.opt23 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt24")));
+  if (v != Qnil) {
+    optargs_s.opt24 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt25")));
+  if (v != Qnil) {
+    optargs_s.opt25 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt26")));
+  if (v != Qnil) {
+    optargs_s.opt26 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt27")));
+  if (v != Qnil) {
+    optargs_s.opt27 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt28")));
+  if (v != Qnil) {
+    optargs_s.opt28 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt29")));
+  if (v != Qnil) {
+    optargs_s.opt29 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt30")));
+  if (v != Qnil) {
+    optargs_s.opt30 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt31")));
+  if (v != Qnil) {
+    optargs_s.opt31 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt32")));
+  if (v != Qnil) {
+    optargs_s.opt32 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt33")));
+  if (v != Qnil) {
+    optargs_s.opt33 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt34")));
+  if (v != Qnil) {
+    optargs_s.opt34 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt35")));
+  if (v != Qnil) {
+    optargs_s.opt35 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt36")));
+  if (v != Qnil) {
+    optargs_s.opt36 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt37")));
+  if (v != Qnil) {
+    optargs_s.opt37 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt38")));
+  if (v != Qnil) {
+    optargs_s.opt38 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt39")));
+  if (v != Qnil) {
+    optargs_s.opt39 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt40")));
+  if (v != Qnil) {
+    optargs_s.opt40 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt41")));
+  if (v != Qnil) {
+    optargs_s.opt41 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt42")));
+  if (v != Qnil) {
+    optargs_s.opt42 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt43")));
+  if (v != Qnil) {
+    optargs_s.opt43 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt44")));
+  if (v != Qnil) {
+    optargs_s.opt44 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt45")));
+  if (v != Qnil) {
+    optargs_s.opt45 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt46")));
+  if (v != Qnil) {
+    optargs_s.opt46 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt47")));
+  if (v != Qnil) {
+    optargs_s.opt47 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt48")));
+  if (v != Qnil) {
+    optargs_s.opt48 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt49")));
+  if (v != Qnil) {
+    optargs_s.opt49 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt50")));
+  if (v != Qnil) {
+    optargs_s.opt50 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt51")));
+  if (v != Qnil) {
+    optargs_s.opt51 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt52")));
+  if (v != Qnil) {
+    optargs_s.opt52 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt53")));
+  if (v != Qnil) {
+    optargs_s.opt53 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt54")));
+  if (v != Qnil) {
+    optargs_s.opt54 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt55")));
+  if (v != Qnil) {
+    optargs_s.opt55 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt56")));
+  if (v != Qnil) {
+    optargs_s.opt56 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt57")));
+  if (v != Qnil) {
+    optargs_s.opt57 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt58")));
+  if (v != Qnil) {
+    optargs_s.opt58 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt59")));
+  if (v != Qnil) {
+    optargs_s.opt59 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt60")));
+  if (v != Qnil) {
+    optargs_s.opt60 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt61")));
+  if (v != Qnil) {
+    optargs_s.opt61 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt62")));
+  if (v != Qnil) {
+    optargs_s.opt62 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("opt63")));
+  if (v != Qnil) {
+    optargs_s.opt63 = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_internal_test_63_optargs_argv (g, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE
+ruby_guestfs_internal_test_rint (VALUE gv, VALUE valv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rint");
 
   const char *val = StringValueCStr (valv);
 
   int r;
 
-  r = guestfs_test0rint (g, val);
+  r = guestfs_internal_test_rint (g, val);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -460,17 +869,17 @@ ruby_guestfs_test0rint (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rinterr (VALUE gv)
+ruby_guestfs_internal_test_rinterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rinterr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rinterr");
 
 
   int r;
 
-  r = guestfs_test0rinterr (g);
+  r = guestfs_internal_test_rinterr (g);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -478,18 +887,18 @@ ruby_guestfs_test0rinterr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rint64 (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rint64 (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rint64");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rint64");
 
   const char *val = StringValueCStr (valv);
 
   int64_t r;
 
-  r = guestfs_test0rint64 (g, val);
+  r = guestfs_internal_test_rint64 (g, val);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -497,17 +906,17 @@ ruby_guestfs_test0rint64 (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rint64err (VALUE gv)
+ruby_guestfs_internal_test_rint64err (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rint64err");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rint64err");
 
 
   int64_t r;
 
-  r = guestfs_test0rint64err (g);
+  r = guestfs_internal_test_rint64err (g);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -515,18 +924,18 @@ ruby_guestfs_test0rint64err (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rbool (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rbool (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rbool");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rbool");
 
   const char *val = StringValueCStr (valv);
 
   int r;
 
-  r = guestfs_test0rbool (g, val);
+  r = guestfs_internal_test_rbool (g, val);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -534,17 +943,17 @@ ruby_guestfs_test0rbool (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rboolerr (VALUE gv)
+ruby_guestfs_internal_test_rboolerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rboolerr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rboolerr");
 
 
   int r;
 
-  r = guestfs_test0rboolerr (g);
+  r = guestfs_internal_test_rboolerr (g);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -552,18 +961,18 @@ ruby_guestfs_test0rboolerr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rconststring (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rconststring (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rconststring");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rconststring");
 
   const char *val = StringValueCStr (valv);
 
   const char *r;
 
-  r = guestfs_test0rconststring (g, val);
+  r = guestfs_internal_test_rconststring (g, val);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -571,17 +980,17 @@ ruby_guestfs_test0rconststring (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rconststringerr (VALUE gv)
+ruby_guestfs_internal_test_rconststringerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rconststringerr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rconststringerr");
 
 
   const char *r;
 
-  r = guestfs_test0rconststringerr (g);
+  r = guestfs_internal_test_rconststringerr (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -589,18 +998,18 @@ ruby_guestfs_test0rconststringerr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rconstoptstring (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rconstoptstring (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rconstoptstring");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rconstoptstring");
 
   const char *val = StringValueCStr (valv);
 
   const char *r;
 
-  r = guestfs_test0rconstoptstring (g, val);
+  r = guestfs_internal_test_rconstoptstring (g, val);
 
   if (r)
     return rb_str_new2 (r);
@@ -609,17 +1018,17 @@ ruby_guestfs_test0rconstoptstring (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rconstoptstringerr (VALUE gv)
+ruby_guestfs_internal_test_rconstoptstringerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rconstoptstringerr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rconstoptstringerr");
 
 
   const char *r;
 
-  r = guestfs_test0rconstoptstringerr (g);
+  r = guestfs_internal_test_rconstoptstringerr (g);
 
   if (r)
     return rb_str_new2 (r);
@@ -628,18 +1037,18 @@ ruby_guestfs_test0rconstoptstringerr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rstring (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rstring (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstring");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstring");
 
   const char *val = StringValueCStr (valv);
 
   char *r;
 
-  r = guestfs_test0rstring (g, val);
+  r = guestfs_internal_test_rstring (g, val);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -649,17 +1058,17 @@ ruby_guestfs_test0rstring (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rstringerr (VALUE gv)
+ruby_guestfs_internal_test_rstringerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstringerr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstringerr");
 
 
   char *r;
 
-  r = guestfs_test0rstringerr (g);
+  r = guestfs_internal_test_rstringerr (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -669,18 +1078,18 @@ ruby_guestfs_test0rstringerr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rstringlist (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rstringlist (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstringlist");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstringlist");
 
   const char *val = StringValueCStr (valv);
 
   char **r;
 
-  r = guestfs_test0rstringlist (g, val);
+  r = guestfs_internal_test_rstringlist (g, val);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -696,17 +1105,17 @@ ruby_guestfs_test0rstringlist (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rstringlisterr (VALUE gv)
+ruby_guestfs_internal_test_rstringlisterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstringlisterr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstringlisterr");
 
 
   char **r;
 
-  r = guestfs_test0rstringlisterr (g);
+  r = guestfs_internal_test_rstringlisterr (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -722,18 +1131,18 @@ ruby_guestfs_test0rstringlisterr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rstruct (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rstruct (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstruct");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstruct");
 
   const char *val = StringValueCStr (valv);
 
   struct guestfs_lvm_pv *r;
 
-  r = guestfs_test0rstruct (g, val);
+  r = guestfs_internal_test_rstruct (g, val);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -757,17 +1166,17 @@ ruby_guestfs_test0rstruct (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rstructerr (VALUE gv)
+ruby_guestfs_internal_test_rstructerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstructerr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstructerr");
 
 
   struct guestfs_lvm_pv *r;
 
-  r = guestfs_test0rstructerr (g);
+  r = guestfs_internal_test_rstructerr (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -791,18 +1200,18 @@ ruby_guestfs_test0rstructerr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rstructlist (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rstructlist (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstructlist");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstructlist");
 
   const char *val = StringValueCStr (valv);
 
   struct guestfs_lvm_pv_list *r;
 
-  r = guestfs_test0rstructlist (g, val);
+  r = guestfs_internal_test_rstructlist (g, val);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -831,17 +1240,17 @@ ruby_guestfs_test0rstructlist (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rstructlisterr (VALUE gv)
+ruby_guestfs_internal_test_rstructlisterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rstructlisterr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rstructlisterr");
 
 
   struct guestfs_lvm_pv_list *r;
 
-  r = guestfs_test0rstructlisterr (g);
+  r = guestfs_internal_test_rstructlisterr (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -870,18 +1279,18 @@ ruby_guestfs_test0rstructlisterr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rhashtable (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rhashtable (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rhashtable");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rhashtable");
 
   const char *val = StringValueCStr (valv);
 
   char **r;
 
-  r = guestfs_test0rhashtable (g, val);
+  r = guestfs_internal_test_rhashtable (g, val);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -897,17 +1306,17 @@ ruby_guestfs_test0rhashtable (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rhashtableerr (VALUE gv)
+ruby_guestfs_internal_test_rhashtableerr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rhashtableerr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rhashtableerr");
 
 
   char **r;
 
-  r = guestfs_test0rhashtableerr (g);
+  r = guestfs_internal_test_rhashtableerr (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -923,19 +1332,19 @@ ruby_guestfs_test0rhashtableerr (VALUE gv)
 }
 
 static VALUE
-ruby_guestfs_test0rbufferout (VALUE gv, VALUE valv)
+ruby_guestfs_internal_test_rbufferout (VALUE gv, VALUE valv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rbufferout");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rbufferout");
 
   const char *val = StringValueCStr (valv);
 
   char *r;
   size_t size;
 
-  r = guestfs_test0rbufferout (g, val, &size);
+  r = guestfs_internal_test_rbufferout (g, val, &size);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -945,24 +1354,61 @@ ruby_guestfs_test0rbufferout (VALUE gv, VALUE valv)
 }
 
 static VALUE
-ruby_guestfs_test0rbufferouterr (VALUE gv)
+ruby_guestfs_internal_test_rbufferouterr (VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "test0rbufferouterr");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_rbufferouterr");
 
 
   char *r;
   size_t size;
 
-  r = guestfs_test0rbufferouterr (g, &size);
+  r = guestfs_internal_test_rbufferouterr (g, &size);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   volatile VALUE rv = rb_str_new (r, size);
   free (r);
   return rv;
+}
+
+static VALUE
+ruby_guestfs_internal_test_set_output (VALUE gv, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_set_output");
+
+  const char *filename = StringValueCStr (filenamev);
+
+  int r;
+
+  r = guestfs_internal_test_set_output (g, filename);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE
+ruby_guestfs_internal_test_close_output (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_test_close_output");
+
+
+  int r;
+
+  r = guestfs_internal_test_close_output (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*
@@ -1092,48 +1538,6 @@ ruby_guestfs_kill_subprocess (VALUE gv)
 
 /*
  * call-seq:
- *   g.add_drive(filename) -> nil
- *
- * add an image to examine or modify
- *
- * This function is the equivalent of calling
- * "g.add_drive_opts" with no optional parameters, so the
- * disk is added writable, with the format being detected
- * automatically.
- * 
- * Automatic detection of the format opens you up to a
- * potential security hole when dealing with untrusted
- * raw-format images. See CVE-2010-3851 and RHBZ#642934.
- * Specifying the format closes this security hole.
- * Therefore you should think about replacing calls to this
- * function with calls to "g.add_drive_opts", and
- * specifying the format.
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_add_drive+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive]).
- */
-static VALUE
-ruby_guestfs_add_drive (VALUE gv, VALUE filenamev)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "add_drive");
-
-  const char *filename = StringValueCStr (filenamev);
-
-  int r;
-
-  r = guestfs_add_drive (g, filename);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
-/*
- * call-seq:
  *   g.add_cdrom(filename) -> nil
  *
  * add a CD-ROM disk image to examine
@@ -1141,24 +1545,11 @@ ruby_guestfs_add_drive (VALUE gv, VALUE filenamev)
  * This function adds a virtual CD-ROM disk image to the
  * guest.
  * 
- * This is equivalent to the qemu parameter *-cdrom
- * filename*.
- * 
- * Notes:
- * 
- * *   This call checks for the existence of "filename".
- * This stops you from specifying other types of drive
- * which are supported by qemu such as "nbd:" and
- * "http:" URLs. To specify those, use the general
- * "g.config" call instead.
- * 
- * *   If you just want to add an ISO file (often you use
- * this as an efficient way to transfer large files
- * into the guest), then you should probably use
- * "g.add_drive_ro" instead.
+ * Do not use this function! ISO files are just ordinary
+ * read-only disk images. Use "g.add_drive_ro" instead.
  * 
  * *This function is deprecated.* In new code, use the
- * "add_drive_opts" call instead.
+ * "add_drive" call instead.
  * 
  * Deprecated functions will not be removed from the API,
  * but the fact that they are deprecated indicates that
@@ -1234,10 +1625,10 @@ ruby_guestfs_add_drive_ro (VALUE gv, VALUE filenamev)
  * parameters which would interfere with parameters that we
  * use.
  * 
- * The first character of "param" string must be a "-"
+ * The first character of "qemuparam" string must be a "-"
  * (dash).
  * 
- * "value" can be NULL.
+ * "qemuvalue" can be NULL.
  *
  *
  * (For the C API documentation for this function, see
@@ -2254,7 +2645,7 @@ ruby_guestfs_get_recovery_proc (VALUE gv)
  * specify the QEMU interface emulation to use at run time.
  * 
  * *This function is deprecated.* In new code, use the
- * "add_drive_opts" call instead.
+ * "add_drive" call instead.
  * 
  * Deprecated functions will not be removed from the API,
  * but the fact that they are deprecated indicates that
@@ -2295,7 +2686,7 @@ ruby_guestfs_add_drive_with_if (VALUE gv, VALUE filenamev, VALUE ifacev)
  * time.
  * 
  * *This function is deprecated.* In new code, use the
- * "add_drive_opts" call instead.
+ * "add_drive" call instead.
  * 
  * Deprecated functions will not be removed from the API,
  * but the fact that they are deprecated indicates that
@@ -2516,6 +2907,9 @@ ruby_guestfs_inspect_os (VALUE gv)
  * "netbsd"
  * NetBSD.
  * 
+ * "openbsd"
+ * OpenBSD.
+ * 
  * "hurd"
  * GNU/Hurd.
  * 
@@ -2644,6 +3038,9 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * "meego"
  * MeeGo.
  * 
+ * "openbsd"
+ * OpenBSD.
+ * 
  * "opensuse"
  * OpenSUSE.
  * 
@@ -2661,6 +3058,12 @@ ruby_guestfs_inspect_get_arch (VALUE gv, VALUE rootv)
  * 
  * "slackware"
  * Slackware.
+ * 
+ * "sles"
+ * SuSE Linux Enterprise Server or Desktop.
+ * 
+ * "suse-based"
+ * Some openSuSE-derived distro.
  * 
  * "ttylinux"
  * ttylinux.
@@ -3077,7 +3480,7 @@ ruby_guestfs_list_filesystems (VALUE gv)
 
 /*
  * call-seq:
- *   g.add_drive_opts(filename, {optargs...}) -> nil
+ *   g.add_drive(filename, {optargs...}) -> nil
  *
  * add an image to examine or modify
  *
@@ -3085,8 +3488,16 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * handle. "filename" may be a regular host file or a host
  * device.
  * 
- * The first time you call this function, the disk appears
- * as "/dev/sda", the second time as "/dev/sdb", and so on.
+ * When this function is called before "g.launch" (the
+ * usual case) then the first time you call this function,
+ * the disk appears in the API as "/dev/sda", the second
+ * time as "/dev/sdb", and so on.
+ * 
+ * In libguestfs ≥ 1.20 you can also call this function
+ * after launch (with some restrictions). This is called
+ * "hotplugging". When hotplugging, you must specify a
+ * "label" so that the new disk gets a predictable name.
+ * For more information see "HOTPLUGGING" in guestfs(3).
  * 
  * You don't necessarily need to be root when using
  * libguestfs. However you obviously do need sufficient
@@ -3130,21 +3541,30 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * "/dev/sdb". This is used as a hint to the guest
  * inspection process if it is available.
  * 
+ * "label"
+ * Give the disk a label. The label should be a unique,
+ * short string using *only* ASCII characters
+ * "[a-zA-Z]". As well as its usual name in the API
+ * (such as "/dev/sda"), the drive will also be named
+ * "/dev/disk/guestfs/*label*".
+ * 
+ * See "DISK LABELS" in guestfs(3).
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
- * +guestfs_add_drive_opts+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_opts]).
+ * +guestfs_add_drive+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive]).
  */
 static VALUE
-ruby_guestfs_add_drive_opts (int argc, VALUE *argv, VALUE gv)
+ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "add_drive_opts");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "add_drive");
 
   if (argc < 1 || argc > 2)
     rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
@@ -3177,6 +3597,11 @@ ruby_guestfs_add_drive_opts (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.name = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
   }
 
   int r;
@@ -3261,32 +3686,6 @@ ruby_guestfs_inspect_get_roots (VALUE gv)
   char **r;
 
   r = guestfs_inspect_get_roots (g);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  size_t i, len = 0;
-  for (i = 0; r[i] != NULL; ++i) len++;
-  volatile VALUE rv = rb_ary_new2 (len);
-  for (i = 0; r[i] != NULL; ++i) {
-    rb_ary_push (rv, rb_str_new2 (r[i]));
-    free (r[i]);
-  }
-  free (r);
-  return rv;
-}
-
-static VALUE
-ruby_guestfs_debug_cmdline (VALUE gv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "debug_cmdline");
-
-
-  char **r;
-
-  r = guestfs_debug_cmdline (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -3672,6 +4071,13 @@ ruby_guestfs_inspect_get_package_management (VALUE gv, VALUE rootv)
  * "".
  * 
  * Please read "INSPECTION" in guestfs(3) for more details.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "inspect_list_applications2" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -3712,6 +4118,151 @@ ruby_guestfs_inspect_list_applications (VALUE gv, VALUE rootv)
     rb_ary_push (rv, hv);
   }
   guestfs_free_application_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.inspect_list_applications2(root) -> list
+ *
+ * get list of applications installed in the operating system
+ *
+ * Return the list of applications installed in the
+ * operating system.
+ * 
+ * *Note:* This call works differently from other parts of
+ * the inspection API. You have to call "g.inspect_os",
+ * then "g.inspect_get_mountpoints", then mount up the
+ * disks, before calling this. Listing applications is a
+ * significantly more difficult operation which requires
+ * access to the full filesystem. Also note that unlike the
+ * other "g.inspect_get_*" calls which are just returning
+ * data cached in the libguestfs handle, this call actually
+ * reads parts of the mounted filesystems during the call.
+ * 
+ * This returns an empty list if the inspection code was
+ * not able to determine the list of applications.
+ * 
+ * The application structure contains the following fields:
+ * 
+ * "app2_name"
+ * The name of the application. For Red Hat-derived and
+ * Debian-derived Linux guests, this is the package
+ * name.
+ * 
+ * "app2_display_name"
+ * The display name of the application, sometimes
+ * localized to the install language of the guest
+ * operating system.
+ * 
+ * If unavailable this is returned as an empty string
+ * "". Callers needing to display something can use
+ * "app2_name" instead.
+ * 
+ * "app2_epoch"
+ * For package managers which use epochs, this contains
+ * the epoch of the package (an integer). If
+ * unavailable, this is returned as 0.
+ * 
+ * "app2_version"
+ * The version string of the application or package. If
+ * unavailable this is returned as an empty string "".
+ * 
+ * "app2_release"
+ * The release string of the application or package,
+ * for package managers that use this. If unavailable
+ * this is returned as an empty string "".
+ * 
+ * "app2_arch"
+ * The architecture string of the application or
+ * package, for package managers that use this. If
+ * unavailable this is returned as an empty string "".
+ * 
+ * "app2_install_path"
+ * The installation path of the application (on
+ * operating systems such as Windows which use
+ * installation paths). This path is in the format used
+ * by the guest operating system, it is not a
+ * libguestfs path.
+ * 
+ * If unavailable this is returned as an empty string
+ * "".
+ * 
+ * "app2_trans_path"
+ * The install path translated into a libguestfs path.
+ * If unavailable this is returned as an empty string
+ * "".
+ * 
+ * "app2_publisher"
+ * The name of the publisher of the application, for
+ * package managers that use this. If unavailable this
+ * is returned as an empty string "".
+ * 
+ * "app2_url"
+ * The URL (eg. upstream URL) of the application. If
+ * unavailable this is returned as an empty string "".
+ * 
+ * "app2_source_package"
+ * For packaging systems which support this, the name
+ * of the source package. If unavailable this is
+ * returned as an empty string "".
+ * 
+ * "app2_summary"
+ * A short (usually one line) description of the
+ * application or package. If unavailable this is
+ * returned as an empty string "".
+ * 
+ * "app2_description"
+ * A longer description of the application or package.
+ * If unavailable this is returned as an empty string
+ * "".
+ * 
+ * Please read "INSPECTION" in guestfs(3) for more details.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_inspect_list_applications2+[http://libguestfs.org/guestfs.3.html#guestfs_inspect_list_applications2]).
+ */
+static VALUE
+ruby_guestfs_inspect_list_applications2 (VALUE gv, VALUE rootv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "inspect_list_applications2");
+
+  const char *root = StringValueCStr (rootv);
+
+  struct guestfs_application2_list *r;
+
+  r = guestfs_inspect_list_applications2 (g, root);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("app2_name"), rb_str_new2 (r->val[i].app2_name));
+    rb_hash_aset (hv, rb_str_new2 ("app2_display_name"), rb_str_new2 (r->val[i].app2_display_name));
+    rb_hash_aset (hv, rb_str_new2 ("app2_epoch"), INT2NUM (r->val[i].app2_epoch));
+    rb_hash_aset (hv, rb_str_new2 ("app2_version"), rb_str_new2 (r->val[i].app2_version));
+    rb_hash_aset (hv, rb_str_new2 ("app2_release"), rb_str_new2 (r->val[i].app2_release));
+    rb_hash_aset (hv, rb_str_new2 ("app2_arch"), rb_str_new2 (r->val[i].app2_arch));
+    rb_hash_aset (hv, rb_str_new2 ("app2_install_path"), rb_str_new2 (r->val[i].app2_install_path));
+    rb_hash_aset (hv, rb_str_new2 ("app2_trans_path"), rb_str_new2 (r->val[i].app2_trans_path));
+    rb_hash_aset (hv, rb_str_new2 ("app2_publisher"), rb_str_new2 (r->val[i].app2_publisher));
+    rb_hash_aset (hv, rb_str_new2 ("app2_url"), rb_str_new2 (r->val[i].app2_url));
+    rb_hash_aset (hv, rb_str_new2 ("app2_source_package"), rb_str_new2 (r->val[i].app2_source_package));
+    rb_hash_aset (hv, rb_str_new2 ("app2_summary"), rb_str_new2 (r->val[i].app2_summary));
+    rb_hash_aset (hv, rb_str_new2 ("app2_description"), rb_str_new2 (r->val[i].app2_description));
+    rb_hash_aset (hv, rb_str_new2 ("app2_spare1"), rb_str_new2 (r->val[i].app2_spare1));
+    rb_hash_aset (hv, rb_str_new2 ("app2_spare2"), rb_str_new2 (r->val[i].app2_spare2));
+    rb_hash_aset (hv, rb_str_new2 ("app2_spare3"), rb_str_new2 (r->val[i].app2_spare3));
+    rb_hash_aset (hv, rb_str_new2 ("app2_spare4"), rb_str_new2 (r->val[i].app2_spare4));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_application2_list (r);
   return rv;
 }
 
@@ -3923,19 +4474,9 @@ ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
  * set the attach method
  *
  * Set the method that libguestfs uses to connect to the
- * back end guestfsd daemon. Possible methods are:
+ * back end guestfsd daemon.
  * 
- * "appliance"
- * Launch an appliance and connect to it. This is the
- * ordinary method and the default.
- * 
- * "unix:*path*"
- * Connect to the Unix domain socket *path*.
- * 
- * This method lets you connect to an existing daemon
- * or (using virtio-serial) to a live guest. For more
- * information, see "ATTACHING TO RUNNING DAEMONS" in
- * guestfs(3).
+ * See "ATTACH METHOD" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -3966,8 +4507,10 @@ ruby_guestfs_set_attach_method (VALUE gv, VALUE attachmethodv)
  *
  * get the attach method
  *
- * Return the current attach method. See
- * "g.set_attach_method".
+ * Return the current attach method.
+ * 
+ * See "g.set_attach_method" and "ATTACH METHOD" in
+ * guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -4596,6 +5139,92 @@ ruby_guestfs_umount_local (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.max_disks() -> fixnum
+ *
+ * maximum number of disks that may be added
+ *
+ * Return the maximum number of disks that may be added to
+ * a handle (eg. by "g.add_drive_opts" and similar calls).
+ * 
+ * This function was added in libguestfs 1.19.7. In
+ * previous versions of libguestfs the limit was 25.
+ * 
+ * See "MAXIMUM NUMBER OF DISKS" in guestfs(3) for
+ * additional information on this topic.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_max_disks+[http://libguestfs.org/guestfs.3.html#guestfs_max_disks]).
+ */
+static VALUE
+ruby_guestfs_max_disks (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "max_disks");
+
+
+  int r;
+
+  r = guestfs_max_disks (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.canonical_device_name(device) -> string
+ *
+ * return canonical device name
+ *
+ * This utility function is useful when displaying device
+ * names to the user. It takes a number of irregular device
+ * names and returns them in a consistent format:
+ * 
+ * "/dev/hdX"
+ * "/dev/vdX"
+ * These are returned as "/dev/sdX". Note this works
+ * for device names and partition names. This is
+ * approximately the reverse of the algorithm described
+ * in "BLOCK DEVICE NAMING" in guestfs(3).
+ * 
+ * "/dev/mapper/VG-LV"
+ * "/dev/dm-N"
+ * Converted to "/dev/VG/LV" form using
+ * "g.lvm_canonical_lvm_name".
+ * 
+ * Other strings are returned unmodified.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_canonical_device_name+[http://libguestfs.org/guestfs.3.html#guestfs_canonical_device_name]).
+ */
+static VALUE
+ruby_guestfs_canonical_device_name (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "canonical_device_name");
+
+  const char *device = StringValueCStr (devicev);
+
+  char *r;
+
+  r = guestfs_canonical_device_name (g, device);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.shutdown() -> nil
  *
  * shutdown the qemu subprocess
@@ -4639,6 +5268,1236 @@ ruby_guestfs_shutdown (VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.cat(path) -> string
+ *
+ * list the contents of a file
+ *
+ * Return the contents of the file named "path".
+ * 
+ * Because, in C, this function returns a "char *", there
+ * is no way to differentiate between a "\0" character in a
+ * file and end of string. To handle binary files, use the
+ * "g.read_file" or "g.download" functions.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_cat+[http://libguestfs.org/guestfs.3.html#guestfs_cat]).
+ */
+static VALUE
+ruby_guestfs_cat (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "cat");
+
+  const char *path = StringValueCStr (pathv);
+
+  char *r;
+
+  r = guestfs_cat (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.find(directory) -> list
+ *
+ * find all files and directories
+ *
+ * This command lists out all files and directories,
+ * recursively, starting at "directory". It is essentially
+ * equivalent to running the shell command "find directory
+ * -print" but some post-processing happens on the output,
+ * described below.
+ * 
+ * This returns a list of strings *without any prefix*.
+ * Thus if the directory structure was:
+ * 
+ * /tmp/a
+ * /tmp/b
+ * /tmp/c/d
+ * 
+ * then the returned list from "g.find" "/tmp" would be 4
+ * elements:
+ * 
+ * a
+ * b
+ * c
+ * c/d
+ * 
+ * If "directory" is not a directory, then this command
+ * returns an error.
+ * 
+ * The returned list is sorted.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_find+[http://libguestfs.org/guestfs.3.html#guestfs_find]).
+ */
+static VALUE
+ruby_guestfs_find (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "find");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  char **r;
+
+  r = guestfs_find (g, directory);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.read_file(path) -> string
+ *
+ * read a file
+ *
+ * This calls returns the contents of the file "path" as a
+ * buffer.
+ * 
+ * Unlike "g.cat", this function can correctly handle files
+ * that contain embedded ASCII NUL characters.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_read_file+[http://libguestfs.org/guestfs.3.html#guestfs_read_file]).
+ */
+static VALUE
+ruby_guestfs_read_file (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "read_file");
+
+  const char *path = StringValueCStr (pathv);
+
+  char *r;
+  size_t size;
+
+  r = guestfs_read_file (g, path, &size);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new (r, size);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.read_lines(path) -> list
+ *
+ * read file as lines
+ *
+ * Return the contents of the file named "path".
+ * 
+ * The file contents are returned as a list of lines.
+ * Trailing "LF" and "CRLF" character sequences are *not*
+ * returned.
+ * 
+ * Note that this function cannot correctly handle binary
+ * files (specifically, files containing "\0" character
+ * which is treated as end of string). For those you need
+ * to use the "g.read_file" function and split the buffer
+ * into lines yourself.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_read_lines+[http://libguestfs.org/guestfs.3.html#guestfs_read_lines]).
+ */
+static VALUE
+ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "read_lines");
+
+  const char *path = StringValueCStr (pathv);
+
+  char **r;
+
+  r = guestfs_read_lines (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.write(path, content) -> nil
+ *
+ * create a new file
+ *
+ * This call creates a file called "path". The content of
+ * the file is the string "content" (which can contain any
+ * 8 bit data).
+ * 
+ * See also "g.write_append".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_write+[http://libguestfs.org/guestfs.3.html#guestfs_write]).
+ */
+static VALUE
+ruby_guestfs_write (VALUE gv, VALUE pathv, VALUE contentv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "write");
+
+  const char *path = StringValueCStr (pathv);
+  Check_Type (contentv, T_STRING);
+  const char *content = RSTRING_PTR (contentv);
+  if (!content)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "content", "write");
+  size_t content_size = RSTRING_LEN (contentv);
+
+  int r;
+
+  r = guestfs_write (g, path, content, content_size);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.write_append(path, content) -> nil
+ *
+ * append content to end of file
+ *
+ * This call appends "content" to the end of file "path".
+ * If "path" does not exist, then a new file is created.
+ * 
+ * See also "g.write".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_write_append+[http://libguestfs.org/guestfs.3.html#guestfs_write_append]).
+ */
+static VALUE
+ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "write_append");
+
+  const char *path = StringValueCStr (pathv);
+  Check_Type (contentv, T_STRING);
+  const char *content = RSTRING_PTR (contentv);
+  if (!content)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "content", "write_append");
+  size_t content_size = RSTRING_LEN (contentv);
+
+  int r;
+
+  r = guestfs_write_append (g, path, content, content_size);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.lstatlist(path, names) -> list
+ *
+ * lstat on multiple files
+ *
+ * This call allows you to perform the "g.lstat" operation
+ * on multiple files, where all files are in the directory
+ * "path". "names" is the list of files from this
+ * directory.
+ * 
+ * On return you get a list of stat structs, with a
+ * one-to-one correspondence to the "names" list. If any
+ * name did not exist or could not be lstat'd, then the
+ * "ino" field of that structure is set to -1.
+ * 
+ * This call is intended for programs that want to
+ * efficiently list a directory contents without making
+ * many round-trips. See also "g.lxattrlist" for a
+ * similarly efficient call for getting extended
+ * attributes.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_lstatlist+[http://libguestfs.org/guestfs.3.html#guestfs_lstatlist]).
+ */
+static VALUE
+ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lstatlist");
+
+  const char *path = StringValueCStr (pathv);
+  char **names;
+  Check_Type (namesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (namesv);
+    names = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (namesv, i);
+      names[i] = StringValueCStr (v);
+    }
+    names[len] = NULL;
+  }
+
+  struct guestfs_stat_list *r;
+
+  r = guestfs_lstatlist (g, path, names);
+  free (names);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("dev"), LL2NUM (r->val[i].dev));
+    rb_hash_aset (hv, rb_str_new2 ("ino"), LL2NUM (r->val[i].ino));
+    rb_hash_aset (hv, rb_str_new2 ("mode"), LL2NUM (r->val[i].mode));
+    rb_hash_aset (hv, rb_str_new2 ("nlink"), LL2NUM (r->val[i].nlink));
+    rb_hash_aset (hv, rb_str_new2 ("uid"), LL2NUM (r->val[i].uid));
+    rb_hash_aset (hv, rb_str_new2 ("gid"), LL2NUM (r->val[i].gid));
+    rb_hash_aset (hv, rb_str_new2 ("rdev"), LL2NUM (r->val[i].rdev));
+    rb_hash_aset (hv, rb_str_new2 ("size"), LL2NUM (r->val[i].size));
+    rb_hash_aset (hv, rb_str_new2 ("blksize"), LL2NUM (r->val[i].blksize));
+    rb_hash_aset (hv, rb_str_new2 ("blocks"), LL2NUM (r->val[i].blocks));
+    rb_hash_aset (hv, rb_str_new2 ("atime"), LL2NUM (r->val[i].atime));
+    rb_hash_aset (hv, rb_str_new2 ("mtime"), LL2NUM (r->val[i].mtime));
+    rb_hash_aset (hv, rb_str_new2 ("ctime"), LL2NUM (r->val[i].ctime));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_stat_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.lxattrlist(path, names) -> list
+ *
+ * lgetxattr on multiple files
+ *
+ * This call allows you to get the extended attributes of
+ * multiple files, where all files are in the directory
+ * "path". "names" is the list of files from this
+ * directory.
+ * 
+ * On return you get a flat list of xattr structs which
+ * must be interpreted sequentially. The first xattr struct
+ * always has a zero-length "attrname". "attrval" in this
+ * struct is zero-length to indicate there was an error
+ * doing "lgetxattr" for this file, *or* is a C string
+ * which is a decimal number (the number of following
+ * attributes for this file, which could be "0"). Then
+ * after the first xattr struct are the zero or more
+ * attributes for the first named file. This repeats for
+ * the second and subsequent files.
+ * 
+ * This call is intended for programs that want to
+ * efficiently list a directory contents without making
+ * many round-trips. See also "g.lstatlist" for a similarly
+ * efficient call for getting standard stats.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_lxattrlist+[http://libguestfs.org/guestfs.3.html#guestfs_lxattrlist]).
+ */
+static VALUE
+ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "lxattrlist");
+
+  const char *path = StringValueCStr (pathv);
+  char **names;
+  Check_Type (namesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (namesv);
+    names = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (namesv, i);
+      names[i] = StringValueCStr (v);
+    }
+    names[len] = NULL;
+  }
+
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_lxattrlist (g, path, names);
+  free (names);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
+    rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_xattr_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.readlinklist(path, names) -> list
+ *
+ * readlink on multiple files
+ *
+ * This call allows you to do a "readlink" operation on
+ * multiple files, where all files are in the directory
+ * "path". "names" is the list of files from this
+ * directory.
+ * 
+ * On return you get a list of strings, with a one-to-one
+ * correspondence to the "names" list. Each string is the
+ * value of the symbolic link.
+ * 
+ * If the readlink(2) operation fails on any name, then the
+ * corresponding result string is the empty string "".
+ * However the whole operation is completed even if there
+ * were readlink(2) errors, and so you can call this
+ * function with names where you don't know if they are
+ * symbolic links already (albeit slightly less efficient).
+ * 
+ * This call is intended for programs that want to
+ * efficiently list a directory contents without making
+ * many round-trips.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_readlinklist+[http://libguestfs.org/guestfs.3.html#guestfs_readlinklist]).
+ */
+static VALUE
+ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "readlinklist");
+
+  const char *path = StringValueCStr (pathv);
+  char **names;
+  Check_Type (namesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (namesv);
+    names = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (namesv, i);
+      names[i] = StringValueCStr (v);
+    }
+    names[len] = NULL;
+  }
+
+  char **r;
+
+  r = guestfs_readlinklist (g, path, names);
+  free (names);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ls(directory) -> list
+ *
+ * list the files in a directory
+ *
+ * List the files in "directory" (relative to the root
+ * directory, there is no cwd). The '.' and '..' entries
+ * are not returned, but hidden files are shown.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ls+[http://libguestfs.org/guestfs.3.html#guestfs_ls]).
+ */
+static VALUE
+ruby_guestfs_ls (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ls");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  char **r;
+
+  r = guestfs_ls (g, directory);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_value_utf8(valueh) -> string
+ *
+ * return the data field from the (key, datatype, data) tuple
+ *
+ * This calls "g.hivex_value_value" (which returns the data
+ * field from a hivex value tuple). It then assumes that
+ * the field is a UTF-16LE string and converts the result
+ * to UTF-8 (or if this is not possible, it returns an
+ * error).
+ * 
+ * This is useful for reading strings out of the Windows
+ * registry. However it is not foolproof because the
+ * registry is not strongly-typed and fields can contain
+ * arbitrary or unexpected data.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_value_utf8+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_utf8]).
+ */
+static VALUE
+ruby_guestfs_hivex_value_utf8 (VALUE gv, VALUE valuehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_value_utf8");
+
+  long long valueh = NUM2LL (valuehv);
+
+  char *r;
+
+  r = guestfs_hivex_value_utf8 (g, valueh);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.disk_format(filename) -> string
+ *
+ * detect the disk format of a disk image
+ *
+ * Detect and return the format of the disk image called
+ * "filename". "filename" can also be a host device, etc.
+ * If the format of the image could not be detected, then
+ * "unknown" is returned.
+ * 
+ * Note that detecting the disk format can be insecure
+ * under some circumstances. See "CVE-2010-3851" in
+ * guestfs(3).
+ * 
+ * See also: "DISK IMAGE FORMATS" in guestfs(3)
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_disk_format+[http://libguestfs.org/guestfs.3.html#guestfs_disk_format]).
+ */
+static VALUE
+ruby_guestfs_disk_format (VALUE gv, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "disk_format");
+
+  const char *filename = StringValueCStr (filenamev);
+
+  char *r;
+
+  r = guestfs_disk_format (g, filename);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.disk_virtual_size(filename) -> fixnum
+ *
+ * return virtual size of a disk
+ *
+ * Detect and return the virtual size in bytes of the disk
+ * image called "filename".
+ * 
+ * Note that detecting disk features can be insecure under
+ * some circumstances. See "CVE-2010-3851" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_disk_virtual_size+[http://libguestfs.org/guestfs.3.html#guestfs_disk_virtual_size]).
+ */
+static VALUE
+ruby_guestfs_disk_virtual_size (VALUE gv, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "disk_virtual_size");
+
+  const char *filename = StringValueCStr (filenamev);
+
+  int64_t r;
+
+  r = guestfs_disk_virtual_size (g, filename);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.disk_has_backing_file(filename) -> [True|False]
+ *
+ * return whether disk has a backing file
+ *
+ * Detect and return whether the disk image "filename" has
+ * a backing file.
+ * 
+ * Note that detecting disk features can be insecure under
+ * some circumstances. See "CVE-2010-3851" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_disk_has_backing_file+[http://libguestfs.org/guestfs.3.html#guestfs_disk_has_backing_file]).
+ */
+static VALUE
+ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "disk_has_backing_file");
+
+  const char *filename = StringValueCStr (filenamev);
+
+  int r;
+
+  r = guestfs_disk_has_backing_file (g, filename);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.remove_drive(label) -> nil
+ *
+ * remove a disk image
+ *
+ * This function is conceptually the opposite of
+ * "g.add_drive_opts". It removes the drive that was
+ * previously added with label "label".
+ * 
+ * Note that in order to remove drives, you have to add
+ * them with labels (see the optional "label" argument to
+ * "g.add_drive_opts"). If you didn't use a label, then
+ * they cannot be removed.
+ * 
+ * You can call this function before or after launching the
+ * handle. If called after launch, if the attach-method
+ * supports it, we try to hot unplug the drive: see
+ * "HOTPLUGGING" in guestfs(3). The disk must not be in use
+ * (eg. mounted) when you do this. We try to detect if the
+ * disk is in use and stop you from doing this.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_remove_drive+[http://libguestfs.org/guestfs.3.html#guestfs_remove_drive]).
+ */
+static VALUE
+ruby_guestfs_remove_drive (VALUE gv, VALUE labelv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "remove_drive");
+
+  const char *label = StringValueCStr (labelv);
+
+  int r;
+
+  r = guestfs_remove_drive (g, label);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.set_libvirt_supported_credentials(creds) -> nil
+ *
+ * set libvirt credentials supported by calling program
+ *
+ * Call this function before setting an event handler for
+ * "GUESTFS_EVENT_LIBVIRT_AUTH", to supply the list of
+ * credential types that the program knows how to process.
+ * 
+ * The "creds" list must be a non-empty list of strings.
+ * Possible strings are:
+ * 
+ * "username"
+ * "authname"
+ * "language"
+ * "cnonce"
+ * "passphrase"
+ * "echoprompt"
+ * "noechoprompt"
+ * "realm"
+ * "external"
+ * 
+ * See libvirt documentation for the meaning of these
+ * credential types.
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+ * documentation and example code.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_libvirt_supported_credentials+[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_supported_credentials]).
+ */
+static VALUE
+ruby_guestfs_set_libvirt_supported_credentials (VALUE gv, VALUE credsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_libvirt_supported_credentials");
+
+  char **creds;
+  Check_Type (credsv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (credsv);
+    creds = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (credsv, i);
+      creds[i] = StringValueCStr (v);
+    }
+    creds[len] = NULL;
+  }
+
+  int r;
+
+  r = guestfs_set_libvirt_supported_credentials (g, creds);
+  free (creds);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_libvirt_requested_credentials() -> list
+ *
+ * get list of credentials requested by libvirt
+ *
+ * This should only be called during the event callback for
+ * events of type "GUESTFS_EVENT_LIBVIRT_AUTH".
+ * 
+ * Return the list of credentials requested by libvirt.
+ * Possible values are a subset of the strings provided
+ * when you called "g.set_libvirt_supported_credentials".
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+ * documentation and example code.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_libvirt_requested_credentials+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credentials]).
+ */
+static VALUE
+ruby_guestfs_get_libvirt_requested_credentials (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_libvirt_requested_credentials");
+
+
+  char **r;
+
+  r = guestfs_get_libvirt_requested_credentials (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.get_libvirt_requested_credential_prompt(index) -> string
+ *
+ * prompt of i'th requested credential
+ *
+ * Get the prompt (provided by libvirt) for the "index"'th
+ * requested credential. If libvirt did not provide a
+ * prompt, this returns the empty string "".
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+ * documentation and example code.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_libvirt_requested_credential_prompt+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_prompt]).
+ */
+static VALUE
+ruby_guestfs_get_libvirt_requested_credential_prompt (VALUE gv, VALUE indexv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_libvirt_requested_credential_prompt");
+
+  int index = NUM2INT (indexv);
+
+  char *r;
+
+  r = guestfs_get_libvirt_requested_credential_prompt (g, index);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.get_libvirt_requested_credential_challenge(index) -> string
+ *
+ * challenge of i'th requested credential
+ *
+ * Get the challenge (provided by libvirt) for the
+ * "index"'th requested credential. If libvirt did not
+ * provide a challenge, this returns the empty string "".
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+ * documentation and example code.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_libvirt_requested_credential_challenge+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_challenge]).
+ */
+static VALUE
+ruby_guestfs_get_libvirt_requested_credential_challenge (VALUE gv, VALUE indexv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_libvirt_requested_credential_challenge");
+
+  int index = NUM2INT (indexv);
+
+  char *r;
+
+  r = guestfs_get_libvirt_requested_credential_challenge (g, index);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.get_libvirt_requested_credential_defresult(index) -> string
+ *
+ * default result of i'th requested credential
+ *
+ * Get the default result (provided by libvirt) for the
+ * "index"'th requested credential. If libvirt did not
+ * provide a default result, this returns the empty string
+ * "".
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+ * documentation and example code.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_libvirt_requested_credential_defresult+[http://libguestfs.org/guestfs.3.html#guestfs_get_libvirt_requested_credential_defresult]).
+ */
+static VALUE
+ruby_guestfs_get_libvirt_requested_credential_defresult (VALUE gv, VALUE indexv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_libvirt_requested_credential_defresult");
+
+  int index = NUM2INT (indexv);
+
+  char *r;
+
+  r = guestfs_get_libvirt_requested_credential_defresult (g, index);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.set_libvirt_requested_credential(index, cred) -> nil
+ *
+ * pass requested credential back to libvirt
+ *
+ * After requesting the "index"'th credential from the
+ * user, call this function to pass the answer back to
+ * libvirt.
+ * 
+ * See "LIBVIRT AUTHENTICATION" in guestfs(3) for
+ * documentation and example code.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_libvirt_requested_credential+[http://libguestfs.org/guestfs.3.html#guestfs_set_libvirt_requested_credential]).
+ */
+static VALUE
+ruby_guestfs_set_libvirt_requested_credential (VALUE gv, VALUE indexv, VALUE credv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_libvirt_requested_credential");
+
+  int index = NUM2INT (indexv);
+  Check_Type (credv, T_STRING);
+  const char *cred = RSTRING_PTR (credv);
+  if (!cred)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "cred", "set_libvirt_requested_credential");
+  size_t cred_size = RSTRING_LEN (credv);
+
+  int r;
+
+  r = guestfs_set_libvirt_requested_credential (g, index, cred, cred_size);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.parse_environment() -> nil
+ *
+ * parse the environment and set handle flags accordingly
+ *
+ * Parse the program's environment and set flags in the
+ * handle accordingly. For example if "LIBGUESTFS_DEBUG=1"
+ * then the 'verbose' flag is set in the handle.
+ * 
+ * *Most programs do not need to call this*. It is done
+ * implicitly when you call "g.create".
+ * 
+ * See "ENVIRONMENT VARIABLES" in guestfs(3) for a list of
+ * environment variables that can affect libguestfs
+ * handles. See also "guestfs_create_flags" in guestfs(3),
+ * and "g.parse_environment_list".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_parse_environment+[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment]).
+ */
+static VALUE
+ruby_guestfs_parse_environment (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "parse_environment");
+
+
+  int r;
+
+  r = guestfs_parse_environment (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.parse_environment_list(environment) -> nil
+ *
+ * parse the environment and set handle flags accordingly
+ *
+ * Parse the list of strings in the argument "environment"
+ * and set flags in the handle accordingly. For example if
+ * "LIBGUESTFS_DEBUG=1" is a string in the list, then the
+ * 'verbose' flag is set in the handle.
+ * 
+ * This is the same as "g.parse_environment" except that it
+ * parses an explicit list of strings instead of the
+ * program's environment.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_parse_environment_list+[http://libguestfs.org/guestfs.3.html#guestfs_parse_environment_list]).
+ */
+static VALUE
+ruby_guestfs_parse_environment_list (VALUE gv, VALUE environmentv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "parse_environment_list");
+
+  char **environment;
+  Check_Type (environmentv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (environmentv);
+    environment = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (environmentv, i);
+      environment[i] = StringValueCStr (v);
+    }
+    environment[len] = NULL;
+  }
+
+  int r;
+
+  r = guestfs_parse_environment_list (g, environment);
+  free (environment);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.set_tmpdir(tmpdir) -> nil
+ *
+ * set the temporary directory
+ *
+ * Set the directory used by the handle to store temporary
+ * files.
+ * 
+ * The environment variables "LIBGUESTFS_TMPDIR" and
+ * "TMPDIR" control the default value: If
+ * "LIBGUESTFS_TMPDIR" is set, then that is the default.
+ * Else if "TMPDIR" is set, then that is the default. Else
+ * "/tmp" is the default.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_tmpdir+[http://libguestfs.org/guestfs.3.html#guestfs_set_tmpdir]).
+ */
+static VALUE
+ruby_guestfs_set_tmpdir (VALUE gv, VALUE tmpdirv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_tmpdir");
+
+  const char *tmpdir = !NIL_P (tmpdirv) ? StringValueCStr (tmpdirv) : NULL;
+
+  int r;
+
+  r = guestfs_set_tmpdir (g, tmpdir);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_tmpdir() -> string
+ *
+ * get the temporary directory
+ *
+ * Get the directory used by the handle to store temporary
+ * files.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_tmpdir+[http://libguestfs.org/guestfs.3.html#guestfs_get_tmpdir]).
+ */
+static VALUE
+ruby_guestfs_get_tmpdir (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_tmpdir");
+
+
+  char *r;
+
+  r = guestfs_get_tmpdir (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.set_cachedir(cachedir) -> nil
+ *
+ * set the appliance cache directory
+ *
+ * Set the directory used by the handle to store the
+ * appliance cache, when using a supermin appliance. The
+ * appliance is cached and shared between all handles which
+ * have the same effective user ID.
+ * 
+ * The environment variables "LIBGUESTFS_CACHEDIR" and
+ * "TMPDIR" control the default value: If
+ * "LIBGUESTFS_CACHEDIR" is set, then that is the default.
+ * Else if "TMPDIR" is set, then that is the default. Else
+ * "/var/tmp" is the default.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_cachedir+[http://libguestfs.org/guestfs.3.html#guestfs_set_cachedir]).
+ */
+static VALUE
+ruby_guestfs_set_cachedir (VALUE gv, VALUE cachedirv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_cachedir");
+
+  const char *cachedir = !NIL_P (cachedirv) ? StringValueCStr (cachedirv) : NULL;
+
+  int r;
+
+  r = guestfs_set_cachedir (g, cachedir);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_cachedir() -> string
+ *
+ * get the appliance cache directory
+ *
+ * Get the directory used by the handle to store the
+ * appliance cache.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_cachedir+[http://libguestfs.org/guestfs.3.html#guestfs_get_cachedir]).
+ */
+static VALUE
+ruby_guestfs_get_cachedir (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_cachedir");
+
+
+  char *r;
+
+  r = guestfs_get_cachedir (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
 }
 
 /*
@@ -4767,49 +6626,6 @@ ruby_guestfs_touch (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.cat(path) -> string
- *
- * list the contents of a file
- *
- * Return the contents of the file named "path".
- * 
- * Note that this function cannot correctly handle binary
- * files (specifically, files containing "\0" character
- * which is treated as end of string). For those you need
- * to use the "g.read_file" or "g.download" functions which
- * have a more complex interface.
- * 
- * Because of the message protocol, there is a transfer
- * limit of somewhere between 2MB and 4MB. See "PROTOCOL
- * LIMITS" in guestfs(3).
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_cat+[http://libguestfs.org/guestfs.3.html#guestfs_cat]).
- */
-static VALUE
-ruby_guestfs_cat (VALUE gv, VALUE pathv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "cat");
-
-  const char *path = StringValueCStr (pathv);
-
-  char *r;
-
-  r = guestfs_cat (g, path);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  volatile VALUE rv = rb_str_new2 (r);
-  free (r);
-  return rv;
-}
-
-/*
- * call-seq:
  *   g.ll(directory) -> string
  *
  * list the files in a directory (long format)
@@ -4842,50 +6658,6 @@ ruby_guestfs_ll (VALUE gv, VALUE directoryv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   volatile VALUE rv = rb_str_new2 (r);
-  free (r);
-  return rv;
-}
-
-/*
- * call-seq:
- *   g.ls(directory) -> list
- *
- * list the files in a directory
- *
- * List the files in "directory" (relative to the root
- * directory, there is no cwd). The '.' and '..' entries
- * are not returned, but hidden files are shown.
- * 
- * This command is mostly useful for interactive sessions.
- * Programs should probably use "g.readdir" instead.
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_ls+[http://libguestfs.org/guestfs.3.html#guestfs_ls]).
- */
-static VALUE
-ruby_guestfs_ls (VALUE gv, VALUE directoryv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "ls");
-
-  const char *directory = StringValueCStr (directoryv);
-
-  char **r;
-
-  r = guestfs_ls (g, directory);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  size_t i, len = 0;
-  for (i = 0; r[i] != NULL; ++i) len++;
-  volatile VALUE rv = rb_ary_new2 (len);
-  for (i = 0; r[i] != NULL; ++i) {
-    rb_ary_push (rv, rb_str_new2 (r[i]));
-    free (r[i]);
-  }
   free (r);
   return rv;
 }
@@ -5274,55 +7046,6 @@ ruby_guestfs_lvs_full (VALUE gv)
     rb_ary_push (rv, hv);
   }
   guestfs_free_lvm_lv_list (r);
-  return rv;
-}
-
-/*
- * call-seq:
- *   g.read_lines(path) -> list
- *
- * read file as lines
- *
- * Return the contents of the file named "path".
- * 
- * The file contents are returned as a list of lines.
- * Trailing "LF" and "CRLF" character sequences are *not*
- * returned.
- * 
- * Note that this function cannot correctly handle binary
- * files (specifically, files containing "\0" character
- * which is treated as end of line). For those you need to
- * use the "g.read_file" function which has a more complex
- * interface.
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_read_lines+[http://libguestfs.org/guestfs.3.html#guestfs_read_lines]).
- */
-static VALUE
-ruby_guestfs_read_lines (VALUE gv, VALUE pathv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "read_lines");
-
-  const char *path = StringValueCStr (pathv);
-
-  char **r;
-
-  r = guestfs_read_lines (g, path);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  size_t i, len = 0;
-  for (i = 0; r[i] != NULL; ++i) len++;
-  volatile VALUE rv = rb_ary_new2 (len);
-  for (i = 0; r[i] != NULL; ++i) {
-    rb_ary_push (rv, rb_str_new2 (r[i]));
-    free (r[i]);
-  }
-  free (r);
   return rv;
 }
 
@@ -6297,40 +8020,6 @@ ruby_guestfs_lvcreate (VALUE gv, VALUE logvolv, VALUE volgroupv, VALUE mbytesv)
 
 /*
  * call-seq:
- *   g.mkfs(fstype, device) -> nil
- *
- * make a filesystem
- *
- * This creates a filesystem on "device" (usually a
- * partition or LVM logical volume). The filesystem type is
- * "fstype", for example "ext3".
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_mkfs+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs]).
- */
-static VALUE
-ruby_guestfs_mkfs (VALUE gv, VALUE fstypev, VALUE devicev)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "mkfs");
-
-  const char *fstype = StringValueCStr (fstypev);
-  const char *device = StringValueCStr (devicev);
-
-  int r;
-
-  r = guestfs_mkfs (g, fstype, device);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
-/*
- * call-seq:
  *   g.sfdisk(device, cyls, heads, sectors, lines) -> nil
  *
  * create partitions on a block device
@@ -6462,31 +8151,56 @@ ruby_guestfs_write_file (VALUE gv, VALUE pathv, VALUE contentv, VALUE sizev)
 
 /*
  * call-seq:
- *   g.umount(pathordevice) -> nil
+ *   g.umount(pathordevice, {optargs...}) -> nil
  *
  * unmount a filesystem
  *
  * This unmounts the given filesystem. The filesystem may
  * be specified either by its mountpoint (path) or the
  * device which contains the filesystem.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_umount+[http://libguestfs.org/guestfs.3.html#guestfs_umount]).
  */
 static VALUE
-ruby_guestfs_umount (VALUE gv, VALUE pathordevicev)
+ruby_guestfs_umount (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "umount");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathordevicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *pathordevice = StringValueCStr (pathordevicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_umount_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_umount_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("force")));
+  if (v != Qnil) {
+    optargs_s.force = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("lazyunmount")));
+  if (v != Qnil) {
+    optargs_s.lazyunmount = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_umount (g, pathordevice);
+  r = guestfs_umount_opts_argv (g, pathordevice, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -7479,34 +9193,60 @@ ruby_guestfs_checksum (VALUE gv, VALUE csumtypev, VALUE pathv)
 
 /*
  * call-seq:
- *   g.tar_in(tarfile, directory) -> nil
+ *   g.tar_in(tarfile, directory, {optargs...}) -> nil
  *
  * unpack tarfile to directory
  *
  * This command uploads and unpacks local file "tarfile"
- * (an *uncompressed* tar file) into "directory".
+ * into "directory".
  * 
- * To upload a compressed tarball, use "g.tgz_in" or
- * "g.txz_in".
+ * The optional "compress" flag controls compression. If
+ * not given, then the input should be an uncompressed tar
+ * file. Otherwise one of the following strings may be
+ * given to select the compression type of the input file:
+ * "compress", "gzip", "bzip2", "xz", "lzop". (Note that
+ * not all builds of libguestfs will support all of these
+ * compression types).
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_tar_in+[http://libguestfs.org/guestfs.3.html#guestfs_tar_in]).
  */
 static VALUE
-ruby_guestfs_tar_in (VALUE gv, VALUE tarfilev, VALUE directoryv)
+ruby_guestfs_tar_in (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "tar_in");
 
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE tarfilev = argv[0];
+  volatile VALUE directoryv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
   const char *tarfile = StringValueCStr (tarfilev);
   const char *directory = StringValueCStr (directoryv);
 
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_tar_in_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("compress")));
+  if (v != Qnil) {
+    optargs_s.compress = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
+  }
+
   int r;
 
-  r = guestfs_tar_in (g, tarfile, directory);
+  r = guestfs_tar_in_opts_argv (g, tarfile, directory, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -7515,34 +9255,93 @@ ruby_guestfs_tar_in (VALUE gv, VALUE tarfilev, VALUE directoryv)
 
 /*
  * call-seq:
- *   g.tar_out(directory, tarfile) -> nil
+ *   g.tar_out(directory, tarfile, {optargs...}) -> nil
  *
  * pack directory into tarfile
  *
  * This command packs the contents of "directory" and
  * downloads it to local file "tarfile".
  * 
- * To download a compressed tarball, use "g.tgz_out" or
- * "g.txz_out".
+ * The optional "compress" flag controls compression. If
+ * not given, then the output will be an uncompressed tar
+ * file. Otherwise one of the following strings may be
+ * given to select the compression type of the output file:
+ * "compress", "gzip", "bzip2", "xz", "lzop". (Note that
+ * not all builds of libguestfs will support all of these
+ * compression types).
+ * 
+ * The other optional arguments are:
+ * 
+ * "excludes"
+ * A list of wildcards. Files are excluded if they
+ * match any of the wildcards.
+ * 
+ * "numericowner"
+ * If set to true, the output tar file will contain
+ * UID/GID numbers instead of user/group names.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_tar_out+[http://libguestfs.org/guestfs.3.html#guestfs_tar_out]).
  */
 static VALUE
-ruby_guestfs_tar_out (VALUE gv, VALUE directoryv, VALUE tarfilev)
+ruby_guestfs_tar_out (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "tar_out");
 
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE directoryv = argv[0];
+  volatile VALUE tarfilev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
   const char *directory = StringValueCStr (directoryv);
   const char *tarfile = StringValueCStr (tarfilev);
 
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_tar_out_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("compress")));
+  if (v != Qnil) {
+    optargs_s.compress = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("numericowner")));
+  if (v != Qnil) {
+    optargs_s.numericowner = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("excludes")));
+  if (v != Qnil) {
+  Check_Type (v, T_ARRAY);
+  {
+    size_t i, len;
+    char **r;
+
+    len = RARRAY_LEN (v);
+    r = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE sv = rb_ary_entry (v, i);
+      r[i] = StringValueCStr (sv);
+    }
+    r[len] = NULL;
+    optargs_s.excludes = r;
+  }
+    optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
+  }
+
   int r;
 
-  r = guestfs_tar_out (g, directory, tarfile);
+  r = guestfs_tar_out_opts_argv (g, directory, tarfile, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -7558,7 +9357,12 @@ ruby_guestfs_tar_out (VALUE gv, VALUE directoryv, VALUE tarfilev)
  * This command uploads and unpacks local file "tarball" (a
  * *gzip compressed* tar file) into "directory".
  * 
- * To upload an uncompressed tarball, use "g.tar_in".
+ * *This function is deprecated.* In new code, use the
+ * "tar_in" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -7593,7 +9397,12 @@ ruby_guestfs_tgz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  * This command packs the contents of "directory" and
  * downloads it to local file "tarball".
  * 
- * To download an uncompressed tarball, use "g.tar_out".
+ * *This function is deprecated.* In new code, use the
+ * "tar_out" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -8980,75 +10789,6 @@ ruby_guestfs_resize2fs (VALUE gv, VALUE devicev)
 
 /*
  * call-seq:
- *   g.find(directory) -> list
- *
- * find all files and directories
- *
- * This command lists out all files and directories,
- * recursively, starting at "directory". It is essentially
- * equivalent to running the shell command "find directory
- * -print" but some post-processing happens on the output,
- * described below.
- * 
- * This returns a list of strings *without any prefix*.
- * Thus if the directory structure was:
- * 
- * /tmp/a
- * /tmp/b
- * /tmp/c/d
- * 
- * then the returned list from "g.find" "/tmp" would be 4
- * elements:
- * 
- * a
- * b
- * c
- * c/d
- * 
- * If "directory" is not a directory, then this command
- * returns an error.
- * 
- * The returned list is sorted.
- * 
- * See also "g.find0".
- * 
- * Because of the message protocol, there is a transfer
- * limit of somewhere between 2MB and 4MB. See "PROTOCOL
- * LIMITS" in guestfs(3).
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_find+[http://libguestfs.org/guestfs.3.html#guestfs_find]).
- */
-static VALUE
-ruby_guestfs_find (VALUE gv, VALUE directoryv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "find");
-
-  const char *directory = StringValueCStr (directoryv);
-
-  char **r;
-
-  r = guestfs_find (g, directory);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  size_t i, len = 0;
-  for (i = 0; r[i] != NULL; ++i) len++;
-  volatile VALUE rv = rb_ary_new2 (len);
-  for (i = 0; r[i] != NULL; ++i) {
-    rb_ary_push (rv, rb_str_new2 (r[i]));
-    free (r[i]);
-  }
-  free (r);
-  return rv;
-}
-
-/*
- * call-seq:
  *   g.e2fsck_f(device) -> nil
  *
  * check an ext2/ext3 filesystem
@@ -9946,29 +11686,57 @@ ruby_guestfs_mount_loop (VALUE gv, VALUE filev, VALUE mountpointv)
 
 /*
  * call-seq:
- *   g.mkswap(device) -> nil
+ *   g.mkswap(device, {optargs...}) -> nil
  *
  * create a swap partition
  *
- * Create a swap partition on "device".
+ * Create a Linux swap partition on "device".
+ * 
+ * The option arguments "label" and "uuid" allow you to set
+ * the label and/or UUID of the new swap partition.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_mkswap+[http://libguestfs.org/guestfs.3.html#guestfs_mkswap]).
  */
 static VALUE
-ruby_guestfs_mkswap (VALUE gv, VALUE devicev)
+ruby_guestfs_mkswap (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mkswap");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_mkswap_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_LABEL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("uuid")));
+  if (v != Qnil) {
+    optargs_s.uuid = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKSWAP_OPTS_UUID_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_mkswap (g, device);
+  r = guestfs_mkswap_opts_argv (g, device, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -9986,6 +11754,13 @@ ruby_guestfs_mkswap (VALUE gv, VALUE devicev)
  * Note that you cannot attach a swap label to a block
  * device (eg. "/dev/sda"), just to a partition. This
  * appears to be a limitation of the kernel or swap tools.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mkswap" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -10018,6 +11793,13 @@ ruby_guestfs_mkswap_L (VALUE gv, VALUE labelv, VALUE devicev)
  * create a swap partition with an explicit UUID
  *
  * Create a swap partition on "device" with UUID "uuid".
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mkswap" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -10291,6 +12073,10 @@ ruby_guestfs_umask (VALUE gv, VALUE maskv)
  * This function is primarily intended for use by programs.
  * To get a simple list of names, use "g.ls". To get a
  * printable directory for human consumption, use "g.ll".
+ * 
+ * Because of the message protocol, there is a transfer
+ * limit of somewhere between 2MB and 4MB. See "PROTOCOL
+ * LIMITS" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -10809,56 +12595,34 @@ ruby_guestfs_rmmountpoint (VALUE gv, VALUE exemptpathv)
 
 /*
  * call-seq:
- *   g.read_file(path) -> string
- *
- * read a file
- *
- * This calls returns the contents of the file "path" as a
- * buffer.
- * 
- * Unlike "g.cat", this function can correctly handle files
- * that contain embedded ASCII NUL characters. However
- * unlike "g.download", this function is limited in the
- * total size of file that can be handled.
- * 
- * Because of the message protocol, there is a transfer
- * limit of somewhere between 2MB and 4MB. See "PROTOCOL
- * LIMITS" in guestfs(3).
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_read_file+[http://libguestfs.org/guestfs.3.html#guestfs_read_file]).
- */
-static VALUE
-ruby_guestfs_read_file (VALUE gv, VALUE pathv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "read_file");
-
-  const char *path = StringValueCStr (pathv);
-
-  char *r;
-  size_t size;
-
-  r = guestfs_read_file (g, path, &size);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  volatile VALUE rv = rb_str_new (r, size);
-  free (r);
-  return rv;
-}
-
-/*
- * call-seq:
- *   g.grep(regex, path) -> list
+ *   g.grep(regex, path, {optargs...}) -> list
  *
  * return lines matching a pattern
  *
  * This calls the external "grep" program and returns the
  * matching lines.
+ * 
+ * The optional flags are:
+ * 
+ * "extended"
+ * Use extended regular expressions. This is the same
+ * as using the *-E* flag.
+ * 
+ * "fixed"
+ * Match fixed (don't use regular expressions). This is
+ * the same as using the *-F* flag.
+ * 
+ * "insensitive"
+ * Match case-insensitive. This is the same as using
+ * the *-i* flag.
+ * 
+ * "compressed"
+ * Use "zgrep" instead of "grep". This allows the input
+ * to be compress- or gzip-compressed.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  * 
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
@@ -10869,19 +12633,51 @@ ruby_guestfs_read_file (VALUE gv, VALUE pathv)
  * +guestfs_grep+[http://libguestfs.org/guestfs.3.html#guestfs_grep]).
  */
 static VALUE
-ruby_guestfs_grep (VALUE gv, VALUE regexv, VALUE pathv)
+ruby_guestfs_grep (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "grep");
 
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE regexv = argv[0];
+  volatile VALUE pathv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
   const char *regex = StringValueCStr (regexv);
   const char *path = StringValueCStr (pathv);
 
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_grep_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_grep_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("extended")));
+  if (v != Qnil) {
+    optargs_s.extended = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("fixed")));
+  if (v != Qnil) {
+    optargs_s.fixed = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_GREP_OPTS_FIXED_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("insensitive")));
+  if (v != Qnil) {
+    optargs_s.insensitive = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("compressed")));
+  if (v != Qnil) {
+    optargs_s.compressed = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
+  }
+
   char **r;
 
-  r = guestfs_grep (g, regex, path);
+  r = guestfs_grep_opts_argv (g, regex, path, optargs);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -10908,6 +12704,13 @@ ruby_guestfs_grep (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -10953,6 +12756,13 @@ ruby_guestfs_egrep (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -10998,6 +12808,13 @@ ruby_guestfs_fgrep (VALUE gv, VALUE patternv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11043,6 +12860,13 @@ ruby_guestfs_grepi (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11088,6 +12912,13 @@ ruby_guestfs_egrepi (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11133,6 +12964,13 @@ ruby_guestfs_fgrepi (VALUE gv, VALUE patternv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11178,6 +13016,13 @@ ruby_guestfs_zgrep (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11223,6 +13068,13 @@ ruby_guestfs_zegrep (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11268,6 +13120,13 @@ ruby_guestfs_zfgrep (VALUE gv, VALUE patternv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11313,6 +13172,13 @@ ruby_guestfs_zgrepi (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -11358,6 +13224,13 @@ ruby_guestfs_zegrepi (VALUE gv, VALUE regexv, VALUE pathv)
  * Because of the message protocol, there is a transfer
  * limit of somewhere between 2MB and 4MB. See "PROTOCOL
  * LIMITS" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "grep" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -12279,7 +14152,7 @@ ruby_guestfs_getcon (VALUE gv)
  * as the requested cluster size.
  * 
  * *This function is deprecated.* In new code, use the
- * "mkfs_opts" call instead.
+ * "mkfs" call instead.
  * 
  * Deprecated functions will not be removed from the API,
  * but the fact that they are deprecated indicates that
@@ -12320,6 +14193,13 @@ ruby_guestfs_mkfs_b (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev)
  * equivalent to the command:
  * 
  * mke2fs -O journal_dev -b blocksize device
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mke2fs" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -12353,6 +14233,13 @@ ruby_guestfs_mke2journal (VALUE gv, VALUE blocksizev, VALUE devicev)
  *
  * This creates an ext2 external journal on "device" with
  * label "label".
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mke2fs" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -12387,6 +14274,13 @@ ruby_guestfs_mke2journal_L (VALUE gv, VALUE blocksizev, VALUE labelv, VALUE devi
  *
  * This creates an ext2 external journal on "device" with
  * UUID "uuid".
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mke2fs" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -12426,6 +14320,13 @@ ruby_guestfs_mke2journal_U (VALUE gv, VALUE blocksizev, VALUE uuidv, VALUE devic
  * mke2fs -t fstype -b blocksize -J device=<journal> <device>
  * 
  * See also "g.mke2journal".
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mke2fs" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -12463,6 +14364,13 @@ ruby_guestfs_mke2fs_J (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev,
  * external journal on the journal labeled "label".
  * 
  * See also "g.mke2journal_L".
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mke2fs" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -12500,6 +14408,13 @@ ruby_guestfs_mke2fs_JL (VALUE gv, VALUE fstypev, VALUE blocksizev, VALUE devicev
  * external journal on the journal with UUID "uuid".
  * 
  * See also "g.mke2journal_U".
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "mke2fs" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -12631,9 +14546,6 @@ ruby_guestfs_echo_daemon (VALUE gv, VALUE wordsv)
  * 
  * *   Items (filenames) in the result are separated by
  * "\0" characters. See find(1) option *-print0*.
- * 
- * *   This command is not limited in the number of names
- * that it can return.
  * 
  * *   The result list is not sorted.
  *
@@ -12968,42 +14880,13 @@ ruby_guestfs_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
   return Qnil;
 }
 
-/*
- * call-seq:
- *   g.lstatlist(path, names) -> list
- *
- * lstat on multiple files
- *
- * This call allows you to perform the "g.lstat" operation
- * on multiple files, where all files are in the directory
- * "path". "names" is the list of files from this
- * directory.
- * 
- * On return you get a list of stat structs, with a
- * one-to-one correspondence to the "names" list. If any
- * name did not exist or could not be lstat'd, then the
- * "ino" field of that structure is set to -1.
- * 
- * This call is intended for programs that want to
- * efficiently list a directory contents without making
- * many round-trips. See also "g.lxattrlist" for a
- * similarly efficient call for getting extended
- * attributes. Very long directory listings might cause the
- * protocol message size to be exceeded, causing this call
- * to fail. The caller must split up such requests into
- * smaller groups of names.
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_lstatlist+[http://libguestfs.org/guestfs.3.html#guestfs_lstatlist]).
- */
 static VALUE
-ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
+ruby_guestfs_internal_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "lstatlist");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_lstatlist");
 
   const char *path = StringValueCStr (pathv);
   char **names;
@@ -13021,7 +14904,7 @@ ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
 
   struct guestfs_stat_list *r;
 
-  r = guestfs_lstatlist (g, path, names);
+  r = guestfs_internal_lstatlist (g, path, names);
   free (names);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
@@ -13049,48 +14932,13 @@ ruby_guestfs_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
   return rv;
 }
 
-/*
- * call-seq:
- *   g.lxattrlist(path, names) -> list
- *
- * lgetxattr on multiple files
- *
- * This call allows you to get the extended attributes of
- * multiple files, where all files are in the directory
- * "path". "names" is the list of files from this
- * directory.
- * 
- * On return you get a flat list of xattr structs which
- * must be interpreted sequentially. The first xattr struct
- * always has a zero-length "attrname". "attrval" in this
- * struct is zero-length to indicate there was an error
- * doing "lgetxattr" for this file, *or* is a C string
- * which is a decimal number (the number of following
- * attributes for this file, which could be "0"). Then
- * after the first xattr struct are the zero or more
- * attributes for the first named file. This repeats for
- * the second and subsequent files.
- * 
- * This call is intended for programs that want to
- * efficiently list a directory contents without making
- * many round-trips. See also "g.lstatlist" for a similarly
- * efficient call for getting standard stats. Very long
- * directory listings might cause the protocol message size
- * to be exceeded, causing this call to fail. The caller
- * must split up such requests into smaller groups of
- * names.
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_lxattrlist+[http://libguestfs.org/guestfs.3.html#guestfs_lxattrlist]).
- */
 static VALUE
-ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
+ruby_guestfs_internal_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "lxattrlist");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_lxattrlist");
 
   const char *path = StringValueCStr (pathv);
   char **names;
@@ -13108,7 +14956,7 @@ ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
 
   struct guestfs_xattr_list *r;
 
-  r = guestfs_lxattrlist (g, path, names);
+  r = guestfs_internal_lxattrlist (g, path, names);
   free (names);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
@@ -13125,46 +14973,13 @@ ruby_guestfs_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
   return rv;
 }
 
-/*
- * call-seq:
- *   g.readlinklist(path, names) -> list
- *
- * readlink on multiple files
- *
- * This call allows you to do a "readlink" operation on
- * multiple files, where all files are in the directory
- * "path". "names" is the list of files from this
- * directory.
- * 
- * On return you get a list of strings, with a one-to-one
- * correspondence to the "names" list. Each string is the
- * value of the symbolic link.
- * 
- * If the readlink(2) operation fails on any name, then the
- * corresponding result string is the empty string "".
- * However the whole operation is completed even if there
- * were readlink(2) errors, and so you can call this
- * function with names where you don't know if they are
- * symbolic links already (albeit slightly less efficient).
- * 
- * This call is intended for programs that want to
- * efficiently list a directory contents without making
- * many round-trips. Very long directory listings might
- * cause the protocol message size to be exceeded, causing
- * this call to fail. The caller must split up such
- * requests into smaller groups of names.
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_readlinklist+[http://libguestfs.org/guestfs.3.html#guestfs_readlinklist]).
- */
 static VALUE
-ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
+ruby_guestfs_internal_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "readlinklist");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_readlinklist");
 
   const char *path = StringValueCStr (pathv);
   char **names;
@@ -13182,7 +14997,7 @@ ruby_guestfs_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
 
   char **r;
 
-  r = guestfs_readlinklist (g, path, names);
+  r = guestfs_internal_readlinklist (g, path, names);
   free (names);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
@@ -13679,6 +15494,8 @@ ruby_guestfs_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
  * versions of libguestfs all you could do would be to
  * speculatively execute a command to find out if the
  * daemon implemented it. See also "g.version".
+ * 
+ * See also "g.filesystem_available".
  *
  *
  * (For the C API documentation for this function, see
@@ -14193,6 +16010,13 @@ ruby_guestfs_zero_device (VALUE gv, VALUE devicev)
  *
  * This command uploads and unpacks local file "tarball"
  * (an *xz compressed* tar file) into "directory".
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "tar_in" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -14227,6 +16051,13 @@ ruby_guestfs_txz_in (VALUE gv, VALUE tarballv, VALUE directoryv)
  * This command packs the contents of "directory" and
  * downloads it to local file "tarball" (as an xz
  * compressed tar archive).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "tar_out" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -14246,56 +16077,6 @@ ruby_guestfs_txz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
   int r;
 
   r = guestfs_txz_out (g, directory, tarball);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
-/*
- * call-seq:
- *   g.ntfsresize(device) -> nil
- *
- * resize an NTFS filesystem
- *
- * This command resizes an NTFS filesystem, expanding or
- * shrinking it to the size of the underlying device.
- * 
- * *Note:* After the resize operation, the filesystem is
- * marked as requiring a consistency check (for safety).
- * You have to boot into Windows to perform this check and
- * clear this condition. Furthermore, ntfsresize refuses to
- * resize filesystems which have been marked in this way.
- * So in effect it is not possible to call ntfsresize
- * multiple times on a single filesystem without booting
- * into Windows between each resize.
- * 
- * See also ntfsresize(8).
- * 
- * *This function is deprecated.* In new code, use the
- * "ntfsresize_opts" call instead.
- * 
- * Deprecated functions will not be removed from the API,
- * but the fact that they are deprecated indicates that
- * there are problems with correct use of these functions.
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_ntfsresize+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize]).
- */
-static VALUE
-ruby_guestfs_ntfsresize (VALUE gv, VALUE devicev)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsresize");
-
-  const char *device = StringValueCStr (devicev);
-
-  int r;
-
-  r = guestfs_ntfsresize (g, device);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -14786,45 +16567,25 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
   return Qnil;
 }
 
-/*
- * call-seq:
- *   g.write(path, content) -> nil
- *
- * create a new file
- *
- * This call creates a file called "path". The content of
- * the file is the string "content" (which can contain any
- * 8 bit data).
- * 
- * See also "g.write_append".
- * 
- * Because of the message protocol, there is a transfer
- * limit of somewhere between 2MB and 4MB. See "PROTOCOL
- * LIMITS" in guestfs(3).
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_write+[http://libguestfs.org/guestfs.3.html#guestfs_write]).
- */
 static VALUE
-ruby_guestfs_write (VALUE gv, VALUE pathv, VALUE contentv)
+ruby_guestfs_internal_write (VALUE gv, VALUE pathv, VALUE contentv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "write");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_write");
 
   const char *path = StringValueCStr (pathv);
   Check_Type (contentv, T_STRING);
   const char *content = RSTRING_PTR (contentv);
   if (!content)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
-              "content", "write");
+              "content", "internal_write");
   size_t content_size = RSTRING_LEN (contentv);
 
   int r;
 
-  r = guestfs_write (g, path, content, content_size);
+  r = guestfs_internal_write (g, path, content, content_size);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -14965,7 +16726,7 @@ ruby_guestfs_pvresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * explicitly.
  * 
  * *This function is deprecated.* In new code, use the
- * "ntfsresize_opts" call instead.
+ * "ntfsresize" call instead.
  * 
  * Deprecated functions will not be removed from the API,
  * but the fact that they are deprecated indicates that
@@ -16052,7 +17813,7 @@ ruby_guestfs_pread_device (VALUE gv, VALUE devicev, VALUE countv, VALUE offsetv)
  * This command returns an error if the "lvname" parameter
  * does not refer to a logical volume.
  * 
- * See also "g.is_lv".
+ * See also "g.is_lv", "g.canonical_device_name".
  *
  *
  * (For the C API documentation for this function, see
@@ -16081,7 +17842,7 @@ ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
 
 /*
  * call-seq:
- *   g.mkfs_opts(fstype, device, {optargs...}) -> nil
+ *   g.mkfs(fstype, device, {optargs...}) -> nil
  *
  * make a filesystem
  *
@@ -16127,15 +17888,15 @@ ruby_guestfs_lvm_canonical_lv_name (VALUE gv, VALUE lvnamev)
  *
  *
  * (For the C API documentation for this function, see
- * +guestfs_mkfs_opts+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs_opts]).
+ * +guestfs_mkfs+[http://libguestfs.org/guestfs.3.html#guestfs_mkfs]).
  */
 static VALUE
-ruby_guestfs_mkfs_opts (int argc, VALUE *argv, VALUE gv)
+ruby_guestfs_mkfs (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "mkfs_opts");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mkfs");
 
   if (argc < 2 || argc > 3)
     rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
@@ -16554,7 +18315,7 @@ ruby_guestfs_list_dm_devices (VALUE gv)
 
 /*
  * call-seq:
- *   g.ntfsresize_opts(device, {optargs...}) -> nil
+ *   g.ntfsresize(device, {optargs...}) -> nil
  *
  * resize an NTFS filesystem
  *
@@ -16578,7 +18339,7 @@ ruby_guestfs_list_dm_devices (VALUE gv)
  * safety). You have to boot into Windows to perform
  * this check and clear this condition. If you *don't*
  * set the "force" option then it is not possible to
- * call "g.ntfsresize_opts" multiple times on a single
+ * call "g.ntfsresize" multiple times on a single
  * filesystem without booting into Windows between each
  * resize.
  * 
@@ -16590,15 +18351,15 @@ ruby_guestfs_list_dm_devices (VALUE gv)
  *
  *
  * (For the C API documentation for this function, see
- * +guestfs_ntfsresize_opts+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize_opts]).
+ * +guestfs_ntfsresize+[http://libguestfs.org/guestfs.3.html#guestfs_ntfsresize]).
  */
 static VALUE
-ruby_guestfs_ntfsresize_opts (int argc, VALUE *argv, VALUE gv)
+ruby_guestfs_ntfsresize (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsresize_opts");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ntfsresize");
 
   if (argc < 1 || argc > 2)
     rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
@@ -16696,44 +18457,25 @@ ruby_guestfs_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
-/*
- * call-seq:
- *   g.write_append(path, content) -> nil
- *
- * append content to end of file
- *
- * This call appends "content" to the end of file "path".
- * If "path" does not exist, then a new file is created.
- * 
- * See also "g.write".
- * 
- * Because of the message protocol, there is a transfer
- * limit of somewhere between 2MB and 4MB. See "PROTOCOL
- * LIMITS" in guestfs(3).
- *
- *
- * (For the C API documentation for this function, see
- * +guestfs_write_append+[http://libguestfs.org/guestfs.3.html#guestfs_write_append]).
- */
 static VALUE
-ruby_guestfs_write_append (VALUE gv, VALUE pathv, VALUE contentv)
+ruby_guestfs_internal_write_append (VALUE gv, VALUE pathv, VALUE contentv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "write_append");
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_write_append");
 
   const char *path = StringValueCStr (pathv);
   Check_Type (contentv, T_STRING);
   const char *content = RSTRING_PTR (contentv);
   if (!content)
     rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
-              "content", "write_append");
+              "content", "internal_write_append");
   size_t content_size = RSTRING_LEN (contentv);
 
   int r;
 
-  r = guestfs_write_append (g, path, content, content_size);
+  r = guestfs_internal_write_append (g, path, content, content_size);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -18039,8 +19781,9 @@ ruby_guestfs_set_label (VALUE gv, VALUE devicev, VALUE labelv)
  * The filesystem contents are not affected, but any free
  * space in the filesystem is freed.
  * 
- * In future (but not currently) these zeroed blocks will
- * be "sparsified" - that is, given back to the host.
+ * Free space is not "trimmed". You may want to call
+ * "g.fstrim" either as an alternative to this, or after
+ * calling this, depending on your requirements.
  *
  *
  * (For the C API documentation for this function, see
@@ -18337,7 +20080,7 @@ ruby_guestfs_md_stat (VALUE gv, VALUE mdv)
  * Since btrfs filesystems can span multiple devices, this
  * takes a non-empty list of devices.
  * 
- * To create general filesystems, use "g.mkfs_opts".
+ * To create general filesystems, use "g.mkfs".
  * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
@@ -19104,6 +20847,127 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.filesystem_available(filesystem) -> [True|False]
+ *
+ * check if filesystem is available
+ *
+ * Check whether libguestfs supports the named filesystem.
+ * The argument "filesystem" is a filesystem name, such as
+ * "ext3".
+ * 
+ * You must call "g.launch" before using this command.
+ * 
+ * This is mainly useful as a negative test. If this
+ * returns true, it doesn't mean that a particular
+ * filesystem can be mounted, since filesystems can fail
+ * for other reasons such as it being a later version of
+ * the filesystem, or having incompatible features.
+ * 
+ * See also "g.available", "AVAILABILITY" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_filesystem_available+[http://libguestfs.org/guestfs.3.html#guestfs_filesystem_available]).
+ */
+static VALUE
+ruby_guestfs_filesystem_available (VALUE gv, VALUE filesystemv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "filesystem_available");
+
+  const char *filesystem = StringValueCStr (filesystemv);
+
+  int r;
+
+  r = guestfs_filesystem_available (g, filesystem);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.fstrim(mountpoint, {optargs...}) -> nil
+ *
+ * trim free space in a filesystem
+ *
+ * Trim the free space in the filesystem mounted on
+ * "mountpoint". The filesystem must be mounted read-write.
+ * 
+ * The filesystem contents are not affected, but any free
+ * space in the filesystem is "trimmed", that is, given
+ * back to the host device, thus making disk images more
+ * sparse, allowing unused space in qcow2 files to be
+ * reused, etc.
+ * 
+ * This operation requires support in libguestfs, the
+ * mounted filesystem, the host filesystem, qemu and the
+ * host kernel. If this support isn't present it may give
+ * an error or even appear to run but do nothing.
+ * 
+ * See also "g.zero_free_space". That is a slightly
+ * different operation that turns free space in the
+ * filesystem into zeroes. It is valid to call "g.fstrim"
+ * either instead of, or after calling "g.zero_free_space".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_fstrim+[http://libguestfs.org/guestfs.3.html#guestfs_fstrim]).
+ */
+static VALUE
+ruby_guestfs_fstrim (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "fstrim");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE mountpointv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *mountpoint = StringValueCStr (mountpointv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_fstrim_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_fstrim_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("offset")));
+  if (v != Qnil) {
+    optargs_s.offset = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_FSTRIM_OFFSET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("length")));
+  if (v != Qnil) {
+    optargs_s.length = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_FSTRIM_LENGTH_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("minimumfreeextent")));
+  if (v != Qnil) {
+    optargs_s.minimumfreeextent = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_fstrim_argv (g, mountpoint, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.device_index(device) -> fixnum
  *
  * convert device to index
@@ -19174,6 +21038,2625 @@ ruby_guestfs_nr_devices (VALUE gv)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.xfs_info(pathordevice) -> hash
+ *
+ * get geometry of XFS filesystem
+ *
+ * "pathordevice" is a mounted XFS filesystem or a device
+ * containing an XFS filesystem. This command returns the
+ * geometry of the filesystem.
+ * 
+ * The returned struct contains geometry information.
+ * Missing fields are returned as -1 (for numeric fields)
+ * or empty string.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_xfs_info+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_info]).
+ */
+static VALUE
+ruby_guestfs_xfs_info (VALUE gv, VALUE pathordevicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "xfs_info");
+
+  const char *pathordevice = StringValueCStr (pathordevicev);
+
+  struct guestfs_xfsinfo *r;
+
+  r = guestfs_xfs_info (g, pathordevice);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("xfs_mntpoint"), rb_str_new2 (r->xfs_mntpoint));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_inodesize"), UINT2NUM (r->xfs_inodesize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_agcount"), UINT2NUM (r->xfs_agcount));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_agsize"), UINT2NUM (r->xfs_agsize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_sectsize"), UINT2NUM (r->xfs_sectsize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_attr"), UINT2NUM (r->xfs_attr));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_blocksize"), UINT2NUM (r->xfs_blocksize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_datablocks"), ULL2NUM (r->xfs_datablocks));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_imaxpct"), UINT2NUM (r->xfs_imaxpct));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_sunit"), UINT2NUM (r->xfs_sunit));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_swidth"), UINT2NUM (r->xfs_swidth));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_dirversion"), UINT2NUM (r->xfs_dirversion));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_dirblocksize"), UINT2NUM (r->xfs_dirblocksize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_cimode"), UINT2NUM (r->xfs_cimode));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_logname"), rb_str_new2 (r->xfs_logname));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_logblocksize"), UINT2NUM (r->xfs_logblocksize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_logblocks"), UINT2NUM (r->xfs_logblocks));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_logversion"), UINT2NUM (r->xfs_logversion));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_logsectsize"), UINT2NUM (r->xfs_logsectsize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_logsunit"), UINT2NUM (r->xfs_logsunit));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_lazycount"), UINT2NUM (r->xfs_lazycount));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_rtname"), rb_str_new2 (r->xfs_rtname));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_rtextsize"), UINT2NUM (r->xfs_rtextsize));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_rtblocks"), ULL2NUM (r->xfs_rtblocks));
+  rb_hash_aset (rv, rb_str_new2 ("xfs_rtextents"), ULL2NUM (r->xfs_rtextents));
+  guestfs_free_xfsinfo (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.pvchange_uuid(device) -> nil
+ *
+ * generate a new random UUID for a physical volume
+ *
+ * Generate a new random UUID for the physical volume
+ * "device".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_pvchange_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid]).
+ */
+static VALUE
+ruby_guestfs_pvchange_uuid (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "pvchange_uuid");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_pvchange_uuid (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.pvchange_uuid_all() -> nil
+ *
+ * generate new random UUIDs for all physical volumes
+ *
+ * Generate new random UUIDs for all physical volumes.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_pvchange_uuid_all+[http://libguestfs.org/guestfs.3.html#guestfs_pvchange_uuid_all]).
+ */
+static VALUE
+ruby_guestfs_pvchange_uuid_all (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "pvchange_uuid_all");
+
+
+  int r;
+
+  r = guestfs_pvchange_uuid_all (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.vgchange_uuid(vg) -> nil
+ *
+ * generate a new random UUID for a volume group
+ *
+ * Generate a new random UUID for the volume group "vg".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_vgchange_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid]).
+ */
+static VALUE
+ruby_guestfs_vgchange_uuid (VALUE gv, VALUE vgv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "vgchange_uuid");
+
+  const char *vg = StringValueCStr (vgv);
+
+  int r;
+
+  r = guestfs_vgchange_uuid (g, vg);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.vgchange_uuid_all() -> nil
+ *
+ * generate new random UUIDs for all volume groups
+ *
+ * Generate new random UUIDs for all volume groups.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_vgchange_uuid_all+[http://libguestfs.org/guestfs.3.html#guestfs_vgchange_uuid_all]).
+ */
+static VALUE
+ruby_guestfs_vgchange_uuid_all (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "vgchange_uuid_all");
+
+
+  int r;
+
+  r = guestfs_vgchange_uuid_all (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.utsname() -> hash
+ *
+ * appliance kernel version
+ *
+ * This returns the kernel version of the appliance, where
+ * this is available. This information is only useful for
+ * debugging. Nothing in the returned structure is defined
+ * by the API.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_utsname+[http://libguestfs.org/guestfs.3.html#guestfs_utsname]).
+ */
+static VALUE
+ruby_guestfs_utsname (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "utsname");
+
+
+  struct guestfs_utsname *r;
+
+  r = guestfs_utsname (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  rb_hash_aset (rv, rb_str_new2 ("uts_sysname"), rb_str_new2 (r->uts_sysname));
+  rb_hash_aset (rv, rb_str_new2 ("uts_release"), rb_str_new2 (r->uts_release));
+  rb_hash_aset (rv, rb_str_new2 ("uts_version"), rb_str_new2 (r->uts_version));
+  rb_hash_aset (rv, rb_str_new2 ("uts_machine"), rb_str_new2 (r->uts_machine));
+  guestfs_free_utsname (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.xfs_growfs(path, {optargs...}) -> nil
+ *
+ * expand an existing XFS filesystem
+ *
+ * Grow the XFS filesystem mounted at "path".
+ * 
+ * The returned struct contains geometry information.
+ * Missing fields are returned as -1 (for numeric fields)
+ * or empty string.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_xfs_growfs+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_growfs]).
+ */
+static VALUE
+ruby_guestfs_xfs_growfs (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "xfs_growfs");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_xfs_growfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("datasec")));
+  if (v != Qnil) {
+    optargs_s.datasec = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("logsec")));
+  if (v != Qnil) {
+    optargs_s.logsec = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("rtsec")));
+  if (v != Qnil) {
+    optargs_s.rtsec = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("datasize")));
+  if (v != Qnil) {
+    optargs_s.datasize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_DATASIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("logsize")));
+  if (v != Qnil) {
+    optargs_s.logsize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("rtsize")));
+  if (v != Qnil) {
+    optargs_s.rtsize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("rtextsize")));
+  if (v != Qnil) {
+    optargs_s.rtextsize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("maxpct")));
+  if (v != Qnil) {
+    optargs_s.maxpct = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_XFS_GROWFS_MAXPCT_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_xfs_growfs_argv (g, path, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.rsync(src, dest, {optargs...}) -> nil
+ *
+ * synchronize the contents of two directories
+ *
+ * This call may be used to copy or synchronize two
+ * directories under the same libguestfs handle. This uses
+ * the rsync(1) program which uses a fast algorithm that
+ * avoids copying files unnecessarily.
+ * 
+ * "src" and "dest" are the source and destination
+ * directories. Files are copied from "src" to "dest".
+ * 
+ * The optional arguments are:
+ * 
+ * "archive"
+ * Turns on archive mode. This is the same as passing
+ * the *--archive* flag to "rsync".
+ * 
+ * "deletedest"
+ * Delete files at the destination that do not exist at
+ * the source.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_rsync+[http://libguestfs.org/guestfs.3.html#guestfs_rsync]).
+ */
+static VALUE
+ruby_guestfs_rsync (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "rsync");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE srcv = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *src = StringValueCStr (srcv);
+  const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_rsync_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("archive")));
+  if (v != Qnil) {
+    optargs_s.archive = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_RSYNC_ARCHIVE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("deletedest")));
+  if (v != Qnil) {
+    optargs_s.deletedest = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_RSYNC_DELETEDEST_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_rsync_argv (g, src, dest, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.rsync_in(remote, dest, {optargs...}) -> nil
+ *
+ * synchronize host or remote filesystem with filesystem
+ *
+ * This call may be used to copy or synchronize the
+ * filesystem on the host or on a remote computer with the
+ * filesystem within libguestfs. This uses the rsync(1)
+ * program which uses a fast algorithm that avoids copying
+ * files unnecessarily.
+ * 
+ * This call only works if the network is enabled. See
+ * "g.set_network" or the *--network* option to various
+ * tools like guestfish(1).
+ * 
+ * Files are copied from the remote server and directory
+ * specified by "remote" to the destination directory
+ * "dest".
+ * 
+ * The format of the remote server string is defined by
+ * rsync(1). Note that there is no way to supply a password
+ * or passphrase so the target must be set up not to
+ * require one.
+ * 
+ * The optional arguments are the same as those of
+ * "g.rsync".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_rsync_in+[http://libguestfs.org/guestfs.3.html#guestfs_rsync_in]).
+ */
+static VALUE
+ruby_guestfs_rsync_in (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "rsync_in");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE remotev = argv[0];
+  volatile VALUE destv = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *remote = StringValueCStr (remotev);
+  const char *dest = StringValueCStr (destv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_rsync_in_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_in_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("archive")));
+  if (v != Qnil) {
+    optargs_s.archive = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("deletedest")));
+  if (v != Qnil) {
+    optargs_s.deletedest = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_rsync_in_argv (g, remote, dest, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.rsync_out(src, remote, {optargs...}) -> nil
+ *
+ * synchronize filesystem with host or remote filesystem
+ *
+ * This call may be used to copy or synchronize the
+ * filesystem within libguestfs with a filesystem on the
+ * host or on a remote computer. This uses the rsync(1)
+ * program which uses a fast algorithm that avoids copying
+ * files unnecessarily.
+ * 
+ * This call only works if the network is enabled. See
+ * "g.set_network" or the *--network* option to various
+ * tools like guestfish(1).
+ * 
+ * Files are copied from the source directory "src" to the
+ * remote server and directory specified by "remote".
+ * 
+ * The format of the remote server string is defined by
+ * rsync(1). Note that there is no way to supply a password
+ * or passphrase so the target must be set up not to
+ * require one.
+ * 
+ * The optional arguments are the same as those of
+ * "g.rsync".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_rsync_out+[http://libguestfs.org/guestfs.3.html#guestfs_rsync_out]).
+ */
+static VALUE
+ruby_guestfs_rsync_out (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "rsync_out");
+
+  if (argc < 2 || argc > 3)
+    rb_raise (rb_eArgError, "expecting 2 or 3 arguments");
+
+  volatile VALUE srcv = argv[0];
+  volatile VALUE remotev = argv[1];
+  volatile VALUE optargsv = argc > 2 ? argv[2] : rb_hash_new ();
+
+  const char *src = StringValueCStr (srcv);
+  const char *remote = StringValueCStr (remotev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_rsync_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_out_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("archive")));
+  if (v != Qnil) {
+    optargs_s.archive = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("deletedest")));
+  if (v != Qnil) {
+    optargs_s.deletedest = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_rsync_out_argv (g, src, remote, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.ls0(dir, filenames) -> nil
+ *
+ * get list of files in a directory
+ *
+ * This specialized command is used to get a listing of the
+ * filenames in the directory "dir". The list of filenames
+ * is written to the local file "filenames" (on the host).
+ * 
+ * In the output file, the filenames are separated by "\0"
+ * characters.
+ * 
+ * "." and ".." are not returned. The filenames are not
+ * sorted.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ls0+[http://libguestfs.org/guestfs.3.html#guestfs_ls0]).
+ */
+static VALUE
+ruby_guestfs_ls0 (VALUE gv, VALUE dirv, VALUE filenamesv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ls0");
+
+  const char *dir = StringValueCStr (dirv);
+  const char *filenames = StringValueCStr (filenamesv);
+
+  int r;
+
+  r = guestfs_ls0 (g, dir, filenames);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.fill_dir(dir, nr) -> nil
+ *
+ * fill a directory with empty files
+ *
+ * This function, useful for testing filesystems, creates
+ * "nr" empty files in the directory "dir" with names
+ * 00000000 through "nr-1" (ie. each file name is 8 digits
+ * long padded with zeroes).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_fill_dir+[http://libguestfs.org/guestfs.3.html#guestfs_fill_dir]).
+ */
+static VALUE
+ruby_guestfs_fill_dir (VALUE gv, VALUE dirv, VALUE nrv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "fill_dir");
+
+  const char *dir = StringValueCStr (dirv);
+  int nr = NUM2INT (nrv);
+
+  int r;
+
+  r = guestfs_fill_dir (g, dir, nr);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.xfs_admin(device, {optargs...}) -> nil
+ *
+ * change parameters of an XFS filesystem
+ *
+ * Change the parameters of the XFS filesystem on "device".
+ * 
+ * Devices that are mounted cannot be modified.
+ * Administrators must unmount filesystems before this call
+ * can modify parameters.
+ * 
+ * Some of the parameters of a mounted filesystem can be
+ * examined and modified using the "g.xfs_info" and
+ * "g.xfs_growfs" calls.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_xfs_admin+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_admin]).
+ */
+static VALUE
+ruby_guestfs_xfs_admin (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "xfs_admin");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_xfs_admin_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_admin_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("extunwritten")));
+  if (v != Qnil) {
+    optargs_s.extunwritten = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("imgfile")));
+  if (v != Qnil) {
+    optargs_s.imgfile = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("v2log")));
+  if (v != Qnil) {
+    optargs_s.v2log = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("projid32bit")));
+  if (v != Qnil) {
+    optargs_s.projid32bit = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("lazycounter")));
+  if (v != Qnil) {
+    optargs_s.lazycounter = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_XFS_ADMIN_LABEL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("uuid")));
+  if (v != Qnil) {
+    optargs_s.uuid = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_XFS_ADMIN_UUID_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_xfs_admin_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_open(filename, {optargs...}) -> nil
+ *
+ * open a Windows Registry hive file
+ *
+ * Open the Windows Registry hive file named "filename". If
+ * there was any previous hivex handle associated with this
+ * guestfs session, then it is closed.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_open+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_open]).
+ */
+static VALUE
+ruby_guestfs_hivex_open (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_open");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE filenamev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *filename = StringValueCStr (filenamev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_hivex_open_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_hivex_open_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("verbose")));
+  if (v != Qnil) {
+    optargs_s.verbose = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("debug")));
+  if (v != Qnil) {
+    optargs_s.debug = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("write")));
+  if (v != Qnil) {
+    optargs_s.write = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_hivex_open_argv (g, filename, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_close() -> nil
+ *
+ * close the current hivex handle
+ *
+ * Close the current hivex handle.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_close+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_close]).
+ */
+static VALUE
+ruby_guestfs_hivex_close (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_close");
+
+
+  int r;
+
+  r = guestfs_hivex_close (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_root() -> fixnum
+ *
+ * return the root node of the hive
+ *
+ * Return the root node of the hive.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_root+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_root]).
+ */
+static VALUE
+ruby_guestfs_hivex_root (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_root");
+
+
+  int64_t r;
+
+  r = guestfs_hivex_root (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_name(nodeh) -> string
+ *
+ * return the name of the node
+ *
+ * Return the name of "nodeh".
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_name+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_name]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_name (VALUE gv, VALUE nodehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_name");
+
+  long long nodeh = NUM2LL (nodehv);
+
+  char *r;
+
+  r = guestfs_hivex_node_name (g, nodeh);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_children(nodeh) -> list
+ *
+ * return list of nodes which are subkeys of node
+ *
+ * Return the list of nodes which are subkeys of "nodeh".
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_children+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_children]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_children (VALUE gv, VALUE nodehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_children");
+
+  long long nodeh = NUM2LL (nodehv);
+
+  struct guestfs_hivex_node_list *r;
+
+  r = guestfs_hivex_node_children (g, nodeh);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("hivex_node_h"), LL2NUM (r->val[i].hivex_node_h));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_hivex_node_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_get_child(nodeh, name) -> fixnum
+ *
+ * return the named child of node
+ *
+ * Return the child of "nodeh" with the name "name", if it
+ * exists. This can return 0 meaning the name was not
+ * found.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_get_child+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_child]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_get_child (VALUE gv, VALUE nodehv, VALUE namev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_get_child");
+
+  long long nodeh = NUM2LL (nodehv);
+  const char *name = StringValueCStr (namev);
+
+  int64_t r;
+
+  r = guestfs_hivex_node_get_child (g, nodeh, name);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_parent(nodeh) -> fixnum
+ *
+ * return the parent of node
+ *
+ * Return the parent node of "nodeh".
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_parent+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_parent]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_parent (VALUE gv, VALUE nodehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_parent");
+
+  long long nodeh = NUM2LL (nodehv);
+
+  int64_t r;
+
+  r = guestfs_hivex_node_parent (g, nodeh);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_values(nodeh) -> list
+ *
+ * return list of values attached to node
+ *
+ * Return the array of (key, datatype, data) tuples
+ * attached to "nodeh".
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_values+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_values]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_values (VALUE gv, VALUE nodehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_values");
+
+  long long nodeh = NUM2LL (nodehv);
+
+  struct guestfs_hivex_value_list *r;
+
+  r = guestfs_hivex_node_values (g, nodeh);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("hivex_value_h"), LL2NUM (r->val[i].hivex_value_h));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_hivex_value_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_get_value(nodeh, key) -> fixnum
+ *
+ * return the named value
+ *
+ * Return the value attached to "nodeh" which has the name
+ * "key", if it exists. This can return 0 meaning the key
+ * was not found.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_get_value+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_get_value]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_get_value (VALUE gv, VALUE nodehv, VALUE keyv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_get_value");
+
+  long long nodeh = NUM2LL (nodehv);
+  const char *key = StringValueCStr (keyv);
+
+  int64_t r;
+
+  r = guestfs_hivex_node_get_value (g, nodeh, key);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.hivex_value_key(valueh) -> string
+ *
+ * return the key field from the (key, datatype, data) tuple
+ *
+ * Return the key (name) field of a (key, datatype, data)
+ * tuple.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_value_key+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_key]).
+ */
+static VALUE
+ruby_guestfs_hivex_value_key (VALUE gv, VALUE valuehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_value_key");
+
+  long long valueh = NUM2LL (valuehv);
+
+  char *r;
+
+  r = guestfs_hivex_value_key (g, valueh);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_value_type(valueh) -> fixnum
+ *
+ * return the data type from the (key, datatype, data) tuple
+ *
+ * Return the data type field from a (key, datatype, data)
+ * tuple.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_value_type+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_type]).
+ */
+static VALUE
+ruby_guestfs_hivex_value_type (VALUE gv, VALUE valuehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_value_type");
+
+  long long valueh = NUM2LL (valuehv);
+
+  int64_t r;
+
+  r = guestfs_hivex_value_type (g, valueh);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.hivex_value_value(valueh) -> string
+ *
+ * return the data field from the (key, datatype, data) tuple
+ *
+ * Return the data field of a (key, datatype, data) tuple.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ * 
+ * See also: "g.hivex_value_utf8".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_value_value+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_value_value]).
+ */
+static VALUE
+ruby_guestfs_hivex_value_value (VALUE gv, VALUE valuehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_value_value");
+
+  long long valueh = NUM2LL (valuehv);
+
+  char *r;
+  size_t size;
+
+  r = guestfs_hivex_value_value (g, valueh, &size);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new (r, size);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_commit(filename) -> nil
+ *
+ * commit (write) changes back to the hive
+ *
+ * Commit (write) changes to the hive.
+ * 
+ * If the optional "filename" parameter is null, then the
+ * changes are written back to the same hive that was
+ * opened. If this is not null then they are written to the
+ * alternate filename given and the original hive is left
+ * untouched.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_commit+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_commit]).
+ */
+static VALUE
+ruby_guestfs_hivex_commit (VALUE gv, VALUE filenamev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_commit");
+
+  const char *filename = !NIL_P (filenamev) ? StringValueCStr (filenamev) : NULL;
+
+  int r;
+
+  r = guestfs_hivex_commit (g, filename);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_add_child(parent, name) -> fixnum
+ *
+ * add a child node
+ *
+ * Add a child node to "parent" named "name".
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_add_child+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_add_child]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_add_child (VALUE gv, VALUE parentv, VALUE namev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_add_child");
+
+  long long parent = NUM2LL (parentv);
+  const char *name = StringValueCStr (namev);
+
+  int64_t r;
+
+  r = guestfs_hivex_node_add_child (g, parent, name);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_delete_child(nodeh) -> nil
+ *
+ * delete a node (recursively)
+ *
+ * Delete "nodeh", recursively if necessary.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_delete_child+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_delete_child]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_delete_child (VALUE gv, VALUE nodehv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_delete_child");
+
+  long long nodeh = NUM2LL (nodehv);
+
+  int r;
+
+  r = guestfs_hivex_node_delete_child (g, nodeh);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.hivex_node_set_value(nodeh, key, t, val) -> nil
+ *
+ * set or replace a single value in a node
+ *
+ * Set or replace a single value under the node "nodeh".
+ * The "key" is the name, "t" is the type, and "val" is the
+ * data.
+ * 
+ * This is a wrapper around the hivex(3) call of the same
+ * name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_hivex_node_set_value+[http://libguestfs.org/guestfs.3.html#guestfs_hivex_node_set_value]).
+ */
+static VALUE
+ruby_guestfs_hivex_node_set_value (VALUE gv, VALUE nodehv, VALUE keyv, VALUE tv, VALUE valv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "hivex_node_set_value");
+
+  long long nodeh = NUM2LL (nodehv);
+  const char *key = StringValueCStr (keyv);
+  long long t = NUM2LL (tv);
+  Check_Type (valv, T_STRING);
+  const char *val = RSTRING_PTR (valv);
+  if (!val)
+    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
+              "val", "hivex_node_set_value");
+  size_t val_size = RSTRING_LEN (valv);
+
+  int r;
+
+  r = guestfs_hivex_node_set_value (g, nodeh, key, t, val, val_size);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.xfs_repair(device, {optargs...}) -> fixnum
+ *
+ * repair an XFS filesystem
+ *
+ * Repair corrupt or damaged XFS filesystem on "device".
+ * 
+ * The filesystem is specified using the "device" argument
+ * which should be the device name of the disk partition or
+ * volume containing the filesystem. If given the name of a
+ * block device, "xfs_repair" will attempt to find the raw
+ * device associated with the specified block device and
+ * will use the raw device instead.
+ * 
+ * Regardless, the filesystem to be repaired must be
+ * unmounted, otherwise, the resulting filesystem may be
+ * inconsistent or corrupt.
+ * 
+ * The returned status indicates whether filesystem
+ * corruption was detected (returns 1) or was not detected
+ * (returns 0).
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_xfs_repair+[http://libguestfs.org/guestfs.3.html#guestfs_xfs_repair]).
+ */
+static VALUE
+ruby_guestfs_xfs_repair (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "xfs_repair");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_xfs_repair_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_repair_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("forcelogzero")));
+  if (v != Qnil) {
+    optargs_s.forcelogzero = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("nomodify")));
+  if (v != Qnil) {
+    optargs_s.nomodify = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("noprefetch")));
+  if (v != Qnil) {
+    optargs_s.noprefetch = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("forcegeometry")));
+  if (v != Qnil) {
+    optargs_s.forcegeometry = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("maxmem")));
+  if (v != Qnil) {
+    optargs_s.maxmem = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_MAXMEM_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("ihashsize")));
+  if (v != Qnil) {
+    optargs_s.ihashsize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("bhashsize")));
+  if (v != Qnil) {
+    optargs_s.bhashsize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("agstride")));
+  if (v != Qnil) {
+    optargs_s.agstride = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("logdev")));
+  if (v != Qnil) {
+    optargs_s.logdev = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("rtdev")));
+  if (v != Qnil) {
+    optargs_s.rtdev = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_xfs_repair_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.rm_f(path) -> nil
+ *
+ * remove a file ignoring errors
+ *
+ * Remove the file "path".
+ * 
+ * If the file doesn't exist, that error is ignored. (Other
+ * errors, eg. I/O errors or bad paths, are not ignored)
+ * 
+ * This call cannot remove directories. Use "g.rmdir" to
+ * remove an empty directory, or "g.rm_rf" to remove
+ * directories recursively.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_rm_f+[http://libguestfs.org/guestfs.3.html#guestfs_rm_f]).
+ */
+static VALUE
+ruby_guestfs_rm_f (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "rm_f");
+
+  const char *path = StringValueCStr (pathv);
+
+  int r;
+
+  r = guestfs_rm_f (g, path);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.mke2fs(device, {optargs...}) -> nil
+ *
+ * create an ext2/ext3/ext4 filesystem on device
+ *
+ * "mke2fs" is used to create an ext2, ext3, or ext4
+ * filesystem on "device". The optional "blockscount" is
+ * the size of the filesystem in blocks. If omitted it
+ * defaults to the size of "device".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_mke2fs+[http://libguestfs.org/guestfs.3.html#guestfs_mke2fs]).
+ */
+static VALUE
+ruby_guestfs_mke2fs (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mke2fs");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_mke2fs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mke2fs_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("blockscount")));
+  if (v != Qnil) {
+    optargs_s.blockscount = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("blocksize")));
+  if (v != Qnil) {
+    optargs_s.blocksize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("fragsize")));
+  if (v != Qnil) {
+    optargs_s.fragsize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_FRAGSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("blockspergroup")));
+  if (v != Qnil) {
+    optargs_s.blockspergroup = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("numberofgroups")));
+  if (v != Qnil) {
+    optargs_s.numberofgroups = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("bytesperinode")));
+  if (v != Qnil) {
+    optargs_s.bytesperinode = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_BYTESPERINODE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("inodesize")));
+  if (v != Qnil) {
+    optargs_s.inodesize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_INODESIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("journalsize")));
+  if (v != Qnil) {
+    optargs_s.journalsize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALSIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("numberofinodes")));
+  if (v != Qnil) {
+    optargs_s.numberofinodes = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("stridesize")));
+  if (v != Qnil) {
+    optargs_s.stridesize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_STRIDESIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("stripewidth")));
+  if (v != Qnil) {
+    optargs_s.stripewidth = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("maxonlineresize")));
+  if (v != Qnil) {
+    optargs_s.maxonlineresize = NUM2LL (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("reservedblockspercentage")));
+  if (v != Qnil) {
+    optargs_s.reservedblockspercentage = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("mmpupdateinterval")));
+  if (v != Qnil) {
+    optargs_s.mmpupdateinterval = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("journaldevice")));
+  if (v != Qnil) {
+    optargs_s.journaldevice = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_LABEL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("lastmounteddir")));
+  if (v != Qnil) {
+    optargs_s.lastmounteddir = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("creatoros")));
+  if (v != Qnil) {
+    optargs_s.creatoros = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_CREATOROS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("fstype")));
+  if (v != Qnil) {
+    optargs_s.fstype = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_FSTYPE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("usagetype")));
+  if (v != Qnil) {
+    optargs_s.usagetype = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_USAGETYPE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("uuid")));
+  if (v != Qnil) {
+    optargs_s.uuid = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_UUID_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("forcecreate")));
+  if (v != Qnil) {
+    optargs_s.forcecreate = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_FORCECREATE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("writesbandgrouponly")));
+  if (v != Qnil) {
+    optargs_s.writesbandgrouponly = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("lazyitableinit")));
+  if (v != Qnil) {
+    optargs_s.lazyitableinit = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("lazyjournalinit")));
+  if (v != Qnil) {
+    optargs_s.lazyjournalinit = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("testfs")));
+  if (v != Qnil) {
+    optargs_s.testfs = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_TESTFS_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("discard")));
+  if (v != Qnil) {
+    optargs_s.discard = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_DISCARD_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("quotatype")));
+  if (v != Qnil) {
+    optargs_s.quotatype = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("extent")));
+  if (v != Qnil) {
+    optargs_s.extent = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_EXTENT_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("filetype")));
+  if (v != Qnil) {
+    optargs_s.filetype = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_FILETYPE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("flexbg")));
+  if (v != Qnil) {
+    optargs_s.flexbg = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_FLEXBG_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("hasjournal")));
+  if (v != Qnil) {
+    optargs_s.hasjournal = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("journaldev")));
+  if (v != Qnil) {
+    optargs_s.journaldev = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("largefile")));
+  if (v != Qnil) {
+    optargs_s.largefile = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_LARGEFILE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("quota")));
+  if (v != Qnil) {
+    optargs_s.quota = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_QUOTA_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("resizeinode")));
+  if (v != Qnil) {
+    optargs_s.resizeinode = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparsesuper")));
+  if (v != Qnil) {
+    optargs_s.sparsesuper = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("uninitbg")));
+  if (v != Qnil) {
+    optargs_s.uninitbg = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_MKE2FS_UNINITBG_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_mke2fs_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.list_disk_labels() -> hash
+ *
+ * mapping of disk labels to devices
+ *
+ * If you add drives using the optional "label" parameter
+ * of "g.add_drive_opts", you can use this call to map
+ * between disk labels, and raw block device and partition
+ * names (like "/dev/sda" and "/dev/sda1").
+ * 
+ * This returns a hashtable, where keys are the disk labels
+ * (*without* the "/dev/disk/guestfs" prefix), and the
+ * values are the full raw block device and partition names
+ * (eg. "/dev/sda" and "/dev/sda1").
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_list_disk_labels+[http://libguestfs.org/guestfs.3.html#guestfs_list_disk_labels]).
+ */
+static VALUE
+ruby_guestfs_list_disk_labels (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "list_disk_labels");
+
+
+  char **r;
+
+  r = guestfs_list_disk_labels (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_hash_new ();
+  size_t i;
+  for (i = 0; r[i] != NULL; i+=2) {
+    rb_hash_aset (rv, rb_str_new2 (r[i]), rb_str_new2 (r[i+1]));
+    free (r[i]);
+    free (r[i+1]);
+  }
+  free (r);
+  return rv;
+}
+
+static VALUE
+ruby_guestfs_internal_hot_add_drive (VALUE gv, VALUE labelv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_hot_add_drive");
+
+  const char *label = StringValueCStr (labelv);
+
+  int r;
+
+  r = guestfs_internal_hot_add_drive (g, label);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE
+ruby_guestfs_internal_hot_remove_drive_precheck (VALUE gv, VALUE labelv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_hot_remove_drive_precheck");
+
+  const char *label = StringValueCStr (labelv);
+
+  int r;
+
+  r = guestfs_internal_hot_remove_drive_precheck (g, label);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+static VALUE
+ruby_guestfs_internal_hot_remove_drive (VALUE gv, VALUE labelv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_hot_remove_drive");
+
+  const char *label = StringValueCStr (labelv);
+
+  int r;
+
+  r = guestfs_internal_hot_remove_drive (g, label);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.mktemp(tmpl, {optargs...}) -> string
+ *
+ * create a temporary file
+ *
+ * This command creates a temporary file. The "tmpl"
+ * parameter should be a full pathname for the temporary
+ * directory name with the final six characters being
+ * "XXXXXX".
+ * 
+ * For example: "/tmp/myprogXXXXXX" or
+ * "/Temp/myprogXXXXXX", the second one being suitable for
+ * Windows filesystems.
+ * 
+ * The name of the temporary file that was created is
+ * returned.
+ * 
+ * The temporary file is created with mode 0600 and is
+ * owned by root.
+ * 
+ * The caller is responsible for deleting the temporary
+ * file after use.
+ * 
+ * If the optional "suffix" parameter is given, then the
+ * suffix (eg. ".txt") is appended to the temporary name.
+ * 
+ * See also: "g.mkdtemp".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_mktemp+[http://libguestfs.org/guestfs.3.html#guestfs_mktemp]).
+ */
+static VALUE
+ruby_guestfs_mktemp (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mktemp");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE tmplv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *tmpl = StringValueCStr (tmplv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_mktemp_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mktemp_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("suffix")));
+  if (v != Qnil) {
+    optargs_s.suffix = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_MKTEMP_SUFFIX_BITMASK;
+  }
+
+  char *r;
+
+  r = guestfs_mktemp_argv (g, tmpl, optargs);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.mklost_and_found(mountpoint) -> nil
+ *
+ * make lost+found directory on an ext2/3/4 filesystem
+ *
+ * Make the "lost+found" directory, normally in the root
+ * directory of an ext2/3/4 filesystem. "mountpoint" is the
+ * directory under which we try to create the "lost+found"
+ * directory.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_mklost_and_found+[http://libguestfs.org/guestfs.3.html#guestfs_mklost_and_found]).
+ */
+static VALUE
+ruby_guestfs_mklost_and_found (VALUE gv, VALUE mountpointv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "mklost_and_found");
+
+  const char *mountpoint = StringValueCStr (mountpointv);
+
+  int r;
+
+  r = guestfs_mklost_and_found (g, mountpoint);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.acl_get_file(path, acltype) -> string
+ *
+ * get the POSIX ACL attached to a file
+ *
+ * This function returns the POSIX Access Control List
+ * (ACL) attached to "path". The ACL is returned in "long
+ * text form" (see acl(5)).
+ * 
+ * The "acltype" parameter may be:
+ * 
+ * "access"
+ * Return the ordinary (access) ACL for any file,
+ * directory or other filesystem object.
+ * 
+ * "default"
+ * Return the default ACL. Normally this only makes
+ * sense if "path" is a directory.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_acl_get_file+[http://libguestfs.org/guestfs.3.html#guestfs_acl_get_file]).
+ */
+static VALUE
+ruby_guestfs_acl_get_file (VALUE gv, VALUE pathv, VALUE acltypev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "acl_get_file");
+
+  const char *path = StringValueCStr (pathv);
+  const char *acltype = StringValueCStr (acltypev);
+
+  char *r;
+
+  r = guestfs_acl_get_file (g, path, acltype);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.acl_set_file(path, acltype, acl) -> nil
+ *
+ * set the POSIX ACL attached to a file
+ *
+ * This function sets the POSIX Access Control List (ACL)
+ * attached to "path". The "acl" parameter is the new ACL
+ * in either "long text form" or "short text form" (see
+ * acl(5)).
+ * 
+ * The "acltype" parameter may be:
+ * 
+ * "access"
+ * Set the ordinary (access) ACL for any file,
+ * directory or other filesystem object.
+ * 
+ * "default"
+ * Set the default ACL. Normally this only makes sense
+ * if "path" is a directory.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_acl_set_file+[http://libguestfs.org/guestfs.3.html#guestfs_acl_set_file]).
+ */
+static VALUE
+ruby_guestfs_acl_set_file (VALUE gv, VALUE pathv, VALUE acltypev, VALUE aclv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "acl_set_file");
+
+  const char *path = StringValueCStr (pathv);
+  const char *acltype = StringValueCStr (acltypev);
+  const char *acl = StringValueCStr (aclv);
+
+  int r;
+
+  r = guestfs_acl_set_file (g, path, acltype, acl);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.acl_delete_def_file(dir) -> nil
+ *
+ * delete the default POSIX ACL of a directory
+ *
+ * This function deletes the default POSIX Access Control
+ * List (ACL) attached to directory "dir".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_acl_delete_def_file+[http://libguestfs.org/guestfs.3.html#guestfs_acl_delete_def_file]).
+ */
+static VALUE
+ruby_guestfs_acl_delete_def_file (VALUE gv, VALUE dirv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "acl_delete_def_file");
+
+  const char *dir = StringValueCStr (dirv);
+
+  int r;
+
+  r = guestfs_acl_delete_def_file (g, dir);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.cap_get_file(path) -> string
+ *
+ * get the Linux capabilities attached to a file
+ *
+ * This function returns the Linux capabilities attached to
+ * "path". The capabilities set is returned in text form
+ * (see cap_to_text(3)).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_cap_get_file+[http://libguestfs.org/guestfs.3.html#guestfs_cap_get_file]).
+ */
+static VALUE
+ruby_guestfs_cap_get_file (VALUE gv, VALUE pathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "cap_get_file");
+
+  const char *path = StringValueCStr (pathv);
+
+  char *r;
+
+  r = guestfs_cap_get_file (g, path);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.cap_set_file(path, cap) -> nil
+ *
+ * set the Linux capabilities attached to a file
+ *
+ * This function sets the Linux capabilities attached to
+ * "path". The capabilities set "cap" should be passed in
+ * text form (see cap_from_text(3)).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_cap_set_file+[http://libguestfs.org/guestfs.3.html#guestfs_cap_set_file]).
+ */
+static VALUE
+ruby_guestfs_cap_set_file (VALUE gv, VALUE pathv, VALUE capv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "cap_set_file");
+
+  const char *path = StringValueCStr (pathv);
+  const char *cap = StringValueCStr (capv);
+
+  int r;
+
+  r = guestfs_cap_set_file (g, path, cap);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.list_ldm_volumes() -> list
+ *
+ * list all Windows dynamic disk volumes
+ *
+ * This function returns all Windows dynamic disk volumes
+ * that were found at launch time. It returns a list of
+ * device names.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_list_ldm_volumes+[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_volumes]).
+ */
+static VALUE
+ruby_guestfs_list_ldm_volumes (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "list_ldm_volumes");
+
+
+  char **r;
+
+  r = guestfs_list_ldm_volumes (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.list_ldm_partitions() -> list
+ *
+ * list all Windows dynamic disk partitions
+ *
+ * This function returns all Windows dynamic disk
+ * partitions that were found at launch time. It returns a
+ * list of device names.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_list_ldm_partitions+[http://libguestfs.org/guestfs.3.html#guestfs_list_ldm_partitions]).
+ */
+static VALUE
+ruby_guestfs_list_ldm_partitions (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "list_ldm_partitions");
+
+
+  char **r;
+
+  r = guestfs_list_ldm_partitions (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_create_all() -> nil
+ *
+ * scan and create Windows dynamic disk volumes
+ *
+ * This function scans all block devices looking for
+ * Windows dynamic disk volumes and partitions, and creates
+ * devices for any that were found.
+ * 
+ * Call "g.list_ldm_volumes" and "g.list_ldm_partitions" to
+ * return all devices.
+ * 
+ * Note that you don't normally need to call this
+ * explicitly, since it is done automatically at "g.launch"
+ * time. However you might want to call this function if
+ * you have hotplugged disks or have just created a Windows
+ * dynamic disk.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_create_all+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_create_all]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_create_all (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_create_all");
+
+
+  int r;
+
+  r = guestfs_ldmtool_create_all (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_remove_all() -> nil
+ *
+ * remove all Windows dynamic disk volumes
+ *
+ * This is essentially the opposite of
+ * "g.ldmtool_create_all". It removes the device mapper
+ * mappings for all Windows dynamic disk volumes
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_remove_all+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_remove_all]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_remove_all (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_remove_all");
+
+
+  int r;
+
+  r = guestfs_ldmtool_remove_all (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_scan() -> list
+ *
+ * scan for Windows dynamic disks
+ *
+ * This function scans for Windows dynamic disks. It
+ * returns a list of identifiers (GUIDs) for all disk
+ * groups that were found. These identifiers can be passed
+ * to other "g.ldmtool_*" functions.
+ * 
+ * This function scans all block devices. To scan a subset
+ * of block devices, call "g.ldmtool_scan_devices" instead.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_scan+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_scan (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_scan");
+
+
+  char **r;
+
+  r = guestfs_ldmtool_scan (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_scan_devices(devices) -> list
+ *
+ * scan for Windows dynamic disks
+ *
+ * This function scans for Windows dynamic disks. It
+ * returns a list of identifiers (GUIDs) for all disk
+ * groups that were found. These identifiers can be passed
+ * to other "g.ldmtool_*" functions.
+ * 
+ * The parameter "devices" is a list of block devices which
+ * are scanned. If this list is empty, all block devices
+ * are scanned.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_scan_devices+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_scan_devices]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_scan_devices (VALUE gv, VALUE devicesv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_scan_devices");
+
+  char **devices;
+  Check_Type (devicesv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (devicesv);
+    devices = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (devicesv, i);
+      devices[i] = StringValueCStr (v);
+    }
+    devices[len] = NULL;
+  }
+
+  char **r;
+
+  r = guestfs_ldmtool_scan_devices (g, devices);
+  free (devices);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_diskgroup_name(diskgroup) -> string
+ *
+ * return the name of a Windows dynamic disk group
+ *
+ * Return the name of a Windows dynamic disk group. The
+ * "diskgroup" parameter should be the GUID of a disk
+ * group, one element from the list returned by
+ * "g.ldmtool_scan".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_diskgroup_name+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_name]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_diskgroup_name (VALUE gv, VALUE diskgroupv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_diskgroup_name");
+
+  const char *diskgroup = StringValueCStr (diskgroupv);
+
+  char *r;
+
+  r = guestfs_ldmtool_diskgroup_name (g, diskgroup);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_diskgroup_volumes(diskgroup) -> list
+ *
+ * return the volumes in a Windows dynamic disk group
+ *
+ * Return the volumes in a Windows dynamic disk group. The
+ * "diskgroup" parameter should be the GUID of a disk
+ * group, one element from the list returned by
+ * "g.ldmtool_scan".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_diskgroup_volumes+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_volumes]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_diskgroup_volumes (VALUE gv, VALUE diskgroupv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_diskgroup_volumes");
+
+  const char *diskgroup = StringValueCStr (diskgroupv);
+
+  char **r;
+
+  r = guestfs_ldmtool_diskgroup_volumes (g, diskgroup);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_diskgroup_disks(diskgroup) -> list
+ *
+ * return the disks in a Windows dynamic disk group
+ *
+ * Return the disks in a Windows dynamic disk group. The
+ * "diskgroup" parameter should be the GUID of a disk
+ * group, one element from the list returned by
+ * "g.ldmtool_scan".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_diskgroup_disks+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_diskgroup_disks]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_diskgroup_disks");
+
+  const char *diskgroup = StringValueCStr (diskgroupv);
+
+  char **r;
+
+  r = guestfs_ldmtool_diskgroup_disks (g, diskgroup);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_volume_type(diskgroup, volume) -> string
+ *
+ * return the type of a Windows dynamic disk volume
+ *
+ * Return the type of the volume named "volume" in the disk
+ * group with GUID <diskgroup>.
+ * 
+ * Possible volume types that can be returned here include:
+ * "simple", "spanned", "striped", "mirrored", "raid5".
+ * Other types may also be returned.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_volume_type+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_type]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_volume_type");
+
+  const char *diskgroup = StringValueCStr (diskgroupv);
+  const char *volume = StringValueCStr (volumev);
+
+  char *r;
+
+  r = guestfs_ldmtool_volume_type (g, diskgroup, volume);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_volume_hint(diskgroup, volume) -> string
+ *
+ * return the hint field of a Windows dynamic disk volume
+ *
+ * Return the hint field of the volume named "volume" in
+ * the disk group with GUID <diskgroup>. This may not be
+ * defined, in which case the empty string is returned. The
+ * hint field is often, though not always, the name of a
+ * Windows drive, eg. "E:".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_volume_hint+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_hint]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_volume_hint");
+
+  const char *diskgroup = StringValueCStr (diskgroupv);
+  const char *volume = StringValueCStr (volumev);
+
+  char *r;
+
+  r = guestfs_ldmtool_volume_hint (g, diskgroup, volume);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.ldmtool_volume_partitions(diskgroup, volume) -> list
+ *
+ * return the partitions in a Windows dynamic disk volume
+ *
+ * Return the list of partitions in the volume named
+ * "volume" in the disk group with GUID <diskgroup>.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_ldmtool_volume_partitions+[http://libguestfs.org/guestfs.3.html#guestfs_ldmtool_volume_partitions]).
+ */
+static VALUE
+ruby_guestfs_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volumev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "ldmtool_volume_partitions");
+
+  const char *diskgroup = StringValueCStr (diskgroupv);
+  const char *volume = StringValueCStr (volumev);
+
+  char **r;
+
+  r = guestfs_ldmtool_volume_partitions (g, diskgroup, volume);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  size_t i, len = 0;
+  for (i = 0; r[i] != NULL; ++i) len++;
+  volatile VALUE rv = rb_ary_new2 (len);
+  for (i = 0; r[i] != NULL; ++i) {
+    rb_ary_push (rv, rb_str_new2 (r[i]));
+    free (r[i]);
+  }
+  free (r);
+  return rv;
+}
+
 /* Initialize the module. */
 void Init__guestfs ()
 {
@@ -19185,7 +23668,7 @@ void Init__guestfs ()
   rb_define_alloc_func (c_guestfs, ruby_guestfs_create);
 #endif
 
-  rb_define_module_function (m_guestfs, "create", ruby_guestfs_create, 0);
+  rb_define_module_function (m_guestfs, "create", ruby_guestfs_create, -1);
   rb_define_method (c_guestfs, "close", ruby_guestfs_close, 0);
   rb_define_method (c_guestfs, "set_event_callback",
                     ruby_set_event_callback, 2);
@@ -19210,61 +23693,69 @@ void Init__guestfs ()
                    ULL2NUM (UINT64_C (0x40)));
   rb_define_const (m_guestfs, "EVENT_ENTER",
                    ULL2NUM (UINT64_C (0x80)));
+  rb_define_const (m_guestfs, "EVENT_LIBVIRT_AUTH",
+                   ULL2NUM (UINT64_C (0x100)));
 
-  rb_define_method (c_guestfs, "test0",
-        ruby_guestfs_test0, -1);
-  rb_define_method (c_guestfs, "test0rint",
-        ruby_guestfs_test0rint, 1);
-  rb_define_method (c_guestfs, "test0rinterr",
-        ruby_guestfs_test0rinterr, 0);
-  rb_define_method (c_guestfs, "test0rint64",
-        ruby_guestfs_test0rint64, 1);
-  rb_define_method (c_guestfs, "test0rint64err",
-        ruby_guestfs_test0rint64err, 0);
-  rb_define_method (c_guestfs, "test0rbool",
-        ruby_guestfs_test0rbool, 1);
-  rb_define_method (c_guestfs, "test0rboolerr",
-        ruby_guestfs_test0rboolerr, 0);
-  rb_define_method (c_guestfs, "test0rconststring",
-        ruby_guestfs_test0rconststring, 1);
-  rb_define_method (c_guestfs, "test0rconststringerr",
-        ruby_guestfs_test0rconststringerr, 0);
-  rb_define_method (c_guestfs, "test0rconstoptstring",
-        ruby_guestfs_test0rconstoptstring, 1);
-  rb_define_method (c_guestfs, "test0rconstoptstringerr",
-        ruby_guestfs_test0rconstoptstringerr, 0);
-  rb_define_method (c_guestfs, "test0rstring",
-        ruby_guestfs_test0rstring, 1);
-  rb_define_method (c_guestfs, "test0rstringerr",
-        ruby_guestfs_test0rstringerr, 0);
-  rb_define_method (c_guestfs, "test0rstringlist",
-        ruby_guestfs_test0rstringlist, 1);
-  rb_define_method (c_guestfs, "test0rstringlisterr",
-        ruby_guestfs_test0rstringlisterr, 0);
-  rb_define_method (c_guestfs, "test0rstruct",
-        ruby_guestfs_test0rstruct, 1);
-  rb_define_method (c_guestfs, "test0rstructerr",
-        ruby_guestfs_test0rstructerr, 0);
-  rb_define_method (c_guestfs, "test0rstructlist",
-        ruby_guestfs_test0rstructlist, 1);
-  rb_define_method (c_guestfs, "test0rstructlisterr",
-        ruby_guestfs_test0rstructlisterr, 0);
-  rb_define_method (c_guestfs, "test0rhashtable",
-        ruby_guestfs_test0rhashtable, 1);
-  rb_define_method (c_guestfs, "test0rhashtableerr",
-        ruby_guestfs_test0rhashtableerr, 0);
-  rb_define_method (c_guestfs, "test0rbufferout",
-        ruby_guestfs_test0rbufferout, 1);
-  rb_define_method (c_guestfs, "test0rbufferouterr",
-        ruby_guestfs_test0rbufferouterr, 0);
+  rb_define_method (c_guestfs, "internal_test",
+        ruby_guestfs_internal_test, -1);
+  rb_define_method (c_guestfs, "internal_test_only_optargs",
+        ruby_guestfs_internal_test_only_optargs, -1);
+  rb_define_method (c_guestfs, "internal_test_63_optargs",
+        ruby_guestfs_internal_test_63_optargs, -1);
+  rb_define_method (c_guestfs, "internal_test_rint",
+        ruby_guestfs_internal_test_rint, 1);
+  rb_define_method (c_guestfs, "internal_test_rinterr",
+        ruby_guestfs_internal_test_rinterr, 0);
+  rb_define_method (c_guestfs, "internal_test_rint64",
+        ruby_guestfs_internal_test_rint64, 1);
+  rb_define_method (c_guestfs, "internal_test_rint64err",
+        ruby_guestfs_internal_test_rint64err, 0);
+  rb_define_method (c_guestfs, "internal_test_rbool",
+        ruby_guestfs_internal_test_rbool, 1);
+  rb_define_method (c_guestfs, "internal_test_rboolerr",
+        ruby_guestfs_internal_test_rboolerr, 0);
+  rb_define_method (c_guestfs, "internal_test_rconststring",
+        ruby_guestfs_internal_test_rconststring, 1);
+  rb_define_method (c_guestfs, "internal_test_rconststringerr",
+        ruby_guestfs_internal_test_rconststringerr, 0);
+  rb_define_method (c_guestfs, "internal_test_rconstoptstring",
+        ruby_guestfs_internal_test_rconstoptstring, 1);
+  rb_define_method (c_guestfs, "internal_test_rconstoptstringerr",
+        ruby_guestfs_internal_test_rconstoptstringerr, 0);
+  rb_define_method (c_guestfs, "internal_test_rstring",
+        ruby_guestfs_internal_test_rstring, 1);
+  rb_define_method (c_guestfs, "internal_test_rstringerr",
+        ruby_guestfs_internal_test_rstringerr, 0);
+  rb_define_method (c_guestfs, "internal_test_rstringlist",
+        ruby_guestfs_internal_test_rstringlist, 1);
+  rb_define_method (c_guestfs, "internal_test_rstringlisterr",
+        ruby_guestfs_internal_test_rstringlisterr, 0);
+  rb_define_method (c_guestfs, "internal_test_rstruct",
+        ruby_guestfs_internal_test_rstruct, 1);
+  rb_define_method (c_guestfs, "internal_test_rstructerr",
+        ruby_guestfs_internal_test_rstructerr, 0);
+  rb_define_method (c_guestfs, "internal_test_rstructlist",
+        ruby_guestfs_internal_test_rstructlist, 1);
+  rb_define_method (c_guestfs, "internal_test_rstructlisterr",
+        ruby_guestfs_internal_test_rstructlisterr, 0);
+  rb_define_method (c_guestfs, "internal_test_rhashtable",
+        ruby_guestfs_internal_test_rhashtable, 1);
+  rb_define_method (c_guestfs, "internal_test_rhashtableerr",
+        ruby_guestfs_internal_test_rhashtableerr, 0);
+  rb_define_method (c_guestfs, "internal_test_rbufferout",
+        ruby_guestfs_internal_test_rbufferout, 1);
+  rb_define_method (c_guestfs, "internal_test_rbufferouterr",
+        ruby_guestfs_internal_test_rbufferouterr, 0);
+  rb_define_method (c_guestfs, "internal_test_set_output",
+        ruby_guestfs_internal_test_set_output, 1);
+  rb_define_method (c_guestfs, "internal_test_close_output",
+        ruby_guestfs_internal_test_close_output, 0);
   rb_define_method (c_guestfs, "launch",
         ruby_guestfs_launch, 0);
   rb_define_method (c_guestfs, "wait_ready",
         ruby_guestfs_wait_ready, 0);
   rb_define_method (c_guestfs, "kill_subprocess",
         ruby_guestfs_kill_subprocess, 0);
-  rb_define_method (c_guestfs, "add_drive",
-        ruby_guestfs_add_drive, 1);
   rb_define_method (c_guestfs, "add_cdrom",
         ruby_guestfs_add_cdrom, 1);
   rb_define_method (c_guestfs, "add_drive_ro",
@@ -19355,14 +23846,14 @@ void Init__guestfs ()
         ruby_guestfs_get_network, 0);
   rb_define_method (c_guestfs, "list_filesystems",
         ruby_guestfs_list_filesystems, 0);
+  rb_define_method (c_guestfs, "add_drive",
+        ruby_guestfs_add_drive, -1);
   rb_define_method (c_guestfs, "add_drive_opts",
-        ruby_guestfs_add_drive_opts, -1);
+        ruby_guestfs_add_drive, -1);
   rb_define_method (c_guestfs, "inspect_get_windows_systemroot",
         ruby_guestfs_inspect_get_windows_systemroot, 1);
   rb_define_method (c_guestfs, "inspect_get_roots",
         ruby_guestfs_inspect_get_roots, 0);
-  rb_define_method (c_guestfs, "debug_cmdline",
-        ruby_guestfs_debug_cmdline, 0);
   rb_define_method (c_guestfs, "debug_drives",
         ruby_guestfs_debug_drives, 0);
   rb_define_method (c_guestfs, "add_domain",
@@ -19373,6 +23864,8 @@ void Init__guestfs ()
         ruby_guestfs_inspect_get_package_management, 1);
   rb_define_method (c_guestfs, "inspect_list_applications",
         ruby_guestfs_inspect_list_applications, 1);
+  rb_define_method (c_guestfs, "inspect_list_applications2",
+        ruby_guestfs_inspect_list_applications2, 1);
   rb_define_method (c_guestfs, "inspect_get_hostname",
         ruby_guestfs_inspect_get_hostname, 1);
   rb_define_method (c_guestfs, "inspect_get_format",
@@ -19409,20 +23902,74 @@ void Init__guestfs ()
         ruby_guestfs_mount_local_run, 0);
   rb_define_method (c_guestfs, "umount_local",
         ruby_guestfs_umount_local, -1);
+  rb_define_method (c_guestfs, "max_disks",
+        ruby_guestfs_max_disks, 0);
+  rb_define_method (c_guestfs, "canonical_device_name",
+        ruby_guestfs_canonical_device_name, 1);
   rb_define_method (c_guestfs, "shutdown",
         ruby_guestfs_shutdown, 0);
+  rb_define_method (c_guestfs, "cat",
+        ruby_guestfs_cat, 1);
+  rb_define_method (c_guestfs, "find",
+        ruby_guestfs_find, 1);
+  rb_define_method (c_guestfs, "read_file",
+        ruby_guestfs_read_file, 1);
+  rb_define_method (c_guestfs, "read_lines",
+        ruby_guestfs_read_lines, 1);
+  rb_define_method (c_guestfs, "write",
+        ruby_guestfs_write, 2);
+  rb_define_method (c_guestfs, "write_append",
+        ruby_guestfs_write_append, 2);
+  rb_define_method (c_guestfs, "lstatlist",
+        ruby_guestfs_lstatlist, 2);
+  rb_define_method (c_guestfs, "lxattrlist",
+        ruby_guestfs_lxattrlist, 2);
+  rb_define_method (c_guestfs, "readlinklist",
+        ruby_guestfs_readlinklist, 2);
+  rb_define_method (c_guestfs, "ls",
+        ruby_guestfs_ls, 1);
+  rb_define_method (c_guestfs, "hivex_value_utf8",
+        ruby_guestfs_hivex_value_utf8, 1);
+  rb_define_method (c_guestfs, "disk_format",
+        ruby_guestfs_disk_format, 1);
+  rb_define_method (c_guestfs, "disk_virtual_size",
+        ruby_guestfs_disk_virtual_size, 1);
+  rb_define_method (c_guestfs, "disk_has_backing_file",
+        ruby_guestfs_disk_has_backing_file, 1);
+  rb_define_method (c_guestfs, "remove_drive",
+        ruby_guestfs_remove_drive, 1);
+  rb_define_method (c_guestfs, "set_libvirt_supported_credentials",
+        ruby_guestfs_set_libvirt_supported_credentials, 1);
+  rb_define_method (c_guestfs, "get_libvirt_requested_credentials",
+        ruby_guestfs_get_libvirt_requested_credentials, 0);
+  rb_define_method (c_guestfs, "get_libvirt_requested_credential_prompt",
+        ruby_guestfs_get_libvirt_requested_credential_prompt, 1);
+  rb_define_method (c_guestfs, "get_libvirt_requested_credential_challenge",
+        ruby_guestfs_get_libvirt_requested_credential_challenge, 1);
+  rb_define_method (c_guestfs, "get_libvirt_requested_credential_defresult",
+        ruby_guestfs_get_libvirt_requested_credential_defresult, 1);
+  rb_define_method (c_guestfs, "set_libvirt_requested_credential",
+        ruby_guestfs_set_libvirt_requested_credential, 2);
+  rb_define_method (c_guestfs, "parse_environment",
+        ruby_guestfs_parse_environment, 0);
+  rb_define_method (c_guestfs, "parse_environment_list",
+        ruby_guestfs_parse_environment_list, 1);
+  rb_define_method (c_guestfs, "set_tmpdir",
+        ruby_guestfs_set_tmpdir, 1);
+  rb_define_method (c_guestfs, "get_tmpdir",
+        ruby_guestfs_get_tmpdir, 0);
+  rb_define_method (c_guestfs, "set_cachedir",
+        ruby_guestfs_set_cachedir, 1);
+  rb_define_method (c_guestfs, "get_cachedir",
+        ruby_guestfs_get_cachedir, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
         ruby_guestfs_sync, 0);
   rb_define_method (c_guestfs, "touch",
         ruby_guestfs_touch, 1);
-  rb_define_method (c_guestfs, "cat",
-        ruby_guestfs_cat, 1);
   rb_define_method (c_guestfs, "ll",
         ruby_guestfs_ll, 1);
-  rb_define_method (c_guestfs, "ls",
-        ruby_guestfs_ls, 1);
   rb_define_method (c_guestfs, "list_devices",
         ruby_guestfs_list_devices, 0);
   rb_define_method (c_guestfs, "list_partitions",
@@ -19439,8 +23986,6 @@ void Init__guestfs ()
         ruby_guestfs_vgs_full, 0);
   rb_define_method (c_guestfs, "lvs_full",
         ruby_guestfs_lvs_full, 0);
-  rb_define_method (c_guestfs, "read_lines",
-        ruby_guestfs_read_lines, 1);
   rb_define_method (c_guestfs, "aug_init",
         ruby_guestfs_aug_init, 2);
   rb_define_method (c_guestfs, "aug_close",
@@ -19493,14 +24038,14 @@ void Init__guestfs ()
         ruby_guestfs_vgcreate, 2);
   rb_define_method (c_guestfs, "lvcreate",
         ruby_guestfs_lvcreate, 3);
-  rb_define_method (c_guestfs, "mkfs",
-        ruby_guestfs_mkfs, 2);
   rb_define_method (c_guestfs, "sfdisk",
         ruby_guestfs_sfdisk, 5);
   rb_define_method (c_guestfs, "write_file",
         ruby_guestfs_write_file, 3);
   rb_define_method (c_guestfs, "umount",
-        ruby_guestfs_umount, 1);
+        ruby_guestfs_umount, -1);
+  rb_define_method (c_guestfs, "umount_opts",
+        ruby_guestfs_umount, -1);
   rb_define_method (c_guestfs, "mounts",
         ruby_guestfs_mounts, 0);
   rb_define_method (c_guestfs, "umount_all",
@@ -19548,9 +24093,13 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "checksum",
         ruby_guestfs_checksum, 2);
   rb_define_method (c_guestfs, "tar_in",
-        ruby_guestfs_tar_in, 2);
+        ruby_guestfs_tar_in, -1);
+  rb_define_method (c_guestfs, "tar_in_opts",
+        ruby_guestfs_tar_in, -1);
   rb_define_method (c_guestfs, "tar_out",
-        ruby_guestfs_tar_out, 2);
+        ruby_guestfs_tar_out, -1);
+  rb_define_method (c_guestfs, "tar_out_opts",
+        ruby_guestfs_tar_out, -1);
   rb_define_method (c_guestfs, "tgz_in",
         ruby_guestfs_tgz_in, 2);
   rb_define_method (c_guestfs, "tgz_out",
@@ -19623,8 +24172,6 @@ void Init__guestfs ()
         ruby_guestfs_lvresize, 2);
   rb_define_method (c_guestfs, "resize2fs",
         ruby_guestfs_resize2fs, 1);
-  rb_define_method (c_guestfs, "find",
-        ruby_guestfs_find, 1);
   rb_define_method (c_guestfs, "e2fsck_f",
         ruby_guestfs_e2fsck_f, 1);
   rb_define_method (c_guestfs, "sleep",
@@ -19670,7 +24217,9 @@ void Init__guestfs ()
   rb_define_method (c_guestfs, "mount_loop",
         ruby_guestfs_mount_loop, 2);
   rb_define_method (c_guestfs, "mkswap",
-        ruby_guestfs_mkswap, 1);
+        ruby_guestfs_mkswap, -1);
+  rb_define_method (c_guestfs, "mkswap_opts",
+        ruby_guestfs_mkswap, -1);
   rb_define_method (c_guestfs, "mkswap_L",
         ruby_guestfs_mkswap_L, 2);
   rb_define_method (c_guestfs, "mkswap_U",
@@ -19709,10 +24258,10 @@ void Init__guestfs ()
         ruby_guestfs_mkmountpoint, 1);
   rb_define_method (c_guestfs, "rmmountpoint",
         ruby_guestfs_rmmountpoint, 1);
-  rb_define_method (c_guestfs, "read_file",
-        ruby_guestfs_read_file, 1);
   rb_define_method (c_guestfs, "grep",
-        ruby_guestfs_grep, 2);
+        ruby_guestfs_grep, -1);
+  rb_define_method (c_guestfs, "grep_opts",
+        ruby_guestfs_grep, -1);
   rb_define_method (c_guestfs, "egrep",
         ruby_guestfs_egrep, 2);
   rb_define_method (c_guestfs, "fgrep",
@@ -19817,12 +24366,12 @@ void Init__guestfs ()
         ruby_guestfs_mkdir_mode, 2);
   rb_define_method (c_guestfs, "lchown",
         ruby_guestfs_lchown, 3);
-  rb_define_method (c_guestfs, "lstatlist",
-        ruby_guestfs_lstatlist, 2);
-  rb_define_method (c_guestfs, "lxattrlist",
-        ruby_guestfs_lxattrlist, 2);
-  rb_define_method (c_guestfs, "readlinklist",
-        ruby_guestfs_readlinklist, 2);
+  rb_define_method (c_guestfs, "internal_lstatlist",
+        ruby_guestfs_internal_lstatlist, 2);
+  rb_define_method (c_guestfs, "internal_lxattrlist",
+        ruby_guestfs_internal_lxattrlist, 2);
+  rb_define_method (c_guestfs, "internal_readlinklist",
+        ruby_guestfs_internal_readlinklist, 2);
   rb_define_method (c_guestfs, "pread",
         ruby_guestfs_pread, 3);
   rb_define_method (c_guestfs, "part_init",
@@ -19871,8 +24420,6 @@ void Init__guestfs ()
         ruby_guestfs_txz_in, 2);
   rb_define_method (c_guestfs, "txz_out",
         ruby_guestfs_txz_out, 2);
-  rb_define_method (c_guestfs, "ntfsresize",
-        ruby_guestfs_ntfsresize, 1);
   rb_define_method (c_guestfs, "vgscan",
         ruby_guestfs_vgscan, 0);
   rb_define_method (c_guestfs, "part_del",
@@ -19901,8 +24448,8 @@ void Init__guestfs ()
         ruby_guestfs_checksums_out, 3);
   rb_define_method (c_guestfs, "fill_pattern",
         ruby_guestfs_fill_pattern, 3);
-  rb_define_method (c_guestfs, "write",
-        ruby_guestfs_write, 2);
+  rb_define_method (c_guestfs, "internal_write",
+        ruby_guestfs_internal_write, 2);
   rb_define_method (c_guestfs, "pwrite",
         ruby_guestfs_pwrite, 3);
   rb_define_method (c_guestfs, "resize2fs_size",
@@ -19965,8 +24512,10 @@ void Init__guestfs ()
         ruby_guestfs_pread_device, 3);
   rb_define_method (c_guestfs, "lvm_canonical_lv_name",
         ruby_guestfs_lvm_canonical_lv_name, 1);
+  rb_define_method (c_guestfs, "mkfs",
+        ruby_guestfs_mkfs, -1);
   rb_define_method (c_guestfs, "mkfs_opts",
-        ruby_guestfs_mkfs_opts, -1);
+        ruby_guestfs_mkfs, -1);
   rb_define_method (c_guestfs, "getxattr",
         ruby_guestfs_getxattr, 2);
   rb_define_method (c_guestfs, "lgetxattr",
@@ -19985,12 +24534,14 @@ void Init__guestfs ()
         ruby_guestfs_mount_9p, -1);
   rb_define_method (c_guestfs, "list_dm_devices",
         ruby_guestfs_list_dm_devices, 0);
+  rb_define_method (c_guestfs, "ntfsresize",
+        ruby_guestfs_ntfsresize, -1);
   rb_define_method (c_guestfs, "ntfsresize_opts",
-        ruby_guestfs_ntfsresize_opts, -1);
+        ruby_guestfs_ntfsresize, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_resize",
         ruby_guestfs_btrfs_filesystem_resize, -1);
-  rb_define_method (c_guestfs, "write_append",
-        ruby_guestfs_write_append, 2);
+  rb_define_method (c_guestfs, "internal_write_append",
+        ruby_guestfs_internal_write_append, 2);
   rb_define_method (c_guestfs, "compress_out",
         ruby_guestfs_compress_out, -1);
   rb_define_method (c_guestfs, "compress_device_out",
@@ -20075,8 +24626,122 @@ void Init__guestfs ()
         ruby_guestfs_btrfs_set_seeding, 2);
   rb_define_method (c_guestfs, "btrfs_fsck",
         ruby_guestfs_btrfs_fsck, -1);
+  rb_define_method (c_guestfs, "filesystem_available",
+        ruby_guestfs_filesystem_available, 1);
+  rb_define_method (c_guestfs, "fstrim",
+        ruby_guestfs_fstrim, -1);
   rb_define_method (c_guestfs, "device_index",
         ruby_guestfs_device_index, 1);
   rb_define_method (c_guestfs, "nr_devices",
         ruby_guestfs_nr_devices, 0);
+  rb_define_method (c_guestfs, "xfs_info",
+        ruby_guestfs_xfs_info, 1);
+  rb_define_method (c_guestfs, "pvchange_uuid",
+        ruby_guestfs_pvchange_uuid, 1);
+  rb_define_method (c_guestfs, "pvchange_uuid_all",
+        ruby_guestfs_pvchange_uuid_all, 0);
+  rb_define_method (c_guestfs, "vgchange_uuid",
+        ruby_guestfs_vgchange_uuid, 1);
+  rb_define_method (c_guestfs, "vgchange_uuid_all",
+        ruby_guestfs_vgchange_uuid_all, 0);
+  rb_define_method (c_guestfs, "utsname",
+        ruby_guestfs_utsname, 0);
+  rb_define_method (c_guestfs, "xfs_growfs",
+        ruby_guestfs_xfs_growfs, -1);
+  rb_define_method (c_guestfs, "rsync",
+        ruby_guestfs_rsync, -1);
+  rb_define_method (c_guestfs, "rsync_in",
+        ruby_guestfs_rsync_in, -1);
+  rb_define_method (c_guestfs, "rsync_out",
+        ruby_guestfs_rsync_out, -1);
+  rb_define_method (c_guestfs, "ls0",
+        ruby_guestfs_ls0, 2);
+  rb_define_method (c_guestfs, "fill_dir",
+        ruby_guestfs_fill_dir, 2);
+  rb_define_method (c_guestfs, "xfs_admin",
+        ruby_guestfs_xfs_admin, -1);
+  rb_define_method (c_guestfs, "hivex_open",
+        ruby_guestfs_hivex_open, -1);
+  rb_define_method (c_guestfs, "hivex_close",
+        ruby_guestfs_hivex_close, 0);
+  rb_define_method (c_guestfs, "hivex_root",
+        ruby_guestfs_hivex_root, 0);
+  rb_define_method (c_guestfs, "hivex_node_name",
+        ruby_guestfs_hivex_node_name, 1);
+  rb_define_method (c_guestfs, "hivex_node_children",
+        ruby_guestfs_hivex_node_children, 1);
+  rb_define_method (c_guestfs, "hivex_node_get_child",
+        ruby_guestfs_hivex_node_get_child, 2);
+  rb_define_method (c_guestfs, "hivex_node_parent",
+        ruby_guestfs_hivex_node_parent, 1);
+  rb_define_method (c_guestfs, "hivex_node_values",
+        ruby_guestfs_hivex_node_values, 1);
+  rb_define_method (c_guestfs, "hivex_node_get_value",
+        ruby_guestfs_hivex_node_get_value, 2);
+  rb_define_method (c_guestfs, "hivex_value_key",
+        ruby_guestfs_hivex_value_key, 1);
+  rb_define_method (c_guestfs, "hivex_value_type",
+        ruby_guestfs_hivex_value_type, 1);
+  rb_define_method (c_guestfs, "hivex_value_value",
+        ruby_guestfs_hivex_value_value, 1);
+  rb_define_method (c_guestfs, "hivex_commit",
+        ruby_guestfs_hivex_commit, 1);
+  rb_define_method (c_guestfs, "hivex_node_add_child",
+        ruby_guestfs_hivex_node_add_child, 2);
+  rb_define_method (c_guestfs, "hivex_node_delete_child",
+        ruby_guestfs_hivex_node_delete_child, 1);
+  rb_define_method (c_guestfs, "hivex_node_set_value",
+        ruby_guestfs_hivex_node_set_value, 4);
+  rb_define_method (c_guestfs, "xfs_repair",
+        ruby_guestfs_xfs_repair, -1);
+  rb_define_method (c_guestfs, "rm_f",
+        ruby_guestfs_rm_f, 1);
+  rb_define_method (c_guestfs, "mke2fs",
+        ruby_guestfs_mke2fs, -1);
+  rb_define_method (c_guestfs, "list_disk_labels",
+        ruby_guestfs_list_disk_labels, 0);
+  rb_define_method (c_guestfs, "internal_hot_add_drive",
+        ruby_guestfs_internal_hot_add_drive, 1);
+  rb_define_method (c_guestfs, "internal_hot_remove_drive_precheck",
+        ruby_guestfs_internal_hot_remove_drive_precheck, 1);
+  rb_define_method (c_guestfs, "internal_hot_remove_drive",
+        ruby_guestfs_internal_hot_remove_drive, 1);
+  rb_define_method (c_guestfs, "mktemp",
+        ruby_guestfs_mktemp, -1);
+  rb_define_method (c_guestfs, "mklost_and_found",
+        ruby_guestfs_mklost_and_found, 1);
+  rb_define_method (c_guestfs, "acl_get_file",
+        ruby_guestfs_acl_get_file, 2);
+  rb_define_method (c_guestfs, "acl_set_file",
+        ruby_guestfs_acl_set_file, 3);
+  rb_define_method (c_guestfs, "acl_delete_def_file",
+        ruby_guestfs_acl_delete_def_file, 1);
+  rb_define_method (c_guestfs, "cap_get_file",
+        ruby_guestfs_cap_get_file, 1);
+  rb_define_method (c_guestfs, "cap_set_file",
+        ruby_guestfs_cap_set_file, 2);
+  rb_define_method (c_guestfs, "list_ldm_volumes",
+        ruby_guestfs_list_ldm_volumes, 0);
+  rb_define_method (c_guestfs, "list_ldm_partitions",
+        ruby_guestfs_list_ldm_partitions, 0);
+  rb_define_method (c_guestfs, "ldmtool_create_all",
+        ruby_guestfs_ldmtool_create_all, 0);
+  rb_define_method (c_guestfs, "ldmtool_remove_all",
+        ruby_guestfs_ldmtool_remove_all, 0);
+  rb_define_method (c_guestfs, "ldmtool_scan",
+        ruby_guestfs_ldmtool_scan, 0);
+  rb_define_method (c_guestfs, "ldmtool_scan_devices",
+        ruby_guestfs_ldmtool_scan_devices, 1);
+  rb_define_method (c_guestfs, "ldmtool_diskgroup_name",
+        ruby_guestfs_ldmtool_diskgroup_name, 1);
+  rb_define_method (c_guestfs, "ldmtool_diskgroup_volumes",
+        ruby_guestfs_ldmtool_diskgroup_volumes, 1);
+  rb_define_method (c_guestfs, "ldmtool_diskgroup_disks",
+        ruby_guestfs_ldmtool_diskgroup_disks, 1);
+  rb_define_method (c_guestfs, "ldmtool_volume_type",
+        ruby_guestfs_ldmtool_volume_type, 2);
+  rb_define_method (c_guestfs, "ldmtool_volume_hint",
+        ruby_guestfs_ldmtool_volume_hint, 2);
+  rb_define_method (c_guestfs, "ldmtool_volume_partitions",
+        ruby_guestfs_ldmtool_volume_partitions, 2);
 }

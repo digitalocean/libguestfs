@@ -34,10 +34,6 @@
 
 #include <pcre.h>
 
-#ifdef HAVE_HIVEX
-#include <hivex.h>
-#endif
-
 #include "c-ctype.h"
 #include "xstrtol.h"
 
@@ -45,8 +41,6 @@
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
-
-#if defined(HAVE_HIVEX)
 
 /* Debian/Ubuntu install disks are easy ...
  *
@@ -484,4 +478,47 @@ guestfs___check_installer_root (guestfs_h *g, struct inspect_fs *fs)
   return 0;
 }
 
-#endif /* defined(HAVE_HIVEX) */
+/* This is called for whole block devices.  See if the device is an
+ * ISO and we are able to read the ISO info from it.  In that case,
+ * try using libosinfo to map from the volume ID and other strings
+ * directly to the operating system type.
+ */
+int
+guestfs___check_installer_iso (guestfs_h *g, struct inspect_fs *fs,
+                               const char *device)
+{
+  struct guestfs_isoinfo *isoinfo;
+  const struct osinfo *osinfo;
+  int r;
+
+  guestfs_push_error_handler (g, NULL, NULL);
+  isoinfo = guestfs_isoinfo_device (g, device);
+  guestfs_pop_error_handler (g);
+  if (!isoinfo)
+    return 0;
+
+  r = guestfs___osinfo_map (g, isoinfo, &osinfo);
+  guestfs_free_isoinfo (isoinfo);
+  if (r == -1)                  /* Fatal error. */
+    return -1;
+  if (r == 0)                   /* Could not locate any matching ISO. */
+    return 0;
+
+  /* Otherwise we matched an ISO, so fill in the fs fields. */
+  fs->device = safe_strdup (g, device);
+  fs->is_root = 1;
+  fs->format = OS_FORMAT_INSTALLER;
+  fs->type = osinfo->type;
+  fs->distro = osinfo->distro;
+  fs->product_name =
+    osinfo->product_name ? safe_strdup (g, osinfo->product_name) : NULL;
+  fs->major_version = osinfo->major_version;
+  fs->minor_version = osinfo->minor_version;
+  fs->arch = osinfo->arch ? safe_strdup (g, osinfo->arch) : NULL;
+  fs->is_live_disk = osinfo->is_live_disk;
+
+  guestfs___check_package_format (g, fs);
+  guestfs___check_package_management (g, fs);
+
+  return 1;
+}

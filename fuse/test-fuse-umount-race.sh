@@ -33,18 +33,6 @@ if [ ! -w /dev/fuse ]; then
     exit 77
 fi
 
-if [ -z "$top_builddir" ]; then
-    echo "$0: error: environment variable \$top_builddir must be set"
-    exit 1
-fi
-
-# Set TMPDIR so the appliance doesn't conflict with globally
-# installed libguestfs.
-export TMPDIR=$top_builddir
-
-# Set libguestfs up for running locally.
-export LIBGUESTFS_PATH="$top_builddir/appliance"
-
 rm -f test.qcow2 test-copy.qcow2 test.pid
 rm -rf mp
 

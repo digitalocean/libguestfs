@@ -1,6 +1,6 @@
 /* libguestfs generated file
  * WARNING: THIS FILE IS GENERATED FROM:
- *   generator/generator_*.ml
+ *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
  * Copyright (C) 2009-2012 Red Hat Inc.
@@ -46,7 +46,6 @@ static const char *xstrtol_suffixes = "0kKMGTPEZY";
 
 static int run_launch (const char *cmd, size_t argc, char *argv[]);
 static int run_kill_subprocess (const char *cmd, size_t argc, char *argv[]);
-static int run_add_drive (const char *cmd, size_t argc, char *argv[]);
 static int run_add_cdrom (const char *cmd, size_t argc, char *argv[]);
 static int run_add_drive_ro (const char *cmd, size_t argc, char *argv[]);
 static int run_config (const char *cmd, size_t argc, char *argv[]);
@@ -92,15 +91,15 @@ static int run_inspect_get_filesystems (const char *cmd, size_t argc, char *argv
 static int run_set_network (const char *cmd, size_t argc, char *argv[]);
 static int run_get_network (const char *cmd, size_t argc, char *argv[]);
 static int run_list_filesystems (const char *cmd, size_t argc, char *argv[]);
-static int run_add_drive_opts (const char *cmd, size_t argc, char *argv[]);
+static int run_add_drive (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_windows_systemroot (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_roots (const char *cmd, size_t argc, char *argv[]);
-static int run_debug_cmdline (const char *cmd, size_t argc, char *argv[]);
 static int run_debug_drives (const char *cmd, size_t argc, char *argv[]);
 static int run_add_domain (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_package_format (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_package_management (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_list_applications (const char *cmd, size_t argc, char *argv[]);
+static int run_inspect_list_applications2 (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_hostname (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_format (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_is_live (const char *cmd, size_t argc, char *argv[]);
@@ -119,13 +118,40 @@ static int run_get_smp (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_local (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_local_run (const char *cmd, size_t argc, char *argv[]);
 static int run_umount_local (const char *cmd, size_t argc, char *argv[]);
+static int run_max_disks (const char *cmd, size_t argc, char *argv[]);
+static int run_canonical_device_name (const char *cmd, size_t argc, char *argv[]);
 static int run_shutdown (const char *cmd, size_t argc, char *argv[]);
+static int run_cat (const char *cmd, size_t argc, char *argv[]);
+static int run_find (const char *cmd, size_t argc, char *argv[]);
+static int run_read_file (const char *cmd, size_t argc, char *argv[]);
+static int run_read_lines (const char *cmd, size_t argc, char *argv[]);
+static int run_write (const char *cmd, size_t argc, char *argv[]);
+static int run_write_append (const char *cmd, size_t argc, char *argv[]);
+static int run_lstatlist (const char *cmd, size_t argc, char *argv[]);
+static int run_lxattrlist (const char *cmd, size_t argc, char *argv[]);
+static int run_readlinklist (const char *cmd, size_t argc, char *argv[]);
+static int run_ls (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_value_utf8 (const char *cmd, size_t argc, char *argv[]);
+static int run_disk_format (const char *cmd, size_t argc, char *argv[]);
+static int run_disk_virtual_size (const char *cmd, size_t argc, char *argv[]);
+static int run_disk_has_backing_file (const char *cmd, size_t argc, char *argv[]);
+static int run_remove_drive (const char *cmd, size_t argc, char *argv[]);
+static int run_set_libvirt_supported_credentials (const char *cmd, size_t argc, char *argv[]);
+static int run_get_libvirt_requested_credentials (const char *cmd, size_t argc, char *argv[]);
+static int run_get_libvirt_requested_credential_prompt (const char *cmd, size_t argc, char *argv[]);
+static int run_get_libvirt_requested_credential_challenge (const char *cmd, size_t argc, char *argv[]);
+static int run_get_libvirt_requested_credential_defresult (const char *cmd, size_t argc, char *argv[]);
+static int run_set_libvirt_requested_credential (const char *cmd, size_t argc, char *argv[]);
+static int run_parse_environment (const char *cmd, size_t argc, char *argv[]);
+static int run_parse_environment_list (const char *cmd, size_t argc, char *argv[]);
+static int run_set_tmpdir (const char *cmd, size_t argc, char *argv[]);
+static int run_get_tmpdir (const char *cmd, size_t argc, char *argv[]);
+static int run_set_cachedir (const char *cmd, size_t argc, char *argv[]);
+static int run_get_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
-static int run_cat (const char *cmd, size_t argc, char *argv[]);
 static int run_ll (const char *cmd, size_t argc, char *argv[]);
-static int run_ls (const char *cmd, size_t argc, char *argv[]);
 static int run_list_devices (const char *cmd, size_t argc, char *argv[]);
 static int run_list_partitions (const char *cmd, size_t argc, char *argv[]);
 static int run_pvs (const char *cmd, size_t argc, char *argv[]);
@@ -134,7 +160,6 @@ static int run_lvs (const char *cmd, size_t argc, char *argv[]);
 static int run_pvs_full (const char *cmd, size_t argc, char *argv[]);
 static int run_vgs_full (const char *cmd, size_t argc, char *argv[]);
 static int run_lvs_full (const char *cmd, size_t argc, char *argv[]);
-static int run_read_lines (const char *cmd, size_t argc, char *argv[]);
 static int run_aug_init (const char *cmd, size_t argc, char *argv[]);
 static int run_aug_close (const char *cmd, size_t argc, char *argv[]);
 static int run_aug_defvar (const char *cmd, size_t argc, char *argv[]);
@@ -161,7 +186,6 @@ static int run_is_dir (const char *cmd, size_t argc, char *argv[]);
 static int run_pvcreate (const char *cmd, size_t argc, char *argv[]);
 static int run_vgcreate (const char *cmd, size_t argc, char *argv[]);
 static int run_lvcreate (const char *cmd, size_t argc, char *argv[]);
-static int run_mkfs (const char *cmd, size_t argc, char *argv[]);
 static int run_sfdisk (const char *cmd, size_t argc, char *argv[]);
 static int run_write_file (const char *cmd, size_t argc, char *argv[]);
 static int run_umount (const char *cmd, size_t argc, char *argv[]);
@@ -226,7 +250,6 @@ static int run_vg_activate_all (const char *cmd, size_t argc, char *argv[]);
 static int run_vg_activate (const char *cmd, size_t argc, char *argv[]);
 static int run_lvresize (const char *cmd, size_t argc, char *argv[]);
 static int run_resize2fs (const char *cmd, size_t argc, char *argv[]);
-static int run_find (const char *cmd, size_t argc, char *argv[]);
 static int run_e2fsck_f (const char *cmd, size_t argc, char *argv[]);
 static int run_sleep (const char *cmd, size_t argc, char *argv[]);
 static int run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[]);
@@ -269,7 +292,6 @@ static int run_lremovexattr (const char *cmd, size_t argc, char *argv[]);
 static int run_mountpoints (const char *cmd, size_t argc, char *argv[]);
 static int run_mkmountpoint (const char *cmd, size_t argc, char *argv[]);
 static int run_rmmountpoint (const char *cmd, size_t argc, char *argv[]);
-static int run_read_file (const char *cmd, size_t argc, char *argv[]);
 static int run_grep (const char *cmd, size_t argc, char *argv[]);
 static int run_egrep (const char *cmd, size_t argc, char *argv[]);
 static int run_fgrep (const char *cmd, size_t argc, char *argv[]);
@@ -323,9 +345,6 @@ static int run_truncate_size (const char *cmd, size_t argc, char *argv[]);
 static int run_utimens (const char *cmd, size_t argc, char *argv[]);
 static int run_mkdir_mode (const char *cmd, size_t argc, char *argv[]);
 static int run_lchown (const char *cmd, size_t argc, char *argv[]);
-static int run_lstatlist (const char *cmd, size_t argc, char *argv[]);
-static int run_lxattrlist (const char *cmd, size_t argc, char *argv[]);
-static int run_readlinklist (const char *cmd, size_t argc, char *argv[]);
 static int run_pread (const char *cmd, size_t argc, char *argv[]);
 static int run_part_init (const char *cmd, size_t argc, char *argv[]);
 static int run_part_add (const char *cmd, size_t argc, char *argv[]);
@@ -350,7 +369,6 @@ static int run_copy_size (const char *cmd, size_t argc, char *argv[]);
 static int run_zero_device (const char *cmd, size_t argc, char *argv[]);
 static int run_txz_in (const char *cmd, size_t argc, char *argv[]);
 static int run_txz_out (const char *cmd, size_t argc, char *argv[]);
-static int run_ntfsresize (const char *cmd, size_t argc, char *argv[]);
 static int run_vgscan (const char *cmd, size_t argc, char *argv[]);
 static int run_part_del (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_bootable (const char *cmd, size_t argc, char *argv[]);
@@ -365,7 +383,6 @@ static int run_base64_in (const char *cmd, size_t argc, char *argv[]);
 static int run_base64_out (const char *cmd, size_t argc, char *argv[]);
 static int run_checksums_out (const char *cmd, size_t argc, char *argv[]);
 static int run_fill_pattern (const char *cmd, size_t argc, char *argv[]);
-static int run_write (const char *cmd, size_t argc, char *argv[]);
 static int run_pwrite (const char *cmd, size_t argc, char *argv[]);
 static int run_resize2fs_size (const char *cmd, size_t argc, char *argv[]);
 static int run_pvresize_size (const char *cmd, size_t argc, char *argv[]);
@@ -397,7 +414,7 @@ static int run_download_offset (const char *cmd, size_t argc, char *argv[]);
 static int run_pwrite_device (const char *cmd, size_t argc, char *argv[]);
 static int run_pread_device (const char *cmd, size_t argc, char *argv[]);
 static int run_lvm_canonical_lv_name (const char *cmd, size_t argc, char *argv[]);
-static int run_mkfs_opts (const char *cmd, size_t argc, char *argv[]);
+static int run_mkfs (const char *cmd, size_t argc, char *argv[]);
 static int run_getxattr (const char *cmd, size_t argc, char *argv[]);
 static int run_lgetxattr (const char *cmd, size_t argc, char *argv[]);
 static int run_resize2fs_M (const char *cmd, size_t argc, char *argv[]);
@@ -406,9 +423,8 @@ static int run_is_zero_device (const char *cmd, size_t argc, char *argv[]);
 static int run_list_9p (const char *cmd, size_t argc, char *argv[]);
 static int run_mount_9p (const char *cmd, size_t argc, char *argv[]);
 static int run_list_dm_devices (const char *cmd, size_t argc, char *argv[]);
-static int run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[]);
+static int run_ntfsresize (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[]);
-static int run_write_append (const char *cmd, size_t argc, char *argv[]);
 static int run_compress_out (const char *cmd, size_t argc, char *argv[]);
 static int run_compress_device_out (const char *cmd, size_t argc, char *argv[]);
 static int run_part_to_partnum (const char *cmd, size_t argc, char *argv[]);
@@ -451,8 +467,62 @@ static int run_btrfs_device_add (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[]);
 static int run_btrfs_fsck (const char *cmd, size_t argc, char *argv[]);
+static int run_filesystem_available (const char *cmd, size_t argc, char *argv[]);
+static int run_fstrim (const char *cmd, size_t argc, char *argv[]);
 static int run_device_index (const char *cmd, size_t argc, char *argv[]);
 static int run_nr_devices (const char *cmd, size_t argc, char *argv[]);
+static int run_xfs_info (const char *cmd, size_t argc, char *argv[]);
+static int run_pvchange_uuid (const char *cmd, size_t argc, char *argv[]);
+static int run_pvchange_uuid_all (const char *cmd, size_t argc, char *argv[]);
+static int run_vgchange_uuid (const char *cmd, size_t argc, char *argv[]);
+static int run_vgchange_uuid_all (const char *cmd, size_t argc, char *argv[]);
+static int run_utsname (const char *cmd, size_t argc, char *argv[]);
+static int run_xfs_growfs (const char *cmd, size_t argc, char *argv[]);
+static int run_rsync (const char *cmd, size_t argc, char *argv[]);
+static int run_rsync_in (const char *cmd, size_t argc, char *argv[]);
+static int run_rsync_out (const char *cmd, size_t argc, char *argv[]);
+static int run_ls0 (const char *cmd, size_t argc, char *argv[]);
+static int run_fill_dir (const char *cmd, size_t argc, char *argv[]);
+static int run_xfs_admin (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_open (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_close (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_root (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_name (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_children (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_get_child (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_parent (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_values (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_get_value (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_value_key (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_value_type (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_value_value (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_commit (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_add_child (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_delete_child (const char *cmd, size_t argc, char *argv[]);
+static int run_hivex_node_set_value (const char *cmd, size_t argc, char *argv[]);
+static int run_xfs_repair (const char *cmd, size_t argc, char *argv[]);
+static int run_rm_f (const char *cmd, size_t argc, char *argv[]);
+static int run_mke2fs (const char *cmd, size_t argc, char *argv[]);
+static int run_list_disk_labels (const char *cmd, size_t argc, char *argv[]);
+static int run_mktemp (const char *cmd, size_t argc, char *argv[]);
+static int run_mklost_and_found (const char *cmd, size_t argc, char *argv[]);
+static int run_acl_get_file (const char *cmd, size_t argc, char *argv[]);
+static int run_acl_set_file (const char *cmd, size_t argc, char *argv[]);
+static int run_acl_delete_def_file (const char *cmd, size_t argc, char *argv[]);
+static int run_cap_get_file (const char *cmd, size_t argc, char *argv[]);
+static int run_cap_set_file (const char *cmd, size_t argc, char *argv[]);
+static int run_list_ldm_volumes (const char *cmd, size_t argc, char *argv[]);
+static int run_list_ldm_partitions (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_create_all (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_remove_all (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_scan (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_scan_devices (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_diskgroup_name (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_diskgroup_volumes (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_volume_type (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_volume_hint (const char *cmd, size_t argc, char *argv[]);
+static int run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -586,15 +656,9 @@ struct command_entry kill_subprocess_cmd_entry = {
   .run = run_kill_subprocess
 };
 
-struct command_entry add_drive_cmd_entry = {
-  .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename\n\nDESCRIPTION\n    This function is the equivalent of calling \"add_drive_opts\" with no\n    optional parameters, so the disk is added writable, with the format\n    being detected automatically.\n\n    Automatic detection of the format opens you up to a potential security\n    hole when dealing with untrusted raw-format images. See CVE-2010-3851\n    and RHBZ#642934. Specifying the format closes this security hole.\n    Therefore you should think about replacing calls to this function with\n    calls to \"add_drive_opts\", and specifying the format.\n\n",
-  .run = run_add_drive
-};
-
 struct command_entry add_cdrom_cmd_entry = {
   .name = "add-cdrom",
-  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    This is equivalent to the qemu parameter *-cdrom filename*.\n\n    Notes:\n\n    *   This call checks for the existence of \"filename\". This stops you\n        from specifying other types of drive which are supported by qemu\n        such as \"nbd:\" and \"http:\" URLs. To specify those, use the general\n        \"config\" call instead.\n\n    *   If you just want to add an ISO file (often you use this as an\n        efficient way to transfer large files into the guest), then you\n        should probably use \"add_drive_ro\" instead.\n\n    *This function is deprecated.* In new code, use the \"add-drive-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-cdrom - add a CD-ROM disk image to examine\n\nSYNOPSIS\n     add-cdrom filename\n\nDESCRIPTION\n    This function adds a virtual CD-ROM disk image to the guest.\n\n    Do not use this function! ISO files are just ordinary read-only disk\n    images. Use \"add_drive_ro\" instead.\n\n    *This function is deprecated.* In new code, use the \"add-drive\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_cdrom
 };
 
@@ -606,7 +670,7 @@ struct command_entry add_drive_ro_cmd_entry = {
 
 struct command_entry config_cmd_entry = {
   .name = "config",
-  .help = "NAME\n    config - add qemu parameters\n\nSYNOPSIS\n     config qemuparam qemuvalue\n\nDESCRIPTION\n    This can be used to add arbitrary qemu command line parameters of the\n    form *-param value*. Actually it's not quite arbitrary - we prevent you\n    from setting some parameters which would interfere with parameters that\n    we use.\n\n    The first character of \"param\" string must be a \"-\" (dash).\n\n    \"value\" can be NULL.\n\n",
+  .help = "NAME\n    config - add qemu parameters\n\nSYNOPSIS\n     config qemuparam qemuvalue\n\nDESCRIPTION\n    This can be used to add arbitrary qemu command line parameters of the\n    form *-param value*. Actually it's not quite arbitrary - we prevent you\n    from setting some parameters which would interfere with parameters that\n    we use.\n\n    The first character of \"qemuparam\" string must be a \"-\" (dash).\n\n    \"qemuvalue\" can be NULL.\n\n",
   .run = run_config
 };
 
@@ -774,13 +838,13 @@ struct command_entry get_recovery_proc_cmd_entry = {
 
 struct command_entry add_drive_with_if_cmd_entry = {
   .name = "add-drive-with-if",
-  .help = "NAME\n    add-drive-with-if - add a drive specifying the QEMU block emulation to\n    use\n\nSYNOPSIS\n     add-drive-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add-drive-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-drive-with-if - add a drive specifying the QEMU block emulation to\n    use\n\nSYNOPSIS\n     add-drive-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add-drive\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_drive_with_if
 };
 
 struct command_entry add_drive_ro_with_if_cmd_entry = {
   .name = "add-drive-ro-with-if",
-  .help = "NAME\n    add-drive-ro-with-if - add a drive read-only specifying the QEMU block\n    emulation to use\n\nSYNOPSIS\n     add-drive-ro-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive_ro\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add-drive-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    add-drive-ro-with-if - add a drive read-only specifying the QEMU block\n    emulation to use\n\nSYNOPSIS\n     add-drive-ro-with-if filename iface\n\nDESCRIPTION\n    This is the same as \"add_drive_ro\" but it allows you to specify the QEMU\n    interface emulation to use at run time.\n\n    *This function is deprecated.* In new code, use the \"add-drive\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_add_drive_ro_with_if
 };
 
@@ -798,7 +862,7 @@ struct command_entry inspect_os_cmd_entry = {
 
 struct command_entry inspect_get_type_cmd_entry = {
   .name = "inspect-get-type",
-  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"hurd\"\n        GNU/Hurd.\n\n    \"dos\"\n        MS-DOS, FreeDOS and others.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-type - get type of inspected operating system\n\nSYNOPSIS\n     inspect-get-type root\n\nDESCRIPTION\n    This returns the type of the inspected operating system. Currently\n    defined types are:\n\n    \"linux\"\n        Any Linux-based operating system.\n\n    \"windows\"\n        Any Microsoft Windows operating system.\n\n    \"freebsd\"\n        FreeBSD.\n\n    \"netbsd\"\n        NetBSD.\n\n    \"openbsd\"\n        OpenBSD.\n\n    \"hurd\"\n        GNU/Hurd.\n\n    \"dos\"\n        MS-DOS, FreeDOS and others.\n\n    \"unknown\"\n        The operating system type could not be determined.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_type
 };
 
@@ -810,7 +874,7 @@ struct command_entry inspect_get_arch_cmd_entry = {
 
 struct command_entry inspect_get_distro_cmd_entry = {
   .name = "inspect-get-distro",
-  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"buildroot\"\n        Buildroot-derived distro, but not one we specifically recognize.\n\n    \"centos\"\n        CentOS.\n\n    \"cirros\"\n        Cirros.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"freedos\"\n        FreeDOS.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-get-distro - get distro of inspected operating system\n\nSYNOPSIS\n     inspect-get-distro root\n\nDESCRIPTION\n    This returns the distro (distribution) of the inspected operating\n    system.\n\n    Currently defined distros are:\n\n    \"archlinux\"\n        Arch Linux.\n\n    \"buildroot\"\n        Buildroot-derived distro, but not one we specifically recognize.\n\n    \"centos\"\n        CentOS.\n\n    \"cirros\"\n        Cirros.\n\n    \"debian\"\n        Debian.\n\n    \"fedora\"\n        Fedora.\n\n    \"freedos\"\n        FreeDOS.\n\n    \"gentoo\"\n        Gentoo.\n\n    \"linuxmint\"\n        Linux Mint.\n\n    \"mageia\"\n        Mageia.\n\n    \"mandriva\"\n        Mandriva.\n\n    \"meego\"\n        MeeGo.\n\n    \"openbsd\"\n        OpenBSD.\n\n    \"opensuse\"\n        OpenSUSE.\n\n    \"pardus\"\n        Pardus.\n\n    \"redhat-based\"\n        Some Red Hat-derived distro.\n\n    \"rhel\"\n        Red Hat Enterprise Linux.\n\n    \"scientificlinux\"\n        Scientific Linux.\n\n    \"slackware\"\n        Slackware.\n\n    \"sles\"\n        SuSE Linux Enterprise Server or Desktop.\n\n    \"suse-based\"\n        Some openSuSE-derived distro.\n\n    \"ttylinux\"\n        ttylinux.\n\n    \"ubuntu\"\n        Ubuntu.\n\n    \"unknown\"\n        The distro could not be determined.\n\n    \"windows\"\n        Windows does not have distributions. This string is returned if the\n        OS type is Windows.\n\n    Future versions of libguestfs may return other strings here. The caller\n    should be prepared to handle any string.\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_distro
 };
 
@@ -862,10 +926,10 @@ struct command_entry list_filesystems_cmd_entry = {
   .run = run_list_filesystems
 };
 
-struct command_entry add_drive_opts_cmd_entry = {
-  .name = "add-drive-opts",
-  .help = "NAME\n    add-drive-opts - add an image to examine or modify\n\nSYNOPSIS\n     add-drive-opts filename [readonly:true|false] [format:..] [iface:..] [name:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    The first time you call this function, the disk appears as \"/dev/sda\",\n    the second time as \"/dev/sdb\", and so on.\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    You can use 'add' as an alias for this command.\n\n",
-  .run = run_add_drive_opts
+struct command_entry add_drive_cmd_entry = {
+  .name = "add-drive",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .run = run_add_drive
 };
 
 struct command_entry inspect_get_windows_systemroot_cmd_entry = {
@@ -878,12 +942,6 @@ struct command_entry inspect_get_roots_cmd_entry = {
   .name = "inspect-get-roots",
   .help = "NAME\n    inspect-get-roots - return list of operating systems found by last\n    inspection\n\nSYNOPSIS\n     inspect-get-roots\n\nDESCRIPTION\n    This function is a convenient way to get the list of root devices, as\n    returned from a previous call to \"inspect_os\", but without redoing the\n    whole inspection process.\n\n    This returns an empty list if either no root devices were found or the\n    caller has not called \"inspect_os\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
   .run = run_inspect_get_roots
-};
-
-struct command_entry debug_cmdline_cmd_entry = {
-  .name = "debug-cmdline",
-  .help = "NAME\n    debug-cmdline - debug the QEMU command line (internal use only)\n\nSYNOPSIS\n     debug-cmdline\n\nDESCRIPTION\n    This returns the internal QEMU command line. 'debug' commands are not\n    part of the formal API and can be removed or changed at any time.\n\n",
-  .run = run_debug_cmdline
 };
 
 struct command_entry debug_drives_cmd_entry = {
@@ -912,8 +970,14 @@ struct command_entry inspect_get_package_management_cmd_entry = {
 
 struct command_entry inspect_list_applications_cmd_entry = {
   .name = "inspect-list-applications",
-  .help = "NAME\n    inspect-list-applications - get list of applications installed in the\n    operating system\n\nSYNOPSIS\n     inspect-list-applications root\n\nDESCRIPTION\n    Return the list of applications installed in the operating system.\n\n    *Note:* This call works differently from other parts of the inspection\n    API. You have to call \"inspect_os\", then \"inspect_get_mountpoints\", then\n    mount up the disks, before calling this. Listing applications is a\n    significantly more difficult operation which requires access to the full\n    filesystem. Also note that unlike the other \"inspect_get_*\" calls which\n    are just returning data cached in the libguestfs handle, this call\n    actually reads parts of the mounted filesystems during the call.\n\n    This returns an empty list if the inspection code was not able to\n    determine the list of applications.\n\n    The application structure contains the following fields:\n\n    \"app_name\"\n        The name of the application. For Red Hat-derived and Debian-derived\n        Linux guests, this is the package name.\n\n    \"app_display_name\"\n        The display name of the application, sometimes localized to the\n        install language of the guest operating system.\n\n        If unavailable this is returned as an empty string \"\". Callers\n        needing to display something can use \"app_name\" instead.\n\n    \"app_epoch\"\n        For package managers which use epochs, this contains the epoch of\n        the package (an integer). If unavailable, this is returned as 0.\n\n    \"app_version\"\n        The version string of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_release\"\n        The release string of the application or package, for package\n        managers that use this. If unavailable this is returned as an empty\n        string \"\".\n\n    \"app_install_path\"\n        The installation path of the application (on operating systems such\n        as Windows which use installation paths). This path is in the format\n        used by the guest operating system, it is not a libguestfs path.\n\n        If unavailable this is returned as an empty string \"\".\n\n    \"app_trans_path\"\n        The install path translated into a libguestfs path. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_publisher\"\n        The name of the publisher of the application, for package managers\n        that use this. If unavailable this is returned as an empty string\n        \"\".\n\n    \"app_url\"\n        The URL (eg. upstream URL) of the application. If unavailable this\n        is returned as an empty string \"\".\n\n    \"app_source_package\"\n        For packaging systems which support this, the name of the source\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_summary\"\n        A short (usually one line) description of the application or\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_description\"\n        A longer description of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .help = "NAME\n    inspect-list-applications - get list of applications installed in the\n    operating system\n\nSYNOPSIS\n     inspect-list-applications root\n\nDESCRIPTION\n    Return the list of applications installed in the operating system.\n\n    *Note:* This call works differently from other parts of the inspection\n    API. You have to call \"inspect_os\", then \"inspect_get_mountpoints\", then\n    mount up the disks, before calling this. Listing applications is a\n    significantly more difficult operation which requires access to the full\n    filesystem. Also note that unlike the other \"inspect_get_*\" calls which\n    are just returning data cached in the libguestfs handle, this call\n    actually reads parts of the mounted filesystems during the call.\n\n    This returns an empty list if the inspection code was not able to\n    determine the list of applications.\n\n    The application structure contains the following fields:\n\n    \"app_name\"\n        The name of the application. For Red Hat-derived and Debian-derived\n        Linux guests, this is the package name.\n\n    \"app_display_name\"\n        The display name of the application, sometimes localized to the\n        install language of the guest operating system.\n\n        If unavailable this is returned as an empty string \"\". Callers\n        needing to display something can use \"app_name\" instead.\n\n    \"app_epoch\"\n        For package managers which use epochs, this contains the epoch of\n        the package (an integer). If unavailable, this is returned as 0.\n\n    \"app_version\"\n        The version string of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_release\"\n        The release string of the application or package, for package\n        managers that use this. If unavailable this is returned as an empty\n        string \"\".\n\n    \"app_install_path\"\n        The installation path of the application (on operating systems such\n        as Windows which use installation paths). This path is in the format\n        used by the guest operating system, it is not a libguestfs path.\n\n        If unavailable this is returned as an empty string \"\".\n\n    \"app_trans_path\"\n        The install path translated into a libguestfs path. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app_publisher\"\n        The name of the publisher of the application, for package managers\n        that use this. If unavailable this is returned as an empty string\n        \"\".\n\n    \"app_url\"\n        The URL (eg. upstream URL) of the application. If unavailable this\n        is returned as an empty string \"\".\n\n    \"app_source_package\"\n        For packaging systems which support this, the name of the source\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_summary\"\n        A short (usually one line) description of the application or\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app_description\"\n        A longer description of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n    *This function is deprecated.* In new code, use the\n    \"inspect-list-applications2\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_inspect_list_applications
+};
+
+struct command_entry inspect_list_applications2_cmd_entry = {
+  .name = "inspect-list-applications2",
+  .help = "NAME\n    inspect-list-applications2 - get list of applications installed in the\n    operating system\n\nSYNOPSIS\n     inspect-list-applications2 root\n\nDESCRIPTION\n    Return the list of applications installed in the operating system.\n\n    *Note:* This call works differently from other parts of the inspection\n    API. You have to call \"inspect_os\", then \"inspect_get_mountpoints\", then\n    mount up the disks, before calling this. Listing applications is a\n    significantly more difficult operation which requires access to the full\n    filesystem. Also note that unlike the other \"inspect_get_*\" calls which\n    are just returning data cached in the libguestfs handle, this call\n    actually reads parts of the mounted filesystems during the call.\n\n    This returns an empty list if the inspection code was not able to\n    determine the list of applications.\n\n    The application structure contains the following fields:\n\n    \"app2_name\"\n        The name of the application. For Red Hat-derived and Debian-derived\n        Linux guests, this is the package name.\n\n    \"app2_display_name\"\n        The display name of the application, sometimes localized to the\n        install language of the guest operating system.\n\n        If unavailable this is returned as an empty string \"\". Callers\n        needing to display something can use \"app2_name\" instead.\n\n    \"app2_epoch\"\n        For package managers which use epochs, this contains the epoch of\n        the package (an integer). If unavailable, this is returned as 0.\n\n    \"app2_version\"\n        The version string of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app2_release\"\n        The release string of the application or package, for package\n        managers that use this. If unavailable this is returned as an empty\n        string \"\".\n\n    \"app2_arch\"\n        The architecture string of the application or package, for package\n        managers that use this. If unavailable this is returned as an empty\n        string \"\".\n\n    \"app2_install_path\"\n        The installation path of the application (on operating systems such\n        as Windows which use installation paths). This path is in the format\n        used by the guest operating system, it is not a libguestfs path.\n\n        If unavailable this is returned as an empty string \"\".\n\n    \"app2_trans_path\"\n        The install path translated into a libguestfs path. If unavailable\n        this is returned as an empty string \"\".\n\n    \"app2_publisher\"\n        The name of the publisher of the application, for package managers\n        that use this. If unavailable this is returned as an empty string\n        \"\".\n\n    \"app2_url\"\n        The URL (eg. upstream URL) of the application. If unavailable this\n        is returned as an empty string \"\".\n\n    \"app2_source_package\"\n        For packaging systems which support this, the name of the source\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app2_summary\"\n        A short (usually one line) description of the application or\n        package. If unavailable this is returned as an empty string \"\".\n\n    \"app2_description\"\n        A longer description of the application or package. If unavailable\n        this is returned as an empty string \"\".\n\n    Please read \"INSPECTION\" in guestfs(3) for more details.\n\n",
+  .run = run_inspect_list_applications2
 };
 
 struct command_entry inspect_get_hostname_cmd_entry = {
@@ -948,13 +1012,13 @@ struct command_entry inspect_is_multipart_cmd_entry = {
 
 struct command_entry set_attach_method_cmd_entry = {
   .name = "set-attach-method",
-  .help = "NAME\n    set-attach-method - set the attach method\n\nSYNOPSIS\n     set-attach-method attachmethod\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the back end guestfsd\n    daemon. Possible methods are:\n\n    \"appliance\"\n        Launch an appliance and connect to it. This is the ordinary method\n        and the default.\n\n    \"unix:*path*\"\n        Connect to the Unix domain socket *path*.\n\n        This method lets you connect to an existing daemon or (using\n        virtio-serial) to a live guest. For more information, see \"ATTACHING\n        TO RUNNING DAEMONS\" in guestfs(3).\n\n    You can use 'attach-method' as an alias for this command.\n\n",
+  .help = "NAME\n    set-attach-method - set the attach method\n\nSYNOPSIS\n     set-attach-method attachmethod\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the back end guestfsd\n    daemon.\n\n    See \"ATTACH METHOD\" in guestfs(3).\n\n    You can use 'attach-method' as an alias for this command.\n\n",
   .run = run_set_attach_method
 };
 
 struct command_entry get_attach_method_cmd_entry = {
   .name = "get-attach-method",
-  .help = "NAME\n    get-attach-method - get the attach method\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current attach method. See \"set_attach_method\".\n\n",
+  .help = "NAME\n    get-attach-method - get the attach method\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current attach method.\n\n    See \"set_attach_method\" and \"ATTACH METHOD\" in guestfs(3).\n\n",
   .run = run_get_attach_method
 };
 
@@ -1024,10 +1088,184 @@ struct command_entry umount_local_cmd_entry = {
   .run = run_umount_local
 };
 
+struct command_entry max_disks_cmd_entry = {
+  .name = "max-disks",
+  .help = "NAME\n    max-disks - maximum number of disks that may be added\n\nSYNOPSIS\n     max-disks\n\nDESCRIPTION\n    Return the maximum number of disks that may be added to a handle (eg. by\n    \"add_drive_opts\" and similar calls).\n\n    This function was added in libguestfs 1.19.7. In previous versions of\n    libguestfs the limit was 25.\n\n    See \"MAXIMUM NUMBER OF DISKS\" in guestfs(3) for additional information\n    on this topic.\n\n",
+  .run = run_max_disks
+};
+
+struct command_entry canonical_device_name_cmd_entry = {
+  .name = "canonical-device-name",
+  .help = "NAME\n    canonical-device-name - return canonical device name\n\nSYNOPSIS\n     canonical-device-name device\n\nDESCRIPTION\n    This utility function is useful when displaying device names to the\n    user. It takes a number of irregular device names and returns them in a\n    consistent format:\n\n    \"/dev/hdX\"\n    \"/dev/vdX\"\n        These are returned as \"/dev/sdX\". Note this works for device names\n        and partition names. This is approximately the reverse of the\n        algorithm described in \"BLOCK DEVICE NAMING\" in guestfs(3).\n\n    \"/dev/mapper/VG-LV\"\n    \"/dev/dm-N\"\n        Converted to \"/dev/VG/LV\" form using \"lvm_canonical_lvm_name\".\n\n    Other strings are returned unmodified.\n\n",
+  .run = run_canonical_device_name
+};
+
 struct command_entry shutdown_cmd_entry = {
   .name = "shutdown",
   .help = "NAME\n    shutdown - shutdown the qemu subprocess\n\nSYNOPSIS\n     shutdown\n\nDESCRIPTION\n    This is the opposite of \"launch\". It performs an orderly shutdown of the\n    backend process(es). If the autosync flag is set (which is the default)\n    then the disk image is synchronized.\n\n    If the subprocess exits with an error then this function will return an\n    error, which should *not* be ignored (it may indicate that the disk\n    image could not be written out properly).\n\n    It is safe to call this multiple times. Extra calls are ignored.\n\n    This call does *not* close or free up the handle. You still need to call\n    \"close\" afterwards.\n\n    \"close\" will call this if you don't do it explicitly, but note that any\n    errors are ignored in that case.\n\n",
   .run = run_shutdown
+};
+
+struct command_entry cat_cmd_entry = {
+  .name = "cat",
+  .help = "NAME\n    cat - list the contents of a file\n\nSYNOPSIS\n     cat path\n\nDESCRIPTION\n    Return the contents of the file named \"path\".\n\n    Because, in C, this function returns a \"char *\", there is no way to\n    differentiate between a \"\\0\" character in a file and end of string. To\n    handle binary files, use the \"read_file\" or \"download\" functions.\n\n",
+  .run = run_cat
+};
+
+struct command_entry find_cmd_entry = {
+  .name = "find",
+  .help = "NAME\n    find - find all files and directories\n\nSYNOPSIS\n     find directory\n\nDESCRIPTION\n    This command lists out all files and directories, recursively, starting\n    at \"directory\". It is essentially equivalent to running the shell\n    command \"find directory -print\" but some post-processing happens on the\n    output, described below.\n\n    This returns a list of strings *without any prefix*. Thus if the\n    directory structure was:\n\n     /tmp/a\n     /tmp/b\n     /tmp/c/d\n\n    then the returned list from \"find\" \"/tmp\" would be 4 elements:\n\n     a\n     b\n     c\n     c/d\n\n    If \"directory\" is not a directory, then this command returns an error.\n\n    The returned list is sorted.\n\n",
+  .run = run_find
+};
+
+struct command_entry read_file_cmd_entry = {
+  .name = "read-file",
+  .help = "NAME\n    read-file - read a file\n\nSYNOPSIS\n     read-file path\n\nDESCRIPTION\n    This calls returns the contents of the file \"path\" as a buffer.\n\n    Unlike \"cat\", this function can correctly handle files that contain\n    embedded ASCII NUL characters.\n\n",
+  .run = run_read_file
+};
+
+struct command_entry read_lines_cmd_entry = {
+  .name = "read-lines",
+  .help = "NAME\n    read-lines - read file as lines\n\nSYNOPSIS\n     read-lines path\n\nDESCRIPTION\n    Return the contents of the file named \"path\".\n\n    The file contents are returned as a list of lines. Trailing \"LF\" and\n    \"CRLF\" character sequences are *not* returned.\n\n    Note that this function cannot correctly handle binary files\n    (specifically, files containing \"\\0\" character which is treated as end\n    of string). For those you need to use the \"read_file\" function and split\n    the buffer into lines yourself.\n\n",
+  .run = run_read_lines
+};
+
+struct command_entry write_cmd_entry = {
+  .name = "write",
+  .help = "NAME\n    write - create a new file\n\nSYNOPSIS\n     write path content\n\nDESCRIPTION\n    This call creates a file called \"path\". The content of the file is the\n    string \"content\" (which can contain any 8 bit data).\n\n    See also \"write_append\".\n\n",
+  .run = run_write
+};
+
+struct command_entry write_append_cmd_entry = {
+  .name = "write-append",
+  .help = "NAME\n    write-append - append content to end of file\n\nSYNOPSIS\n     write-append path content\n\nDESCRIPTION\n    This call appends \"content\" to the end of file \"path\". If \"path\" does\n    not exist, then a new file is created.\n\n    See also \"write\".\n\n",
+  .run = run_write_append
+};
+
+struct command_entry lstatlist_cmd_entry = {
+  .name = "lstatlist",
+  .help = "NAME\n    lstatlist - lstat on multiple files\n\nSYNOPSIS\n     lstatlist path names\n\nDESCRIPTION\n    This call allows you to perform the \"lstat\" operation on multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a list of stat structs, with a one-to-one\n    correspondence to the \"names\" list. If any name did not exist or could\n    not be lstat'd, then the \"ino\" field of that structure is set to -1.\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. See also\n    \"lxattrlist\" for a similarly efficient call for getting extended\n    attributes.\n\n",
+  .run = run_lstatlist
+};
+
+struct command_entry lxattrlist_cmd_entry = {
+  .name = "lxattrlist",
+  .help = "NAME\n    lxattrlist - lgetxattr on multiple files\n\nSYNOPSIS\n     lxattrlist path names\n\nDESCRIPTION\n    This call allows you to get the extended attributes of multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a flat list of xattr structs which must be interpreted\n    sequentially. The first xattr struct always has a zero-length\n    \"attrname\". \"attrval\" in this struct is zero-length to indicate there\n    was an error doing \"lgetxattr\" for this file, *or* is a C string which\n    is a decimal number (the number of following attributes for this file,\n    which could be \"0\"). Then after the first xattr struct are the zero or\n    more attributes for the first named file. This repeats for the second\n    and subsequent files.\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. See also \"lstatlist\"\n    for a similarly efficient call for getting standard stats.\n\n",
+  .run = run_lxattrlist
+};
+
+struct command_entry readlinklist_cmd_entry = {
+  .name = "readlinklist",
+  .help = "NAME\n    readlinklist - readlink on multiple files\n\nSYNOPSIS\n     readlinklist path names\n\nDESCRIPTION\n    This call allows you to do a \"readlink\" operation on multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a list of strings, with a one-to-one correspondence to\n    the \"names\" list. Each string is the value of the symbolic link.\n\n    If the readlink(2) operation fails on any name, then the corresponding\n    result string is the empty string \"\". However the whole operation is\n    completed even if there were readlink(2) errors, and so you can call\n    this function with names where you don't know if they are symbolic links\n    already (albeit slightly less efficient).\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips.\n\n",
+  .run = run_readlinklist
+};
+
+struct command_entry ls_cmd_entry = {
+  .name = "ls",
+  .help = "NAME\n    ls - list the files in a directory\n\nSYNOPSIS\n     ls directory\n\nDESCRIPTION\n    List the files in \"directory\" (relative to the root directory, there is\n    no cwd). The '.' and '..' entries are not returned, but hidden files are\n    shown.\n\n",
+  .run = run_ls
+};
+
+struct command_entry hivex_value_utf8_cmd_entry = {
+  .name = "hivex-value-utf8",
+  .help = "NAME\n    hivex-value-utf8 - return the data field from the (key, datatype, data)\n    tuple\n\nSYNOPSIS\n     hivex-value-utf8 valueh\n\nDESCRIPTION\n    This calls \"hivex_value_value\" (which returns the data field from a\n    hivex value tuple). It then assumes that the field is a UTF-16LE string\n    and converts the result to UTF-8 (or if this is not possible, it returns\n    an error).\n\n    This is useful for reading strings out of the Windows registry. However\n    it is not foolproof because the registry is not strongly-typed and\n    fields can contain arbitrary or unexpected data.\n\n",
+  .run = run_hivex_value_utf8
+};
+
+struct command_entry disk_format_cmd_entry = {
+  .name = "disk-format",
+  .help = "NAME\n    disk-format - detect the disk format of a disk image\n\nSYNOPSIS\n     disk-format filename\n\nDESCRIPTION\n    Detect and return the format of the disk image called \"filename\".\n    \"filename\" can also be a host device, etc. If the format of the image\n    could not be detected, then \"unknown\" is returned.\n\n    Note that detecting the disk format can be insecure under some\n    circumstances. See \"CVE-2010-3851\" in guestfs(3).\n\n    See also: \"DISK IMAGE FORMATS\" in guestfs(3)\n\n",
+  .run = run_disk_format
+};
+
+struct command_entry disk_virtual_size_cmd_entry = {
+  .name = "disk-virtual-size",
+  .help = "NAME\n    disk-virtual-size - return virtual size of a disk\n\nSYNOPSIS\n     disk-virtual-size filename\n\nDESCRIPTION\n    Detect and return the virtual size in bytes of the disk image called\n    \"filename\".\n\n    Note that detecting disk features can be insecure under some\n    circumstances. See \"CVE-2010-3851\" in guestfs(3).\n\n",
+  .run = run_disk_virtual_size
+};
+
+struct command_entry disk_has_backing_file_cmd_entry = {
+  .name = "disk-has-backing-file",
+  .help = "NAME\n    disk-has-backing-file - return whether disk has a backing file\n\nSYNOPSIS\n     disk-has-backing-file filename\n\nDESCRIPTION\n    Detect and return whether the disk image \"filename\" has a backing file.\n\n    Note that detecting disk features can be insecure under some\n    circumstances. See \"CVE-2010-3851\" in guestfs(3).\n\n",
+  .run = run_disk_has_backing_file
+};
+
+struct command_entry remove_drive_cmd_entry = {
+  .name = "remove-drive",
+  .help = "NAME\n    remove-drive - remove a disk image\n\nSYNOPSIS\n     remove-drive label\n\nDESCRIPTION\n    This function is conceptually the opposite of \"add_drive_opts\". It\n    removes the drive that was previously added with label \"label\".\n\n    Note that in order to remove drives, you have to add them with labels\n    (see the optional \"label\" argument to \"add_drive_opts\"). If you didn't\n    use a label, then they cannot be removed.\n\n    You can call this function before or after launching the handle. If\n    called after launch, if the attach-method supports it, we try to hot\n    unplug the drive: see \"HOTPLUGGING\" in guestfs(3). The disk must not be\n    in use (eg. mounted) when you do this. We try to detect if the disk is\n    in use and stop you from doing this.\n\n",
+  .run = run_remove_drive
+};
+
+struct command_entry set_libvirt_supported_credentials_cmd_entry = {
+  .name = "set-libvirt-supported-credentials",
+  .help = "NAME\n    set-libvirt-supported-credentials - set libvirt credentials supported by\n    calling program\n\nSYNOPSIS\n     set-libvirt-supported-credentials creds\n\nDESCRIPTION\n    Call this function before setting an event handler for\n    \"GUESTFS_EVENT_LIBVIRT_AUTH\", to supply the list of credential types\n    that the program knows how to process.\n\n    The \"creds\" list must be a non-empty list of strings. Possible strings\n    are:\n\n    \"username\"\n    \"authname\"\n    \"language\"\n    \"cnonce\"\n    \"passphrase\"\n    \"echoprompt\"\n    \"noechoprompt\"\n    \"realm\"\n    \"external\"\n\n    See libvirt documentation for the meaning of these credential types.\n\n    See \"LIBVIRT AUTHENTICATION\" in guestfs(3) for documentation and example\n    code.\n\n",
+  .run = run_set_libvirt_supported_credentials
+};
+
+struct command_entry get_libvirt_requested_credentials_cmd_entry = {
+  .name = "get-libvirt-requested-credentials",
+  .help = "NAME\n    get-libvirt-requested-credentials - get list of credentials requested by\n    libvirt\n\nSYNOPSIS\n     get-libvirt-requested-credentials\n\nDESCRIPTION\n    This should only be called during the event callback for events of type\n    \"GUESTFS_EVENT_LIBVIRT_AUTH\".\n\n    Return the list of credentials requested by libvirt. Possible values are\n    a subset of the strings provided when you called\n    \"set_libvirt_supported_credentials\".\n\n    See \"LIBVIRT AUTHENTICATION\" in guestfs(3) for documentation and example\n    code.\n\n",
+  .run = run_get_libvirt_requested_credentials
+};
+
+struct command_entry get_libvirt_requested_credential_prompt_cmd_entry = {
+  .name = "get-libvirt-requested-credential-prompt",
+  .help = "NAME\n    get-libvirt-requested-credential-prompt - prompt of i'th requested\n    credential\n\nSYNOPSIS\n     get-libvirt-requested-credential-prompt index\n\nDESCRIPTION\n    Get the prompt (provided by libvirt) for the \"index\"'th requested\n    credential. If libvirt did not provide a prompt, this returns the empty\n    string \"\".\n\n    See \"LIBVIRT AUTHENTICATION\" in guestfs(3) for documentation and example\n    code.\n\n",
+  .run = run_get_libvirt_requested_credential_prompt
+};
+
+struct command_entry get_libvirt_requested_credential_challenge_cmd_entry = {
+  .name = "get-libvirt-requested-credential-challenge",
+  .help = "NAME\n    get-libvirt-requested-credential-challenge - challenge of i'th requested\n    credential\n\nSYNOPSIS\n     get-libvirt-requested-credential-challenge index\n\nDESCRIPTION\n    Get the challenge (provided by libvirt) for the \"index\"'th requested\n    credential. If libvirt did not provide a challenge, this returns the\n    empty string \"\".\n\n    See \"LIBVIRT AUTHENTICATION\" in guestfs(3) for documentation and example\n    code.\n\n",
+  .run = run_get_libvirt_requested_credential_challenge
+};
+
+struct command_entry get_libvirt_requested_credential_defresult_cmd_entry = {
+  .name = "get-libvirt-requested-credential-defresult",
+  .help = "NAME\n    get-libvirt-requested-credential-defresult - default result of i'th\n    requested credential\n\nSYNOPSIS\n     get-libvirt-requested-credential-defresult index\n\nDESCRIPTION\n    Get the default result (provided by libvirt) for the \"index\"'th\n    requested credential. If libvirt did not provide a default result, this\n    returns the empty string \"\".\n\n    See \"LIBVIRT AUTHENTICATION\" in guestfs(3) for documentation and example\n    code.\n\n",
+  .run = run_get_libvirt_requested_credential_defresult
+};
+
+struct command_entry set_libvirt_requested_credential_cmd_entry = {
+  .name = "set-libvirt-requested-credential",
+  .help = "NAME\n    set-libvirt-requested-credential - pass requested credential back to\n    libvirt\n\nSYNOPSIS\n     set-libvirt-requested-credential index cred\n\nDESCRIPTION\n    After requesting the \"index\"'th credential from the user, call this\n    function to pass the answer back to libvirt.\n\n    See \"LIBVIRT AUTHENTICATION\" in guestfs(3) for documentation and example\n    code.\n\n",
+  .run = run_set_libvirt_requested_credential
+};
+
+struct command_entry parse_environment_cmd_entry = {
+  .name = "parse-environment",
+  .help = "NAME\n    parse-environment - parse the environment and set handle flags\n    accordingly\n\nSYNOPSIS\n     parse-environment\n\nDESCRIPTION\n    Parse the program's environment and set flags in the handle accordingly.\n    For example if \"LIBGUESTFS_DEBUG=1\" then the 'verbose' flag is set in\n    the handle.\n\n    *Most programs do not need to call this*. It is done implicitly when you\n    call \"create\".\n\n    See \"ENVIRONMENT VARIABLES\" in guestfs(3) for a list of environment\n    variables that can affect libguestfs handles. See also\n    \"guestfs_create_flags\" in guestfs(3), and \"parse_environment_list\".\n\n",
+  .run = run_parse_environment
+};
+
+struct command_entry parse_environment_list_cmd_entry = {
+  .name = "parse-environment-list",
+  .help = "NAME\n    parse-environment-list - parse the environment and set handle flags\n    accordingly\n\nSYNOPSIS\n     parse-environment-list environment\n\nDESCRIPTION\n    Parse the list of strings in the argument \"environment\" and set flags in\n    the handle accordingly. For example if \"LIBGUESTFS_DEBUG=1\" is a string\n    in the list, then the 'verbose' flag is set in the handle.\n\n    This is the same as \"parse_environment\" except that it parses an\n    explicit list of strings instead of the program's environment.\n\n",
+  .run = run_parse_environment_list
+};
+
+struct command_entry set_tmpdir_cmd_entry = {
+  .name = "set-tmpdir",
+  .help = "NAME\n    set-tmpdir - set the temporary directory\n\nSYNOPSIS\n     set-tmpdir tmpdir\n\nDESCRIPTION\n    Set the directory used by the handle to store temporary files.\n\n    The environment variables \"LIBGUESTFS_TMPDIR\" and \"TMPDIR\" control the\n    default value: If \"LIBGUESTFS_TMPDIR\" is set, then that is the default.\n    Else if \"TMPDIR\" is set, then that is the default. Else \"/tmp\" is the\n    default.\n\n    You can use 'tmpdir' as an alias for this command.\n\n",
+  .run = run_set_tmpdir
+};
+
+struct command_entry get_tmpdir_cmd_entry = {
+  .name = "get-tmpdir",
+  .help = "NAME\n    get-tmpdir - get the temporary directory\n\nSYNOPSIS\n     get-tmpdir\n\nDESCRIPTION\n    Get the directory used by the handle to store temporary files.\n\n",
+  .run = run_get_tmpdir
+};
+
+struct command_entry set_cachedir_cmd_entry = {
+  .name = "set-cachedir",
+  .help = "NAME\n    set-cachedir - set the appliance cache directory\n\nSYNOPSIS\n     set-cachedir cachedir\n\nDESCRIPTION\n    Set the directory used by the handle to store the appliance cache, when\n    using a supermin appliance. The appliance is cached and shared between\n    all handles which have the same effective user ID.\n\n    The environment variables \"LIBGUESTFS_CACHEDIR\" and \"TMPDIR\" control the\n    default value: If \"LIBGUESTFS_CACHEDIR\" is set, then that is the\n    default. Else if \"TMPDIR\" is set, then that is the default. Else\n    \"/var/tmp\" is the default.\n\n    You can use 'cachedir' as an alias for this command.\n\n",
+  .run = run_set_cachedir
+};
+
+struct command_entry get_cachedir_cmd_entry = {
+  .name = "get-cachedir",
+  .help = "NAME\n    get-cachedir - get the appliance cache directory\n\nSYNOPSIS\n     get-cachedir\n\nDESCRIPTION\n    Get the directory used by the handle to store the appliance cache.\n\n",
+  .run = run_get_cachedir
 };
 
 struct command_entry mount_cmd_entry = {
@@ -1048,22 +1286,10 @@ struct command_entry touch_cmd_entry = {
   .run = run_touch
 };
 
-struct command_entry cat_cmd_entry = {
-  .name = "cat",
-  .help = "NAME\n    cat - list the contents of a file\n\nSYNOPSIS\n     cat path\n\nDESCRIPTION\n    Return the contents of the file named \"path\".\n\n    Note that this function cannot correctly handle binary files\n    (specifically, files containing \"\\0\" character which is treated as end\n    of string). For those you need to use the \"read_file\" or \"download\"\n    functions which have a more complex interface.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
-  .run = run_cat
-};
-
 struct command_entry ll_cmd_entry = {
   .name = "ll",
   .help = "NAME\n    ll - list the files in a directory (long format)\n\nSYNOPSIS\n     ll directory\n\nDESCRIPTION\n    List the files in \"directory\" (relative to the root directory, there is\n    no cwd) in the format of 'ls -la'.\n\n    This command is mostly useful for interactive sessions. It is *not*\n    intended that you try to parse the output string.\n\n",
   .run = run_ll
-};
-
-struct command_entry ls_cmd_entry = {
-  .name = "ls",
-  .help = "NAME\n    ls - list the files in a directory\n\nSYNOPSIS\n     ls directory\n\nDESCRIPTION\n    List the files in \"directory\" (relative to the root directory, there is\n    no cwd). The '.' and '..' entries are not returned, but hidden files are\n    shown.\n\n    This command is mostly useful for interactive sessions. Programs should\n    probably use \"readdir\" instead.\n\n",
-  .run = run_ls
 };
 
 struct command_entry list_devices_cmd_entry = {
@@ -1112,12 +1338,6 @@ struct command_entry lvs_full_cmd_entry = {
   .name = "lvs-full",
   .help = "NAME\n    lvs-full - list the LVM logical volumes (LVs)\n\nSYNOPSIS\n     lvs-full\n\nDESCRIPTION\n    List all the logical volumes detected. This is the equivalent of the\n    lvs(8) command. The \"full\" version includes all fields.\n\n",
   .run = run_lvs_full
-};
-
-struct command_entry read_lines_cmd_entry = {
-  .name = "read-lines",
-  .help = "NAME\n    read-lines - read file as lines\n\nSYNOPSIS\n     read-lines path\n\nDESCRIPTION\n    Return the contents of the file named \"path\".\n\n    The file contents are returned as a list of lines. Trailing \"LF\" and\n    \"CRLF\" character sequences are *not* returned.\n\n    Note that this function cannot correctly handle binary files\n    (specifically, files containing \"\\0\" character which is treated as end\n    of line). For those you need to use the \"read_file\" function which has a\n    more complex interface.\n\n",
-  .run = run_read_lines
 };
 
 struct command_entry aug_init_cmd_entry = {
@@ -1276,12 +1496,6 @@ struct command_entry lvcreate_cmd_entry = {
   .run = run_lvcreate
 };
 
-struct command_entry mkfs_cmd_entry = {
-  .name = "mkfs",
-  .help = "NAME\n    mkfs - make a filesystem\n\nSYNOPSIS\n     mkfs fstype device\n\nDESCRIPTION\n    This creates a filesystem on \"device\" (usually a partition or LVM\n    logical volume). The filesystem type is \"fstype\", for example \"ext3\".\n\n",
-  .run = run_mkfs
-};
-
 struct command_entry sfdisk_cmd_entry = {
   .name = "sfdisk",
   .help = "NAME\n    sfdisk - create partitions on a block device\n\nSYNOPSIS\n     sfdisk device cyls heads sectors lines\n\nDESCRIPTION\n    This is a direct interface to the sfdisk(8) program for creating\n    partitions on block devices.\n\n    \"device\" should be a block device, for example \"/dev/sda\".\n\n    \"cyls\", \"heads\" and \"sectors\" are the number of cylinders, heads and\n    sectors on the device, which are passed directly to sfdisk as the *-C*,\n    *-H* and *-S* parameters. If you pass 0 for any of these, then the\n    corresponding parameter is omitted. Usually for 'large' disks, you can\n    just pass 0 for these, but for small (floppy-sized) disks, sfdisk (or\n    rather, the kernel) cannot work out the right geometry and you will need\n    to tell it.\n\n    \"lines\" is a list of lines that we feed to \"sfdisk\". For more\n    information refer to the sfdisk(8) manpage.\n\n    To create a single partition occupying the whole disk, you would pass\n    \"lines\" as a single element list, when the single element being the\n    string \",\" (comma).\n\n    See also: \"sfdisk_l\", \"sfdisk_N\", \"part_init\"\n\n    *This function is deprecated.* In new code, use the \"part-add\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
@@ -1296,7 +1510,7 @@ struct command_entry write_file_cmd_entry = {
 
 struct command_entry umount_cmd_entry = {
   .name = "umount",
-  .help = "NAME\n    umount - unmount a filesystem\n\nSYNOPSIS\n     umount pathordevice\n\nDESCRIPTION\n    This unmounts the given filesystem. The filesystem may be specified\n    either by its mountpoint (path) or the device which contains the\n    filesystem.\n\n    You can use 'unmount' as an alias for this command.\n\n",
+  .help = "NAME\n    umount - unmount a filesystem\n\nSYNOPSIS\n     umount pathordevice [force:true|false] [lazyunmount:true|false]\n\nDESCRIPTION\n    This unmounts the given filesystem. The filesystem may be specified\n    either by its mountpoint (path) or the device which contains the\n    filesystem.\n\n    You can use 'unmount' or 'umount-opts' as an alias for this command.\n\n",
   .run = run_umount
 };
 
@@ -1440,25 +1654,25 @@ struct command_entry checksum_cmd_entry = {
 
 struct command_entry tar_in_cmd_entry = {
   .name = "tar-in",
-  .help = "NAME\n    tar-in - unpack tarfile to directory\n\nSYNOPSIS\n     tar-in tarfile directory\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarfile\" (an *uncompressed*\n    tar file) into \"directory\".\n\n    To upload a compressed tarball, use \"tgz_in\" or \"txz_in\".\n\n",
+  .help = "NAME\n    tar-in - unpack tarfile to directory\n\nSYNOPSIS\n     tar-in tarfile directory [compress:..]\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarfile\" into \"directory\".\n\n    The optional \"compress\" flag controls compression. If not given, then\n    the input should be an uncompressed tar file. Otherwise one of the\n    following strings may be given to select the compression type of the\n    input file: \"compress\", \"gzip\", \"bzip2\", \"xz\", \"lzop\". (Note that not\n    all builds of libguestfs will support all of these compression types).\n\n    You can use 'tar-in-opts' as an alias for this command.\n\n",
   .run = run_tar_in
 };
 
 struct command_entry tar_out_cmd_entry = {
   .name = "tar-out",
-  .help = "NAME\n    tar-out - pack directory into tarfile\n\nSYNOPSIS\n     tar-out directory tarfile\n\nDESCRIPTION\n    This command packs the contents of \"directory\" and downloads it to local\n    file \"tarfile\".\n\n    To download a compressed tarball, use \"tgz_out\" or \"txz_out\".\n\n",
+  .help = "NAME\n    tar-out - pack directory into tarfile\n\nSYNOPSIS\n     tar-out directory tarfile [compress:..] [numericowner:true|false] [excludes:..]\n\nDESCRIPTION\n    This command packs the contents of \"directory\" and downloads it to local\n    file \"tarfile\".\n\n    The optional \"compress\" flag controls compression. If not given, then\n    the output will be an uncompressed tar file. Otherwise one of the\n    following strings may be given to select the compression type of the\n    output file: \"compress\", \"gzip\", \"bzip2\", \"xz\", \"lzop\". (Note that not\n    all builds of libguestfs will support all of these compression types).\n\n    The other optional arguments are:\n\n    \"excludes\"\n        A list of wildcards. Files are excluded if they match any of the\n        wildcards.\n\n    \"numericowner\"\n        If set to true, the output tar file will contain UID/GID numbers\n        instead of user/group names.\n\n    You can use 'tar-out-opts' as an alias for this command.\n\n",
   .run = run_tar_out
 };
 
 struct command_entry tgz_in_cmd_entry = {
   .name = "tgz-in",
-  .help = "NAME\n    tgz-in - unpack compressed tarball to directory\n\nSYNOPSIS\n     tgz-in tarball directory\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarball\" (a *gzip\n    compressed* tar file) into \"directory\".\n\n    To upload an uncompressed tarball, use \"tar_in\".\n\n",
+  .help = "NAME\n    tgz-in - unpack compressed tarball to directory\n\nSYNOPSIS\n     tgz-in tarball directory\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarball\" (a *gzip\n    compressed* tar file) into \"directory\".\n\n    *This function is deprecated.* In new code, use the \"tar-in\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_tgz_in
 };
 
 struct command_entry tgz_out_cmd_entry = {
   .name = "tgz-out",
-  .help = "NAME\n    tgz-out - pack directory into compressed tarball\n\nSYNOPSIS\n     tgz-out directory tarball\n\nDESCRIPTION\n    This command packs the contents of \"directory\" and downloads it to local\n    file \"tarball\".\n\n    To download an uncompressed tarball, use \"tar_out\".\n\n",
+  .help = "NAME\n    tgz-out - pack directory into compressed tarball\n\nSYNOPSIS\n     tgz-out directory tarball\n\nDESCRIPTION\n    This command packs the contents of \"directory\" and downloads it to local\n    file \"tarball\".\n\n    *This function is deprecated.* In new code, use the \"tar-out\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_tgz_out
 };
 
@@ -1666,12 +1880,6 @@ struct command_entry resize2fs_cmd_entry = {
   .run = run_resize2fs
 };
 
-struct command_entry find_cmd_entry = {
-  .name = "find",
-  .help = "NAME\n    find - find all files and directories\n\nSYNOPSIS\n     find directory\n\nDESCRIPTION\n    This command lists out all files and directories, recursively, starting\n    at \"directory\". It is essentially equivalent to running the shell\n    command \"find directory -print\" but some post-processing happens on the\n    output, described below.\n\n    This returns a list of strings *without any prefix*. Thus if the\n    directory structure was:\n\n     /tmp/a\n     /tmp/b\n     /tmp/c/d\n\n    then the returned list from \"find\" \"/tmp\" would be 4 elements:\n\n     a\n     b\n     c\n     c/d\n\n    If \"directory\" is not a directory, then this command returns an error.\n\n    The returned list is sorted.\n\n    See also \"find0\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
-  .run = run_find
-};
-
 struct command_entry e2fsck_f_cmd_entry = {
   .name = "e2fsck-f",
   .help = "NAME\n    e2fsck-f - check an ext2/ext3 filesystem\n\nSYNOPSIS\n     e2fsck-f device\n\nDESCRIPTION\n    This runs \"e2fsck -p -f device\", ie. runs the ext2/ext3 filesystem\n    checker on \"device\", noninteractively (*-p*), even if the filesystem\n    appears to be clean (*-f*).\n\n    *This function is deprecated.* In new code, use the \"e2fsck\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
@@ -1806,19 +2014,19 @@ struct command_entry mount_loop_cmd_entry = {
 
 struct command_entry mkswap_cmd_entry = {
   .name = "mkswap",
-  .help = "NAME\n    mkswap - create a swap partition\n\nSYNOPSIS\n     mkswap device\n\nDESCRIPTION\n    Create a swap partition on \"device\".\n\n",
+  .help = "NAME\n    mkswap - create a swap partition\n\nSYNOPSIS\n     mkswap device [label:..] [uuid:..]\n\nDESCRIPTION\n    Create a Linux swap partition on \"device\".\n\n    The option arguments \"label\" and \"uuid\" allow you to set the label\n    and/or UUID of the new swap partition.\n\n    You can use 'mkswap-opts' as an alias for this command.\n\n",
   .run = run_mkswap
 };
 
 struct command_entry mkswap_L_cmd_entry = {
   .name = "mkswap-L",
-  .help = "NAME\n    mkswap-L - create a swap partition with a label\n\nSYNOPSIS\n     mkswap-L label device\n\nDESCRIPTION\n    Create a swap partition on \"device\" with label \"label\".\n\n    Note that you cannot attach a swap label to a block device (eg.\n    \"/dev/sda\"), just to a partition. This appears to be a limitation of the\n    kernel or swap tools.\n\n",
+  .help = "NAME\n    mkswap-L - create a swap partition with a label\n\nSYNOPSIS\n     mkswap-L label device\n\nDESCRIPTION\n    Create a swap partition on \"device\" with label \"label\".\n\n    Note that you cannot attach a swap label to a block device (eg.\n    \"/dev/sda\"), just to a partition. This appears to be a limitation of the\n    kernel or swap tools.\n\n    *This function is deprecated.* In new code, use the \"mkswap\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mkswap_L
 };
 
 struct command_entry mkswap_U_cmd_entry = {
   .name = "mkswap-U",
-  .help = "NAME\n    mkswap-U - create a swap partition with an explicit UUID\n\nSYNOPSIS\n     mkswap-U uuid device\n\nDESCRIPTION\n    Create a swap partition on \"device\" with UUID \"uuid\".\n\n",
+  .help = "NAME\n    mkswap-U - create a swap partition with an explicit UUID\n\nSYNOPSIS\n     mkswap-U uuid device\n\nDESCRIPTION\n    Create a swap partition on \"device\" with UUID \"uuid\".\n\n    *This function is deprecated.* In new code, use the \"mkswap\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mkswap_U
 };
 
@@ -1854,7 +2062,7 @@ struct command_entry umask_cmd_entry = {
 
 struct command_entry readdir_cmd_entry = {
   .name = "readdir",
-  .help = "NAME\n    readdir - read directories entries\n\nSYNOPSIS\n     readdir dir\n\nDESCRIPTION\n    This returns the list of directory entries in directory \"dir\".\n\n    All entries in the directory are returned, including \".\" and \"..\". The\n    entries are *not* sorted, but returned in the same order as the\n    underlying filesystem.\n\n    Also this call returns basic file type information about each file. The\n    \"ftyp\" field will contain one of the following characters:\n\n    'b' Block special\n\n    'c' Char special\n\n    'd' Directory\n\n    'f' FIFO (named pipe)\n\n    'l' Symbolic link\n\n    'r' Regular file\n\n    's' Socket\n\n    'u' Unknown file type\n\n    '?' The readdir(3) call returned a \"d_type\" field with an unexpected\n        value\n\n    This function is primarily intended for use by programs. To get a simple\n    list of names, use \"ls\". To get a printable directory for human\n    consumption, use \"ll\".\n\n",
+  .help = "NAME\n    readdir - read directories entries\n\nSYNOPSIS\n     readdir dir\n\nDESCRIPTION\n    This returns the list of directory entries in directory \"dir\".\n\n    All entries in the directory are returned, including \".\" and \"..\". The\n    entries are *not* sorted, but returned in the same order as the\n    underlying filesystem.\n\n    Also this call returns basic file type information about each file. The\n    \"ftyp\" field will contain one of the following characters:\n\n    'b' Block special\n\n    'c' Char special\n\n    'd' Directory\n\n    'f' FIFO (named pipe)\n\n    'l' Symbolic link\n\n    'r' Regular file\n\n    's' Socket\n\n    'u' Unknown file type\n\n    '?' The readdir(3) call returned a \"d_type\" field with an unexpected\n        value\n\n    This function is primarily intended for use by programs. To get a simple\n    list of names, use \"ls\". To get a printable directory for human\n    consumption, use \"ll\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
   .run = run_readdir
 };
 
@@ -1924,81 +2132,75 @@ struct command_entry rmmountpoint_cmd_entry = {
   .run = run_rmmountpoint
 };
 
-struct command_entry read_file_cmd_entry = {
-  .name = "read-file",
-  .help = "NAME\n    read-file - read a file\n\nSYNOPSIS\n     read-file path\n\nDESCRIPTION\n    This calls returns the contents of the file \"path\" as a buffer.\n\n    Unlike \"cat\", this function can correctly handle files that contain\n    embedded ASCII NUL characters. However unlike \"download\", this function\n    is limited in the total size of file that can be handled.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
-  .run = run_read_file
-};
-
 struct command_entry grep_cmd_entry = {
   .name = "grep",
-  .help = "NAME\n    grep - return lines matching a pattern\n\nSYNOPSIS\n     grep regex path\n\nDESCRIPTION\n    This calls the external \"grep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    grep - return lines matching a pattern\n\nSYNOPSIS\n     grep regex path [extended:true|false] [fixed:true|false] [insensitive:true|false] [compressed:true|false]\n\nDESCRIPTION\n    This calls the external \"grep\" program and returns the matching lines.\n\n    The optional flags are:\n\n    \"extended\"\n        Use extended regular expressions. This is the same as using the *-E*\n        flag.\n\n    \"fixed\"\n        Match fixed (don't use regular expressions). This is the same as\n        using the *-F* flag.\n\n    \"insensitive\"\n        Match case-insensitive. This is the same as using the *-i* flag.\n\n    \"compressed\"\n        Use \"zgrep\" instead of \"grep\". This allows the input to be compress-\n        or gzip-compressed.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    You can use 'grep-opts' as an alias for this command.\n\n",
   .run = run_grep
 };
 
 struct command_entry egrep_cmd_entry = {
   .name = "egrep",
-  .help = "NAME\n    egrep - return lines matching a pattern\n\nSYNOPSIS\n     egrep regex path\n\nDESCRIPTION\n    This calls the external \"egrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    egrep - return lines matching a pattern\n\nSYNOPSIS\n     egrep regex path\n\nDESCRIPTION\n    This calls the external \"egrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_egrep
 };
 
 struct command_entry fgrep_cmd_entry = {
   .name = "fgrep",
-  .help = "NAME\n    fgrep - return lines matching a pattern\n\nSYNOPSIS\n     fgrep pattern path\n\nDESCRIPTION\n    This calls the external \"fgrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    fgrep - return lines matching a pattern\n\nSYNOPSIS\n     fgrep pattern path\n\nDESCRIPTION\n    This calls the external \"fgrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_fgrep
 };
 
 struct command_entry grepi_cmd_entry = {
   .name = "grepi",
-  .help = "NAME\n    grepi - return lines matching a pattern\n\nSYNOPSIS\n     grepi regex path\n\nDESCRIPTION\n    This calls the external \"grep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    grepi - return lines matching a pattern\n\nSYNOPSIS\n     grepi regex path\n\nDESCRIPTION\n    This calls the external \"grep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_grepi
 };
 
 struct command_entry egrepi_cmd_entry = {
   .name = "egrepi",
-  .help = "NAME\n    egrepi - return lines matching a pattern\n\nSYNOPSIS\n     egrepi regex path\n\nDESCRIPTION\n    This calls the external \"egrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    egrepi - return lines matching a pattern\n\nSYNOPSIS\n     egrepi regex path\n\nDESCRIPTION\n    This calls the external \"egrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_egrepi
 };
 
 struct command_entry fgrepi_cmd_entry = {
   .name = "fgrepi",
-  .help = "NAME\n    fgrepi - return lines matching a pattern\n\nSYNOPSIS\n     fgrepi pattern path\n\nDESCRIPTION\n    This calls the external \"fgrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    fgrepi - return lines matching a pattern\n\nSYNOPSIS\n     fgrepi pattern path\n\nDESCRIPTION\n    This calls the external \"fgrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_fgrepi
 };
 
 struct command_entry zgrep_cmd_entry = {
   .name = "zgrep",
-  .help = "NAME\n    zgrep - return lines matching a pattern\n\nSYNOPSIS\n     zgrep regex path\n\nDESCRIPTION\n    This calls the external \"zgrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    zgrep - return lines matching a pattern\n\nSYNOPSIS\n     zgrep regex path\n\nDESCRIPTION\n    This calls the external \"zgrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_zgrep
 };
 
 struct command_entry zegrep_cmd_entry = {
   .name = "zegrep",
-  .help = "NAME\n    zegrep - return lines matching a pattern\n\nSYNOPSIS\n     zegrep regex path\n\nDESCRIPTION\n    This calls the external \"zegrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    zegrep - return lines matching a pattern\n\nSYNOPSIS\n     zegrep regex path\n\nDESCRIPTION\n    This calls the external \"zegrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_zegrep
 };
 
 struct command_entry zfgrep_cmd_entry = {
   .name = "zfgrep",
-  .help = "NAME\n    zfgrep - return lines matching a pattern\n\nSYNOPSIS\n     zfgrep pattern path\n\nDESCRIPTION\n    This calls the external \"zfgrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    zfgrep - return lines matching a pattern\n\nSYNOPSIS\n     zfgrep pattern path\n\nDESCRIPTION\n    This calls the external \"zfgrep\" program and returns the matching lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_zfgrep
 };
 
 struct command_entry zgrepi_cmd_entry = {
   .name = "zgrepi",
-  .help = "NAME\n    zgrepi - return lines matching a pattern\n\nSYNOPSIS\n     zgrepi regex path\n\nDESCRIPTION\n    This calls the external \"zgrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    zgrepi - return lines matching a pattern\n\nSYNOPSIS\n     zgrepi regex path\n\nDESCRIPTION\n    This calls the external \"zgrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_zgrepi
 };
 
 struct command_entry zegrepi_cmd_entry = {
   .name = "zegrepi",
-  .help = "NAME\n    zegrepi - return lines matching a pattern\n\nSYNOPSIS\n     zegrepi regex path\n\nDESCRIPTION\n    This calls the external \"zegrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    zegrepi - return lines matching a pattern\n\nSYNOPSIS\n     zegrepi regex path\n\nDESCRIPTION\n    This calls the external \"zegrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_zegrepi
 };
 
 struct command_entry zfgrepi_cmd_entry = {
   .name = "zfgrepi",
-  .help = "NAME\n    zfgrepi - return lines matching a pattern\n\nSYNOPSIS\n     zfgrepi pattern path\n\nDESCRIPTION\n    This calls the external \"zfgrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    zfgrepi - return lines matching a pattern\n\nSYNOPSIS\n     zfgrepi pattern path\n\nDESCRIPTION\n    This calls the external \"zfgrep -i\" program and returns the matching\n    lines.\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"grep\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_zfgrepi
 };
 
@@ -2148,43 +2350,43 @@ struct command_entry getcon_cmd_entry = {
 
 struct command_entry mkfs_b_cmd_entry = {
   .name = "mkfs-b",
-  .help = "NAME\n    mkfs-b - make a filesystem with block size\n\nSYNOPSIS\n     mkfs-b fstype blocksize device\n\nDESCRIPTION\n    This call is similar to \"mkfs\", but it allows you to control the block\n    size of the resulting filesystem. Supported block sizes depend on the\n    filesystem type, but typically they are 1024, 2048 or 4096 only.\n\n    For VFAT and NTFS the \"blocksize\" parameter is treated as the requested\n    cluster size.\n\n    *This function is deprecated.* In new code, use the \"mkfs-opts\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    mkfs-b - make a filesystem with block size\n\nSYNOPSIS\n     mkfs-b fstype blocksize device\n\nDESCRIPTION\n    This call is similar to \"mkfs\", but it allows you to control the block\n    size of the resulting filesystem. Supported block sizes depend on the\n    filesystem type, but typically they are 1024, 2048 or 4096 only.\n\n    For VFAT and NTFS the \"blocksize\" parameter is treated as the requested\n    cluster size.\n\n    *This function is deprecated.* In new code, use the \"mkfs\" call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mkfs_b
 };
 
 struct command_entry mke2journal_cmd_entry = {
   .name = "mke2journal",
-  .help = "NAME\n    mke2journal - make ext2/3/4 external journal\n\nSYNOPSIS\n     mke2journal blocksize device\n\nDESCRIPTION\n    This creates an ext2 external journal on \"device\". It is equivalent to\n    the command:\n\n     mke2fs -O journal_dev -b blocksize device\n\n",
+  .help = "NAME\n    mke2journal - make ext2/3/4 external journal\n\nSYNOPSIS\n     mke2journal blocksize device\n\nDESCRIPTION\n    This creates an ext2 external journal on \"device\". It is equivalent to\n    the command:\n\n     mke2fs -O journal_dev -b blocksize device\n\n    *This function is deprecated.* In new code, use the \"mke2fs\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mke2journal
 };
 
 struct command_entry mke2journal_L_cmd_entry = {
   .name = "mke2journal-L",
-  .help = "NAME\n    mke2journal-L - make ext2/3/4 external journal with label\n\nSYNOPSIS\n     mke2journal-L blocksize label device\n\nDESCRIPTION\n    This creates an ext2 external journal on \"device\" with label \"label\".\n\n",
+  .help = "NAME\n    mke2journal-L - make ext2/3/4 external journal with label\n\nSYNOPSIS\n     mke2journal-L blocksize label device\n\nDESCRIPTION\n    This creates an ext2 external journal on \"device\" with label \"label\".\n\n    *This function is deprecated.* In new code, use the \"mke2fs\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mke2journal_L
 };
 
 struct command_entry mke2journal_U_cmd_entry = {
   .name = "mke2journal-U",
-  .help = "NAME\n    mke2journal-U - make ext2/3/4 external journal with UUID\n\nSYNOPSIS\n     mke2journal-U blocksize uuid device\n\nDESCRIPTION\n    This creates an ext2 external journal on \"device\" with UUID \"uuid\".\n\n",
+  .help = "NAME\n    mke2journal-U - make ext2/3/4 external journal with UUID\n\nSYNOPSIS\n     mke2journal-U blocksize uuid device\n\nDESCRIPTION\n    This creates an ext2 external journal on \"device\" with UUID \"uuid\".\n\n    *This function is deprecated.* In new code, use the \"mke2fs\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mke2journal_U
 };
 
 struct command_entry mke2fs_J_cmd_entry = {
   .name = "mke2fs-J",
-  .help = "NAME\n    mke2fs-J - make ext2/3/4 filesystem with external journal\n\nSYNOPSIS\n     mke2fs-J fstype blocksize device journal\n\nDESCRIPTION\n    This creates an ext2/3/4 filesystem on \"device\" with an external journal\n    on \"journal\". It is equivalent to the command:\n\n     mke2fs -t fstype -b blocksize -J device=<journal> <device>\n\n    See also \"mke2journal\".\n\n",
+  .help = "NAME\n    mke2fs-J - make ext2/3/4 filesystem with external journal\n\nSYNOPSIS\n     mke2fs-J fstype blocksize device journal\n\nDESCRIPTION\n    This creates an ext2/3/4 filesystem on \"device\" with an external journal\n    on \"journal\". It is equivalent to the command:\n\n     mke2fs -t fstype -b blocksize -J device=<journal> <device>\n\n    See also \"mke2journal\".\n\n    *This function is deprecated.* In new code, use the \"mke2fs\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mke2fs_J
 };
 
 struct command_entry mke2fs_JL_cmd_entry = {
   .name = "mke2fs-JL",
-  .help = "NAME\n    mke2fs-JL - make ext2/3/4 filesystem with external journal\n\nSYNOPSIS\n     mke2fs-JL fstype blocksize device label\n\nDESCRIPTION\n    This creates an ext2/3/4 filesystem on \"device\" with an external journal\n    on the journal labeled \"label\".\n\n    See also \"mke2journal_L\".\n\n",
+  .help = "NAME\n    mke2fs-JL - make ext2/3/4 filesystem with external journal\n\nSYNOPSIS\n     mke2fs-JL fstype blocksize device label\n\nDESCRIPTION\n    This creates an ext2/3/4 filesystem on \"device\" with an external journal\n    on the journal labeled \"label\".\n\n    See also \"mke2journal_L\".\n\n    *This function is deprecated.* In new code, use the \"mke2fs\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mke2fs_JL
 };
 
 struct command_entry mke2fs_JU_cmd_entry = {
   .name = "mke2fs-JU",
-  .help = "NAME\n    mke2fs-JU - make ext2/3/4 filesystem with external journal\n\nSYNOPSIS\n     mke2fs-JU fstype blocksize device uuid\n\nDESCRIPTION\n    This creates an ext2/3/4 filesystem on \"device\" with an external journal\n    on the journal with UUID \"uuid\".\n\n    See also \"mke2journal_U\".\n\n",
+  .help = "NAME\n    mke2fs-JU - make ext2/3/4 filesystem with external journal\n\nSYNOPSIS\n     mke2fs-JU fstype blocksize device uuid\n\nDESCRIPTION\n    This creates an ext2/3/4 filesystem on \"device\" with an external journal\n    on the journal with UUID \"uuid\".\n\n    See also \"mke2journal_U\".\n\n    *This function is deprecated.* In new code, use the \"mke2fs\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_mke2fs_JU
 };
 
@@ -2202,7 +2404,7 @@ struct command_entry echo_daemon_cmd_entry = {
 
 struct command_entry find0_cmd_entry = {
   .name = "find0",
-  .help = "NAME\n    find0 - find all files and directories, returning NUL-separated list\n\nSYNOPSIS\n     find0 directory files\n\nDESCRIPTION\n    This command lists out all files and directories, recursively, starting\n    at \"directory\", placing the resulting list in the external file called\n    \"files\".\n\n    This command works the same way as \"find\" with the following exceptions:\n\n    *   The resulting list is written to an external file.\n\n    *   Items (filenames) in the result are separated by \"\\0\" characters.\n        See find(1) option *-print0*.\n\n    *   This command is not limited in the number of names that it can\n        return.\n\n    *   The result list is not sorted.\n\n",
+  .help = "NAME\n    find0 - find all files and directories, returning NUL-separated list\n\nSYNOPSIS\n     find0 directory files\n\nDESCRIPTION\n    This command lists out all files and directories, recursively, starting\n    at \"directory\", placing the resulting list in the external file called\n    \"files\".\n\n    This command works the same way as \"find\" with the following exceptions:\n\n    *   The resulting list is written to an external file.\n\n    *   Items (filenames) in the result are separated by \"\\0\" characters.\n        See find(1) option *-print0*.\n\n    *   The result list is not sorted.\n\n",
   .run = run_find0
 };
 
@@ -2246,24 +2448,6 @@ struct command_entry lchown_cmd_entry = {
   .name = "lchown",
   .help = "NAME\n    lchown - change file owner and group\n\nSYNOPSIS\n     lchown owner group path\n\nDESCRIPTION\n    Change the file owner to \"owner\" and group to \"group\". This is like\n    \"chown\" but if \"path\" is a symlink then the link itself is changed, not\n    the target.\n\n    Only numeric uid and gid are supported. If you want to use names, you\n    will need to locate and parse the password file yourself (Augeas support\n    makes this relatively easy).\n\n",
   .run = run_lchown
-};
-
-struct command_entry lstatlist_cmd_entry = {
-  .name = "lstatlist",
-  .help = "NAME\n    lstatlist - lstat on multiple files\n\nSYNOPSIS\n     lstatlist path names\n\nDESCRIPTION\n    This call allows you to perform the \"lstat\" operation on multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a list of stat structs, with a one-to-one\n    correspondence to the \"names\" list. If any name did not exist or could\n    not be lstat'd, then the \"ino\" field of that structure is set to -1.\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. See also\n    \"lxattrlist\" for a similarly efficient call for getting extended\n    attributes. Very long directory listings might cause the protocol\n    message size to be exceeded, causing this call to fail. The caller must\n    split up such requests into smaller groups of names.\n\n",
-  .run = run_lstatlist
-};
-
-struct command_entry lxattrlist_cmd_entry = {
-  .name = "lxattrlist",
-  .help = "NAME\n    lxattrlist - lgetxattr on multiple files\n\nSYNOPSIS\n     lxattrlist path names\n\nDESCRIPTION\n    This call allows you to get the extended attributes of multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a flat list of xattr structs which must be interpreted\n    sequentially. The first xattr struct always has a zero-length\n    \"attrname\". \"attrval\" in this struct is zero-length to indicate there\n    was an error doing \"lgetxattr\" for this file, *or* is a C string which\n    is a decimal number (the number of following attributes for this file,\n    which could be \"0\"). Then after the first xattr struct are the zero or\n    more attributes for the first named file. This repeats for the second\n    and subsequent files.\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. See also \"lstatlist\"\n    for a similarly efficient call for getting standard stats. Very long\n    directory listings might cause the protocol message size to be exceeded,\n    causing this call to fail. The caller must split up such requests into\n    smaller groups of names.\n\n",
-  .run = run_lxattrlist
-};
-
-struct command_entry readlinklist_cmd_entry = {
-  .name = "readlinklist",
-  .help = "NAME\n    readlinklist - readlink on multiple files\n\nSYNOPSIS\n     readlinklist path names\n\nDESCRIPTION\n    This call allows you to do a \"readlink\" operation on multiple files,\n    where all files are in the directory \"path\". \"names\" is the list of\n    files from this directory.\n\n    On return you get a list of strings, with a one-to-one correspondence to\n    the \"names\" list. Each string is the value of the symbolic link.\n\n    If the readlink(2) operation fails on any name, then the corresponding\n    result string is the empty string \"\". However the whole operation is\n    completed even if there were readlink(2) errors, and so you can call\n    this function with names where you don't know if they are symbolic links\n    already (albeit slightly less efficient).\n\n    This call is intended for programs that want to efficiently list a\n    directory contents without making many round-trips. Very long directory\n    listings might cause the protocol message size to be exceeded, causing\n    this call to fail. The caller must split up such requests into smaller\n    groups of names.\n\n",
-  .run = run_readlinklist
 };
 
 struct command_entry pread_cmd_entry = {
@@ -2322,7 +2506,7 @@ struct command_entry fill_cmd_entry = {
 
 struct command_entry available_cmd_entry = {
   .name = "available",
-  .help = "NAME\n    available - test availability of some parts of the API\n\nSYNOPSIS\n     available groups\n\nDESCRIPTION\n    This command is used to check the availability of some groups of\n    functionality in the appliance, which not all builds of the libguestfs\n    appliance will be able to provide.\n\n    The libguestfs groups, and the functions that those groups correspond\n    to, are listed in \"AVAILABILITY\" in guestfs(3). You can also fetch this\n    list at runtime by calling \"available_all_groups\".\n\n    The argument \"groups\" is a list of group names, eg: \"[\"inotify\",\n    \"augeas\"]\" would check for the availability of the Linux inotify\n    functions and Augeas (configuration file editing) functions.\n\n    The command returns no error if *all* requested groups are available.\n\n    It fails with an error if one or more of the requested groups is\n    unavailable in the appliance.\n\n    If an unknown group name is included in the list of groups then an error\n    is always returned.\n\n    *Notes:*\n\n    *   You must call \"launch\" before calling this function.\n\n        The reason is because we don't know what groups are supported by the\n        appliance/daemon until it is running and can be queried.\n\n    *   If a group of functions is available, this does not necessarily mean\n        that they will work. You still have to check for errors when calling\n        individual API functions even if they are available.\n\n    *   It is usually the job of distro packagers to build complete\n        functionality into the libguestfs appliance. Upstream libguestfs, if\n        built from source with all requirements satisfied, will support\n        everything.\n\n    *   This call was added in version 1.0.80. In previous versions of\n        libguestfs all you could do would be to speculatively execute a\n        command to find out if the daemon implemented it. See also\n        \"version\".\n\n",
+  .help = "NAME\n    available - test availability of some parts of the API\n\nSYNOPSIS\n     available groups\n\nDESCRIPTION\n    This command is used to check the availability of some groups of\n    functionality in the appliance, which not all builds of the libguestfs\n    appliance will be able to provide.\n\n    The libguestfs groups, and the functions that those groups correspond\n    to, are listed in \"AVAILABILITY\" in guestfs(3). You can also fetch this\n    list at runtime by calling \"available_all_groups\".\n\n    The argument \"groups\" is a list of group names, eg: \"[\"inotify\",\n    \"augeas\"]\" would check for the availability of the Linux inotify\n    functions and Augeas (configuration file editing) functions.\n\n    The command returns no error if *all* requested groups are available.\n\n    It fails with an error if one or more of the requested groups is\n    unavailable in the appliance.\n\n    If an unknown group name is included in the list of groups then an error\n    is always returned.\n\n    *Notes:*\n\n    *   You must call \"launch\" before calling this function.\n\n        The reason is because we don't know what groups are supported by the\n        appliance/daemon until it is running and can be queried.\n\n    *   If a group of functions is available, this does not necessarily mean\n        that they will work. You still have to check for errors when calling\n        individual API functions even if they are available.\n\n    *   It is usually the job of distro packagers to build complete\n        functionality into the libguestfs appliance. Upstream libguestfs, if\n        built from source with all requirements satisfied, will support\n        everything.\n\n    *   This call was added in version 1.0.80. In previous versions of\n        libguestfs all you could do would be to speculatively execute a\n        command to find out if the daemon implemented it. See also\n        \"version\".\n\n    See also \"filesystem_available\".\n\n",
   .run = run_available
 };
 
@@ -2400,20 +2584,14 @@ struct command_entry zero_device_cmd_entry = {
 
 struct command_entry txz_in_cmd_entry = {
   .name = "txz-in",
-  .help = "NAME\n    txz-in - unpack compressed tarball to directory\n\nSYNOPSIS\n     txz-in tarball directory\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarball\" (an *xz\n    compressed* tar file) into \"directory\".\n\n",
+  .help = "NAME\n    txz-in - unpack compressed tarball to directory\n\nSYNOPSIS\n     txz-in tarball directory\n\nDESCRIPTION\n    This command uploads and unpacks local file \"tarball\" (an *xz\n    compressed* tar file) into \"directory\".\n\n    *This function is deprecated.* In new code, use the \"tar-in\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_txz_in
 };
 
 struct command_entry txz_out_cmd_entry = {
   .name = "txz-out",
-  .help = "NAME\n    txz-out - pack directory into compressed tarball\n\nSYNOPSIS\n     txz-out directory tarball\n\nDESCRIPTION\n    This command packs the contents of \"directory\" and downloads it to local\n    file \"tarball\" (as an xz compressed tar archive).\n\n",
+  .help = "NAME\n    txz-out - pack directory into compressed tarball\n\nSYNOPSIS\n     txz-out directory tarball\n\nDESCRIPTION\n    This command packs the contents of \"directory\" and downloads it to local\n    file \"tarball\" (as an xz compressed tar archive).\n\n    *This function is deprecated.* In new code, use the \"tar-out\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_txz_out
-};
-
-struct command_entry ntfsresize_cmd_entry = {
-  .name = "ntfsresize",
-  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    *Note:* After the resize operation, the filesystem is marked as\n    requiring a consistency check (for safety). You have to boot into\n    Windows to perform this check and clear this condition. Furthermore,\n    ntfsresize refuses to resize filesystems which have been marked in this\n    way. So in effect it is not possible to call ntfsresize multiple times\n    on a single filesystem without booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n    *This function is deprecated.* In new code, use the \"ntfsresize-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
-  .run = run_ntfsresize
 };
 
 struct command_entry vgscan_cmd_entry = {
@@ -2500,12 +2678,6 @@ struct command_entry fill_pattern_cmd_entry = {
   .run = run_fill_pattern
 };
 
-struct command_entry write_cmd_entry = {
-  .name = "write",
-  .help = "NAME\n    write - create a new file\n\nSYNOPSIS\n     write path content\n\nDESCRIPTION\n    This call creates a file called \"path\". The content of the file is the\n    string \"content\" (which can contain any 8 bit data).\n\n    See also \"write_append\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
-  .run = run_write
-};
-
 struct command_entry pwrite_cmd_entry = {
   .name = "pwrite",
   .help = "NAME\n    pwrite - write to part of a file\n\nSYNOPSIS\n     pwrite path content offset\n\nDESCRIPTION\n    This command writes to part of a file. It writes the data buffer\n    \"content\" to the file \"path\" starting at offset \"offset\".\n\n    This command implements the pwrite(2) system call, and like that system\n    call it may not write the full data requested. The return value is the\n    number of bytes that were actually written to the file. This could even\n    be 0, although short writes are unlikely for regular files in ordinary\n    circumstances.\n\n    See also \"pread\", \"pwrite_device\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
@@ -2526,7 +2698,7 @@ struct command_entry pvresize_size_cmd_entry = {
 
 struct command_entry ntfsresize_size_cmd_entry = {
   .name = "ntfsresize-size",
-  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    *This function is deprecated.* In new code, use the \"ntfsresize-opts\"\n    call instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    ntfsresize-size - resize an NTFS filesystem (with size)\n\nSYNOPSIS\n     ntfsresize-size device size\n\nDESCRIPTION\n    This command is the same as \"ntfsresize\" except that it allows you to\n    specify the new size (in bytes) explicitly.\n\n    *This function is deprecated.* In new code, use the \"ntfsresize\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_ntfsresize_size
 };
 
@@ -2688,14 +2860,14 @@ struct command_entry pread_device_cmd_entry = {
 
 struct command_entry lvm_canonical_lv_name_cmd_entry = {
   .name = "lvm-canonical-lv-name",
-  .help = "NAME\n    lvm-canonical-lv-name - get canonical name of an LV\n\nSYNOPSIS\n     lvm-canonical-lv-name lvname\n\nDESCRIPTION\n    This converts alternative naming schemes for LVs that you might find to\n    the canonical name. For example, \"/dev/mapper/VG-LV\" is converted to\n    \"/dev/VG/LV\".\n\n    This command returns an error if the \"lvname\" parameter does not refer\n    to a logical volume.\n\n    See also \"is_lv\".\n\n",
+  .help = "NAME\n    lvm-canonical-lv-name - get canonical name of an LV\n\nSYNOPSIS\n     lvm-canonical-lv-name lvname\n\nDESCRIPTION\n    This converts alternative naming schemes for LVs that you might find to\n    the canonical name. For example, \"/dev/mapper/VG-LV\" is converted to\n    \"/dev/VG/LV\".\n\n    This command returns an error if the \"lvname\" parameter does not refer\n    to a logical volume.\n\n    See also \"is_lv\", \"canonical_device_name\".\n\n",
   .run = run_lvm_canonical_lv_name
 };
 
-struct command_entry mkfs_opts_cmd_entry = {
-  .name = "mkfs-opts",
-  .help = "NAME\n    mkfs-opts - make a filesystem\n\nSYNOPSIS\n     mkfs-opts fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]\n\nDESCRIPTION\n    This function creates a filesystem on \"device\". The filesystem type is\n    \"fstype\", for example \"ext3\".\n\n    The optional arguments are:\n\n    \"blocksize\"\n        The filesystem block size. Supported block sizes depend on the\n        filesystem type, but typically they are 1024, 2048 or 4096 for Linux\n        ext2/3 filesystems.\n\n        For VFAT and NTFS the \"blocksize\" parameter is treated as the\n        requested cluster size.\n\n        For UFS block sizes, please see mkfs.ufs(8).\n\n    \"features\"\n        This passes the *-O* parameter to the external mkfs program.\n\n        For certain filesystem types, this allows extra filesystem features\n        to be selected. See mke2fs(8) and mkfs.ufs(8) for more details.\n\n        You cannot use this optional parameter with the \"gfs\" or \"gfs2\"\n        filesystem type.\n\n    \"inode\"\n        This passes the *-I* parameter to the external mke2fs(8) program\n        which sets the inode size (only for ext2/3/4 filesystems at\n        present).\n\n    \"sectorsize\"\n        This passes the *-S* parameter to external mkfs.ufs(8) program,\n        which sets sector size for ufs filesystem.\n\n",
-  .run = run_mkfs_opts
+struct command_entry mkfs_cmd_entry = {
+  .name = "mkfs",
+  .help = "NAME\n    mkfs - make a filesystem\n\nSYNOPSIS\n     mkfs fstype device [blocksize:N] [features:..] [inode:N] [sectorsize:N]\n\nDESCRIPTION\n    This function creates a filesystem on \"device\". The filesystem type is\n    \"fstype\", for example \"ext3\".\n\n    The optional arguments are:\n\n    \"blocksize\"\n        The filesystem block size. Supported block sizes depend on the\n        filesystem type, but typically they are 1024, 2048 or 4096 for Linux\n        ext2/3 filesystems.\n\n        For VFAT and NTFS the \"blocksize\" parameter is treated as the\n        requested cluster size.\n\n        For UFS block sizes, please see mkfs.ufs(8).\n\n    \"features\"\n        This passes the *-O* parameter to the external mkfs program.\n\n        For certain filesystem types, this allows extra filesystem features\n        to be selected. See mke2fs(8) and mkfs.ufs(8) for more details.\n\n        You cannot use this optional parameter with the \"gfs\" or \"gfs2\"\n        filesystem type.\n\n    \"inode\"\n        This passes the *-I* parameter to the external mke2fs(8) program\n        which sets the inode size (only for ext2/3/4 filesystems at\n        present).\n\n    \"sectorsize\"\n        This passes the *-S* parameter to external mkfs.ufs(8) program,\n        which sets sector size for ufs filesystem.\n\n    You can use 'mkfs-opts' as an alias for this command.\n\n",
+  .run = run_mkfs
 };
 
 struct command_entry getxattr_cmd_entry = {
@@ -2746,22 +2918,16 @@ struct command_entry list_dm_devices_cmd_entry = {
   .run = run_list_dm_devices
 };
 
-struct command_entry ntfsresize_opts_cmd_entry = {
-  .name = "ntfsresize-opts",
-  .help = "NAME\n    ntfsresize-opts - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize-opts device [size:N] [force:true|false]\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    The optional parameters are:\n\n    \"size\"\n        The new size (in bytes) of the filesystem. If omitted, the\n        filesystem is resized to fit the container (eg. partition).\n\n    \"force\"\n        If this option is true, then force the resize of the filesystem even\n        if the filesystem is marked as requiring a consistency check.\n\n        After the resize operation, the filesystem is always marked as\n        requiring a consistency check (for safety). You have to boot into\n        Windows to perform this check and clear this condition. If you\n        *don't* set the \"force\" option then it is not possible to call\n        \"ntfsresize_opts\" multiple times on a single filesystem without\n        booting into Windows between each resize.\n\n    See also ntfsresize(8).\n\n",
-  .run = run_ntfsresize_opts
+struct command_entry ntfsresize_cmd_entry = {
+  .name = "ntfsresize",
+  .help = "NAME\n    ntfsresize - resize an NTFS filesystem\n\nSYNOPSIS\n     ntfsresize device [size:N] [force:true|false]\n\nDESCRIPTION\n    This command resizes an NTFS filesystem, expanding or shrinking it to\n    the size of the underlying device.\n\n    The optional parameters are:\n\n    \"size\"\n        The new size (in bytes) of the filesystem. If omitted, the\n        filesystem is resized to fit the container (eg. partition).\n\n    \"force\"\n        If this option is true, then force the resize of the filesystem even\n        if the filesystem is marked as requiring a consistency check.\n\n        After the resize operation, the filesystem is always marked as\n        requiring a consistency check (for safety). You have to boot into\n        Windows to perform this check and clear this condition. If you\n        *don't* set the \"force\" option then it is not possible to call\n        \"ntfsresize\" multiple times on a single filesystem without booting\n        into Windows between each resize.\n\n    See also ntfsresize(8).\n\n    You can use 'ntfsresize-opts' as an alias for this command.\n\n",
+  .run = run_ntfsresize
 };
 
 struct command_entry btrfs_filesystem_resize_cmd_entry = {
   .name = "btrfs-filesystem-resize",
   .help = "NAME\n    btrfs-filesystem-resize - resize a btrfs filesystem\n\nSYNOPSIS\n     btrfs-filesystem-resize mountpoint [size:N]\n\nDESCRIPTION\n    This command resizes a btrfs filesystem.\n\n    Note that unlike other resize calls, the filesystem has to be mounted\n    and the parameter is the mountpoint not the device (this is a\n    requirement of btrfs itself).\n\n    The optional parameters are:\n\n    \"size\"\n        The new size (in bytes) of the filesystem. If omitted, the\n        filesystem is resized to the maximum size.\n\n    See also btrfs(8).\n\n",
   .run = run_btrfs_filesystem_resize
-};
-
-struct command_entry write_append_cmd_entry = {
-  .name = "write-append",
-  .help = "NAME\n    write-append - append content to end of file\n\nSYNOPSIS\n     write-append path content\n\nDESCRIPTION\n    This call appends \"content\" to the end of file \"path\". If \"path\" does\n    not exist, then a new file is created.\n\n    See also \"write\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
-  .run = run_write_append
 };
 
 struct command_entry compress_out_cmd_entry = {
@@ -2886,7 +3052,7 @@ struct command_entry set_label_cmd_entry = {
 
 struct command_entry zero_free_space_cmd_entry = {
   .name = "zero-free-space",
-  .help = "NAME\n    zero-free-space - zero free space in a filesystem\n\nSYNOPSIS\n     zero-free-space directory\n\nDESCRIPTION\n    Zero the free space in the filesystem mounted on \"directory\". The\n    filesystem must be mounted read-write.\n\n    The filesystem contents are not affected, but any free space in the\n    filesystem is freed.\n\n    In future (but not currently) these zeroed blocks will be \"sparsified\" -\n    that is, given back to the host.\n\n",
+  .help = "NAME\n    zero-free-space - zero free space in a filesystem\n\nSYNOPSIS\n     zero-free-space directory\n\nDESCRIPTION\n    Zero the free space in the filesystem mounted on \"directory\". The\n    filesystem must be mounted read-write.\n\n    The filesystem contents are not affected, but any free space in the\n    filesystem is freed.\n\n    Free space is not \"trimmed\". You may want to call \"fstrim\" either as an\n    alternative to this, or after calling this, depending on your\n    requirements.\n\n",
   .run = run_zero_free_space
 };
 
@@ -2922,7 +3088,7 @@ struct command_entry md_stat_cmd_entry = {
 
 struct command_entry mkfs_btrfs_cmd_entry = {
   .name = "mkfs-btrfs",
-  .help = "NAME\n    mkfs-btrfs - create a btrfs filesystem\n\nSYNOPSIS\n     mkfs-btrfs devices [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]\n\nDESCRIPTION\n    Create a btrfs filesystem, allowing all configurables to be set. For\n    more information on the optional arguments, see mkfs.btrfs(8).\n\n    Since btrfs filesystems can span multiple devices, this takes a\n    non-empty list of devices.\n\n    To create general filesystems, use \"mkfs_opts\".\n\n",
+  .help = "NAME\n    mkfs-btrfs - create a btrfs filesystem\n\nSYNOPSIS\n     mkfs-btrfs devices [allocstart:N] [bytecount:N] [datatype:..] [leafsize:N] [label:..] [metadata:..] [nodesize:N] [sectorsize:N]\n\nDESCRIPTION\n    Create a btrfs filesystem, allowing all configurables to be set. For\n    more information on the optional arguments, see mkfs.btrfs(8).\n\n    Since btrfs filesystems can span multiple devices, this takes a\n    non-empty list of devices.\n\n    To create general filesystems, use \"mkfs\".\n\n",
   .run = run_mkfs_btrfs
 };
 
@@ -3016,6 +3182,18 @@ struct command_entry btrfs_fsck_cmd_entry = {
   .run = run_btrfs_fsck
 };
 
+struct command_entry filesystem_available_cmd_entry = {
+  .name = "filesystem-available",
+  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be mounted, since\n    filesystems can fail for other reasons such as it being a later version\n    of the filesystem, or having incompatible features.\n\n    See also \"available\", \"AVAILABILITY\" in guestfs(3).\n\n",
+  .run = run_filesystem_available
+};
+
+struct command_entry fstrim_cmd_entry = {
+  .name = "fstrim",
+  .help = "NAME\n    fstrim - trim free space in a filesystem\n\nSYNOPSIS\n     fstrim mountpoint [offset:N] [length:N] [minimumfreeextent:N]\n\nDESCRIPTION\n    Trim the free space in the filesystem mounted on \"mountpoint\". The\n    filesystem must be mounted read-write.\n\n    The filesystem contents are not affected, but any free space in the\n    filesystem is \"trimmed\", that is, given back to the host device, thus\n    making disk images more sparse, allowing unused space in qcow2 files to\n    be reused, etc.\n\n    This operation requires support in libguestfs, the mounted filesystem,\n    the host filesystem, qemu and the host kernel. If this support isn't\n    present it may give an error or even appear to run but do nothing.\n\n    See also \"zero_free_space\". That is a slightly different operation that\n    turns free space in the filesystem into zeroes. It is valid to call\n    \"fstrim\" either instead of, or after calling \"zero_free_space\".\n\n",
+  .run = run_fstrim
+};
+
 struct command_entry device_index_cmd_entry = {
   .name = "device-index",
   .help = "NAME\n    device-index - convert device to index\n\nSYNOPSIS\n     device-index device\n\nDESCRIPTION\n    This function takes a device name (eg. \"/dev/sdb\") and returns the index\n    of the device in the list of devices.\n\n    Index numbers start from 0. The named device must exist, for example as\n    a string returned from \"list_devices\".\n\n    See also \"list_devices\", \"part_to_dev\".\n\n",
@@ -3028,15 +3206,329 @@ struct command_entry nr_devices_cmd_entry = {
   .run = run_nr_devices
 };
 
+struct command_entry xfs_info_cmd_entry = {
+  .name = "xfs-info",
+  .help = "NAME\n    xfs-info - get geometry of XFS filesystem\n\nSYNOPSIS\n     xfs-info pathordevice\n\nDESCRIPTION\n    \"pathordevice\" is a mounted XFS filesystem or a device containing an XFS\n    filesystem. This command returns the geometry of the filesystem.\n\n    The returned struct contains geometry information. Missing fields are\n    returned as -1 (for numeric fields) or empty string.\n\n",
+  .run = run_xfs_info
+};
+
+struct command_entry pvchange_uuid_cmd_entry = {
+  .name = "pvchange-uuid",
+  .help = "NAME\n    pvchange-uuid - generate a new random UUID for a physical volume\n\nSYNOPSIS\n     pvchange-uuid device\n\nDESCRIPTION\n    Generate a new random UUID for the physical volume \"device\".\n\n",
+  .run = run_pvchange_uuid
+};
+
+struct command_entry pvchange_uuid_all_cmd_entry = {
+  .name = "pvchange-uuid-all",
+  .help = "NAME\n    pvchange-uuid-all - generate new random UUIDs for all physical volumes\n\nSYNOPSIS\n     pvchange-uuid-all\n\nDESCRIPTION\n    Generate new random UUIDs for all physical volumes.\n\n",
+  .run = run_pvchange_uuid_all
+};
+
+struct command_entry vgchange_uuid_cmd_entry = {
+  .name = "vgchange-uuid",
+  .help = "NAME\n    vgchange-uuid - generate a new random UUID for a volume group\n\nSYNOPSIS\n     vgchange-uuid vg\n\nDESCRIPTION\n    Generate a new random UUID for the volume group \"vg\".\n\n",
+  .run = run_vgchange_uuid
+};
+
+struct command_entry vgchange_uuid_all_cmd_entry = {
+  .name = "vgchange-uuid-all",
+  .help = "NAME\n    vgchange-uuid-all - generate new random UUIDs for all volume groups\n\nSYNOPSIS\n     vgchange-uuid-all\n\nDESCRIPTION\n    Generate new random UUIDs for all volume groups.\n\n",
+  .run = run_vgchange_uuid_all
+};
+
+struct command_entry utsname_cmd_entry = {
+  .name = "utsname",
+  .help = "NAME\n    utsname - appliance kernel version\n\nSYNOPSIS\n     utsname\n\nDESCRIPTION\n    This returns the kernel version of the appliance, where this is\n    available. This information is only useful for debugging. Nothing in the\n    returned structure is defined by the API.\n\n",
+  .run = run_utsname
+};
+
+struct command_entry xfs_growfs_cmd_entry = {
+  .name = "xfs-growfs",
+  .help = "NAME\n    xfs-growfs - expand an existing XFS filesystem\n\nSYNOPSIS\n     xfs-growfs path [datasec:true|false] [logsec:true|false] [rtsec:true|false] [datasize:N] [logsize:N] [rtsize:N] [rtextsize:N] [maxpct:N]\n\nDESCRIPTION\n    Grow the XFS filesystem mounted at \"path\".\n\n    The returned struct contains geometry information. Missing fields are\n    returned as -1 (for numeric fields) or empty string.\n\n",
+  .run = run_xfs_growfs
+};
+
+struct command_entry rsync_cmd_entry = {
+  .name = "rsync",
+  .help = "NAME\n    rsync - synchronize the contents of two directories\n\nSYNOPSIS\n     rsync src dest [archive:true|false] [deletedest:true|false]\n\nDESCRIPTION\n    This call may be used to copy or synchronize two directories under the\n    same libguestfs handle. This uses the rsync(1) program which uses a fast\n    algorithm that avoids copying files unnecessarily.\n\n    \"src\" and \"dest\" are the source and destination directories. Files are\n    copied from \"src\" to \"dest\".\n\n    The optional arguments are:\n\n    \"archive\"\n        Turns on archive mode. This is the same as passing the *--archive*\n        flag to \"rsync\".\n\n    \"deletedest\"\n        Delete files at the destination that do not exist at the source.\n\n",
+  .run = run_rsync
+};
+
+struct command_entry rsync_in_cmd_entry = {
+  .name = "rsync-in",
+  .help = "NAME\n    rsync-in - synchronize host or remote filesystem with filesystem\n\nSYNOPSIS\n     rsync-in remote dest [archive:true|false] [deletedest:true|false]\n\nDESCRIPTION\n    This call may be used to copy or synchronize the filesystem on the host\n    or on a remote computer with the filesystem within libguestfs. This uses\n    the rsync(1) program which uses a fast algorithm that avoids copying\n    files unnecessarily.\n\n    This call only works if the network is enabled. See \"set_network\" or the\n    *--network* option to various tools like guestfish(1).\n\n    Files are copied from the remote server and directory specified by\n    \"remote\" to the destination directory \"dest\".\n\n    The format of the remote server string is defined by rsync(1). Note that\n    there is no way to supply a password or passphrase so the target must be\n    set up not to require one.\n\n    The optional arguments are the same as those of \"rsync\".\n\n",
+  .run = run_rsync_in
+};
+
+struct command_entry rsync_out_cmd_entry = {
+  .name = "rsync-out",
+  .help = "NAME\n    rsync-out - synchronize filesystem with host or remote filesystem\n\nSYNOPSIS\n     rsync-out src remote [archive:true|false] [deletedest:true|false]\n\nDESCRIPTION\n    This call may be used to copy or synchronize the filesystem within\n    libguestfs with a filesystem on the host or on a remote computer. This\n    uses the rsync(1) program which uses a fast algorithm that avoids\n    copying files unnecessarily.\n\n    This call only works if the network is enabled. See \"set_network\" or the\n    *--network* option to various tools like guestfish(1).\n\n    Files are copied from the source directory \"src\" to the remote server\n    and directory specified by \"remote\".\n\n    The format of the remote server string is defined by rsync(1). Note that\n    there is no way to supply a password or passphrase so the target must be\n    set up not to require one.\n\n    The optional arguments are the same as those of \"rsync\".\n\n",
+  .run = run_rsync_out
+};
+
+struct command_entry ls0_cmd_entry = {
+  .name = "ls0",
+  .help = "NAME\n    ls0 - get list of files in a directory\n\nSYNOPSIS\n     ls0 dir filenames\n\nDESCRIPTION\n    This specialized command is used to get a listing of the filenames in\n    the directory \"dir\". The list of filenames is written to the local file\n    \"filenames\" (on the host).\n\n    In the output file, the filenames are separated by \"\\0\" characters.\n\n    \".\" and \"..\" are not returned. The filenames are not sorted.\n\n",
+  .run = run_ls0
+};
+
+struct command_entry fill_dir_cmd_entry = {
+  .name = "fill-dir",
+  .help = "NAME\n    fill-dir - fill a directory with empty files\n\nSYNOPSIS\n     fill-dir dir nr\n\nDESCRIPTION\n    This function, useful for testing filesystems, creates \"nr\" empty files\n    in the directory \"dir\" with names 00000000 through \"nr-1\" (ie. each file\n    name is 8 digits long padded with zeroes).\n\n",
+  .run = run_fill_dir
+};
+
+struct command_entry xfs_admin_cmd_entry = {
+  .name = "xfs-admin",
+  .help = "NAME\n    xfs-admin - change parameters of an XFS filesystem\n\nSYNOPSIS\n     xfs-admin device [extunwritten:true|false] [imgfile:true|false] [v2log:true|false] [projid32bit:true|false] [lazycounter:true|false] [label:..] [uuid:..]\n\nDESCRIPTION\n    Change the parameters of the XFS filesystem on \"device\".\n\n    Devices that are mounted cannot be modified. Administrators must unmount\n    filesystems before this call can modify parameters.\n\n    Some of the parameters of a mounted filesystem can be examined and\n    modified using the \"xfs_info\" and \"xfs_growfs\" calls.\n\n",
+  .run = run_xfs_admin
+};
+
+struct command_entry hivex_open_cmd_entry = {
+  .name = "hivex-open",
+  .help = "NAME\n    hivex-open - open a Windows Registry hive file\n\nSYNOPSIS\n     hivex-open filename [verbose:true|false] [debug:true|false] [write:true|false]\n\nDESCRIPTION\n    Open the Windows Registry hive file named \"filename\". If there was any\n    previous hivex handle associated with this guestfs session, then it is\n    closed.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_open
+};
+
+struct command_entry hivex_close_cmd_entry = {
+  .name = "hivex-close",
+  .help = "NAME\n    hivex-close - close the current hivex handle\n\nSYNOPSIS\n     hivex-close\n\nDESCRIPTION\n    Close the current hivex handle.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_close
+};
+
+struct command_entry hivex_root_cmd_entry = {
+  .name = "hivex-root",
+  .help = "NAME\n    hivex-root - return the root node of the hive\n\nSYNOPSIS\n     hivex-root\n\nDESCRIPTION\n    Return the root node of the hive.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_root
+};
+
+struct command_entry hivex_node_name_cmd_entry = {
+  .name = "hivex-node-name",
+  .help = "NAME\n    hivex-node-name - return the name of the node\n\nSYNOPSIS\n     hivex-node-name nodeh\n\nDESCRIPTION\n    Return the name of \"nodeh\".\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_name
+};
+
+struct command_entry hivex_node_children_cmd_entry = {
+  .name = "hivex-node-children",
+  .help = "NAME\n    hivex-node-children - return list of nodes which are subkeys of node\n\nSYNOPSIS\n     hivex-node-children nodeh\n\nDESCRIPTION\n    Return the list of nodes which are subkeys of \"nodeh\".\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_children
+};
+
+struct command_entry hivex_node_get_child_cmd_entry = {
+  .name = "hivex-node-get-child",
+  .help = "NAME\n    hivex-node-get-child - return the named child of node\n\nSYNOPSIS\n     hivex-node-get-child nodeh name\n\nDESCRIPTION\n    Return the child of \"nodeh\" with the name \"name\", if it exists. This can\n    return 0 meaning the name was not found.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_get_child
+};
+
+struct command_entry hivex_node_parent_cmd_entry = {
+  .name = "hivex-node-parent",
+  .help = "NAME\n    hivex-node-parent - return the parent of node\n\nSYNOPSIS\n     hivex-node-parent nodeh\n\nDESCRIPTION\n    Return the parent node of \"nodeh\".\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_parent
+};
+
+struct command_entry hivex_node_values_cmd_entry = {
+  .name = "hivex-node-values",
+  .help = "NAME\n    hivex-node-values - return list of values attached to node\n\nSYNOPSIS\n     hivex-node-values nodeh\n\nDESCRIPTION\n    Return the array of (key, datatype, data) tuples attached to \"nodeh\".\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_values
+};
+
+struct command_entry hivex_node_get_value_cmd_entry = {
+  .name = "hivex-node-get-value",
+  .help = "NAME\n    hivex-node-get-value - return the named value\n\nSYNOPSIS\n     hivex-node-get-value nodeh key\n\nDESCRIPTION\n    Return the value attached to \"nodeh\" which has the name \"key\", if it\n    exists. This can return 0 meaning the key was not found.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_get_value
+};
+
+struct command_entry hivex_value_key_cmd_entry = {
+  .name = "hivex-value-key",
+  .help = "NAME\n    hivex-value-key - return the key field from the (key, datatype, data)\n    tuple\n\nSYNOPSIS\n     hivex-value-key valueh\n\nDESCRIPTION\n    Return the key (name) field of a (key, datatype, data) tuple.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_value_key
+};
+
+struct command_entry hivex_value_type_cmd_entry = {
+  .name = "hivex-value-type",
+  .help = "NAME\n    hivex-value-type - return the data type from the (key, datatype, data)\n    tuple\n\nSYNOPSIS\n     hivex-value-type valueh\n\nDESCRIPTION\n    Return the data type field from a (key, datatype, data) tuple.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_value_type
+};
+
+struct command_entry hivex_value_value_cmd_entry = {
+  .name = "hivex-value-value",
+  .help = "NAME\n    hivex-value-value - return the data field from the (key, datatype, data)\n    tuple\n\nSYNOPSIS\n     hivex-value-value valueh\n\nDESCRIPTION\n    Return the data field of a (key, datatype, data) tuple.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n    See also: \"hivex_value_utf8\".\n\n",
+  .run = run_hivex_value_value
+};
+
+struct command_entry hivex_commit_cmd_entry = {
+  .name = "hivex-commit",
+  .help = "NAME\n    hivex-commit - commit (write) changes back to the hive\n\nSYNOPSIS\n     hivex-commit filename\n\nDESCRIPTION\n    Commit (write) changes to the hive.\n\n    If the optional \"filename\" parameter is null, then the changes are\n    written back to the same hive that was opened. If this is not null then\n    they are written to the alternate filename given and the original hive\n    is left untouched.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_commit
+};
+
+struct command_entry hivex_node_add_child_cmd_entry = {
+  .name = "hivex-node-add-child",
+  .help = "NAME\n    hivex-node-add-child - add a child node\n\nSYNOPSIS\n     hivex-node-add-child parent name\n\nDESCRIPTION\n    Add a child node to \"parent\" named \"name\".\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_add_child
+};
+
+struct command_entry hivex_node_delete_child_cmd_entry = {
+  .name = "hivex-node-delete-child",
+  .help = "NAME\n    hivex-node-delete-child - delete a node (recursively)\n\nSYNOPSIS\n     hivex-node-delete-child nodeh\n\nDESCRIPTION\n    Delete \"nodeh\", recursively if necessary.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_delete_child
+};
+
+struct command_entry hivex_node_set_value_cmd_entry = {
+  .name = "hivex-node-set-value",
+  .help = "NAME\n    hivex-node-set-value - set or replace a single value in a node\n\nSYNOPSIS\n     hivex-node-set-value nodeh key t val\n\nDESCRIPTION\n    Set or replace a single value under the node \"nodeh\". The \"key\" is the\n    name, \"t\" is the type, and \"val\" is the data.\n\n    This is a wrapper around the hivex(3) call of the same name.\n\n",
+  .run = run_hivex_node_set_value
+};
+
+struct command_entry xfs_repair_cmd_entry = {
+  .name = "xfs-repair",
+  .help = "NAME\n    xfs-repair - repair an XFS filesystem\n\nSYNOPSIS\n     xfs-repair device [forcelogzero:true|false] [nomodify:true|false] [noprefetch:true|false] [forcegeometry:true|false] [maxmem:N] [ihashsize:N] [bhashsize:N] [agstride:N] [logdev:..] [rtdev:..]\n\nDESCRIPTION\n    Repair corrupt or damaged XFS filesystem on \"device\".\n\n    The filesystem is specified using the \"device\" argument which should be\n    the device name of the disk partition or volume containing the\n    filesystem. If given the name of a block device, \"xfs_repair\" will\n    attempt to find the raw device associated with the specified block\n    device and will use the raw device instead.\n\n    Regardless, the filesystem to be repaired must be unmounted, otherwise,\n    the resulting filesystem may be inconsistent or corrupt.\n\n    The returned status indicates whether filesystem corruption was detected\n    (returns 1) or was not detected (returns 0).\n\n",
+  .run = run_xfs_repair
+};
+
+struct command_entry rm_f_cmd_entry = {
+  .name = "rm-f",
+  .help = "NAME\n    rm-f - remove a file ignoring errors\n\nSYNOPSIS\n     rm-f path\n\nDESCRIPTION\n    Remove the file \"path\".\n\n    If the file doesn't exist, that error is ignored. (Other errors, eg. I/O\n    errors or bad paths, are not ignored)\n\n    This call cannot remove directories. Use \"rmdir\" to remove an empty\n    directory, or \"rm_rf\" to remove directories recursively.\n\n",
+  .run = run_rm_f
+};
+
+struct command_entry mke2fs_cmd_entry = {
+  .name = "mke2fs",
+  .help = "NAME\n    mke2fs - create an ext2/ext3/ext4 filesystem on device\n\nSYNOPSIS\n     mke2fs device [blockscount:N] [blocksize:N] [fragsize:N] [blockspergroup:N] [numberofgroups:N] [bytesperinode:N] [inodesize:N] [journalsize:N] [numberofinodes:N] [stridesize:N] [stripewidth:N] [maxonlineresize:N] [reservedblockspercentage:N] [mmpupdateinterval:N] [journaldevice:..] [label:..] [lastmounteddir:..] [creatoros:..] [fstype:..] [usagetype:..] [uuid:..] [forcecreate:true|false] [writesbandgrouponly:true|false] [lazyitableinit:true|false] [lazyjournalinit:true|false] [testfs:true|false] [discard:true|false] [quotatype:true|false] [extent:true|false] [filetype:true|false] [flexbg:true|false] [hasjournal:true|false] [journaldev:true|false] [largefile:true|false] [quota:true|false] [resizeinode:true|false] [sparsesuper:true|false] [uninitbg:true|false]\n\nDESCRIPTION\n    \"mke2fs\" is used to create an ext2, ext3, or ext4 filesystem on\n    \"device\". The optional \"blockscount\" is the size of the filesystem in\n    blocks. If omitted it defaults to the size of \"device\".\n\n",
+  .run = run_mke2fs
+};
+
+struct command_entry list_disk_labels_cmd_entry = {
+  .name = "list-disk-labels",
+  .help = "NAME\n    list-disk-labels - mapping of disk labels to devices\n\nSYNOPSIS\n     list-disk-labels\n\nDESCRIPTION\n    If you add drives using the optional \"label\" parameter of\n    \"add_drive_opts\", you can use this call to map between disk labels, and\n    raw block device and partition names (like \"/dev/sda\" and \"/dev/sda1\").\n\n    This returns a hashtable, where keys are the disk labels (*without* the\n    \"/dev/disk/guestfs\" prefix), and the values are the full raw block\n    device and partition names (eg. \"/dev/sda\" and \"/dev/sda1\").\n\n",
+  .run = run_list_disk_labels
+};
+
+struct command_entry mktemp_cmd_entry = {
+  .name = "mktemp",
+  .help = "NAME\n    mktemp - create a temporary file\n\nSYNOPSIS\n     mktemp tmpl [suffix:..]\n\nDESCRIPTION\n    This command creates a temporary file. The \"tmpl\" parameter should be a\n    full pathname for the temporary directory name with the final six\n    characters being \"XXXXXX\".\n\n    For example: \"/tmp/myprogXXXXXX\" or \"/Temp/myprogXXXXXX\", the second one\n    being suitable for Windows filesystems.\n\n    The name of the temporary file that was created is returned.\n\n    The temporary file is created with mode 0600 and is owned by root.\n\n    The caller is responsible for deleting the temporary file after use.\n\n    If the optional \"suffix\" parameter is given, then the suffix (eg.\n    \".txt\") is appended to the temporary name.\n\n    See also: \"mkdtemp\".\n\n",
+  .run = run_mktemp
+};
+
+struct command_entry mklost_and_found_cmd_entry = {
+  .name = "mklost-and-found",
+  .help = "NAME\n    mklost-and-found - make lost+found directory on an ext2/3/4 filesystem\n\nSYNOPSIS\n     mklost-and-found mountpoint\n\nDESCRIPTION\n    Make the \"lost+found\" directory, normally in the root directory of an\n    ext2/3/4 filesystem. \"mountpoint\" is the directory under which we try to\n    create the \"lost+found\" directory.\n\n",
+  .run = run_mklost_and_found
+};
+
+struct command_entry acl_get_file_cmd_entry = {
+  .name = "acl-get-file",
+  .help = "NAME\n    acl-get-file - get the POSIX ACL attached to a file\n\nSYNOPSIS\n     acl-get-file path acltype\n\nDESCRIPTION\n    This function returns the POSIX Access Control List (ACL) attached to\n    \"path\". The ACL is returned in \"long text form\" (see acl(5)).\n\n    The \"acltype\" parameter may be:\n\n    \"access\"\n        Return the ordinary (access) ACL for any file, directory or other\n        filesystem object.\n\n    \"default\"\n        Return the default ACL. Normally this only makes sense if \"path\" is\n        a directory.\n\n",
+  .run = run_acl_get_file
+};
+
+struct command_entry acl_set_file_cmd_entry = {
+  .name = "acl-set-file",
+  .help = "NAME\n    acl-set-file - set the POSIX ACL attached to a file\n\nSYNOPSIS\n     acl-set-file path acltype acl\n\nDESCRIPTION\n    This function sets the POSIX Access Control List (ACL) attached to\n    \"path\". The \"acl\" parameter is the new ACL in either \"long text form\" or\n    \"short text form\" (see acl(5)).\n\n    The \"acltype\" parameter may be:\n\n    \"access\"\n        Set the ordinary (access) ACL for any file, directory or other\n        filesystem object.\n\n    \"default\"\n        Set the default ACL. Normally this only makes sense if \"path\" is a\n        directory.\n\n",
+  .run = run_acl_set_file
+};
+
+struct command_entry acl_delete_def_file_cmd_entry = {
+  .name = "acl-delete-def-file",
+  .help = "NAME\n    acl-delete-def-file - delete the default POSIX ACL of a directory\n\nSYNOPSIS\n     acl-delete-def-file dir\n\nDESCRIPTION\n    This function deletes the default POSIX Access Control List (ACL)\n    attached to directory \"dir\".\n\n",
+  .run = run_acl_delete_def_file
+};
+
+struct command_entry cap_get_file_cmd_entry = {
+  .name = "cap-get-file",
+  .help = "NAME\n    cap-get-file - get the Linux capabilities attached to a file\n\nSYNOPSIS\n     cap-get-file path\n\nDESCRIPTION\n    This function returns the Linux capabilities attached to \"path\". The\n    capabilities set is returned in text form (see cap_to_text(3)).\n\n",
+  .run = run_cap_get_file
+};
+
+struct command_entry cap_set_file_cmd_entry = {
+  .name = "cap-set-file",
+  .help = "NAME\n    cap-set-file - set the Linux capabilities attached to a file\n\nSYNOPSIS\n     cap-set-file path cap\n\nDESCRIPTION\n    This function sets the Linux capabilities attached to \"path\". The\n    capabilities set \"cap\" should be passed in text form (see\n    cap_from_text(3)).\n\n",
+  .run = run_cap_set_file
+};
+
+struct command_entry list_ldm_volumes_cmd_entry = {
+  .name = "list-ldm-volumes",
+  .help = "NAME\n    list-ldm-volumes - list all Windows dynamic disk volumes\n\nSYNOPSIS\n     list-ldm-volumes\n\nDESCRIPTION\n    This function returns all Windows dynamic disk volumes that were found\n    at launch time. It returns a list of device names.\n\n",
+  .run = run_list_ldm_volumes
+};
+
+struct command_entry list_ldm_partitions_cmd_entry = {
+  .name = "list-ldm-partitions",
+  .help = "NAME\n    list-ldm-partitions - list all Windows dynamic disk partitions\n\nSYNOPSIS\n     list-ldm-partitions\n\nDESCRIPTION\n    This function returns all Windows dynamic disk partitions that were\n    found at launch time. It returns a list of device names.\n\n",
+  .run = run_list_ldm_partitions
+};
+
+struct command_entry ldmtool_create_all_cmd_entry = {
+  .name = "ldmtool-create-all",
+  .help = "NAME\n    ldmtool-create-all - scan and create Windows dynamic disk volumes\n\nSYNOPSIS\n     ldmtool-create-all\n\nDESCRIPTION\n    This function scans all block devices looking for Windows dynamic disk\n    volumes and partitions, and creates devices for any that were found.\n\n    Call \"list_ldm_volumes\" and \"list_ldm_partitions\" to return all devices.\n\n    Note that you don't normally need to call this explicitly, since it is\n    done automatically at \"launch\" time. However you might want to call this\n    function if you have hotplugged disks or have just created a Windows\n    dynamic disk.\n\n",
+  .run = run_ldmtool_create_all
+};
+
+struct command_entry ldmtool_remove_all_cmd_entry = {
+  .name = "ldmtool-remove-all",
+  .help = "NAME\n    ldmtool-remove-all - remove all Windows dynamic disk volumes\n\nSYNOPSIS\n     ldmtool-remove-all\n\nDESCRIPTION\n    This is essentially the opposite of \"ldmtool_create_all\". It removes the\n    device mapper mappings for all Windows dynamic disk volumes\n\n",
+  .run = run_ldmtool_remove_all
+};
+
+struct command_entry ldmtool_scan_cmd_entry = {
+  .name = "ldmtool-scan",
+  .help = "NAME\n    ldmtool-scan - scan for Windows dynamic disks\n\nSYNOPSIS\n     ldmtool-scan\n\nDESCRIPTION\n    This function scans for Windows dynamic disks. It returns a list of\n    identifiers (GUIDs) for all disk groups that were found. These\n    identifiers can be passed to other \"ldmtool_*\" functions.\n\n    This function scans all block devices. To scan a subset of block\n    devices, call \"ldmtool_scan_devices\" instead.\n\n",
+  .run = run_ldmtool_scan
+};
+
+struct command_entry ldmtool_scan_devices_cmd_entry = {
+  .name = "ldmtool-scan-devices",
+  .help = "NAME\n    ldmtool-scan-devices - scan for Windows dynamic disks\n\nSYNOPSIS\n     ldmtool-scan-devices devices\n\nDESCRIPTION\n    This function scans for Windows dynamic disks. It returns a list of\n    identifiers (GUIDs) for all disk groups that were found. These\n    identifiers can be passed to other \"ldmtool_*\" functions.\n\n    The parameter \"devices\" is a list of block devices which are scanned. If\n    this list is empty, all block devices are scanned.\n\n",
+  .run = run_ldmtool_scan_devices
+};
+
+struct command_entry ldmtool_diskgroup_name_cmd_entry = {
+  .name = "ldmtool-diskgroup-name",
+  .help = "NAME\n    ldmtool-diskgroup-name - return the name of a Windows dynamic disk group\n\nSYNOPSIS\n     ldmtool-diskgroup-name diskgroup\n\nDESCRIPTION\n    Return the name of a Windows dynamic disk group. The \"diskgroup\"\n    parameter should be the GUID of a disk group, one element from the list\n    returned by \"ldmtool_scan\".\n\n",
+  .run = run_ldmtool_diskgroup_name
+};
+
+struct command_entry ldmtool_diskgroup_volumes_cmd_entry = {
+  .name = "ldmtool-diskgroup-volumes",
+  .help = "NAME\n    ldmtool-diskgroup-volumes - return the volumes in a Windows dynamic disk\n    group\n\nSYNOPSIS\n     ldmtool-diskgroup-volumes diskgroup\n\nDESCRIPTION\n    Return the volumes in a Windows dynamic disk group. The \"diskgroup\"\n    parameter should be the GUID of a disk group, one element from the list\n    returned by \"ldmtool_scan\".\n\n",
+  .run = run_ldmtool_diskgroup_volumes
+};
+
+struct command_entry ldmtool_diskgroup_disks_cmd_entry = {
+  .name = "ldmtool-diskgroup-disks",
+  .help = "NAME\n    ldmtool-diskgroup-disks - return the disks in a Windows dynamic disk\n    group\n\nSYNOPSIS\n     ldmtool-diskgroup-disks diskgroup\n\nDESCRIPTION\n    Return the disks in a Windows dynamic disk group. The \"diskgroup\"\n    parameter should be the GUID of a disk group, one element from the list\n    returned by \"ldmtool_scan\".\n\n",
+  .run = run_ldmtool_diskgroup_disks
+};
+
+struct command_entry ldmtool_volume_type_cmd_entry = {
+  .name = "ldmtool-volume-type",
+  .help = "NAME\n    ldmtool-volume-type - return the type of a Windows dynamic disk volume\n\nSYNOPSIS\n     ldmtool-volume-type diskgroup volume\n\nDESCRIPTION\n    Return the type of the volume named \"volume\" in the disk group with GUID\n    <diskgroup>.\n\n    Possible volume types that can be returned here include: \"simple\",\n    \"spanned\", \"striped\", \"mirrored\", \"raid5\". Other types may also be\n    returned.\n\n",
+  .run = run_ldmtool_volume_type
+};
+
+struct command_entry ldmtool_volume_hint_cmd_entry = {
+  .name = "ldmtool-volume-hint",
+  .help = "NAME\n    ldmtool-volume-hint - return the hint field of a Windows dynamic disk\n    volume\n\nSYNOPSIS\n     ldmtool-volume-hint diskgroup volume\n\nDESCRIPTION\n    Return the hint field of the volume named \"volume\" in the disk group\n    with GUID <diskgroup>. This may not be defined, in which case the empty\n    string is returned. The hint field is often, though not always, the name\n    of a Windows drive, eg. \"E:\".\n\n",
+  .run = run_ldmtool_volume_hint
+};
+
+struct command_entry ldmtool_volume_partitions_cmd_entry = {
+  .name = "ldmtool-volume-partitions",
+  .help = "NAME\n    ldmtool-volume-partitions - return the partitions in a Windows dynamic\n    disk volume\n\nSYNOPSIS\n     ldmtool-volume-partitions diskgroup volume\n\nDESCRIPTION\n    Return the list of partitions in the volume named \"volume\" in the disk\n    group with GUID <diskgroup>.\n\n",
+  .run = run_ldmtool_volume_partitions
+};
+
 void
 list_commands (void)
 {
   printf ("    %-16s     %s\n", _("Command"), _("Description"));
   list_builtin_commands ();
+  printf ("%-20s %s\n", "acl-delete-def-file", _("delete the default POSIX ACL of a directory"));
+  printf ("%-20s %s\n", "acl-get-file", _("get the POSIX ACL attached to a file"));
+  printf ("%-20s %s\n", "acl-set-file", _("set the POSIX ACL attached to a file"));
   printf ("%-20s %s\n", "add-cdrom", _("add a CD-ROM disk image to examine"));
   printf ("%-20s %s\n", "add-domain", _("add the disk(s) from a named libvirt domain"));
   printf ("%-20s %s\n", "add-drive", _("add an image to examine or modify"));
-  printf ("%-20s %s\n", "add-drive-opts", _("add an image to examine or modify"));
   printf ("%-20s %s\n", "add-drive-ro", _("add a drive in snapshot mode (read-only)"));
   printf ("%-20s %s\n", "add-drive-ro-with-if", _("add a drive read-only specifying the QEMU block emulation to use"));
   printf ("%-20s %s\n", "add-drive-with-if", _("add a drive specifying the QEMU block emulation to use"));
@@ -3082,6 +3574,9 @@ list_commands (void)
   printf ("%-20s %s\n", "btrfs-subvolume-list", _("list btrfs snapshots and subvolumes"));
   printf ("%-20s %s\n", "btrfs-subvolume-set-default", _("set default btrfs subvolume"));
   printf ("%-20s %s\n", "btrfs-subvolume-snapshot", _("create a writable btrfs snapshot"));
+  printf ("%-20s %s\n", "canonical-device-name", _("return canonical device name"));
+  printf ("%-20s %s\n", "cap-get-file", _("get the Linux capabilities attached to a file"));
+  printf ("%-20s %s\n", "cap-set-file", _("set the Linux capabilities attached to a file"));
   printf ("%-20s %s\n", "case-sensitive-path", _("return true path on case-insensitive filesystem"));
   printf ("%-20s %s\n", "cat", _("list the contents of a file"));
   printf ("%-20s %s\n", "checksum", _("compute MD5, SHAx or CRC checksum of file"));
@@ -3105,13 +3600,15 @@ list_commands (void)
   printf ("%-20s %s\n", "cp-a", _("copy a file or directory recursively"));
   printf ("%-20s %s\n", "dd", _("copy from source to destination using dd"));
   printf ("%-20s %s\n", "debug", _("debugging and internals"));
-  printf ("%-20s %s\n", "debug-cmdline", _("debug the QEMU command line (internal use only)"));
   printf ("%-20s %s\n", "debug-drives", _("debug the drives (internal use only)"));
   printf ("%-20s %s\n", "debug-upload", _("upload a file to the appliance (internal use only)"));
   printf ("%-20s %s\n", "delete-event", _("delete a previously registered event handler"));
   printf ("%-20s %s\n", "device-index", _("convert device to index"));
   printf ("%-20s %s\n", "df", _("report file system disk space usage"));
   printf ("%-20s %s\n", "df-h", _("report file system disk space usage (human readable)"));
+  printf ("%-20s %s\n", "disk-format", _("detect the disk format of a disk image"));
+  printf ("%-20s %s\n", "disk-has-backing-file", _("return whether disk has a backing file"));
+  printf ("%-20s %s\n", "disk-virtual-size", _("return virtual size of a disk"));
   printf ("%-20s %s\n", "display", _("display an image"));
   printf ("%-20s %s\n", "dmesg", _("return kernel messages"));
   printf ("%-20s %s\n", "download", _("download a file to the local machine"));
@@ -3135,21 +3632,29 @@ list_commands (void)
   printf ("%-20s %s\n", "file", _("determine file type"));
   printf ("%-20s %s\n", "file-architecture", _("detect the architecture of a binary file"));
   printf ("%-20s %s\n", "filesize", _("return the size of the file in bytes"));
+  printf ("%-20s %s\n", "filesystem-available", _("check if filesystem is available"));
   printf ("%-20s %s\n", "fill", _("fill a file with octets"));
+  printf ("%-20s %s\n", "fill-dir", _("fill a directory with empty files"));
   printf ("%-20s %s\n", "fill-pattern", _("fill a file with a repeating pattern of bytes"));
   printf ("%-20s %s\n", "find", _("find all files and directories"));
   printf ("%-20s %s\n", "find0", _("find all files and directories, returning NUL-separated list"));
   printf ("%-20s %s\n", "findfs-label", _("find a filesystem by label"));
   printf ("%-20s %s\n", "findfs-uuid", _("find a filesystem by UUID"));
   printf ("%-20s %s\n", "fsck", _("run the filesystem checker"));
+  printf ("%-20s %s\n", "fstrim", _("trim free space in a filesystem"));
   printf ("%-20s %s\n", "get-append", _("get the additional kernel options"));
   printf ("%-20s %s\n", "get-attach-method", _("get the attach method"));
   printf ("%-20s %s\n", "get-autosync", _("get autosync mode"));
+  printf ("%-20s %s\n", "get-cachedir", _("get the appliance cache directory"));
   printf ("%-20s %s\n", "get-direct", _("get direct appliance mode flag"));
   printf ("%-20s %s\n", "get-e2attrs", _("get ext2 file attributes of a file"));
   printf ("%-20s %s\n", "get-e2generation", _("get ext2 file generation of a file"));
   printf ("%-20s %s\n", "get-e2label", _("get the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "get-e2uuid", _("get the ext2/3/4 filesystem UUID"));
+  printf ("%-20s %s\n", "get-libvirt-requested-credential-challenge", _("challenge of i'th requested credential"));
+  printf ("%-20s %s\n", "get-libvirt-requested-credential-defresult", _("default result of i'th requested credential"));
+  printf ("%-20s %s\n", "get-libvirt-requested-credential-prompt", _("prompt of i'th requested credential"));
+  printf ("%-20s %s\n", "get-libvirt-requested-credentials", _("get list of credentials requested by libvirt"));
   printf ("%-20s %s\n", "get-memsize", _("get memory allocated to the qemu subprocess"));
   printf ("%-20s %s\n", "get-network", _("get enable network flag"));
   printf ("%-20s %s\n", "get-path", _("get the search path"));
@@ -3160,6 +3665,7 @@ list_commands (void)
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
   printf ("%-20s %s\n", "get-smp", _("get number of virtual CPUs in appliance"));
   printf ("%-20s %s\n", "get-state", _("get the current state"));
+  printf ("%-20s %s\n", "get-tmpdir", _("get the temporary directory"));
   printf ("%-20s %s\n", "get-trace", _("get command trace enabled flag"));
   printf ("%-20s %s\n", "get-umask", _("get the current umask"));
   printf ("%-20s %s\n", "get-verbose", _("get verbose mode"));
@@ -3175,6 +3681,23 @@ list_commands (void)
   printf ("%-20s %s\n", "head-n", _("return first N lines of a file"));
   printf ("%-20s %s\n", "hexdump", _("dump a file in hexadecimal"));
   printf ("%-20s %s\n", "hexedit", _("edit with a hex editor"));
+  printf ("%-20s %s\n", "hivex-close", _("close the current hivex handle"));
+  printf ("%-20s %s\n", "hivex-commit", _("commit (write) changes back to the hive"));
+  printf ("%-20s %s\n", "hivex-node-add-child", _("add a child node"));
+  printf ("%-20s %s\n", "hivex-node-children", _("return list of nodes which are subkeys of node"));
+  printf ("%-20s %s\n", "hivex-node-delete-child", _("delete a node (recursively)"));
+  printf ("%-20s %s\n", "hivex-node-get-child", _("return the named child of node"));
+  printf ("%-20s %s\n", "hivex-node-get-value", _("return the named value"));
+  printf ("%-20s %s\n", "hivex-node-name", _("return the name of the node"));
+  printf ("%-20s %s\n", "hivex-node-parent", _("return the parent of node"));
+  printf ("%-20s %s\n", "hivex-node-set-value", _("set or replace a single value in a node"));
+  printf ("%-20s %s\n", "hivex-node-values", _("return list of values attached to node"));
+  printf ("%-20s %s\n", "hivex-open", _("open a Windows Registry hive file"));
+  printf ("%-20s %s\n", "hivex-root", _("return the root node of the hive"));
+  printf ("%-20s %s\n", "hivex-value-key", _("return the key field from the (key, datatype, data) tuple"));
+  printf ("%-20s %s\n", "hivex-value-type", _("return the data type from the (key, datatype, data) tuple"));
+  printf ("%-20s %s\n", "hivex-value-utf8", _("return the data field from the (key, datatype, data) tuple"));
+  printf ("%-20s %s\n", "hivex-value-value", _("return the data field from the (key, datatype, data) tuple"));
   printf ("%-20s %s\n", "initrd-cat", _("list the contents of a single file in an initrd"));
   printf ("%-20s %s\n", "initrd-list", _("list files in an initrd"));
   printf ("%-20s %s\n", "inotify-add-watch", _("add an inotify watch"));
@@ -3205,6 +3728,7 @@ list_commands (void)
   printf ("%-20s %s\n", "inspect-is-multipart", _("get multipart flag for install disk"));
   printf ("%-20s %s\n", "inspect-is-netinst", _("get netinst (network installer) flag for install disk"));
   printf ("%-20s %s\n", "inspect-list-applications", _("get list of applications installed in the operating system"));
+  printf ("%-20s %s\n", "inspect-list-applications2", _("get list of applications installed in the operating system"));
   printf ("%-20s %s\n", "inspect-os", _("inspect disk and return list of operating systems found"));
   printf ("%-20s %s\n", "is-blockdev", _("test if block device"));
   printf ("%-20s %s\n", "is-busy", _("is busy processing a command"));
@@ -3226,13 +3750,26 @@ list_commands (void)
   printf ("%-20s %s\n", "launch", _("launch the qemu subprocess"));
   printf ("%-20s %s\n", "lcd", _("change working directory"));
   printf ("%-20s %s\n", "lchown", _("change file owner and group"));
+  printf ("%-20s %s\n", "ldmtool-create-all", _("scan and create Windows dynamic disk volumes"));
+  printf ("%-20s %s\n", "ldmtool-diskgroup-disks", _("return the disks in a Windows dynamic disk group"));
+  printf ("%-20s %s\n", "ldmtool-diskgroup-name", _("return the name of a Windows dynamic disk group"));
+  printf ("%-20s %s\n", "ldmtool-diskgroup-volumes", _("return the volumes in a Windows dynamic disk group"));
+  printf ("%-20s %s\n", "ldmtool-remove-all", _("remove all Windows dynamic disk volumes"));
+  printf ("%-20s %s\n", "ldmtool-scan", _("scan for Windows dynamic disks"));
+  printf ("%-20s %s\n", "ldmtool-scan-devices", _("scan for Windows dynamic disks"));
+  printf ("%-20s %s\n", "ldmtool-volume-hint", _("return the hint field of a Windows dynamic disk volume"));
+  printf ("%-20s %s\n", "ldmtool-volume-partitions", _("return the partitions in a Windows dynamic disk volume"));
+  printf ("%-20s %s\n", "ldmtool-volume-type", _("return the type of a Windows dynamic disk volume"));
   printf ("%-20s %s\n", "lgetxattr", _("get a single extended attribute"));
   printf ("%-20s %s\n", "lgetxattrs", _("list extended attributes of a file or directory"));
   printf ("%-20s %s\n", "list-9p", _("list 9p filesystems"));
   printf ("%-20s %s\n", "list-devices", _("list the block devices"));
+  printf ("%-20s %s\n", "list-disk-labels", _("mapping of disk labels to devices"));
   printf ("%-20s %s\n", "list-dm-devices", _("list device mapper devices"));
   printf ("%-20s %s\n", "list-events", _("list event handlers"));
   printf ("%-20s %s\n", "list-filesystems", _("list filesystems"));
+  printf ("%-20s %s\n", "list-ldm-partitions", _("list all Windows dynamic disk partitions"));
+  printf ("%-20s %s\n", "list-ldm-volumes", _("list all Windows dynamic disk volumes"));
   printf ("%-20s %s\n", "list-md-devices", _("list Linux md (RAID) devices"));
   printf ("%-20s %s\n", "list-partitions", _("list the partitions"));
   printf ("%-20s %s\n", "ll", _("list the files in a directory (long format)"));
@@ -3243,6 +3780,7 @@ list_commands (void)
   printf ("%-20s %s\n", "ln-sf", _("create a symbolic link"));
   printf ("%-20s %s\n", "lremovexattr", _("remove extended attribute of a file or directory"));
   printf ("%-20s %s\n", "ls", _("list the files in a directory"));
+  printf ("%-20s %s\n", "ls0", _("get list of files in a directory"));
   printf ("%-20s %s\n", "lsetxattr", _("set extended attribute of a file or directory"));
   printf ("%-20s %s\n", "lstat", _("get file information for a symbolic link"));
   printf ("%-20s %s\n", "lstatlist", _("lstat on multiple files"));
@@ -3268,6 +3806,7 @@ list_commands (void)
   printf ("%-20s %s\n", "lvuuid", _("get the UUID of a logical volume"));
   printf ("%-20s %s\n", "lxattrlist", _("lgetxattr on multiple files"));
   printf ("%-20s %s\n", "man", _("open the manual"));
+  printf ("%-20s %s\n", "max-disks", _("maximum number of disks that may be added"));
   printf ("%-20s %s\n", "md-create", _("create a Linux md (RAID) device"));
   printf ("%-20s %s\n", "md-detail", _("obtain metadata for an MD device"));
   printf ("%-20s %s\n", "md-stat", _("get underlying devices from an MD device"));
@@ -3276,6 +3815,7 @@ list_commands (void)
   printf ("%-20s %s\n", "mkdir-mode", _("create a directory with a particular mode"));
   printf ("%-20s %s\n", "mkdir-p", _("create a directory and parents"));
   printf ("%-20s %s\n", "mkdtemp", _("create a temporary directory"));
+  printf ("%-20s %s\n", "mke2fs", _("create an ext2/ext3/ext4 filesystem on device"));
   printf ("%-20s %s\n", "mke2fs-J", _("make ext2/3/4 filesystem with external journal"));
   printf ("%-20s %s\n", "mke2fs-JL", _("make ext2/3/4 filesystem with external journal"));
   printf ("%-20s %s\n", "mke2fs-JU", _("make ext2/3/4 filesystem with external journal"));
@@ -3286,7 +3826,7 @@ list_commands (void)
   printf ("%-20s %s\n", "mkfs", _("make a filesystem"));
   printf ("%-20s %s\n", "mkfs-b", _("make a filesystem with block size"));
   printf ("%-20s %s\n", "mkfs-btrfs", _("create a btrfs filesystem"));
-  printf ("%-20s %s\n", "mkfs-opts", _("make a filesystem"));
+  printf ("%-20s %s\n", "mklost-and-found", _("make lost+found directory on an ext2/3/4 filesystem"));
   printf ("%-20s %s\n", "mkmountpoint", _("create a mountpoint"));
   printf ("%-20s %s\n", "mknod", _("make block, character or FIFO devices"));
   printf ("%-20s %s\n", "mknod-b", _("make block device node"));
@@ -3295,6 +3835,7 @@ list_commands (void)
   printf ("%-20s %s\n", "mkswap-L", _("create a swap partition with a label"));
   printf ("%-20s %s\n", "mkswap-U", _("create a swap partition with an explicit UUID"));
   printf ("%-20s %s\n", "mkswap-file", _("create a swap file"));
+  printf ("%-20s %s\n", "mktemp", _("create a temporary file"));
   printf ("%-20s %s\n", "modprobe", _("load a kernel module"));
   printf ("%-20s %s\n", "more", _("view a file"));
   printf ("%-20s %s\n", "mount", _("mount a guest disk at a position in the filesystem"));
@@ -3314,8 +3855,9 @@ list_commands (void)
   printf ("%-20s %s\n", "ntfsclone-out", _("save NTFS to backup file"));
   printf ("%-20s %s\n", "ntfsfix", _("fix common errors and force Windows to check NTFS"));
   printf ("%-20s %s\n", "ntfsresize", _("resize an NTFS filesystem"));
-  printf ("%-20s %s\n", "ntfsresize-opts", _("resize an NTFS filesystem"));
   printf ("%-20s %s\n", "ntfsresize-size", _("resize an NTFS filesystem (with size)"));
+  printf ("%-20s %s\n", "parse-environment", _("parse the environment and set handle flags accordingly"));
+  printf ("%-20s %s\n", "parse-environment-list", _("parse the environment and set handle flags accordingly"));
   printf ("%-20s %s\n", "part-add", _("add a partition to the device"));
   printf ("%-20s %s\n", "part-del", _("delete a partition"));
   printf ("%-20s %s\n", "part-disk", _("partition whole disk with a single primary partition"));
@@ -3332,6 +3874,8 @@ list_commands (void)
   printf ("%-20s %s\n", "ping-daemon", _("ping the guest daemon"));
   printf ("%-20s %s\n", "pread", _("read part of a file"));
   printf ("%-20s %s\n", "pread-device", _("read part of a device"));
+  printf ("%-20s %s\n", "pvchange-uuid", _("generate a new random UUID for a physical volume"));
+  printf ("%-20s %s\n", "pvchange-uuid-all", _("generate new random UUIDs for all physical volumes"));
   printf ("%-20s %s\n", "pvcreate", _("create an LVM physical volume"));
   printf ("%-20s %s\n", "pvremove", _("remove an LVM physical volume"));
   printf ("%-20s %s\n", "pvresize", _("resize an LVM physical volume"));
@@ -3347,27 +3891,35 @@ list_commands (void)
   printf ("%-20s %s\n", "readlink", _("read the target of a symbolic link"));
   printf ("%-20s %s\n", "readlinklist", _("readlink on multiple files"));
   printf ("%-20s %s\n", "realpath", _("canonicalized absolute pathname"));
+  printf ("%-20s %s\n", "remove-drive", _("remove a disk image"));
   printf ("%-20s %s\n", "removexattr", _("remove extended attribute of a file or directory"));
   printf ("%-20s %s\n", "reopen", _("close and reopen libguestfs handle"));
   printf ("%-20s %s\n", "resize2fs", _("resize an ext2, ext3 or ext4 filesystem"));
   printf ("%-20s %s\n", "resize2fs-M", _("resize an ext2, ext3 or ext4 filesystem to the minimum size"));
   printf ("%-20s %s\n", "resize2fs-size", _("resize an ext2, ext3 or ext4 filesystem (with size)"));
   printf ("%-20s %s\n", "rm", _("remove a file"));
+  printf ("%-20s %s\n", "rm-f", _("remove a file ignoring errors"));
   printf ("%-20s %s\n", "rm-rf", _("remove a file or directory recursively"));
   printf ("%-20s %s\n", "rmdir", _("remove a directory"));
   printf ("%-20s %s\n", "rmmountpoint", _("remove a mountpoint"));
+  printf ("%-20s %s\n", "rsync", _("synchronize the contents of two directories"));
+  printf ("%-20s %s\n", "rsync-in", _("synchronize host or remote filesystem with filesystem"));
+  printf ("%-20s %s\n", "rsync-out", _("synchronize filesystem with host or remote filesystem"));
   printf ("%-20s %s\n", "scrub-device", _("scrub (securely wipe) a device"));
   printf ("%-20s %s\n", "scrub-file", _("scrub (securely wipe) a file"));
   printf ("%-20s %s\n", "scrub-freespace", _("scrub (securely wipe) free space"));
   printf ("%-20s %s\n", "set-append", _("add options to kernel command line"));
   printf ("%-20s %s\n", "set-attach-method", _("set the attach method"));
   printf ("%-20s %s\n", "set-autosync", _("set autosync mode"));
+  printf ("%-20s %s\n", "set-cachedir", _("set the appliance cache directory"));
   printf ("%-20s %s\n", "set-direct", _("enable or disable direct appliance mode"));
   printf ("%-20s %s\n", "set-e2attrs", _("set ext2 file attributes of a file"));
   printf ("%-20s %s\n", "set-e2generation", _("set ext2 file generation of a file"));
   printf ("%-20s %s\n", "set-e2label", _("set the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "set-e2uuid", _("set the ext2/3/4 filesystem UUID"));
   printf ("%-20s %s\n", "set-label", _("set filesystem label"));
+  printf ("%-20s %s\n", "set-libvirt-requested-credential", _("pass requested credential back to libvirt"));
+  printf ("%-20s %s\n", "set-libvirt-supported-credentials", _("set libvirt credentials supported by calling program"));
   printf ("%-20s %s\n", "set-memsize", _("set memory allocated to the qemu subprocess"));
   printf ("%-20s %s\n", "set-network", _("set enable network flag"));
   printf ("%-20s %s\n", "set-path", _("set the search path"));
@@ -3376,6 +3928,7 @@ list_commands (void)
   printf ("%-20s %s\n", "set-recovery-proc", _("enable or disable the recovery process"));
   printf ("%-20s %s\n", "set-selinux", _("set SELinux enabled or disabled at appliance boot"));
   printf ("%-20s %s\n", "set-smp", _("set number of virtual CPUs in appliance"));
+  printf ("%-20s %s\n", "set-tmpdir", _("set the temporary directory"));
   printf ("%-20s %s\n", "set-trace", _("enable or disable command traces"));
   printf ("%-20s %s\n", "set-verbose", _("set verbose mode"));
   printf ("%-20s %s\n", "setcon", _("set SELinux security context"));
@@ -3428,12 +3981,15 @@ list_commands (void)
   printf ("%-20s %s\n", "upload", _("upload a file from the local machine"));
   printf ("%-20s %s\n", "upload-offset", _("upload a file from the local machine with offset"));
   printf ("%-20s %s\n", "utimens", _("set timestamp of a file with nanosecond precision"));
+  printf ("%-20s %s\n", "utsname", _("appliance kernel version"));
   printf ("%-20s %s\n", "version", _("get the library version number"));
   printf ("%-20s %s\n", "vfs-label", _("get the filesystem label"));
   printf ("%-20s %s\n", "vfs-type", _("get the Linux VFS type corresponding to a mounted device"));
   printf ("%-20s %s\n", "vfs-uuid", _("get the filesystem UUID"));
   printf ("%-20s %s\n", "vg-activate", _("activate or deactivate some volume groups"));
   printf ("%-20s %s\n", "vg-activate-all", _("activate or deactivate all volume groups"));
+  printf ("%-20s %s\n", "vgchange-uuid", _("generate a new random UUID for a volume group"));
+  printf ("%-20s %s\n", "vgchange-uuid-all", _("generate new random UUIDs for all volume groups"));
   printf ("%-20s %s\n", "vgcreate", _("create an LVM volume group"));
   printf ("%-20s %s\n", "vglvuuids", _("get the LV UUIDs of all LVs in the volume group"));
   printf ("%-20s %s\n", "vgmeta", _("get volume group metadata"));
@@ -3451,6 +4007,10 @@ list_commands (void)
   printf ("%-20s %s\n", "write", _("create a new file"));
   printf ("%-20s %s\n", "write-append", _("append content to end of file"));
   printf ("%-20s %s\n", "write-file", _("create a file"));
+  printf ("%-20s %s\n", "xfs-admin", _("change parameters of an XFS filesystem"));
+  printf ("%-20s %s\n", "xfs-growfs", _("expand an existing XFS filesystem"));
+  printf ("%-20s %s\n", "xfs-info", _("get geometry of XFS filesystem"));
+  printf ("%-20s %s\n", "xfs-repair", _("repair an XFS filesystem"));
   printf ("%-20s %s\n", "zegrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "zegrepi", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "zero", _("write zeroes to the device"));
@@ -3673,6 +4233,28 @@ print_application_indent (struct guestfs_application *application, const char *i
 }
 
 static void
+print_application2_indent (struct guestfs_application2 *application2, const char *indent)
+{
+  printf ("%sapp2_name: %s\n", indent, application2->app2_name);
+  printf ("%sapp2_display_name: %s\n", indent, application2->app2_display_name);
+  printf ("%sapp2_epoch: %" PRIi32 "\n", indent, application2->app2_epoch);
+  printf ("%sapp2_version: %s\n", indent, application2->app2_version);
+  printf ("%sapp2_release: %s\n", indent, application2->app2_release);
+  printf ("%sapp2_arch: %s\n", indent, application2->app2_arch);
+  printf ("%sapp2_install_path: %s\n", indent, application2->app2_install_path);
+  printf ("%sapp2_trans_path: %s\n", indent, application2->app2_trans_path);
+  printf ("%sapp2_publisher: %s\n", indent, application2->app2_publisher);
+  printf ("%sapp2_url: %s\n", indent, application2->app2_url);
+  printf ("%sapp2_source_package: %s\n", indent, application2->app2_source_package);
+  printf ("%sapp2_summary: %s\n", indent, application2->app2_summary);
+  printf ("%sapp2_description: %s\n", indent, application2->app2_description);
+  printf ("%sapp2_spare1: %s\n", indent, application2->app2_spare1);
+  printf ("%sapp2_spare2: %s\n", indent, application2->app2_spare2);
+  printf ("%sapp2_spare3: %s\n", indent, application2->app2_spare3);
+  printf ("%sapp2_spare4: %s\n", indent, application2->app2_spare4);
+}
+
+static void
 print_isoinfo_indent (struct guestfs_isoinfo *isoinfo, const char *indent)
 {
   printf ("%siso_system_id: %s\n", indent, isoinfo->iso_system_id);
@@ -3708,6 +4290,57 @@ print_btrfssubvolume_indent (struct guestfs_btrfssubvolume *btrfssubvolume, cons
   printf ("%sbtrfssubvolume_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_id);
   printf ("%sbtrfssubvolume_top_level_id: %" PRIu64 "\n", indent, btrfssubvolume->btrfssubvolume_top_level_id);
   printf ("%sbtrfssubvolume_path: %s\n", indent, btrfssubvolume->btrfssubvolume_path);
+}
+
+static void
+print_xfsinfo_indent (struct guestfs_xfsinfo *xfsinfo, const char *indent)
+{
+  printf ("%sxfs_mntpoint: %s\n", indent, xfsinfo->xfs_mntpoint);
+  printf ("%sxfs_inodesize: %" PRIu32 "\n", indent, xfsinfo->xfs_inodesize);
+  printf ("%sxfs_agcount: %" PRIu32 "\n", indent, xfsinfo->xfs_agcount);
+  printf ("%sxfs_agsize: %" PRIu32 "\n", indent, xfsinfo->xfs_agsize);
+  printf ("%sxfs_sectsize: %" PRIu32 "\n", indent, xfsinfo->xfs_sectsize);
+  printf ("%sxfs_attr: %" PRIu32 "\n", indent, xfsinfo->xfs_attr);
+  printf ("%sxfs_blocksize: %" PRIu32 "\n", indent, xfsinfo->xfs_blocksize);
+  printf ("%sxfs_datablocks: %" PRIu64 "\n", indent, xfsinfo->xfs_datablocks);
+  printf ("%sxfs_imaxpct: %" PRIu32 "\n", indent, xfsinfo->xfs_imaxpct);
+  printf ("%sxfs_sunit: %" PRIu32 "\n", indent, xfsinfo->xfs_sunit);
+  printf ("%sxfs_swidth: %" PRIu32 "\n", indent, xfsinfo->xfs_swidth);
+  printf ("%sxfs_dirversion: %" PRIu32 "\n", indent, xfsinfo->xfs_dirversion);
+  printf ("%sxfs_dirblocksize: %" PRIu32 "\n", indent, xfsinfo->xfs_dirblocksize);
+  printf ("%sxfs_cimode: %" PRIu32 "\n", indent, xfsinfo->xfs_cimode);
+  printf ("%sxfs_logname: %s\n", indent, xfsinfo->xfs_logname);
+  printf ("%sxfs_logblocksize: %" PRIu32 "\n", indent, xfsinfo->xfs_logblocksize);
+  printf ("%sxfs_logblocks: %" PRIu32 "\n", indent, xfsinfo->xfs_logblocks);
+  printf ("%sxfs_logversion: %" PRIu32 "\n", indent, xfsinfo->xfs_logversion);
+  printf ("%sxfs_logsectsize: %" PRIu32 "\n", indent, xfsinfo->xfs_logsectsize);
+  printf ("%sxfs_logsunit: %" PRIu32 "\n", indent, xfsinfo->xfs_logsunit);
+  printf ("%sxfs_lazycount: %" PRIu32 "\n", indent, xfsinfo->xfs_lazycount);
+  printf ("%sxfs_rtname: %s\n", indent, xfsinfo->xfs_rtname);
+  printf ("%sxfs_rtextsize: %" PRIu32 "\n", indent, xfsinfo->xfs_rtextsize);
+  printf ("%sxfs_rtblocks: %" PRIu64 "\n", indent, xfsinfo->xfs_rtblocks);
+  printf ("%sxfs_rtextents: %" PRIu64 "\n", indent, xfsinfo->xfs_rtextents);
+}
+
+static void
+print_utsname_indent (struct guestfs_utsname *utsname, const char *indent)
+{
+  printf ("%suts_sysname: %s\n", indent, utsname->uts_sysname);
+  printf ("%suts_release: %s\n", indent, utsname->uts_release);
+  printf ("%suts_version: %s\n", indent, utsname->uts_version);
+  printf ("%suts_machine: %s\n", indent, utsname->uts_machine);
+}
+
+static void
+print_hivex_node_indent (struct guestfs_hivex_node *hivex_node, const char *indent)
+{
+  printf ("%shivex_node_h: %" PRIi64 "\n", indent, hivex_node->hivex_node_h);
+}
+
+static void
+print_hivex_value_indent (struct guestfs_hivex_value *hivex_value, const char *indent)
+{
+  printf ("%shivex_value_h: %" PRIi64 "\n", indent, hivex_value->hivex_value_h);
 }
 
 static void
@@ -3747,6 +4380,18 @@ print_partition_list (struct guestfs_partition_list *partitions)
 }
 
 static void
+print_application2_list (struct guestfs_application2_list *application2s)
+{
+  unsigned int i;
+
+  for (i = 0; i < application2s->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_application2_indent (&application2s->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
 print_inotify_event_list (struct guestfs_inotify_event_list *inotify_events)
 {
   unsigned int i;
@@ -3766,6 +4411,18 @@ print_application_list (struct guestfs_application_list *applications)
   for (i = 0; i < applications->len; ++i) {
     printf ("[%d] = {\n", i);
     print_application_indent (&applications->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
+print_hivex_value_list (struct guestfs_hivex_value_list *hivex_values)
+{
+  unsigned int i;
+
+  for (i = 0; i < hivex_values->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_hivex_value_indent (&hivex_values->val[i], "  ");
     printf ("}\n");
   }
 }
@@ -3831,6 +4488,18 @@ print_mdstat_list (struct guestfs_mdstat_list *mdstats)
 }
 
 static void
+print_hivex_node_list (struct guestfs_hivex_node_list *hivex_nodes)
+{
+  unsigned int i;
+
+  for (i = 0; i < hivex_nodes->len; ++i) {
+    printf ("[%d] = {\n", i);
+    print_hivex_node_indent (&hivex_nodes->val[i], "  ");
+    printf ("}\n");
+  }
+}
+
+static void
 print_stat_list (struct guestfs_stat_list *stats)
 {
   unsigned int i;
@@ -3843,6 +4512,12 @@ print_stat_list (struct guestfs_stat_list *stats)
 }
 
 static void
+print_utsname (struct guestfs_utsname *utsname)
+{
+  print_utsname_indent (utsname, "");
+}
+
+static void
 print_version (struct guestfs_version *version)
 {
   print_version_indent (version, "");
@@ -3852,6 +4527,12 @@ static void
 print_int_bool (struct guestfs_int_bool *int_bool)
 {
   print_int_bool_indent (int_bool, "");
+}
+
+static void
+print_xfsinfo (struct guestfs_xfsinfo *xfsinfo)
+{
+  print_xfsinfo_indent (xfsinfo, "");
 }
 
 static void
@@ -3903,28 +4584,6 @@ run_kill_subprocess (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   r = guestfs_kill_subprocess (g);
-  if (r == -1) goto out;
-  ret = 0;
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_add_drive (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-  const char *filename;
-  size_t i = 0;
-
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  filename = argv[i++];
-  r = guestfs_add_drive (g, filename);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -4932,7 +5591,7 @@ run_list_filesystems (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
+run_add_drive (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
@@ -4941,8 +5600,8 @@ run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 5);
+  if (argc < 1 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -4971,6 +5630,11 @@ run_add_drive_opts (const char *cmd, size_t argc, char *argv[])
       optargs_s.name = &argv[i][5];
       this_mask = GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK;
       this_arg = "name";
+    }
+    else if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
+      this_arg = "label";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -5030,27 +5694,6 @@ run_inspect_get_roots (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   r = guestfs_inspect_get_roots (g);
-  if (r == NULL) goto out;
-  ret = 0;
-  print_strings (r);
-  free_strings (r);
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_debug_cmdline (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  char **r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_debug_cmdline (g);
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
@@ -5222,6 +5865,30 @@ run_inspect_list_applications (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   print_application_list (r);
   guestfs_free_application_list (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_inspect_list_applications2 (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_application2_list *r;
+  const char *root;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  root = argv[i++];
+  r = guestfs_inspect_list_applications2 (g, root);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_application2_list (r);
+  guestfs_free_application2_list (r);
  out:
  out_noargs:
   return ret;
@@ -5769,6 +6436,50 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_max_disks (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_max_disks (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%d\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_canonical_device_name (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_canonical_device_name (g, device);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_shutdown (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -5782,6 +6493,784 @@ run_shutdown (const char *cmd, size_t argc, char *argv[])
   r = guestfs_shutdown (g);
   if (r == -1) goto out;
   ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_cat (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_cat (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_find (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_find (g, directory);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_read_file (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  size_t size;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_read_file (g, path, &size);
+  if (r == NULL) goto out;
+  if (full_write (1, r, size) != size) {
+    perror ("write");
+    free (r);
+    goto out;
+  }
+  ret = 0;
+  free (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_read_lines (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_read_lines (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_write (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *path;
+  const char *content;
+  size_t content_size;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  content = argv[i];
+  content_size = strlen (argv[i]);
+  i++;
+  r = guestfs_write (g, path, content, content_size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_write_append (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *path;
+  const char *content;
+  size_t content_size;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  content = argv[i];
+  content_size = strlen (argv[i]);
+  i++;
+  r = guestfs_write_append (g, path, content, content_size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_lstatlist (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_stat_list *r;
+  char *path;
+  char **names;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  names = parse_string_list (argv[i++]);
+  if (names == NULL) goto out_names;
+  r = guestfs_lstatlist (g, path, names);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_stat_list (r);
+  guestfs_free_stat_list (r);
+ out:
+  free_strings (names);
+ out_names:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_lxattrlist (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_xattr_list *r;
+  char *path;
+  char **names;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  names = parse_string_list (argv[i++]);
+  if (names == NULL) goto out_names;
+  r = guestfs_lxattrlist (g, path, names);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_xattr_list (r);
+  guestfs_free_xattr_list (r);
+ out:
+  free_strings (names);
+ out_names:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_readlinklist (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  char *path;
+  char **names;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  names = parse_string_list (argv[i++]);
+  if (names == NULL) goto out_names;
+  r = guestfs_readlinklist (g, path, names);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+  free_strings (names);
+ out_names:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ls (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_ls (g, directory);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_value_utf8 (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  int64_t valueh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "valueh", "xstrtoll", xerr);
+      goto out_valueh;
+    }
+    valueh = r;
+  }
+  r = guestfs_hivex_value_utf8 (g, valueh);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_valueh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_disk_format (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *filename;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filename = argv[i++];
+  r = guestfs_disk_format (g, filename);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_disk_virtual_size (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  const char *filename;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filename = argv[i++];
+  r = guestfs_disk_virtual_size (g, filename);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_disk_has_backing_file (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *filename;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filename = argv[i++];
+  r = guestfs_disk_has_backing_file (g, filename);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_remove_drive (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *label;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  label = argv[i++];
+  r = guestfs_remove_drive (g, label);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_libvirt_supported_credentials (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char **creds;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  creds = parse_string_list (argv[i++]);
+  if (creds == NULL) goto out_creds;
+  r = guestfs_set_libvirt_supported_credentials (g, creds);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free_strings (creds);
+ out_creds:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_libvirt_requested_credentials (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_libvirt_requested_credentials (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_libvirt_requested_credential_prompt (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  int index;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "index", "xstrtoll", xerr);
+      goto out_index;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "index");
+      goto out_index;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    index = r;
+  }
+  r = guestfs_get_libvirt_requested_credential_prompt (g, index);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_index:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_libvirt_requested_credential_challenge (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  int index;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "index", "xstrtoll", xerr);
+      goto out_index;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "index");
+      goto out_index;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    index = r;
+  }
+  r = guestfs_get_libvirt_requested_credential_challenge (g, index);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_index:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_libvirt_requested_credential_defresult (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  int index;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "index", "xstrtoll", xerr);
+      goto out_index;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "index");
+      goto out_index;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    index = r;
+  }
+  r = guestfs_get_libvirt_requested_credential_defresult (g, index);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_index:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_libvirt_requested_credential (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int index;
+  const char *cred;
+  size_t cred_size;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "index", "xstrtoll", xerr);
+      goto out_index;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "index");
+      goto out_index;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    index = r;
+  }
+  cred = argv[i];
+  cred_size = strlen (argv[i]);
+  i++;
+  r = guestfs_set_libvirt_requested_credential (g, index, cred, cred_size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_index:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_parse_environment (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_parse_environment (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_parse_environment_list (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char **environment;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  environment = parse_string_list (argv[i++]);
+  if (environment == NULL) goto out_environment;
+  r = guestfs_parse_environment_list (g, environment);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free_strings (environment);
+ out_environment:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_tmpdir (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *tmpdir;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  tmpdir = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  i++;
+  r = guestfs_set_tmpdir (g, tmpdir);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_tmpdir (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_tmpdir (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_cachedir (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *cachedir;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  cachedir = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  i++;
+  r = guestfs_set_cachedir (g, cachedir);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_cachedir (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_cachedir (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
  out:
  out_noargs:
   return ret;
@@ -5856,33 +7345,6 @@ run_touch (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_cat (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  char *r;
-  char *path;
-  size_t i = 0;
-
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  r = guestfs_cat (g, path);
-  if (r == NULL) goto out;
-  ret = 0;
-  printf ("%s\n", r);
-  free (r);
- out:
-  free (path);
- out_path:
- out_noargs:
-  return ret;
-}
-
-static int
 run_ll (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -5902,33 +7364,6 @@ run_ll (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   printf ("%s\n", r);
   free (r);
- out:
-  free (directory);
- out_directory:
- out_noargs:
-  return ret;
-}
-
-static int
-run_ls (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  char **r;
-  char *directory;
-  size_t i = 0;
-
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) goto out_directory;
-  r = guestfs_ls (g, directory);
-  if (r == NULL) goto out;
-  ret = 0;
-  print_strings (r);
-  free_strings (r);
  out:
   free (directory);
  out_directory:
@@ -6100,33 +7535,6 @@ run_lvs_full (const char *cmd, size_t argc, char *argv[])
   print_lvm_lv_list (r);
   guestfs_free_lvm_lv_list (r);
  out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_read_lines (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  char **r;
-  char *path;
-  size_t i = 0;
-
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  r = guestfs_read_lines (g, path);
-  if (r == NULL) goto out;
-  ret = 0;
-  print_strings (r);
-  free_strings (r);
- out:
-  free (path);
- out_path:
  out_noargs:
   return ret;
 }
@@ -6868,30 +8276,6 @@ run_lvcreate (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_mkfs (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-  const char *fstype;
-  const char *device;
-  size_t i = 0;
-
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  fstype = argv[i++];
-  device = argv[i++];
-  r = guestfs_mkfs (g, fstype, device);
-  if (r == -1) goto out;
-  ret = 0;
- out:
- out_noargs:
-  return ret;
-}
-
-static int
 run_sfdisk (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -7034,19 +8418,53 @@ run_umount (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *pathordevice;
+  char *pathordevice;
+  struct guestfs_umount_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_umount_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  pathordevice = argv[i++];
-  r = guestfs_umount (g, pathordevice);
+  pathordevice = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (pathordevice == NULL) goto out_pathordevice;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "force:")) {
+      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
+      this_arg = "force";
+    }
+    else if (STRPREFIX (argv[i], "lazyunmount:")) {
+      optargs_s.lazyunmount = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
+      this_arg = "lazyunmount";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_umount_opts_argv (g, pathordevice, optargs);
   if (r == -1) goto out;
   ret = 0;
  out:
+  free (pathordevice);
+ out_pathordevice:
  out_noargs:
   return ret;
 }
@@ -7638,10 +9056,12 @@ run_tar_in (const char *cmd, size_t argc, char *argv[])
   int r;
   char *tarfile;
   char *directory;
+  struct guestfs_tar_in_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+  if (argc < 2 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -7649,7 +9069,31 @@ run_tar_in (const char *cmd, size_t argc, char *argv[])
   if (tarfile == NULL) goto out_tarfile;
   directory = win_prefix (argv[i++]); /* process "win:" prefix */
   if (directory == NULL) goto out_directory;
-  r = guestfs_tar_in (g, tarfile, directory);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "compress:")) {
+      optargs_s.compress = &argv[i][9];
+      this_mask = GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK;
+      this_arg = "compress";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_tar_in_opts_argv (g, tarfile, directory, optargs);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -7668,20 +9112,60 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
   int r;
   const char *directory;
   char *tarfile;
+  struct guestfs_tar_out_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+  if (argc < 2 || argc > 5) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   directory = argv[i++];
   tarfile = file_out (argv[i++]);
   if (tarfile == NULL) goto out_tarfile;
-  r = guestfs_tar_out (g, directory, tarfile);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "compress:")) {
+      optargs_s.compress = &argv[i][9];
+      this_mask = GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK;
+      this_arg = "compress";
+    }
+    else if (STRPREFIX (argv[i], "numericowner:")) {
+      optargs_s.numericowner = is_true (&argv[i][13]) ? 1 : 0;
+      this_mask = GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
+      this_arg = "numericowner";
+    }
+    else if (STRPREFIX (argv[i], "excludes:")) {
+      optargs_s.excludes = parse_string_list (&argv[i][9]);
+      if (optargs_s.excludes == NULL) goto out;
+      this_mask = GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
+      this_arg = "excludes";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_tar_out_opts_argv (g, directory, tarfile, optargs);
   if (r == -1) goto out;
   ret = 0;
  out:
+  if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK) &&
+      optargs_s.excludes != NULL)
+    free_strings ((char **) optargs_s.excludes);
   free (tarfile);
  out_tarfile:
  out_noargs:
@@ -8715,33 +10199,6 @@ run_resize2fs (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_find (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  char **r;
-  char *directory;
-  size_t i = 0;
-
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  directory = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (directory == NULL) goto out_directory;
-  r = guestfs_find (g, directory);
-  if (r == NULL) goto out;
-  ret = 0;
-  print_strings (r);
-  free_strings (r);
- out:
-  free (directory);
- out_directory:
- out_noargs:
-  return ret;
-}
-
-static int
 run_e2fsck_f (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -9362,15 +10819,46 @@ run_mkswap (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   const char *device;
+  struct guestfs_mkswap_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   device = argv[i++];
-  r = guestfs_mkswap (g, device);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_MKSWAP_OPTS_LABEL_BITMASK;
+      this_arg = "label";
+    }
+    else if (STRPREFIX (argv[i], "uuid:")) {
+      optargs_s.uuid = &argv[i][5];
+      this_mask = GUESTFS_MKSWAP_OPTS_UUID_BITMASK;
+      this_arg = "uuid";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_mkswap_opts_argv (g, device, optargs);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -10135,55 +11623,64 @@ run_rmmountpoint (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_read_file (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  char *r;
-  size_t size;
-  char *path;
-  size_t i = 0;
-
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  r = guestfs_read_file (g, path, &size);
-  if (r == NULL) goto out;
-  if (full_write (1, r, size) != size) {
-    perror ("write");
-    free (r);
-    goto out;
-  }
-  ret = 0;
-  free (r);
- out:
-  free (path);
- out_path:
- out_noargs:
-  return ret;
-}
-
-static int
 run_grep (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   char **r;
   const char *regex;
   char *path;
+  struct guestfs_grep_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_grep_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   regex = argv[i++];
   path = win_prefix (argv[i++]); /* process "win:" prefix */
   if (path == NULL) goto out_path;
-  r = guestfs_grep (g, regex, path);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "extended:")) {
+      optargs_s.extended = is_true (&argv[i][9]) ? 1 : 0;
+      this_mask = GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
+      this_arg = "extended";
+    }
+    else if (STRPREFIX (argv[i], "fixed:")) {
+      optargs_s.fixed = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_GREP_OPTS_FIXED_BITMASK;
+      this_arg = "fixed";
+    }
+    else if (STRPREFIX (argv[i], "insensitive:")) {
+      optargs_s.insensitive = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
+      this_arg = "insensitive";
+    }
+    else if (STRPREFIX (argv[i], "compressed:")) {
+      optargs_s.compressed = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
+      this_arg = "compressed";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_grep_opts_argv (g, regex, path, optargs);
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
@@ -11875,102 +13372,6 @@ run_lchown (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_lstatlist (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  struct guestfs_stat_list *r;
-  char *path;
-  char **names;
-  size_t i = 0;
-
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  names = parse_string_list (argv[i++]);
-  if (names == NULL) goto out_names;
-  r = guestfs_lstatlist (g, path, names);
-  if (r == NULL) goto out;
-  ret = 0;
-  print_stat_list (r);
-  guestfs_free_stat_list (r);
- out:
-  free_strings (names);
- out_names:
-  free (path);
- out_path:
- out_noargs:
-  return ret;
-}
-
-static int
-run_lxattrlist (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  struct guestfs_xattr_list *r;
-  char *path;
-  char **names;
-  size_t i = 0;
-
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  names = parse_string_list (argv[i++]);
-  if (names == NULL) goto out_names;
-  r = guestfs_lxattrlist (g, path, names);
-  if (r == NULL) goto out;
-  ret = 0;
-  print_xattr_list (r);
-  guestfs_free_xattr_list (r);
- out:
-  free_strings (names);
- out_names:
-  free (path);
- out_path:
- out_noargs:
-  return ret;
-}
-
-static int
-run_readlinklist (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  char **r;
-  char *path;
-  char **names;
-  size_t i = 0;
-
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  names = parse_string_list (argv[i++]);
-  if (names == NULL) goto out_names;
-  r = guestfs_readlinklist (g, path, names);
-  if (r == NULL) goto out;
-  ret = 0;
-  print_strings (r);
-  free_strings (r);
- out:
-  free_strings (names);
- out_names:
-  free (path);
- out_path:
- out_noargs:
-  return ret;
-}
-
-static int
 run_pread (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -12756,28 +14157,6 @@ run_txz_out (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_ntfsresize (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-  const char *device;
-  size_t i = 0;
-
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  device = argv[i++];
-  r = guestfs_ntfsresize (g, device);
-  if (r == -1) goto out;
-  ret = 0;
- out:
- out_noargs:
-  return ret;
-}
-
-static int
 run_vgscan (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -13286,36 +14665,6 @@ run_fill_pattern (const char *cmd, size_t argc, char *argv[])
   free (path);
  out_path:
  out_len:
- out_noargs:
-  return ret;
-}
-
-static int
-run_write (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-  char *path;
-  const char *content;
-  size_t content_size;
-  size_t i = 0;
-
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  content = argv[i];
-  content_size = strlen (argv[i]);
-  i++;
-  r = guestfs_write (g, path, content, content_size);
-  if (r == -1) goto out;
-  ret = 0;
- out:
-  free (path);
- out_path:
  out_noargs:
   return ret;
 }
@@ -14386,7 +15735,7 @@ run_lvm_canonical_lv_name (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_mkfs_opts (const char *cmd, size_t argc, char *argv[])
+run_mkfs (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
@@ -14736,7 +16085,7 @@ run_list_dm_devices (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_ntfsresize_opts (const char *cmd, size_t argc, char *argv[])
+run_ntfsresize (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
@@ -14859,36 +16208,6 @@ run_btrfs_filesystem_resize (const char *cmd, size_t argc, char *argv[])
  out:
   free (mountpoint);
  out_mountpoint:
- out_noargs:
-  return ret;
-}
-
-static int
-run_write_append (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-  char *path;
-  const char *content;
-  size_t content_size;
-  size_t i = 0;
-
-  if (argc != 2) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  path = win_prefix (argv[i++]); /* process "win:" prefix */
-  if (path == NULL) goto out_path;
-  content = argv[i];
-  content_size = strlen (argv[i]);
-  i++;
-  r = guestfs_write_append (g, path, content, content_size);
-  if (r == -1) goto out;
-  ret = 0;
- out:
-  free (path);
- out_path:
  out_noargs:
   return ret;
 }
@@ -16991,6 +18310,126 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_filesystem_available (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *filesystem;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filesystem = argv[i++];
+  r = guestfs_filesystem_available (g, filesystem);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_fstrim (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *mountpoint;
+  struct guestfs_fstrim_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_fstrim_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  mountpoint = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (mountpoint == NULL) goto out_mountpoint;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "offset:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.offset", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.offset = r;
+      }
+      this_mask = GUESTFS_FSTRIM_OFFSET_BITMASK;
+      this_arg = "offset";
+    }
+    else if (STRPREFIX (argv[i], "length:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.length", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.length = r;
+      }
+      this_mask = GUESTFS_FSTRIM_LENGTH_BITMASK;
+      this_arg = "length";
+    }
+    else if (STRPREFIX (argv[i], "minimumfreeextent:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][18], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.minimumfreeextent", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.minimumfreeextent = r;
+      }
+      this_mask = GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK;
+      this_arg = "minimumfreeextent";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_fstrim_argv (g, mountpoint, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (mountpoint);
+ out_mountpoint:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_device_index (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -17028,6 +18467,2307 @@ run_nr_devices (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
   printf ("%d\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_xfs_info (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_xfsinfo *r;
+  char *pathordevice;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  pathordevice = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (pathordevice == NULL) goto out_pathordevice;
+  r = guestfs_xfs_info (g, pathordevice);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_xfsinfo (r);
+  guestfs_free_xfsinfo (r);
+ out:
+  free (pathordevice);
+ out_pathordevice:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_pvchange_uuid (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_pvchange_uuid (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_pvchange_uuid_all (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_pvchange_uuid_all (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_vgchange_uuid (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *vg;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  vg = argv[i++];
+  r = guestfs_vgchange_uuid (g, vg);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_vgchange_uuid_all (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_vgchange_uuid_all (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_utsname (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_utsname *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_utsname (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_utsname (r);
+  guestfs_free_utsname (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *path;
+  struct guestfs_xfs_growfs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 9) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 9);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "datasec:")) {
+      optargs_s.datasec = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
+      this_arg = "datasec";
+    }
+    else if (STRPREFIX (argv[i], "logsec:")) {
+      optargs_s.logsec = is_true (&argv[i][7]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
+      this_arg = "logsec";
+    }
+    else if (STRPREFIX (argv[i], "rtsec:")) {
+      optargs_s.rtsec = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
+      this_arg = "rtsec";
+    }
+    else if (STRPREFIX (argv[i], "datasize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.datasize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.datasize = r;
+      }
+      this_mask = GUESTFS_XFS_GROWFS_DATASIZE_BITMASK;
+      this_arg = "datasize";
+    }
+    else if (STRPREFIX (argv[i], "logsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][8], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.logsize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.logsize = r;
+      }
+      this_mask = GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK;
+      this_arg = "logsize";
+    }
+    else if (STRPREFIX (argv[i], "rtsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.rtsize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.rtsize = r;
+      }
+      this_mask = GUESTFS_XFS_GROWFS_RTSIZE_BITMASK;
+      this_arg = "rtsize";
+    }
+    else if (STRPREFIX (argv[i], "rtextsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.rtextsize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.rtextsize = r;
+      }
+      this_mask = GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK;
+      this_arg = "rtextsize";
+    }
+    else if (STRPREFIX (argv[i], "maxpct:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.maxpct", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.maxpct");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.maxpct = r;
+      }
+      this_mask = GUESTFS_XFS_GROWFS_MAXPCT_BITMASK;
+      this_arg = "maxpct";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_xfs_growfs_argv (g, path, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_rsync (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *src;
+  char *dest;
+  struct guestfs_rsync_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  src = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (src == NULL) goto out_src;
+  dest = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dest == NULL) goto out_dest;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "archive:")) {
+      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_RSYNC_ARCHIVE_BITMASK;
+      this_arg = "archive";
+    }
+    else if (STRPREFIX (argv[i], "deletedest:")) {
+      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_RSYNC_DELETEDEST_BITMASK;
+      this_arg = "deletedest";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_rsync_argv (g, src, dest, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (dest);
+ out_dest:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_rsync_in (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *remote;
+  char *dest;
+  struct guestfs_rsync_in_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_in_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  remote = argv[i++];
+  dest = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dest == NULL) goto out_dest;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "archive:")) {
+      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
+      this_arg = "archive";
+    }
+    else if (STRPREFIX (argv[i], "deletedest:")) {
+      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
+      this_arg = "deletedest";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_rsync_in_argv (g, remote, dest, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (dest);
+ out_dest:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_rsync_out (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *src;
+  const char *remote;
+  struct guestfs_rsync_out_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_rsync_out_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 2 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  src = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (src == NULL) goto out_src;
+  remote = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "archive:")) {
+      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
+      this_arg = "archive";
+    }
+    else if (STRPREFIX (argv[i], "deletedest:")) {
+      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
+      this_arg = "deletedest";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_rsync_out_argv (g, src, remote, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (src);
+ out_src:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ls0 (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *dir;
+  char *filenames;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  dir = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dir == NULL) goto out_dir;
+  filenames = file_out (argv[i++]);
+  if (filenames == NULL) goto out_filenames;
+  r = guestfs_ls0 (g, dir, filenames);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (filenames);
+ out_filenames:
+  free (dir);
+ out_dir:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_fill_dir (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *dir;
+  int nr;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  dir = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dir == NULL) goto out_dir;
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nr", "xstrtoll", xerr);
+      goto out_nr;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "nr");
+      goto out_nr;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    nr = r;
+  }
+  r = guestfs_fill_dir (g, dir, nr);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_nr:
+  free (dir);
+ out_dir:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_xfs_admin (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  struct guestfs_xfs_admin_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_admin_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 8) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 8);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "extunwritten:")) {
+      optargs_s.extunwritten = is_true (&argv[i][13]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
+      this_arg = "extunwritten";
+    }
+    else if (STRPREFIX (argv[i], "imgfile:")) {
+      optargs_s.imgfile = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
+      this_arg = "imgfile";
+    }
+    else if (STRPREFIX (argv[i], "v2log:")) {
+      optargs_s.v2log = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
+      this_arg = "v2log";
+    }
+    else if (STRPREFIX (argv[i], "projid32bit:")) {
+      optargs_s.projid32bit = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
+      this_arg = "projid32bit";
+    }
+    else if (STRPREFIX (argv[i], "lazycounter:")) {
+      optargs_s.lazycounter = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
+      this_arg = "lazycounter";
+    }
+    else if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_XFS_ADMIN_LABEL_BITMASK;
+      this_arg = "label";
+    }
+    else if (STRPREFIX (argv[i], "uuid:")) {
+      optargs_s.uuid = &argv[i][5];
+      this_mask = GUESTFS_XFS_ADMIN_UUID_BITMASK;
+      this_arg = "uuid";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_xfs_admin_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_open (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *filename;
+  struct guestfs_hivex_open_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_hivex_open_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 4) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filename = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (filename == NULL) goto out_filename;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "verbose:")) {
+      optargs_s.verbose = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
+      this_arg = "verbose";
+    }
+    else if (STRPREFIX (argv[i], "debug:")) {
+      optargs_s.debug = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
+      this_arg = "debug";
+    }
+    else if (STRPREFIX (argv[i], "write:")) {
+      optargs_s.write = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
+      this_arg = "write";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_hivex_open_argv (g, filename, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (filename);
+ out_filename:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_close (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_hivex_close (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_root (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_hivex_root (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_name (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  int64_t nodeh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  r = guestfs_hivex_node_name (g, nodeh);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_children (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_hivex_node_list *r;
+  int64_t nodeh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  r = guestfs_hivex_node_children (g, nodeh);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_hivex_node_list (r);
+  guestfs_free_hivex_node_list (r);
+ out:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_get_child (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  int64_t nodeh;
+  const char *name;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  name = argv[i++];
+  r = guestfs_hivex_node_get_child (g, nodeh, name);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_parent (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  int64_t nodeh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  r = guestfs_hivex_node_parent (g, nodeh);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_values (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_hivex_value_list *r;
+  int64_t nodeh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  r = guestfs_hivex_node_values (g, nodeh);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_hivex_value_list (r);
+  guestfs_free_hivex_value_list (r);
+ out:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_get_value (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  int64_t nodeh;
+  const char *key;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  key = argv[i++];
+  r = guestfs_hivex_node_get_value (g, nodeh, key);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_value_key (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  int64_t valueh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "valueh", "xstrtoll", xerr);
+      goto out_valueh;
+    }
+    valueh = r;
+  }
+  r = guestfs_hivex_value_key (g, valueh);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_valueh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_value_type (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  int64_t valueh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "valueh", "xstrtoll", xerr);
+      goto out_valueh;
+    }
+    valueh = r;
+  }
+  r = guestfs_hivex_value_type (g, valueh);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_valueh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_value_value (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  size_t size;
+  int64_t valueh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "valueh", "xstrtoll", xerr);
+      goto out_valueh;
+    }
+    valueh = r;
+  }
+  r = guestfs_hivex_value_value (g, valueh, &size);
+  if (r == NULL) goto out;
+  if (full_write (1, r, size) != size) {
+    perror ("write");
+    free (r);
+    goto out;
+  }
+  ret = 0;
+  free (r);
+ out:
+ out_valueh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_commit (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *filename;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  filename = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  i++;
+  r = guestfs_hivex_commit (g, filename);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_add_child (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  int64_t parent;
+  const char *name;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "parent", "xstrtoll", xerr);
+      goto out_parent;
+    }
+    parent = r;
+  }
+  name = argv[i++];
+  r = guestfs_hivex_node_add_child (g, parent, name);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_parent:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_delete_child (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int64_t nodeh;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  r = guestfs_hivex_node_delete_child (g, nodeh);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_hivex_node_set_value (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int64_t nodeh;
+  const char *key;
+  int64_t t;
+  const char *val;
+  size_t val_size;
+  size_t i = 0;
+
+  if (argc != 4) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 4);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "nodeh", "xstrtoll", xerr);
+      goto out_nodeh;
+    }
+    nodeh = r;
+  }
+  key = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "t", "xstrtoll", xerr);
+      goto out_t;
+    }
+    t = r;
+  }
+  val = argv[i];
+  val_size = strlen (argv[i]);
+  i++;
+  r = guestfs_hivex_node_set_value (g, nodeh, key, t, val, val_size);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_t:
+ out_nodeh:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_xfs_repair (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *device;
+  struct guestfs_xfs_repair_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_xfs_repair_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 11) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 11);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (device == NULL) goto out_device;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "forcelogzero:")) {
+      optargs_s.forcelogzero = is_true (&argv[i][13]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
+      this_arg = "forcelogzero";
+    }
+    else if (STRPREFIX (argv[i], "nomodify:")) {
+      optargs_s.nomodify = is_true (&argv[i][9]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
+      this_arg = "nomodify";
+    }
+    else if (STRPREFIX (argv[i], "noprefetch:")) {
+      optargs_s.noprefetch = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
+      this_arg = "noprefetch";
+    }
+    else if (STRPREFIX (argv[i], "forcegeometry:")) {
+      optargs_s.forcegeometry = is_true (&argv[i][14]) ? 1 : 0;
+      this_mask = GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
+      this_arg = "forcegeometry";
+    }
+    else if (STRPREFIX (argv[i], "maxmem:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][7], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.maxmem", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.maxmem = r;
+      }
+      this_mask = GUESTFS_XFS_REPAIR_MAXMEM_BITMASK;
+      this_arg = "maxmem";
+    }
+    else if (STRPREFIX (argv[i], "ihashsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.ihashsize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.ihashsize = r;
+      }
+      this_mask = GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK;
+      this_arg = "ihashsize";
+    }
+    else if (STRPREFIX (argv[i], "bhashsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.bhashsize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.bhashsize = r;
+      }
+      this_mask = GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK;
+      this_arg = "bhashsize";
+    }
+    else if (STRPREFIX (argv[i], "agstride:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.agstride", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.agstride = r;
+      }
+      this_mask = GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK;
+      this_arg = "agstride";
+    }
+    else if (STRPREFIX (argv[i], "logdev:")) {
+      optargs_s.logdev = &argv[i][7];
+      this_mask = GUESTFS_XFS_REPAIR_LOGDEV_BITMASK;
+      this_arg = "logdev";
+    }
+    else if (STRPREFIX (argv[i], "rtdev:")) {
+      optargs_s.rtdev = &argv[i][6];
+      this_mask = GUESTFS_XFS_REPAIR_RTDEV_BITMASK;
+      this_arg = "rtdev";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_xfs_repair_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%d\n", r);
+ out:
+  free (device);
+ out_device:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_rm_f (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_rm_f (g, path);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_mke2fs (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  struct guestfs_mke2fs_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mke2fs_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 39) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 39);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "blockscount:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.blockscount", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.blockscount = r;
+      }
+      this_mask = GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK;
+      this_arg = "blockscount";
+    }
+    else if (STRPREFIX (argv[i], "blocksize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.blocksize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.blocksize = r;
+      }
+      this_mask = GUESTFS_MKE2FS_BLOCKSIZE_BITMASK;
+      this_arg = "blocksize";
+    }
+    else if (STRPREFIX (argv[i], "fragsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][9], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.fragsize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.fragsize = r;
+      }
+      this_mask = GUESTFS_MKE2FS_FRAGSIZE_BITMASK;
+      this_arg = "fragsize";
+    }
+    else if (STRPREFIX (argv[i], "blockspergroup:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][15], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.blockspergroup", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.blockspergroup = r;
+      }
+      this_mask = GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK;
+      this_arg = "blockspergroup";
+    }
+    else if (STRPREFIX (argv[i], "numberofgroups:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][15], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.numberofgroups", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.numberofgroups = r;
+      }
+      this_mask = GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK;
+      this_arg = "numberofgroups";
+    }
+    else if (STRPREFIX (argv[i], "bytesperinode:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][14], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.bytesperinode", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.bytesperinode = r;
+      }
+      this_mask = GUESTFS_MKE2FS_BYTESPERINODE_BITMASK;
+      this_arg = "bytesperinode";
+    }
+    else if (STRPREFIX (argv[i], "inodesize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][10], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.inodesize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.inodesize = r;
+      }
+      this_mask = GUESTFS_MKE2FS_INODESIZE_BITMASK;
+      this_arg = "inodesize";
+    }
+    else if (STRPREFIX (argv[i], "journalsize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.journalsize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.journalsize = r;
+      }
+      this_mask = GUESTFS_MKE2FS_JOURNALSIZE_BITMASK;
+      this_arg = "journalsize";
+    }
+    else if (STRPREFIX (argv[i], "numberofinodes:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][15], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.numberofinodes", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.numberofinodes = r;
+      }
+      this_mask = GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK;
+      this_arg = "numberofinodes";
+    }
+    else if (STRPREFIX (argv[i], "stridesize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][11], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.stridesize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.stridesize = r;
+      }
+      this_mask = GUESTFS_MKE2FS_STRIDESIZE_BITMASK;
+      this_arg = "stridesize";
+    }
+    else if (STRPREFIX (argv[i], "stripewidth:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][12], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.stripewidth", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.stripewidth = r;
+      }
+      this_mask = GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK;
+      this_arg = "stripewidth";
+    }
+    else if (STRPREFIX (argv[i], "maxonlineresize:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][16], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.maxonlineresize", "xstrtoll", xerr);
+          goto out;
+        }
+        optargs_s.maxonlineresize = r;
+      }
+      this_mask = GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK;
+      this_arg = "maxonlineresize";
+    }
+    else if (STRPREFIX (argv[i], "reservedblockspercentage:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][25], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.reservedblockspercentage", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.reservedblockspercentage");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.reservedblockspercentage = r;
+      }
+      this_mask = GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK;
+      this_arg = "reservedblockspercentage";
+    }
+    else if (STRPREFIX (argv[i], "mmpupdateinterval:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][18], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.mmpupdateinterval", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.mmpupdateinterval");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.mmpupdateinterval = r;
+      }
+      this_mask = GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK;
+      this_arg = "mmpupdateinterval";
+    }
+    else if (STRPREFIX (argv[i], "journaldevice:")) {
+      optargs_s.journaldevice = &argv[i][14];
+      this_mask = GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK;
+      this_arg = "journaldevice";
+    }
+    else if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_MKE2FS_LABEL_BITMASK;
+      this_arg = "label";
+    }
+    else if (STRPREFIX (argv[i], "lastmounteddir:")) {
+      optargs_s.lastmounteddir = &argv[i][15];
+      this_mask = GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK;
+      this_arg = "lastmounteddir";
+    }
+    else if (STRPREFIX (argv[i], "creatoros:")) {
+      optargs_s.creatoros = &argv[i][10];
+      this_mask = GUESTFS_MKE2FS_CREATOROS_BITMASK;
+      this_arg = "creatoros";
+    }
+    else if (STRPREFIX (argv[i], "fstype:")) {
+      optargs_s.fstype = &argv[i][7];
+      this_mask = GUESTFS_MKE2FS_FSTYPE_BITMASK;
+      this_arg = "fstype";
+    }
+    else if (STRPREFIX (argv[i], "usagetype:")) {
+      optargs_s.usagetype = &argv[i][10];
+      this_mask = GUESTFS_MKE2FS_USAGETYPE_BITMASK;
+      this_arg = "usagetype";
+    }
+    else if (STRPREFIX (argv[i], "uuid:")) {
+      optargs_s.uuid = &argv[i][5];
+      this_mask = GUESTFS_MKE2FS_UUID_BITMASK;
+      this_arg = "uuid";
+    }
+    else if (STRPREFIX (argv[i], "forcecreate:")) {
+      optargs_s.forcecreate = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_FORCECREATE_BITMASK;
+      this_arg = "forcecreate";
+    }
+    else if (STRPREFIX (argv[i], "writesbandgrouponly:")) {
+      optargs_s.writesbandgrouponly = is_true (&argv[i][20]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
+      this_arg = "writesbandgrouponly";
+    }
+    else if (STRPREFIX (argv[i], "lazyitableinit:")) {
+      optargs_s.lazyitableinit = is_true (&argv[i][15]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
+      this_arg = "lazyitableinit";
+    }
+    else if (STRPREFIX (argv[i], "lazyjournalinit:")) {
+      optargs_s.lazyjournalinit = is_true (&argv[i][16]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
+      this_arg = "lazyjournalinit";
+    }
+    else if (STRPREFIX (argv[i], "testfs:")) {
+      optargs_s.testfs = is_true (&argv[i][7]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_TESTFS_BITMASK;
+      this_arg = "testfs";
+    }
+    else if (STRPREFIX (argv[i], "discard:")) {
+      optargs_s.discard = is_true (&argv[i][8]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_DISCARD_BITMASK;
+      this_arg = "discard";
+    }
+    else if (STRPREFIX (argv[i], "quotatype:")) {
+      optargs_s.quotatype = is_true (&argv[i][10]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
+      this_arg = "quotatype";
+    }
+    else if (STRPREFIX (argv[i], "extent:")) {
+      optargs_s.extent = is_true (&argv[i][7]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_EXTENT_BITMASK;
+      this_arg = "extent";
+    }
+    else if (STRPREFIX (argv[i], "filetype:")) {
+      optargs_s.filetype = is_true (&argv[i][9]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_FILETYPE_BITMASK;
+      this_arg = "filetype";
+    }
+    else if (STRPREFIX (argv[i], "flexbg:")) {
+      optargs_s.flexbg = is_true (&argv[i][7]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_FLEXBG_BITMASK;
+      this_arg = "flexbg";
+    }
+    else if (STRPREFIX (argv[i], "hasjournal:")) {
+      optargs_s.hasjournal = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
+      this_arg = "hasjournal";
+    }
+    else if (STRPREFIX (argv[i], "journaldev:")) {
+      optargs_s.journaldev = is_true (&argv[i][11]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
+      this_arg = "journaldev";
+    }
+    else if (STRPREFIX (argv[i], "largefile:")) {
+      optargs_s.largefile = is_true (&argv[i][10]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_LARGEFILE_BITMASK;
+      this_arg = "largefile";
+    }
+    else if (STRPREFIX (argv[i], "quota:")) {
+      optargs_s.quota = is_true (&argv[i][6]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_QUOTA_BITMASK;
+      this_arg = "quota";
+    }
+    else if (STRPREFIX (argv[i], "resizeinode:")) {
+      optargs_s.resizeinode = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
+      this_arg = "resizeinode";
+    }
+    else if (STRPREFIX (argv[i], "sparsesuper:")) {
+      optargs_s.sparsesuper = is_true (&argv[i][12]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
+      this_arg = "sparsesuper";
+    }
+    else if (STRPREFIX (argv[i], "uninitbg:")) {
+      optargs_s.uninitbg = is_true (&argv[i][9]) ? 1 : 0;
+      this_mask = GUESTFS_MKE2FS_UNINITBG_BITMASK;
+      this_arg = "uninitbg";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_mke2fs_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_list_disk_labels (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_list_disk_labels (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_table (r);
+  free_strings (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_mktemp (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  char *tmpl;
+  struct guestfs_mktemp_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_mktemp_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  tmpl = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (tmpl == NULL) goto out_tmpl;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "suffix:")) {
+      optargs_s.suffix = &argv[i][7];
+      this_mask = GUESTFS_MKTEMP_SUFFIX_BITMASK;
+      this_arg = "suffix";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_mktemp_argv (g, tmpl, optargs);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+  free (tmpl);
+ out_tmpl:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_mklost_and_found (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *mountpoint;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  mountpoint = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (mountpoint == NULL) goto out_mountpoint;
+  r = guestfs_mklost_and_found (g, mountpoint);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (mountpoint);
+ out_mountpoint:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_acl_get_file (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  char *path;
+  const char *acltype;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  acltype = argv[i++];
+  r = guestfs_acl_get_file (g, path, acltype);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_acl_set_file (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *path;
+  const char *acltype;
+  const char *acl;
+  size_t i = 0;
+
+  if (argc != 3) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  acltype = argv[i++];
+  acl = argv[i++];
+  r = guestfs_acl_set_file (g, path, acltype, acl);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_acl_delete_def_file (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *dir;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  dir = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (dir == NULL) goto out_dir;
+  r = guestfs_acl_delete_def_file (g, dir);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (dir);
+ out_dir:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_cap_get_file (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  char *path;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  r = guestfs_cap_get_file (g, path);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_cap_set_file (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *path;
+  const char *cap;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  path = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (path == NULL) goto out_path;
+  cap = argv[i++];
+  r = guestfs_cap_set_file (g, path, cap);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (path);
+ out_path:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_list_ldm_volumes (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_list_ldm_volumes (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_list_ldm_partitions (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_list_ldm_partitions (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_create_all (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_ldmtool_create_all (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_remove_all (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_ldmtool_remove_all (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_scan (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_ldmtool_scan (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_scan_devices (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  char **devices;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  devices = parse_string_list (argv[i++]);
+  if (devices == NULL) goto out_devices;
+  r = guestfs_ldmtool_scan_devices (g, devices);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+  free_strings (devices);
+ out_devices:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_diskgroup_name (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *diskgroup;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  diskgroup = argv[i++];
+  r = guestfs_ldmtool_diskgroup_name (g, diskgroup);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_diskgroup_volumes (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  const char *diskgroup;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  diskgroup = argv[i++];
+  r = guestfs_ldmtool_diskgroup_volumes (g, diskgroup);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  const char *diskgroup;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  diskgroup = argv[i++];
+  r = guestfs_ldmtool_diskgroup_disks (g, diskgroup);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_volume_type (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *diskgroup;
+  const char *volume;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  diskgroup = argv[i++];
+  volume = argv[i++];
+  r = guestfs_ldmtool_volume_type (g, diskgroup, volume);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_volume_hint (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *diskgroup;
+  const char *volume;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  diskgroup = argv[i++];
+  volume = argv[i++];
+  r = guestfs_ldmtool_volume_hint (g, diskgroup, volume);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char **r;
+  const char *diskgroup;
+  const char *volume;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  diskgroup = argv[i++];
+  volume = argv[i++];
+  r = guestfs_ldmtool_volume_partitions (g, diskgroup, volume);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_strings (r);
+  free_strings (r);
  out:
  out_noargs:
   return ret;

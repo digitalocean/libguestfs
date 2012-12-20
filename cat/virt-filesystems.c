@@ -36,15 +36,6 @@
 #include "guestfs.h"
 #include "options.h"
 
-#define DISABLE_GUESTFS_ERRORS_FOR(stmt) do {                           \
-    guestfs_error_handler_cb old_error_cb;                              \
-    void *old_error_data;                                               \
-    old_error_cb = guestfs_get_error_handler (g, &old_error_data);      \
-    guestfs_set_error_handler (g, NULL, NULL);                          \
-    stmt;                                                               \
-    guestfs_set_error_handler (g, old_error_cb, old_error_data);        \
-  } while (0)
-
 /* These globals are shared with options.c. */
 guestfs_h *g;
 
@@ -81,8 +72,6 @@ static int output = 0;
 #define COLUMN_UUID             128 /* if --uuid */
 #define NR_COLUMNS                8
 static int columns;
-
-static char *canonical_device (const char *dev);
 
 static void do_output_title (void);
 static void do_output (void);
@@ -466,15 +455,17 @@ do_output_filesystems (void)
         (STREQ (fses[i+1], "swap") || STREQ (fses[i+1], "unknown")))
       goto next;
 
-    dev = canonical_device (fses[i]);
+    dev = guestfs_canonical_device_name (g, fses[i]);
+    if (dev == NULL)
+      exit (EXIT_FAILURE);
 
     /* Only bother to look these up if we will be displaying them,
      * otherwise pass them as NULL.
      */
     if ((columns & COLUMN_VFS_LABEL)) {
-      DISABLE_GUESTFS_ERRORS_FOR (
-        vfs_label = guestfs_vfs_label (g, fses[i]);
-      );
+      guestfs_push_error_handler (g, NULL, NULL);
+      vfs_label = guestfs_vfs_label (g, fses[i]);
+      guestfs_pop_error_handler (g);
       if (vfs_label == NULL) {
         vfs_label = strdup ("");
         if (!vfs_label) {
@@ -484,9 +475,9 @@ do_output_filesystems (void)
       }
     }
     if ((columns & COLUMN_UUID)) {
-      DISABLE_GUESTFS_ERRORS_FOR (
-        vfs_uuid = guestfs_vfs_uuid (g, fses[i]);
-      );
+      guestfs_push_error_handler (g, NULL, NULL);
+      vfs_uuid = guestfs_vfs_uuid (g, fses[i]);
+      guestfs_pop_error_handler (g);
       if (vfs_uuid == NULL) {
         vfs_uuid = strdup ("");
         if (!vfs_uuid) {
@@ -582,12 +573,14 @@ do_output_vgs (void)
     exit (EXIT_FAILURE);
 
   for (i = 0; i < vgs->len; ++i) {
-    char name[PATH_MAX];
+    char *name;
     char uuid[33];
     char **parents;
 
-    strcpy (name, "/dev/");
-    strcpy (&name[5], vgs->val[i].vg_name);
+    if (asprintf (&name, "/dev/%s", vgs->val[i].vg_name) == -1) {
+      perror ("asprintf");
+      exit (EXIT_FAILURE);
+    }
 
     memcpy (uuid, vgs->val[i].vg_uuid, 32);
     uuid[32] = '\0';
@@ -597,6 +590,7 @@ do_output_vgs (void)
     write_row (name, "vg",
                NULL, NULL, -1, (int64_t) vgs->val[i].vg_size, parents, uuid);
 
+    free (name);
     free_strings (parents);
   }
 
@@ -639,7 +633,9 @@ do_output_pvs (void)
     char uuid[33];
     const char *parents[1] = { NULL };
 
-    dev = canonical_device (pvs->val[i].pv_name);
+    dev = guestfs_canonical_device_name (g, pvs->val[i].pv_name);
+    if (!dev)
+      exit (EXIT_FAILURE);
 
     memcpy (uuid, pvs->val[i].pv_uuid, 32);
     uuid[32] = '\0';
@@ -657,22 +653,19 @@ get_mbr_id (const char *dev, const char *parent_name)
   char *parttype = NULL;
   int mbr_id = -1, partnum;
 
-  DISABLE_GUESTFS_ERRORS_FOR (
-    parttype = guestfs_part_get_parttype (g, parent_name);
-  );
+  guestfs_push_error_handler (g, NULL, NULL);
+
+  parttype = guestfs_part_get_parttype (g, parent_name);
 
   if (parttype && STREQ (parttype, "msdos")) {
-    DISABLE_GUESTFS_ERRORS_FOR (
-      partnum = guestfs_part_to_partnum (g, dev);
-    );
-    if (partnum >= 0) {
-      DISABLE_GUESTFS_ERRORS_FOR (
-        mbr_id = guestfs_part_get_mbr_id (g, parent_name, partnum);
-      );
-    }
+    partnum = guestfs_part_to_partnum (g, dev);
+    if (partnum >= 0)
+      mbr_id = guestfs_part_get_mbr_id (g, parent_name, partnum);
   }
 
   free (parttype);
+
+  guestfs_pop_error_handler (g);
 
   return mbr_id;
 }
@@ -693,7 +686,9 @@ do_output_partitions (void)
     int64_t size = -1;
     int mbr_id = -1;
 
-    dev = canonical_device (parts[i]);
+    dev = guestfs_canonical_device_name (g, parts[i]);
+    if (!dev)
+      exit (EXIT_FAILURE);
 
     if ((columns & COLUMN_SIZE)) {
       size = guestfs_blockdev_getsize64 (g, parts[i]);
@@ -708,7 +703,9 @@ do_output_partitions (void)
       if ((columns & COLUMN_MBR))
         mbr_id = get_mbr_id (parts[i], parent_name);
 
-      char *p = canonical_device (parent_name);
+      char *p = guestfs_canonical_device_name (g, parent_name);
+      if (!p)
+        exit (EXIT_FAILURE);
       free (parent_name);
       parent_name = p;
 
@@ -742,7 +739,9 @@ do_output_blockdevs (void)
     char *dev;
     char **parents;
 
-    dev = canonical_device (devices[i]);
+    dev = guestfs_canonical_device_name (g, devices[i]);
+    if (!dev)
+      exit (EXIT_FAILURE);
 
     if ((columns & COLUMN_SIZE)) {
       size = guestfs_blockdev_getsize64 (g, devices[i]);
@@ -764,26 +763,6 @@ do_output_blockdevs (void)
   }
 
   free (devices);
-}
-
-/* /dev/vda1 -> /dev/sda.  Returns a string which the caller must free. */
-static char *
-canonical_device (const char *dev)
-{
-  char *ret = strdup (dev);
-  if (ret == NULL) {
-    perror ("strdup");
-    exit (EXIT_FAILURE);
-  }
-
-  if (STRPREFIX (ret, "/dev/") &&
-      (ret[5] == 'h' || ret[5] == 'v') &&
-      ret[6] == 'd' &&
-      c_isalpha (ret[7]) &&
-      (c_isdigit (ret[8]) || ret[8] == '\0'))
-    ret[5] = 's';
-
-  return ret;
 }
 
 /* Returns an empty list of parents.  Note this must be freed using
@@ -841,8 +820,11 @@ parents_of_md (char *device)
     exit (EXIT_FAILURE);
   }
 
-  for (i = 0; i < stats->len; ++i)
-    ret[i] = canonical_device (stats->val[i].mdstat_device);
+  for (i = 0; i < stats->len; ++i) {
+    ret[i] = guestfs_canonical_device_name (g, stats->val[i].mdstat_device);
+    if (!ret[i])
+      exit (EXIT_FAILURE);
+  }
 
   ret[stats->len] = NULL;
 
@@ -902,8 +884,11 @@ parents_of_vg (char *vg)
         break;
     }
 
-    if (j < pvs->len)
-      ret[i] = canonical_device (pvs->val[j].pv_name);
+    if (j < pvs->len) {
+      ret[i] = guestfs_canonical_device_name (g, pvs->val[j].pv_name);
+      if (!ret[i])
+        exit (EXIT_FAILURE);
+    }
     else {
       fprintf (stderr, "%s: warning: unknown PV UUID ignored\n", __func__);
       ret[i] = strndup (pvuuids[i], 32);

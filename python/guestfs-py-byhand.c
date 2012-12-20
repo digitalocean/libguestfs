@@ -34,8 +34,11 @@ PyObject *
 py_guestfs_create (PyObject *self, PyObject *args)
 {
   guestfs_h *g;
+  unsigned flags;
 
-  g = guestfs_create ();
+  if (!PyArg_ParseTuple (args, (char *) "I:guestfs_create", &flags))
+    return NULL;
+  g = guestfs_create_flags (flags);
   if (g == NULL) {
     PyErr_SetString (PyExc_RuntimeError,
                      "guestfs.create: failed to allocate handle");
@@ -216,7 +219,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (PyObject *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (PyObject *) * (*len_rtn));
 
   i = 0;
   cb = guestfs_first_private (g, &key);

@@ -50,7 +50,7 @@
 
 # libguestfs generated file
 # WARNING: THIS FILE IS GENERATED FROM:
-#   generator/generator_*.ml
+#   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
 # Copyright (C) 2009-2012 Red Hat Inc.
@@ -154,30 +154,29 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
 	$(top_srcdir)/m4/inet_ntop.m4 $(top_srcdir)/m4/inet_pton.m4 \
-	$(top_srcdir)/m4/inline.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax_t.m4 $(top_srcdir)/m4/introspection.m4 \
-	$(top_srcdir)/m4/inttostr.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
-	$(top_srcdir)/m4/inttypes.m4 $(top_srcdir)/m4/inttypes_h.m4 \
-	$(top_srcdir)/m4/ioctl.m4 $(top_srcdir)/m4/largefile.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/localcharset.m4 \
-	$(top_srcdir)/m4/locale-fr.m4 $(top_srcdir)/m4/locale-ja.m4 \
-	$(top_srcdir)/m4/locale-tr.m4 $(top_srcdir)/m4/locale-zh.m4 \
-	$(top_srcdir)/m4/locale_h.m4 $(top_srcdir)/m4/localeconv.m4 \
-	$(top_srcdir)/m4/localename.m4 $(top_srcdir)/m4/lock.m4 \
-	$(top_srcdir)/m4/longlong.m4 $(top_srcdir)/m4/lseek.m4 \
-	$(top_srcdir)/m4/lstat.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/malloc.m4 \
-	$(top_srcdir)/m4/malloca.m4 $(top_srcdir)/m4/manywarnings.m4 \
-	$(top_srcdir)/m4/mbrtowc.m4 $(top_srcdir)/m4/mbsinit.m4 \
-	$(top_srcdir)/m4/mbsrtowcs.m4 $(top_srcdir)/m4/mbstate_t.m4 \
-	$(top_srcdir)/m4/mbtowc.m4 $(top_srcdir)/m4/memchr.m4 \
-	$(top_srcdir)/m4/memmem.m4 $(top_srcdir)/m4/mempcpy.m4 \
-	$(top_srcdir)/m4/memrchr.m4 $(top_srcdir)/m4/mkdtemp.m4 \
-	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
-	$(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax_t.m4 \
+	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/inttostr.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 $(top_srcdir)/m4/inttypes.m4 \
+	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/ioctl.m4 \
+	$(top_srcdir)/m4/largefile.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/localcharset.m4 $(top_srcdir)/m4/locale-fr.m4 \
+	$(top_srcdir)/m4/locale-ja.m4 $(top_srcdir)/m4/locale-tr.m4 \
+	$(top_srcdir)/m4/locale-zh.m4 $(top_srcdir)/m4/locale_h.m4 \
+	$(top_srcdir)/m4/localeconv.m4 $(top_srcdir)/m4/localename.m4 \
+	$(top_srcdir)/m4/lock.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/lseek.m4 $(top_srcdir)/m4/lstat.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/manywarnings.m4 $(top_srcdir)/m4/mbrtowc.m4 \
+	$(top_srcdir)/m4/mbsinit.m4 $(top_srcdir)/m4/mbsrtowcs.m4 \
+	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
+	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
+	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
+	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -185,32 +184,32 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
 	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
 	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
-	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
-	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
-	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
-	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
-	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/signal_h.m4 \
-	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
-	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
-	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
-	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
-	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
-	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
-	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
-	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
-	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
-	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
-	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
-	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
-	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
-	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
-	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
-	$(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/pread.m4 \
+	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/putenv.m4 \
+	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
+	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
+	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
+	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/signal_h.m4 $(top_srcdir)/m4/size_max.m4 \
+	$(top_srcdir)/m4/sleep.m4 $(top_srcdir)/m4/snprintf.m4 \
+	$(top_srcdir)/m4/socketlib.m4 $(top_srcdir)/m4/sockets.m4 \
+	$(top_srcdir)/m4/socklen.m4 $(top_srcdir)/m4/sockpfaf.m4 \
+	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
+	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
+	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
+	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
+	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
+	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
+	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
+	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
+	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
+	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
+	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
+	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -283,18 +282,30 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-struct-inotify_event.lo \
 	libguestfs_gobject_1_0_la-struct-partition.lo \
 	libguestfs_gobject_1_0_la-struct-application.lo \
+	libguestfs_gobject_1_0_la-struct-application2.lo \
 	libguestfs_gobject_1_0_la-struct-isoinfo.lo \
 	libguestfs_gobject_1_0_la-struct-mdstat.lo \
 	libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo \
-	libguestfs_gobject_1_0_la-optargs-test0.lo \
-	libguestfs_gobject_1_0_la-optargs-add_drive_opts.lo \
+	libguestfs_gobject_1_0_la-struct-xfsinfo.lo \
+	libguestfs_gobject_1_0_la-struct-utsname.lo \
+	libguestfs_gobject_1_0_la-struct-hivex_node.lo \
+	libguestfs_gobject_1_0_la-struct-hivex_value.lo \
+	libguestfs_gobject_1_0_la-optargs-internal_test.lo \
+	libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.lo \
+	libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.lo \
+	libguestfs_gobject_1_0_la-optargs-add_drive.lo \
 	libguestfs_gobject_1_0_la-optargs-add_domain.lo \
 	libguestfs_gobject_1_0_la-optargs-inspect_get_icon.lo \
 	libguestfs_gobject_1_0_la-optargs-mount_local.lo \
 	libguestfs_gobject_1_0_la-optargs-umount_local.lo \
-	libguestfs_gobject_1_0_la-optargs-mkfs_opts.lo \
+	libguestfs_gobject_1_0_la-optargs-umount.lo \
+	libguestfs_gobject_1_0_la-optargs-tar_in.lo \
+	libguestfs_gobject_1_0_la-optargs-tar_out.lo \
+	libguestfs_gobject_1_0_la-optargs-mkswap.lo \
+	libguestfs_gobject_1_0_la-optargs-grep.lo \
+	libguestfs_gobject_1_0_la-optargs-mkfs.lo \
 	libguestfs_gobject_1_0_la-optargs-mount_9p.lo \
-	libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.lo \
+	libguestfs_gobject_1_0_la-optargs-ntfsresize.lo \
 	libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo \
 	libguestfs_gobject_1_0_la-optargs-compress_out.lo \
 	libguestfs_gobject_1_0_la-optargs-compress_device_out.lo \
@@ -309,7 +320,17 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-optargs-ntfsclone_out.lo \
 	libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.lo \
 	libguestfs_gobject_1_0_la-optargs-set_e2attrs.lo \
-	libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo
+	libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo \
+	libguestfs_gobject_1_0_la-optargs-fstrim.lo \
+	libguestfs_gobject_1_0_la-optargs-xfs_growfs.lo \
+	libguestfs_gobject_1_0_la-optargs-rsync.lo \
+	libguestfs_gobject_1_0_la-optargs-rsync_in.lo \
+	libguestfs_gobject_1_0_la-optargs-rsync_out.lo \
+	libguestfs_gobject_1_0_la-optargs-xfs_admin.lo \
+	libguestfs_gobject_1_0_la-optargs-hivex_open.lo \
+	libguestfs_gobject_1_0_la-optargs-xfs_repair.lo \
+	libguestfs_gobject_1_0_la-optargs-mke2fs.lo \
+	libguestfs_gobject_1_0_la-optargs-mktemp.lo
 am_libguestfs_gobject_1_0_la_OBJECTS = $(am__objects_1)
 libguestfs_gobject_1_0_la_OBJECTS =  \
 	$(am_libguestfs_gobject_1_0_la_OBJECTS)
@@ -411,6 +432,7 @@ am__relativize = \
   reldir="$$dir2"
 pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
+ACL_LIBS = @ACL_LIBS@
 ALLOCA = @ALLOCA@
 ALLOCA_H = @ALLOCA_H@
 AMTAR = @AMTAR@
@@ -431,6 +453,7 @@ BITSIZEOF_WCHAR_T = @BITSIZEOF_WCHAR_T@
 BITSIZEOF_WINT_T = @BITSIZEOF_WINT_T@
 BMPTOPNM = @BMPTOPNM@
 BYTESWAP_H = @BYTESWAP_H@
+CAP_LIBS = @CAP_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -479,6 +502,7 @@ FNMATCH_H = @FNMATCH_H@
 FUSE_CFLAGS = @FUSE_CFLAGS@
 FUSE_LIBS = @FUSE_LIBS@
 GCC_VISIBILITY_HIDDEN = @GCC_VISIBILITY_HIDDEN@
+GCOV_CFLAGS = @GCOV_CFLAGS@
 GENISOIMAGE = @GENISOIMAGE@
 GETADDRINFO_LIB = @GETADDRINFO_LIB@
 GETOPT_H = @GETOPT_H@
@@ -770,6 +794,7 @@ GNULIB__EXIT = @GNULIB__EXIT@
 GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GPERF = @GPERF@
+GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
@@ -1081,6 +1106,10 @@ LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
 LTLIBPTH = @LTLIBPTH@
 LTLIBTHREAD = @LTLIBTHREAD@
+LUA = @LUA@
+LUA_CFLAGS = @LUA_CFLAGS@
+LUA_LIBS = @LUA_LIBS@
+LUA_VERSION = @LUA_VERSION@
 MAGIC_LIBS = @MAGIC_LIBS@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -1165,6 +1194,7 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLOPTDOTOPT = @OCAMLOPTDOTOPT@
 OCAMLVERSION = @OCAMLVERSION@
+OCAML_GCOV_LDFLAGS = @OCAML_GCOV_LDFLAGS@
 OCAML_GETTEXT = @OCAML_GETTEXT@
 OCAML_PKG_gettext = @OCAML_PKG_gettext@
 OTOOL = @OTOOL@
@@ -1283,6 +1313,7 @@ REPLACE_PREAD = @REPLACE_PREAD@
 REPLACE_PRINTF = @REPLACE_PRINTF@
 REPLACE_PSELECT = @REPLACE_PSELECT@
 REPLACE_PTHREAD_SIGMASK = @REPLACE_PTHREAD_SIGMASK@
+REPLACE_PTSNAME = @REPLACE_PTSNAME@
 REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
 REPLACE_PUTENV = @REPLACE_PUTENV@
 REPLACE_PWRITE = @REPLACE_PWRITE@
@@ -1382,6 +1413,8 @@ WINT_T_SUFFIX = @WINT_T_SUFFIX@
 WRESTOOL = @WRESTOOL@
 XGETTEXT = @XGETTEXT@
 XMLLINT = @XMLLINT@
+YAJL_CFLAGS = @YAJL_CFLAGS@
+YAJL_LIBS = @YAJL_LIBS@
 YIELD_LIB = @YIELD_LIB@
 abs_aux_dir = @abs_aux_dir@
 abs_builddir = @abs_builddir@
@@ -1425,6 +1458,7 @@ infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+libvirt_ro_uri = @libvirt_ro_uri@
 lispdir = @lispdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -1460,18 +1494,30 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/struct-inotify_event.h \
   include/guestfs-gobject/struct-partition.h \
   include/guestfs-gobject/struct-application.h \
+  include/guestfs-gobject/struct-application2.h \
   include/guestfs-gobject/struct-isoinfo.h \
   include/guestfs-gobject/struct-mdstat.h \
   include/guestfs-gobject/struct-btrfssubvolume.h \
-  include/guestfs-gobject/optargs-test0.h \
-  include/guestfs-gobject/optargs-add_drive_opts.h \
+  include/guestfs-gobject/struct-xfsinfo.h \
+  include/guestfs-gobject/struct-utsname.h \
+  include/guestfs-gobject/struct-hivex_node.h \
+  include/guestfs-gobject/struct-hivex_value.h \
+  include/guestfs-gobject/optargs-internal_test.h \
+  include/guestfs-gobject/optargs-internal_test_only_optargs.h \
+  include/guestfs-gobject/optargs-internal_test_63_optargs.h \
+  include/guestfs-gobject/optargs-add_drive.h \
   include/guestfs-gobject/optargs-add_domain.h \
   include/guestfs-gobject/optargs-inspect_get_icon.h \
   include/guestfs-gobject/optargs-mount_local.h \
   include/guestfs-gobject/optargs-umount_local.h \
-  include/guestfs-gobject/optargs-mkfs_opts.h \
+  include/guestfs-gobject/optargs-umount.h \
+  include/guestfs-gobject/optargs-tar_in.h \
+  include/guestfs-gobject/optargs-tar_out.h \
+  include/guestfs-gobject/optargs-mkswap.h \
+  include/guestfs-gobject/optargs-grep.h \
+  include/guestfs-gobject/optargs-mkfs.h \
   include/guestfs-gobject/optargs-mount_9p.h \
-  include/guestfs-gobject/optargs-ntfsresize_opts.h \
+  include/guestfs-gobject/optargs-ntfsresize.h \
   include/guestfs-gobject/optargs-btrfs_filesystem_resize.h \
   include/guestfs-gobject/optargs-compress_out.h \
   include/guestfs-gobject/optargs-compress_device_out.h \
@@ -1486,7 +1532,17 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-ntfsclone_out.h \
   include/guestfs-gobject/optargs-mkfs_btrfs.h \
   include/guestfs-gobject/optargs-set_e2attrs.h \
-  include/guestfs-gobject/optargs-btrfs_fsck.h
+  include/guestfs-gobject/optargs-btrfs_fsck.h \
+  include/guestfs-gobject/optargs-fstrim.h \
+  include/guestfs-gobject/optargs-xfs_growfs.h \
+  include/guestfs-gobject/optargs-rsync.h \
+  include/guestfs-gobject/optargs-rsync_in.h \
+  include/guestfs-gobject/optargs-rsync_out.h \
+  include/guestfs-gobject/optargs-xfs_admin.h \
+  include/guestfs-gobject/optargs-hivex_open.h \
+  include/guestfs-gobject/optargs-xfs_repair.h \
+  include/guestfs-gobject/optargs-mke2fs.h \
+  include/guestfs-gobject/optargs-mktemp.h
 
 guestfs_gobject_sources = \
   src/session.c \
@@ -1503,18 +1559,30 @@ guestfs_gobject_sources = \
   src/struct-inotify_event.c \
   src/struct-partition.c \
   src/struct-application.c \
+  src/struct-application2.c \
   src/struct-isoinfo.c \
   src/struct-mdstat.c \
   src/struct-btrfssubvolume.c \
-  src/optargs-test0.c \
-  src/optargs-add_drive_opts.c \
+  src/struct-xfsinfo.c \
+  src/struct-utsname.c \
+  src/struct-hivex_node.c \
+  src/struct-hivex_value.c \
+  src/optargs-internal_test.c \
+  src/optargs-internal_test_only_optargs.c \
+  src/optargs-internal_test_63_optargs.c \
+  src/optargs-add_drive.c \
   src/optargs-add_domain.c \
   src/optargs-inspect_get_icon.c \
   src/optargs-mount_local.c \
   src/optargs-umount_local.c \
-  src/optargs-mkfs_opts.c \
+  src/optargs-umount.c \
+  src/optargs-tar_in.c \
+  src/optargs-tar_out.c \
+  src/optargs-mkswap.c \
+  src/optargs-grep.c \
+  src/optargs-mkfs.c \
   src/optargs-mount_9p.c \
-  src/optargs-ntfsresize_opts.c \
+  src/optargs-ntfsresize.c \
   src/optargs-btrfs_filesystem_resize.c \
   src/optargs-compress_out.c \
   src/optargs-compress_device_out.c \
@@ -1529,7 +1597,17 @@ guestfs_gobject_sources = \
   src/optargs-ntfsclone_out.c \
   src/optargs-mkfs_btrfs.c \
   src/optargs-set_e2attrs.c \
-  src/optargs-btrfs_fsck.c
+  src/optargs-btrfs_fsck.c \
+  src/optargs-fstrim.c \
+  src/optargs-xfs_growfs.c \
+  src/optargs-rsync.c \
+  src/optargs-rsync_in.c \
+  src/optargs-rsync_out.c \
+  src/optargs-xfs_admin.c \
+  src/optargs-hivex_open.c \
+  src/optargs-xfs_repair.c \
+  src/optargs-mke2fs.c \
+  src/optargs-mktemp.c
 
 generator_built = \
 	$(guestfs_gobject_headers) \
@@ -1578,7 +1656,7 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 @HAVE_INTROSPECTION_TRUE@typelibdir = $(libdir)/girepository-1.0
 @HAVE_INTROSPECTION_TRUE@typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 @HAVE_INTROSPECTION_TRUE@TESTS = run-tests $(am__append_2)
-@HAVE_INTROSPECTION_TRUE@TESTS_ENVIRONMENT = GJS=$(GJS)
+@HAVE_INTROSPECTION_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -1659,7 +1737,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_domain.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive_opts.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_fsck.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-compress_device_out.Plo@am__quote@
@@ -1669,23 +1747,43 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_file_to_device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-copy_file_to_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-e2fsck.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-fstrim.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-grep.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-hivex_open.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-inspect_get_icon.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-md_create.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mke2fs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs_btrfs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs_opts.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkswap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mktemp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mount_9p.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mount_local.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsclone_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsfix.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_in.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-set_e2attrs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-test0.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_in.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tune2fs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-umount.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-umount_local.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_admin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_growfs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_repair.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-application.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-btrfssubvolume.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-dirent.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-inotify_event.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-int_bool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Plo@am__quote@
@@ -1696,8 +1794,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-partition.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-stat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-statvfs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-version.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-xattr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-tristate.Plo@am__quote@
 
 .c.o:
@@ -1819,6 +1919,13 @@ libguestfs_gobject_1_0_la-struct-application.lo: src/struct-application.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-application.lo `test -f 'src/struct-application.c' || echo '$(srcdir)/'`src/struct-application.c
 
+libguestfs_gobject_1_0_la-struct-application2.lo: src/struct-application2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-application2.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Tpo -c -o libguestfs_gobject_1_0_la-struct-application2.lo `test -f 'src/struct-application2.c' || echo '$(srcdir)/'`src/struct-application2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-application2.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-application2.c' object='libguestfs_gobject_1_0_la-struct-application2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-application2.lo `test -f 'src/struct-application2.c' || echo '$(srcdir)/'`src/struct-application2.c
+
 libguestfs_gobject_1_0_la-struct-isoinfo.lo: src/struct-isoinfo.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-isoinfo.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Tpo -c -o libguestfs_gobject_1_0_la-struct-isoinfo.lo `test -f 'src/struct-isoinfo.c' || echo '$(srcdir)/'`src/struct-isoinfo.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-isoinfo.Plo
@@ -1840,19 +1947,61 @@ libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo: src/struct-btrfssubvolume.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-btrfssubvolume.lo `test -f 'src/struct-btrfssubvolume.c' || echo '$(srcdir)/'`src/struct-btrfssubvolume.c
 
-libguestfs_gobject_1_0_la-optargs-test0.lo: src/optargs-test0.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-test0.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-test0.Tpo -c -o libguestfs_gobject_1_0_la-optargs-test0.lo `test -f 'src/optargs-test0.c' || echo '$(srcdir)/'`src/optargs-test0.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-test0.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-test0.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-test0.c' object='libguestfs_gobject_1_0_la-optargs-test0.lo' libtool=yes @AMDEPBACKSLASH@
+libguestfs_gobject_1_0_la-struct-xfsinfo.lo: src/struct-xfsinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-xfsinfo.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Tpo -c -o libguestfs_gobject_1_0_la-struct-xfsinfo.lo `test -f 'src/struct-xfsinfo.c' || echo '$(srcdir)/'`src/struct-xfsinfo.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-xfsinfo.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-xfsinfo.c' object='libguestfs_gobject_1_0_la-struct-xfsinfo.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-test0.lo `test -f 'src/optargs-test0.c' || echo '$(srcdir)/'`src/optargs-test0.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-xfsinfo.lo `test -f 'src/struct-xfsinfo.c' || echo '$(srcdir)/'`src/struct-xfsinfo.c
 
-libguestfs_gobject_1_0_la-optargs-add_drive_opts.lo: src/optargs-add_drive_opts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-add_drive_opts.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive_opts.Tpo -c -o libguestfs_gobject_1_0_la-optargs-add_drive_opts.lo `test -f 'src/optargs-add_drive_opts.c' || echo '$(srcdir)/'`src/optargs-add_drive_opts.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive_opts.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive_opts.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-add_drive_opts.c' object='libguestfs_gobject_1_0_la-optargs-add_drive_opts.lo' libtool=yes @AMDEPBACKSLASH@
+libguestfs_gobject_1_0_la-struct-utsname.lo: src/struct-utsname.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-utsname.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo -c -o libguestfs_gobject_1_0_la-struct-utsname.lo `test -f 'src/struct-utsname.c' || echo '$(srcdir)/'`src/struct-utsname.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-utsname.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-utsname.c' object='libguestfs_gobject_1_0_la-struct-utsname.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-add_drive_opts.lo `test -f 'src/optargs-add_drive_opts.c' || echo '$(srcdir)/'`src/optargs-add_drive_opts.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-utsname.lo `test -f 'src/struct-utsname.c' || echo '$(srcdir)/'`src/struct-utsname.c
+
+libguestfs_gobject_1_0_la-struct-hivex_node.lo: src/struct-hivex_node.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-hivex_node.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Tpo -c -o libguestfs_gobject_1_0_la-struct-hivex_node.lo `test -f 'src/struct-hivex_node.c' || echo '$(srcdir)/'`src/struct-hivex_node.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_node.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-hivex_node.c' object='libguestfs_gobject_1_0_la-struct-hivex_node.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-hivex_node.lo `test -f 'src/struct-hivex_node.c' || echo '$(srcdir)/'`src/struct-hivex_node.c
+
+libguestfs_gobject_1_0_la-struct-hivex_value.lo: src/struct-hivex_value.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-struct-hivex_value.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Tpo -c -o libguestfs_gobject_1_0_la-struct-hivex_value.lo `test -f 'src/struct-hivex_value.c' || echo '$(srcdir)/'`src/struct-hivex_value.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-struct-hivex_value.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/struct-hivex_value.c' object='libguestfs_gobject_1_0_la-struct-hivex_value.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-struct-hivex_value.lo `test -f 'src/struct-hivex_value.c' || echo '$(srcdir)/'`src/struct-hivex_value.c
+
+libguestfs_gobject_1_0_la-optargs-internal_test.lo: src/optargs-internal_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-internal_test.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test.Tpo -c -o libguestfs_gobject_1_0_la-optargs-internal_test.lo `test -f 'src/optargs-internal_test.c' || echo '$(srcdir)/'`src/optargs-internal_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-internal_test.c' object='libguestfs_gobject_1_0_la-optargs-internal_test.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-internal_test.lo `test -f 'src/optargs-internal_test.c' || echo '$(srcdir)/'`src/optargs-internal_test.c
+
+libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.lo: src/optargs-internal_test_only_optargs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.Tpo -c -o libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.lo `test -f 'src/optargs-internal_test_only_optargs.c' || echo '$(srcdir)/'`src/optargs-internal_test_only_optargs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-internal_test_only_optargs.c' object='libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-internal_test_only_optargs.lo `test -f 'src/optargs-internal_test_only_optargs.c' || echo '$(srcdir)/'`src/optargs-internal_test_only_optargs.c
+
+libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.lo: src/optargs-internal_test_63_optargs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.Tpo -c -o libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.lo `test -f 'src/optargs-internal_test_63_optargs.c' || echo '$(srcdir)/'`src/optargs-internal_test_63_optargs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-internal_test_63_optargs.c' object='libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-internal_test_63_optargs.lo `test -f 'src/optargs-internal_test_63_optargs.c' || echo '$(srcdir)/'`src/optargs-internal_test_63_optargs.c
+
+libguestfs_gobject_1_0_la-optargs-add_drive.lo: src/optargs-add_drive.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-add_drive.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive.Tpo -c -o libguestfs_gobject_1_0_la-optargs-add_drive.lo `test -f 'src/optargs-add_drive.c' || echo '$(srcdir)/'`src/optargs-add_drive.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_drive.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-add_drive.c' object='libguestfs_gobject_1_0_la-optargs-add_drive.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-add_drive.lo `test -f 'src/optargs-add_drive.c' || echo '$(srcdir)/'`src/optargs-add_drive.c
 
 libguestfs_gobject_1_0_la-optargs-add_domain.lo: src/optargs-add_domain.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-add_domain.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-add_domain.Tpo -c -o libguestfs_gobject_1_0_la-optargs-add_domain.lo `test -f 'src/optargs-add_domain.c' || echo '$(srcdir)/'`src/optargs-add_domain.c
@@ -1882,12 +2031,47 @@ libguestfs_gobject_1_0_la-optargs-umount_local.lo: src/optargs-umount_local.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-umount_local.lo `test -f 'src/optargs-umount_local.c' || echo '$(srcdir)/'`src/optargs-umount_local.c
 
-libguestfs_gobject_1_0_la-optargs-mkfs_opts.lo: src/optargs-mkfs_opts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-mkfs_opts.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs_opts.Tpo -c -o libguestfs_gobject_1_0_la-optargs-mkfs_opts.lo `test -f 'src/optargs-mkfs_opts.c' || echo '$(srcdir)/'`src/optargs-mkfs_opts.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs_opts.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs_opts.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mkfs_opts.c' object='libguestfs_gobject_1_0_la-optargs-mkfs_opts.lo' libtool=yes @AMDEPBACKSLASH@
+libguestfs_gobject_1_0_la-optargs-umount.lo: src/optargs-umount.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-umount.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-umount.Tpo -c -o libguestfs_gobject_1_0_la-optargs-umount.lo `test -f 'src/optargs-umount.c' || echo '$(srcdir)/'`src/optargs-umount.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-umount.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-umount.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-umount.c' object='libguestfs_gobject_1_0_la-optargs-umount.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-mkfs_opts.lo `test -f 'src/optargs-mkfs_opts.c' || echo '$(srcdir)/'`src/optargs-mkfs_opts.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-umount.lo `test -f 'src/optargs-umount.c' || echo '$(srcdir)/'`src/optargs-umount.c
+
+libguestfs_gobject_1_0_la-optargs-tar_in.lo: src/optargs-tar_in.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-tar_in.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_in.Tpo -c -o libguestfs_gobject_1_0_la-optargs-tar_in.lo `test -f 'src/optargs-tar_in.c' || echo '$(srcdir)/'`src/optargs-tar_in.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_in.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_in.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-tar_in.c' object='libguestfs_gobject_1_0_la-optargs-tar_in.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-tar_in.lo `test -f 'src/optargs-tar_in.c' || echo '$(srcdir)/'`src/optargs-tar_in.c
+
+libguestfs_gobject_1_0_la-optargs-tar_out.lo: src/optargs-tar_out.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-tar_out.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_out.Tpo -c -o libguestfs_gobject_1_0_la-optargs-tar_out.lo `test -f 'src/optargs-tar_out.c' || echo '$(srcdir)/'`src/optargs-tar_out.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_out.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_out.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-tar_out.c' object='libguestfs_gobject_1_0_la-optargs-tar_out.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-tar_out.lo `test -f 'src/optargs-tar_out.c' || echo '$(srcdir)/'`src/optargs-tar_out.c
+
+libguestfs_gobject_1_0_la-optargs-mkswap.lo: src/optargs-mkswap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-mkswap.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkswap.Tpo -c -o libguestfs_gobject_1_0_la-optargs-mkswap.lo `test -f 'src/optargs-mkswap.c' || echo '$(srcdir)/'`src/optargs-mkswap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkswap.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkswap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mkswap.c' object='libguestfs_gobject_1_0_la-optargs-mkswap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-mkswap.lo `test -f 'src/optargs-mkswap.c' || echo '$(srcdir)/'`src/optargs-mkswap.c
+
+libguestfs_gobject_1_0_la-optargs-grep.lo: src/optargs-grep.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-grep.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-grep.Tpo -c -o libguestfs_gobject_1_0_la-optargs-grep.lo `test -f 'src/optargs-grep.c' || echo '$(srcdir)/'`src/optargs-grep.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-grep.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-grep.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-grep.c' object='libguestfs_gobject_1_0_la-optargs-grep.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-grep.lo `test -f 'src/optargs-grep.c' || echo '$(srcdir)/'`src/optargs-grep.c
+
+libguestfs_gobject_1_0_la-optargs-mkfs.lo: src/optargs-mkfs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-mkfs.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs.Tpo -c -o libguestfs_gobject_1_0_la-optargs-mkfs.lo `test -f 'src/optargs-mkfs.c' || echo '$(srcdir)/'`src/optargs-mkfs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mkfs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mkfs.c' object='libguestfs_gobject_1_0_la-optargs-mkfs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-mkfs.lo `test -f 'src/optargs-mkfs.c' || echo '$(srcdir)/'`src/optargs-mkfs.c
 
 libguestfs_gobject_1_0_la-optargs-mount_9p.lo: src/optargs-mount_9p.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-mount_9p.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mount_9p.Tpo -c -o libguestfs_gobject_1_0_la-optargs-mount_9p.lo `test -f 'src/optargs-mount_9p.c' || echo '$(srcdir)/'`src/optargs-mount_9p.c
@@ -1896,12 +2080,12 @@ libguestfs_gobject_1_0_la-optargs-mount_9p.lo: src/optargs-mount_9p.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-mount_9p.lo `test -f 'src/optargs-mount_9p.c' || echo '$(srcdir)/'`src/optargs-mount_9p.c
 
-libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.lo: src/optargs-ntfsresize_opts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.Tpo -c -o libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.lo `test -f 'src/optargs-ntfsresize_opts.c' || echo '$(srcdir)/'`src/optargs-ntfsresize_opts.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-ntfsresize_opts.c' object='libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.lo' libtool=yes @AMDEPBACKSLASH@
+libguestfs_gobject_1_0_la-optargs-ntfsresize.lo: src/optargs-ntfsresize.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-ntfsresize.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize.Tpo -c -o libguestfs_gobject_1_0_la-optargs-ntfsresize.lo `test -f 'src/optargs-ntfsresize.c' || echo '$(srcdir)/'`src/optargs-ntfsresize.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-ntfsresize.c' object='libguestfs_gobject_1_0_la-optargs-ntfsresize.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-ntfsresize_opts.lo `test -f 'src/optargs-ntfsresize_opts.c' || echo '$(srcdir)/'`src/optargs-ntfsresize_opts.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-ntfsresize.lo `test -f 'src/optargs-ntfsresize.c' || echo '$(srcdir)/'`src/optargs-ntfsresize.c
 
 libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo: src/optargs-btrfs_filesystem_resize.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.Tpo -c -o libguestfs_gobject_1_0_la-optargs-btrfs_filesystem_resize.lo `test -f 'src/optargs-btrfs_filesystem_resize.c' || echo '$(srcdir)/'`src/optargs-btrfs_filesystem_resize.c
@@ -2007,6 +2191,76 @@ libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo: src/optargs-btrfs_fsck.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-btrfs_fsck.c' object='libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-btrfs_fsck.lo `test -f 'src/optargs-btrfs_fsck.c' || echo '$(srcdir)/'`src/optargs-btrfs_fsck.c
+
+libguestfs_gobject_1_0_la-optargs-fstrim.lo: src/optargs-fstrim.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-fstrim.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-fstrim.Tpo -c -o libguestfs_gobject_1_0_la-optargs-fstrim.lo `test -f 'src/optargs-fstrim.c' || echo '$(srcdir)/'`src/optargs-fstrim.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-fstrim.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-fstrim.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-fstrim.c' object='libguestfs_gobject_1_0_la-optargs-fstrim.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-fstrim.lo `test -f 'src/optargs-fstrim.c' || echo '$(srcdir)/'`src/optargs-fstrim.c
+
+libguestfs_gobject_1_0_la-optargs-xfs_growfs.lo: src/optargs-xfs_growfs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-xfs_growfs.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_growfs.Tpo -c -o libguestfs_gobject_1_0_la-optargs-xfs_growfs.lo `test -f 'src/optargs-xfs_growfs.c' || echo '$(srcdir)/'`src/optargs-xfs_growfs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_growfs.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_growfs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-xfs_growfs.c' object='libguestfs_gobject_1_0_la-optargs-xfs_growfs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-xfs_growfs.lo `test -f 'src/optargs-xfs_growfs.c' || echo '$(srcdir)/'`src/optargs-xfs_growfs.c
+
+libguestfs_gobject_1_0_la-optargs-rsync.lo: src/optargs-rsync.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-rsync.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync.Tpo -c -o libguestfs_gobject_1_0_la-optargs-rsync.lo `test -f 'src/optargs-rsync.c' || echo '$(srcdir)/'`src/optargs-rsync.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-rsync.c' object='libguestfs_gobject_1_0_la-optargs-rsync.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-rsync.lo `test -f 'src/optargs-rsync.c' || echo '$(srcdir)/'`src/optargs-rsync.c
+
+libguestfs_gobject_1_0_la-optargs-rsync_in.lo: src/optargs-rsync_in.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-rsync_in.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_in.Tpo -c -o libguestfs_gobject_1_0_la-optargs-rsync_in.lo `test -f 'src/optargs-rsync_in.c' || echo '$(srcdir)/'`src/optargs-rsync_in.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_in.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_in.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-rsync_in.c' object='libguestfs_gobject_1_0_la-optargs-rsync_in.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-rsync_in.lo `test -f 'src/optargs-rsync_in.c' || echo '$(srcdir)/'`src/optargs-rsync_in.c
+
+libguestfs_gobject_1_0_la-optargs-rsync_out.lo: src/optargs-rsync_out.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-rsync_out.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_out.Tpo -c -o libguestfs_gobject_1_0_la-optargs-rsync_out.lo `test -f 'src/optargs-rsync_out.c' || echo '$(srcdir)/'`src/optargs-rsync_out.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_out.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_out.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-rsync_out.c' object='libguestfs_gobject_1_0_la-optargs-rsync_out.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-rsync_out.lo `test -f 'src/optargs-rsync_out.c' || echo '$(srcdir)/'`src/optargs-rsync_out.c
+
+libguestfs_gobject_1_0_la-optargs-xfs_admin.lo: src/optargs-xfs_admin.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-xfs_admin.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_admin.Tpo -c -o libguestfs_gobject_1_0_la-optargs-xfs_admin.lo `test -f 'src/optargs-xfs_admin.c' || echo '$(srcdir)/'`src/optargs-xfs_admin.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_admin.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_admin.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-xfs_admin.c' object='libguestfs_gobject_1_0_la-optargs-xfs_admin.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-xfs_admin.lo `test -f 'src/optargs-xfs_admin.c' || echo '$(srcdir)/'`src/optargs-xfs_admin.c
+
+libguestfs_gobject_1_0_la-optargs-hivex_open.lo: src/optargs-hivex_open.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-hivex_open.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-hivex_open.Tpo -c -o libguestfs_gobject_1_0_la-optargs-hivex_open.lo `test -f 'src/optargs-hivex_open.c' || echo '$(srcdir)/'`src/optargs-hivex_open.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-hivex_open.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-hivex_open.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-hivex_open.c' object='libguestfs_gobject_1_0_la-optargs-hivex_open.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-hivex_open.lo `test -f 'src/optargs-hivex_open.c' || echo '$(srcdir)/'`src/optargs-hivex_open.c
+
+libguestfs_gobject_1_0_la-optargs-xfs_repair.lo: src/optargs-xfs_repair.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-xfs_repair.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_repair.Tpo -c -o libguestfs_gobject_1_0_la-optargs-xfs_repair.lo `test -f 'src/optargs-xfs_repair.c' || echo '$(srcdir)/'`src/optargs-xfs_repair.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_repair.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-xfs_repair.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-xfs_repair.c' object='libguestfs_gobject_1_0_la-optargs-xfs_repair.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-xfs_repair.lo `test -f 'src/optargs-xfs_repair.c' || echo '$(srcdir)/'`src/optargs-xfs_repair.c
+
+libguestfs_gobject_1_0_la-optargs-mke2fs.lo: src/optargs-mke2fs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-mke2fs.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mke2fs.Tpo -c -o libguestfs_gobject_1_0_la-optargs-mke2fs.lo `test -f 'src/optargs-mke2fs.c' || echo '$(srcdir)/'`src/optargs-mke2fs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mke2fs.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mke2fs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mke2fs.c' object='libguestfs_gobject_1_0_la-optargs-mke2fs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-mke2fs.lo `test -f 'src/optargs-mke2fs.c' || echo '$(srcdir)/'`src/optargs-mke2fs.c
+
+libguestfs_gobject_1_0_la-optargs-mktemp.lo: src/optargs-mktemp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-mktemp.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mktemp.Tpo -c -o libguestfs_gobject_1_0_la-optargs-mktemp.lo `test -f 'src/optargs-mktemp.c' || echo '$(srcdir)/'`src/optargs-mktemp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mktemp.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-mktemp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mktemp.c' object='libguestfs_gobject_1_0_la-optargs-mktemp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-mktemp.lo `test -f 'src/optargs-mktemp.c' || echo '$(srcdir)/'`src/optargs-mktemp.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

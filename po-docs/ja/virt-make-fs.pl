@@ -24,7 +24,7 @@ useful if you want to attach these filesystems to existing virtual machines
 To create blank disks, use L<virt-format(1)>.  To create complex layouts,
 use L<guestfish(1)>.
 
-Basic usage is:
+基本的な使用法は次のとおりです:
 
  virt-make-fs input output.img
 
@@ -129,6 +129,13 @@ to build another image from scratch.
 
 デバッグ情報を有効にします。
 
+=item B<--floppy>
+
+仮想フロッピーディスクを作成します。
+
+今のところ、容量 (1440K)、パーティション形式 (MBR) およびファイルシステム形式 (VFAT)
+が事前に選択されています。将来的に、ジオメトリーを選択できるようになる可能性があります。
+
 =item B<--size=E<lt>NE<gt>>
 
 =item B<--size=+E<lt>NE<gt>>
@@ -172,7 +179,7 @@ that would really make sense here is C<qcow2>.
 
 =item B<-t E<lt>fsE<gt>>
 
-Choose the output filesystem type.
+出力ファイルシステム形式を選択します。
 
 デフォルトは C<ext2> です。
 
