@@ -121,18 +121,6 @@ override_dh_auto_install:
 	done
 
 override_dh_install:
-	rm -f debian/tmp/usr/lib/python*/dist-packages/libguestfsmod.la
-
-# Workaround for:
-# W: libguestfs-perl: script-not-executable usr/lib/perl5/Sys/bindtests.pl
-	rm -f debian/tmp/usr/lib/perl5/Sys/bindtests.pl
-
-	rm -f debian/tmp/usr/lib/ocaml/stublibs/*.so.owner
-
-# Workaround for:
-# E: libguestfs-dev: non-empty-dependency_libs-in-la-file usr/lib/libguestfs.la
-	find debian/tmp -name *.la | xargs sed -i '/^dependency_libs/ s/^/# /'
-
 # We do not install supermin.d/base.img, but ship make.sh which can be
 # used to build it.
 	mkdir -p debian/tmp/usr/lib/guestfs/supermin.d
@@ -146,7 +134,10 @@ override_dh_install:
 		debian/tmp/usr/lib/guestfs/supermin.d/
 
 	erlang-depends -perlang-guestfs
-	dh_install --fail-missing
+# Workarounds for:
+# W: libguestfs-perl: script-not-executable usr/lib/perl5/Sys/bindtests.pl
+# E: libguestfs-dev: non-empty-dependency_libs-in-la-file
+	dh_install -X.la -Xbindtests -X.so.owner --fail-missing
 
 # Workaround for python3-defaults < 3.2~b2-1
 # ("do not rename .so files outside dist-packages directory")
