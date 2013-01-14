@@ -1,3 +1,10 @@
+libguestfs (1:1.20.1-2) unstable; urgency=low
+
+  * Fixed Build-Dependencies: The fuse-utils package is no longer
+    available (Closes: #698151)
+
+ -- Hilko Bengen <bengen@debian.org>  Mon, 14 Jan 2013 18:48:54 +0100
+
 libguestfs (1:1.20.1-1) unstable; urgency=low
 
   * New upstream version
