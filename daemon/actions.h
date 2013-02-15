@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -553,5 +553,6 @@ extern char **do_ldmtool_diskgroup_disks (const char *diskgroup);
 extern char *do_ldmtool_volume_type (const char *diskgroup, const char *volume);
 extern char *do_ldmtool_volume_hint (const char *diskgroup, const char *volume);
 extern char **do_ldmtool_volume_partitions (const char *diskgroup, const char *volume);
+extern int do_rename (const char *oldpath, const char *newpath);
 
 #endif /* GUESTFSD_ACTIONS_H */

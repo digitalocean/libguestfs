@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -239,7 +239,7 @@ getenv_from_strings (const void *stringsv, const char *name)
 
   for (i = 0; strings[i] != NULL; ++i)
     if (STRPREFIX (strings[i], name) && strings[i][len] == '=')
-      return (char *) &strings[i][len+1];
+      return &strings[i][len+1];
   return NULL;
 }
 

@@ -420,8 +420,6 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
-FEBOOTSTRAP = @FEBOOTSTRAP@
-FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1317,6 +1315,9 @@ STDBOOL_H = @STDBOOL_H@
 STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
+SUPERMIN = @SUPERMIN@
+SUPERMIN_HELPER = @SUPERMIN_HELPER@
+SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1408,6 +1409,7 @@ generator_built = \
 	guestfs_protocol.x \
 	guestfs.h \
 	guestfs-internal-actions.h \
+	guestfs-internal-frontend-cleanups.h \
 	actions-0.c \
 	actions-1.c \
 	actions-2.c \
@@ -1507,6 +1509,8 @@ libguestfs_la_LDFLAGS = -version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR) \
 libguestfs_la_SOURCES = \
 	guestfs.h \
 	guestfs-internal.h \
+	guestfs-internal-all.h \
+	guestfs-internal-frontend.h \
 	guestfs_protocol.h \
 	actions-0.c \
 	actions-1.c \
@@ -1562,13 +1566,16 @@ libguestfs_la_LIBADD = $(PCRE_LIBS) $(MAGIC_LIBS) $(LIBVIRT_LIBS) \
 
 # Make libguestfs include the convenience libraries.
 noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
-libguestfs_la_CFLAGS = -DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
-	-DGUESTFS_WARN_DEPRECATED=1 -DGUESTFS_PRIVATE_FUNCTIONS=1 \
-	-DLIBOSINFO_DB_PATH='"$(datadir)/libosinfo/db"' $(WARN_CFLAGS) \
-	$(WERROR_CFLAGS) $(GPROF_CFLAGS) $(GCOV_CFLAGS) \
-	$(GCC_VISIBILITY_HIDDEN) $(PCRE_CFLAGS) $(LIBVIRT_CFLAGS) \
-	$(LIBXML2_CFLAGS) $(am__append_1)
-libguestfs_la_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+libguestfs_la_CPPFLAGS = \
+	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DGUESTFS_PRIVATE=1 \
+	-DLIBOSINFO_DB_PATH='"$(datadir)/libosinfo/db"' \
+	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+
+libguestfs_la_CFLAGS = $(WARN_CFLAGS) $(WERROR_CFLAGS) $(GPROF_CFLAGS) \
+	$(GCOV_CFLAGS) $(GCC_VISIBILITY_HIDDEN) $(PCRE_CFLAGS) \
+	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) $(am__append_1)
 @HAVE_RPCGEN_TRUE@RPCGEN_DEFS = $(am__append_3) $(am__append_4)
 
 # Pkgconfig.

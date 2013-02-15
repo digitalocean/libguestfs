@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,11 +59,7 @@ static int run_set_autosync (const char *cmd, size_t argc, char *argv[]);
 static int run_get_autosync (const char *cmd, size_t argc, char *argv[]);
 static int run_set_verbose (const char *cmd, size_t argc, char *argv[]);
 static int run_get_verbose (const char *cmd, size_t argc, char *argv[]);
-static int run_is_ready (const char *cmd, size_t argc, char *argv[]);
 static int run_is_config (const char *cmd, size_t argc, char *argv[]);
-static int run_is_launching (const char *cmd, size_t argc, char *argv[]);
-static int run_is_busy (const char *cmd, size_t argc, char *argv[]);
-static int run_get_state (const char *cmd, size_t argc, char *argv[]);
 static int run_set_memsize (const char *cmd, size_t argc, char *argv[]);
 static int run_get_memsize (const char *cmd, size_t argc, char *argv[]);
 static int run_get_pid (const char *cmd, size_t argc, char *argv[]);
@@ -523,6 +519,7 @@ static int run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv
 static int run_ldmtool_volume_type (const char *cmd, size_t argc, char *argv[]);
 static int run_ldmtool_volume_hint (const char *cmd, size_t argc, char *argv[]);
 static int run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[]);
+static int run_rename (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -734,34 +731,10 @@ struct command_entry get_verbose_cmd_entry = {
   .run = run_get_verbose
 };
 
-struct command_entry is_ready_cmd_entry = {
-  .name = "is-ready",
-  .help = "NAME\n    is-ready - is ready to accept commands\n\nSYNOPSIS\n     is-ready\n\nDESCRIPTION\n    This returns true iff this handle is ready to accept commands (in the\n    \"READY\" state).\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_is_ready
-};
-
 struct command_entry is_config_cmd_entry = {
   .name = "is-config",
   .help = "NAME\n    is-config - is in configuration state\n\nSYNOPSIS\n     is-config\n\nDESCRIPTION\n    This returns true iff this handle is being configured (in the \"CONFIG\"\n    state).\n\n    For more information on states, see guestfs(3).\n\n",
   .run = run_is_config
-};
-
-struct command_entry is_launching_cmd_entry = {
-  .name = "is-launching",
-  .help = "NAME\n    is-launching - is launching subprocess\n\nSYNOPSIS\n     is-launching\n\nDESCRIPTION\n    This returns true iff this handle is launching the subprocess (in the\n    \"LAUNCHING\" state).\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_is_launching
-};
-
-struct command_entry is_busy_cmd_entry = {
-  .name = "is-busy",
-  .help = "NAME\n    is-busy - is busy processing a command\n\nSYNOPSIS\n     is-busy\n\nDESCRIPTION\n    This always returns false. Do not use this function.\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_is_busy
-};
-
-struct command_entry get_state_cmd_entry = {
-  .name = "get-state",
-  .help = "NAME\n    get-state - get the current state\n\nSYNOPSIS\n     get-state\n\nDESCRIPTION\n    This returns the current state as an opaque integer. This is only useful\n    for printing debug and internal error messages.\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_get_state
 };
 
 struct command_entry set_memsize_cmd_entry = {
@@ -1774,7 +1747,7 @@ struct command_entry cp_a_cmd_entry = {
 
 struct command_entry mv_cmd_entry = {
   .name = "mv",
-  .help = "NAME\n    mv - move a file\n\nSYNOPSIS\n     mv src dest\n\nDESCRIPTION\n    This moves a file from \"src\" to \"dest\" where \"dest\" is either a\n    destination filename or destination directory.\n\n",
+  .help = "NAME\n    mv - move a file\n\nSYNOPSIS\n     mv src dest\n\nDESCRIPTION\n    This moves a file from \"src\" to \"dest\" where \"dest\" is either a\n    destination filename or destination directory.\n\n    See also: \"rename\".\n\n",
   .run = run_mv
 };
 
@@ -2854,7 +2827,7 @@ struct command_entry pwrite_device_cmd_entry = {
 
 struct command_entry pread_device_cmd_entry = {
   .name = "pread-device",
-  .help = "NAME\n    pread-device - read part of a device\n\nSYNOPSIS\n     pread-device device count offset\n\nDESCRIPTION\n    This command lets you read part of a file. It reads \"count\" bytes of\n    \"device\", starting at \"offset\".\n\n    This may read fewer bytes than requested. For further details see the\n    pread(2) system call.\n\n    See also \"pread\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    pread-device - read part of a device\n\nSYNOPSIS\n     pread-device device count offset\n\nDESCRIPTION\n    This command lets you read part of a block device. It reads \"count\"\n    bytes of \"device\", starting at \"offset\".\n\n    This may read fewer bytes than requested. For further details see the\n    pread(2) system call.\n\n    See also \"pread\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
   .run = run_pread_device
 };
 
@@ -3502,20 +3475,26 @@ struct command_entry ldmtool_diskgroup_disks_cmd_entry = {
 
 struct command_entry ldmtool_volume_type_cmd_entry = {
   .name = "ldmtool-volume-type",
-  .help = "NAME\n    ldmtool-volume-type - return the type of a Windows dynamic disk volume\n\nSYNOPSIS\n     ldmtool-volume-type diskgroup volume\n\nDESCRIPTION\n    Return the type of the volume named \"volume\" in the disk group with GUID\n    <diskgroup>.\n\n    Possible volume types that can be returned here include: \"simple\",\n    \"spanned\", \"striped\", \"mirrored\", \"raid5\". Other types may also be\n    returned.\n\n",
+  .help = "NAME\n    ldmtool-volume-type - return the type of a Windows dynamic disk volume\n\nSYNOPSIS\n     ldmtool-volume-type diskgroup volume\n\nDESCRIPTION\n    Return the type of the volume named \"volume\" in the disk group with GUID\n    \"diskgroup\".\n\n    Possible volume types that can be returned here include: \"simple\",\n    \"spanned\", \"striped\", \"mirrored\", \"raid5\". Other types may also be\n    returned.\n\n",
   .run = run_ldmtool_volume_type
 };
 
 struct command_entry ldmtool_volume_hint_cmd_entry = {
   .name = "ldmtool-volume-hint",
-  .help = "NAME\n    ldmtool-volume-hint - return the hint field of a Windows dynamic disk\n    volume\n\nSYNOPSIS\n     ldmtool-volume-hint diskgroup volume\n\nDESCRIPTION\n    Return the hint field of the volume named \"volume\" in the disk group\n    with GUID <diskgroup>. This may not be defined, in which case the empty\n    string is returned. The hint field is often, though not always, the name\n    of a Windows drive, eg. \"E:\".\n\n",
+  .help = "NAME\n    ldmtool-volume-hint - return the hint field of a Windows dynamic disk\n    volume\n\nSYNOPSIS\n     ldmtool-volume-hint diskgroup volume\n\nDESCRIPTION\n    Return the hint field of the volume named \"volume\" in the disk group\n    with GUID \"diskgroup\". This may not be defined, in which case the empty\n    string is returned. The hint field is often, though not always, the name\n    of a Windows drive, eg. \"E:\".\n\n",
   .run = run_ldmtool_volume_hint
 };
 
 struct command_entry ldmtool_volume_partitions_cmd_entry = {
   .name = "ldmtool-volume-partitions",
-  .help = "NAME\n    ldmtool-volume-partitions - return the partitions in a Windows dynamic\n    disk volume\n\nSYNOPSIS\n     ldmtool-volume-partitions diskgroup volume\n\nDESCRIPTION\n    Return the list of partitions in the volume named \"volume\" in the disk\n    group with GUID <diskgroup>.\n\n",
+  .help = "NAME\n    ldmtool-volume-partitions - return the partitions in a Windows dynamic\n    disk volume\n\nSYNOPSIS\n     ldmtool-volume-partitions diskgroup volume\n\nDESCRIPTION\n    Return the list of partitions in the volume named \"volume\" in the disk\n    group with GUID \"diskgroup\".\n\n",
   .run = run_ldmtool_volume_partitions
+};
+
+struct command_entry rename_cmd_entry = {
+  .name = "rename",
+  .help = "NAME\n    rename - rename a file on the same filesystem\n\nSYNOPSIS\n     rename oldpath newpath\n\nDESCRIPTION\n    Rename a file to a new place on the same filesystem. This is the same as\n    the Linux rename(2) system call. In most cases you are better to use\n    \"mv\" instead.\n\n",
+  .run = run_rename
 };
 
 void
@@ -3664,7 +3643,6 @@ list_commands (void)
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
   printf ("%-20s %s\n", "get-smp", _("get number of virtual CPUs in appliance"));
-  printf ("%-20s %s\n", "get-state", _("get the current state"));
   printf ("%-20s %s\n", "get-tmpdir", _("get the temporary directory"));
   printf ("%-20s %s\n", "get-trace", _("get command trace enabled flag"));
   printf ("%-20s %s\n", "get-umask", _("get the current umask"));
@@ -3731,15 +3709,12 @@ list_commands (void)
   printf ("%-20s %s\n", "inspect-list-applications2", _("get list of applications installed in the operating system"));
   printf ("%-20s %s\n", "inspect-os", _("inspect disk and return list of operating systems found"));
   printf ("%-20s %s\n", "is-blockdev", _("test if block device"));
-  printf ("%-20s %s\n", "is-busy", _("is busy processing a command"));
   printf ("%-20s %s\n", "is-chardev", _("test if character device"));
   printf ("%-20s %s\n", "is-config", _("is in configuration state"));
   printf ("%-20s %s\n", "is-dir", _("test if a directory"));
   printf ("%-20s %s\n", "is-fifo", _("test if FIFO (named pipe)"));
   printf ("%-20s %s\n", "is-file", _("test if a regular file"));
-  printf ("%-20s %s\n", "is-launching", _("is launching subprocess"));
   printf ("%-20s %s\n", "is-lv", _("test if device is a logical volume"));
-  printf ("%-20s %s\n", "is-ready", _("is ready to accept commands"));
   printf ("%-20s %s\n", "is-socket", _("test if socket"));
   printf ("%-20s %s\n", "is-symlink", _("test if symbolic link"));
   printf ("%-20s %s\n", "is-zero", _("test if a file contains all zero bytes"));
@@ -3893,6 +3868,7 @@ list_commands (void)
   printf ("%-20s %s\n", "realpath", _("canonicalized absolute pathname"));
   printf ("%-20s %s\n", "remove-drive", _("remove a disk image"));
   printf ("%-20s %s\n", "removexattr", _("remove extended attribute of a file or directory"));
+  printf ("%-20s %s\n", "rename", _("rename a file on the same filesystem"));
   printf ("%-20s %s\n", "reopen", _("close and reopen libguestfs handle"));
   printf ("%-20s %s\n", "resize2fs", _("resize an ext2, ext3 or ext4 filesystem"));
   printf ("%-20s %s\n", "resize2fs-M", _("resize an ext2, ext3 or ext4 filesystem to the minimum size"));
@@ -4872,26 +4848,6 @@ run_get_verbose (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_is_ready (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_is_ready (g);
-  if (r == -1) goto out;
-  ret = 0;
-  if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
 run_is_config (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -4906,66 +4862,6 @@ run_is_config (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_is_launching (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_is_launching (g);
-  if (r == -1) goto out;
-  ret = 0;
-  if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_is_busy (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_is_busy (g);
-  if (r == -1) goto out;
-  ret = 0;
-  if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_get_state (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_get_state (g);
-  if (r == -1) goto out;
-  ret = 0;
-  printf ("%d\n", r);
  out:
  out_noargs:
   return ret;
@@ -20769,6 +20665,36 @@ run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[])
   print_strings (r);
   free_strings (r);
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_rename (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *oldpath;
+  char *newpath;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  oldpath = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (oldpath == NULL) goto out_oldpath;
+  newpath = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (newpath == NULL) goto out_newpath;
+  r = guestfs_rename (g, oldpath, newpath);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (newpath);
+ out_newpath:
+  free (oldpath);
+ out_oldpath:
  out_noargs:
   return ret;
 }

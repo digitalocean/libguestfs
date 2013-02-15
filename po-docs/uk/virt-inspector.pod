@@ -377,10 +377,10 @@ supports, and from guestfish.
 
 For a description of the C inspection API, read L<guestfs(3)/INSPECTION>.
 
-For example code using the C inspection API, look for C<inspect_vm.c> which
+For example code using the C inspection API, look for C<inspect-vm.c> which
 ships with libguestfs.
 
-C<inspect_vm.c> has also been translated into other languages.  For example,
+C<inspect-vm.c> has also been translated into other languages.  For example,
 C<inspect_vm.pl> is the Perl translation, and there are other translations
 for OCaml, Python, etc.  See L<guestfs(3)/USING LIBGUESTFS WITH OTHER
 PROGRAMMING LANGUAGES> for a list of man pages which contain this example

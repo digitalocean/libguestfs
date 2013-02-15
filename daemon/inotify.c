@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,9 @@ static int inotify_fd = -1;
 
 static char inotify_buf[64*1024*1024];	/* Event buffer, [0..posn-1] is valid */
 static size_t inotify_posn = 0;
+
+/* Because of use of arbitrary offsets within inotify_buf. */
+#pragma GCC diagnostic ignored "-Wcast-align"
 
 /* Clean up the inotify handle on daemon exit. */
 static void inotify_finalize (void) __attribute__((destructor));
@@ -151,7 +154,7 @@ int64_t
 do_inotify_add_watch (const char *path, int mask)
 {
   int64_t r;
-  char *buf;
+  CLEANUP_FREE char *buf = NULL;
 
   NEED_INOTIFY (-1);
 
@@ -162,7 +165,6 @@ do_inotify_add_watch (const char *path, int mask)
   }
 
   r = inotify_add_watch (inotify_fd, buf, mask);
-  free (buf);
   if (r == -1) {
     reply_with_perror ("%s", path);
     return -1;

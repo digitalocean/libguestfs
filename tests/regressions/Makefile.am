@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,10 +29,12 @@ TESTS = \
 	rhbz789960.sh \
 	rhbz790721 \
 	rhbz811649.sh \
+	rhbz895904.sh \
 	test-noexec-stack.pl
 
 tests_not_run = \
-	rhbz727178.sh
+	rhbz727178.sh \
+	rhbz909624.sh
 
 TESTS_ENVIRONMENT = \
 	NOEXEC_CHECK="$(top_builddir)/src/.libs/libguestfs.so $(top_builddir)/daemon/guestfsd" \
@@ -43,17 +45,19 @@ check_PROGRAMS = \
 	rhbz790721
 
 rhbz501893_SOURCES = rhbz501893.c
+rhbz501893_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
 rhbz501893_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 rhbz501893_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 rhbz790721_SOURCES = rhbz790721.c
+rhbz790721_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
 rhbz790721_CFLAGS = \
 	-pthread \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 rhbz790721_LDADD = \
@@ -64,3 +68,6 @@ EXTRA_DIST = \
 	$(tests_not_run) \
 	rhbz557655-expected.stdout \
 	rhbz557655-expected.stderr
+
+check-slow:
+	$(MAKE) TESTS="rhbz909624.sh" check

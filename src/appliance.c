@@ -103,7 +103,7 @@ gl_lock_define_initialized (static, building_lock);
  *
  *   $TMPDIR/.guestfs-$UID/checksum       - the checksum
  *   $TMPDIR/.guestfs-$UID/kernel         - the kernel
- *   $TMPDIR/.guestfs-$UID/initrd         - the febootstrap initrd
+ *   $TMPDIR/.guestfs-$UID/initrd         - the supermin initrd
  *   $TMPDIR/.guestfs-$UID/root           - the appliance
  *
  * Since multiple instances of libguestfs with the same UID may be
@@ -140,11 +140,12 @@ guestfs___build_appliance (guestfs_h *g,
 {
   int r;
   uid_t uid = geteuid ();
+  CLEANUP_FREE char *supermin_path = NULL;
+  CLEANUP_FREE char *path = NULL;
 
   gl_lock_lock (building_lock);
 
   /* Step (1). */
-  char *supermin_path;
   r = find_path (g, contains_supermin_appliance, NULL, &supermin_path);
   if (r == -1) {
     gl_lock_unlock (building_lock);
@@ -153,14 +154,13 @@ guestfs___build_appliance (guestfs_h *g,
 
   if (r == 1) {
     /* Step (2): calculate checksum. */
-    char *checksum = calculate_supermin_checksum (g, supermin_path);
+    CLEANUP_FREE char *checksum =
+      calculate_supermin_checksum (g, supermin_path);
     if (checksum) {
       /* Step (3): cached appliance exists? */
       r = check_for_cached_appliance (g, supermin_path, checksum, uid,
                                       kernel, initrd, appliance);
       if (r != 0) {
-        free (supermin_path);
-        free (checksum);
         gl_lock_unlock (building_lock);
         return r == 1 ? 0 : -1;
       }
@@ -168,16 +168,12 @@ guestfs___build_appliance (guestfs_h *g,
       /* Step (4): build supermin appliance. */
       r = build_supermin_appliance (g, supermin_path, checksum, uid,
                                     kernel, initrd, appliance);
-      free (supermin_path);
-      free (checksum);
       gl_lock_unlock (building_lock);
       return r;
     }
-    free (supermin_path);
   }
 
   /* Step (5). */
-  char *path;
   r = find_path (g, contains_fixed_appliance, NULL, &path);
   if (r == -1) {
     gl_lock_unlock (building_lock);
@@ -193,7 +189,6 @@ guestfs___build_appliance (guestfs_h *g,
     sprintf (*initrd, "%s/initrd", path);
     sprintf (*appliance, "%s/root", path);
 
-    free (path);
     gl_lock_unlock (building_lock);
     return 0;
   }
@@ -213,7 +208,6 @@ guestfs___build_appliance (guestfs_h *g,
     sprintf (*initrd, "%s/%s", path, initrd_name);
     *appliance = NULL;
 
-    free (path);
     gl_lock_unlock (building_lock);
     return 0;
   }
@@ -257,20 +251,18 @@ read_checksum (guestfs_h *g, void *checksumv, const char *line, size_t len)
 }
 
 /* supermin_path is a path which is known to contain a supermin
- * appliance.  Using febootstrap-supermin-helper -f checksum calculate
+ * appliance.  Using supermin-helper -f checksum calculate
  * the checksum so we can see if it is cached.
  */
 static char *
 calculate_supermin_checksum (guestfs_h *g, const char *supermin_path)
 {
   size_t len;
-  struct command *cmd;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
   int pass_u_g_args = getuid () != geteuid () || getgid () != getegid ();
-  int r;
   char checksum[MAX_CHECKSUM_LEN + 1] = { 0 };
 
-  cmd = guestfs___new_command (g);
-  guestfs___cmd_add_arg (cmd, "febootstrap-supermin-helper");
+  guestfs___cmd_add_arg (cmd, SUPERMIN_HELPER);
   if (g->verbose)
     guestfs___cmd_add_arg (cmd, "--verbose");
   if (pass_u_g_args) {
@@ -285,17 +277,15 @@ calculate_supermin_checksum (guestfs_h *g, const char *supermin_path)
   guestfs___cmd_add_arg (cmd, host_cpu);
   guestfs___cmd_set_stdout_callback (cmd, read_checksum, checksum, 0);
 
-  r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
   /* Errors here are non-fatal, so we don't need to call error(). */
-  if (r == -1)
+  if (guestfs___cmd_run (cmd) == -1)
     return NULL;
 
   debug (g, "checksum of existing appliance: %s", checksum);
 
   len = strlen (checksum);
   if (len < 16) {               /* sanity check */
-    warning (g, "febootstrap-supermin-helper -f checksum returned a short string");
+    warning (g, "supermin-helper -f checksum returned a short string");
     return NULL;
   }
 
@@ -352,7 +342,7 @@ check_for_cached_appliance (guestfs_h *g,
                             uid_t uid,
                             char **kernel, char **initrd, char **appliance)
 {
-  char *tmpdir = guestfs_get_cachedir (g);
+  CLEANUP_FREE char *tmpdir = guestfs_get_cachedir (g);
 
   /* len must be longer than the length of any pathname we can
    * generate in this function.
@@ -362,8 +352,6 @@ check_for_cached_appliance (guestfs_h *g,
   snprintf (cachedir, len, "%s/.guestfs-%d", tmpdir, uid);
   char filename[len];
   snprintf (filename, len, "%s/checksum", cachedir);
-
-  free (tmpdir);
 
   (void) mkdir (cachedir, 0755);
 
@@ -472,13 +460,11 @@ build_supermin_appliance (guestfs_h *g,
                           uid_t uid,
                           char **kernel, char **initrd, char **appliance)
 {
-  char *tmpdir;
+  CLEANUP_FREE char *tmpdir = guestfs_get_cachedir (g);
   size_t len;
 
   if (g->verbose)
     guestfs___print_timestamped_message (g, "begin building supermin appliance");
-
-  tmpdir = guestfs_get_cachedir (g);
 
   /* len must be longer than the length of any pathname we can
    * generate in this function.
@@ -491,17 +477,15 @@ build_supermin_appliance (guestfs_h *g,
 
   if (mkdtemp (tmpcd) == NULL) {
     perrorf (g, "mkdtemp");
-    free (tmpdir);
     return -1;
   }
 
   if (g->verbose)
-    guestfs___print_timestamped_message (g, "run febootstrap-supermin-helper");
+    guestfs___print_timestamped_message (g, "run supermin-helper");
 
   int r = run_supermin_helper (g, supermin_path, tmpcd);
   if (r == -1) {
     guestfs___recursive_remove_dir (g, tmpcd);
-    free (tmpdir);
     return -1;
   }
 
@@ -513,8 +497,6 @@ build_supermin_appliance (guestfs_h *g,
   char filename[len];
   char filename2[len];
   snprintf (filename, len, "%s/checksum", cachedir);
-
-  free (tmpdir);
 
   /* Open and acquire write lock on checksum file.  The file might
    * not exist, in which case we want to create it.
@@ -670,14 +652,14 @@ hard_link_to_cached_appliance (guestfs_h *g,
   return -1;
 }
 
-/* Run febootstrap-supermin-helper and tell it to generate the
+/* Run supermin-helper and tell it to generate the
  * appliance.
  */
 static int
 run_supermin_helper (guestfs_h *g, const char *supermin_path,
                      const char *cachedir)
 {
-  struct command *cmd;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
   int r;
   uid_t uid = getuid ();
   uid_t euid = geteuid ();
@@ -685,8 +667,7 @@ run_supermin_helper (guestfs_h *g, const char *supermin_path,
   gid_t egid = getegid ();
   int pass_u_g_args = uid != euid || gid != egid;
 
-  cmd = guestfs___new_command (g);
-  guestfs___cmd_add_arg (cmd, "febootstrap-supermin-helper");
+  guestfs___cmd_add_arg (cmd, SUPERMIN_HELPER);
   if (g->verbose)
     guestfs___cmd_add_arg (cmd, "--verbose");
   if (pass_u_g_args) {
@@ -705,7 +686,6 @@ run_supermin_helper (guestfs_h *g, const char *supermin_path,
   guestfs___cmd_add_arg_format (cmd, "%s/root", cachedir);
 
   r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
   if (r == -1)
     return -1;
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {

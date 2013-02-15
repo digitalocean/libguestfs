@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "read-file.h"
 
@@ -122,7 +125,7 @@ do_tar_in (const char *dir, const char *compress)
   const char *filter;
   int err, r;
   FILE *fp;
-  char *cmd;
+  CLEANUP_FREE char *cmd = NULL;
   char error_file[] = "/tmp/tarXXXXXX";
   int fd, chown_supported;
 
@@ -180,10 +183,8 @@ do_tar_in (const char *dir, const char *compress)
     errno = err;
     reply_with_perror ("%s", cmd);
     unlink (error_file);
-    free (cmd);
     return -1;
   }
-  free (cmd);
 
   /* The semantics of fwrite are too undefined, so write to the
    * file descriptor directly instead.
@@ -193,9 +194,8 @@ do_tar_in (const char *dir, const char *compress)
   r = receive_file (write_cb, &fd);
   if (r == -1) {		/* write error */
     cancel_receive ();
-    char *errstr = read_error_file (error_file);
+    CLEANUP_FREE char *errstr = read_error_file (error_file);
     reply_with_error ("write error on directory: %s: %s", dir, errstr);
-    free (errstr);
     unlink (error_file);
     pclose (fp);
     return -1;
@@ -211,10 +211,9 @@ do_tar_in (const char *dir, const char *compress)
   }
 
   if (pclose (fp) != 0) {
-    char *errstr = read_error_file (error_file);
+    CLEANUP_FREE char *errstr = read_error_file (error_file);
     reply_with_error ("tar subcommand failed on directory: %s: %s",
                       dir, errstr);
-    free (errstr);
     unlink (error_file);
     return -1;
   }
@@ -283,12 +282,14 @@ int
 do_tar_out (const char *dir, const char *compress, int numericowner,
             char *const *excludes)
 {
+  CLEANUP_FREE char *buf = NULL;
+  struct stat statbuf;
   const char *filter;
   int r;
   FILE *fp;
-  char *excludes_args;
-  char *cmd;
-  char buf[GUESTFS_MAX_CHUNK_SIZE];
+  CLEANUP_FREE char *excludes_args = NULL;
+  CLEANUP_FREE char *cmd = NULL;
+  char buffer[GUESTFS_MAX_CHUNK_SIZE];
 
   if ((optargs_bitmask & GUESTFS_TAR_OUT_COMPRESS_BITMASK)) {
     if (STREQ (compress, "compress"))
@@ -323,17 +324,32 @@ do_tar_out (const char *dir, const char *compress, int numericowner,
     }
   }
 
+  /* Check the filename exists and is a directory (RHBZ#908322). */
+  buf = sysroot_path (dir);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  if (stat (buf, &statbuf) == -1) {
+    reply_with_perror ("stat: %s", dir);
+    return -1;
+  }
+
+  if (! S_ISDIR (statbuf.st_mode)) {
+    reply_with_error ("%s: not a directory", dir);
+    return -1;
+  }
+
   /* "tar -C /sysroot%s -cf - ." but we have to quote the dir. */
-  if (asprintf_nowarn (&cmd, "%s -C %R%s%s%s -cf - .",
+  if (asprintf_nowarn (&cmd, "%s -C %s%s%s%s -cf - .",
                        str_tar,
-                       dir, filter,
+                       buf, filter,
                        numericowner ? " --numeric-owner" : "",
                        excludes_args) == -1) {
     reply_with_perror ("asprintf");
-    free (excludes_args);
     return -1;
   }
-  free (excludes_args);
 
   if (verbose)
     fprintf (stderr, "%s\n", cmd);
@@ -341,10 +357,8 @@ do_tar_out (const char *dir, const char *compress, int numericowner,
   fp = popen (cmd, "r");
   if (fp == NULL) {
     reply_with_perror ("%s", cmd);
-    free (cmd);
     return -1;
   }
-  free (cmd);
 
   /* Now we must send the reply message, before the file contents.  After
    * this there is no opportunity in the protocol to send any error
@@ -352,22 +366,22 @@ do_tar_out (const char *dir, const char *compress, int numericowner,
    */
   reply (NULL, NULL);
 
-  while ((r = fread (buf, 1, sizeof buf, fp)) > 0) {
-    if (send_file_write (buf, r) < 0) {
+  while ((r = fread (buffer, 1, sizeof buffer, fp)) > 0) {
+    if (send_file_write (buffer, r) < 0) {
       pclose (fp);
       return -1;
     }
   }
 
   if (ferror (fp)) {
-    perror (dir);
+    fprintf (stderr, "fread: %s: %m\n", dir);
     send_file_end (1);		/* Cancel. */
     pclose (fp);
     return -1;
   }
 
   if (pclose (fp) != 0) {
-    perror (dir);
+    fprintf (stderr, "pclose: %s: %m\n", dir);
     send_file_end (1);		/* Cancel. */
     return -1;
   }

@@ -1,5 +1,5 @@
 # libguestfs virt-inspector
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,12 +63,14 @@ virt_inspector_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
 	virt-inspector.c
 
-virt_inspector_CFLAGS = \
+virt_inspector_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(top_srcdir)/fish \
-	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
-	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+virt_inspector_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBXML2_CFLAGS) \

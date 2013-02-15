@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,16 +43,7 @@ let rec generate_tests () =
 #include <fcntl.h>
 
 #include \"guestfs.h\"
-
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
-//#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
-#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
-//#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
-//#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
-//#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
-#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
-//#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
-//#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
+#include \"guestfs-internal-frontend.h\"
 
 static guestfs_h *g;
 

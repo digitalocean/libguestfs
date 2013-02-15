@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -363,6 +363,14 @@ and test_init =
 and seq = cmd list
 and cmd = string list
 
+type visibility =
+  | VPublic                       (* Part of the public API *)
+  | VStateTest                    (* A function which tests the state
+                                     of the appliance *)
+  | VBindTest                     (* Only used for testing language bindings *)
+  | VDebug                        (* Exported everywhere, but not documented *)
+  | VInternal                     (* Not exported *)
+
 (* Type of an action as declared in Actions module. *)
 type action = {
   name : string;                  (* name, not including "guestfs_" *)
@@ -376,8 +384,7 @@ type action = {
   protocol_limit_warning : bool;  (* warn about protocol size limits *)
   fish_alias : string list;       (* alias(es) for this cmd in guestfish *)
   fish_output : fish_output_t option; (* how to display output in guestfish *)
-  in_fish : bool;                 (* export via guestfish *)
-  in_docs : bool;                 (* add this function to documentation *)
+  visibility: visibility;         (* The visbility of function *)
   deprecated_by : string option;  (* function is deprecated, use .. instead *)
   optional : string option;       (* function is part of an optional group *)
   progress : bool;                (* function can generate progress messages *)

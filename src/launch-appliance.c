@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -136,8 +136,12 @@ add_cmdline_shell_unquoted (guestfs_h *g, const char *options)
       endp = options + strlen (options);
     }
 
-    if (quote == ' ')
-      nextp = endp+1;
+    if (quote == ' ') {
+      if (endp[0] == '\0')
+        nextp = endp;
+      else
+        nextp = endp+1;
+    }
     else {
       if (!endp[1])
         nextp = endp+1;
@@ -166,10 +170,10 @@ launch_appliance (guestfs_h *g, const char *arg)
   int wfd[2], rfd[2];
   char guestfsd_sock[256];
   struct sockaddr_un addr;
-  char *kernel = NULL, *initrd = NULL, *appliance = NULL;
+  CLEANUP_FREE char *kernel = NULL, *initrd = NULL, *appliance = NULL;
   int has_appliance_drive;
   uint32_t size;
-  void *buf = NULL;
+  CLEANUP_FREE void *buf = NULL;
 
   /* At present you must add drives before starting the appliance.  In
    * future when we enable hotplugging you won't need to do this.
@@ -307,11 +311,10 @@ launch_appliance (guestfs_h *g, const char *arg)
 
     ITER_DRIVES (g, i, drv) {
       /* Construct the final -drive parameter. */
-      char *buf = qemu_drive_param (g, drv, i);
+      CLEANUP_FREE char *buf = qemu_drive_param (g, drv, i);
 
       add_cmdline (g, "-drive");
       add_cmdline (g, buf);
-      free (buf);
 
       if (virtio_scsi && drv->iface == NULL) {
         char buf2[64];
@@ -427,14 +430,16 @@ launch_appliance (guestfs_h *g, const char *arg)
     add_cmdline (g, "stdio");
 #endif
 
-    /* Use sgabios instead of vgabios.  This means we'll see BIOS
-     * messages on the serial port, and also works around this bug
-     * in qemu 1.1.0:
-     * https://bugs.launchpad.net/qemu/+bug/1021649
-     * QEmu has included sgabios upstream since just before 1.0.
-     */
-    add_cmdline (g, "-device");
-    add_cmdline (g, "sga");
+    if (qemu_supports_device (g, "Serial Graphics Adapter")) {
+      /* Use sgabios instead of vgabios.  This means we'll see BIOS
+       * messages on the serial port, and also works around this bug
+       * in qemu 1.1.0:
+       * https://bugs.launchpad.net/qemu/+bug/1021649
+       * QEmu has included sgabios upstream since just before 1.0.
+       */
+      add_cmdline (g, "-device");
+      add_cmdline (g, "sga");
+    }
 
     /* Set up virtio-serial for the communications channel. */
     add_cmdline (g, "-chardev");
@@ -467,9 +472,9 @@ launch_appliance (guestfs_h *g, const char *arg)
     add_cmdline (g, initrd);
 
     add_cmdline (g, "-append");
-    char *cmdline = guestfs___appliance_command_line (g, appliance_dev, 0);
+    CLEANUP_FREE char *cmdline =
+      guestfs___appliance_command_line (g, appliance_dev, 0);
     add_cmdline (g, cmdline);
-    free (cmdline);
 
     /* Finish off the command line. */
     incr_cmdline_size (g);
@@ -523,13 +528,6 @@ launch_appliance (guestfs_h *g, const char *arg)
 
   /* Parent (library). */
   g->app.pid = r;
-
-  free (kernel);
-  kernel = NULL;
-  free (initrd);
-  initrd = NULL;
-  free (appliance);
-  appliance = NULL;
 
   /* Fork the recovery process off which will kill qemu if the parent
    * process fails to do so (eg. if the parent segfaults).
@@ -648,7 +646,6 @@ launch_appliance (guestfs_h *g, const char *arg)
   }
 
   r = guestfs___recv_from_daemon (g, &size, &buf);
-  free (buf);
 
   if (r == -1) {
     guestfs___launch_failed_error (g);
@@ -705,9 +702,6 @@ launch_appliance (guestfs_h *g, const char *arg)
     g->sock = -1;
   }
   g->state = CONFIG;
-  free (kernel);
-  free (initrd);
-  free (appliance);
   return -1;
 }
 
@@ -752,7 +746,9 @@ static void read_all (guestfs_h *g, void *retv, const char *buf, size_t len);
 static int
 test_qemu (guestfs_h *g)
 {
-  struct command *cmd;
+  CLEANUP_CMD_CLOSE struct command *cmd1 = guestfs___new_command (g);
+  CLEANUP_CMD_CLOSE struct command *cmd2 = guestfs___new_command (g);
+  CLEANUP_CMD_CLOSE struct command *cmd3 = guestfs___new_command (g);
   int r;
 
   free (g->app.qemu_help);
@@ -762,43 +758,37 @@ test_qemu (guestfs_h *g)
   free (g->app.qemu_devices);
   g->app.qemu_devices = NULL;
 
-  cmd = guestfs___new_command (g);
-  guestfs___cmd_add_arg (cmd, g->qemu);
-  guestfs___cmd_add_arg (cmd, "-nographic");
-  guestfs___cmd_add_arg (cmd, "-help");
-  guestfs___cmd_set_stdout_callback (cmd, read_all, &g->app.qemu_help,
+  guestfs___cmd_add_arg (cmd1, g->qemu);
+  guestfs___cmd_add_arg (cmd1, "-nographic");
+  guestfs___cmd_add_arg (cmd1, "-help");
+  guestfs___cmd_set_stdout_callback (cmd1, read_all, &g->app.qemu_help,
                                      CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
+  r = guestfs___cmd_run (cmd1);
   if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
 
-  cmd = guestfs___new_command (g);
-  guestfs___cmd_add_arg (cmd, g->qemu);
-  guestfs___cmd_add_arg (cmd, "-nographic");
-  guestfs___cmd_add_arg (cmd, "-version");
-  guestfs___cmd_set_stdout_callback (cmd, read_all, &g->app.qemu_version,
+  guestfs___cmd_add_arg (cmd2, g->qemu);
+  guestfs___cmd_add_arg (cmd2, "-nographic");
+  guestfs___cmd_add_arg (cmd2, "-version");
+  guestfs___cmd_set_stdout_callback (cmd2, read_all, &g->app.qemu_version,
                                      CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
+  r = guestfs___cmd_run (cmd2);
   if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
 
   parse_qemu_version (g);
 
-  cmd = guestfs___new_command (g);
-  guestfs___cmd_add_arg (cmd, g->qemu);
-  guestfs___cmd_add_arg (cmd, "-nographic");
-  guestfs___cmd_add_arg (cmd, "-machine");
-  guestfs___cmd_add_arg (cmd, "accel=kvm:tcg");
-  guestfs___cmd_add_arg (cmd, "-device");
-  guestfs___cmd_add_arg (cmd, "?");
-  guestfs___cmd_clear_capture_errors (cmd);
-  guestfs___cmd_set_stderr_to_stdout (cmd);
-  guestfs___cmd_set_stdout_callback (cmd, read_all, &g->app.qemu_devices,
+  guestfs___cmd_add_arg (cmd3, g->qemu);
+  guestfs___cmd_add_arg (cmd3, "-nographic");
+  guestfs___cmd_add_arg (cmd3, "-machine");
+  guestfs___cmd_add_arg (cmd3, "accel=kvm:tcg");
+  guestfs___cmd_add_arg (cmd3, "-device");
+  guestfs___cmd_add_arg (cmd3, "?");
+  guestfs___cmd_clear_capture_errors (cmd3);
+  guestfs___cmd_set_stderr_to_stdout (cmd3);
+  guestfs___cmd_set_stdout_callback (cmd3, read_all, &g->app.qemu_devices,
                                      CMD_STDOUT_FLAG_WHOLE_BUFFER);
-  r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
+  r = guestfs___cmd_run (cmd3);
   if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
 
@@ -815,7 +805,7 @@ test_qemu (guestfs_h *g)
 static void
 parse_qemu_version (guestfs_h *g)
 {
-  char *major_s = NULL, *minor_s = NULL;
+  CLEANUP_FREE char *major_s = NULL, *minor_s = NULL;
   int major_i, minor_i;
 
   g->app.qemu_version_major = 0;
@@ -828,7 +818,7 @@ parse_qemu_version (guestfs_h *g)
   parse_failed:
     debug (g, "%s: failed to parse qemu version string '%s'",
            __func__, g->app.qemu_version);
-    goto out;
+    return;
   }
 
   major_i = guestfs___parse_unsigned_int (g, major_s);
@@ -843,10 +833,6 @@ parse_qemu_version (guestfs_h *g)
   g->app.qemu_version_minor = minor_i;
 
   debug (g, "qemu version %d.%d", major_i, minor_i);
-
- out:
-  free (major_s);
-  free (minor_s);
 }
 
 static void
@@ -908,6 +894,16 @@ is_openable (guestfs_h *g, const char *path, int flags)
   return 1;
 }
 
+static int
+old_or_broken_virtio_scsi (guestfs_h *g)
+{
+  /* qemu 1.1 claims to support virtio-scsi but in reality it's broken. */
+  if (g->app.qemu_version_major == 1 && g->app.qemu_version_minor < 2)
+    return 1;
+
+  return 0;
+}
+
 /* Returns 1 = use virtio-scsi, or 0 = use virtio-blk. */
 static int
 qemu_supports_virtio_scsi (guestfs_h *g)
@@ -926,8 +922,7 @@ qemu_supports_virtio_scsi (guestfs_h *g)
    *   3 = test failed (use virtio-blk)
    */
   if (g->app.virtio_scsi == 0) {
-    /* qemu 1.1 claims to support virtio-scsi but in reality it's broken. */
-    if (g->app.qemu_version_major == 1 && g->app.qemu_version_minor < 2)
+    if (old_or_broken_virtio_scsi (g))
       g->app.virtio_scsi = 2;
     else {
       r = qemu_supports_device (g, "virtio-scsi-pci");

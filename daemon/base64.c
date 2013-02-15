@@ -22,6 +22,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "guestfs_protocol.h"
 #include "daemon.h"
@@ -42,7 +45,7 @@ do_base64_in (const char *file)
 {
   int err, r;
   FILE *fp;
-  char *cmd;
+  CLEANUP_FREE char *cmd = NULL;
 
   if (asprintf_nowarn (&cmd, "%s -d -i > %R", str_base64, file) == -1) {
     err = errno;
@@ -61,10 +64,8 @@ do_base64_in (const char *file)
     cancel_receive ();
     errno = err;
     reply_with_perror ("%s", cmd);
-    free (cmd);
     return -1;
   }
-  free (cmd);
 
   /* The semantics of fwrite are too undefined, so write to the
    * file descriptor directly instead.
@@ -99,12 +100,32 @@ do_base64_in (const char *file)
 int
 do_base64_out (const char *file)
 {
+  CLEANUP_FREE char *buf = NULL;
+  struct stat statbuf;
   int r;
   FILE *fp;
-  char *cmd;
-  char buf[GUESTFS_MAX_CHUNK_SIZE];
+  CLEANUP_FREE char *cmd = NULL;
+  char buffer[GUESTFS_MAX_CHUNK_SIZE];
 
-  if (asprintf_nowarn (&cmd, "%s %R", str_base64, file) == -1) {
+  /* Check the filename exists and is not a directory (RHBZ#908322). */
+  buf = sysroot_path (file);
+  if (buf == NULL) {
+    reply_with_perror ("malloc");
+    return -1;
+  }
+
+  if (stat (buf, &statbuf) == -1) {
+    reply_with_perror ("stat: %s", file);
+    return -1;
+  }
+
+  if (S_ISDIR (statbuf.st_mode)) {
+    reply_with_error ("%s: is a directory", file);
+    return -1;
+  }
+
+  /* Construct the command. */
+  if (asprintf_nowarn (&cmd, "%s %s", str_base64, buf) == -1) {
     reply_with_perror ("asprintf");
     return -1;
   }
@@ -115,10 +136,8 @@ do_base64_out (const char *file)
   fp = popen (cmd, "r");
   if (fp == NULL) {
     reply_with_perror ("%s", cmd);
-    free (cmd);
     return -1;
   }
-  free (cmd);
 
   /* Now we must send the reply message, before the file contents.  After
    * this there is no opportunity in the protocol to send any error
@@ -126,22 +145,22 @@ do_base64_out (const char *file)
    */
   reply (NULL, NULL);
 
-  while ((r = fread (buf, 1, sizeof buf, fp)) > 0) {
-    if (send_file_write (buf, r) < 0) {
+  while ((r = fread (buffer, 1, sizeof buffer, fp)) > 0) {
+    if (send_file_write (buffer, r) < 0) {
       pclose (fp);
       return -1;
     }
   }
 
   if (ferror (fp)) {
-    perror (file);
+    fprintf (stderr, "fread: %s: %m\n", file);
     send_file_end (1);		/* Cancel. */
     pclose (fp);
     return -1;
   }
 
   if (pclose (fp) != 0) {
-    perror (file);
+    fprintf (stderr, "pclose: %s: %m\n", file);
     send_file_end (1);		/* Cancel. */
     return -1;
   }

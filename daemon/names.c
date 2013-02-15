@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -410,4 +410,5 @@ const char *function_names[] = {
   [389] = "ldmtool_volume_type",
   [390] = "ldmtool_volume_hint",
   [391] = "ldmtool_volume_partitions",
+  [394] = "rename",
 };

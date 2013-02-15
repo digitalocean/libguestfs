@@ -1,8 +1,10 @@
 /* Demonstrate the use of the 'mount-local' API.
  *
- * Run this program as (eg) mount_local /tmp/test.img.  Note that
+ * Run this program as (eg) mount-local /tmp/test.img.  Note that
  * '/tmp/test.img' is created or overwritten.  Follow the instructions
  * on screen.
+ *
+ * See "MOUNT LOCAL" in guestfs(3).
  */
 
 #include <stdio.h>
@@ -31,7 +33,7 @@ static void
 usage (void)
 {
   fprintf (stderr,
-           "Usage: mount_local disk.img\n"
+           "Usage: mount-local disk.img\n"
            "\n"
            "NOTE: disk.img will be created or overwritten.\n"
            "\n");

@@ -50,12 +50,6 @@ int echo_keys = 0;
 const char *libvirt_uri = NULL;
 int inspector = 0;
 
-static inline char *
-bad_cast (char const *s)
-{
-  return (char *) s;
-}
-
 static void __attribute__((noreturn))
 usage (int status)
 {
@@ -65,7 +59,7 @@ usage (int status)
   else {
     fprintf (stdout,
            _("%s: Run a rescue shell on a virtual machine\n"
-             "Copyright (C) 2009-2012 Red Hat Inc.\n"
+             "Copyright (C) 2009-2013 Red Hat Inc.\n"
              "Usage:\n"
              "  %s [--options] -d domname\n"
              "  %s [--options] -a disk.img [-a disk.img ...]\n"
@@ -135,11 +129,9 @@ main (int argc, char *argv[])
   int option_index;
   int network = 0;
   const char *append = NULL;
-  char *append_full;
   int memsize = 0;
   int smp = 0;
   int suggest = 0;
-  char *attach_method;
 
   g = guestfs_create ();
   if (g == NULL) {
@@ -147,7 +139,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  argv[0] = bad_cast (program_name);
+  argv[0] = (char *) program_name;
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -313,20 +305,21 @@ main (int argc, char *argv[])
   if (guestfs_set_direct (g, 1) == -1)
     exit (EXIT_FAILURE);
 
-  /* The libvirt backend doesn't support direct mode.  As a temporary
-   * workaround, force the appliance backend, but warn about it.
-   */
-  attach_method = guestfs_get_attach_method (g);
-  if (attach_method) {
-    if (STREQ (attach_method, "libvirt") ||
-        STRPREFIX (attach_method, "libvirt:")) {
-      fprintf (stderr, _("%s: warning: virt-rescue doesn't work with the libvirt backend\n"
-                         "at the moment.  As a workaround, forcing attach-method = 'appliance'.\n"),
-               program_name);
-      if (guestfs_set_attach_method (g, "appliance") == -1)
-        exit (EXIT_FAILURE);
+  {
+    /* The libvirt backend doesn't support direct mode.  As a temporary
+     * workaround, force the appliance backend, but warn about it.
+     */
+    CLEANUP_FREE char *attach_method = guestfs_get_attach_method (g);
+    if (attach_method) {
+      if (STREQ (attach_method, "libvirt") ||
+          STRPREFIX (attach_method, "libvirt:")) {
+        fprintf (stderr, _("%s: warning: virt-rescue doesn't work with the libvirt backend\n"
+                           "at the moment.  As a workaround, forcing attach-method = 'appliance'.\n"),
+                 program_name);
+        if (guestfs_set_attach_method (g, "appliance") == -1)
+          exit (EXIT_FAILURE);
+      }
     }
-    free (attach_method);
   }
 
   /* Set other features. */
@@ -340,15 +333,16 @@ main (int argc, char *argv[])
     if (guestfs_set_smp (g, smp) == -1)
       exit (EXIT_FAILURE);
 
-  /* Kernel command line must include guestfs_rescue=1 (see
-   * appliance/init) as well as other options.
-   */
-  append_full = xasprintf ("guestfs_rescue=1%s%s",
-                           append ? " " : "",
-                           append ? append : "");
-  if (guestfs_set_append (g, append_full) == -1)
-    exit (EXIT_FAILURE);
-  free (append_full);
+  {
+    /* Kernel command line must include guestfs_rescue=1 (see
+     * appliance/init) as well as other options.
+     */
+    CLEANUP_FREE char *append_full = xasprintf ("guestfs_rescue=1%s%s",
+                                                append ? " " : "",
+                                                append ? append : "");
+    if (guestfs_set_append (g, append_full) == -1)
+      exit (EXIT_FAILURE);
+  }
 
   /* Add drives. */
   add_drives (drvs, 'a');
@@ -398,11 +392,11 @@ count_strings (char *const *argv)
 static void
 do_suggestion (struct drv *drvs)
 {
-  char **roots;
+  CLEANUP_FREE_STRING_LIST char **roots = NULL;
   size_t i, j;
-  char *type, *distro, *product_name;
+  CLEANUP_FREE char *type = NULL, *distro = NULL, *product_name = NULL;
   int major, minor;
-  char **mps;
+  CLEANUP_FREE_STRING_LIST char **mps = NULL;
 
   /* For inspection, force add_drives to add the drives read-only. */
   read_only = 1;
@@ -459,11 +453,8 @@ do_suggestion (struct drv *drvs)
     qsort (mps, count_strings (mps) / 2, 2 * sizeof (char *),
            compare_keys_len);
 
-    for (j = 0; mps[j] != NULL; j += 2) {
+    for (j = 0; mps[j] != NULL; j += 2)
       printf ("mount %s /sysroot%s\n", mps[j+1], mps[j]);
-      free (mps[j]);
-      free (mps[j+1]);
-    }
 
     /* If it's Linux, print the bind-mounts. */
     if (type && STREQ (type, "linux")) {
@@ -474,14 +465,7 @@ do_suggestion (struct drv *drvs)
     }
 
     printf ("\n");
-
-    free (type);
-    free (distro);
-    free (product_name);
-    free (roots[i]);
   }
-
-  free (roots);
 }
 
 /* Inspection failed, so it doesn't contain any OS that we recognise.
@@ -491,15 +475,25 @@ do_suggestion (struct drv *drvs)
 static void
 suggest_filesystems (void)
 {
-  char **fses;
-  size_t i;
+  size_t i, count;
 
-  fses = guestfs_list_filesystems (g);
+  CLEANUP_FREE_STRING_LIST char **fses = guestfs_list_filesystems (g);
   if (fses == NULL)
     exit (EXIT_FAILURE);
 
-  if (fses[0] == NULL) {
-    printf (_("This disk contains no filesystems that we recognize.\n\n"
+  /* Count how many are not swap or unknown.  Possibly we should try
+   * mounting to see which are mountable, but that has a high
+   * probability of breaking.
+   */
+#define TEST_MOUNTABLE(fs) STRNEQ ((fs), "swap") && STRNEQ ((fs), "unknown")
+  count = 0;
+  for (i = 0; fses[i] != NULL; i += 2) {
+    if (TEST_MOUNTABLE (fses[i+1]))
+      count++;
+  }
+
+  if (count == 0) {
+    printf (_("This disk contains no mountable filesystems that we recognize.\n\n"
               "However you can still use virt-rescue on the disk image, to try to mount\n"
               "filesystems that are not recognized by libguestfs, or to create partitions,\n"
               "logical volumes and filesystems on a blank disk.\n"));
@@ -513,15 +507,12 @@ suggest_filesystems (void)
   for (i = 0; fses[i] != NULL; i += 2) {
     printf (_("# %s has type '%s'\n"), fses[i], fses[i+1]);
 
-    if (STRNEQ (fses[i+1], "swap") && STRNEQ (fses[i+1], "unknown"))
+    if (TEST_MOUNTABLE (fses[i+1]))
       printf ("mount %s /sysroot\n", fses[i]);
 
     printf ("\n");
-
-    free (fses[i]);
-    free (fses[i+1]);
   }
-  free (fses);
+#undef TEST_MOUNTABLE
 }
 
 struct scratch_disk {

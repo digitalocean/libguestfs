@@ -70,6 +70,7 @@
 /* Define this to 1 if F_DUPFD behavior does not match POSIX */
 #undef FCNTL_DUPFD_BUGGY
 
+
 /* Enable compile-time and run-time bounds-checking, and some warnings. */
 #if __OPTIMIZE__
 # define _FORTIFY_SOURCE 2
@@ -422,6 +423,9 @@
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
+
+/* Define to 1 if '__attribute__((cleanup(...)))' works with this compiler. */
+#undef HAVE_ATTRIBUTE_CLEANUP
 
 /* Define to 1 if you have the <attr/xattr.h> header file. */
 #undef HAVE_ATTR_XATTR_H
@@ -2219,6 +2223,9 @@
 
 /* Define to 1 if strerror_r returns char *. */
 #undef STRERROR_R_CHAR_P
+
+/* Name of supermin-helper program. */
+#undef SUPERMIN_HELPER
 
 /* Define to 1 if the type of the st_atim member of a struct stat is struct
    timespec. */

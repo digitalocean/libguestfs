@@ -3,7 +3,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -86,7 +86,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.391';
+$VERSION = '0.394';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -203,6 +203,14 @@ See L<guestfs(3)/GUESTFS_EVENT_LIBVIRT_AUTH>.
 =cut
 
 our $EVENT_LIBVIRT_AUTH = 0x100;
+
+=item $Sys::Guestfs::EVENT_ALL
+
+See L<guestfs(3)/GUESTFS_EVENT_ALL>.
+
+=cut
+
+our $EVENT_ALL = 0x1ff;
 
 =item $event_handle = $g->set_event_callback (\&cb, $event_bitmask);
 
@@ -3277,6 +3285,13 @@ with the given C<path> name.
 
 See also C<$g-E<gt>stat>.
 
+=item $busy = $g->is_busy ();
+
+This always returns false.  This function is deprecated with no
+replacement.  Do not use this function.
+
+For more information on states, see L<guestfs(3)>.
+
 =item $flag = $g->is_chardev ($path);
 
 This returns C<true> if and only if there is a character device
@@ -3474,19 +3489,19 @@ scanned.  If this list is empty, all block devices are scanned.
 =item $hint = $g->ldmtool_volume_hint ($diskgroup, $volume);
 
 Return the hint field of the volume named C<volume> in the disk
-group with GUID <diskgroup>.  This may not be defined, in which
+group with GUID C<diskgroup>.  This may not be defined, in which
 case the empty string is returned.  The hint field is often, though
 not always, the name of a Windows drive, eg. C<E:>.
 
 =item @partitions = $g->ldmtool_volume_partitions ($diskgroup, $volume);
 
 Return the list of partitions in the volume named C<volume> in the disk
-group with GUID <diskgroup>.
+group with GUID C<diskgroup>.
 
 =item $voltype = $g->ldmtool_volume_type ($diskgroup, $volume);
 
 Return the type of the volume named C<volume> in the disk
-group with GUID <diskgroup>.
+group with GUID C<diskgroup>.
 
 Possible volume types that can be returned here include:
 C<simple>, C<spanned>, C<striped>, C<mirrored>, C<raid5>.
@@ -4546,6 +4561,8 @@ See also: C<$g-E<gt>mountpoints>
 This moves a file from C<src> to C<dest> where C<dest> is
 either a destination filename or destination directory.
 
+See also: C<$g-E<gt>rename>.
+
 =item $nrdisks = $g->nr_devices ();
 
 This returns the number of whole block devices that were
@@ -4918,7 +4935,7 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =item $content = $g->pread_device ($device, $count, $offset);
 
-This command lets you read part of a file.  It reads C<count>
+This command lets you read part of a block device.  It reads C<count>
 bytes of C<device>, starting at C<offset>.
 
 This may read fewer bytes than requested.  For further details
@@ -5141,6 +5158,12 @@ This call removes the extended attribute named C<xattr>
 of the file C<path>.
 
 See also: C<$g-E<gt>lremovexattr>, L<attr(5)>.
+
+=item $g->rename ($oldpath, $newpath);
+
+Rename a file to a new place on the same filesystem.  This is
+the same as the Linux L<rename(2)> system call.  In most cases
+you are better to use C<$g-E<gt>mv> instead.
 
 =item $g->resize2fs ($device);
 
@@ -8353,64 +8376,6 @@ use vars qw(%guestfs_introspection);
     name => "inspect_os",
     description => "inspect disk and return list of operating systems found",
   },
-  "internal_autosync" => {
-    ret => 'void',
-    args => [
-    ],
-    name => "internal_autosync",
-    description => "internal autosync operation",
-  },
-  "internal_hot_add_drive" => {
-    ret => 'void',
-    args => [
-      [ 'label', 'string', 0 ],
-    ],
-    name => "internal_hot_add_drive",
-    description => "internal hotplugging operation",
-  },
-  "internal_hot_remove_drive" => {
-    ret => 'void',
-    args => [
-      [ 'label', 'string', 0 ],
-    ],
-    name => "internal_hot_remove_drive",
-    description => "internal hotplugging operation",
-  },
-  "internal_hot_remove_drive_precheck" => {
-    ret => 'void',
-    args => [
-      [ 'label', 'string', 0 ],
-    ],
-    name => "internal_hot_remove_drive_precheck",
-    description => "internal hotplugging operation",
-  },
-  "internal_lstatlist" => {
-    ret => 'struct stat list',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
-    ],
-    name => "internal_lstatlist",
-    description => "lstat on multiple files",
-  },
-  "internal_lxattrlist" => {
-    ret => 'struct xattr list',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
-    ],
-    name => "internal_lxattrlist",
-    description => "lgetxattr on multiple files",
-  },
-  "internal_readlinklist" => {
-    ret => 'string list',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
-    ],
-    name => "internal_readlinklist",
-    description => "readlink on multiple files",
-  },
   "internal_test" => {
     ret => 'void',
     args => [
@@ -8695,24 +8660,6 @@ use vars qw(%guestfs_introspection);
     ],
     name => "internal_test_set_output",
     description => "internal test function - do not use",
-  },
-  "internal_write" => {
-    ret => 'void',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'content', 'buffer', 1 ],
-    ],
-    name => "internal_write",
-    description => "create a new file",
-  },
-  "internal_write_append" => {
-    ret => 'void',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'content', 'buffer', 1 ],
-    ],
-    name => "internal_write_append",
-    description => "append content to end of file",
   },
   "is_blockdev" => {
     ret => 'bool',
@@ -10155,6 +10102,15 @@ use vars qw(%guestfs_introspection);
     name => "removexattr",
     description => "remove extended attribute of a file or directory",
   },
+  "rename" => {
+    ret => 'void',
+    args => [
+      [ 'oldpath', 'string(path)', 0 ],
+      [ 'newpath', 'string(path)', 1 ],
+    ],
+    name => "rename",
+    description => "rename a file on the same filesystem",
+  },
   "resize2fs" => {
     ret => 'void',
     args => [
@@ -11365,7 +11321,7 @@ with some unique string, to avoid conflicts with other users.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2009-2012 Red Hat Inc.
+Copyright (C) 2009-2013 Red Hat Inc.
 
 =head1 LICENSE
 

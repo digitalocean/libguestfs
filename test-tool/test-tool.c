@@ -1,5 +1,5 @@
 /* libguestfs-test-tool
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,19 +34,9 @@
 #include <libintl.h>
 
 #include <guestfs.h>
+#include "guestfs-internal-frontend.h"
 
-#define _(str) dgettext(PACKAGE, (str))
-//#define N_(str) dgettext(PACKAGE, (str))
-
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
-//#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
-//#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
-//#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
-//#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
-//#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
-//#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
-//#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
-#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
+#include "ignore-value.h"
 
 #ifndef P_tmpdir
 #define P_tmpdir "/tmp"
@@ -56,16 +46,15 @@
 
 static int timeout = DEFAULT_TIMEOUT;
 static char tmpf[] = P_tmpdir "/libguestfs-test-tool-sda-XXXXXX";
-static guestfs_h *g;
 
 static void make_files (void);
-static void set_qemu (const char *path, int use_wrapper);
+static void set_qemu (guestfs_h *g, const char *path, int use_wrapper);
 
 static void
 usage (void)
 {
   printf (_("libguestfs-test-tool: interactive test tool\n"
-            "Copyright (C) 2009-2012 Red Hat Inc.\n"
+            "Copyright (C) 2009-2013 Red Hat Inc.\n"
             "Usage:\n"
             "  libguestfs-test-tool [--options]\n"
             "Options:\n"
@@ -103,6 +92,9 @@ main (int argc, char *argv[])
   int i;
   struct guestfs_version *vers;
   char *p;
+  guestfs_h *g;
+  char *qemu = NULL;
+  int qemu_use_wrapper;
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -110,10 +102,14 @@ main (int argc, char *argv[])
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "qemu"))
-        set_qemu (optarg, 0);
-      else if (STREQ (long_options[option_index].name, "qemudir"))
-        set_qemu (optarg, 1);
+      if (STREQ (long_options[option_index].name, "qemu")) {
+        qemu = optarg;
+        qemu_use_wrapper = 0;
+      }
+      else if (STREQ (long_options[option_index].name, "qemudir")) {
+        qemu = optarg;
+        qemu_use_wrapper = 1;
+      }
       else {
         fprintf (stderr,
                  _("libguestfs-test-tool: unknown long option: %s (%d)\n"),
@@ -188,15 +184,18 @@ main (int argc, char *argv[])
   }
   guestfs_set_verbose (g, 1);
 
-  make_files ();
+  if (qemu)
+    set_qemu (g, qemu, qemu_use_wrapper);
 
-  printf ("===== Test starts here =====\n");
+  make_files ();
 
   /* Print out any environment variables which may relate to this test. */
   for (i = 0; environ[i] != NULL; ++i) {
     if (STRPREFIX (environ[i], "LIBGUESTFS_"))
       printf ("%s\n", environ[i]);
     if (STRPREFIX (environ[i], "FEBOOTSTRAP_"))
+      printf ("%s\n", environ[i]);
+    if (STRPREFIX (environ[i], "SUPERMIN_"))
       printf ("%s\n", environ[i]);
     if (STRPREFIX (environ[i], "LIBVIRT_"))
       printf ("%s\n", environ[i]);
@@ -211,6 +210,13 @@ main (int argc, char *argv[])
   p = getenv ("PATH");
   if (p)
     printf ("PATH=%s\n", p);
+
+  /* Print SELinux mode (don't worry if this fails, or if the command
+   * doesn't even exist).
+   */
+  printf ("SELinux: ");
+  fflush (stdout); /* because getenforce prints output on stderr :-( */
+  ignore_value (system ("getenforce"));
 
   /* Configure the handle. */
   if (guestfs_add_drive_opts (g, tmpf,
@@ -326,7 +332,7 @@ cleanup_wrapper (void)
  * a wrapper shell script.
  */
 static void
-set_qemu (const char *path, int use_wrapper)
+set_qemu (guestfs_h *g, const char *path, int use_wrapper)
 {
   char *buffer;
   struct stat statbuf;
@@ -379,19 +385,11 @@ set_qemu (const char *path, int use_wrapper)
   fp = fdopen (fd, "w");
   fprintf (fp,
            "#!/bin/sh -\n"
+           "host_cpu=%s\n"
            "qemudir='%s'\n"
-           "\"$qemudir\"/",
-           path);
-
-  /* Select the right qemu binary for the wrapper script. */
-#ifdef __i386__
-  fprintf (fp, "i386-softmmu/qemu");
-#else
-  fprintf (fp, host_cpu "-softmmu/qemu-system-" host_cpu);
-#endif
-
-  fprintf (fp, " -L \"$qemudir\"/pc-bios \"$@\"\n");
-
+           "qemu=\"$qemudir/$host_cpu-softmmu/qemu-system-$host_cpu\"\n"
+           "exec \"$qemu\" -L \"$qemudir/pc-bios\" \"$@\"\n",
+           host_cpu, path);
   fclose (fp);
 
   guestfs_set_qemu (g, qemuwrapper);

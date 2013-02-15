@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,19 +88,15 @@ wipefs_has_force_option (void)
 {
   static int flag = -1;
   int r;
-  char *out, *err;
+  CLEANUP_FREE char *out = NULL, *err = NULL;
 
   if (flag == -1) {
     r = command (&out, &err, "wipefs", "--help", NULL);
     if (r == -1) {
       reply_with_error ("%s", err);
-      free (out);
-      free (err);
       return -1;
     }
-    free (err);
     flag = strstr (out, "--force") != NULL;
-    free (out);
   }
 
   return flag;
@@ -111,7 +107,7 @@ do_wipefs (const char *device)
 {
   int force;
   int r;
-  char *err = NULL;
+  CLEANUP_FREE char *err = NULL;
   const size_t MAX_ARGS = 16;
   const char *argv[MAX_ARGS];
   size_t i = 0;
@@ -130,11 +126,9 @@ do_wipefs (const char *device)
   r = commandv (NULL, &err, argv);
   if (r == -1) {
     reply_with_error ("%s", err);
-    free (err);
     return -1;
   }
 
-  free (err);
   return 0;
 }
 
@@ -342,4 +336,33 @@ do_zero_free_space (const char *dir)
   }
 
   return 0;
+}
+
+/* Internal function used to wipe disks before we do 'mkfs'-type
+ * operations on them.  For the rationale see RHBZ#889888 and
+ * RHBZ#907554.
+ *
+ * Note this is really destructive, so only call it just before doing
+ * the 'mkfs' operation (ie. after doing as much pre-checking as
+ * possible).  Otherwise you could end up with a 'mkfs' operation
+ * failing with an error but still wiping data.
+ */
+void
+wipe_device_before_mkfs (const char *device)
+{
+  int r;
+
+  r = command (NULL, NULL, "wipefs", "-a", "--force", device, NULL);
+  if (r == 0)
+    return;
+
+  r = command (NULL, NULL, "wipefs", "-a", device, NULL);
+  if (r == 0)
+    return;
+
+  /* XXX We could fall back to overwriting bits of disk here, but if
+   * they don't have working wipefs, it seems unlikely they are using
+   * btrfs which is what mostly causes this problem.  See:
+   * http://www.spinics.net/lists/linux-btrfs/msg21197.html
+   */
 }

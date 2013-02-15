@@ -129,10 +129,12 @@ int
 guestfs___lazy_make_tmpdir (guestfs_h *g)
 {
   if (!g->tmpdir) {
-    TMP_TEMPLATE_ON_STACK (g, dir_template);
-    g->tmpdir = safe_strdup (g, dir_template);
+    CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g);
+    g->tmpdir = safe_asprintf (g, "%s/libguestfsXXXXXX", tmpdir);
     if (mkdtemp (g->tmpdir) == NULL) {
-      perrorf (g, _("%s: cannot create temporary directory"), dir_template);
+      perrorf (g, _("%s: cannot create temporary directory"), g->tmpdir);
+      free (g->tmpdir);
+      g->tmpdir = NULL;
       return -1;
     }
   }
@@ -147,14 +149,12 @@ guestfs___lazy_make_tmpdir (guestfs_h *g)
 void
 guestfs___recursive_remove_dir (guestfs_h *g, const char *dir)
 {
-  struct command *cmd;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
 
-  cmd = guestfs___new_command (g);
   guestfs___cmd_add_arg (cmd, "rm");
   guestfs___cmd_add_arg (cmd, "-rf");
   guestfs___cmd_add_arg (cmd, dir);
   ignore_value (guestfs___cmd_run (cmd));
-  guestfs___cmd_close (cmd);
 }
 
 void

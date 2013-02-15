@@ -9,12 +9,10 @@ GuestfsSession
 
 </para>
 
-
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
-
 
 <!-- ##### SECTION Stability_Level ##### -->
 
@@ -2364,85 +2362,6 @@ GuestfsSession
 @Returns: 
 
 
-<!-- ##### FUNCTION guestfs_session_internal_autosync ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_hot_add_drive ##### -->
-<para>
-
-</para>
-
-@session: 
-@label: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_hot_remove_drive ##### -->
-<para>
-
-</para>
-
-@session: 
-@label: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_hot_remove_drive_precheck ##### -->
-<para>
-
-</para>
-
-@session: 
-@label: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_lstatlist ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@names: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_lxattrlist ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@names: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_readlinklist ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@names: 
-@err: 
-@Returns: 
-
-
 <!-- ##### FUNCTION guestfs_session_internal_test ##### -->
 <para>
 
@@ -2739,32 +2658,6 @@ GuestfsSession
 
 @session: 
 @filename: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_write ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@content: 
-@content_size: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_write_append ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@content: 
-@content_size: 
 @err: 
 @Returns: 
 
@@ -4619,6 +4512,18 @@ GuestfsSession
 @session: 
 @xattr: 
 @path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_rename ##### -->
+<para>
+
+</para>
+
+@session: 
+@oldpath: 
+@newpath: 
 @err: 
 @Returns: 
 

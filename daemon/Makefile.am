@@ -26,18 +26,25 @@ generator_built = \
 	stubs.c \
 	names.c
 
-BUILT_SOURCES = \
-	$(generator_built) \
+shared_with_library = \
 	guestfs_protocol.c \
 	guestfs_protocol.h \
-	errnostring-gperf.c \
 	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h
 
+BUILT_SOURCES = \
+	$(generator_built) \
+	$(shared_with_library) \
+	errnostring-gperf.c
+
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
 	guestfsd.pod
+
+$(shared_with_library): %: $(libsrcdir)/%
+	rm -f $@
+	ln $< $@
 
 noinst_LIBRARIES = libprotocol.a
 
@@ -46,12 +53,6 @@ noinst_LIBRARIES = libprotocol.a
 libprotocol_a_SOURCES = guestfs_protocol.c guestfs_protocol.h
 libprotocol_a_CFLAGS = -Wall -Wno-unused -fno-strict-aliasing
 
-guestfs_protocol.c: $(libsrcdir)/guestfs_protocol.c
-	rm -f $@
-	ln $< $@
-guestfs_protocol.h: $(libsrcdir)/guestfs_protocol.h
-	rm -f $@
-	ln $< $@
 $(libsrcdir)/guestfs_protocol.c: force
 	$(MAKE) -C $(libsrcdir) guestfs_protocol.c
 $(libsrcdir)/guestfs_protocol.h: force
@@ -70,15 +71,6 @@ errnostring-gperf.c: errnostring-gperf.gperf
 	rm -f $@
 	$(GPERF) -t $< > $@-t
 	mv $@-t $@
-errnostring-gperf.gperf: $(libsrcdir)/errnostring-gperf.gperf
-	rm -f $@
-	ln $< $@
-errnostring.c: $(libsrcdir)/errnostring.c
-	rm -f $@
-	ln $< $@
-errnostring.h: $(libsrcdir)/errnostring.h
-	rm -f $@
-	ln $< $@
 
 if INSTALL_DAEMON
 sbin_PROGRAMS = guestfsd
@@ -158,6 +150,7 @@ guestfsd_SOURCES = \
 	proto.c \
 	readdir.c \
 	realpath.c \
+	rename.c \
 	rsync.c \
 	scrub.c \
 	selinux.c \
@@ -197,14 +190,19 @@ guestfsd_LDADD = \
 	$(LIBSOCKET) \
 	$(LIB_CLOCK_GETTIME) \
 	$(LIBINTL) \
-	$(SERVENT_LIB)
+	$(SERVENT_LIB) \
+	$(PCRE_LIBS)
 
-guestfsd_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+guestfsd_CPPFLAGS = \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib \
+	-I$(top_builddir)/src
 guestfsd_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(AUGEAS_CFLAGS) \
 	$(HIVEX_CFLAGS) \
-	$(YAJL_CFLAGS)
+	$(YAJL_CFLAGS) \
+	$(PCRE_CFLAGS)
 
 # Manual pages and HTML files for the website.
 man_MANS = guestfsd.8

@@ -69,7 +69,8 @@ check_debian_installer_root (guestfs_h *g, struct inspect_fs *fs)
   (void) guestfs___parse_major_minor (g, fs);
 
   if (guestfs_is_file (g, "/.disk/cd_type") > 0) {
-    char *cd_type = guestfs___first_line_of_file (g, "/.disk/cd_type");
+    CLEANUP_FREE char *cd_type =
+      guestfs___first_line_of_file (g, "/.disk/cd_type");
     if (!cd_type)
       return -1;
 
@@ -87,8 +88,6 @@ check_debian_installer_root (guestfs_h *g, struct inspect_fs *fs)
       fs->is_multipart_disk = 0;
       fs->is_netinst_disk = 1;
     }
-
-    free (cd_type);
   }
 
   return 0;
@@ -487,7 +486,7 @@ int
 guestfs___check_installer_iso (guestfs_h *g, struct inspect_fs *fs,
                                const char *device)
 {
-  struct guestfs_isoinfo *isoinfo;
+  CLEANUP_FREE_ISOINFO struct guestfs_isoinfo *isoinfo = NULL;
   const struct osinfo *osinfo;
   int r;
 
@@ -498,7 +497,6 @@ guestfs___check_installer_iso (guestfs_h *g, struct inspect_fs *fs,
     return 0;
 
   r = guestfs___osinfo_map (g, isoinfo, &osinfo);
-  guestfs_free_isoinfo (isoinfo);
   if (r == -1)                  /* Fatal error. */
     return -1;
   if (r == 0)                   /* Could not locate any matching ISO. */

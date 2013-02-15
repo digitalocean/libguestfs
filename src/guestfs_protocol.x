@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2718,6 +2718,11 @@ struct guestfs_ldmtool_volume_partitions_ret {
   guestfs_str partitions<>;
 };
 
+struct guestfs_rename_args {
+  string oldpath<>;
+  string newpath<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3103,10 +3108,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_LDMTOOL_DISKGROUP_DISKS = 388,
   GUESTFS_PROC_LDMTOOL_VOLUME_TYPE = 389,
   GUESTFS_PROC_LDMTOOL_VOLUME_HINT = 390,
-  GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391
+  GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391,
+  GUESTFS_PROC_RENAME = 394
 };
 
-const GUESTFS_MAX_PROC_NR = 391;
+const GUESTFS_MAX_PROC_NR = 394;
 
 /* The remote procedure call protocol. */
 

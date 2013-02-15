@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,8 @@ do_mv (const char *src, const char *dest)
 static int
 cpmv_cmd (const char *cmd, const char *flags, const char *src, const char *dest)
 {
-  char *srcbuf, *destbuf;
-  char *err;
+  CLEANUP_FREE char *srcbuf = NULL, *destbuf = NULL;
+  CLEANUP_FREE char *err = NULL;
   int r;
 
   srcbuf = sysroot_path (src);
@@ -64,7 +64,6 @@ cpmv_cmd (const char *cmd, const char *flags, const char *src, const char *dest)
   destbuf = sysroot_path (dest);
   if (destbuf == NULL) {
     reply_with_perror ("malloc");
-    free (srcbuf);
     return -1;
   }
 
@@ -75,16 +74,11 @@ cpmv_cmd (const char *cmd, const char *flags, const char *src, const char *dest)
   else
     r = command (NULL, &err, cmd, srcbuf, destbuf, NULL);
 
-  free (srcbuf);
-  free (destbuf);
-
   if (r == -1) {
     pulse_mode_cancel ();
     reply_with_error ("%s", err);
-    free (err);
     return -1;
   }
-  free (err);
 
   pulse_mode_end ();
 

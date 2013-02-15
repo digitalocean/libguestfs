@@ -218,25 +218,28 @@ static char *
 get_png (guestfs_h *g, struct inspect_fs *fs, const char *filename,
          size_t *size_r, size_t max_size)
 {
-  char *ret = NOT_FOUND;
-  char *type = NULL;
-  char *local = NULL;
+  char *ret;
+  CLEANUP_FREE char *type = NULL;
+  CLEANUP_FREE char *local = NULL;
   int r, w, h;
 
   r = guestfs_exists (g, filename);
-  if (r == -1) {
-    ret = NULL; /* a real error */
-    goto out;
-  }
-  if (r == 0) goto out;
+  if (r == -1)
+    return NULL; /* a real error */
+  if (r == 0)
+    return NOT_FOUND;
 
   /* Check the file type and geometry. */
   type = guestfs_file (g, filename);
-  if (!type) goto out;
+  if (!type)
+    return NOT_FOUND;
 
-  if (!STRPREFIX (type, "PNG image data, ")) goto out;
-  if (sscanf (&type[16], "%d x %d", &w, &h) != 2) goto out;
-  if (w < 16 || h < 16 || w > 1024 || h > 1024) goto out;
+  if (!STRPREFIX (type, "PNG image data, "))
+    return NOT_FOUND;
+  if (sscanf (&type[16], "%d x %d", &w, &h) != 2)
+    return NOT_FOUND;
+  if (w < 16 || h < 16 || w > 1024 || h > 1024)
+    return NOT_FOUND;
 
   /* Define a maximum reasonable size based on the geometry.  This
    * also limits the maximum we allocate below to around 4 MB.
@@ -245,17 +248,12 @@ get_png (guestfs_h *g, struct inspect_fs *fs, const char *filename,
     max_size = 4 * w * h;
 
   local = guestfs___download_to_tmp (g, fs, filename, "icon", max_size);
-  if (!local) goto out;
+  if (!local)
+    return NOT_FOUND;
 
   /* Successfully passed checks and downloaded.  Read it into memory. */
-  if (read_whole_file (g, local, &ret, size_r) == -1) {
-    ret = NULL;
-    goto out;
-  }
-
- out:
-  free (local);
-  free (type);
+  if (read_whole_file (g, local, &ret, size_r) == -1)
+    return NULL;
 
   return ret;
 }
@@ -360,54 +358,47 @@ icon_opensuse (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 static char *
 icon_cirros (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
-  char *ret = NOT_FOUND;
-  char *type = NULL;
-  char *local = NULL;
-  char *pngfile = NULL;
-  struct command *cmd;
+  char *ret;
+  CLEANUP_FREE char *type = NULL;
+  CLEANUP_FREE char *local = NULL;
+  CLEANUP_FREE char *pngfile = NULL;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
   int r;
 
   r = guestfs_exists (g, CIRROS_LOGO);
-  if (r == -1) {
-    ret = NULL; /* a real error */
-    goto out;
-  }
-  if (r == 0) goto out;
+  if (r == -1)
+    return NULL; /* a real error */
+  if (r == 0)
+    return NOT_FOUND;
 
   /* Check the file type and geometry. */
   type = guestfs_file (g, CIRROS_LOGO);
-  if (!type) goto out;
+  if (!type)
+    return NOT_FOUND;
 
-  if (!STRPREFIX (type, "ASCII text")) goto out;
+  if (!STRPREFIX (type, "ASCII text"))
+    return NOT_FOUND;
 
   local = guestfs___download_to_tmp (g, fs, CIRROS_LOGO, "icon", 1024);
-  if (!local) goto out;
+  if (!local)
+    return NOT_FOUND;
 
   /* Use pbmtext to render it. */
   pngfile = safe_asprintf (g, "%s/cirros.png", g->tmpdir);
 
-  cmd = guestfs___new_command (g);
   guestfs___cmd_add_string_unquoted (cmd, PBMTEXT " < ");
   guestfs___cmd_add_string_quoted   (cmd, local);
   guestfs___cmd_add_string_unquoted (cmd, " | " PNMTOPNG " > ");
   guestfs___cmd_add_string_quoted   (cmd, pngfile);
   r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
   if (r == -1)
-    goto out;
+    return NOT_FOUND;
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto out;
+    return NOT_FOUND;
 
   /* Read it into memory. */
-  if (read_whole_file (g, pngfile, &ret, size_r) == -1) {
-    ret = NULL;
-    goto out;
-  }
-
- out:
-  free (pngfile);
-  free (local);
-  free (type);
+  if (read_whole_file (g, pngfile, &ret, size_r) == -1)
+    return NULL;
 
   return ret;
 }
@@ -434,91 +425,70 @@ icon_cirros (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 static char *
 icon_windows_xp (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
-  char *filename = NULL;
-  char *filename_case = NULL;
-  char *filename_downloaded = NULL;
-  char *pngfile = NULL;
-  char *ret;
-  struct command *cmd;
+  CLEANUP_FREE char *filename = NULL;
+  CLEANUP_FREE char *filename_case = NULL;
+  CLEANUP_FREE char *filename_downloaded = NULL;
+  CLEANUP_FREE char *pngfile = NULL;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
   int r;
+  char *ret;
 
   /* Download %systemroot%\explorer.exe */
   filename = safe_asprintf (g, "%s/explorer.exe", fs->windows_systemroot);
   filename_case = guestfs___case_sensitive_path_silently (g, filename);
   if (filename_case == NULL)
-    goto not_found;
+    return NOT_FOUND;
 
   filename_downloaded = guestfs___download_to_tmp (g, fs, filename_case,
                                                    "explorer.exe",
                                                    MAX_WINDOWS_EXPLORER_SIZE);
   if (filename_downloaded == NULL)
-    goto not_found;
+    return NOT_FOUND;
 
   pngfile = safe_asprintf (g, "%s/windows-xp-icon.png", g->tmpdir);
 
-  cmd = guestfs___new_command (g);
   guestfs___cmd_add_string_unquoted (cmd, WRESTOOL " -x --type=2 --name=143 ");
   guestfs___cmd_add_string_quoted   (cmd, filename_downloaded);
   guestfs___cmd_add_string_unquoted (cmd,
                                      " | " BMPTOPNM " | " PNMTOPNG " > ");
   guestfs___cmd_add_string_quoted   (cmd, pngfile);
   r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
   if (r == -1)
-    goto error;
+    return NULL;
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto not_found;
+    return NOT_FOUND;
 
   if (read_whole_file (g, pngfile, &ret, size_r) == -1)
-    goto error;
+    return NULL;
 
-  free (filename);
-  free (filename_case);
-  free (filename_downloaded);
-  free (pngfile);
   return ret;
-
- error:
-  free (filename);
-  free (filename_case);
-  free (filename_downloaded);
-  free (pngfile);
-  return NULL;
-
- not_found:
-  free (filename);
-  free (filename_case);
-  free (filename_downloaded);
-  free (pngfile);
-  return NOT_FOUND;
 }
 
 static char *
 icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
-  char *filename = NULL;
-  char *filename_case = NULL;
-  char *filename_downloaded = NULL;
-  char *pngfile = NULL;
-  char *ret;
-  struct command *cmd;
+  CLEANUP_FREE char *filename = NULL;
+  CLEANUP_FREE char *filename_case = NULL;
+  CLEANUP_FREE char *filename_downloaded = NULL;
+  CLEANUP_FREE char *pngfile = NULL;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
   int r;
+  char *ret;
 
   /* Download %systemroot%\explorer.exe */
   filename = safe_asprintf (g, "%s/explorer.exe", fs->windows_systemroot);
   filename_case = guestfs___case_sensitive_path_silently (g, filename);
   if (filename_case == NULL)
-    goto not_found;
+    return NOT_FOUND;
 
   filename_downloaded = guestfs___download_to_tmp (g, fs, filename_case,
                                                    "explorer.exe",
                                                    MAX_WINDOWS_EXPLORER_SIZE);
   if (filename_downloaded == NULL)
-    goto not_found;
+    return NOT_FOUND;
 
   pngfile = safe_asprintf (g, "%s/windows-7-icon.png", g->tmpdir);
 
-  cmd = guestfs___new_command (g);
   guestfs___cmd_add_string_unquoted (cmd, WRESTOOL " -x --type=2 --name=6801 ");
   guestfs___cmd_add_string_quoted   (cmd, filename_downloaded);
   guestfs___cmd_add_string_unquoted (cmd,
@@ -527,34 +497,15 @@ icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
                                      PNMTOPNG " > ");
   guestfs___cmd_add_string_quoted   (cmd, pngfile);
   r = guestfs___cmd_run (cmd);
-  guestfs___cmd_close (cmd);
   if (r == -1)
-    goto error;
+    return NULL;
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0)
-    goto not_found;
+    return NOT_FOUND;
 
   if (read_whole_file (g, pngfile, &ret, size_r) == -1)
-    goto error;
+    return NULL;
 
-  free (filename);
-  free (filename_case);
-  free (filename_downloaded);
-  free (pngfile);
   return ret;
-
- error:
-  free (filename);
-  free (filename_case);
-  free (filename_downloaded);
-  free (pngfile);
-  return NULL;
-
- not_found:
-  free (filename);
-  free (filename_case);
-  free (filename_downloaded);
-  free (pngfile);
-  return NOT_FOUND;
 }
 
 /* There are several sources we might use:
@@ -565,36 +516,24 @@ icon_windows_7 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 static char *
 icon_windows_8 (guestfs_h *g, struct inspect_fs *fs, size_t *size_r)
 {
-  char *filename_case = NULL;
-  char *filename_downloaded = NULL;
+  CLEANUP_FREE char *filename_case = NULL;
+  CLEANUP_FREE char *filename_downloaded = NULL;
   char *ret;
 
   filename_case = guestfs___case_sensitive_path_silently
     (g, "/ProgramData/Microsoft/Windows Live/WLive48x48.png");
   if (filename_case == NULL)
-    goto not_found;
+    return NOT_FOUND;
 
   filename_downloaded = guestfs___download_to_tmp (g, fs, filename_case,
                                                    "wlive48x48.png", 8192);
   if (filename_downloaded == NULL)
-    goto not_found;
+    return NOT_FOUND;
 
   if (read_whole_file (g, filename_downloaded, &ret, size_r) == -1)
-    goto error;
+    return NULL;
 
-  free (filename_case);
-  free (filename_downloaded);
   return ret;
-
- error:
-  free (filename_case);
-  free (filename_downloaded);
-  return NULL;
-
- not_found:
-  free (filename_case);
-  free (filename_downloaded);
-  return NOT_FOUND;
 }
 
 static char *

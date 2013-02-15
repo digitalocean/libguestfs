@@ -1,5 +1,5 @@
 # libguestfs Python bindings
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,12 +40,17 @@ python_DATA = guestfs.py
 python_LTLIBRARIES = libguestfsmod.la
 
 libguestfsmod_la_SOURCES = guestfs-py.c guestfs-py.h guestfs-py-byhand.c
-libguestfsmod_la_CFLAGS = \
-	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
-	-Wall \
+
+libguestfsmod_la_CPPFLAGS = \
+	-DGUESTFS_PRIVATE=1 \
 	-I$(PYTHON_INCLUDEDIR) \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+libguestfsmod_la_CFLAGS = \
+	-Wall
+
 libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
+
 libguestfsmod_la_LDFLAGS = -avoid-version -shared
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test

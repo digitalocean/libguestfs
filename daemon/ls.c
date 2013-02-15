@@ -77,14 +77,14 @@ do_ls0 (const char *path)
   }
 
   if (errno != 0) {
-    perror (path);
+    fprintf (stderr, "readdir: %s: %m\n", path);
     send_file_end (1);          /* Cancel. */
     closedir (dir);
     return -1;
   }
 
   if (closedir (dir) == -1) {
-    perror (path);
+    fprintf (stderr, "closedir: %s: %m\n", path);
     send_file_end (1);          /* Cancel. */
     return -1;
   }
@@ -105,8 +105,9 @@ char *
 do_ll (const char *path)
 {
   int r;
-  char *out, *err;
-  char *spath;
+  char *out;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *spath = NULL;
 
   spath = sysroot_path (path);
   if (!spath) {
@@ -115,15 +116,12 @@ do_ll (const char *path)
   }
 
   r = command (&out, &err, str_ls, "-la", spath, NULL);
-  free (spath);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (out);
-    free (err);
     return NULL;
   }
 
-  free (err);
   return out;			/* caller frees */
 }
 
@@ -131,8 +129,9 @@ char *
 do_llz (const char *path)
 {
   int r;
-  char *out, *err;
-  char *spath;
+  char *out;
+  CLEANUP_FREE char *err = NULL;
+  CLEANUP_FREE char *spath;
 
   spath = sysroot_path (path);
   if (!spath) {
@@ -141,14 +140,11 @@ do_llz (const char *path)
   }
 
   r = command (&out, &err, str_ls, "-laZ", spath, NULL);
-  free (spath);
   if (r == -1) {
     reply_with_error ("%s", err);
     free (out);
-    free (err);
     return NULL;
   }
 
-  free (err);
   return out;			/* caller frees */
 }

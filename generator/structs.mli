@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ type struc = {
   s_name : string;                      (** Regular name. *)
   s_cols : cols;                        (** Columns. *)
   s_camel_name : string;                (** Camel-cased name. *)
+  s_internal : bool;                    (** Internal only. *)
   s_unused : unit;
 }
 
@@ -48,3 +49,9 @@ val camel_name_of_struct : string -> string
 
 val cols_of_struct : string -> cols
 (** Lookup struct by name, return the s_cols field. *)
+
+val external_structs : struc list
+(** Only external structs *)
+
+val internal_structs : struc list
+(** Only internal structs *)

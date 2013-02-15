@@ -55,7 +55,7 @@ For basic functionality and the C tools:
   to make complex changes to the ./configure command line to get it
   to work if you don't have virtio)
 
-- febootstrap >= 3.20
+- febootstrap >= 3.20 or supermin >= 4.1.0
 
   Notes: (1) febootstrap 2.x WILL NOT WORK
          (2) febootstrap 3.x is distro-independent, and is required on
@@ -134,7 +134,7 @@ To build language bindings:
 
 - Perl if you want to build the perl bindings (optional)
 
-- Python if you want to build the python bindings (optional)
+- Python >= 2.2 if you want to build the python bindings (optional)
 
 - Ruby, rake if you want to build the ruby bindings (optional)
 
@@ -163,12 +163,12 @@ To build the Perl tools:
 Building
 ----------------------------------------------------------------------
 
-Then make the daemon, library and root filesystem:
+Build the daemon, library and root filesystem:
 
   ./configure
   make
 
-Finally run the tests:
+Run the tests:
 
   make check
 
@@ -185,6 +185,10 @@ runs check-valgrind + even more tests, but these require that you have
 some libvirt guests installed, that these guests' disks are accessible
 by the current user, and these tests may fail for other reasons which
 are not necessarily because of real problems.
+
+ make help
+
+lists all 'make' targets.
 
 If everything works, you can install the library and tools by running
 this command as root:
@@ -289,7 +293,7 @@ distributions.  Non-Linux ports are trickier, but we will accept
 patches if they aren't too invasive.
 
 The main porting issues are with the dependencies needed to build the
-appliance.  You will need to port the febootstrap first
+appliance.  You will need to port febootstrap first
 (http://people.redhat.com/~rjones/febootstrap/).
 
 
@@ -324,11 +328,11 @@ For example:
         --with-qemu-options="-M versatilepb -cpu arm926"
   ./configure \
         --with-qemu="qemu-system-arm" \
-        --with-qemu-options="-M vexpress-a9 -cpu cortex-a9"
+        --with-qemu-options="-M vexpress-a15 -cpu cortex-a15"
 
 Note that since virtio is required by libguestfs, and virtio is a
-PCI-based architecture, whatever architecture qemu emulates must
-support PCI also.
+PCI-based architecture, whatever architecture qemu emulates MUST
+support PCI.
 
 For PPC64 you will need to specify the IBM pSeries machine type:
 
@@ -343,7 +347,7 @@ attention to the qemu command line and kernel output.
 Copyright and license information
 ----------------------------------------------------------------------
 
-Copyright (C) 2009-2012 Red Hat Inc.
+Copyright (C) 2009-2013 Red Hat Inc.
 
 The library is distributed under the LGPLv2+.  The programs are
 distributed under the GPLv2+.  Please see the files COPYING and

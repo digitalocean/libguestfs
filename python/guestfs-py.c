@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -13085,126 +13085,6 @@ py_guestfs_lchown (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-py_guestfs_internal_lstatlist (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  struct guestfs_stat_list *r;
-  const char *path;
-  PyObject *py_names;
-  char **names = NULL;
-
-  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_internal_lstatlist",
-                         &py_g, &path, &py_names))
-    goto out;
-  g = get_handle (py_g);
-  names = get_string_list (py_names);
-  if (!names) goto out;
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_lstatlist (g, path, names);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == NULL) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  py_r = put_stat_list (r);
-  guestfs_free_stat_list (r);
-
- out:
-  free (names);
-  return py_r;
-}
-
-static PyObject *
-py_guestfs_internal_lxattrlist (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  struct guestfs_xattr_list *r;
-  const char *path;
-  PyObject *py_names;
-  char **names = NULL;
-
-  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_internal_lxattrlist",
-                         &py_g, &path, &py_names))
-    goto out;
-  g = get_handle (py_g);
-  names = get_string_list (py_names);
-  if (!names) goto out;
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_lxattrlist (g, path, names);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == NULL) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  py_r = put_xattr_list (r);
-  guestfs_free_xattr_list (r);
-
- out:
-  free (names);
-  return py_r;
-}
-
-static PyObject *
-py_guestfs_internal_readlinklist (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  char **r;
-  const char *path;
-  PyObject *py_names;
-  char **names = NULL;
-
-  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_internal_readlinklist",
-                         &py_g, &path, &py_names))
-    goto out;
-  g = get_handle (py_g);
-  names = get_string_list (py_names);
-  if (!names) goto out;
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_readlinklist (g, path, names);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == NULL) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  py_r = put_string_list (r);
-  free_strings (r);
-
- out:
-  free (names);
-  return py_r;
-}
-
-static PyObject *
 py_guestfs_pread (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -14599,43 +14479,6 @@ py_guestfs_fill_pattern (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-py_guestfs_internal_write (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  int r;
-  const char *path;
-  const char *content;
-  Py_ssize_t content_size;
-
-  if (!PyArg_ParseTuple (args, (char *) "Oss#:guestfs_internal_write",
-                         &py_g, &path, &content, &content_size))
-    goto out;
-  g = get_handle (py_g);
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_write (g, path, content, content_size);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == -1) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  Py_INCREF (Py_None);
-  py_r = Py_None;
-
- out:
-  return py_r;
-}
-
-static PyObject *
 py_guestfs_pwrite (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -15962,40 +15805,6 @@ py_guestfs_resize2fs_M (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-py_guestfs_internal_autosync (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  int r;
-
-  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_internal_autosync",
-                         &py_g))
-    goto out;
-  g = get_handle (py_g);
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_autosync (g);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == -1) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  Py_INCREF (Py_None);
-  py_r = Py_None;
-
- out:
-  return py_r;
-}
-
-static PyObject *
 py_guestfs_is_zero (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -16265,43 +16074,6 @@ py_guestfs_btrfs_filesystem_resize (PyObject *self, PyObject *args)
     py_save = PyEval_SaveThread ();
 
   r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == -1) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  Py_INCREF (Py_None);
-  py_r = Py_None;
-
- out:
-  return py_r;
-}
-
-static PyObject *
-py_guestfs_internal_write_append (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  int r;
-  const char *path;
-  const char *content;
-  Py_ssize_t content_size;
-
-  if (!PyArg_ParseTuple (args, (char *) "Oss#:guestfs_internal_write_append",
-                         &py_g, &path, &content, &content_size))
-    goto out;
-  g = get_handle (py_g);
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_write_append (g, path, content, content_size);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -20077,111 +19849,6 @@ py_guestfs_list_disk_labels (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-py_guestfs_internal_hot_add_drive (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  int r;
-  const char *label;
-
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_internal_hot_add_drive",
-                         &py_g, &label))
-    goto out;
-  g = get_handle (py_g);
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_hot_add_drive (g, label);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == -1) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  Py_INCREF (Py_None);
-  py_r = Py_None;
-
- out:
-  return py_r;
-}
-
-static PyObject *
-py_guestfs_internal_hot_remove_drive_precheck (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  int r;
-  const char *label;
-
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_internal_hot_remove_drive_precheck",
-                         &py_g, &label))
-    goto out;
-  g = get_handle (py_g);
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_hot_remove_drive_precheck (g, label);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == -1) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  Py_INCREF (Py_None);
-  py_r = Py_None;
-
- out:
-  return py_r;
-}
-
-static PyObject *
-py_guestfs_internal_hot_remove_drive (PyObject *self, PyObject *args)
-{
-  PyThreadState *py_save = NULL;
-  PyObject *py_g;
-  guestfs_h *g;
-  PyObject *py_r = NULL;
-  int r;
-  const char *label;
-
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_internal_hot_remove_drive",
-                         &py_g, &label))
-    goto out;
-  g = get_handle (py_g);
-
-  if (PyEval_ThreadsInitialized ())
-    py_save = PyEval_SaveThread ();
-
-  r = guestfs_internal_hot_remove_drive (g, label);
-
-  if (PyEval_ThreadsInitialized ())
-    PyEval_RestoreThread (py_save);
-
-  if (r == -1) {
-    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
-    goto out;
-  }
-
-  Py_INCREF (Py_None);
-  py_r = Py_None;
-
- out:
-  return py_r;
-}
-
-static PyObject *
 py_guestfs_mktemp (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -20892,6 +20559,42 @@ py_guestfs_ldmtool_volume_partitions (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_rename (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *oldpath;
+  const char *newpath;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_rename",
+                         &py_g, &oldpath, &newpath))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_rename (g, oldpath, newpath);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21228,9 +20931,6 @@ static PyMethodDef methods[] = {
   { (char *) "utimens", py_guestfs_utimens, METH_VARARGS, NULL },
   { (char *) "mkdir_mode", py_guestfs_mkdir_mode, METH_VARARGS, NULL },
   { (char *) "lchown", py_guestfs_lchown, METH_VARARGS, NULL },
-  { (char *) "internal_lstatlist", py_guestfs_internal_lstatlist, METH_VARARGS, NULL },
-  { (char *) "internal_lxattrlist", py_guestfs_internal_lxattrlist, METH_VARARGS, NULL },
-  { (char *) "internal_readlinklist", py_guestfs_internal_readlinklist, METH_VARARGS, NULL },
   { (char *) "pread", py_guestfs_pread, METH_VARARGS, NULL },
   { (char *) "part_init", py_guestfs_part_init, METH_VARARGS, NULL },
   { (char *) "part_add", py_guestfs_part_add, METH_VARARGS, NULL },
@@ -21269,7 +20969,6 @@ static PyMethodDef methods[] = {
   { (char *) "base64_out", py_guestfs_base64_out, METH_VARARGS, NULL },
   { (char *) "checksums_out", py_guestfs_checksums_out, METH_VARARGS, NULL },
   { (char *) "fill_pattern", py_guestfs_fill_pattern, METH_VARARGS, NULL },
-  { (char *) "internal_write", py_guestfs_internal_write, METH_VARARGS, NULL },
   { (char *) "pwrite", py_guestfs_pwrite, METH_VARARGS, NULL },
   { (char *) "resize2fs_size", py_guestfs_resize2fs_size, METH_VARARGS, NULL },
   { (char *) "pvresize_size", py_guestfs_pvresize_size, METH_VARARGS, NULL },
@@ -21305,7 +21004,6 @@ static PyMethodDef methods[] = {
   { (char *) "getxattr", py_guestfs_getxattr, METH_VARARGS, NULL },
   { (char *) "lgetxattr", py_guestfs_lgetxattr, METH_VARARGS, NULL },
   { (char *) "resize2fs_M", py_guestfs_resize2fs_M, METH_VARARGS, NULL },
-  { (char *) "internal_autosync", py_guestfs_internal_autosync, METH_VARARGS, NULL },
   { (char *) "is_zero", py_guestfs_is_zero, METH_VARARGS, NULL },
   { (char *) "is_zero_device", py_guestfs_is_zero_device, METH_VARARGS, NULL },
   { (char *) "list_9p", py_guestfs_list_9p, METH_VARARGS, NULL },
@@ -21313,7 +21011,6 @@ static PyMethodDef methods[] = {
   { (char *) "list_dm_devices", py_guestfs_list_dm_devices, METH_VARARGS, NULL },
   { (char *) "ntfsresize", py_guestfs_ntfsresize, METH_VARARGS, NULL },
   { (char *) "btrfs_filesystem_resize", py_guestfs_btrfs_filesystem_resize, METH_VARARGS, NULL },
-  { (char *) "internal_write_append", py_guestfs_internal_write_append, METH_VARARGS, NULL },
   { (char *) "compress_out", py_guestfs_compress_out, METH_VARARGS, NULL },
   { (char *) "compress_device_out", py_guestfs_compress_device_out, METH_VARARGS, NULL },
   { (char *) "part_to_partnum", py_guestfs_part_to_partnum, METH_VARARGS, NULL },
@@ -21393,9 +21090,6 @@ static PyMethodDef methods[] = {
   { (char *) "rm_f", py_guestfs_rm_f, METH_VARARGS, NULL },
   { (char *) "mke2fs", py_guestfs_mke2fs, METH_VARARGS, NULL },
   { (char *) "list_disk_labels", py_guestfs_list_disk_labels, METH_VARARGS, NULL },
-  { (char *) "internal_hot_add_drive", py_guestfs_internal_hot_add_drive, METH_VARARGS, NULL },
-  { (char *) "internal_hot_remove_drive_precheck", py_guestfs_internal_hot_remove_drive_precheck, METH_VARARGS, NULL },
-  { (char *) "internal_hot_remove_drive", py_guestfs_internal_hot_remove_drive, METH_VARARGS, NULL },
   { (char *) "mktemp", py_guestfs_mktemp, METH_VARARGS, NULL },
   { (char *) "mklost_and_found", py_guestfs_mklost_and_found, METH_VARARGS, NULL },
   { (char *) "acl_get_file", py_guestfs_acl_get_file, METH_VARARGS, NULL },
@@ -21415,6 +21109,7 @@ static PyMethodDef methods[] = {
   { (char *) "ldmtool_volume_type", py_guestfs_ldmtool_volume_type, METH_VARARGS, NULL },
   { (char *) "ldmtool_volume_hint", py_guestfs_ldmtool_volume_hint, METH_VARARGS, NULL },
   { (char *) "ldmtool_volume_partitions", py_guestfs_ldmtool_volume_partitions, METH_VARARGS, NULL },
+  { (char *) "rename", py_guestfs_rename, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

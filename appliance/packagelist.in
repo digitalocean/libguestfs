@@ -35,12 +35,14 @@
   iproute
   iputils
   kernel
+  libcap
   libldm /* only Fedora has this for now, but we should add it to others later*/
   MAKEDEV
   nilfs-utils
   ntfsprogs
   ntfs-3g
   openssh-clients
+  pcre
   reiserfs-utils
   libselinux
   systemd /* for /sbin/reboot and udevd */
@@ -62,7 +64,9 @@
   hfsplus
   iproute
   libaugeas0
+  libcap2
   libhivex0
+  libpcre3
   libyajl2
   linux-image
   nilfs-tools
@@ -70,6 +74,7 @@
   ntfsprogs
   openssh-client
   reiserfsprogs
+  sysvinit /* for /sbin/reboot */
   ufsutils
   vim-tiny
   xz-utils
@@ -86,11 +91,13 @@
   hivex
   iproute2
   iputils
+  libcap
   linux
   lrzip
   nilfs-utils
   ntfsprogs
   ntfs-3g
+  pcre
   reiserfsprogs
   systemd
   vim

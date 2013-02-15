@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,7 +234,7 @@ free_strings (char **argv)
       pr "};\n";
       pr "\n";
 
-  ) structs;
+  ) external_structs;
 
   (* Emit a put_TYPE_list function definition only if that function is used. *)
   List.iter (
@@ -243,7 +243,7 @@ free_strings (char **argv)
         (* generate the function for typ *)
         emit_put_list_function typ
     | typ, _ -> () (* empty *)
-  ) (rstructs_used_by all_functions);
+  ) (rstructs_used_by external_functions);
 
   (* Python wrapper functions. *)
   List.iter (
@@ -517,7 +517,7 @@ free_strings (char **argv)
       pr "  return py_r;\n";
       pr "}\n";
       pr "\n"
-  ) all_functions;
+  ) external_functions;
 
   (* Table of functions. *)
   pr "static PyMethodDef methods[] = {\n";
@@ -531,7 +531,7 @@ free_strings (char **argv)
     fun { name = name } ->
       pr "  { (char *) \"%s\", py_guestfs_%s, METH_VARARGS, NULL },\n"
         name name
-  ) all_functions;
+  ) external_functions;
   pr "  { NULL, NULL, 0, NULL }\n";
   pr "};\n";
   pr "\n";
@@ -646,13 +646,14 @@ import libguestfsmod
     fun (name, bitmask) ->
       pr "EVENT_%s = 0x%x\n" (String.uppercase name) bitmask
   ) events;
+  pr "EVENT_ALL = 0x%x\n" all_events_bitmask;
   pr "\n";
 
   pr "\
 class ClosedHandle(ValueError):
     pass
 
-class GuestFS:
+class GuestFS(object):
     \"\"\"Instances of this class are libguestfs API handles.\"\"\"
 
     def __init__ (self, environment=True, close_on_exit=True):
@@ -718,9 +719,9 @@ class GuestFS:
 ";
 
   List.iter (
-    fun ({ name = name; style = ret, args, optargs; in_docs = in_docs;
-          longdesc = longdesc; non_c_aliases = non_c_aliases } as f) ->
-      pr "    def %s (self" name;
+    fun f ->
+      let ret, args, optargs = f.style in
+      pr "    def %s (self" f.name;
       List.iter (fun arg -> pr ", %s" (name_of_argt arg)) args;
       List.iter (
         fun optarg ->
@@ -728,8 +729,8 @@ class GuestFS:
       ) optargs;
       pr "):\n";
 
-      if in_docs then (
-        let doc = replace_str longdesc "C<guestfs_" "C<g." in
+      if is_documented f then (
+        let doc = replace_str f.longdesc "C<guestfs_" "C<g." in
         let doc =
           match ret with
           | RErr | RInt _ | RInt64 _ | RBool _
@@ -751,7 +752,7 @@ class GuestFS:
           match deprecation_notice f with
           | None -> doc
           | Some txt -> doc ^ "\n\n" ^ txt in
-        let doc = pod2text ~width:60 name doc in
+        let doc = pod2text ~width:60 f.name doc in
         let doc = List.map (fun line -> replace_str line "\\" "\\\\") doc in
         let doc = String.concat "\n        " doc in
         pr "        \"\"\"%s\"\"\"\n" doc;
@@ -769,7 +770,7 @@ class GuestFS:
             pr "        %s = list (%s)\n" n n
       ) args;
       pr "        self._check_not_closed ()\n";
-      pr "        return libguestfsmod.%s (self._o" name;
+      pr "        return libguestfsmod.%s (self._o" f.name;
       List.iter (fun arg -> pr ", %s" (name_of_argt arg))
         (args @ args_of_optargs optargs);
       pr ")\n\n";
@@ -777,6 +778,6 @@ class GuestFS:
       (* Aliases. *)
       List.iter (
         fun alias ->
-          pr "    %s = %s\n\n" alias name
-      ) non_c_aliases
-  ) all_functions
+          pr "    %s = %s\n\n" alias f.name
+      ) f.non_c_aliases
+  ) external_functions

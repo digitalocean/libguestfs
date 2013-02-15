@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -4004,115 +4004,6 @@ run_inspect_os (ETERM *message)
 }
 
 static ETERM *
-run_internal_autosync (ETERM *message)
-{
-  int r;
-
-  r = guestfs_internal_autosync (g);
-  if (r == -1)
-    return make_error ("internal_autosync");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_internal_hot_add_drive (ETERM *message)
-{
-  char *label = erl_iolist_to_string (ARG (0));
-  int r;
-
-  r = guestfs_internal_hot_add_drive (g, label);
-  free (label);
-  if (r == -1)
-    return make_error ("internal_hot_add_drive");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_internal_hot_remove_drive (ETERM *message)
-{
-  char *label = erl_iolist_to_string (ARG (0));
-  int r;
-
-  r = guestfs_internal_hot_remove_drive (g, label);
-  free (label);
-  if (r == -1)
-    return make_error ("internal_hot_remove_drive");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_internal_hot_remove_drive_precheck (ETERM *message)
-{
-  char *label = erl_iolist_to_string (ARG (0));
-  int r;
-
-  r = guestfs_internal_hot_remove_drive_precheck (g, label);
-  free (label);
-  if (r == -1)
-    return make_error ("internal_hot_remove_drive_precheck");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_internal_lstatlist (ETERM *message)
-{
-  char *path = erl_iolist_to_string (ARG (0));
-  char **names = get_string_list (ARG (1));
-  struct guestfs_stat_list *r;
-
-  r = guestfs_internal_lstatlist (g, path, names);
-  free (path);
-  free_strings (names);
-  if (r == NULL)
-    return make_error ("internal_lstatlist");
-
-  ETERM *rt = make_stat_list (r);
-  guestfs_free_stat_list (r);
-  return rt;
-}
-
-static ETERM *
-run_internal_lxattrlist (ETERM *message)
-{
-  char *path = erl_iolist_to_string (ARG (0));
-  char **names = get_string_list (ARG (1));
-  struct guestfs_xattr_list *r;
-
-  r = guestfs_internal_lxattrlist (g, path, names);
-  free (path);
-  free_strings (names);
-  if (r == NULL)
-    return make_error ("internal_lxattrlist");
-
-  ETERM *rt = make_xattr_list (r);
-  guestfs_free_xattr_list (r);
-  return rt;
-}
-
-static ETERM *
-run_internal_readlinklist (ETERM *message)
-{
-  char *path = erl_iolist_to_string (ARG (0));
-  char **names = get_string_list (ARG (1));
-  char **r;
-
-  r = guestfs_internal_readlinklist (g, path, names);
-  free (path);
-  free_strings (names);
-  if (r == NULL)
-    return make_error ("internal_readlinklist");
-
-  ETERM *rt = make_string_list (r);
-  free_strings (r);
-
-  return rt;
-}
-
-static ETERM *
 run_internal_test (ETERM *message)
 {
   char *str = erl_iolist_to_string (ARG (0));
@@ -4898,40 +4789,6 @@ run_internal_test_set_output (ETERM *message)
   free (filename);
   if (r == -1)
     return make_error ("internal_test_set_output");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_internal_write (ETERM *message)
-{
-  char *path = erl_iolist_to_string (ARG (0));
-  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
-  const void *content = ERL_BIN_PTR (content_bin);
-  size_t content_size = ERL_BIN_SIZE (content_bin);
-  int r;
-
-  r = guestfs_internal_write (g, path, content, content_size);
-  free (path);
-  if (r == -1)
-    return make_error ("internal_write");
-
-  return erl_mk_atom ("ok");
-}
-
-static ETERM *
-run_internal_write_append (ETERM *message)
-{
-  char *path = erl_iolist_to_string (ARG (0));
-  ETERM *content_bin = erl_iolist_to_binary (ARG (1));
-  const void *content = ERL_BIN_PTR (content_bin);
-  size_t content_size = ERL_BIN_SIZE (content_bin);
-  int r;
-
-  r = guestfs_internal_write_append (g, path, content, content_size);
-  free (path);
-  if (r == -1)
-    return make_error ("internal_write_append");
 
   return erl_mk_atom ("ok");
 }
@@ -7925,6 +7782,22 @@ run_removexattr (ETERM *message)
 }
 
 static ETERM *
+run_rename (ETERM *message)
+{
+  char *oldpath = erl_iolist_to_string (ARG (0));
+  char *newpath = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_rename (g, oldpath, newpath);
+  free (oldpath);
+  free (newpath);
+  if (r == -1)
+    return make_error ("rename");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_resize2fs (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
@@ -10633,20 +10506,6 @@ dispatch (ETERM *message)
     return run_inspect_list_applications2 (message);
   else if (atom_equals (fun, "inspect_os"))
     return run_inspect_os (message);
-  else if (atom_equals (fun, "internal_autosync"))
-    return run_internal_autosync (message);
-  else if (atom_equals (fun, "internal_hot_add_drive"))
-    return run_internal_hot_add_drive (message);
-  else if (atom_equals (fun, "internal_hot_remove_drive"))
-    return run_internal_hot_remove_drive (message);
-  else if (atom_equals (fun, "internal_hot_remove_drive_precheck"))
-    return run_internal_hot_remove_drive_precheck (message);
-  else if (atom_equals (fun, "internal_lstatlist"))
-    return run_internal_lstatlist (message);
-  else if (atom_equals (fun, "internal_lxattrlist"))
-    return run_internal_lxattrlist (message);
-  else if (atom_equals (fun, "internal_readlinklist"))
-    return run_internal_readlinklist (message);
   else if (atom_equals (fun, "internal_test"))
     return run_internal_test (message);
   else if (atom_equals (fun, "internal_test_63_optargs"))
@@ -10701,10 +10560,6 @@ dispatch (ETERM *message)
     return run_internal_test_rstructlisterr (message);
   else if (atom_equals (fun, "internal_test_set_output"))
     return run_internal_test_set_output (message);
-  else if (atom_equals (fun, "internal_write"))
-    return run_internal_write (message);
-  else if (atom_equals (fun, "internal_write_append"))
-    return run_internal_write_append (message);
   else if (atom_equals (fun, "is_blockdev"))
     return run_is_blockdev (message);
   else if (atom_equals (fun, "is_busy"))
@@ -11023,6 +10878,8 @@ dispatch (ETERM *message)
     return run_remove_drive (message);
   else if (atom_equals (fun, "removexattr"))
     return run_removexattr (message);
+  else if (atom_equals (fun, "rename"))
+    return run_rename (message);
   else if (atom_equals (fun, "resize2fs"))
     return run_resize2fs (message);
   else if (atom_equals (fun, "resize2fs_M"))

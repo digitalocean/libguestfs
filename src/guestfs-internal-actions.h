@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
+#ifndef GUESTFS_INTERNAL_ACTIONS_H_
+#define GUESTFS_INTERNAL_ACTIONS_H_
 
 extern int guestfs__internal_test (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, const struct guestfs_internal_test_argv *optargs);
 extern int guestfs__internal_test_only_optargs (guestfs_h *g, const struct guestfs_internal_test_only_optargs_argv *optargs);
@@ -152,3 +155,5 @@ extern int guestfs__set_tmpdir (guestfs_h *g, const char *tmpdir);
 extern char *guestfs__get_tmpdir (guestfs_h *g);
 extern int guestfs__set_cachedir (guestfs_h *g, const char *cachedir);
 extern char *guestfs__get_cachedir (guestfs_h *g);
+
+#endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

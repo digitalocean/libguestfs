@@ -1,6 +1,6 @@
 /* Regression test for RHBZ#501893.
  * Test that String parameters are checked for != NULL.
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <assert.h>
 
 #include "guestfs.h"
+#include "guestfs-internal-frontend.h"
 
 int
 main (int argc, char *argv[])

@@ -4,7 +4,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -78,11 +78,12 @@ EVENT_LIBRARY = 0x20
 EVENT_TRACE = 0x40
 EVENT_ENTER = 0x80
 EVENT_LIBVIRT_AUTH = 0x100
+EVENT_ALL = 0x1ff
 
 class ClosedHandle(ValueError):
     pass
 
-class GuestFS:
+class GuestFS(object):
     """Instances of this class are libguestfs API handles."""
 
     def __init__ (self, environment=True, close_on_exit=True):
@@ -490,6 +491,11 @@ class GuestFS:
         return libguestfsmod.is_launching (self._o)
 
     def is_busy (self):
+        """This always returns false. This function is deprecated
+        with no replacement. Do not use this function.
+        
+        For more information on states, see guestfs(3).
+        """
         self._check_not_closed ()
         return libguestfsmod.is_busy (self._o)
 
@@ -3479,6 +3485,8 @@ class GuestFS:
     def mv (self, src, dest):
         """This moves a file from "src" to "dest" where "dest" is
         either a destination filename or destination directory.
+        
+        See also: "g.rename".
         """
         self._check_not_closed ()
         return libguestfsmod.mv (self._o, src, dest)
@@ -5115,21 +5123,6 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.lchown (self._o, owner, group, path)
 
-    def internal_lstatlist (self, path, names):
-        names = list (names)
-        self._check_not_closed ()
-        return libguestfsmod.internal_lstatlist (self._o, path, names)
-
-    def internal_lxattrlist (self, path, names):
-        names = list (names)
-        self._check_not_closed ()
-        return libguestfsmod.internal_lxattrlist (self._o, path, names)
-
-    def internal_readlinklist (self, path, names):
-        names = list (names)
-        self._check_not_closed ()
-        return libguestfsmod.internal_readlinklist (self._o, path, names)
-
     def pread (self, path, count, offset):
         """This command lets you read part of a file. It reads
         "count" bytes of the file, starting at "offset", from
@@ -5663,10 +5656,6 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.fill_pattern (self._o, pattern, len, path)
 
-    def internal_write (self, path, content):
-        self._check_not_closed ()
-        return libguestfsmod.internal_write (self._o, path, content)
-
     def pwrite (self, path, content, offset):
         """This command writes to part of a file. It writes the
         data buffer "content" to the file "path" starting at
@@ -6043,8 +6032,8 @@ class GuestFS:
         return libguestfsmod.pwrite_device (self._o, device, content, offset)
 
     def pread_device (self, device, count, offset):
-        """This command lets you read part of a file. It reads
-        "count" bytes of "device", starting at "offset".
+        """This command lets you read part of a block device. It
+        reads "count" bytes of "device", starting at "offset".
         
         This may read fewer bytes than requested. For further
         details see the pread(2) system call.
@@ -6174,10 +6163,6 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.resize2fs_M (self._o, device)
 
-    def internal_autosync (self):
-        self._check_not_closed ()
-        return libguestfsmod.internal_autosync (self._o)
-
     def is_zero (self, path):
         """This returns true iff the file exists and the file is
         empty or it contains all zero bytes.
@@ -6280,10 +6265,6 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.btrfs_filesystem_resize (self._o, mountpoint, size)
-
-    def internal_write_append (self, path, content):
-        self._check_not_closed ()
-        return libguestfsmod.internal_write_append (self._o, path, content)
 
     def compress_out (self, ctype, file, zfile, level=None):
         """This command compresses "file" and writes it out to the
@@ -7466,18 +7447,6 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.list_disk_labels (self._o)
 
-    def internal_hot_add_drive (self, label):
-        self._check_not_closed ()
-        return libguestfsmod.internal_hot_add_drive (self._o, label)
-
-    def internal_hot_remove_drive_precheck (self, label):
-        self._check_not_closed ()
-        return libguestfsmod.internal_hot_remove_drive_precheck (self._o, label)
-
-    def internal_hot_remove_drive (self, label):
-        self._check_not_closed ()
-        return libguestfsmod.internal_hot_remove_drive (self._o, label)
-
     def mktemp (self, tmpl, suffix=None):
         """This command creates a temporary file. The "tmpl"
         parameter should be a full pathname for the temporary
@@ -7682,7 +7651,7 @@ class GuestFS:
 
     def ldmtool_volume_type (self, diskgroup, volume):
         """Return the type of the volume named "volume" in the disk
-        group with GUID <diskgroup>.
+        group with GUID "diskgroup".
         
         Possible volume types that can be returned here include:
         "simple", "spanned", "striped", "mirrored", "raid5".
@@ -7693,7 +7662,7 @@ class GuestFS:
 
     def ldmtool_volume_hint (self, diskgroup, volume):
         """Return the hint field of the volume named "volume" in
-        the disk group with GUID <diskgroup>. This may not be
+        the disk group with GUID "diskgroup". This may not be
         defined, in which case the empty string is returned. The
         hint field is often, though not always, the name of a
         Windows drive, eg. "E:".
@@ -7703,10 +7672,18 @@ class GuestFS:
 
     def ldmtool_volume_partitions (self, diskgroup, volume):
         """Return the list of partitions in the volume named
-        "volume" in the disk group with GUID <diskgroup>.
+        "volume" in the disk group with GUID "diskgroup".
         
         This function returns a list of strings.
         """
         self._check_not_closed ()
         return libguestfsmod.ldmtool_volume_partitions (self._o, diskgroup, volume)
+
+    def rename (self, oldpath, newpath):
+        """Rename a file to a new place on the same filesystem.
+        This is the same as the Linux rename(2) system call. In
+        most cases you are better to use "g.mv" instead.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.rename (self._o, oldpath, newpath)
 

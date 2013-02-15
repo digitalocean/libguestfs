@@ -67,12 +67,12 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = create_disk$(EXEEXT) display_icon$(EXEEXT) \
-	inspect_vm$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
+noinst_PROGRAMS = create-disk$(EXEEXT) display-icon$(EXEEXT) \
+	inspect-vm$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
 	$(am__EXEEXT_3)
-@HAVE_LIBVIRT_TRUE@am__append_1 = copy_over libvirt_auth
+@HAVE_LIBVIRT_TRUE@am__append_1 = copy-over libvirt-auth
 @HAVE_HIVEX_TRUE@am__append_2 = virt-dhcp-address
-@HAVE_FUSE_TRUE@am__append_3 = mount_local
+@HAVE_FUSE_TRUE@am__append_3 = mount-local
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/depcomp
@@ -198,14 +198,14 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_LIBVIRT_TRUE@am__EXEEXT_1 = copy_over$(EXEEXT) \
-@HAVE_LIBVIRT_TRUE@	libvirt_auth$(EXEEXT)
+@HAVE_LIBVIRT_TRUE@am__EXEEXT_1 = copy-over$(EXEEXT) \
+@HAVE_LIBVIRT_TRUE@	libvirt-auth$(EXEEXT)
 @HAVE_HIVEX_TRUE@am__EXEEXT_2 = virt-dhcp-address$(EXEEXT)
-@HAVE_FUSE_TRUE@am__EXEEXT_3 = mount_local$(EXEEXT)
+@HAVE_FUSE_TRUE@am__EXEEXT_3 = mount-local$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am__copy_over_SOURCES_DIST = copy_over.c
+am__copy_over_SOURCES_DIST = copy-over.c
 @HAVE_LIBVIRT_TRUE@am_copy_over_OBJECTS =  \
-@HAVE_LIBVIRT_TRUE@	copy_over-copy_over.$(OBJEXT)
+@HAVE_LIBVIRT_TRUE@	copy_over-copy-over.$(OBJEXT)
 copy_over_OBJECTS = $(am_copy_over_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_LIBVIRT_TRUE@copy_over_DEPENDENCIES =  \
@@ -218,27 +218,27 @@ am__v_lt_1 =
 copy_over_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(copy_over_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_create_disk_OBJECTS = create_disk-create_disk.$(OBJEXT)
+am_create_disk_OBJECTS = create_disk-create-disk.$(OBJEXT)
 create_disk_OBJECTS = $(am_create_disk_OBJECTS)
 create_disk_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 create_disk_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(create_disk_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_display_icon_OBJECTS = display_icon-display_icon.$(OBJEXT)
+am_display_icon_OBJECTS = display_icon-display-icon.$(OBJEXT)
 display_icon_OBJECTS = $(am_display_icon_OBJECTS)
 display_icon_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 display_icon_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(display_icon_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_inspect_vm_OBJECTS = inspect_vm-inspect_vm.$(OBJEXT)
+am_inspect_vm_OBJECTS = inspect_vm-inspect-vm.$(OBJEXT)
 inspect_vm_OBJECTS = $(am_inspect_vm_OBJECTS)
 inspect_vm_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 inspect_vm_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(inspect_vm_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__libvirt_auth_SOURCES_DIST = libvirt_auth.c
+am__libvirt_auth_SOURCES_DIST = libvirt-auth.c
 @HAVE_LIBVIRT_TRUE@am_libvirt_auth_OBJECTS =  \
-@HAVE_LIBVIRT_TRUE@	libvirt_auth-libvirt_auth.$(OBJEXT)
+@HAVE_LIBVIRT_TRUE@	libvirt_auth-libvirt-auth.$(OBJEXT)
 libvirt_auth_OBJECTS = $(am_libvirt_auth_OBJECTS)
 @HAVE_LIBVIRT_TRUE@libvirt_auth_DEPENDENCIES =  \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
@@ -246,9 +246,9 @@ libvirt_auth_OBJECTS = $(am_libvirt_auth_OBJECTS)
 libvirt_auth_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libvirt_auth_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__mount_local_SOURCES_DIST = mount_local.c
+am__mount_local_SOURCES_DIST = mount-local.c
 @HAVE_FUSE_TRUE@am_mount_local_OBJECTS =  \
-@HAVE_FUSE_TRUE@	mount_local-mount_local.$(OBJEXT)
+@HAVE_FUSE_TRUE@	mount_local-mount-local.$(OBJEXT)
 mount_local_OBJECTS = $(am_mount_local_OBJECTS)
 @HAVE_FUSE_TRUE@mount_local_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la
@@ -412,8 +412,6 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
-FEBOOTSTRAP = @FEBOOTSTRAP@
-FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1309,6 +1307,9 @@ STDBOOL_H = @STDBOOL_H@
 STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
+SUPERMIN = @SUPERMIN@
+SUPERMIN_HELPER = @SUPERMIN_HELPER@
+SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1401,7 +1402,14 @@ EXTRA_DIST = \
 	guestfs-faq.pod \
 	guestfs-performance.pod \
 	guestfs-recipes.pod \
-	guestfs-testing.pod
+	guestfs-testing.pod \
+	copy-over.c \
+	create-disk.c \
+	display-icon.c \
+	inspect-vm.c \
+	libvirt-auth.c \
+	mount-local.c \
+	virt-dhcp-address.c
 
 CLEANFILES = \
 	stamp-guestfs-examples.pod \
@@ -1410,10 +1418,12 @@ CLEANFILES = \
 	stamp-guestfs-recipes.pod \
 	stamp-guestfs-testing.pod
 
-@HAVE_LIBVIRT_TRUE@copy_over_SOURCES = copy_over.c
-@HAVE_LIBVIRT_TRUE@copy_over_CFLAGS = \
+@HAVE_LIBVIRT_TRUE@copy_over_SOURCES = copy-over.c
+@HAVE_LIBVIRT_TRUE@copy_over_CPPFLAGS = \
 @HAVE_LIBVIRT_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
-@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+@HAVE_LIBVIRT_TRUE@copy_over_CFLAGS = \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS) \
 @HAVE_LIBVIRT_TRUE@	-pthread \
 @HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -1423,10 +1433,12 @@ CLEANFILES = \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_LIBS)
 
-@HAVE_LIBVIRT_TRUE@libvirt_auth_SOURCES = libvirt_auth.c
-@HAVE_LIBVIRT_TRUE@libvirt_auth_CFLAGS = \
+@HAVE_LIBVIRT_TRUE@libvirt_auth_SOURCES = libvirt-auth.c
+@HAVE_LIBVIRT_TRUE@libvirt_auth_CPPFLAGS = \
 @HAVE_LIBVIRT_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
-@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_LIBVIRT_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+@HAVE_LIBVIRT_TRUE@libvirt_auth_CFLAGS = \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_CFLAGS) \
 @HAVE_LIBVIRT_TRUE@	-pthread \
 @HAVE_LIBVIRT_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
@@ -1436,37 +1448,47 @@ CLEANFILES = \
 @HAVE_LIBVIRT_TRUE@	$(top_builddir)/src/libguestfs.la \
 @HAVE_LIBVIRT_TRUE@	$(LIBVIRT_LIBS)
 
-create_disk_SOURCES = create_disk.c
-create_disk_CFLAGS = \
+create_disk_SOURCES = create-disk.c
+create_disk_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+create_disk_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 create_disk_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
-display_icon_SOURCES = display_icon.c
-display_icon_CFLAGS = \
+display_icon_SOURCES = display-icon.c
+display_icon_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+display_icon_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 display_icon_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
-inspect_vm_SOURCES = inspect_vm.c
-inspect_vm_CFLAGS = \
+inspect_vm_SOURCES = inspect-vm.c
+inspect_vm_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+inspect_vm_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 inspect_vm_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
-@HAVE_FUSE_TRUE@mount_local_SOURCES = mount_local.c
+@HAVE_FUSE_TRUE@mount_local_SOURCES = mount-local.c
+@HAVE_FUSE_TRUE@mount_local_CPPFLAGS = \
+@HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 @HAVE_FUSE_TRUE@mount_local_CFLAGS = \
 @HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
 @HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
@@ -1479,9 +1501,11 @@ inspect_vm_LDADD = \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la
 
 @HAVE_HIVEX_TRUE@virt_dhcp_address_SOURCES = virt-dhcp-address.c
-@HAVE_HIVEX_TRUE@virt_dhcp_address_CFLAGS = \
+@HAVE_HIVEX_TRUE@virt_dhcp_address_CPPFLAGS = \
 @HAVE_HIVEX_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
-@HAVE_HIVEX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_HIVEX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+@HAVE_HIVEX_TRUE@virt_dhcp_address_CFLAGS = \
 @HAVE_HIVEX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_HIVEX_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1545,23 +1569,23 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-copy_over$(EXEEXT): $(copy_over_OBJECTS) $(copy_over_DEPENDENCIES) $(EXTRA_copy_over_DEPENDENCIES) 
-	@rm -f copy_over$(EXEEXT)
+copy-over$(EXEEXT): $(copy_over_OBJECTS) $(copy_over_DEPENDENCIES) $(EXTRA_copy_over_DEPENDENCIES) 
+	@rm -f copy-over$(EXEEXT)
 	$(AM_V_CCLD)$(copy_over_LINK) $(copy_over_OBJECTS) $(copy_over_LDADD) $(LIBS)
-create_disk$(EXEEXT): $(create_disk_OBJECTS) $(create_disk_DEPENDENCIES) $(EXTRA_create_disk_DEPENDENCIES) 
-	@rm -f create_disk$(EXEEXT)
+create-disk$(EXEEXT): $(create_disk_OBJECTS) $(create_disk_DEPENDENCIES) $(EXTRA_create_disk_DEPENDENCIES) 
+	@rm -f create-disk$(EXEEXT)
 	$(AM_V_CCLD)$(create_disk_LINK) $(create_disk_OBJECTS) $(create_disk_LDADD) $(LIBS)
-display_icon$(EXEEXT): $(display_icon_OBJECTS) $(display_icon_DEPENDENCIES) $(EXTRA_display_icon_DEPENDENCIES) 
-	@rm -f display_icon$(EXEEXT)
+display-icon$(EXEEXT): $(display_icon_OBJECTS) $(display_icon_DEPENDENCIES) $(EXTRA_display_icon_DEPENDENCIES) 
+	@rm -f display-icon$(EXEEXT)
 	$(AM_V_CCLD)$(display_icon_LINK) $(display_icon_OBJECTS) $(display_icon_LDADD) $(LIBS)
-inspect_vm$(EXEEXT): $(inspect_vm_OBJECTS) $(inspect_vm_DEPENDENCIES) $(EXTRA_inspect_vm_DEPENDENCIES) 
-	@rm -f inspect_vm$(EXEEXT)
+inspect-vm$(EXEEXT): $(inspect_vm_OBJECTS) $(inspect_vm_DEPENDENCIES) $(EXTRA_inspect_vm_DEPENDENCIES) 
+	@rm -f inspect-vm$(EXEEXT)
 	$(AM_V_CCLD)$(inspect_vm_LINK) $(inspect_vm_OBJECTS) $(inspect_vm_LDADD) $(LIBS)
-libvirt_auth$(EXEEXT): $(libvirt_auth_OBJECTS) $(libvirt_auth_DEPENDENCIES) $(EXTRA_libvirt_auth_DEPENDENCIES) 
-	@rm -f libvirt_auth$(EXEEXT)
+libvirt-auth$(EXEEXT): $(libvirt_auth_OBJECTS) $(libvirt_auth_DEPENDENCIES) $(EXTRA_libvirt_auth_DEPENDENCIES) 
+	@rm -f libvirt-auth$(EXEEXT)
 	$(AM_V_CCLD)$(libvirt_auth_LINK) $(libvirt_auth_OBJECTS) $(libvirt_auth_LDADD) $(LIBS)
-mount_local$(EXEEXT): $(mount_local_OBJECTS) $(mount_local_DEPENDENCIES) $(EXTRA_mount_local_DEPENDENCIES) 
-	@rm -f mount_local$(EXEEXT)
+mount-local$(EXEEXT): $(mount_local_OBJECTS) $(mount_local_DEPENDENCIES) $(EXTRA_mount_local_DEPENDENCIES) 
+	@rm -f mount-local$(EXEEXT)
 	$(AM_V_CCLD)$(mount_local_LINK) $(mount_local_OBJECTS) $(mount_local_LDADD) $(LIBS)
 virt-dhcp-address$(EXEEXT): $(virt_dhcp_address_OBJECTS) $(virt_dhcp_address_DEPENDENCIES) $(EXTRA_virt_dhcp_address_DEPENDENCIES) 
 	@rm -f virt-dhcp-address$(EXEEXT)
@@ -1573,12 +1597,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copy_over-copy_over.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/create_disk-create_disk.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/display_icon-display_icon.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect_vm-inspect_vm.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvirt_auth-libvirt_auth.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mount_local-mount_local.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copy_over-copy-over.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/create_disk-create-disk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/display_icon-display-icon.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect_vm-inspect-vm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvirt_auth-libvirt-auth.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mount_local-mount-local.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Po@am__quote@
 
 .c.o:
@@ -1602,103 +1626,103 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-copy_over-copy_over.o: copy_over.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -MT copy_over-copy_over.o -MD -MP -MF $(DEPDIR)/copy_over-copy_over.Tpo -c -o copy_over-copy_over.o `test -f 'copy_over.c' || echo '$(srcdir)/'`copy_over.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/copy_over-copy_over.Tpo $(DEPDIR)/copy_over-copy_over.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy_over.c' object='copy_over-copy_over.o' libtool=no @AMDEPBACKSLASH@
+copy_over-copy-over.o: copy-over.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(copy_over_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -MT copy_over-copy-over.o -MD -MP -MF $(DEPDIR)/copy_over-copy-over.Tpo -c -o copy_over-copy-over.o `test -f 'copy-over.c' || echo '$(srcdir)/'`copy-over.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/copy_over-copy-over.Tpo $(DEPDIR)/copy_over-copy-over.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy-over.c' object='copy_over-copy-over.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -c -o copy_over-copy_over.o `test -f 'copy_over.c' || echo '$(srcdir)/'`copy_over.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(copy_over_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -c -o copy_over-copy-over.o `test -f 'copy-over.c' || echo '$(srcdir)/'`copy-over.c
 
-copy_over-copy_over.obj: copy_over.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -MT copy_over-copy_over.obj -MD -MP -MF $(DEPDIR)/copy_over-copy_over.Tpo -c -o copy_over-copy_over.obj `if test -f 'copy_over.c'; then $(CYGPATH_W) 'copy_over.c'; else $(CYGPATH_W) '$(srcdir)/copy_over.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/copy_over-copy_over.Tpo $(DEPDIR)/copy_over-copy_over.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy_over.c' object='copy_over-copy_over.obj' libtool=no @AMDEPBACKSLASH@
+copy_over-copy-over.obj: copy-over.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(copy_over_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -MT copy_over-copy-over.obj -MD -MP -MF $(DEPDIR)/copy_over-copy-over.Tpo -c -o copy_over-copy-over.obj `if test -f 'copy-over.c'; then $(CYGPATH_W) 'copy-over.c'; else $(CYGPATH_W) '$(srcdir)/copy-over.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/copy_over-copy-over.Tpo $(DEPDIR)/copy_over-copy-over.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='copy-over.c' object='copy_over-copy-over.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -c -o copy_over-copy_over.obj `if test -f 'copy_over.c'; then $(CYGPATH_W) 'copy_over.c'; else $(CYGPATH_W) '$(srcdir)/copy_over.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(copy_over_CPPFLAGS) $(CPPFLAGS) $(copy_over_CFLAGS) $(CFLAGS) -c -o copy_over-copy-over.obj `if test -f 'copy-over.c'; then $(CYGPATH_W) 'copy-over.c'; else $(CYGPATH_W) '$(srcdir)/copy-over.c'; fi`
 
-create_disk-create_disk.o: create_disk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -MT create_disk-create_disk.o -MD -MP -MF $(DEPDIR)/create_disk-create_disk.Tpo -c -o create_disk-create_disk.o `test -f 'create_disk.c' || echo '$(srcdir)/'`create_disk.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/create_disk-create_disk.Tpo $(DEPDIR)/create_disk-create_disk.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='create_disk.c' object='create_disk-create_disk.o' libtool=no @AMDEPBACKSLASH@
+create_disk-create-disk.o: create-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(create_disk_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -MT create_disk-create-disk.o -MD -MP -MF $(DEPDIR)/create_disk-create-disk.Tpo -c -o create_disk-create-disk.o `test -f 'create-disk.c' || echo '$(srcdir)/'`create-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/create_disk-create-disk.Tpo $(DEPDIR)/create_disk-create-disk.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='create-disk.c' object='create_disk-create-disk.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -c -o create_disk-create_disk.o `test -f 'create_disk.c' || echo '$(srcdir)/'`create_disk.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(create_disk_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -c -o create_disk-create-disk.o `test -f 'create-disk.c' || echo '$(srcdir)/'`create-disk.c
 
-create_disk-create_disk.obj: create_disk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -MT create_disk-create_disk.obj -MD -MP -MF $(DEPDIR)/create_disk-create_disk.Tpo -c -o create_disk-create_disk.obj `if test -f 'create_disk.c'; then $(CYGPATH_W) 'create_disk.c'; else $(CYGPATH_W) '$(srcdir)/create_disk.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/create_disk-create_disk.Tpo $(DEPDIR)/create_disk-create_disk.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='create_disk.c' object='create_disk-create_disk.obj' libtool=no @AMDEPBACKSLASH@
+create_disk-create-disk.obj: create-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(create_disk_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -MT create_disk-create-disk.obj -MD -MP -MF $(DEPDIR)/create_disk-create-disk.Tpo -c -o create_disk-create-disk.obj `if test -f 'create-disk.c'; then $(CYGPATH_W) 'create-disk.c'; else $(CYGPATH_W) '$(srcdir)/create-disk.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/create_disk-create-disk.Tpo $(DEPDIR)/create_disk-create-disk.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='create-disk.c' object='create_disk-create-disk.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -c -o create_disk-create_disk.obj `if test -f 'create_disk.c'; then $(CYGPATH_W) 'create_disk.c'; else $(CYGPATH_W) '$(srcdir)/create_disk.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(create_disk_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -c -o create_disk-create-disk.obj `if test -f 'create-disk.c'; then $(CYGPATH_W) 'create-disk.c'; else $(CYGPATH_W) '$(srcdir)/create-disk.c'; fi`
 
-display_icon-display_icon.o: display_icon.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -MT display_icon-display_icon.o -MD -MP -MF $(DEPDIR)/display_icon-display_icon.Tpo -c -o display_icon-display_icon.o `test -f 'display_icon.c' || echo '$(srcdir)/'`display_icon.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/display_icon-display_icon.Tpo $(DEPDIR)/display_icon-display_icon.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display_icon.c' object='display_icon-display_icon.o' libtool=no @AMDEPBACKSLASH@
+display_icon-display-icon.o: display-icon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(display_icon_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -MT display_icon-display-icon.o -MD -MP -MF $(DEPDIR)/display_icon-display-icon.Tpo -c -o display_icon-display-icon.o `test -f 'display-icon.c' || echo '$(srcdir)/'`display-icon.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/display_icon-display-icon.Tpo $(DEPDIR)/display_icon-display-icon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display-icon.c' object='display_icon-display-icon.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -c -o display_icon-display_icon.o `test -f 'display_icon.c' || echo '$(srcdir)/'`display_icon.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(display_icon_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -c -o display_icon-display-icon.o `test -f 'display-icon.c' || echo '$(srcdir)/'`display-icon.c
 
-display_icon-display_icon.obj: display_icon.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -MT display_icon-display_icon.obj -MD -MP -MF $(DEPDIR)/display_icon-display_icon.Tpo -c -o display_icon-display_icon.obj `if test -f 'display_icon.c'; then $(CYGPATH_W) 'display_icon.c'; else $(CYGPATH_W) '$(srcdir)/display_icon.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/display_icon-display_icon.Tpo $(DEPDIR)/display_icon-display_icon.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display_icon.c' object='display_icon-display_icon.obj' libtool=no @AMDEPBACKSLASH@
+display_icon-display-icon.obj: display-icon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(display_icon_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -MT display_icon-display-icon.obj -MD -MP -MF $(DEPDIR)/display_icon-display-icon.Tpo -c -o display_icon-display-icon.obj `if test -f 'display-icon.c'; then $(CYGPATH_W) 'display-icon.c'; else $(CYGPATH_W) '$(srcdir)/display-icon.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/display_icon-display-icon.Tpo $(DEPDIR)/display_icon-display-icon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='display-icon.c' object='display_icon-display-icon.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -c -o display_icon-display_icon.obj `if test -f 'display_icon.c'; then $(CYGPATH_W) 'display_icon.c'; else $(CYGPATH_W) '$(srcdir)/display_icon.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(display_icon_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -c -o display_icon-display-icon.obj `if test -f 'display-icon.c'; then $(CYGPATH_W) 'display-icon.c'; else $(CYGPATH_W) '$(srcdir)/display-icon.c'; fi`
 
-inspect_vm-inspect_vm.o: inspect_vm.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -MT inspect_vm-inspect_vm.o -MD -MP -MF $(DEPDIR)/inspect_vm-inspect_vm.Tpo -c -o inspect_vm-inspect_vm.o `test -f 'inspect_vm.c' || echo '$(srcdir)/'`inspect_vm.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/inspect_vm-inspect_vm.Tpo $(DEPDIR)/inspect_vm-inspect_vm.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inspect_vm.c' object='inspect_vm-inspect_vm.o' libtool=no @AMDEPBACKSLASH@
+inspect_vm-inspect-vm.o: inspect-vm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(inspect_vm_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -MT inspect_vm-inspect-vm.o -MD -MP -MF $(DEPDIR)/inspect_vm-inspect-vm.Tpo -c -o inspect_vm-inspect-vm.o `test -f 'inspect-vm.c' || echo '$(srcdir)/'`inspect-vm.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/inspect_vm-inspect-vm.Tpo $(DEPDIR)/inspect_vm-inspect-vm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inspect-vm.c' object='inspect_vm-inspect-vm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -c -o inspect_vm-inspect_vm.o `test -f 'inspect_vm.c' || echo '$(srcdir)/'`inspect_vm.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(inspect_vm_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -c -o inspect_vm-inspect-vm.o `test -f 'inspect-vm.c' || echo '$(srcdir)/'`inspect-vm.c
 
-inspect_vm-inspect_vm.obj: inspect_vm.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -MT inspect_vm-inspect_vm.obj -MD -MP -MF $(DEPDIR)/inspect_vm-inspect_vm.Tpo -c -o inspect_vm-inspect_vm.obj `if test -f 'inspect_vm.c'; then $(CYGPATH_W) 'inspect_vm.c'; else $(CYGPATH_W) '$(srcdir)/inspect_vm.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/inspect_vm-inspect_vm.Tpo $(DEPDIR)/inspect_vm-inspect_vm.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inspect_vm.c' object='inspect_vm-inspect_vm.obj' libtool=no @AMDEPBACKSLASH@
+inspect_vm-inspect-vm.obj: inspect-vm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(inspect_vm_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -MT inspect_vm-inspect-vm.obj -MD -MP -MF $(DEPDIR)/inspect_vm-inspect-vm.Tpo -c -o inspect_vm-inspect-vm.obj `if test -f 'inspect-vm.c'; then $(CYGPATH_W) 'inspect-vm.c'; else $(CYGPATH_W) '$(srcdir)/inspect-vm.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/inspect_vm-inspect-vm.Tpo $(DEPDIR)/inspect_vm-inspect-vm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inspect-vm.c' object='inspect_vm-inspect-vm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -c -o inspect_vm-inspect_vm.obj `if test -f 'inspect_vm.c'; then $(CYGPATH_W) 'inspect_vm.c'; else $(CYGPATH_W) '$(srcdir)/inspect_vm.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(inspect_vm_CPPFLAGS) $(CPPFLAGS) $(inspect_vm_CFLAGS) $(CFLAGS) -c -o inspect_vm-inspect-vm.obj `if test -f 'inspect-vm.c'; then $(CYGPATH_W) 'inspect-vm.c'; else $(CYGPATH_W) '$(srcdir)/inspect-vm.c'; fi`
 
-libvirt_auth-libvirt_auth.o: libvirt_auth.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -MT libvirt_auth-libvirt_auth.o -MD -MP -MF $(DEPDIR)/libvirt_auth-libvirt_auth.Tpo -c -o libvirt_auth-libvirt_auth.o `test -f 'libvirt_auth.c' || echo '$(srcdir)/'`libvirt_auth.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_auth-libvirt_auth.Tpo $(DEPDIR)/libvirt_auth-libvirt_auth.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_auth.c' object='libvirt_auth-libvirt_auth.o' libtool=no @AMDEPBACKSLASH@
+libvirt_auth-libvirt-auth.o: libvirt-auth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_auth_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -MT libvirt_auth-libvirt-auth.o -MD -MP -MF $(DEPDIR)/libvirt_auth-libvirt-auth.Tpo -c -o libvirt_auth-libvirt-auth.o `test -f 'libvirt-auth.c' || echo '$(srcdir)/'`libvirt-auth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_auth-libvirt-auth.Tpo $(DEPDIR)/libvirt_auth-libvirt-auth.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt-auth.c' object='libvirt_auth-libvirt-auth.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -c -o libvirt_auth-libvirt_auth.o `test -f 'libvirt_auth.c' || echo '$(srcdir)/'`libvirt_auth.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_auth_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -c -o libvirt_auth-libvirt-auth.o `test -f 'libvirt-auth.c' || echo '$(srcdir)/'`libvirt-auth.c
 
-libvirt_auth-libvirt_auth.obj: libvirt_auth.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -MT libvirt_auth-libvirt_auth.obj -MD -MP -MF $(DEPDIR)/libvirt_auth-libvirt_auth.Tpo -c -o libvirt_auth-libvirt_auth.obj `if test -f 'libvirt_auth.c'; then $(CYGPATH_W) 'libvirt_auth.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_auth.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_auth-libvirt_auth.Tpo $(DEPDIR)/libvirt_auth-libvirt_auth.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt_auth.c' object='libvirt_auth-libvirt_auth.obj' libtool=no @AMDEPBACKSLASH@
+libvirt_auth-libvirt-auth.obj: libvirt-auth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_auth_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -MT libvirt_auth-libvirt-auth.obj -MD -MP -MF $(DEPDIR)/libvirt_auth-libvirt-auth.Tpo -c -o libvirt_auth-libvirt-auth.obj `if test -f 'libvirt-auth.c'; then $(CYGPATH_W) 'libvirt-auth.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-auth.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libvirt_auth-libvirt-auth.Tpo $(DEPDIR)/libvirt_auth-libvirt-auth.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libvirt-auth.c' object='libvirt_auth-libvirt-auth.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -c -o libvirt_auth-libvirt_auth.obj `if test -f 'libvirt_auth.c'; then $(CYGPATH_W) 'libvirt_auth.c'; else $(CYGPATH_W) '$(srcdir)/libvirt_auth.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvirt_auth_CPPFLAGS) $(CPPFLAGS) $(libvirt_auth_CFLAGS) $(CFLAGS) -c -o libvirt_auth-libvirt-auth.obj `if test -f 'libvirt-auth.c'; then $(CYGPATH_W) 'libvirt-auth.c'; else $(CYGPATH_W) '$(srcdir)/libvirt-auth.c'; fi`
 
-mount_local-mount_local.o: mount_local.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -MT mount_local-mount_local.o -MD -MP -MF $(DEPDIR)/mount_local-mount_local.Tpo -c -o mount_local-mount_local.o `test -f 'mount_local.c' || echo '$(srcdir)/'`mount_local.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mount_local-mount_local.Tpo $(DEPDIR)/mount_local-mount_local.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mount_local.c' object='mount_local-mount_local.o' libtool=no @AMDEPBACKSLASH@
+mount_local-mount-local.o: mount-local.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mount_local_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -MT mount_local-mount-local.o -MD -MP -MF $(DEPDIR)/mount_local-mount-local.Tpo -c -o mount_local-mount-local.o `test -f 'mount-local.c' || echo '$(srcdir)/'`mount-local.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mount_local-mount-local.Tpo $(DEPDIR)/mount_local-mount-local.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mount-local.c' object='mount_local-mount-local.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -c -o mount_local-mount_local.o `test -f 'mount_local.c' || echo '$(srcdir)/'`mount_local.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mount_local_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -c -o mount_local-mount-local.o `test -f 'mount-local.c' || echo '$(srcdir)/'`mount-local.c
 
-mount_local-mount_local.obj: mount_local.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -MT mount_local-mount_local.obj -MD -MP -MF $(DEPDIR)/mount_local-mount_local.Tpo -c -o mount_local-mount_local.obj `if test -f 'mount_local.c'; then $(CYGPATH_W) 'mount_local.c'; else $(CYGPATH_W) '$(srcdir)/mount_local.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mount_local-mount_local.Tpo $(DEPDIR)/mount_local-mount_local.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mount_local.c' object='mount_local-mount_local.obj' libtool=no @AMDEPBACKSLASH@
+mount_local-mount-local.obj: mount-local.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mount_local_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -MT mount_local-mount-local.obj -MD -MP -MF $(DEPDIR)/mount_local-mount-local.Tpo -c -o mount_local-mount-local.obj `if test -f 'mount-local.c'; then $(CYGPATH_W) 'mount-local.c'; else $(CYGPATH_W) '$(srcdir)/mount-local.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mount_local-mount-local.Tpo $(DEPDIR)/mount_local-mount-local.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mount-local.c' object='mount_local-mount-local.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -c -o mount_local-mount_local.obj `if test -f 'mount_local.c'; then $(CYGPATH_W) 'mount_local.c'; else $(CYGPATH_W) '$(srcdir)/mount_local.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(mount_local_CPPFLAGS) $(CPPFLAGS) $(mount_local_CFLAGS) $(CFLAGS) -c -o mount_local-mount-local.obj `if test -f 'mount-local.c'; then $(CYGPATH_W) 'mount-local.c'; else $(CYGPATH_W) '$(srcdir)/mount-local.c'; fi`
 
 virt_dhcp_address-virt-dhcp-address.o: virt-dhcp-address.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -MT virt_dhcp_address-virt-dhcp-address.o -MD -MP -MF $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Tpo -c -o virt_dhcp_address-virt-dhcp-address.o `test -f 'virt-dhcp-address.c' || echo '$(srcdir)/'`virt-dhcp-address.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dhcp_address_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -MT virt_dhcp_address-virt-dhcp-address.o -MD -MP -MF $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Tpo -c -o virt_dhcp_address-virt-dhcp-address.o `test -f 'virt-dhcp-address.c' || echo '$(srcdir)/'`virt-dhcp-address.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Tpo $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virt-dhcp-address.c' object='virt_dhcp_address-virt-dhcp-address.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -c -o virt_dhcp_address-virt-dhcp-address.o `test -f 'virt-dhcp-address.c' || echo '$(srcdir)/'`virt-dhcp-address.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dhcp_address_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -c -o virt_dhcp_address-virt-dhcp-address.o `test -f 'virt-dhcp-address.c' || echo '$(srcdir)/'`virt-dhcp-address.c
 
 virt_dhcp_address-virt-dhcp-address.obj: virt-dhcp-address.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -MT virt_dhcp_address-virt-dhcp-address.obj -MD -MP -MF $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Tpo -c -o virt_dhcp_address-virt-dhcp-address.obj `if test -f 'virt-dhcp-address.c'; then $(CYGPATH_W) 'virt-dhcp-address.c'; else $(CYGPATH_W) '$(srcdir)/virt-dhcp-address.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dhcp_address_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -MT virt_dhcp_address-virt-dhcp-address.obj -MD -MP -MF $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Tpo -c -o virt_dhcp_address-virt-dhcp-address.obj `if test -f 'virt-dhcp-address.c'; then $(CYGPATH_W) 'virt-dhcp-address.c'; else $(CYGPATH_W) '$(srcdir)/virt-dhcp-address.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Tpo $(DEPDIR)/virt_dhcp_address-virt-dhcp-address.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virt-dhcp-address.c' object='virt_dhcp_address-virt-dhcp-address.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -c -o virt_dhcp_address-virt-dhcp-address.obj `if test -f 'virt-dhcp-address.c'; then $(CYGPATH_W) 'virt-dhcp-address.c'; else $(CYGPATH_W) '$(srcdir)/virt-dhcp-address.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_dhcp_address_CPPFLAGS) $(CPPFLAGS) $(virt_dhcp_address_CFLAGS) $(CFLAGS) -c -o virt_dhcp_address-virt-dhcp-address.obj `if test -f 'virt-dhcp-address.c'; then $(CYGPATH_W) 'virt-dhcp-address.c'; else $(CYGPATH_W) '$(srcdir)/virt-dhcp-address.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2032,13 +2056,13 @@ uninstall-man: uninstall-man1 uninstall-man3
 
 guestfs-examples.3 $(top_builddir)/html/guestfs-examples.3.html: stamp-guestfs-examples.pod
 
-stamp-guestfs-examples.pod: guestfs-examples.pod create_disk.c inspect_vm.c
+stamp-guestfs-examples.pod: guestfs-examples.pod copy-over.c create-disk.c display-icon.c inspect-vm.c libvirt-auth.c mount-local.c virt-dhcp-address.c
 	$(PODWRAPPER) \
 	  --section 3 \
 	  --man guestfs-examples.3 \
 	  --html $(top_builddir)/html/guestfs-examples.3.html \
-	  --verbatim $(srcdir)/create_disk.c:@EXAMPLE1@ \
-	  --verbatim $(srcdir)/inspect_vm.c:@EXAMPLE2@ \
+	  --verbatim $(srcdir)/create-disk.c:@EXAMPLE1@ \
+	  --verbatim $(srcdir)/inspect-vm.c:@EXAMPLE2@ \
 	  --license examples \
 	  $<
 	touch $@

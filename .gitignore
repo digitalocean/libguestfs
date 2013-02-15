@@ -96,17 +96,17 @@ Makefile.in
 /erlang/guestfs.beam
 /erlang/guestfs.erl
 /erlang/test.img
-/examples/copy_over
-/examples/create_disk
-/examples/display_icon
+/examples/copy-over
+/examples/create-disk
+/examples/display-icon
 /examples/guestfs-examples.3
 /examples/guestfs-faq.1
 /examples/guestfs-performance.1
 /examples/guestfs-recipes.1
 /examples/guestfs-testing.1
-/examples/inspect_vm
-/examples/libvirt_auth
-/examples/mount_local
+/examples/inspect-vm
+/examples/libvirt-auth
+/examples/mount-local
 /examples/stamp-guestfs-examples.pod
 /examples/stamp-guestfs-faq.pod
 /examples/stamp-guestfs-performance.pod
@@ -319,6 +319,7 @@ Makefile.in
 /po-docs/po4a.conf
 /po-docs/*/*.pod
 /po-docs/*/stamp-update-po
+/podwrapper.1
 /podwrapper.pl
 /po/*.gmo
 /python/bindtests.py
@@ -344,6 +345,7 @@ Makefile.in
 /ruby/examples/guestfs-ruby.3
 /ruby/examples/stamp-guestfs-ruby.pod
 /ruby/ext/guestfs/extconf.h
+/ruby/ext/guestfs/extconf.rb
 /ruby/ext/guestfs/_guestfs.bundle
 /ruby/ext/guestfs/_guestfs.c
 /ruby/ext/guestfs/_guestfs.so
@@ -368,6 +370,7 @@ Makefile.in
 /src/guestfs-availability.pod
 /src/guestfs.h
 /src/guestfs-internal-actions.h
+/src/guestfs-internal-frontend-cleanups.h
 /src/guestfs_protocol.c
 /src/guestfs_protocol.h
 /src/guestfs_protocol.x
