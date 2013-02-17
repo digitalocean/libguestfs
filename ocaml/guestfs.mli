@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -984,20 +984,6 @@ val inspect_list_applications2 : t -> string -> application2 array
 val inspect_os : t -> string array
 (** inspect disk and return list of operating systems found *)
 
-val internal_autosync : t -> unit
-
-val internal_hot_add_drive : t -> string -> unit
-
-val internal_hot_remove_drive : t -> string -> unit
-
-val internal_hot_remove_drive_precheck : t -> string -> unit
-
-val internal_lstatlist : t -> string -> string array -> stat array
-
-val internal_lxattrlist : t -> string -> string array -> xattr array
-
-val internal_readlinklist : t -> string -> string array -> string array
-
 val internal_test : t -> ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
 
 val internal_test_63_optargs : t -> ?opt1:int -> ?opt2:int -> ?opt3:int -> ?opt4:int -> ?opt5:int -> ?opt6:int -> ?opt7:int -> ?opt8:int -> ?opt9:int -> ?opt10:int -> ?opt11:int -> ?opt12:int -> ?opt13:int -> ?opt14:int -> ?opt15:int -> ?opt16:int -> ?opt17:int -> ?opt18:int -> ?opt19:int -> ?opt20:int -> ?opt21:int -> ?opt22:int -> ?opt23:int -> ?opt24:int -> ?opt25:int -> ?opt26:int -> ?opt27:int -> ?opt28:int -> ?opt29:int -> ?opt30:int -> ?opt31:int -> ?opt32:int -> ?opt33:int -> ?opt34:int -> ?opt35:int -> ?opt36:int -> ?opt37:int -> ?opt38:int -> ?opt39:int -> ?opt40:int -> ?opt41:int -> ?opt42:int -> ?opt43:int -> ?opt44:int -> ?opt45:int -> ?opt46:int -> ?opt47:int -> ?opt48:int -> ?opt49:int -> ?opt50:int -> ?opt51:int -> ?opt52:int -> ?opt53:int -> ?opt54:int -> ?opt55:int -> ?opt56:int -> ?opt57:int -> ?opt58:int -> ?opt59:int -> ?opt60:int -> ?opt61:int -> ?opt62:int -> ?opt63:int -> unit
@@ -1052,14 +1038,11 @@ val internal_test_rstructlisterr : t -> lvm_pv array
 
 val internal_test_set_output : t -> string -> unit
 
-val internal_write : t -> string -> string -> unit
-
-val internal_write_append : t -> string -> string -> unit
-
 val is_blockdev : t -> string -> bool
 (** test if block device *)
 
 val is_busy : t -> bool
+(** is busy processing a command *)
 
 val is_chardev : t -> string -> bool
 (** test if character device *)
@@ -1570,6 +1553,9 @@ val remove_drive : t -> string -> unit
 
 val removexattr : t -> string -> string -> unit
 (** remove extended attribute of a file or directory *)
+
+val rename : t -> string -> string -> unit
+(** rename a file on the same filesystem *)
 
 val resize2fs : t -> string -> unit
 (** resize an ext2, ext3 or ext4 filesystem *)
@@ -2231,13 +2217,6 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method inspect_list_applications : string -> application array
   method inspect_list_applications2 : string -> application2 array
   method inspect_os : unit -> string array
-  method internal_autosync : unit -> unit
-  method internal_hot_add_drive : string -> unit
-  method internal_hot_remove_drive : string -> unit
-  method internal_hot_remove_drive_precheck : string -> unit
-  method internal_lstatlist : string -> string array -> stat array
-  method internal_lxattrlist : string -> string array -> xattr array
-  method internal_readlinklist : string -> string array -> string array
   method internal_test : ?obool:bool -> ?oint:int -> ?oint64:int64 -> ?ostring:string -> ?ostringlist:string array -> string -> string option -> string array -> bool -> int -> int64 -> string -> string -> string -> unit
   method internal_test_63_optargs : ?opt1:int -> ?opt2:int -> ?opt3:int -> ?opt4:int -> ?opt5:int -> ?opt6:int -> ?opt7:int -> ?opt8:int -> ?opt9:int -> ?opt10:int -> ?opt11:int -> ?opt12:int -> ?opt13:int -> ?opt14:int -> ?opt15:int -> ?opt16:int -> ?opt17:int -> ?opt18:int -> ?opt19:int -> ?opt20:int -> ?opt21:int -> ?opt22:int -> ?opt23:int -> ?opt24:int -> ?opt25:int -> ?opt26:int -> ?opt27:int -> ?opt28:int -> ?opt29:int -> ?opt30:int -> ?opt31:int -> ?opt32:int -> ?opt33:int -> ?opt34:int -> ?opt35:int -> ?opt36:int -> ?opt37:int -> ?opt38:int -> ?opt39:int -> ?opt40:int -> ?opt41:int -> ?opt42:int -> ?opt43:int -> ?opt44:int -> ?opt45:int -> ?opt46:int -> ?opt47:int -> ?opt48:int -> ?opt49:int -> ?opt50:int -> ?opt51:int -> ?opt52:int -> ?opt53:int -> ?opt54:int -> ?opt55:int -> ?opt56:int -> ?opt57:int -> ?opt58:int -> ?opt59:int -> ?opt60:int -> ?opt61:int -> ?opt62:int -> ?opt63:int -> unit -> unit
   method internal_test_close_output : unit -> unit
@@ -2265,8 +2244,6 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method internal_test_rstructlist : string -> lvm_pv array
   method internal_test_rstructlisterr : unit -> lvm_pv array
   method internal_test_set_output : string -> unit
-  method internal_write : string -> string -> unit
-  method internal_write_append : string -> string -> unit
   method is_blockdev : string -> bool
   method is_busy : unit -> bool
   method is_chardev : string -> bool
@@ -2429,6 +2406,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method realpath : string -> string
   method remove_drive : string -> unit
   method removexattr : string -> string -> unit
+  method rename : string -> string -> unit
   method resize2fs : string -> unit
   method resize2fs_M : string -> unit
   method resize2fs_size : string -> int64 -> unit

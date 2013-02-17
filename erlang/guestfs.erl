@@ -3,7 +3,7 @@
 %    generator/ *.ml
 %  ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 % 
-%  Copyright (C) 2009-2012 Red Hat Inc.
+%  Copyright (C) 2009-2013 Red Hat Inc.
 % 
 %  This library is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU Lesser General Public
@@ -222,13 +222,6 @@
 -export([inspect_list_applications/2]).
 -export([inspect_list_applications2/2]).
 -export([inspect_os/1]).
--export([internal_autosync/1]).
--export([internal_hot_add_drive/2]).
--export([internal_hot_remove_drive/2]).
--export([internal_hot_remove_drive_precheck/2]).
--export([internal_lstatlist/3]).
--export([internal_lxattrlist/3]).
--export([internal_readlinklist/3]).
 -export([internal_test/10, internal_test/11]).
 -export([internal_test_63_optargs/1, internal_test_63_optargs/2]).
 -export([internal_test_close_output/1]).
@@ -256,8 +249,6 @@
 -export([internal_test_rstructlist/2]).
 -export([internal_test_rstructlisterr/1]).
 -export([internal_test_set_output/2]).
--export([internal_write/3]).
--export([internal_write_append/3]).
 -export([is_blockdev/2]).
 -export([is_busy/1]).
 -export([is_chardev/2]).
@@ -420,6 +411,7 @@
 -export([realpath/2]).
 -export([remove_drive/2]).
 -export([removexattr/3]).
+-export([rename/3]).
 -export([resize2fs/2]).
 -export([resize2fs_M/2]).
 -export([resize2fs_size/3]).
@@ -1215,27 +1207,6 @@ inspect_list_applications2(G, Root) ->
 inspect_os(G) ->
   call_port(G, {inspect_os}).
 
-internal_autosync(G) ->
-  call_port(G, {internal_autosync}).
-
-internal_hot_add_drive(G, Label) ->
-  call_port(G, {internal_hot_add_drive, Label}).
-
-internal_hot_remove_drive(G, Label) ->
-  call_port(G, {internal_hot_remove_drive, Label}).
-
-internal_hot_remove_drive_precheck(G, Label) ->
-  call_port(G, {internal_hot_remove_drive_precheck, Label}).
-
-internal_lstatlist(G, Path, Names) ->
-  call_port(G, {internal_lstatlist, Path, Names}).
-
-internal_lxattrlist(G, Path, Names) ->
-  call_port(G, {internal_lxattrlist, Path, Names}).
-
-internal_readlinklist(G, Path, Names) ->
-  call_port(G, {internal_readlinklist, Path, Names}).
-
 internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs) ->
   call_port(G, {internal_test, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs}).
 internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin) ->
@@ -1322,12 +1293,6 @@ internal_test_rstructlisterr(G) ->
 
 internal_test_set_output(G, Filename) ->
   call_port(G, {internal_test_set_output, Filename}).
-
-internal_write(G, Path, Content) ->
-  call_port(G, {internal_write, Path, Content}).
-
-internal_write_append(G, Path, Content) ->
-  call_port(G, {internal_write_append, Path, Content}).
 
 is_blockdev(G, Path) ->
   call_port(G, {is_blockdev, Path}).
@@ -1839,6 +1804,9 @@ remove_drive(G, Label) ->
 
 removexattr(G, Xattr, Path) ->
   call_port(G, {removexattr, Xattr, Path}).
+
+rename(G, Oldpath, Newpath) ->
+  call_port(G, {rename, Oldpath, Newpath}).
 
 resize2fs(G, Device) ->
   call_port(G, {resize2fs, Device}).

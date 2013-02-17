@@ -332,8 +332,6 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
-FEBOOTSTRAP = @FEBOOTSTRAP@
-FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1229,6 +1227,9 @@ STDBOOL_H = @STDBOOL_H@
 STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
+SUPERMIN = @SUPERMIN@
+SUPERMIN_HELPER = @SUPERMIN_HELPER@
+SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1317,11 +1318,13 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 test_parallel_SOURCES = test-parallel.c
-test_parallel_CFLAGS = \
+test_parallel_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
-	-pthread \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+test_parallel_CFLAGS = \
+	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1407,18 +1410,18 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 test_parallel-test-parallel.o: test-parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -MT test_parallel-test-parallel.o -MD -MP -MF $(DEPDIR)/test_parallel-test-parallel.Tpo -c -o test_parallel-test-parallel.o `test -f 'test-parallel.c' || echo '$(srcdir)/'`test-parallel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -MT test_parallel-test-parallel.o -MD -MP -MF $(DEPDIR)/test_parallel-test-parallel.Tpo -c -o test_parallel-test-parallel.o `test -f 'test-parallel.c' || echo '$(srcdir)/'`test-parallel.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parallel-test-parallel.Tpo $(DEPDIR)/test_parallel-test-parallel.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-parallel.c' object='test_parallel-test-parallel.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -c -o test_parallel-test-parallel.o `test -f 'test-parallel.c' || echo '$(srcdir)/'`test-parallel.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -c -o test_parallel-test-parallel.o `test -f 'test-parallel.c' || echo '$(srcdir)/'`test-parallel.c
 
 test_parallel-test-parallel.obj: test-parallel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -MT test_parallel-test-parallel.obj -MD -MP -MF $(DEPDIR)/test_parallel-test-parallel.Tpo -c -o test_parallel-test-parallel.obj `if test -f 'test-parallel.c'; then $(CYGPATH_W) 'test-parallel.c'; else $(CYGPATH_W) '$(srcdir)/test-parallel.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -MT test_parallel-test-parallel.obj -MD -MP -MF $(DEPDIR)/test_parallel-test-parallel.Tpo -c -o test_parallel-test-parallel.obj `if test -f 'test-parallel.c'; then $(CYGPATH_W) 'test-parallel.c'; else $(CYGPATH_W) '$(srcdir)/test-parallel.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parallel-test-parallel.Tpo $(DEPDIR)/test_parallel-test-parallel.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-parallel.c' object='test_parallel-test-parallel.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -c -o test_parallel-test-parallel.obj `if test -f 'test-parallel.c'; then $(CYGPATH_W) 'test-parallel.c'; else $(CYGPATH_W) '$(srcdir)/test-parallel.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_CPPFLAGS) $(CPPFLAGS) $(test_parallel_CFLAGS) $(CFLAGS) -c -o test_parallel-test-parallel.obj `if test -f 'test-parallel.c'; then $(CYGPATH_W) 'test-parallel.c'; else $(CYGPATH_W) '$(srcdir)/test-parallel.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -206,6 +206,7 @@ src/free-structs.c
 src/guestfs-actions.pod
 src/guestfs-availability.pod
 src/guestfs-internal-actions.h
+src/guestfs-internal-frontend-cleanups.h
 src/guestfs-structs.pod
 src/guestfs.h
 src/guestfs_protocol.x

@@ -233,6 +233,9 @@ read_rpm_name (guestfs_h *g,
   return 0;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
+
 /* tag constants, see rpmtag.h in RPM for complete list */
 #define RPMTAG_VERSION 1001
 #define RPMTAG_RELEASE 1002
@@ -279,6 +282,8 @@ get_rpm_header_tag (guestfs_h *g, const unsigned char *header_start,
   return NULL;
 }
 
+#pragma GCC diagnostic pop
+
 struct read_package_data {
   struct rpm_names_list *list;
   struct guestfs_application2_list *apps;
@@ -292,7 +297,7 @@ read_package (guestfs_h *g,
 {
   struct read_package_data *data = datav;
   struct rpm_name nkey, *entry;
-  char *version, *release, *arch;
+  CLEANUP_FREE char *version = NULL, *release = NULL, *arch = NULL;
 
   /* This function reads one (key, value) pair from the Packages
    * database.  The key is the link field (see struct rpm_name).  The
@@ -326,17 +331,13 @@ read_package (guestfs_h *g,
     add_application (g, data->apps, entry->name, "", 0, version, release,
                      arch ? arch : "", "", "", "", "");
 
-  free (version);
-  free (release);
-  free (arch);
-
   return 0;
 }
 
 static struct guestfs_application2_list *
 list_applications_rpm (guestfs_h *g, struct inspect_fs *fs)
 {
-  char *Name = NULL, *Packages = NULL;
+  CLEANUP_FREE char *Name = NULL, *Packages = NULL;
   struct rpm_names_list list = { .names = NULL, .len = 0 };
   struct guestfs_application2_list *apps = NULL;
   struct read_package_data data;
@@ -371,18 +372,13 @@ list_applications_rpm (guestfs_h *g, struct inspect_fs *fs)
   if (guestfs___read_db_dump (g, Packages, &data, read_package) == -1)
     goto error;
 
-  free (Name);
-  free (Packages);
   free_rpm_names_list (&list);
 
   return apps;
 
  error:
-  free (Name);
-  free (Packages);
   free_rpm_names_list (&list);
-  if (apps != NULL)
-    guestfs_free_application2_list (apps);
+  guestfs_free_application2_list (apps);
 
   return NULL;
 }
@@ -392,7 +388,7 @@ list_applications_rpm (guestfs_h *g, struct inspect_fs *fs)
 static struct guestfs_application2_list *
 list_applications_deb (guestfs_h *g, struct inspect_fs *fs)
 {
-  char *status = NULL;
+  CLEANUP_FREE char *status = NULL;
   status = guestfs___download_to_tmp (g, fs, "/var/lib/dpkg/status", "status",
                                       MAX_PKG_DB_SIZE);
   if (status == NULL)
@@ -402,7 +398,7 @@ list_applications_deb (guestfs_h *g, struct inspect_fs *fs)
   FILE *fp;
   char line[1024];
   size_t len;
-  char *name = NULL, *version = NULL, *release = NULL, *arch = NULL;
+  CLEANUP_FREE char *name = NULL, *version = NULL, *release = NULL, *arch = NULL;
   int installed_flag = 0;
 
   fp = fopen (status, "r");
@@ -475,16 +471,12 @@ list_applications_deb (guestfs_h *g, struct inspect_fs *fs)
   ret = apps;
 
  out:
-  if (ret == NULL && apps != NULL)
+  if (ret == NULL)
     guestfs_free_application2_list (apps);
   /*
   if (fp)
     fclose (fp);
   */
-  free (name);
-  free (version);
-  free (release);
-  free (status);
   return ret;
 }
 
@@ -498,7 +490,7 @@ list_applications_windows (guestfs_h *g, struct inspect_fs *fs)
   snprintf (software, len, "%s/system32/config/software",
             fs->windows_systemroot);
 
-  char *software_path = guestfs_case_sensitive_path (g, software);
+  CLEANUP_FREE char *software_path = guestfs_case_sensitive_path (g, software);
   if (!software_path)
     return NULL;
 
@@ -510,7 +502,7 @@ list_applications_windows (guestfs_h *g, struct inspect_fs *fs)
 
   if (guestfs_hivex_open (g, software_path,
                           GUESTFS_HIVEX_OPEN_VERBOSE, g->verbose, -1) == -1)
-    goto out;
+    return NULL;
 
   /* Allocate apps list. */
   ret = safe_malloc (g, sizeof *ret);
@@ -528,9 +520,6 @@ list_applications_windows (guestfs_h *g, struct inspect_fs *fs)
                                        sizeof hivepath2 / sizeof hivepath2[0]);
 
   guestfs_hivex_close (g);
- out:
-  free (software_path);
-
   return ret;
 }
 
@@ -539,7 +528,7 @@ list_applications_windows_from_path (guestfs_h *g,
                                      struct guestfs_application2_list *apps,
                                      const char **path, size_t path_len)
 {
-  struct guestfs_hivex_node_list *children = NULL;
+  CLEANUP_FREE_HIVEX_NODE_LIST struct guestfs_hivex_node_list *children = NULL;
   int64_t node;
   size_t i;
 
@@ -562,13 +551,8 @@ list_applications_windows_from_path (guestfs_h *g,
   for (i = 0; i < children->len; ++i) {
     int64_t child = children->val[i].hivex_node_h;
     int64_t value;
-    char *name = NULL;
-    char *display_name = NULL;
-    char *version = NULL;
-    char *install_path = NULL;
-    char *publisher = NULL;
-    char *url = NULL;
-    char *comments = NULL;
+    CLEANUP_FREE char *name = NULL, *display_name = NULL, *version = NULL,
+      *install_path = NULL, *publisher = NULL, *url = NULL, *comments = NULL;
 
     /* Use the node name as a proxy for the package name in Linux.  The
      * display name is not language-independent, so it cannot be used.
@@ -606,17 +590,7 @@ list_applications_windows_from_path (guestfs_h *g,
                          comments ? : "");
       }
     }
-
-    free (name);
-    free (display_name);
-    free (version);
-    free (install_path);
-    free (publisher);
-    free (url);
-    free (comments);
   }
-
-  guestfs_free_hivex_node_list (children);
 }
 
 static void

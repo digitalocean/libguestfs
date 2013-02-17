@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,13 @@ let rec generate_ruby_c () =
 
 #include <ruby.h>
 
+/* ruby/defines.h defines '_'. */
+#ifdef _
+#undef _
+#endif
+
 #include \"guestfs.h\"
+#include \"guestfs-internal-frontend.h\"
 
 #include \"extconf.h\"
 
@@ -390,13 +396,12 @@ ruby_user_cancel (VALUE gv)
 ";
 
   List.iter (
-    fun ({ name = name; style = (ret, args, optargs as style);
-           in_docs = in_docs;
-           c_function = c_function; c_optarg_prefix = c_optarg_prefix;
-           shortdesc = shortdesc; longdesc = longdesc } as f) ->
+    fun f ->
+      let ret, args, optargs = f.style in
+
       (* Generate rdoc. *)
-      if in_docs then (
-        let doc = replace_str longdesc "C<guestfs_" "C<g." in
+      if is_documented f then (
+        let doc = replace_str f.longdesc "C<guestfs_" "C<g." in
         let doc =
           if optargs <> [] then
             doc ^ "\n\nOptional arguments are supplied in the final hash parameter, which is a hash of the argument name to its value.  Pass an empty {} for no optional arguments."
@@ -409,9 +414,14 @@ ruby_user_cancel (VALUE gv)
           match deprecation_notice f with
           | None -> doc
           | Some txt -> doc ^ "\n\n" ^ txt in
-        let doc = pod2text ~width:60 name doc in
+        let doc = pod2text ~width:60 f.name doc in
         let doc = String.concat "\n * " doc in
         let doc = trim doc in
+
+        (* Because Ruby documentation appears as C comments, we must
+         * replace any instance of "/*".
+         *)
+        let doc = replace_str doc "/*" "/ *" in
 
         let args = List.map name_of_argt args in
         let args = if optargs <> [] then args @ ["{optargs...}"] else args in
@@ -444,7 +454,7 @@ ruby_user_cancel (VALUE gv)
  * (For the C API documentation for this function, see
  * +guestfs_%s+[http://libguestfs.org/guestfs.3.html#guestfs_%s]).
  */
-" name args ret shortdesc doc name name
+" f.name args ret f.shortdesc doc f.name f.name
       );
 
       (* Generate the function.  Prototype is completely different
@@ -454,7 +464,7 @@ ruby_user_cancel (VALUE gv)
        * http://stackoverflow.com/questions/7626745/extending-ruby-in-c-how-to-specify-default-argument-values-to-function
        *)
       pr "static VALUE\n";
-      pr "ruby_guestfs_%s (" name;
+      pr "ruby_guestfs_%s (" f.name;
       if optargs = [] then (
         pr "VALUE gv";
         List.iter
@@ -468,7 +478,7 @@ ruby_user_cancel (VALUE gv)
       pr "  Data_Get_Struct (gv, guestfs_h, g);\n";
       pr "  if (!g)\n";
       pr "    rb_raise (rb_eArgError, \"%%s: used handle after closing it\", \"%s\");\n"
-        name;
+        f.name;
       pr "\n";
 
       (* For optargs case, get the arg VALUEs into local variables.
@@ -500,7 +510,7 @@ ruby_user_cancel (VALUE gv)
           pr "  const char *%s = RSTRING_PTR (%sv);\n" n n;
           pr "  if (!%s)\n" n;
           pr "    rb_raise (rb_eTypeError, \"expected string for parameter %%s of %%s\",\n";
-          pr "              \"%s\", \"%s\");\n" n name;
+          pr "              \"%s\", \"%s\");\n" n f.name;
           pr "  size_t %s_size = RSTRING_LEN (%sv);\n" n n
         | OptString n ->
           pr "  const char *%s = !NIL_P (%sv) ? StringValueCStr (%sv) : NULL;\n" n n n
@@ -532,8 +542,8 @@ ruby_user_cancel (VALUE gv)
       (* Optional arguments are passed in a final hash parameter. *)
       if optargs <> [] then (
         pr "  Check_Type (optargsv, T_HASH);\n";
-        pr "  struct %s optargs_s = { .bitmask = 0 };\n" c_function;
-        pr "  struct %s *optargs = &optargs_s;\n" c_function;
+        pr "  struct %s optargs_s = { .bitmask = 0 };\n" f.c_function;
+        pr "  struct %s *optargs = &optargs_s;\n" f.c_function;
         pr "  volatile VALUE v;\n";
         List.iter (
           fun argt ->
@@ -566,7 +576,7 @@ ruby_user_cancel (VALUE gv)
                pr "    optargs_s.%s = r;\n" n;
                pr "  }\n"
             );
-            pr "    optargs_s.bitmask |= %s_%s_BITMASK;\n" c_optarg_prefix uc_n;
+            pr "    optargs_s.bitmask |= %s_%s_BITMASK;\n" f.c_optarg_prefix uc_n;
             pr "  }\n";
         ) optargs;
         pr "\n";
@@ -588,8 +598,8 @@ ruby_user_cancel (VALUE gv)
       );
       pr "\n";
 
-      pr "  r = %s " c_function;
-      generate_c_call_args ~handle:"g" style;
+      pr "  r = %s " f.c_function;
+      generate_c_call_args ~handle:"g" f.style;
       pr ";\n";
 
       List.iter (
@@ -664,18 +674,21 @@ ruby_user_cancel (VALUE gv)
 
       pr "}\n";
       pr "\n"
-  ) all_functions;
+  ) external_functions;
 
   pr "\
+extern void Init__guestfs (void); /* keep GCC warnings happy */
+
 /* Initialize the module. */
-void Init__guestfs ()
+void
+Init__guestfs (void)
 {
   m_guestfs = rb_define_module (\"Guestfs\");
   c_guestfs = rb_define_class_under (m_guestfs, \"Guestfs\", rb_cObject);
   e_Error = rb_define_class_under (m_guestfs, \"Error\", rb_eStandardError);
 
 #ifdef HAVE_RB_DEFINE_ALLOC_FUNC
-  rb_define_alloc_func (c_guestfs, ruby_guestfs_create);
+  rb_define_alloc_func (c_guestfs, (rb_alloc_func_t) ruby_guestfs_create);
 #endif
 
   rb_define_module_function (m_guestfs, \"create\", ruby_guestfs_create, -1);
@@ -696,6 +709,8 @@ void Init__guestfs ()
         (String.uppercase name);
       pr "                   ULL2NUM (UINT64_C (0x%x)));\n" bitmask;
   ) events;
+  pr "  rb_define_const (m_guestfs, \"EVENT_ALL\",\n";
+  pr "                   ULL2NUM (UINT64_C (0x%x)));\n" all_events_bitmask;
   pr "\n";
 
   (* Methods. *)
@@ -712,7 +727,7 @@ void Init__guestfs ()
           pr "  rb_define_method (c_guestfs, \"%s\",\n" alias;
           pr "        ruby_guestfs_%s, %d);\n" name nr_args
       ) non_c_aliases
-  ) all_functions;
+  ) external_functions;
 
   pr "}\n"
 

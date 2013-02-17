@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -460,8 +460,6 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
-FEBOOTSTRAP = @FEBOOTSTRAP@
-FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1357,6 +1355,9 @@ STDBOOL_H = @STDBOOL_H@
 STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
+SUPERMIN = @SUPERMIN@
+SUPERMIN_HELPER = @SUPERMIN_HELPER@
+SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1460,8 +1461,11 @@ TESTS_ENVIRONMENT = \
 
 #SKIP_TEST_CHECKSUM_8=$(shell if test `find ../initramfs -name squashfs.ko | wc -l` -eq 0; then echo 1; fi)
 tests_SOURCES = tests.c
+tests_CPPFLAGS = \
+	-DGUESTFS_PRIVATE=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 tests_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1474,8 +1478,10 @@ test_command_LDFLAGS = -all-static
 
 # Hand-written C API tests.
 test_just_header_SOURCES = test-just-header.c
+test_just_header_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_just_header_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1483,8 +1489,10 @@ test_just_header_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 @HAVE_CXX_TRUE@test_just_header_cxx_SOURCES = test-just-header-cxx.cpp
+@HAVE_CXX_TRUE@test_just_header_cxx_CPPFLAGS = \
+@HAVE_CXX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 @HAVE_CXX_TRUE@test_just_header_cxx_CXXFLAGS = \
-@HAVE_CXX_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
 @HAVE_CXX_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_CXX_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1492,8 +1500,10 @@ test_just_header_LDADD = \
 @HAVE_CXX_TRUE@	$(top_builddir)/src/libguestfs.la
 
 test_create_handle_SOURCES = test-create-handle.c
+test_create_handle_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_create_handle_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1501,8 +1511,10 @@ test_create_handle_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 test_config_SOURCES = test-config.c
+test_config_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_config_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1510,8 +1522,10 @@ test_config_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 test_add_drive_opts_SOURCES = test-add-drive-opts.c
+test_add_drive_opts_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_add_drive_opts_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1519,8 +1533,10 @@ test_add_drive_opts_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 test_last_errno_SOURCES = test-last-errno.c
+test_last_errno_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_last_errno_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1528,8 +1544,10 @@ test_last_errno_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 test_private_data_SOURCES = test-private-data.c
+test_private_data_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_private_data_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1537,9 +1555,11 @@ test_private_data_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 test_user_cancel_SOURCES = test-user-cancel.c
+test_user_cancel_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_user_cancel_CFLAGS = \
 	-pthread \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1547,10 +1567,12 @@ test_user_cancel_LDADD = \
 	$(top_builddir)/src/libguestfs.la -lm
 
 test_debug_to_file_SOURCES = test-debug-to-file.c
-test_debug_to_file_CFLAGS = \
+test_debug_to_file_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(top_srcdir)/gnulib/lib \
-	-I$(top_builddir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib
+
+test_debug_to_file_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1559,10 +1581,12 @@ test_debug_to_file_LDADD = \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
 test_environment_SOURCES = test-environment.c
-test_environment_CFLAGS = \
+test_environment_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(top_srcdir)/gnulib/lib \
-	-I$(top_builddir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib
+
+test_environment_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1693,144 +1717,144 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 test_add_drive_opts-test-add-drive-opts.o: test-add-drive-opts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -MT test_add_drive_opts-test-add-drive-opts.o -MD -MP -MF $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Tpo -c -o test_add_drive_opts-test-add-drive-opts.o `test -f 'test-add-drive-opts.c' || echo '$(srcdir)/'`test-add-drive-opts.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_drive_opts_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -MT test_add_drive_opts-test-add-drive-opts.o -MD -MP -MF $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Tpo -c -o test_add_drive_opts-test-add-drive-opts.o `test -f 'test-add-drive-opts.c' || echo '$(srcdir)/'`test-add-drive-opts.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Tpo $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-drive-opts.c' object='test_add_drive_opts-test-add-drive-opts.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -c -o test_add_drive_opts-test-add-drive-opts.o `test -f 'test-add-drive-opts.c' || echo '$(srcdir)/'`test-add-drive-opts.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_drive_opts_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -c -o test_add_drive_opts-test-add-drive-opts.o `test -f 'test-add-drive-opts.c' || echo '$(srcdir)/'`test-add-drive-opts.c
 
 test_add_drive_opts-test-add-drive-opts.obj: test-add-drive-opts.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -MT test_add_drive_opts-test-add-drive-opts.obj -MD -MP -MF $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Tpo -c -o test_add_drive_opts-test-add-drive-opts.obj `if test -f 'test-add-drive-opts.c'; then $(CYGPATH_W) 'test-add-drive-opts.c'; else $(CYGPATH_W) '$(srcdir)/test-add-drive-opts.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_drive_opts_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -MT test_add_drive_opts-test-add-drive-opts.obj -MD -MP -MF $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Tpo -c -o test_add_drive_opts-test-add-drive-opts.obj `if test -f 'test-add-drive-opts.c'; then $(CYGPATH_W) 'test-add-drive-opts.c'; else $(CYGPATH_W) '$(srcdir)/test-add-drive-opts.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Tpo $(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-add-drive-opts.c' object='test_add_drive_opts-test-add-drive-opts.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -c -o test_add_drive_opts-test-add-drive-opts.obj `if test -f 'test-add-drive-opts.c'; then $(CYGPATH_W) 'test-add-drive-opts.c'; else $(CYGPATH_W) '$(srcdir)/test-add-drive-opts.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_add_drive_opts_CPPFLAGS) $(CPPFLAGS) $(test_add_drive_opts_CFLAGS) $(CFLAGS) -c -o test_add_drive_opts-test-add-drive-opts.obj `if test -f 'test-add-drive-opts.c'; then $(CYGPATH_W) 'test-add-drive-opts.c'; else $(CYGPATH_W) '$(srcdir)/test-add-drive-opts.c'; fi`
 
 test_config-test-config.o: test-config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -MT test_config-test-config.o -MD -MP -MF $(DEPDIR)/test_config-test-config.Tpo -c -o test_config-test-config.o `test -f 'test-config.c' || echo '$(srcdir)/'`test-config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_config_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -MT test_config-test-config.o -MD -MP -MF $(DEPDIR)/test_config-test-config.Tpo -c -o test_config-test-config.o `test -f 'test-config.c' || echo '$(srcdir)/'`test-config.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_config-test-config.Tpo $(DEPDIR)/test_config-test-config.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-config.c' object='test_config-test-config.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -c -o test_config-test-config.o `test -f 'test-config.c' || echo '$(srcdir)/'`test-config.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_config_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -c -o test_config-test-config.o `test -f 'test-config.c' || echo '$(srcdir)/'`test-config.c
 
 test_config-test-config.obj: test-config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -MT test_config-test-config.obj -MD -MP -MF $(DEPDIR)/test_config-test-config.Tpo -c -o test_config-test-config.obj `if test -f 'test-config.c'; then $(CYGPATH_W) 'test-config.c'; else $(CYGPATH_W) '$(srcdir)/test-config.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_config_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -MT test_config-test-config.obj -MD -MP -MF $(DEPDIR)/test_config-test-config.Tpo -c -o test_config-test-config.obj `if test -f 'test-config.c'; then $(CYGPATH_W) 'test-config.c'; else $(CYGPATH_W) '$(srcdir)/test-config.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_config-test-config.Tpo $(DEPDIR)/test_config-test-config.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-config.c' object='test_config-test-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -c -o test_config-test-config.obj `if test -f 'test-config.c'; then $(CYGPATH_W) 'test-config.c'; else $(CYGPATH_W) '$(srcdir)/test-config.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_config_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -c -o test_config-test-config.obj `if test -f 'test-config.c'; then $(CYGPATH_W) 'test-config.c'; else $(CYGPATH_W) '$(srcdir)/test-config.c'; fi`
 
 test_create_handle-test-create-handle.o: test-create-handle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -MT test_create_handle-test-create-handle.o -MD -MP -MF $(DEPDIR)/test_create_handle-test-create-handle.Tpo -c -o test_create_handle-test-create-handle.o `test -f 'test-create-handle.c' || echo '$(srcdir)/'`test-create-handle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_create_handle_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -MT test_create_handle-test-create-handle.o -MD -MP -MF $(DEPDIR)/test_create_handle-test-create-handle.Tpo -c -o test_create_handle-test-create-handle.o `test -f 'test-create-handle.c' || echo '$(srcdir)/'`test-create-handle.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_create_handle-test-create-handle.Tpo $(DEPDIR)/test_create_handle-test-create-handle.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-create-handle.c' object='test_create_handle-test-create-handle.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -c -o test_create_handle-test-create-handle.o `test -f 'test-create-handle.c' || echo '$(srcdir)/'`test-create-handle.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_create_handle_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -c -o test_create_handle-test-create-handle.o `test -f 'test-create-handle.c' || echo '$(srcdir)/'`test-create-handle.c
 
 test_create_handle-test-create-handle.obj: test-create-handle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -MT test_create_handle-test-create-handle.obj -MD -MP -MF $(DEPDIR)/test_create_handle-test-create-handle.Tpo -c -o test_create_handle-test-create-handle.obj `if test -f 'test-create-handle.c'; then $(CYGPATH_W) 'test-create-handle.c'; else $(CYGPATH_W) '$(srcdir)/test-create-handle.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_create_handle_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -MT test_create_handle-test-create-handle.obj -MD -MP -MF $(DEPDIR)/test_create_handle-test-create-handle.Tpo -c -o test_create_handle-test-create-handle.obj `if test -f 'test-create-handle.c'; then $(CYGPATH_W) 'test-create-handle.c'; else $(CYGPATH_W) '$(srcdir)/test-create-handle.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_create_handle-test-create-handle.Tpo $(DEPDIR)/test_create_handle-test-create-handle.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-create-handle.c' object='test_create_handle-test-create-handle.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -c -o test_create_handle-test-create-handle.obj `if test -f 'test-create-handle.c'; then $(CYGPATH_W) 'test-create-handle.c'; else $(CYGPATH_W) '$(srcdir)/test-create-handle.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_create_handle_CPPFLAGS) $(CPPFLAGS) $(test_create_handle_CFLAGS) $(CFLAGS) -c -o test_create_handle-test-create-handle.obj `if test -f 'test-create-handle.c'; then $(CYGPATH_W) 'test-create-handle.c'; else $(CYGPATH_W) '$(srcdir)/test-create-handle.c'; fi`
 
 test_debug_to_file-test-debug-to-file.o: test-debug-to-file.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -MT test_debug_to_file-test-debug-to-file.o -MD -MP -MF $(DEPDIR)/test_debug_to_file-test-debug-to-file.Tpo -c -o test_debug_to_file-test-debug-to-file.o `test -f 'test-debug-to-file.c' || echo '$(srcdir)/'`test-debug-to-file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_debug_to_file_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -MT test_debug_to_file-test-debug-to-file.o -MD -MP -MF $(DEPDIR)/test_debug_to_file-test-debug-to-file.Tpo -c -o test_debug_to_file-test-debug-to-file.o `test -f 'test-debug-to-file.c' || echo '$(srcdir)/'`test-debug-to-file.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_debug_to_file-test-debug-to-file.Tpo $(DEPDIR)/test_debug_to_file-test-debug-to-file.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-debug-to-file.c' object='test_debug_to_file-test-debug-to-file.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -c -o test_debug_to_file-test-debug-to-file.o `test -f 'test-debug-to-file.c' || echo '$(srcdir)/'`test-debug-to-file.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_debug_to_file_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -c -o test_debug_to_file-test-debug-to-file.o `test -f 'test-debug-to-file.c' || echo '$(srcdir)/'`test-debug-to-file.c
 
 test_debug_to_file-test-debug-to-file.obj: test-debug-to-file.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -MT test_debug_to_file-test-debug-to-file.obj -MD -MP -MF $(DEPDIR)/test_debug_to_file-test-debug-to-file.Tpo -c -o test_debug_to_file-test-debug-to-file.obj `if test -f 'test-debug-to-file.c'; then $(CYGPATH_W) 'test-debug-to-file.c'; else $(CYGPATH_W) '$(srcdir)/test-debug-to-file.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_debug_to_file_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -MT test_debug_to_file-test-debug-to-file.obj -MD -MP -MF $(DEPDIR)/test_debug_to_file-test-debug-to-file.Tpo -c -o test_debug_to_file-test-debug-to-file.obj `if test -f 'test-debug-to-file.c'; then $(CYGPATH_W) 'test-debug-to-file.c'; else $(CYGPATH_W) '$(srcdir)/test-debug-to-file.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_debug_to_file-test-debug-to-file.Tpo $(DEPDIR)/test_debug_to_file-test-debug-to-file.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-debug-to-file.c' object='test_debug_to_file-test-debug-to-file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -c -o test_debug_to_file-test-debug-to-file.obj `if test -f 'test-debug-to-file.c'; then $(CYGPATH_W) 'test-debug-to-file.c'; else $(CYGPATH_W) '$(srcdir)/test-debug-to-file.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_debug_to_file_CPPFLAGS) $(CPPFLAGS) $(test_debug_to_file_CFLAGS) $(CFLAGS) -c -o test_debug_to_file-test-debug-to-file.obj `if test -f 'test-debug-to-file.c'; then $(CYGPATH_W) 'test-debug-to-file.c'; else $(CYGPATH_W) '$(srcdir)/test-debug-to-file.c'; fi`
 
 test_environment-test-environment.o: test-environment.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -MT test_environment-test-environment.o -MD -MP -MF $(DEPDIR)/test_environment-test-environment.Tpo -c -o test_environment-test-environment.o `test -f 'test-environment.c' || echo '$(srcdir)/'`test-environment.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_environment_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -MT test_environment-test-environment.o -MD -MP -MF $(DEPDIR)/test_environment-test-environment.Tpo -c -o test_environment-test-environment.o `test -f 'test-environment.c' || echo '$(srcdir)/'`test-environment.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_environment-test-environment.Tpo $(DEPDIR)/test_environment-test-environment.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-environment.c' object='test_environment-test-environment.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.o `test -f 'test-environment.c' || echo '$(srcdir)/'`test-environment.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_environment_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.o `test -f 'test-environment.c' || echo '$(srcdir)/'`test-environment.c
 
 test_environment-test-environment.obj: test-environment.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -MT test_environment-test-environment.obj -MD -MP -MF $(DEPDIR)/test_environment-test-environment.Tpo -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_environment_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -MT test_environment-test-environment.obj -MD -MP -MF $(DEPDIR)/test_environment-test-environment.Tpo -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_environment-test-environment.Tpo $(DEPDIR)/test_environment-test-environment.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-environment.c' object='test_environment-test-environment.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_environment_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
 
 test_just_header-test-just-header.o: test-just-header.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -MT test_just_header-test-just-header.o -MD -MP -MF $(DEPDIR)/test_just_header-test-just-header.Tpo -c -o test_just_header-test-just-header.o `test -f 'test-just-header.c' || echo '$(srcdir)/'`test-just-header.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -MT test_just_header-test-just-header.o -MD -MP -MF $(DEPDIR)/test_just_header-test-just-header.Tpo -c -o test_just_header-test-just-header.o `test -f 'test-just-header.c' || echo '$(srcdir)/'`test-just-header.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_just_header-test-just-header.Tpo $(DEPDIR)/test_just_header-test-just-header.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-just-header.c' object='test_just_header-test-just-header.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -c -o test_just_header-test-just-header.o `test -f 'test-just-header.c' || echo '$(srcdir)/'`test-just-header.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -c -o test_just_header-test-just-header.o `test -f 'test-just-header.c' || echo '$(srcdir)/'`test-just-header.c
 
 test_just_header-test-just-header.obj: test-just-header.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -MT test_just_header-test-just-header.obj -MD -MP -MF $(DEPDIR)/test_just_header-test-just-header.Tpo -c -o test_just_header-test-just-header.obj `if test -f 'test-just-header.c'; then $(CYGPATH_W) 'test-just-header.c'; else $(CYGPATH_W) '$(srcdir)/test-just-header.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -MT test_just_header-test-just-header.obj -MD -MP -MF $(DEPDIR)/test_just_header-test-just-header.Tpo -c -o test_just_header-test-just-header.obj `if test -f 'test-just-header.c'; then $(CYGPATH_W) 'test-just-header.c'; else $(CYGPATH_W) '$(srcdir)/test-just-header.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_just_header-test-just-header.Tpo $(DEPDIR)/test_just_header-test-just-header.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-just-header.c' object='test_just_header-test-just-header.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -c -o test_just_header-test-just-header.obj `if test -f 'test-just-header.c'; then $(CYGPATH_W) 'test-just-header.c'; else $(CYGPATH_W) '$(srcdir)/test-just-header.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -c -o test_just_header-test-just-header.obj `if test -f 'test-just-header.c'; then $(CYGPATH_W) 'test-just-header.c'; else $(CYGPATH_W) '$(srcdir)/test-just-header.c'; fi`
 
 test_last_errno-test-last-errno.o: test-last-errno.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -MT test_last_errno-test-last-errno.o -MD -MP -MF $(DEPDIR)/test_last_errno-test-last-errno.Tpo -c -o test_last_errno-test-last-errno.o `test -f 'test-last-errno.c' || echo '$(srcdir)/'`test-last-errno.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_last_errno_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -MT test_last_errno-test-last-errno.o -MD -MP -MF $(DEPDIR)/test_last_errno-test-last-errno.Tpo -c -o test_last_errno-test-last-errno.o `test -f 'test-last-errno.c' || echo '$(srcdir)/'`test-last-errno.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_last_errno-test-last-errno.Tpo $(DEPDIR)/test_last_errno-test-last-errno.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-last-errno.c' object='test_last_errno-test-last-errno.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -c -o test_last_errno-test-last-errno.o `test -f 'test-last-errno.c' || echo '$(srcdir)/'`test-last-errno.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_last_errno_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -c -o test_last_errno-test-last-errno.o `test -f 'test-last-errno.c' || echo '$(srcdir)/'`test-last-errno.c
 
 test_last_errno-test-last-errno.obj: test-last-errno.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -MT test_last_errno-test-last-errno.obj -MD -MP -MF $(DEPDIR)/test_last_errno-test-last-errno.Tpo -c -o test_last_errno-test-last-errno.obj `if test -f 'test-last-errno.c'; then $(CYGPATH_W) 'test-last-errno.c'; else $(CYGPATH_W) '$(srcdir)/test-last-errno.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_last_errno_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -MT test_last_errno-test-last-errno.obj -MD -MP -MF $(DEPDIR)/test_last_errno-test-last-errno.Tpo -c -o test_last_errno-test-last-errno.obj `if test -f 'test-last-errno.c'; then $(CYGPATH_W) 'test-last-errno.c'; else $(CYGPATH_W) '$(srcdir)/test-last-errno.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_last_errno-test-last-errno.Tpo $(DEPDIR)/test_last_errno-test-last-errno.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-last-errno.c' object='test_last_errno-test-last-errno.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -c -o test_last_errno-test-last-errno.obj `if test -f 'test-last-errno.c'; then $(CYGPATH_W) 'test-last-errno.c'; else $(CYGPATH_W) '$(srcdir)/test-last-errno.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_last_errno_CPPFLAGS) $(CPPFLAGS) $(test_last_errno_CFLAGS) $(CFLAGS) -c -o test_last_errno-test-last-errno.obj `if test -f 'test-last-errno.c'; then $(CYGPATH_W) 'test-last-errno.c'; else $(CYGPATH_W) '$(srcdir)/test-last-errno.c'; fi`
 
 test_private_data-test-private-data.o: test-private-data.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -MT test_private_data-test-private-data.o -MD -MP -MF $(DEPDIR)/test_private_data-test-private-data.Tpo -c -o test_private_data-test-private-data.o `test -f 'test-private-data.c' || echo '$(srcdir)/'`test-private-data.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_private_data_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -MT test_private_data-test-private-data.o -MD -MP -MF $(DEPDIR)/test_private_data-test-private-data.Tpo -c -o test_private_data-test-private-data.o `test -f 'test-private-data.c' || echo '$(srcdir)/'`test-private-data.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_private_data-test-private-data.Tpo $(DEPDIR)/test_private_data-test-private-data.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-private-data.c' object='test_private_data-test-private-data.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -c -o test_private_data-test-private-data.o `test -f 'test-private-data.c' || echo '$(srcdir)/'`test-private-data.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_private_data_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -c -o test_private_data-test-private-data.o `test -f 'test-private-data.c' || echo '$(srcdir)/'`test-private-data.c
 
 test_private_data-test-private-data.obj: test-private-data.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -MT test_private_data-test-private-data.obj -MD -MP -MF $(DEPDIR)/test_private_data-test-private-data.Tpo -c -o test_private_data-test-private-data.obj `if test -f 'test-private-data.c'; then $(CYGPATH_W) 'test-private-data.c'; else $(CYGPATH_W) '$(srcdir)/test-private-data.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_private_data_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -MT test_private_data-test-private-data.obj -MD -MP -MF $(DEPDIR)/test_private_data-test-private-data.Tpo -c -o test_private_data-test-private-data.obj `if test -f 'test-private-data.c'; then $(CYGPATH_W) 'test-private-data.c'; else $(CYGPATH_W) '$(srcdir)/test-private-data.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_private_data-test-private-data.Tpo $(DEPDIR)/test_private_data-test-private-data.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-private-data.c' object='test_private_data-test-private-data.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -c -o test_private_data-test-private-data.obj `if test -f 'test-private-data.c'; then $(CYGPATH_W) 'test-private-data.c'; else $(CYGPATH_W) '$(srcdir)/test-private-data.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_private_data_CPPFLAGS) $(CPPFLAGS) $(test_private_data_CFLAGS) $(CFLAGS) -c -o test_private_data-test-private-data.obj `if test -f 'test-private-data.c'; then $(CYGPATH_W) 'test-private-data.c'; else $(CYGPATH_W) '$(srcdir)/test-private-data.c'; fi`
 
 test_user_cancel-test-user-cancel.o: test-user-cancel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -MT test_user_cancel-test-user-cancel.o -MD -MP -MF $(DEPDIR)/test_user_cancel-test-user-cancel.Tpo -c -o test_user_cancel-test-user-cancel.o `test -f 'test-user-cancel.c' || echo '$(srcdir)/'`test-user-cancel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_user_cancel_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -MT test_user_cancel-test-user-cancel.o -MD -MP -MF $(DEPDIR)/test_user_cancel-test-user-cancel.Tpo -c -o test_user_cancel-test-user-cancel.o `test -f 'test-user-cancel.c' || echo '$(srcdir)/'`test-user-cancel.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_user_cancel-test-user-cancel.Tpo $(DEPDIR)/test_user_cancel-test-user-cancel.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-user-cancel.c' object='test_user_cancel-test-user-cancel.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -c -o test_user_cancel-test-user-cancel.o `test -f 'test-user-cancel.c' || echo '$(srcdir)/'`test-user-cancel.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_user_cancel_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -c -o test_user_cancel-test-user-cancel.o `test -f 'test-user-cancel.c' || echo '$(srcdir)/'`test-user-cancel.c
 
 test_user_cancel-test-user-cancel.obj: test-user-cancel.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -MT test_user_cancel-test-user-cancel.obj -MD -MP -MF $(DEPDIR)/test_user_cancel-test-user-cancel.Tpo -c -o test_user_cancel-test-user-cancel.obj `if test -f 'test-user-cancel.c'; then $(CYGPATH_W) 'test-user-cancel.c'; else $(CYGPATH_W) '$(srcdir)/test-user-cancel.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_user_cancel_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -MT test_user_cancel-test-user-cancel.obj -MD -MP -MF $(DEPDIR)/test_user_cancel-test-user-cancel.Tpo -c -o test_user_cancel-test-user-cancel.obj `if test -f 'test-user-cancel.c'; then $(CYGPATH_W) 'test-user-cancel.c'; else $(CYGPATH_W) '$(srcdir)/test-user-cancel.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_user_cancel-test-user-cancel.Tpo $(DEPDIR)/test_user_cancel-test-user-cancel.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-user-cancel.c' object='test_user_cancel-test-user-cancel.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -c -o test_user_cancel-test-user-cancel.obj `if test -f 'test-user-cancel.c'; then $(CYGPATH_W) 'test-user-cancel.c'; else $(CYGPATH_W) '$(srcdir)/test-user-cancel.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_user_cancel_CPPFLAGS) $(CPPFLAGS) $(test_user_cancel_CFLAGS) $(CFLAGS) -c -o test_user_cancel-test-user-cancel.obj `if test -f 'test-user-cancel.c'; then $(CYGPATH_W) 'test-user-cancel.c'; else $(CYGPATH_W) '$(srcdir)/test-user-cancel.c'; fi`
 
 tests-tests.o: tests.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -MT tests-tests.o -MD -MP -MF $(DEPDIR)/tests-tests.Tpo -c -o tests-tests.o `test -f 'tests.c' || echo '$(srcdir)/'`tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -MT tests-tests.o -MD -MP -MF $(DEPDIR)/tests-tests.Tpo -c -o tests-tests.o `test -f 'tests.c' || echo '$(srcdir)/'`tests.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tests-tests.Tpo $(DEPDIR)/tests-tests.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests.c' object='tests-tests.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -c -o tests-tests.o `test -f 'tests.c' || echo '$(srcdir)/'`tests.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -c -o tests-tests.o `test -f 'tests.c' || echo '$(srcdir)/'`tests.c
 
 tests-tests.obj: tests.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -MT tests-tests.obj -MD -MP -MF $(DEPDIR)/tests-tests.Tpo -c -o tests-tests.obj `if test -f 'tests.c'; then $(CYGPATH_W) 'tests.c'; else $(CYGPATH_W) '$(srcdir)/tests.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -MT tests-tests.obj -MD -MP -MF $(DEPDIR)/tests-tests.Tpo -c -o tests-tests.obj `if test -f 'tests.c'; then $(CYGPATH_W) 'tests.c'; else $(CYGPATH_W) '$(srcdir)/tests.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tests-tests.Tpo $(DEPDIR)/tests-tests.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests.c' object='tests-tests.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -c -o tests-tests.obj `if test -f 'tests.c'; then $(CYGPATH_W) 'tests.c'; else $(CYGPATH_W) '$(srcdir)/tests.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -c -o tests-tests.obj `if test -f 'tests.c'; then $(CYGPATH_W) 'tests.c'; else $(CYGPATH_W) '$(srcdir)/tests.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1854,18 +1878,18 @@ tests-tests.obj: tests.c
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
 test_just_header_cxx-test-just-header-cxx.o: test-just-header-cxx.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -MT test_just_header_cxx-test-just-header-cxx.o -MD -MP -MF $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Tpo -c -o test_just_header_cxx-test-just-header-cxx.o `test -f 'test-just-header-cxx.cpp' || echo '$(srcdir)/'`test-just-header-cxx.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_cxx_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -MT test_just_header_cxx-test-just-header-cxx.o -MD -MP -MF $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Tpo -c -o test_just_header_cxx-test-just-header-cxx.o `test -f 'test-just-header-cxx.cpp' || echo '$(srcdir)/'`test-just-header-cxx.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Tpo $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test-just-header-cxx.cpp' object='test_just_header_cxx-test-just-header-cxx.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -c -o test_just_header_cxx-test-just-header-cxx.o `test -f 'test-just-header-cxx.cpp' || echo '$(srcdir)/'`test-just-header-cxx.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_cxx_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -c -o test_just_header_cxx-test-just-header-cxx.o `test -f 'test-just-header-cxx.cpp' || echo '$(srcdir)/'`test-just-header-cxx.cpp
 
 test_just_header_cxx-test-just-header-cxx.obj: test-just-header-cxx.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -MT test_just_header_cxx-test-just-header-cxx.obj -MD -MP -MF $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Tpo -c -o test_just_header_cxx-test-just-header-cxx.obj `if test -f 'test-just-header-cxx.cpp'; then $(CYGPATH_W) 'test-just-header-cxx.cpp'; else $(CYGPATH_W) '$(srcdir)/test-just-header-cxx.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_cxx_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -MT test_just_header_cxx-test-just-header-cxx.obj -MD -MP -MF $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Tpo -c -o test_just_header_cxx-test-just-header-cxx.obj `if test -f 'test-just-header-cxx.cpp'; then $(CYGPATH_W) 'test-just-header-cxx.cpp'; else $(CYGPATH_W) '$(srcdir)/test-just-header-cxx.cpp'; fi`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Tpo $(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test-just-header-cxx.cpp' object='test_just_header_cxx-test-just-header-cxx.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -c -o test_just_header_cxx-test-just-header-cxx.obj `if test -f 'test-just-header-cxx.cpp'; then $(CYGPATH_W) 'test-just-header-cxx.cpp'; else $(CYGPATH_W) '$(srcdir)/test-just-header-cxx.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_cxx_CPPFLAGS) $(CPPFLAGS) $(test_just_header_cxx_CXXFLAGS) $(CXXFLAGS) -c -o test_just_header_cxx-test-just-header-cxx.obj `if test -f 'test-just-header-cxx.cpp'; then $(CYGPATH_W) 'test-just-header-cxx.cpp'; else $(CYGPATH_W) '$(srcdir)/test-just-header-cxx.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -2205,8 +2229,9 @@ appliance: force
 
 #if HAVE_LIBVIRT
 #test_add_libvirt_dom_SOURCES = test-add-libvirt-dom.c
+#test_add_libvirt_dom_CPPFLAGS = \
+#	-I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_srcdir)/gnulib/lib
 #test_add_libvirt_dom_CFLAGS = \
-#	-I$(top_srcdir)/src -I$(top_builddir)/src -I$(top_srcdir)/gnulib/lib \
 #	$(LIBVIRT_CFLAGS) \
 #	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 #	$(GPROF_CFLAGS) $(GCOV_CFLAGS)

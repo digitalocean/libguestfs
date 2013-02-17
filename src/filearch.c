@@ -127,19 +127,20 @@ is_regular_file (const char *filename)
 static char *
 cpio_arch (guestfs_h *g, const char *file, const char *path)
 {
-  TMP_TEMPLATE_ON_STACK (g, dir);
-#define dir_len (strlen (dir))
-#define initrd_len (dir_len + 16)
-  char initrd[initrd_len];
-  struct command *cmd = NULL;
-#define bin_len (dir_len + 32)
-  char bin[bin_len];
+  CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g), *dir = NULL;
+  CLEANUP_FREE char *initrd = NULL;
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
   char *ret = NULL;
   const char *method;
   int64_t size;
   int r;
   const char *bins[] = INITRD_BINARIES2;
   size_t i;
+
+  if (asprintf (&dir, "%s/libguestfsXXXXXX", tmpdir) == -1) {
+    perror ("asprintf");
+    return NULL;
+  }
 
   if (strstr (file, "gzip"))
     method = "zcat";
@@ -161,11 +162,10 @@ cpio_arch (guestfs_h *g, const char *file, const char *path)
     goto out;
   }
 
-  snprintf (initrd, initrd_len, "%s/initrd", dir);
+  initrd = safe_asprintf (g, "%s/initrd", dir);
   if (guestfs_download (g, path, initrd) == -1)
     goto out;
 
-  cmd = guestfs___new_command (g);
   guestfs___cmd_add_string_unquoted (cmd, "cd ");
   guestfs___cmd_add_string_quoted   (cmd, dir);
   guestfs___cmd_add_string_unquoted (cmd, " && ");
@@ -180,7 +180,7 @@ cpio_arch (guestfs_h *g, const char *file, const char *path)
   }
 
   for (i = 0; i < sizeof bins / sizeof bins[0]; ++i) {
-    snprintf (bin, bin_len, "%s/%s", dir, bins[i]);
+    CLEANUP_FREE char *bin = safe_asprintf (g, "%s/%s", dir, bins[i]);
 
     if (is_regular_file (bin)) {
       int flags = g->verbose ? MAGIC_DEBUG : 0;
@@ -205,10 +205,9 @@ cpio_arch (guestfs_h *g, const char *file, const char *path)
         goto out;
       }
 
-      char *elf_arch;
-      if ((elf_arch = match1 (g, line, re_file_elf)) != NULL) {
+      CLEANUP_FREE char *elf_arch = match1 (g, line, re_file_elf);
+      if (elf_arch != NULL) {
         ret = canonical_elf_arch (g, elf_arch);
-        free (elf_arch);
         magic_close (m);
         goto out;
       }
@@ -218,22 +217,16 @@ cpio_arch (guestfs_h *g, const char *file, const char *path)
   error (g, "file_architecture: could not determine architecture of cpio archive");
 
  out:
-  if (cmd)
-    guestfs___cmd_close (cmd);
-
   guestfs___recursive_remove_dir (g, dir);
 
   return ret;
-#undef dir_len
-#undef initrd_len
-#undef bin_len
 }
 
 char *
 guestfs__file_architecture (guestfs_h *g, const char *path)
 {
-  char *file = NULL;
-  char *elf_arch = NULL;
+  CLEANUP_FREE char *file = NULL;
+  CLEANUP_FREE char *elf_arch = NULL;
   char *ret = NULL;
 
   /* Get the output of the "file" command.  Note that because this
@@ -254,8 +247,6 @@ guestfs__file_architecture (guestfs_h *g, const char *path)
   else
     error (g, "file_architecture: unknown architecture: %s", path);
 
-  free (file);
-  free (elf_arch);
   return ret;                   /* caller frees */
 }
 

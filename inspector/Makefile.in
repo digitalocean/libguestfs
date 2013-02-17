@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-inspector
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -383,8 +383,6 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
-FEBOOTSTRAP = @FEBOOTSTRAP@
-FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1280,6 +1278,9 @@ STDBOOL_H = @STDBOOL_H@
 STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
+SUPERMIN = @SUPERMIN@
+SUPERMIN_HELPER = @SUPERMIN_HELPER@
+SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1388,12 +1389,14 @@ dist_doc_DATA = \
 @HAVE_LIBXML2_TRUE@	$(SHARED_SOURCE_FILES) \
 @HAVE_LIBXML2_TRUE@	virt-inspector.c
 
-@HAVE_LIBXML2_TRUE@virt_inspector_CFLAGS = \
+@HAVE_LIBXML2_TRUE@virt_inspector_CPPFLAGS = \
 @HAVE_LIBXML2_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
+@HAVE_LIBXML2_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 @HAVE_LIBXML2_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
 @HAVE_LIBXML2_TRUE@	-I$(top_srcdir)/fish \
-@HAVE_LIBXML2_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
-@HAVE_LIBXML2_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+@HAVE_LIBXML2_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+@HAVE_LIBXML2_TRUE@virt_inspector_CFLAGS = \
 @HAVE_LIBXML2_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_LIBXML2_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 @HAVE_LIBXML2_TRUE@	$(LIBXML2_CFLAGS) \
@@ -1533,88 +1536,88 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 virt_inspector-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-config.o -MD -MP -MF $(DEPDIR)/virt_inspector-config.Tpo -c -o virt_inspector-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-config.o -MD -MP -MF $(DEPDIR)/virt_inspector-config.Tpo -c -o virt_inspector-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-config.Tpo $(DEPDIR)/virt_inspector-config.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_inspector-config.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
 
 virt_inspector-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-config.obj -MD -MP -MF $(DEPDIR)/virt_inspector-config.Tpo -c -o virt_inspector-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-config.obj -MD -MP -MF $(DEPDIR)/virt_inspector-config.Tpo -c -o virt_inspector-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-config.Tpo $(DEPDIR)/virt_inspector-config.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_inspector-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
 
 virt_inspector-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-domain.o -MD -MP -MF $(DEPDIR)/virt_inspector-domain.Tpo -c -o virt_inspector-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-domain.o -MD -MP -MF $(DEPDIR)/virt_inspector-domain.Tpo -c -o virt_inspector-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-domain.Tpo $(DEPDIR)/virt_inspector-domain.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_inspector-domain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 
 virt_inspector-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-domain.obj -MD -MP -MF $(DEPDIR)/virt_inspector-domain.Tpo -c -o virt_inspector-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-domain.obj -MD -MP -MF $(DEPDIR)/virt_inspector-domain.Tpo -c -o virt_inspector-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-domain.Tpo $(DEPDIR)/virt_inspector-domain.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_inspector-domain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
 
 virt_inspector-inspect.o: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-inspect.o -MD -MP -MF $(DEPDIR)/virt_inspector-inspect.Tpo -c -o virt_inspector-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-inspect.o -MD -MP -MF $(DEPDIR)/virt_inspector-inspect.Tpo -c -o virt_inspector-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-inspect.Tpo $(DEPDIR)/virt_inspector-inspect.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_inspector-inspect.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
 
 virt_inspector-inspect.obj: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-inspect.obj -MD -MP -MF $(DEPDIR)/virt_inspector-inspect.Tpo -c -o virt_inspector-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-inspect.obj -MD -MP -MF $(DEPDIR)/virt_inspector-inspect.Tpo -c -o virt_inspector-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-inspect.Tpo $(DEPDIR)/virt_inspector-inspect.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_inspector-inspect.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
 
 virt_inspector-keys.o: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-keys.o -MD -MP -MF $(DEPDIR)/virt_inspector-keys.Tpo -c -o virt_inspector-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-keys.o -MD -MP -MF $(DEPDIR)/virt_inspector-keys.Tpo -c -o virt_inspector-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-keys.Tpo $(DEPDIR)/virt_inspector-keys.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_inspector-keys.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
 
 virt_inspector-keys.obj: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-keys.obj -MD -MP -MF $(DEPDIR)/virt_inspector-keys.Tpo -c -o virt_inspector-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-keys.obj -MD -MP -MF $(DEPDIR)/virt_inspector-keys.Tpo -c -o virt_inspector-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-keys.Tpo $(DEPDIR)/virt_inspector-keys.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_inspector-keys.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
 
 virt_inspector-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-options.o -MD -MP -MF $(DEPDIR)/virt_inspector-options.Tpo -c -o virt_inspector-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-options.o -MD -MP -MF $(DEPDIR)/virt_inspector-options.Tpo -c -o virt_inspector-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-options.Tpo $(DEPDIR)/virt_inspector-options.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_inspector-options.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
 
 virt_inspector-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-options.obj -MD -MP -MF $(DEPDIR)/virt_inspector-options.Tpo -c -o virt_inspector-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-options.obj -MD -MP -MF $(DEPDIR)/virt_inspector-options.Tpo -c -o virt_inspector-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-options.Tpo $(DEPDIR)/virt_inspector-options.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_inspector-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
 
 virt_inspector-virt-inspector.o: virt-inspector.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-virt-inspector.o -MD -MP -MF $(DEPDIR)/virt_inspector-virt-inspector.Tpo -c -o virt_inspector-virt-inspector.o `test -f 'virt-inspector.c' || echo '$(srcdir)/'`virt-inspector.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-virt-inspector.o -MD -MP -MF $(DEPDIR)/virt_inspector-virt-inspector.Tpo -c -o virt_inspector-virt-inspector.o `test -f 'virt-inspector.c' || echo '$(srcdir)/'`virt-inspector.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-virt-inspector.Tpo $(DEPDIR)/virt_inspector-virt-inspector.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virt-inspector.c' object='virt_inspector-virt-inspector.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-virt-inspector.o `test -f 'virt-inspector.c' || echo '$(srcdir)/'`virt-inspector.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-virt-inspector.o `test -f 'virt-inspector.c' || echo '$(srcdir)/'`virt-inspector.c
 
 virt_inspector-virt-inspector.obj: virt-inspector.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-virt-inspector.obj -MD -MP -MF $(DEPDIR)/virt_inspector-virt-inspector.Tpo -c -o virt_inspector-virt-inspector.obj `if test -f 'virt-inspector.c'; then $(CYGPATH_W) 'virt-inspector.c'; else $(CYGPATH_W) '$(srcdir)/virt-inspector.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -MT virt_inspector-virt-inspector.obj -MD -MP -MF $(DEPDIR)/virt_inspector-virt-inspector.Tpo -c -o virt_inspector-virt-inspector.obj `if test -f 'virt-inspector.c'; then $(CYGPATH_W) 'virt-inspector.c'; else $(CYGPATH_W) '$(srcdir)/virt-inspector.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_inspector-virt-inspector.Tpo $(DEPDIR)/virt_inspector-virt-inspector.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virt-inspector.c' object='virt_inspector-virt-inspector.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-virt-inspector.obj `if test -f 'virt-inspector.c'; then $(CYGPATH_W) 'virt-inspector.c'; else $(CYGPATH_W) '$(srcdir)/virt-inspector.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_inspector_CPPFLAGS) $(CPPFLAGS) $(virt_inspector_CFLAGS) $(CFLAGS) -c -o virt_inspector-virt-inspector.obj `if test -f 'virt-inspector.c'; then $(CYGPATH_W) 'virt-inspector.c'; else $(CYGPATH_W) '$(srcdir)/virt-inspector.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

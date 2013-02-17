@@ -56,12 +56,6 @@ static int do_format (void);
 static int do_rescan (char **devices);
 static int feature_available (guestfs_h *g, const char *feature);
 
-static inline char *
-bad_cast (char const *s)
-{
-  return (char *) s;
-}
-
 static void __attribute__((noreturn))
 usage (int status)
 {
@@ -138,7 +132,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  argv[0] = bad_cast (program_name);
+  argv[0] = (char *) program_name;
 
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
@@ -321,11 +315,10 @@ parse_vg_lv (const char *lvm)
 static int
 do_format (void)
 {
-  char **devices;
   size_t i;
-  int ret;
 
-  devices = guestfs_list_devices (g);
+  CLEANUP_FREE_STRING_LIST char **devices =
+    guestfs_list_devices (g);
   if (devices == NULL)
     exit (EXIT_FAILURE);
 
@@ -347,10 +340,8 @@ do_format (void)
     }
   }
 
-  if (do_rescan (devices)) {
-    ret = 1; /* which means, reopen the handle and retry */
-    goto out;
-  }
+  if (do_rescan (devices))
+    return 1; /* which means, reopen the handle and retry */
 
   /* Format each disk. */
   for (i = 0; devices[i] != NULL; ++i) {
@@ -411,15 +402,7 @@ do_format (void)
   if (guestfs_sync (g) == -1)
     exit (EXIT_FAILURE);
 
-  ret = 0;
-
- out:
-  /* Free device list. */
-  for (i = 0; devices[i] != NULL; ++i)
-    free (devices[i]);
-  free (devices);
-
-  return ret;
+  return 0;
 }
 
 /* Rescan everything so the kernel knows that there are no partition

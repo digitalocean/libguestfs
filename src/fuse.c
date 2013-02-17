@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,7 +72,18 @@ gl_lock_define_initialized (static, mount_local_lock);
            g->localmountpoint, __func__, ## __VA_ARGS__);               \
   }
 
-#define RETURN_ERRNO return -guestfs_last_errno (g)
+#define RETURN_ERRNO                                                 \
+  do {                                                               \
+    int ret_errno = guestfs_last_errno (g);                          \
+                                                                     \
+    /* 0 doesn't mean "no error".  It means the errno was not        \
+     * captured.  Therefore we have to substitute an errno here.     \
+     */                                                              \
+    if (ret_errno == 0)                                              \
+      ret_errno = EINVAL;                                            \
+                                                                     \
+    return -ret_errno;                                               \
+  } while (0)
 
 static struct guestfs_xattr_list *
 copy_xattr_list (const struct guestfs_xattr *first, size_t num)
@@ -116,9 +127,8 @@ mount_local_readdir (const char *path, void *buf, fuse_fill_dir_t filler,
 
   dir_cache_remove_all_expired (g, now);
 
-  struct guestfs_dirent_list *ents;
-
-  ents = guestfs_readdir (g, path);
+  CLEANUP_FREE_DIRENT_LIST struct guestfs_dirent_list *ents =
+    guestfs_readdir (g, path);
   if (ents == NULL)
     RETURN_ERRNO;
 
@@ -158,7 +168,8 @@ mount_local_readdir (const char *path, void *buf, fuse_fill_dir_t filler,
       names[i] = ents->val[i].name;
     names[i] = NULL;
 
-    struct guestfs_stat_list *ss = guestfs_lstatlist (g, path, names);
+    CLEANUP_FREE_STAT_LIST struct guestfs_stat_list *ss =
+      guestfs_lstatlist (g, path, names);
     if (ss) {
       for (i = 0; i < ss->len; ++i) {
         if (ss->val[i].ino >= 0) {
@@ -181,10 +192,10 @@ mount_local_readdir (const char *path, void *buf, fuse_fill_dir_t filler,
           lsc_insert (g, path, names[i], now, &statbuf);
         }
       }
-      guestfs_free_stat_list (ss);
     }
 
-    struct guestfs_xattr_list *xattrs = guestfs_lxattrlist (g, path, names);
+    CLEANUP_FREE_XATTR_LIST struct guestfs_xattr_list *xattrs =
+      guestfs_lxattrlist (g, path, names);
     if (xattrs) {
       size_t ni, num;
       struct guestfs_xattr *first;
@@ -205,7 +216,6 @@ mount_local_readdir (const char *path, void *buf, fuse_fill_dir_t filler,
           i--;
         }
       }
-      guestfs_free_xattr_list (xattrs);
     }
 
     char **links = guestfs_readlinklist (g, path, names);
@@ -224,8 +234,6 @@ mount_local_readdir (const char *path, void *buf, fuse_fill_dir_t filler,
     free (names);
   }
 
-  guestfs_free_dirent_list (ents);
-
   return 0;
 }
 
@@ -243,9 +251,7 @@ mount_local_getattr (const char *path, struct stat *statbuf)
     return 0;
   }
 
-  struct guestfs_stat *r;
-
-  r = guestfs_lstat (g, path);
+  CLEANUP_FREE_STAT struct guestfs_stat *r = guestfs_lstat (g, path);
   if (r == NULL)
     RETURN_ERRNO;
 
@@ -262,8 +268,6 @@ mount_local_getattr (const char *path, struct stat *statbuf)
   statbuf->st_atime = r->atime;
   statbuf->st_mtime = r->mtime;
   statbuf->st_ctime = r->ctime;
-
-  guestfs_free_stat (r);
 
   return 0;
 }
@@ -453,11 +457,7 @@ mount_local_rename (const char *from, const char *to)
   dir_cache_invalidate (g, from);
   dir_cache_invalidate (g, to);
 
-  /* XXX It's not clear how close the 'mv' command is to the
-   * rename syscall.  We might need to add the rename syscall
-   * to the guestfs(3) API.
-   */
-  r = guestfs_mv (g, from, to);
+  r = guestfs_rename (g, from, to);
   if (r == -1)
     RETURN_ERRNO;
 
@@ -664,9 +664,7 @@ mount_local_statfs (const char *path, struct statvfs *stbuf)
   DECL_G ();
   DEBUG_CALL ("%s, %p", path, stbuf);
 
-  struct guestfs_statvfs *r;
-
-  r = guestfs_statvfs (g, path);
+  CLEANUP_FREE_STATVFS struct guestfs_statvfs *r = guestfs_statvfs (g, path);
   if (r == NULL)
     RETURN_ERRNO;
 
@@ -681,8 +679,6 @@ mount_local_statfs (const char *path, struct statvfs *stbuf)
   stbuf->f_fsid = r->fsid;
   stbuf->f_flag = r->flag;
   stbuf->f_namemax = r->namemax;
-
-  guestfs_free_statvfs (r);
 
   return 0;
 }
@@ -1052,8 +1048,6 @@ guestfs__umount_local (guestfs_h *g,
   size_t i, tries;
   char *localmountpoint;
   char *fusermount_log = NULL;
-  struct command *cmd;
-  int r;
   FILE *fp;
   char error_message[4096];
   size_t n;
@@ -1086,7 +1080,9 @@ guestfs__umount_local (guestfs_h *g,
   fusermount_log = safe_asprintf (g, "%s/fusermount%d", g->tmpdir, ++g->unique);
 
   for (i = 0; i < tries; ++i) {
-    cmd = guestfs___new_command (g);
+    int r;
+    CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
+
     guestfs___cmd_add_string_unquoted (cmd, "fusermount -u ");
     guestfs___cmd_add_string_quoted   (cmd, localmountpoint);
     guestfs___cmd_add_string_unquoted (cmd, " > ");
@@ -1094,7 +1090,6 @@ guestfs__umount_local (guestfs_h *g,
     guestfs___cmd_add_string_unquoted (cmd, " 2>&1");
     guestfs___cmd_clear_capture_errors (cmd);
     r = guestfs___cmd_run (cmd);
-    guestfs___cmd_close (cmd);
     if (r == -1)
       goto out;
     if (WIFEXITED (r) && WEXITSTATUS (r) == EXIT_SUCCESS) {
@@ -1156,38 +1151,38 @@ guestfs__umount_local (guestfs_h *g,
  * if you like.
  */
 
-struct lsc_entry {              /* lstat cache entry */
+struct entry_common {
   char *pathname;               /* full path to the file */
   time_t timeout;               /* when this entry expires */
+};
+
+struct lsc_entry {              /* lstat cache entry */
+  struct entry_common c;
   struct stat statbuf;          /* statbuf */
 };
 
 struct xac_entry {              /* xattr cache entry */
-  /* NB first two fields must be same as lsc_entry */
-  char *pathname;               /* full path to the file */
-  time_t timeout;               /* when this entry expires */
+  struct entry_common c;
   struct guestfs_xattr_list *xattrs;
 };
 
 struct rlc_entry {              /* readlink cache entry */
-  /* NB first two fields must be same as lsc_entry */
-  char *pathname;               /* full path to the file */
-  time_t timeout;               /* when this entry expires */
+  struct entry_common c;
   char *link;
 };
 
 static size_t
 gen_hash (void const *x, size_t table_size)
 {
-  struct lsc_entry const *p = x;
+  struct entry_common const *p = x;
   return hash_pjw (p->pathname, table_size);
 }
 
 static bool
 gen_compare (void const *x, void const *y)
 {
-  struct lsc_entry const *a = x;
-  struct lsc_entry const *b = y;
+  struct entry_common const *a = x;
+  struct entry_common const *b = y;
   return STREQ (a->pathname, b->pathname);
 }
 
@@ -1195,7 +1190,7 @@ static void
 lsc_free (void *x)
 {
   if (x) {
-    struct lsc_entry *p = x;
+    struct entry_common *p = x;
 
     free (p->pathname);
     free (p);
@@ -1264,7 +1259,7 @@ gen_remove_if_expired (void *x, void *data)
    * with x == NULL.
    */
   if (x) {
-    struct lsc_entry *p = x;
+    struct entry_common *p = x;
     struct gen_remove_data *d = data;
 
     if (p->timeout < d->now)
@@ -1298,9 +1293,9 @@ dir_cache_remove_all_expired (guestfs_h *g, time_t now)
 }
 
 static int
-gen_replace (Hash_table *ht, struct lsc_entry *new_entry, Hash_data_freer freer)
+gen_replace (Hash_table *ht, struct entry_common *new_entry, Hash_data_freer freer)
 {
-  struct lsc_entry *old_entry;
+  struct entry_common *old_entry;
 
   old_entry = hash_delete (ht, new_entry);
   freer (old_entry);
@@ -1330,22 +1325,22 @@ lsc_insert (guestfs_h *g,
   }
 
   size_t len = strlen (path) + strlen (name) + 2;
-  entry->pathname = malloc (len);
-  if (entry->pathname == NULL) {
+  entry->c.pathname = malloc (len);
+  if (entry->c.pathname == NULL) {
     perror ("malloc");
     free (entry);
     return -1;
   }
   if (STREQ (path, "/"))
-    snprintf (entry->pathname, len, "/%s", name);
+    snprintf (entry->c.pathname, len, "/%s", name);
   else
-    snprintf (entry->pathname, len, "%s/%s", path, name);
+    snprintf (entry->c.pathname, len, "%s/%s", path, name);
 
   memcpy (&entry->statbuf, statbuf, sizeof entry->statbuf);
 
-  entry->timeout = now + g->ml_dir_cache_timeout;
+  entry->c.timeout = now + g->ml_dir_cache_timeout;
 
-  return gen_replace (g->lsc_ht, entry, lsc_free);
+  return gen_replace (g->lsc_ht, (struct entry_common *) entry, lsc_free);
 }
 
 static int
@@ -1362,22 +1357,22 @@ xac_insert (guestfs_h *g,
   }
 
   size_t len = strlen (path) + strlen (name) + 2;
-  entry->pathname = malloc (len);
-  if (entry->pathname == NULL) {
+  entry->c.pathname = malloc (len);
+  if (entry->c.pathname == NULL) {
     perror ("malloc");
     free (entry);
     return -1;
   }
   if (STREQ (path, "/"))
-    snprintf (entry->pathname, len, "/%s", name);
+    snprintf (entry->c.pathname, len, "/%s", name);
   else
-    snprintf (entry->pathname, len, "%s/%s", path, name);
+    snprintf (entry->c.pathname, len, "%s/%s", path, name);
 
   entry->xattrs = xattrs;
 
-  entry->timeout = now + g->ml_dir_cache_timeout;
+  entry->c.timeout = now + g->ml_dir_cache_timeout;
 
-  return gen_replace (g->xac_ht, (struct lsc_entry *) entry, xac_free);
+  return gen_replace (g->xac_ht, (struct entry_common *) entry, xac_free);
 }
 
 static int
@@ -1394,35 +1389,35 @@ rlc_insert (guestfs_h *g,
   }
 
   size_t len = strlen (path) + strlen (name) + 2;
-  entry->pathname = malloc (len);
-  if (entry->pathname == NULL) {
+  entry->c.pathname = malloc (len);
+  if (entry->c.pathname == NULL) {
     perror ("malloc");
     free (entry);
     return -1;
   }
   if (STREQ (path, "/"))
-    snprintf (entry->pathname, len, "/%s", name);
+    snprintf (entry->c.pathname, len, "/%s", name);
   else
-    snprintf (entry->pathname, len, "%s/%s", path, name);
+    snprintf (entry->c.pathname, len, "%s/%s", path, name);
 
   entry->link = link;
 
-  entry->timeout = now + g->ml_dir_cache_timeout;
+  entry->c.timeout = now + g->ml_dir_cache_timeout;
 
-  return gen_replace (g->rlc_ht, (struct lsc_entry *) entry, rlc_free);
+  return gen_replace (g->rlc_ht, (struct entry_common *) entry, rlc_free);
 }
 
 static const struct stat *
 lsc_lookup (guestfs_h *g, const char *pathname)
 {
-  const struct lsc_entry key = { .pathname = (char *) pathname };
+  const struct entry_common key = { .pathname = (char *) pathname };
   struct lsc_entry *entry;
   time_t now;
 
   time (&now);
 
   entry = hash_lookup (g->lsc_ht, &key);
-  if (entry && entry->timeout >= now)
+  if (entry && entry->c.timeout >= now)
     return &entry->statbuf;
   else
     return NULL;
@@ -1431,14 +1426,14 @@ lsc_lookup (guestfs_h *g, const char *pathname)
 static const struct guestfs_xattr_list *
 xac_lookup (guestfs_h *g, const char *pathname)
 {
-  const struct xac_entry key = { .pathname = (char *) pathname };
+  const struct entry_common key = { .pathname = (char *) pathname };
   struct xac_entry *entry;
   time_t now;
 
   time (&now);
 
   entry = hash_lookup (g->xac_ht, &key);
-  if (entry && entry->timeout >= now)
+  if (entry && entry->c.timeout >= now)
     return entry->xattrs;
   else
     return NULL;
@@ -1447,24 +1442,24 @@ xac_lookup (guestfs_h *g, const char *pathname)
 static const char *
 rlc_lookup (guestfs_h *g, const char *pathname)
 {
-  const struct rlc_entry key = { .pathname = (char *) pathname };
+  const struct entry_common key = { .pathname = (char *) pathname };
   struct rlc_entry *entry;
   time_t now;
 
   time (&now);
 
   entry = hash_lookup (g->rlc_ht, &key);
-  if (entry && entry->timeout >= now)
+  if (entry && entry->c.timeout >= now)
     return entry->link;
   else
     return NULL;
 }
 
 static void
-lsc_remove (Hash_table *ht, const char *pathname, Hash_data_freer freer)
+gen_remove (Hash_table *ht, const char *pathname, Hash_data_freer freer)
 {
-  const struct lsc_entry key = { .pathname = (char *) pathname };
-  struct lsc_entry *entry;
+  const struct entry_common key = { .pathname = (char *) pathname };
+  struct entry_common *entry;
 
   entry = hash_delete (ht, &key);
 
@@ -1474,9 +1469,9 @@ lsc_remove (Hash_table *ht, const char *pathname, Hash_data_freer freer)
 static void
 dir_cache_invalidate (guestfs_h *g, const char *path)
 {
-  lsc_remove (g->lsc_ht, path, lsc_free);
-  lsc_remove (g->xac_ht, path, xac_free);
-  lsc_remove (g->rlc_ht, path, rlc_free);
+  gen_remove (g->lsc_ht, path, lsc_free);
+  gen_remove (g->xac_ht, path, xac_free);
+  gen_remove (g->rlc_ht, path, rlc_free);
 }
 
 #else /* !HAVE_FUSE */

@@ -37,7 +37,13 @@ GUESTFSD_EXT_CMD(str_rm, rm);
 
 /* This runs during daemon start up and creates a complete copy of
  * /etc/lvm so that we can modify it as we desire.  We set
- * LVM_SYSTEM_DIR to point to the copy.
+ * LVM_SYSTEM_DIR to point to the copy.  Note that the final directory
+ * layout is:
+ *   /tmp/lvmXXXXXX                 (lvm_system_dir set to this)
+ *   /tmp/lvmXXXXXX/lvm             ($LVM_SYSTEM_DIR set to this)
+ *   /tmp/lvmXXXXXX/lvm/lvm.conf    (configuration file)
+ *   /tmp/lvmXXXXXX/lvm/cache
+ *   etc.
  */
 static char lvm_system_dir[] = "/tmp/lvmXXXXXX";
 
@@ -47,7 +53,7 @@ void
 copy_lvm (void)
 {
   struct stat statbuf;
-  char cmd[64];
+  char cmd[64], env[64];
   int r;
 
   /* If /etc/lvm directory doesn't exist (or isn't a directory) assume
@@ -64,12 +70,12 @@ copy_lvm (void)
   }
 
   if (mkdtemp (lvm_system_dir) == NULL) {
-    perror (lvm_system_dir);
+    fprintf (stderr, "mkdtemp: %s: %m\n", lvm_system_dir);
     exit (EXIT_FAILURE);
   }
 
-  /* Hopefully no dotfiles in there ... XXX */
-  snprintf (cmd, sizeof cmd, "%s -a /etc/lvm/* %s", str_cp, lvm_system_dir);
+  /* Copy the entire directory */
+  snprintf (cmd, sizeof cmd, "%s -a /etc/lvm/ %s", str_cp, lvm_system_dir);
   r = system (cmd);
   if (r == -1) {
     perror (cmd);
@@ -85,7 +91,8 @@ copy_lvm (void)
   }
 
   /* Set environment variable so we use the copy. */
-  setenv ("LVM_SYSTEM_DIR", lvm_system_dir, 1);
+  snprintf (env, sizeof env, "%s/lvm", lvm_system_dir);
+  setenv ("LVM_SYSTEM_DIR", env, 1);
 
   /* Set a handler to remove the temporary directory at exit. */
   atexit (rm_lvm_system_dir);
@@ -129,10 +136,11 @@ static int
 set_filter (const char *filter)
 {
   char lvm_conf[64];
-  snprintf (lvm_conf, sizeof lvm_conf, "%s/lvm.conf", lvm_system_dir);
+  snprintf (lvm_conf, sizeof lvm_conf, "%s/lvm/lvm.conf", lvm_system_dir);
 
   char lvm_conf_new[64];
-  snprintf (lvm_conf_new, sizeof lvm_conf, "%s/lvm.conf.new", lvm_system_dir);
+  snprintf (lvm_conf_new, sizeof lvm_conf, "%s/lvm/lvm.conf.new",
+            lvm_system_dir);
 
   FILE *ifp = fopen (lvm_conf, "r");
   if (ifp == NULL) {
@@ -146,9 +154,9 @@ set_filter (const char *filter)
     return -1;
   }
 
-  char *line = NULL;
-  size_t len = 0;
-  while (getline (&line, &len, ifp) != -1) {
+  CLEANUP_FREE char *line = NULL;
+  size_t allocsize = 0;
+  while (getline (&line, &allocsize, ifp) != -1) {
     int r;
     if (is_filter_line (line)) {
       r = fprintf (ofp, "    filter = [ %s ]\n", filter);
@@ -160,13 +168,10 @@ set_filter (const char *filter)
       reply_with_error ("%s: write failed", lvm_conf_new);
       fclose (ifp);
       fclose (ofp);
-      free (line);
       unlink (lvm_conf_new);
       return -1;
     }
   }
-
-  free (line);
 
   if (fclose (ifp) == EOF) {
     reply_with_perror ("close: %s", lvm_conf);
@@ -192,15 +197,13 @@ set_filter (const char *filter)
 static int
 vgchange (const char *vgchange_flag)
 {
-  char *err;
+  CLEANUP_FREE char *err = NULL;
   int r = command (NULL, &err, str_lvm, "vgchange", vgchange_flag, NULL);
   if (r == -1) {
     reply_with_error ("vgchange: %s", err);
-    free (err);
     return -1;
   }
 
-  free (err);
   return 0;
 }
 
@@ -223,19 +226,17 @@ static int
 rescan (void)
 {
   char lvm_cache[64];
-  snprintf (lvm_cache, sizeof lvm_cache, "%s/cache/.cache", lvm_system_dir);
+  snprintf (lvm_cache, sizeof lvm_cache, "%s/lvm/cache/.cache", lvm_system_dir);
 
   unlink (lvm_cache);
 
-  char *err;
+  CLEANUP_FREE char *err = NULL;
   int r = command (NULL, &err, str_lvm, "vgscan", NULL);
   if (r == -1) {
     reply_with_error ("vgscan: %s", err);
-    free (err);
     return -1;
   }
 
-  free (err);
   return 0;
 }
 
@@ -287,17 +288,14 @@ make_filter_string (char *const *devices)
 int
 do_lvm_set_filter (char *const *devices)
 {
-  char *filter = make_filter_string (devices);
+  CLEANUP_FREE char *filter = make_filter_string (devices);
   if (filter == NULL)
     return -1;
 
-  if (deactivate () == -1) {
-    free (filter);
+  if (deactivate () == -1)
     return -1;
-  }
 
   int r = set_filter (filter);
-  free (filter);
   if (r == -1)
     return -1;
 

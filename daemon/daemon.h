@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include <rpc/xdr.h>
 
 #include "guestfs_protocol.h"
+
+#include "guestfs-internal-all.h"
 
 /*-- in guestfsd.c --*/
 extern int verbose;
@@ -122,8 +124,13 @@ extern int random_name (char *template);
 
 /* This just stops gcc from giving a warning about our custom printf
  * formatters %Q and %R.  See guestfs(3)/EXTENDING LIBGUESTFS for more
- * info about these.
+ * info about these.  In GCC 4.8.0 the warning is even harder to
+ * 'trick', hence the need for the #pragma directives.
  */
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+#endif
 static inline int
 asprintf_nowarn (char **strp, const char *fmt, ...)
 {
@@ -135,6 +142,14 @@ asprintf_nowarn (char **strp, const char *fmt, ...)
   va_end (args);
   return r;
 }
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic pop
+#endif
+
+/* Use by the CLEANUP_* macros. */
+extern void cleanup_free (void *ptr);
+extern void cleanup_free_string_list (void *ptr);
+extern void cleanup_unlink_free (void *ptr);
 
 /*-- in names.c (auto-generated) --*/
 extern const char *function_names[];
@@ -178,6 +193,9 @@ extern int lv_canonical (const char *device, char **ret);
 
 /*-- in lvm-filter.c --*/
 extern void copy_lvm (void);
+
+/*-- in zero.c --*/
+extern void wipe_device_before_mkfs (const char *device);
 
 /*-- in proto.c --*/
 extern void main_loop (int sock) __attribute__((noreturn));
@@ -236,6 +254,11 @@ extern void notify_progress (uint64_t position, uint64_t total);
 extern void pulse_mode_start (void);
 extern void pulse_mode_end (void);
 extern void pulse_mode_cancel (void);
+
+/* Send a progress message without rate-limiting.  This is just
+ * for debugging - DON'T use it in regular code!
+ */
+extern void notify_progress_no_ratelimit (uint64_t position, uint64_t total, const struct timeval *now);
 
 /* Return true iff the buffer is all zero bytes.
  *
@@ -384,24 +407,15 @@ is_zero (const char *buffer, size_t size)
     }                                                   \
     while (0)
 
-#ifndef __attribute__
-# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)
-#  define __attribute__(x) /* empty */
-# endif
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+#define CLEANUP_FREE __attribute__((cleanup(cleanup_free)))
+#define CLEANUP_FREE_STRING_LIST                        \
+    __attribute__((cleanup(cleanup_free_string_list)))
+#define CLEANUP_UNLINK_FREE __attribute__((cleanup(cleanup_unlink_free)))
+#else
+#define CLEANUP_FREE
+#define CLEANUP_FREE_STRING_LIST
+#define CLEANUP_UNLINK_FREE
 #endif
-
-#ifndef ATTRIBUTE_UNUSED
-# define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
-#endif
-
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
-#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
-#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
-#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
-#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
-#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
-#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
-#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
-#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
 
 #endif /* GUESTFSD_DAEMON_H */

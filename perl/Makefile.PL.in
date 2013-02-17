@@ -1,5 +1,5 @@
 # libguestfs Perl bindings
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,5 +27,5 @@ WriteMakefile (
     LIBS => '-L@top_builddir@/src/.libs -lguestfs',
     INC => '-I@top_builddir@/src -I@top_srcdir@/src',
     TYPEMAPS => [ '@srcdir@/typemap' ],
-    CCFLAGS => $Config{ccflags} . ' -DGUESTFS_PRIVATE_FUNCTIONS=1 @CFLAGS@',
+    CCFLAGS => $Config{ccflags} . ' -DGUESTFS_PRIVATE=1 @CFLAGS@',
     );

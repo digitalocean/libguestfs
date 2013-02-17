@@ -1,5 +1,5 @@
 # libguestfs test images
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -96,3 +96,8 @@ guest-aux/windows-system: guest-aux/windows-system.reg
 	cp guest-aux/minimal-hive $@-t
 	hivexregedit --merge $@-t --prefix 'HKEY_LOCAL_MACHINE\SYSTEM' $<
 	mv $@-t $@
+
+# Don't construct the guests in parallel.  In automake 1.13, check_DATA
+# was changed so it can now run in parallel, but this causes everything
+# to fall over on machines with limited memory.
+.NOTPARALLEL:

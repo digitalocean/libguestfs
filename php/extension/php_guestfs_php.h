@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -233,13 +233,6 @@ PHP_FUNCTION (guestfs_inspect_is_netinst);
 PHP_FUNCTION (guestfs_inspect_list_applications);
 PHP_FUNCTION (guestfs_inspect_list_applications2);
 PHP_FUNCTION (guestfs_inspect_os);
-PHP_FUNCTION (guestfs_internal_autosync);
-PHP_FUNCTION (guestfs_internal_hot_add_drive);
-PHP_FUNCTION (guestfs_internal_hot_remove_drive);
-PHP_FUNCTION (guestfs_internal_hot_remove_drive_precheck);
-PHP_FUNCTION (guestfs_internal_lstatlist);
-PHP_FUNCTION (guestfs_internal_lxattrlist);
-PHP_FUNCTION (guestfs_internal_readlinklist);
 PHP_FUNCTION (guestfs_internal_test);
 PHP_FUNCTION (guestfs_internal_test_63_optargs);
 PHP_FUNCTION (guestfs_internal_test_close_output);
@@ -267,8 +260,6 @@ PHP_FUNCTION (guestfs_internal_test_rstructerr);
 PHP_FUNCTION (guestfs_internal_test_rstructlist);
 PHP_FUNCTION (guestfs_internal_test_rstructlisterr);
 PHP_FUNCTION (guestfs_internal_test_set_output);
-PHP_FUNCTION (guestfs_internal_write);
-PHP_FUNCTION (guestfs_internal_write_append);
 PHP_FUNCTION (guestfs_is_blockdev);
 PHP_FUNCTION (guestfs_is_busy);
 PHP_FUNCTION (guestfs_is_chardev);
@@ -428,6 +419,7 @@ PHP_FUNCTION (guestfs_readlinklist);
 PHP_FUNCTION (guestfs_realpath);
 PHP_FUNCTION (guestfs_remove_drive);
 PHP_FUNCTION (guestfs_removexattr);
+PHP_FUNCTION (guestfs_rename);
 PHP_FUNCTION (guestfs_resize2fs);
 PHP_FUNCTION (guestfs_resize2fs_M);
 PHP_FUNCTION (guestfs_resize2fs_size);

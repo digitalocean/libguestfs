@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs Java bindings
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@
 #   generator/ *.ml
 # ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
 #
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -393,8 +393,6 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
-FEBOOTSTRAP = @FEBOOTSTRAP@
-FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1290,6 +1288,9 @@ STDBOOL_H = @STDBOOL_H@
 STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
+SUPERMIN = @SUPERMIN@
+SUPERMIN_HELPER = @SUPERMIN_HELPER@
+SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1410,13 +1411,15 @@ java_built_sources = \
 # Pull in automatically generated built sources
 java_sources = \
 	$(java_built_sources) \
+	com/redhat/et/libguestfs/EventCallback.java \
 	com/redhat/et/libguestfs/LibGuestFSException.java
 
 java_tests = \
 	Bindtests.java \
 	t/GuestFS005Load.java \
 	t/GuestFS010Basic.java \
-	t/GuestFS080OptArgs.java
+	t/GuestFS080OptArgs.java \
+	t/GuestFS400Events.java
 
 EXTRA_DIST = \
 	$(java_sources) \
@@ -1441,14 +1444,16 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
 @HAVE_JAVA_TRUE@	com_redhat_et_libguestfs_GuestFS.h \
 @HAVE_JAVA_TRUE@	com_redhat_et_libguestfs_GuestFS.c
 
-@HAVE_JAVA_TRUE@libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
-@HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
+@HAVE_JAVA_TRUE@libguestfs_jni_la_CPPFLAGS = \
+@HAVE_JAVA_TRUE@	-DGUESTFS_PRIVATE=1 \
+@HAVE_JAVA_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 @HAVE_JAVA_TRUE@libguestfs_jni_la_CFLAGS = \
-@HAVE_JAVA_TRUE@	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
 @HAVE_JAVA_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_JAVA_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
 @HAVE_JAVA_TRUE@	$(JNI_CFLAGS)
 
+@HAVE_JAVA_TRUE@libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
+@HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
 @HAVE_JAVA_TRUE@BUILT_SOURCES = com_redhat_et_libguestfs_GuestFS.h
 
 # Documentation.
@@ -1561,11 +1566,11 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo: com_redhat_et_libguestfs_GuestFS.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Tpo -c -o libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo `test -f 'com_redhat_et_libguestfs_GuestFS.c' || echo '$(srcdir)/'`com_redhat_et_libguestfs_GuestFS.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -MT libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo -MD -MP -MF $(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Tpo -c -o libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo `test -f 'com_redhat_et_libguestfs_GuestFS.c' || echo '$(srcdir)/'`com_redhat_et_libguestfs_GuestFS.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Tpo $(DEPDIR)/libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='com_redhat_et_libguestfs_GuestFS.c' object='libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo `test -f 'com_redhat_et_libguestfs_GuestFS.c' || echo '$(srcdir)/'`com_redhat_et_libguestfs_GuestFS.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_jni_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_jni_la_CFLAGS) $(CFLAGS) -c -o libguestfs_jni_la-com_redhat_et_libguestfs_GuestFS.lo `test -f 'com_redhat_et_libguestfs_GuestFS.c' || echo '$(srcdir)/'`com_redhat_et_libguestfs_GuestFS.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

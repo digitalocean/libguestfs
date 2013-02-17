@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -288,11 +288,22 @@ stamp-guestfs-release-notes.pod: guestfs-release-notes.pod
 	  $<
 	touch $@
 
+# NB. podwrapper is an internal tool, so the man page mustn't be installed.
+noinst_MANS = podwrapper.1
+podwrapper.1: podwrapper.pl
+	$(PODWRAPPER) \
+	  --section 1 \
+	  --man $@-t \
+	  --license GPLv2+ \
+	  $<
+	mv $@-t $@
+
 # Make clean.
 
 CLEANFILES = \
 	html/*.html \
 	pod2htm?.tmp \
+	podwrapper.1 \
 	qemu-wrapper.sh \
 	stamp-guestfs-release-notes.pod
 
@@ -346,9 +357,8 @@ QEMUDIR = $(HOME)/d/qemu
 QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
 
 check-with-upstream-qemu:
-	@if $(QEMUBINARY) --help >/dev/null 2>&1; then \
-	  $(MAKE) check-with-upstream-qemu-1 || exit $$?; \
-	fi
+	rm -f $(top_builddir)/qemu-wrapper.sh
+	$(MAKE) check-with-upstream-qemu-1 || exit $$?
 
 check-with-upstream-qemu-1: $(top_builddir)/qemu-wrapper.sh
 	$(QEMUBINARY) --version

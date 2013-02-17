@@ -1,5 +1,5 @@
 # libguestfs Java bindings
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,13 +33,15 @@ include $(srcdir)/Makefile.inc
 
 java_sources = \
 	$(java_built_sources) \
+	com/redhat/et/libguestfs/EventCallback.java \
 	com/redhat/et/libguestfs/LibGuestFSException.java
 
 java_tests = \
 	Bindtests.java \
 	t/GuestFS005Load.java \
 	t/GuestFS010Basic.java \
-	t/GuestFS080OptArgs.java
+	t/GuestFS080OptArgs.java \
+	t/GuestFS400Events.java
 
 EXTRA_DIST = \
 	$(java_sources) \
@@ -69,18 +71,24 @@ libguestfs-${VERSION}.jar: $(libguestfs_jar_class_files)
 # JNI source.
 
 jnilib_LTLIBRARIES = libguestfs_jni.la
+
 jnilibdir = $(JNI_INSTALL_DIR)
+
 libguestfs_jni_la_SOURCES = \
 	com_redhat_et_libguestfs_GuestFS.h \
 	com_redhat_et_libguestfs_GuestFS.c
 
-libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
-libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
+libguestfs_jni_la_CPPFLAGS = \
+	-DGUESTFS_PRIVATE=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 libguestfs_jni_la_CFLAGS = \
-	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(JNI_CFLAGS)
+
+libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
+
+libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
 
 BUILT_SOURCES = com_redhat_et_libguestfs_GuestFS.h
 

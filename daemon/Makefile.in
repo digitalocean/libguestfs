@@ -264,17 +264,18 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-optgroups.$(OBJEXT) guestfsd-parted.$(OBJEXT) \
 	guestfsd-pingdaemon.$(OBJEXT) guestfsd-proto.$(OBJEXT) \
 	guestfsd-readdir.$(OBJEXT) guestfsd-realpath.$(OBJEXT) \
-	guestfsd-rsync.$(OBJEXT) guestfsd-scrub.$(OBJEXT) \
-	guestfsd-selinux.$(OBJEXT) guestfsd-sfdisk.$(OBJEXT) \
-	guestfsd-sleep.$(OBJEXT) guestfsd-stat.$(OBJEXT) \
-	guestfsd-statvfs.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
-	guestfsd-stubs.$(OBJEXT) guestfsd-swap.$(OBJEXT) \
-	guestfsd-sync.$(OBJEXT) guestfsd-tar.$(OBJEXT) \
-	guestfsd-truncate.$(OBJEXT) guestfsd-umask.$(OBJEXT) \
-	guestfsd-upload.$(OBJEXT) guestfsd-utimens.$(OBJEXT) \
-	guestfsd-utsname.$(OBJEXT) guestfsd-wc.$(OBJEXT) \
-	guestfsd-xattr.$(OBJEXT) guestfsd-xfs.$(OBJEXT) \
-	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
+	guestfsd-rename.$(OBJEXT) guestfsd-rsync.$(OBJEXT) \
+	guestfsd-scrub.$(OBJEXT) guestfsd-selinux.$(OBJEXT) \
+	guestfsd-sfdisk.$(OBJEXT) guestfsd-sleep.$(OBJEXT) \
+	guestfsd-stat.$(OBJEXT) guestfsd-statvfs.$(OBJEXT) \
+	guestfsd-strings.$(OBJEXT) guestfsd-stubs.$(OBJEXT) \
+	guestfsd-swap.$(OBJEXT) guestfsd-sync.$(OBJEXT) \
+	guestfsd-tar.$(OBJEXT) guestfsd-truncate.$(OBJEXT) \
+	guestfsd-umask.$(OBJEXT) guestfsd-upload.$(OBJEXT) \
+	guestfsd-utimens.$(OBJEXT) guestfsd-utsname.$(OBJEXT) \
+	guestfsd-wc.$(OBJEXT) guestfsd-xattr.$(OBJEXT) \
+	guestfsd-xfs.$(OBJEXT) guestfsd-zero.$(OBJEXT) \
+	guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfsd_DEPENDENCIES = liberrnostring.a libprotocol.a \
@@ -285,7 +286,7 @@ guestfsd_DEPENDENCIES = liberrnostring.a libprotocol.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -434,8 +435,6 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
-FEBOOTSTRAP = @FEBOOTSTRAP@
-FEBOOTSTRAP_YUM_CONFIG = @FEBOOTSTRAP_YUM_CONFIG@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1331,6 +1330,9 @@ STDBOOL_H = @STDBOOL_H@
 STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
+SUPERMIN = @SUPERMIN@
+SUPERMIN_HELPER = @SUPERMIN_HELPER@
+SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
 SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 SYS_TIME_H_DEFINES_STRUCT_TIMESPEC = @SYS_TIME_H_DEFINES_STRUCT_TIMESPEC@
@@ -1424,14 +1426,17 @@ generator_built = \
 	stubs.c \
 	names.c
 
-BUILT_SOURCES = \
-	$(generator_built) \
+shared_with_library = \
 	guestfs_protocol.c \
 	guestfs_protocol.h \
-	errnostring-gperf.c \
 	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h
+
+BUILT_SOURCES = \
+	$(generator_built) \
+	$(shared_with_library) \
+	errnostring-gperf.c
 
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
@@ -1524,6 +1529,7 @@ guestfsd_SOURCES = \
 	proto.c \
 	readdir.c \
 	realpath.c \
+	rename.c \
 	rsync.c \
 	scrub.c \
 	selinux.c \
@@ -1563,14 +1569,20 @@ guestfsd_LDADD = \
 	$(LIBSOCKET) \
 	$(LIB_CLOCK_GETTIME) \
 	$(LIBINTL) \
-	$(SERVENT_LIB)
+	$(SERVENT_LIB) \
+	$(PCRE_LIBS)
 
-guestfsd_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+guestfsd_CPPFLAGS = \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib \
+	-I$(top_builddir)/src
+
 guestfsd_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(AUGEAS_CFLAGS) \
 	$(HIVEX_CFLAGS) \
-	$(YAJL_CFLAGS)
+	$(YAJL_CFLAGS) \
+	$(PCRE_CFLAGS)
 
 
 # Manual pages and HTML files for the website.
@@ -1756,6 +1768,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-proto.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-readdir.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-realpath.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-rename.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-rsync.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-scrub.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-selinux.Po@am__quote@
@@ -2797,6 +2810,20 @@ guestfsd-realpath.obj: realpath.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-realpath.obj `if test -f 'realpath.c'; then $(CYGPATH_W) 'realpath.c'; else $(CYGPATH_W) '$(srcdir)/realpath.c'; fi`
 
+guestfsd-rename.o: rename.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-rename.o -MD -MP -MF $(DEPDIR)/guestfsd-rename.Tpo -c -o guestfsd-rename.o `test -f 'rename.c' || echo '$(srcdir)/'`rename.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-rename.Tpo $(DEPDIR)/guestfsd-rename.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rename.c' object='guestfsd-rename.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-rename.o `test -f 'rename.c' || echo '$(srcdir)/'`rename.c
+
+guestfsd-rename.obj: rename.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-rename.obj -MD -MP -MF $(DEPDIR)/guestfsd-rename.Tpo -c -o guestfsd-rename.obj `if test -f 'rename.c'; then $(CYGPATH_W) 'rename.c'; else $(CYGPATH_W) '$(srcdir)/rename.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-rename.Tpo $(DEPDIR)/guestfsd-rename.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rename.c' object='guestfsd-rename.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-rename.obj `if test -f 'rename.c'; then $(CYGPATH_W) 'rename.c'; else $(CYGPATH_W) '$(srcdir)/rename.c'; fi`
+
 guestfsd-rsync.o: rsync.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-rsync.o -MD -MP -MF $(DEPDIR)/guestfsd-rsync.Tpo -c -o guestfsd-rsync.o `test -f 'rsync.c' || echo '$(srcdir)/'`rsync.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-rsync.Tpo $(DEPDIR)/guestfsd-rsync.Po
@@ -3410,12 +3437,10 @@ $(top_builddir)/generator/stamp-generator: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
-guestfs_protocol.c: $(libsrcdir)/guestfs_protocol.c
+$(shared_with_library): %: $(libsrcdir)/%
 	rm -f $@
 	ln $< $@
-guestfs_protocol.h: $(libsrcdir)/guestfs_protocol.h
-	rm -f $@
-	ln $< $@
+
 $(libsrcdir)/guestfs_protocol.c: force
 	$(MAKE) -C $(libsrcdir) guestfs_protocol.c
 $(libsrcdir)/guestfs_protocol.h: force
@@ -3425,15 +3450,6 @@ errnostring-gperf.c: errnostring-gperf.gperf
 	rm -f $@
 	$(GPERF) -t $< > $@-t
 	mv $@-t $@
-errnostring-gperf.gperf: $(libsrcdir)/errnostring-gperf.gperf
-	rm -f $@
-	ln $< $@
-errnostring.c: $(libsrcdir)/errnostring.c
-	rm -f $@
-	ln $< $@
-errnostring.h: $(libsrcdir)/errnostring.h
-	rm -f $@
-	ln $< $@
 
 guestfsd.8 $(top_builddir)/html/guestfsd.8.html: stamp-guestfsd.pod
 

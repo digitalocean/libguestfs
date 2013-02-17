@@ -126,6 +126,16 @@ Include the full output of L<libguestfs-test-tool(1)>.
 See also L<guestfs(3)/LIBGUESTFS GOTCHAS> for some "gotchas" with using the
 libguestfs API.
 
+=head2 "Could not allocate dynamic translator buffer"
+
+This obscure error is in fact an SELinux failure.  You have to enable the
+following SELinux boolean:
+
+ setsebool -P virt_use_execmem=on
+
+For more information see
+L<https://bugzilla.redhat.com/show_bug.cgi?id=806106>.
+
 =head2 "child process died unexpectedly"
 
 This error indicates that qemu failed or the host kernel could not boot.  To
@@ -237,20 +247,16 @@ L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 
 EPEL 5 からパッケージを使用してください: L<https://fedoraproject.org/wiki/EPEL>
 
-=item RHEL 6.2-6.3
+=item RHEL 6.2-6.4
 
 標準インストールの一部です。RHEL 6 (のみ) において、Windows ゲストをサポートするには、C<libguestfs-winsupport>
 をインストールする必要があります。
 
-=item RHEL 6.4
-
-プレビューのリポジトリが利用可能です。次のアナウンスを参照してください:
-L<https://www.redhat.com/archives/libguestfs/2012-September/msg00074.html>
-
 =item RHEL 7
 
-標準インストールの一部で、libguestfs 1.20 に基づいています。RHEL 6 と同じように、Windows ゲストをサポートするには
-C<libguestfs-winsupport> をインストールする必要があります。
+It will be part of the default install, and based on libguestfs 1.20 or
+1.22.  As with RHEL 6 you will need to install C<libguestfs-winsupport>
+separately to get Windows guest support.
 
 =back
 
@@ -324,16 +330,16 @@ libguestfs は Gentoo の 2012-07 に追加されました。次のようにし�
 
 =head2 How can I compile and install libguestfs from source?
 
-If your Linux distro has a working port of febootstrap (that is, Fedora,
-S<Red Hat Enterprise Linux E<ge> 6.3>, Debian, Ubuntu and ArchLinux)  then
-you should just be able to compile from source in the usual way.  Download
-the latest tarball from L<http://libguestfs.org/download>, unpack it, and
-start by reading the README file.
+If your Linux distro has a working port of supermin (that is, Fedora, S<Red
+Hat Enterprise Linux E<ge> 6.3>, Debian, Ubuntu and ArchLinux)  then you
+should just be able to compile from source in the usual way.  Download the
+latest tarball from L<http://libguestfs.org/download>, unpack it, and start
+by reading the README file.
 
-If you I<don't> have febootstrap, you will need to use the "fixed appliance
+If you I<don't> have supermin, you will need to use the "fixed appliance
 method".  See: L<http://libguestfs.org/download/binaries/appliance/>
 
-Patches to port febootstrap to more Linux distros are welcome.
+Patches to port supermin to more Linux distros are welcome.
 
 =head2 Why do I get an error when I try to rebuild from the source RPMs supplied by
 Red Hat / Fedora?
@@ -358,8 +364,9 @@ mock を使用しているならば、次を実行します:
 
 =head2 どのように sVirt をサポートしますか?
 
-Note: We are planning to make this configuration the default in S<Fedora
-18>.  If you find any problems, please let us know or file a bug.
+Note for Fedora/RHEL users: This configuration is the default starting with
+S<Fedora 18> and S<RHEL 7>.  If you find any problems, please let us know or
+file a bug.
 
 L<SVirt|http://selinuxproject.org/page/SVirt> provides a hardened appliance
 using SELinux, making it very hard for a rogue disk image to "escape" from
@@ -368,22 +375,26 @@ even in standard libguestfs this would be hard, but sVirt provides an extra
 layer of protection for the host and more importantly protects virtual
 machines on the same host from each other).
 
-Currently to enable sVirt you will need the very latest libvirt (from git),
-libguestfs and SELinux policies.  If you are not running S<Fedora 18+>, you
-will need to make changes to your SELinux policy - contact us on the mailing
-list.
+Currently to enable sVirt you will need libvirt E<ge> 0.10.2 (1.0 or later
+preferred), libguestfs E<ge> 1.20, and the SELinux policies from recent
+Fedora.  If you are not running S<Fedora 18+>, you will need to make changes
+to your SELinux policy - contact us on the mailing list.
 
 Once you have the requirements, do:
 
  ./configure --with-default-attach-method=libvirt
  make
 
-SELinux を有効にすると、sVirt が自動的に使用されます。
+Set SELinux to Enforcing mode, and sVirt should be used automatically.
 
 All, or almost all, features of libguestfs should work under sVirt.  There
 is one known shortcoming: L<virt-rescue(1)> will not use libvirt (hence
 sVirt), but falls back to direct launch of qemu.  So you won't currently get
 the benefit of sVirt protection when using virt-rescue.
+
+You can check if sVirt is being used by enabling libvirtd logging (see
+C</etc/libvirt/libvirtd.log>), killing and restarting libvirtd, and checking
+the log files for S<"Setting SELinux context on ..."> messages.
 
 In theory sVirt should support AppArmor, but we have not tried it.  It will
 almost certainly require patching libvirt and writing an AppArmor policy.
@@ -451,7 +462,7 @@ libguestfs を使用していないとき、このディレクトリーを安全
 
 If the input to L<virt-sparsify(1)> is raw, then the output will be raw
 sparse.  Make sure you are measuring the output with a tool which
-understands sparseness such as C<du-sh>.  It can make a huge difference:
+understands sparseness such as C<du -sh>.  It can make a huge difference:
 
  $ ls -lh test1.img
  -rw-rw-r--. 1 rjones rjones 100M Aug  8 08:08 test1.img
@@ -460,10 +471,51 @@ understands sparseness such as C<du-sh>.  It can make a huge difference:
 
 (見た目の容量 B<100M> と実際の容量 B<3.6M> を比較します)
 
-If all this confuses you, use a non-sparse output by specifying the
+If all this confuses you, use a non-sparse output format by specifying the
 I<--convert> option, eg:
 
  virt-sparsify --convert qcow2 disk.raw disk.qcow2
+
+=head2 Why doesn't virt-resize work on the disk image in-place?
+
+Resizing a disk image is very tricky -- especially making sure that you
+don't lose data or break the bootloader.  The current method effectively
+creates a new disk image and copies the data plus bootloader from the old
+one.  If something goes wrong, you can always go back to the original.
+
+If we were to make virt-resize work in-place then there would have to be
+limitations: for example, you wouldn't be allowed to move existing
+partitions (because moving data across the same disk is most likely to
+corrupt data in the event of a power failure or crash), and LVM would be
+very difficult to support (because of the almost arbitrary mapping between
+LV content and underlying disk blocks).
+
+Another method we have considered is to place a snapshot over the original
+disk image, so that the original data is untouched and only differences are
+recorded in the snapshot.  You can do this today using C<qemu-img create> +
+C<virt-resize>, but qemu currently isn't smart enough to recognize when the
+same block is written back to the snapshot as already exists in the backing
+disk, so you will find that this doesn't save you any space or time.
+
+In summary, this is a hard problem, and what we have now mostly works so we
+are reluctant to change it.
+
+=head2 Why doesn't virt-sparsify work on the disk image in-place?
+
+Eventually we plan to make virt-sparsify work on disk images in-place,
+instead of copying the disk image.  However it requires several changes to
+both the Linux kernel and qemu which are slowly making their way upstream
+(thanks to the tireless efforts of Paolo Bonzini).  Then we will have to
+modify virt-sparsify to support this.  Finally there will be some
+integration work required to make sure all the pieces work together.
+
+Even with this implemented there may be some limitations: For example, it
+requires completely different steps (and is probably harder) to sparsify a
+disk image that is stored on a SAN LUN, compared to one which is stored in a
+local raw image file, so you can expect that different storage and backing
+formats will become supported at different times.  Some backing filesystems
+/ formats may never support sparsification (eg. disk images stored on VFAT,
+old-style non-thin LVs).
 
 =head1 USING LIBGUESTFS IN YOUR OWN PROGRAMS
 
@@ -777,5 +829,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012 Red Hat Inc.
+Copyright (C) 2012-2013 Red Hat Inc.
 

@@ -3,7 +3,7 @@
      generator/ *.ml
    ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
   
-   Copyright (C) 2009-2012 Red Hat Inc.
+   Copyright (C) 2009-2013 Red Hat Inc.
   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -219,7 +219,6 @@ module Guestfs (
   base64_out,
   checksums_out,
   fill_pattern,
-  internal_write,
   pwrite,
   resize2fs_size,
   pvresize_size,
@@ -238,8 +237,6 @@ module Guestfs (
   download_offset,
   pwrite_device,
   resize2fs_M,
-  internal_autosync,
-  internal_write_append,
   part_to_partnum,
   md_stop,
   wipefs,
@@ -277,15 +274,13 @@ module Guestfs (
   hivex_node_delete_child,
   hivex_node_set_value,
   rm_f,
-  internal_hot_add_drive,
-  internal_hot_remove_drive_precheck,
-  internal_hot_remove_drive,
   mklost_and_found,
   acl_set_file,
   acl_delete_def_file,
   cap_set_file,
   ldmtool_create_all,
-  ldmtool_remove_all
+  ldmtool_remove_all,
+  rename
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -2670,18 +2665,6 @@ fill_pattern h pattern len path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_internal_write" c_internal_write
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
-
-internal_write :: GuestfsH -> String -> String -> IO ()
-internal_write h path content = do
-  r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_internal_write p path content (fromIntegral content_size))
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
 foreign import ccall unsafe "guestfs_pwrite" c_pwrite
   :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
 
@@ -2892,30 +2875,6 @@ foreign import ccall unsafe "guestfs_resize2fs_M" c_resize2fs_M
 resize2fs_M :: GuestfsH -> String -> IO ()
 resize2fs_M h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_resize2fs_M p device)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
-foreign import ccall unsafe "guestfs_internal_autosync" c_internal_autosync
-  :: GuestfsP -> IO (CInt)
-
-internal_autosync :: GuestfsH -> IO ()
-internal_autosync h = do
-  r <- withForeignPtr h (\p -> c_internal_autosync p)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
-foreign import ccall unsafe "guestfs_internal_write_append" c_internal_write_append
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
-
-internal_write_append :: GuestfsH -> String -> String -> IO ()
-internal_write_append h path content = do
-  r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_internal_write_append p path content (fromIntegral content_size))
   if (r == -1)
     then do
       err <- last_error h
@@ -3366,42 +3325,6 @@ rm_f h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_internal_hot_add_drive" c_internal_hot_add_drive
-  :: GuestfsP -> CString -> IO (CInt)
-
-internal_hot_add_drive :: GuestfsH -> String -> IO ()
-internal_hot_add_drive h label = do
-  r <- withCString label $ \label -> withForeignPtr h (\p -> c_internal_hot_add_drive p label)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
-foreign import ccall unsafe "guestfs_internal_hot_remove_drive_precheck" c_internal_hot_remove_drive_precheck
-  :: GuestfsP -> CString -> IO (CInt)
-
-internal_hot_remove_drive_precheck :: GuestfsH -> String -> IO ()
-internal_hot_remove_drive_precheck h label = do
-  r <- withCString label $ \label -> withForeignPtr h (\p -> c_internal_hot_remove_drive_precheck p label)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
-foreign import ccall unsafe "guestfs_internal_hot_remove_drive" c_internal_hot_remove_drive
-  :: GuestfsP -> CString -> IO (CInt)
-
-internal_hot_remove_drive :: GuestfsH -> String -> IO ()
-internal_hot_remove_drive h label = do
-  r <- withCString label $ \label -> withForeignPtr h (\p -> c_internal_hot_remove_drive p label)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
 foreign import ccall unsafe "guestfs_mklost_and_found" c_mklost_and_found
   :: GuestfsP -> CString -> IO (CInt)
 
@@ -3468,6 +3391,18 @@ foreign import ccall unsafe "guestfs_ldmtool_remove_all" c_ldmtool_remove_all
 ldmtool_remove_all :: GuestfsH -> IO ()
 ldmtool_remove_all h = do
   r <- withForeignPtr h (\p -> c_ldmtool_remove_all p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_rename" c_rename
+  :: GuestfsP -> CString -> CString -> IO (CInt)
+
+rename :: GuestfsH -> String -> String -> IO ()
+rename h oldpath newpath = do
+  r <- withCString oldpath $ \oldpath -> withCString newpath $ \newpath -> withForeignPtr h (\p -> c_rename p oldpath newpath)
   if (r == -1)
     then do
       err <- last_error h

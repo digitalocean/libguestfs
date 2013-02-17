@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ open Docstrings
 open Optgroups
 open Actions
 open Structs
+open Events
 open C
 
 (* Generate Java bindings GuestFS.java file. *)
@@ -40,7 +41,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The GuestFS object is a libguestfs handle.
+ * Libguestfs handle.
+ * <p>
+ * The <code>GuestFS</code> object corresponds to a libguestfs handle.
+ * <p>
+ * Note that the main documentation for the libguestfs API is in
+ * the following man pages:
+ * <p>
+ * <ol>
+ * <li> <a href=\"http://libguestfs.org/guestfs-java.3.html\"><code>guestfs-java(3)</code></a> and </li>
+ * <li> <a href=\"http://libguestfs.org/guestfs.3.html\"><code>guestfs(3)</code></a>. </li>
+ * </ol>
+ * <p>
+ * This javadoc is <b>not</b> a good introduction to using libguestfs.
  *
  * @author rjones
  */
@@ -54,6 +67,10 @@ public class GuestFS {
    * The native guestfs_h pointer.
    */
   long g;
+
+  /* guestfs_create_flags values defined in <guestfs.h> */
+  private static int CREATE_NO_ENVIRONMENT   = 1;
+  private static int CREATE_NO_CLOSE_ON_EXIT = 2;
 
   /**
    * Create a libguestfs handle, setting flags.
@@ -70,11 +87,11 @@ public class GuestFS {
     if (optargs != null)
       _optobj = optargs.get (\"environment\");
     if (_optobj != null && !((Boolean) _optobj).booleanValue())
-      flags |= 1;
+      flags |= CREATE_NO_ENVIRONMENT;
     if (optargs != null)
       _optobj = optargs.get (\"close_on_exit\");
     if (_optobj != null && !((Boolean) _optobj).booleanValue())
-      flags |= 2;
+      flags |= CREATE_NO_CLOSE_ON_EXIT;
 
     g = _create (flags);
   }
@@ -88,6 +105,7 @@ public class GuestFS {
   {
     g = _create (0);
   }
+
   private native long _create (int flags) throws LibGuestFSException;
 
   /**
@@ -116,12 +134,123 @@ public class GuestFS {
 
 ";
 
+  (* Events. *)
+  pr "  // Event bitmasks.\n\n";
   List.iter (
-    fun ({ name = name; style = (ret, args, optargs as style);
-           in_docs = in_docs; shortdesc = shortdesc;
-           longdesc = longdesc; non_c_aliases = non_c_aliases } as f) ->
-      if in_docs then (
-        let doc = replace_str longdesc "C<guestfs_" "C<g." in
+    fun (name, bitmask) ->
+      pr "  /**\n";
+      pr "   * Event '%s'.\n" name;
+      pr "   *\n";
+      pr "   * @see #set_event_callback\n";
+      pr "   */\n";
+      pr "  public static final long EVENT_%s = 0x%x;\n" (String.uppercase name) bitmask;
+      pr "\n";
+  ) events;
+
+  pr "  /** Bitmask of all events. */\n";
+  pr "  public static final long EVENT_ALL = 0x%x;\n" all_events_bitmask;
+  pr "\n";
+
+  pr "  /** Utility function to turn an event number or bitmask into a string. */\n";
+  pr "  public static String eventToString (long events)\n";
+  pr "  {\n";
+  pr "    if (events == 0)\n";
+  pr "      return \"\";\n";
+  pr "\n";
+  pr "    String ret = \"\";\n";
+  pr "\n";
+  List.iter (
+    fun (name, bitmask) ->
+      pr "    if ((events & EVENT_%s) != 0) {\n" (String.uppercase name);
+      pr "      ret = ret + \"|EVENT_%s\";\n" (String.uppercase name);
+      pr "      events &= ~0x%x;\n" bitmask;
+      pr "    }\n";
+  ) events;
+  pr "\n";
+  pr "    if (events != 0)\n";
+  pr "      ret = events + ret;\n";
+  pr "    else\n";
+  pr "       ret = ret.substring (1);\n";
+  pr "\n";
+  pr "    return ret;\n";
+  pr "  }\n";
+
+  pr "
+  /**
+   * Set an event handler.
+   * <p>
+   * Set an event handler (<code>callback</code>) which is called when any
+   * event from the set (<code>events</code>) is raised by the API.
+   * <code>events</code> is one or more <code>EVENT_*</code> constants,
+   * bitwise ORed together.
+   * <p>
+   * When an event happens, the callback object's <code>event</code> method
+   * is invoked like this:
+   * <pre>
+   * callback.event (event,    // the specific event which fired (long)
+   *                 eh,       // the event handle (int)
+   *                 buffer,   // event data (String)
+   *                 array     // event data (long[])
+   *                 );
+   * </pre>
+   * Note that you can pass arbitrary data from the main program to the
+   * callback by putting it into your {@link EventCallback callback object},
+   * then accessing it in the callback via <code>this</code>.
+   * <p>
+   * This function returns an event handle which may be used to delete
+   * the event.  Note that event handlers are deleted automatically when
+   * the libguestfs handle is closed.
+   *
+   * @throws LibGuestFSException
+   * @see The section \"EVENTS\" in the guestfs(3) manual
+   * @see #delete_event_callback
+   */
+  public int set_event_callback (EventCallback callback, long events)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException (\"set_event_callback: handle is closed\");
+
+    return _set_event_callback (g, callback, events);
+  }
+
+  private native int _set_event_callback (long g, EventCallback callback,
+                                          long events)
+    throws LibGuestFSException;
+
+  /**
+   * Delete an event handler.
+   * <p>
+   * Delete a previously registered event handler.  The 'eh' parameter is
+   * the event handle returned from a previous call to
+   * {@link #set_event_callback set_event_callback}.
+   * <p>
+   * Note that event handlers are deleted automatically when the
+   * libguestfs handle is closed.
+   *
+   * @throws LibGuestFSException
+   * @see #set_event_callback
+   */
+  public void delete_event_callback (int eh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException (\"delete_event_callback: handle is closed\");
+
+    _delete_event_callback (g, eh);
+  }
+
+  private native void _delete_event_callback (long g, int eh);
+
+";
+
+  (* Methods. *)
+  List.iter (
+    fun f ->
+      let ret, args, optargs = f.style in
+
+      if is_documented f then (
+        let doc = replace_str f.longdesc "C<guestfs_" "C<g." in
         let doc =
           if optargs <> [] then
             doc ^ "\n\nOptional arguments are supplied in the final Map<String,Object> parameter, which is a hash of the argument name to its value (cast to Object).  Pass an empty Map or null for no optional arguments."
@@ -134,7 +263,7 @@ public class GuestFS {
           match deprecation_notice f with
           | None -> doc
           | Some txt -> doc ^ "\n\n" ^ txt in
-        let doc = pod2text ~width:60 name doc in
+        let doc = pod2text ~width:60 f.name doc in
         let doc = List.map (		(* RHBZ#501883 *)
           function
           | "" -> "<p>"
@@ -143,19 +272,19 @@ public class GuestFS {
         let doc = String.concat "\n   * " doc in
 
         pr "  /**\n";
-        pr "   * %s\n" shortdesc;
+        pr "   * %s\n" f.shortdesc;
         pr "   * <p>\n";
         pr "   * %s\n" doc;
         pr "   * @throws LibGuestFSException\n";
         pr "   */\n";
       );
       pr "  ";
-      generate_java_prototype ~public:true ~semicolon:false name style;
+      generate_java_prototype ~public:true ~semicolon:false f.name f.style;
       pr "\n";
       pr "  {\n";
       pr "    if (g == 0)\n";
       pr "      throw new LibGuestFSException (\"%s: handle is closed\");\n"
-        name;
+        f.name;
       if optargs <> [] then (
         pr "\n";
         pr "    /* Unpack optional args. */\n";
@@ -184,12 +313,12 @@ public class GuestFS {
       pr "\n";
       (match ret with
        | RErr ->
-           pr "    _%s " name;
-           generate_java_call_args ~handle:"g" style;
+           pr "    _%s " f.name;
+           generate_java_call_args ~handle:"g" f.style;
            pr ";\n"
        | RHashtable _ ->
-           pr "    String[] r = _%s " name;
-           generate_java_call_args ~handle:"g" style;
+           pr "    String[] r = _%s " f.name;
+           generate_java_call_args ~handle:"g" f.style;
            pr ";\n";
            pr "\n";
            pr "    HashMap<String, String> rhash = new HashMap<String, String> ();\n";
@@ -197,8 +326,8 @@ public class GuestFS {
            pr "      rhash.put (r[i], r[i+1]);\n";
            pr "    return rhash;\n"
        | _ ->
-           pr "    return _%s " name;
-           generate_java_call_args ~handle:"g" style;
+           pr "    return _%s " f.name;
+           generate_java_call_args ~handle:"g" f.style;
            pr ";\n"
       );
       pr "  }\n";
@@ -211,14 +340,14 @@ public class GuestFS {
       if optargs <> [] then (
         pr "  ";
         generate_java_prototype ~public:true ~semicolon:false
-          name (ret, args, []);
+          f.name (ret, args, []);
         pr "\n";
         pr "  {\n";
         (match ret with
         | RErr -> pr "    "
         | _ ->    pr "    return "
         );
-        pr "%s (" name;
+        pr "%s (" f.name;
         List.iter (fun arg -> pr "%s, " (name_of_argt arg)) args;
         pr "null);\n";
         pr "  }\n";
@@ -229,14 +358,14 @@ public class GuestFS {
       List.iter (
         fun alias ->
           pr "  ";
-          generate_java_prototype ~public:true ~semicolon:false alias style;
+          generate_java_prototype ~public:true ~semicolon:false alias f.style;
           pr "\n";
           pr "  {\n";
           (match ret with
           | RErr -> pr "    "
           | _ ->    pr "    return "
           );
-          pr "%s (" name;
+          pr "%s (" f.name;
           let needs_comma = ref false in
           List.iter (
             fun arg ->
@@ -263,20 +392,20 @@ public class GuestFS {
             | RErr -> pr "    "
             | _ ->    pr "    return "
             );
-            pr "%s (" name;
+            pr "%s (" f.name;
             List.iter (fun arg -> pr "%s, " (name_of_argt arg)) args;
             pr "null);\n";
             pr "  }\n";
             pr "\n"
           )
-      ) non_c_aliases;
+      ) f.non_c_aliases;
 
       (* Prototype for the native method. *)
       pr "  ";
-      generate_java_prototype ~privat:true ~native:true name style;
+      generate_java_prototype ~privat:true ~native:true f.name f.style;
       pr "\n";
       pr "\n";
-  ) all_functions;
+  ) external_functions;
 
   pr "}\n"
 
@@ -384,7 +513,7 @@ and generate_java_struct jtyp cols () =
 package com.redhat.et.libguestfs;
 
 /**
- * Libguestfs %s structure.
+ * %s structure.
  *
  * @author rjones
  * @see GuestFS
@@ -416,9 +545,25 @@ and generate_java_c () =
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include \"com_redhat_et_libguestfs_GuestFS.h\"
 #include \"guestfs.h\"
+#include \"guestfs-internal-frontend.h\"
+
+/* This is the opaque data passed between _set_event_callback and
+ * the C wrapper which calls the Java event callback.
+ *
+ * NB: The 'callback' in the following struct is registered as a global
+ * reference.  It must be freed along with the struct.
+ */
+struct callback_data {
+  JavaVM *jvm;           // JVM
+  jobject callback;      // object supporting EventCallback interface
+  jmethodID method;      // callback.event method
+};
+
+static struct callback_data **get_all_event_callbacks (guestfs_h *g, size_t *len_rtn);
 
 /* Note that this function returns.  The exception is not thrown
  * until after the wrapper function returns.
@@ -452,7 +597,180 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
   (JNIEnv *env, jobject obj, jlong jg)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
+  size_t len, i;
+  struct callback_data **data;
+
+  /* There is a nasty, difficult to solve case here where the
+   * user deletes events in one of the callbacks that we are
+   * about to invoke, resulting in a double-free.  XXX
+   */
+  data = get_all_event_callbacks (g, &len);
+
   guestfs_close (g);
+
+  for (i = 0; i < len; ++i) {
+    (*env)->DeleteGlobalRef (env, data[i]->callback);
+    free (data[i]);
+  }
+  free (data);
+}
+
+/* See EventCallback interface. */
+#define METHOD_NAME \"event\"
+#define METHOD_SIGNATURE \"(JILjava/lang/String;[J)V\"
+
+static void
+guestfs_java_callback (guestfs_h *g,
+                       void *opaque,
+                       uint64_t event,
+                       int event_handle,
+                       int flags,
+                       const char *buf, size_t buf_len,
+                       const uint64_t *array, size_t array_len)
+{
+  struct callback_data *data = opaque;
+  JavaVM *jvm = data->jvm;
+  JNIEnv *env;
+  int r;
+  jstring jbuf;
+  jlongArray jarray;
+  size_t i;
+  jlong jl;
+
+  /* Get the Java environment.  See:
+   * http://stackoverflow.com/questions/12900695/how-to-obtain-jni-interface-pointer-jnienv-for-asynchronous-calls
+   */
+  r = (*jvm)->GetEnv (jvm, (void **) &env, JNI_VERSION_1_6);
+  if (r != JNI_OK) {
+    switch (r) {
+    case JNI_EDETACHED:
+      /* This can happen when the close event is generated during an atexit
+       * cleanup.  The JVM has probably been destroyed so I doubt it is
+       * safe to run Java code at this point.
+       */
+      fprintf (stderr, \"%%s: event %%\" PRIu64 \" (eh %%d) ignored because the thread is not attached to the JVM.  This can happen when libguestfs handles are cleaned up at program exit after the JVM has been destroyed.\\n\",
+               __func__, event, event_handle);
+      return;
+
+    default:
+      fprintf (stderr, \"%%s: jvm->GetEnv failed! (JNI_* error code = %%d)\\n\",
+               __func__, r);
+      return;
+    }
+  }
+
+  /* Convert the buffer and array to Java objects. */
+  jbuf = (*env)->NewStringUTF (env, buf); // XXX size
+
+  jarray = (*env)->NewLongArray (env, array_len);
+  for (i = 0; i < array_len; ++i) {
+    jl = array[i];
+    (*env)->SetLongArrayRegion (env, jarray, i, 1, &jl);
+  }
+
+  /* Call the event method.  If it throws an exception, all we can do is
+   * print it on stderr.
+   */
+  (*env)->ExceptionClear (env);
+  (*env)->CallVoidMethod (env, data->callback, data->method,
+                          (jlong) event, (jint) event_handle,
+                          jbuf, jarray);
+  if ((*env)->ExceptionOccurred (env)) {
+    (*env)->ExceptionDescribe (env);
+    (*env)->ExceptionClear (env);
+  }
+}
+
+JNIEXPORT jint JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1set_1event_1callback
+  (JNIEnv *env, jobject obj, jlong jg, jobject jcallback, jlong jevents)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  struct callback_data *data;
+  jclass callback_class;
+  jmethodID method;
+  char key[64];
+
+  callback_class = (*env)->GetObjectClass (env, jcallback);
+  method = (*env)->GetMethodID (env, callback_class, METHOD_NAME, METHOD_SIGNATURE);
+  if (method == 0) {
+    throw_exception (env, \"GuestFS.set_event_callback: callback class does not implement the EventCallback interface\");
+    return -1;
+  }
+
+  data = guestfs___safe_malloc (g, sizeof *data);
+  (*env)->GetJavaVM (env, &data->jvm);
+  data->method = method;
+
+  r = guestfs_set_event_callback (g, guestfs_java_callback,
+                                  (uint64_t) jevents, 0, data);
+  if (r == -1) {
+    free (data);
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+
+  /* Register jcallback as a global reference so the GC won't free it. */
+  data->callback = (*env)->NewGlobalRef (env, jcallback);
+
+  /* Store 'data' in the handle, so we can free it at some point. */
+  snprintf (key, sizeof key, \"_java_event_%%d\", r);
+  guestfs_set_private (g, key, data);
+
+  return (jint) r;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1delete_1event_1callback
+  (JNIEnv *env, jobject obj, jlong jg, jint eh)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  char key[64];
+  struct callback_data *data;
+
+  snprintf (key, sizeof key, \"_java_event_%%d\", eh);
+
+  data = guestfs_get_private (g, key);
+  if (data) {
+    (*env)->DeleteGlobalRef (env, data->callback);
+    free (data);
+    guestfs_set_private (g, key, NULL);
+    guestfs_delete_event_callback (g, eh);
+  }
+}
+
+static struct callback_data **
+get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
+{
+  struct callback_data **r;
+  size_t i;
+  const char *key;
+  struct callback_data *data;
+
+  /* Count the length of the array that will be needed. */
+  *len_rtn = 0;
+  data = guestfs_first_private (g, &key);
+  while (data != NULL) {
+    if (strncmp (key, \"_java_event_\", strlen (\"_java_event_\")) == 0)
+      (*len_rtn)++;
+    data = guestfs_next_private (g, &key);
+  }
+
+  /* Copy them into the return array. */
+  r = guestfs___safe_malloc (g, sizeof (struct callback_data *) * (*len_rtn));
+
+  i = 0;
+  data = guestfs_first_private (g, &key);
+  while (data != NULL) {
+    if (strncmp (key, \"_java_event_\", strlen (\"_java_event_\")) == 0) {
+      r[i] = data;
+      i++;
+    }
+    data = guestfs_next_private (g, &key);
+  }
+
+  return r;
 }
 
 ";
@@ -782,7 +1100,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1close
 
       pr "}\n";
       pr "\n"
-  ) all_functions
+  ) external_functions
 
 and generate_java_struct_return typ jtyp cols =
   pr "  cl = (*env)->FindClass (env, \"com/redhat/et/libguestfs/%s\");\n" jtyp;
@@ -873,7 +1191,7 @@ and generate_java_struct_list_return typ jtyp cols =
 and generate_java_makefile_inc () =
   generate_header HashStyle GPLv2plus;
 
-  let jtyps = List.map (fun { s_camel_name = jtyp } -> jtyp) structs in
+  let jtyps = List.map (fun { s_camel_name = jtyp } -> jtyp) external_structs in
   let jtyps = List.sort compare jtyps in
 
   pr "java_built_sources = \\\n";
@@ -883,7 +1201,7 @@ and generate_java_makefile_inc () =
   pr "\tcom/redhat/et/libguestfs/GuestFS.java\n"
 
 and generate_java_gitignore () =
-  let jtyps = List.map (fun { s_camel_name = jtyp } -> jtyp) structs in
+  let jtyps = List.map (fun { s_camel_name = jtyp } -> jtyp) external_structs in
   let jtyps = List.sort compare jtyps in
 
   List.iter (pr "%s.java\n") jtyps

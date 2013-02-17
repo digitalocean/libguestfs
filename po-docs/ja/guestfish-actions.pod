@@ -2003,15 +2003,6 @@ libguestfs のアーキテクチャーの詳細は L<guestfs(3)> を参照して
 
 This returns the number of virtual CPUs assigned to the appliance.
 
-=head2 get-state
-
- get-state
-
-This returns the current state as an opaque integer.  This is only useful
-for printing debug and internal error messages.
-
-For more information on states, see L<guestfs(3)>.
-
 =head2 get-tmpdir
 
  get-tmpdir
@@ -3268,30 +3259,12 @@ directories.
 
 L</stat> 参照。
 
-=head2 is-launching
-
- is-launching
-
-This returns true iff this handle is launching the subprocess (in the
-C<LAUNCHING> state).
-
-For more information on states, see L<guestfs(3)>.
-
 =head2 is-lv
 
  is-lv device
 
 This command tests whether C<device> is a logical volume, and returns true
 iff this is the case.
-
-=head2 is-ready
-
- is-ready
-
-This returns true iff this handle is ready to accept commands (in the
-C<READY> state).
-
-For more information on states, see L<guestfs(3)>.
 
 =head2 is-socket
 
@@ -3465,7 +3438,7 @@ this list is empty, all block devices are scanned.
  ldmtool-volume-hint diskgroup volume
 
 Return the hint field of the volume named C<volume> in the disk group with
-GUID <diskgroup>.  This may not be defined, in which case the empty string
+GUID C<diskgroup>.  This may not be defined, in which case the empty string
 is returned.  The hint field is often, though not always, the name of a
 Windows drive, eg. C<E:>.
 
@@ -3474,14 +3447,14 @@ Windows drive, eg. C<E:>.
  ldmtool-volume-partitions diskgroup volume
 
 Return the list of partitions in the volume named C<volume> in the disk
-group with GUID <diskgroup>.
+group with GUID C<diskgroup>.
 
 =head2 ldmtool-volume-type
 
  ldmtool-volume-type diskgroup volume
 
 Return the type of the volume named C<volume> in the disk group with GUID
-<diskgroup>.
+C<diskgroup>.
 
 Possible volume types that can be returned here include: C<simple>,
 C<spanned>, C<striped>, C<mirrored>, C<raid5>.  Other types may also be
@@ -4651,6 +4624,8 @@ Some internal mounts are not shown.
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
+See also: L</rename>.
+
 =head2 nr-devices
 
  nr-devices
@@ -5052,7 +5027,8 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  pread-device device count offset
 
-このコマンドはファイルの一部を読み込みます。C<device> を C<offset> から開始して C<count> バイト読み込みます。
+This command lets you read part of a block device.  It reads C<count> bytes
+of C<device>, starting at C<offset>.
 
 This may read fewer bytes than requested.  For further details see the
 L<pread(2)> system call.
@@ -5305,6 +5281,14 @@ stop you from doing this.
 This call removes the extended attribute named C<xattr> of the file C<path>.
 
 関連項目: L</lremovexattr>, L<attr(5)>
+
+=head2 rename
+
+ rename oldpath newpath
+
+Rename a file to a new place on the same filesystem.  This is the same as
+the Linux L<rename(2)> system call.  In most cases you are better to use
+L</mv> instead.
 
 =head2 resize2fs
 

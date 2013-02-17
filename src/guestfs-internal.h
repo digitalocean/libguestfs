@@ -1,5 +1,5 @@
 /* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,23 +34,7 @@
 
 #include "hash.h"
 
-#ifndef SOCK_CLOEXEC
-#define SOCK_CLOEXEC 0
-#endif
-
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
-#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
-#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
-#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
-#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
-#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
-#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
-#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
-#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
-#define STRSUFFIX(a,b) (strlen((a)) >= strlen((b)) && STREQ((a)+strlen((a))-strlen((b)),(b)))
-
-#define _(str) dgettext(PACKAGE, (str))
-#define N_(str) dgettext(PACKAGE, (str))
+#include "guestfs-internal-frontend.h"
 
 #if ENABLE_PROBES
 #include <sys/sdt.h>
@@ -70,26 +54,6 @@
 #define TRACE2(name, arg1, arg2)
 #define TRACE3(name, arg1, arg2, arg3)
 #define TRACE4(name, arg1, arg2, arg3, arg4)
-#endif
-
-#define TMP_TEMPLATE_ON_STACK(g,var)                      \
-  char *ttos_tmpdir = guestfs_get_tmpdir (g);             \
-  char var[strlen (ttos_tmpdir) + 32];                    \
-  sprintf (var, "%s/libguestfsXXXXXX", ttos_tmpdir);      \
-  free (ttos_tmpdir)
-
-#ifdef __APPLE__
-#define UNIX_PATH_MAX 104
-#else
-#define UNIX_PATH_MAX 108
-#endif
-
-#ifndef MAX
-#define MAX(a,b) ((a)>(b)?(a):(b))
-#endif
-
-#ifdef __APPLE__
-#define xdr_uint32_t xdr_u_int32_t
 #endif
 
 /* Some limits on what the inspection code will read, for safety. */
@@ -458,22 +422,6 @@ struct guestfs_message_header;
 struct guestfs_message_error;
 struct guestfs_progress;
 
-/* alloc.c */
-extern void *guestfs___safe_realloc (guestfs_h *g, void *ptr, size_t nbytes);
-extern char *guestfs___safe_strdup (guestfs_h *g, const char *str);
-extern char *guestfs___safe_strndup (guestfs_h *g, const char *str, size_t n);
-extern void *guestfs___safe_memdup (guestfs_h *g, const void *ptr, size_t size);
-extern char *guestfs___safe_asprintf (guestfs_h *g, const char *fs, ...)
-  __attribute__((format (printf,2,3)));
-
-#define safe_calloc guestfs___safe_calloc
-#define safe_malloc guestfs___safe_malloc
-#define safe_realloc guestfs___safe_realloc
-#define safe_strdup guestfs___safe_strdup
-#define safe_strndup guestfs___safe_strndup
-#define safe_memdup guestfs___safe_memdup
-#define safe_asprintf guestfs___safe_asprintf
-
 /* errors.c */
 extern void guestfs___init_error_handler (guestfs_h *g);
 
@@ -554,7 +502,7 @@ extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd
 
 /* launch.c */
 extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);
-extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...);
+extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
 extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
 extern size_t guestfs___checkpoint_drives (guestfs_h *g);
 extern void guestfs___rollback_drives (guestfs_h *g, size_t);
@@ -660,5 +608,12 @@ extern void guestfs___cmd_set_stderr_to_stdout (struct command *);
 extern void guestfs___cmd_clear_capture_errors (struct command *);
 extern int guestfs___cmd_run (struct command *);
 extern void guestfs___cmd_close (struct command *);
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+#define CLEANUP_CMD_CLOSE __attribute__((cleanup(guestfs___cleanup_cmd_close)))
+#else
+#define CLEANUP_CMD_CLOSE
+#endif
+extern void guestfs___cleanup_cmd_close (void *ptr);
 
 #endif /* GUESTFS_INTERNAL_H_ */

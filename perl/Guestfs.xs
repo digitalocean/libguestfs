@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,9 +30,13 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include <guestfs.h>
+/* perl CORE/config.h defines '_' to something completely bonkers. */
+#ifdef _
+#undef _
+#endif
 
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
+#include <guestfs.h>
+#include "guestfs-internal-frontend.h"
 
 static SV *
 my_newSVll(long long val) {
@@ -5814,84 +5818,6 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
-void
-internal_lstatlist (g, path, names)
-      guestfs_h *g;
-      char *path;
-      char **names;
-PREINIT:
-      struct guestfs_stat_list *r;
-      size_t i;
-      HV *hv;
- PPCODE:
-      r = guestfs_internal_lstatlist (g, path, names);
-      free (names);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, r->len);
-      for (i = 0; i < r->len; ++i) {
-        hv = newHV ();
-        (void) hv_store (hv, "dev", 3, my_newSVll (r->val[i].dev), 0);
-        (void) hv_store (hv, "ino", 3, my_newSVll (r->val[i].ino), 0);
-        (void) hv_store (hv, "mode", 4, my_newSVll (r->val[i].mode), 0);
-        (void) hv_store (hv, "nlink", 5, my_newSVll (r->val[i].nlink), 0);
-        (void) hv_store (hv, "uid", 3, my_newSVll (r->val[i].uid), 0);
-        (void) hv_store (hv, "gid", 3, my_newSVll (r->val[i].gid), 0);
-        (void) hv_store (hv, "rdev", 4, my_newSVll (r->val[i].rdev), 0);
-        (void) hv_store (hv, "size", 4, my_newSVll (r->val[i].size), 0);
-        (void) hv_store (hv, "blksize", 7, my_newSVll (r->val[i].blksize), 0);
-        (void) hv_store (hv, "blocks", 6, my_newSVll (r->val[i].blocks), 0);
-        (void) hv_store (hv, "atime", 5, my_newSVll (r->val[i].atime), 0);
-        (void) hv_store (hv, "mtime", 5, my_newSVll (r->val[i].mtime), 0);
-        (void) hv_store (hv, "ctime", 5, my_newSVll (r->val[i].ctime), 0);
-        PUSHs (sv_2mortal (newRV ((SV *) hv)));
-      }
-      guestfs_free_stat_list (r);
-
-void
-internal_lxattrlist (g, path, names)
-      guestfs_h *g;
-      char *path;
-      char **names;
-PREINIT:
-      struct guestfs_xattr_list *r;
-      size_t i;
-      HV *hv;
- PPCODE:
-      r = guestfs_internal_lxattrlist (g, path, names);
-      free (names);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      EXTEND (SP, r->len);
-      for (i = 0; i < r->len; ++i) {
-        hv = newHV ();
-        (void) hv_store (hv, "attrname", 8, newSVpv (r->val[i].attrname, 0), 0);
-        (void) hv_store (hv, "attrval", 7, newSVpvn (r->val[i].attrval, r->val[i].attrval_len), 0);
-        PUSHs (sv_2mortal (newRV ((SV *) hv)));
-      }
-      guestfs_free_xattr_list (r);
-
-void
-internal_readlinklist (g, path, names)
-      guestfs_h *g;
-      char *path;
-      char **names;
-PREINIT:
-      char **r;
-      size_t i, n;
- PPCODE:
-      r = guestfs_internal_readlinklist (g, path, names);
-      free (names);
-      if (r == NULL)
-        croak ("%s", guestfs_last_error (g));
-      for (n = 0; r[n] != NULL; ++n) /**/;
-      EXTEND (SP, n);
-      for (i = 0; i < n; ++i) {
-        PUSHs (sv_2mortal (newSVpv (r[i], 0)));
-        free (r[i]);
-      }
-      free (r);
-
 SV *
 pread (g, path, count, offset)
       guestfs_h *g;
@@ -6412,19 +6338,6 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_fill_pattern (g, pattern, len, path);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
-void
-internal_write (g, path, content)
-      guestfs_h *g;
-      char *path;
-      char *content;
-      size_t content_size = SvCUR (ST(2));
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_internal_write (g, path, content, content_size);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -6950,16 +6863,6 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
-void
-internal_autosync (g)
-      guestfs_h *g;
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_internal_autosync (g);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
 SV *
 is_zero (g, path)
       guestfs_h *g;
@@ -7122,19 +7025,6 @@ PREINIT:
       }
 
       r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
-void
-internal_write_append (g, path, content)
-      guestfs_h *g;
-      char *path;
-      char *content;
-      size_t content_size = SvCUR (ST(2));
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_internal_write_append (g, path, content, content_size);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -9187,39 +9077,6 @@ PREINIT:
       }
       free (r);
 
-void
-internal_hot_add_drive (g, label)
-      guestfs_h *g;
-      char *label;
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_internal_hot_add_drive (g, label);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
-void
-internal_hot_remove_drive_precheck (g, label)
-      guestfs_h *g;
-      char *label;
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_internal_hot_remove_drive_precheck (g, label);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
-void
-internal_hot_remove_drive (g, label)
-      guestfs_h *g;
-      char *label;
-PREINIT:
-      int r;
- PPCODE:
-      r = guestfs_internal_hot_remove_drive (g, label);
-      if (r == -1)
-        croak ("%s", guestfs_last_error (g));
-
 SV *
 mktemp (g, tmpl, ...)
       guestfs_h *g;
@@ -9532,4 +9389,16 @@ PREINIT:
         free (r[i]);
       }
       free (r);
+
+void
+rename (g, oldpath, newpath)
+      guestfs_h *g;
+      char *oldpath;
+      char *newpath;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_rename (g, oldpath, newpath);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 

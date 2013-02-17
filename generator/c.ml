@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,18 @@ let hash_matches h { name = name } =
   h = h'
 
 type optarg_proto = Dots | VA | Argv
+
+let is_public { visibility = v } = match v with
+  | VPublic | VStateTest | VDebug -> true
+  | VBindTest | VInternal -> false
+
+let is_private f = not (is_public f)
+
+let public_functions_sorted =
+  List.filter is_public all_functions_sorted
+
+let private_functions_sorted =
+  List.filter is_private all_functions_sorted
 
 (* Generate a C function prototype. *)
 let rec generate_prototype ?(extern = true) ?(static = false)
@@ -186,13 +198,12 @@ and generate_c_call_args ?handle ?(implicit_size_ptr = "&size")
 and generate_actions_pod () =
   List.iter (
     function
-    | { in_docs = false } -> ()
-    | ({ in_docs = true; once_had_no_optargs = false } as f) ->
+    | ({ once_had_no_optargs = false } as f) ->
       generate_actions_pod_entry f
-    | ({ in_docs = true; once_had_no_optargs = true } as f) ->
+    | ({ once_had_no_optargs = true } as f) ->
       generate_actions_pod_back_compat_entry f;
       generate_actions_pod_entry f
-  ) all_functions_sorted
+  ) documented_functions_sorted
 
 and generate_actions_pod_entry ({ c_name = c_name;
                                   style = ret, args, optargs as style } as f) =
@@ -383,8 +394,10 @@ and generate_guestfs_h () =
  * To read it, type:           man 3 guestfs
  * Or read it online here:     http://libguestfs.org/guestfs.3.html
  *
- * Go and read it now, I'll be right here waiting for you
- * when you come back.
+ * Go and read it now!  This header file won't make much sense.
+ *
+ * For example code using the C API, see 'guestfs-examples(3)'
+ * available online at: http://libguestfs.org/guestfs-examples.3.html
  *
  * ------------------------------------
  */
@@ -400,7 +413,7 @@ extern \"C\" {
 #include <stdint.h>
 #include <stdarg.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(GUESTFS_GCC_VERSION)
 # define GUESTFS_GCC_VERSION \\
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
@@ -434,7 +447,7 @@ typedef struct guestfs_h guestfs_h;
 
 /* Connection management. */
 extern GUESTFS_DLL_PUBLIC guestfs_h *guestfs_create (void);
-#define LIBGUESTFS_HAVE_CREATE_FLAGS 1
+#define GUESTFS_HAVE_CREATE_FLAGS 1
 extern GUESTFS_DLL_PUBLIC guestfs_h *guestfs_create_flags (unsigned flags, ...);
 #define GUESTFS_CREATE_NO_ENVIRONMENT   (1 << 0)
 #define GUESTFS_CREATE_NO_CLOSE_ON_EXIT (1 << 1)
@@ -442,7 +455,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_close (guestfs_h *g);
 
 /* Error handling. */
 extern GUESTFS_DLL_PUBLIC const char *guestfs_last_error (guestfs_h *g);
-#define LIBGUESTFS_HAVE_LAST_ERRNO 1
+#define GUESTFS_HAVE_LAST_ERRNO 1
 extern GUESTFS_DLL_PUBLIC int guestfs_last_errno (guestfs_h *g);
 
 #ifndef GUESTFS_TYPEDEF_ERROR_HANDLER_CB
@@ -457,9 +470,9 @@ typedef void (*guestfs_abort_cb) (void) GUESTFS_NORETURN;
 
 extern GUESTFS_DLL_PUBLIC void guestfs_set_error_handler (guestfs_h *g, guestfs_error_handler_cb cb, void *opaque);
 extern GUESTFS_DLL_PUBLIC guestfs_error_handler_cb guestfs_get_error_handler (guestfs_h *g, void **opaque_rtn);
-#define LIBGUESTFS_HAVE_PUSH_ERROR_HANDLER 1
+#define GUESTFS_HAVE_PUSH_ERROR_HANDLER 1
 extern GUESTFS_DLL_PUBLIC void guestfs_push_error_handler (guestfs_h *g, guestfs_error_handler_cb cb, void *opaque);
-#define LIBGUESTFS_HAVE_POP_ERROR_HANDLER 1
+#define GUESTFS_HAVE_POP_ERROR_HANDLER 1
 extern GUESTFS_DLL_PUBLIC void guestfs_pop_error_handler (guestfs_h *g);
 
 extern GUESTFS_DLL_PUBLIC void guestfs_set_out_of_memory_handler (guestfs_h *g, guestfs_abort_cb);
@@ -473,7 +486,7 @@ extern GUESTFS_DLL_PUBLIC guestfs_abort_cb guestfs_get_out_of_memory_handler (gu
       pr "#define GUESTFS_EVENT_%-16s 0x%04x\n"
         (String.uppercase name) bitmask
   ) events;
-  pr "#define GUESTFS_EVENT_%-16s UINT64_MAX\n" "ALL";
+  pr "#define GUESTFS_EVENT_%-16s 0x%x\n" "ALL" all_events_bitmask;
   pr "\n";
 
   pr "\
@@ -489,9 +502,9 @@ typedef void (*guestfs_event_callback) (
                         const uint64_t *array, size_t array_len);
 #endif
 
-#define LIBGUESTFS_HAVE_SET_EVENT_CALLBACK 1
+#define GUESTFS_HAVE_SET_EVENT_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_event_callback (guestfs_h *g, guestfs_event_callback cb, uint64_t event_bitmask, int flags, void *opaque);
-#define LIBGUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
+#define GUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_delete_event_callback (guestfs_h *g, int event_handle);
 
 /* Old-style event handling. */
@@ -526,25 +539,25 @@ extern GUESTFS_DLL_PUBLIC void guestfs_set_subprocess_quit_callback (guestfs_h *
   GUESTFS_DEPRECATED_BY(\"set_event_callback\");
 extern GUESTFS_DLL_PUBLIC void guestfs_set_launch_done_callback (guestfs_h *g, guestfs_launch_done_cb cb, void *opaque)
   GUESTFS_DEPRECATED_BY(\"set_event_callback\");
-#define LIBGUESTFS_HAVE_SET_CLOSE_CALLBACK 1
+#define GUESTFS_HAVE_SET_CLOSE_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_set_close_callback (guestfs_h *g, guestfs_close_cb cb, void *opaque)
   GUESTFS_DEPRECATED_BY(\"set_event_callback\");
-#define LIBGUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
+#define GUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque)
   GUESTFS_DEPRECATED_BY(\"set_event_callback\");
 
 /* User cancellation. */
-#define LIBGUESTFS_HAVE_USER_CANCEL 1
+#define GUESTFS_HAVE_USER_CANCEL 1
 extern GUESTFS_DLL_PUBLIC void guestfs_user_cancel (guestfs_h *g);
 
 /* Private data area. */
-#define LIBGUESTFS_HAVE_SET_PRIVATE 1
+#define GUESTFS_HAVE_SET_PRIVATE 1
 extern GUESTFS_DLL_PUBLIC void guestfs_set_private (guestfs_h *g, const char *key, void *data);
-#define LIBGUESTFS_HAVE_GET_PRIVATE 1
+#define GUESTFS_HAVE_GET_PRIVATE 1
 extern GUESTFS_DLL_PUBLIC void *guestfs_get_private (guestfs_h *g, const char *key);
-#define LIBGUESTFS_HAVE_FIRST_PRIVATE 1
+#define GUESTFS_HAVE_FIRST_PRIVATE 1
 extern GUESTFS_DLL_PUBLIC void *guestfs_first_private (guestfs_h *g, const char **key_rtn);
-#define LIBGUESTFS_HAVE_NEXT_PRIVATE 1
+#define GUESTFS_HAVE_NEXT_PRIVATE 1
 extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char **key_rtn);
 
 /* Structures. */
@@ -564,7 +577,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
    *)
 
   (* Public structures. *)
-  List.iter (
+  let generate_all_structs = List.iter (
     fun { s_name = typ; s_cols = cols } ->
       pr "struct guestfs_%s {\n" typ;
       List.iter (
@@ -591,7 +604,9 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
       pr "extern GUESTFS_DLL_PUBLIC void guestfs_free_%s (struct guestfs_%s *);\n" typ typ;
       pr "extern GUESTFS_DLL_PUBLIC void guestfs_free_%s_list (struct guestfs_%s_list *);\n" typ typ;
       pr "\n"
-  ) structs;
+  ) in
+
+  generate_all_structs external_structs;
 
   pr "\
 /* Actions. */
@@ -606,7 +621,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
     let debug =
       String.length shortname >= 5 && String.sub shortname 0 5 = "debug" in
     if deprecated_by = None && not test && not debug then
-      pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
+      pr "#define GUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
 
     if optargs <> [] then (
       iteri (
@@ -661,7 +676,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
     pr "\n"
   in
 
-  List.iter (
+  let generate_all_headers = List.iter (
     fun ({ name = name; style = ret, args, _ } as f) ->
       (* If once_had_no_optargs is set, then we need to generate a
        * <name>_opts variant, plus a backwards-compatible wrapper
@@ -673,27 +688,71 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
       )
       else
         generate_action_header f
-  ) all_functions_sorted;
+  ) in
+
+  generate_all_headers public_functions_sorted;
 
   pr "\
-
-#if GUESTFS_PRIVATE_FUNCTIONS
-
-/* Private functions.
- *
- * These are NOT part of the public, stable API, and can change at any
- * time!  We export them because they are used by some of the language
- * bindings.
+#if GUESTFS_PRIVATE
+/* Symbols protected by GUESTFS_PRIVATE are NOT part of the public,
+ * stable API, and can change at any time!  We export them because
+ * they are used by some of the language bindings.
  */
 
-extern GUESTFS_DLL_PUBLIC void *guestfs___safe_malloc (guestfs_h *g, size_t nbytes);
-extern GUESTFS_DLL_PUBLIC void *guestfs___safe_calloc (guestfs_h *g, size_t n, size_t s);
-extern GUESTFS_DLL_PUBLIC char *guestfs___safe_strdup (guestfs_h *g, const char *str);
-extern GUESTFS_DLL_PUBLIC void *guestfs___safe_memdup (guestfs_h *g, const void *ptr, size_t size);
+/* Private functions. */
 
 extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomainPtr */ void *dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
 
-#endif /* End of private functions. */
+";
+
+  generate_all_headers private_functions_sorted;
+
+  pr "\
+/* Private structures. */
+
+";
+
+  generate_all_structs internal_structs;
+
+pr "\
+/* Deprecated macros for internal functions. */
+
+";
+
+  List.iter (
+    fun { name = shortname } ->
+      pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
+  ) private_functions_sorted;
+
+pr "\
+
+#endif /* End of GUESTFS_PRIVATE. */
+
+/* Deprecated macros.  Use GUESTFS_HAVE_* instead. */
+
+#define LIBGUESTFS_HAVE_CREATE_FLAGS 1
+#define LIBGUESTFS_HAVE_LAST_ERRNO 1
+#define LIBGUESTFS_HAVE_PUSH_ERROR_HANDLER 1
+#define LIBGUESTFS_HAVE_POP_ERROR_HANDLER 1
+#define LIBGUESTFS_HAVE_SET_EVENT_CALLBACK 1
+#define LIBGUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
+#define LIBGUESTFS_HAVE_SET_CLOSE_CALLBACK 1
+#define LIBGUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
+#define LIBGUESTFS_HAVE_USER_CANCEL 1
+#define LIBGUESTFS_HAVE_SET_PRIVATE 1
+#define LIBGUESTFS_HAVE_GET_PRIVATE 1
+#define LIBGUESTFS_HAVE_FIRST_PRIVATE 1
+#define LIBGUESTFS_HAVE_NEXT_PRIVATE 1
+
+";
+
+  List.iter (
+    fun { name = shortname } ->
+      pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
+  ) public_functions_sorted;
+
+  pr "
+/* End of deprecated macros. */
 
 #ifdef __cplusplus
 }
@@ -705,12 +764,74 @@ extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomai
 (* Generate the guestfs-internal-actions.h file. *)
 and generate_internal_actions_h () =
   generate_header CStyle LGPLv2plus;
+
+  pr "#ifndef GUESTFS_INTERNAL_ACTIONS_H_\n";
+  pr "#define GUESTFS_INTERNAL_ACTIONS_H_\n";
+  pr "\n";
+
   List.iter (
     fun { c_name = c_name; style = style } ->
       generate_prototype ~single_line:true ~newline:true ~handle:"g"
         ~prefix:"guestfs__" ~optarg_proto:Argv
         c_name style
-  ) non_daemon_functions
+  ) non_daemon_functions;
+
+  pr "\n";
+  pr "#endif /* GUESTFS_INTERNAL_ACTIONS_H_ */\n"
+
+(* Generate guestfs-internal-frontend-cleanups.h file. *)
+and generate_internal_frontend_cleanups_h () =
+  generate_header CStyle LGPLv2plus;
+
+  pr "\
+/* These CLEANUP_* macros automatically free the struct or struct list
+ * pointed to by the local variable at the end of the current scope.
+ *
+ * Don't include this file directly!  To use these cleanups in library
+ * bindings and tools, include \"guestfs-internal-frontend.h\" only.
+ */
+
+#ifndef GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_
+#define GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "#define CLEANUP_FREE_%s \\\n" (String.uppercase name);
+      pr "  __attribute__((cleanup(guestfs___cleanup_free_%s)))\n" name;
+      pr "#define CLEANUP_FREE_%s_LIST \\\n" (String.uppercase name);
+      pr "  __attribute__((cleanup(guestfs___cleanup_free_%s_list)))\n" name
+  ) structs;
+
+  pr "#else /* !HAVE_ATTRIBUTE_CLEANUP */\n";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "#define CLEANUP_FREE_%s\n" (String.uppercase name);
+      pr "#define CLEANUP_FREE_%s_LIST\n" (String.uppercase name)
+  ) structs;
+
+  pr "\
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+/* These functions are used internally by the CLEANUP_* macros.
+ * Don't call them directly.
+ */
+
+";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "extern GUESTFS_DLL_PUBLIC void guestfs___cleanup_free_%s (void *ptr);\n"
+        name;
+      pr "extern GUESTFS_DLL_PUBLIC void guestfs___cleanup_free_%s_list (void *ptr);\n"
+        name
+  ) structs;
+
+  pr "\n";
+  pr "#endif /* GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_ */\n"
 
 (* Functions to free structures. *)
 and generate_client_free_structs () =
@@ -739,16 +860,43 @@ and generate_client_free_structs () =
       pr "GUESTFS_DLL_PUBLIC void\n";
       pr "guestfs_free_%s (struct guestfs_%s *x)\n" typ typ;
       pr "{\n";
-      pr "  xdr_free ((xdrproc_t) xdr_guestfs_int_%s, (char *) x);\n" typ;
-      pr "  free (x);\n";
+      pr "  if (x) {\n";
+      pr "    xdr_free ((xdrproc_t) xdr_guestfs_int_%s, (char *) x);\n" typ;
+      pr "    free (x);\n";
+      pr "  }\n";
       pr "}\n";
       pr "\n";
 
       pr "GUESTFS_DLL_PUBLIC void\n";
       pr "guestfs_free_%s_list (struct guestfs_%s_list *x)\n" typ typ;
       pr "{\n";
-      pr "  xdr_free ((xdrproc_t) xdr_guestfs_int_%s_list, (char *) x);\n" typ;
-      pr "  free (x);\n";
+      pr "  if (x) {\n";
+      pr "    xdr_free ((xdrproc_t) xdr_guestfs_int_%s_list, (char *) x);\n"
+        typ;
+      pr "    free (x);\n";
+      pr "  }\n";
+      pr "}\n";
+      pr "\n";
+
+  ) structs;
+
+  pr "/* Cleanup functions used by CLEANUP_* macros. */\n";
+  pr "\n";
+
+  List.iter (
+    fun { s_name = typ } ->
+      pr "GUESTFS_DLL_PUBLIC void\n";
+      pr "guestfs___cleanup_free_%s (void *ptr)\n" typ;
+      pr "{\n";
+      pr "  guestfs_free_%s (* (struct guestfs_%s **) ptr);\n" typ typ;
+      pr "}\n";
+      pr "\n";
+
+      pr "GUESTFS_DLL_PUBLIC void\n";
+      pr "guestfs___cleanup_free_%s_list (void *ptr)\n" typ;
+      pr "{\n";
+      pr "  guestfs_free_%s_list (* (struct guestfs_%s_list **) ptr);\n"
+        typ typ;
       pr "}\n";
       pr "\n";
 
@@ -1597,11 +1745,20 @@ and generate_linker_script () =
     (* Unofficial parts of the API: the bindings code use these
      * functions, so it is useful to export them.
      *)
+    "guestfs___cleanup_free";
+    "guestfs___cleanup_free_string_list";
+    "guestfs___cleanup_hash_free";
+    "guestfs___cleanup_unlink_free";
+    "guestfs___cleanup_xmlBufferFree";
+    "guestfs___cleanup_xmlFreeDoc";
+    "guestfs___cleanup_xmlFreeTextWriter";
+    "guestfs___cleanup_xmlXPathFreeContext";
+    "guestfs___cleanup_xmlXPathFreeObject";
+    "guestfs___for_each_disk";
     "guestfs___safe_calloc";
     "guestfs___safe_malloc";
     "guestfs___safe_strdup";
     "guestfs___safe_memdup";
-    "guestfs___for_each_disk";
   ] in
   let functions =
     List.flatten (
@@ -1621,13 +1778,24 @@ and generate_linker_script () =
              "guestfs_" ^ c_name ^ "_argv"]
       ) all_functions
     ) in
-  let structs =
+  let struct_frees =
     List.concat (
       List.map (fun { s_name = typ } ->
-                  ["guestfs_free_" ^ typ; "guestfs_free_" ^ typ ^ "_list"])
+                  ["guestfs_free_" ^ typ;
+                   "guestfs_free_" ^ typ ^ "_list"])
         structs
     ) in
-  let globals = List.sort compare (globals @ functions @ structs) in
+  let struct_cleanups =
+    List.concat (
+      List.map (fun { s_name = typ } ->
+                  ["guestfs___cleanup_free_" ^ typ;
+                   "guestfs___cleanup_free_" ^ typ ^ "_list"])
+        structs
+    ) in
+  let globals = List.sort compare (globals @
+                                     functions @
+                                     struct_frees @
+                                     struct_cleanups) in
 
   pr "{\n";
   pr "    global:\n";

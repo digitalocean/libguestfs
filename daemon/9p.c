@@ -48,8 +48,10 @@ do_list_9p (void)
   dir = opendir (BUS_PATH);
   if (!dir) {
     perror ("opendir: " BUS_PATH);
-    if (errno != ENOENT)
+    if (errno != ENOENT) {
+      reply_with_perror ("opendir: " BUS_PATH);
       return NULL;
+    }
 
     /* If this directory doesn't exist, it probably means that
      * the virtio driver isn't loaded.  Don't return an error
@@ -75,17 +77,14 @@ do_list_9p (void)
        * the mount tag length to be unlimited (or up to 65536 bytes).
        * See: linux/include/linux/virtio_9p.h
        */
-      char *mount_tag = read_whole_file (mount_tag_path);
+      CLEANUP_FREE char *mount_tag = read_whole_file (mount_tag_path);
       if (mount_tag == 0)
         continue;
 
       if (add_string (&r, mount_tag) == -1) {
-        free (mount_tag);
         closedir (dir);
         return NULL;
       }
-
-      free (mount_tag);
     }
   }
 
@@ -148,7 +147,7 @@ read_whole_file (const char *filename)
      */
     ssize_t n = read (fd, r + size, alloc - size - 1);
     if (n == -1) {
-      perror (filename);
+      fprintf (stderr, "read: %s: %m\n", filename);
       free (r);
       close (fd);
       return NULL;
@@ -159,7 +158,7 @@ read_whole_file (const char *filename)
   }
 
   if (close (fd) == -1) {
-    perror (filename);
+    fprintf (stderr, "close: %s: %m\n", filename);
     free (r);
     return NULL;
   }
@@ -173,26 +172,26 @@ read_whole_file (const char *filename)
 int
 do_mount_9p (const char *mount_tag, const char *mountpoint, const char *options)
 {
-  char *mp = NULL, *opts = NULL, *err = NULL;
+  CLEANUP_FREE char *mp = NULL, *opts = NULL, *err = NULL;
   struct stat statbuf;
-  int r = -1;
+  int r;
 
   ABS_PATH (mountpoint, , return -1);
 
   mp = sysroot_path (mountpoint);
   if (!mp) {
     reply_with_perror ("malloc");
-    goto out;
+    return -1;
   }
 
   /* Check the mountpoint exists and is a directory. */
   if (stat (mp, &statbuf) == -1) {
     reply_with_perror ("%s", mountpoint);
-    goto out;
+    return -1;
   }
   if (!S_ISDIR (statbuf.st_mode)) {
     reply_with_perror ("%s: mount point is not a directory", mountpoint);
-    goto out;
+    return -1;
   }
 
   /* Add trans=virtio to the options. */
@@ -200,14 +199,14 @@ do_mount_9p (const char *mount_tag, const char *mountpoint, const char *options)
       STRNEQ (options, "")) {
     if (asprintf (&opts, "trans=virtio,%s", options) == -1) {
       reply_with_perror ("asprintf");
-      goto out;
+      return -1;
     }
   }
   else {
     opts = strdup ("trans=virtio");
     if (opts == NULL) {
       reply_with_perror ("strdup");
-      goto out;
+      return -1;
     }
   }
 
@@ -215,13 +214,8 @@ do_mount_9p (const char *mount_tag, const char *mountpoint, const char *options)
                str_mount, "-o", opts, "-t", "9p", mount_tag, mp, NULL);
   if (r == -1) {
     reply_with_error ("%s on %s: %s", mount_tag, mountpoint, err);
-    goto out;
+    return -1;
   }
 
-  r = 0;
- out:
-  free (err);
-  free (opts);
-  free (mp);
-  return r;
+  return 0;
 }

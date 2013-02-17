@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ fsync_devices (void)
 
   /* Close the directory handle */
   if (closedir (dir) == -1)
-    perror ("closedir");
+    perror ("closedir: /sys/block");
 }
 #endif /* HAVE_FSYNC */
 

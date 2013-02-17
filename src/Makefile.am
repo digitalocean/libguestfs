@@ -23,6 +23,7 @@ generator_built = \
 	guestfs_protocol.x \
 	guestfs.h \
 	guestfs-internal-actions.h \
+	guestfs-internal-frontend-cleanups.h \
 	actions-0.c \
 	actions-1.c \
 	actions-2.c \
@@ -128,6 +129,8 @@ libguestfs_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
 libguestfs_la_SOURCES = \
 	guestfs.h \
 	guestfs-internal.h \
+	guestfs-internal-all.h \
+	guestfs-internal-frontend.h \
 	guestfs_protocol.h \
 	actions-0.c \
 	actions-1.c \
@@ -192,19 +195,20 @@ libguestfs_la_LIBADD = \
 noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
 libguestfs_la_LIBADD += liberrnostring.la libprotocol.la
 
-libguestfs_la_CFLAGS = \
+libguestfs_la_CPPFLAGS = \
 	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
 	-DGUESTFS_WARN_DEPRECATED=1 \
-	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
+	-DGUESTFS_PRIVATE=1 \
 	-DLIBOSINFO_DB_PATH='"$(datadir)/libosinfo/db"' \
+	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+
+libguestfs_la_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(GCC_VISIBILITY_HIDDEN) \
 	$(PCRE_CFLAGS) \
 	$(LIBVIRT_CFLAGS) \
 	$(LIBXML2_CFLAGS)
-
-libguestfs_la_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 
 if HAVE_FUSE
 # XXX Unfortunately FUSE_CFLAGS defines _FILE_OFFSET_BITS=64.

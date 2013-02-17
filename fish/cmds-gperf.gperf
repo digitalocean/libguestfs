@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,7 +176,6 @@ extern struct command_entry get_qemu_cmd_entry;
 extern struct command_entry get_recovery_proc_cmd_entry;
 extern struct command_entry get_selinux_cmd_entry;
 extern struct command_entry get_smp_cmd_entry;
-extern struct command_entry get_state_cmd_entry;
 extern struct command_entry get_tmpdir_cmd_entry;
 extern struct command_entry get_trace_cmd_entry;
 extern struct command_entry get_umask_cmd_entry;
@@ -243,15 +242,12 @@ extern struct command_entry inspect_list_applications_cmd_entry;
 extern struct command_entry inspect_list_applications2_cmd_entry;
 extern struct command_entry inspect_os_cmd_entry;
 extern struct command_entry is_blockdev_cmd_entry;
-extern struct command_entry is_busy_cmd_entry;
 extern struct command_entry is_chardev_cmd_entry;
 extern struct command_entry is_config_cmd_entry;
 extern struct command_entry is_dir_cmd_entry;
 extern struct command_entry is_fifo_cmd_entry;
 extern struct command_entry is_file_cmd_entry;
-extern struct command_entry is_launching_cmd_entry;
 extern struct command_entry is_lv_cmd_entry;
-extern struct command_entry is_ready_cmd_entry;
 extern struct command_entry is_socket_cmd_entry;
 extern struct command_entry is_symlink_cmd_entry;
 extern struct command_entry is_zero_cmd_entry;
@@ -405,6 +401,7 @@ extern struct command_entry readlinklist_cmd_entry;
 extern struct command_entry realpath_cmd_entry;
 extern struct command_entry remove_drive_cmd_entry;
 extern struct command_entry removexattr_cmd_entry;
+extern struct command_entry rename_cmd_entry;
 extern struct command_entry reopen_cmd_entry;
 extern struct command_entry resize2fs_cmd_entry;
 extern struct command_entry resize2fs_M_cmd_entry;
@@ -793,8 +790,6 @@ get_selinux, &get_selinux_cmd_entry
 get-selinux, &get_selinux_cmd_entry
 get_smp, &get_smp_cmd_entry
 get-smp, &get_smp_cmd_entry
-get_state, &get_state_cmd_entry
-get-state, &get_state_cmd_entry
 get_tmpdir, &get_tmpdir_cmd_entry
 get-tmpdir, &get_tmpdir_cmd_entry
 get_trace, &get_trace_cmd_entry
@@ -919,8 +914,6 @@ inspect_os, &inspect_os_cmd_entry
 inspect-os, &inspect_os_cmd_entry
 is_blockdev, &is_blockdev_cmd_entry
 is-blockdev, &is_blockdev_cmd_entry
-is_busy, &is_busy_cmd_entry
-is-busy, &is_busy_cmd_entry
 is_chardev, &is_chardev_cmd_entry
 is-chardev, &is_chardev_cmd_entry
 is_config, &is_config_cmd_entry
@@ -931,12 +924,8 @@ is_fifo, &is_fifo_cmd_entry
 is-fifo, &is_fifo_cmd_entry
 is_file, &is_file_cmd_entry
 is-file, &is_file_cmd_entry
-is_launching, &is_launching_cmd_entry
-is-launching, &is_launching_cmd_entry
 is_lv, &is_lv_cmd_entry
 is-lv, &is_lv_cmd_entry
-is_ready, &is_ready_cmd_entry
-is-ready, &is_ready_cmd_entry
 is_socket, &is_socket_cmd_entry
 is-socket, &is_socket_cmd_entry
 is_symlink, &is_symlink_cmd_entry
@@ -1196,6 +1185,7 @@ realpath, &realpath_cmd_entry
 remove_drive, &remove_drive_cmd_entry
 remove-drive, &remove_drive_cmd_entry
 removexattr, &removexattr_cmd_entry
+rename, &rename_cmd_entry
 reopen, &reopen_cmd_entry
 resize2fs, &resize2fs_cmd_entry
 resize2fs_M, &resize2fs_M_cmd_entry
