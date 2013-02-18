@@ -33,6 +33,8 @@ override_dh_auto_clean:
 	done
 
 override_dh_auto_configure:
+	# Make sure that the file is generated in builddir from the template.
+	rm -f ruby/ext/guestfs/extconf.rb
 	dh_auto_configure --builddir=$(CURDIR)/debian/build-default \
 		-- \
 		$(DEFAULT_CONFIG_FLAGS) \
