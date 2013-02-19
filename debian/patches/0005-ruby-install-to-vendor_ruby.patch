@@ -7,10 +7,10 @@ Subject: ruby: install to vendor_ruby.
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/ruby/Makefile.am b/ruby/Makefile.am
-index 9073ad7..6534c83 100644
+index 5b755e5..3fbc9c9 100644
 --- a/ruby/Makefile.am
 +++ b/ruby/Makefile.am
-@@ -57,13 +57,13 @@ all: $(generator_built)
+@@ -51,14 +51,14 @@ all: $(generator_built)
  	$(RAKE) build
  	$(RAKE) rdoc
  
@@ -29,4 +29,5 @@ index 9073ad7..6534c83 100644
 +	$(INSTALL) -p -m 0644 $(srcdir)/lib/guestfs.rb $(DESTDIR)$(RUBY_VENDORLIB)
 +	$(INSTALL) -p -m 0755 $(builddir)/ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_VENDORARCH)
  
- endif
+ TESTS = run-bindtests run-ruby-tests
+ 

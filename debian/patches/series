@@ -4,7 +4,9 @@
 0004-out-of-tree-build-daemon.patch
 0005-ruby-install-to-vendor_ruby.patch
 0006-Fix-guestfs-supermin-appliance-path.patch
-0007-erlang-fix-bindtests-for-out-of-tree-build.patch
-0008-erlang-Install-to-correct-directory.patch
-0009-inspector-Fix-tests-for-out-of-tree-builds.patch
-0010-Fix-packagelist.patch
+0007-erlang-Install-to-correct-directory.patch
+0008-out-of-tree-build-Fix-test-tool.patch
+0009-out-of-tree-build-Fix-Ruby-bindings.patch
+0010-ruby-Don-t-compile-with-Werror.patch
+0011-ruby-Move-checks-for-symbols-from-configure.ac-to-ex.patch
+0012-build-Only-add-serial-tests-for-automake-1.12.patch

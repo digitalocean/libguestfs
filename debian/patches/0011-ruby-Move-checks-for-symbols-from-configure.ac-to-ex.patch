@@ -1,0 +1,92 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sun, 17 Feb 2013 23:05:12 +0100
+Subject: ruby: Move checks for symbols from configure.ac to extconf.rb; add
+ extra check for rb_alloc_func_t
+
+---
+ configure.ac                   |    8 --------
+ generator/ruby.ml              |    5 +++--
+ ruby/ext/guestfs/_guestfs.c    |    5 +++--
+ ruby/ext/guestfs/extconf.rb.in |    4 ++++
+ 4 files changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index ee20911..d60127b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1143,14 +1143,6 @@ AS_IF([test "x$enable_ruby" != "xno"],[
+             AC_MSG_RESULT([-l$libruby])
+             AC_CHECK_LIB([$libruby],[ruby_init],
+                          [have_libruby=1],[have_libruby=])
+-
+-            dnl Symbols that we substitute when missing.
+-            AS_IF([test -n "$have_libruby"],[
+-                old_LIBS="$LIBS"
+-                LIBS="$LIBS -l$libruby"
+-                AC_CHECK_FUNCS([rb_hash_lookup])
+-                LIBS="$old_LIBS"
+-            ])
+         ],[
+             AC_MSG_RESULT([not found])
+         ])
+diff --git a/generator/ruby.ml b/generator/ruby.ml
+index db16e2a..ba02fd1 100644
+--- a/generator/ruby.ml
++++ b/generator/ruby.ml
+@@ -35,8 +35,6 @@ let rec generate_ruby_c () =
+   generate_header CStyle LGPLv2plus;
+ 
+   pr "\
+-#include <config.h>
+-
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <stdint.h>
+@@ -688,6 +686,9 @@ Init__guestfs (void)
+   e_Error = rb_define_class_under (m_guestfs, \"Error\", rb_eStandardError);
+ 
+ #ifdef HAVE_RB_DEFINE_ALLOC_FUNC
++#ifndef HAVE_TYPE_RB_ALLOC_FUNC_T
++#define rb_alloc_func_t void*
++#endif
+   rb_define_alloc_func (c_guestfs, (rb_alloc_func_t) ruby_guestfs_create);
+ #endif
+ 
+diff --git a/ruby/ext/guestfs/_guestfs.c b/ruby/ext/guestfs/_guestfs.c
+index c0d6ced..d4282f5 100644
+--- a/ruby/ext/guestfs/_guestfs.c
++++ b/ruby/ext/guestfs/_guestfs.c
+@@ -20,8 +20,6 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
+-#include <config.h>
+-
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <stdint.h>
+@@ -23467,6 +23465,9 @@ Init__guestfs (void)
+   e_Error = rb_define_class_under (m_guestfs, "Error", rb_eStandardError);
+ 
+ #ifdef HAVE_RB_DEFINE_ALLOC_FUNC
++#ifndef HAVE_TYPE_RB_ALLOC_FUNC_T
++#define rb_alloc_func_t void*
++#endif
+   rb_define_alloc_func (c_guestfs, (rb_alloc_func_t) ruby_guestfs_create);
+ #endif
+ 
+diff --git a/ruby/ext/guestfs/extconf.rb.in b/ruby/ext/guestfs/extconf.rb.in
+index d03ae64..07a2d4f 100644
+--- a/ruby/ext/guestfs/extconf.rb.in
++++ b/ruby/ext/guestfs/extconf.rb.in
+@@ -33,6 +33,10 @@ $CFLAGS =
+   "#{$CFLAGS} @CFLAGS@ -DGUESTFS_PRIVATE=1 " <<
+   "@WARN_CFLAGS@"
+ 
++have_func("rb_hash_lookup")
++have_func("rb_define_alloc_func")
++have_type("rb_alloc_func_t")
++
+ create_header
+ create_makefile(extension_name, "@abs_srcdir@")
+ 

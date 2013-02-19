@@ -7,7 +7,7 @@ Subject: erlang: Install to correct directory
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/erlang/Makefile.am b/erlang/Makefile.am
-index 8c1e887..1f3782a 100644
+index b036b36..22fe6e5 100644
 --- a/erlang/Makefile.am
 +++ b/erlang/Makefile.am
 @@ -30,7 +30,7 @@ EXTRA_DIST = \
