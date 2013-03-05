@@ -666,12 +666,6 @@ libguestfs.
 
 =end HTML
 
-=head2 Can I use C<guestfish --ro> as a way to backup my virtual machines?
-
-Usually this is not a good idea.  The question is answered in more detail in
-this mailing list posting:
-L<https://www.redhat.com/archives/libguestfs/2010-August/msg00024.html>
-
 =head2 Why can I write to the disk, even though I added it read-only?
 
 =head2 Why does C<--ro> appear to have no effect?
@@ -706,6 +700,36 @@ I<いいえ!> C<--ro> オプションはコマンドラインにおいて、つ�
 
 In guestfish, if you use the C<add> command, then disk is added read-write
 (unless you specify the C<readonly:true> flag explicitly with the command).
+
+=head2 Can I use C<guestfish --ro> as a way to backup my virtual machines?
+
+Usually this is I<not> a good idea.  The question is answered in more detail
+in this mailing list posting:
+L<https://www.redhat.com/archives/libguestfs/2010-August/msg00024.html>
+
+See also the next question.
+
+=head2 Why can't I run fsck on a live filesystem using C<guestfish --ro>?
+
+This command will usually I<not> work:
+
+ guestfish --ro -a /dev/vg/my_root_fs run : fsck /dev/sda
+
+The reason for this is that qemu creates a snapshot over the original
+filesystem, but it doesn't create a strict point-in-time snapshot.  Blocks
+of data on the underlying filesystem are read by qemu at different times as
+the fsck operation progresses, with host writes in between.  The result is
+that fsck sees massive corruption (imaginary, not real!) and fails.
+
+What you have to do is to create a point-in-time snapshot.  If it's a
+logical volume, use an LVM2 snapshot.  If the filesystem is located inside
+something like a btrfs/ZFS file, use a btrfs/ZFS snapshot, and then run the
+fsck on the snapshot.  In practice you don't need to use libguestfs for this
+-- just run C</sbin/fsck> directly.
+
+Creating point-in-time snapshots of host devices and files is outside the
+scope of libguestfs, although libguestfs can operate on them once they are
+created.
 
 =head2 guestfish と virt-rescue の違いは何でしょうか?
 
@@ -818,6 +842,30 @@ The C<internal-*> (or C<guestfs_internal_*>) functions are purely to be used
 by libguestfs itself.  There is no reason for programs to call them, and
 programs should not try to use them.  Using them will often cause bad things
 to happen, as well as not being part of the documented stable API.
+
+=head1 DEVELOPERS
+
+=head2 Where do I send patches?
+
+Please send patches to the libguestfs mailing list
+L<https://www.redhat.com/mailman/listinfo/libguestfs>.  You don't have to be
+subscribed, but there will be a delay until your posting is manually
+approved.
+
+Please don't use github pull requests - they will be ignored.  The reasons
+are (a) we want to discuss and dissect patches on the mailing list, and (b)
+github pull requests turn into merge commits which we don't want.
+
+=head2 How do I propose a feature?
+
+Large new features that you intend to contribute should be discussed on the
+mailing list first (L<https://www.redhat.com/mailman/listinfo/libguestfs>).
+This avoids disappointment and wasted work if we don't think the feature
+would fit into the libguestfs project.
+
+If you want to suggest a useful feature but don't want to write the code,
+you can file a bug (see L</GETTING HELP AND REPORTING BUGS>)  with C<"RFE:
+"> at the beginning of the Summary line.
 
 =head1 関連項目
 

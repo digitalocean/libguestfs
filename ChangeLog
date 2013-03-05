@@ -1,3 +1,296 @@
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.20.3.
+
+	launch: libvirt: When debugging, print permissions of appliance and sockets.
+	When debugging is enabled, this prints out the permissions (ie.
+	ls -laZ) of the appliance and sockets directories.  This should be
+	helpful for debugging RHBZ#913774.
+	(cherry picked from commit ba08a51094409811d0bd01a7af5ec596a8640cc1)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: guestfs_umount_local is not thread-safe.
+	Despite what the documentation may have said, it certainly was not
+	safe to call guestfs_umount_local from another thread.
+
+	guestfs_umount_local could generate events, call the error handler, or
+	access other fields in the handle, with no locking at all.
+
+	We should aim to make guestfs_umount_local thread-safe in future.
+
+	See also:
+	https://bugzilla.redhat.com/show_bug.cgi?id=917706
+	(cherry picked from commit 09442d058875987f3636982c4a313e05d2709e32)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Typo in comment: "Checking" -> "Check". (cherry picked from commit 4236929fbbd8943589e9ad2441e3f4393872dc79)
+
+	threads: Note that even innocent-looking functions need a mutex.
+	RWMJ was caught out by this one ...
+	(cherry picked from commit 9b7de52d58bb70294e6c5be6fb80b888d42f7ad7)
+
+	trace: Put trace buffer on the stack instead of in the handle.
+	This makes more sense, and makes the code slightly closer to being
+	thread safe (although it's still NOT thread safe).
+	(cherry picked from commit 66351f7494954f26e2fcf35f4b02238fcfdb366f)
+
+	FAQ: Add question about running fsck on live filesystems. (cherry picked from commit 8e2b920fe67d859399945910f8a55209586865c8)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Check calls to xmlXPathEvalExpression for nodesetval == NULL.
+	libxml2 xmlXPathEvalExpression can return an unusual nodeset:
+
+	  $1 = {type = XPATH_NODESET, nodesetval = 0x0, boolval = 0, floatval = 0,
+	    stringval = 0x0, user = 0x0, index = 0, user2 = 0x0, index2 = 0}
+
+	Note that the nodeset is non-NULL, but the nodesetval is NULL.
+
+	Check every call site and fix those that don't deal with this
+	correctly.
+
+	(cherry picked from commit 7f5bedd53b3b13d3638be47088d2239470d1dc3e)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	test-tool: Give an error if there are extra arguments on the command line. (cherry picked from commit d01ac175598add0de574a4cccfe48d0c5cc4276c)
+
+	launch: libvirt: Refactor SELinux warning code.
+	This is just code motion.
+	(cherry picked from commit 3f1e7f1078ac40a6736b7721cc248f8ed0614f48)
+
+	libutils: Don't include "guestfs-internal.h".
+	This mini-library shouldn't access library-internal stuff.  It should
+	only use the "guestfs-internal-frontend.h" header.
+	(cherry picked from commit ce7cffa85a76f539fcccb0c34321594e96b2a186)
+
+	generator: Line up GUESTFS_EVENT_ALL. (cherry picked from commit 4c5c555eeb37da74d9af902762308a544f4f82d4)
+
+	generator: Remove "deprecated macros for internal functions".
+	No need for these since these are internal functions that only code
+	under our control should have been calling.
+	(cherry picked from commit c29660588fd7b196f11aa7f92e7d5230534a59e5)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: guests: Add blank disks plus libvirt test:// XML.
+	You can now run virt-df and virt-alignment-scan on all of the test
+	guests by doing:
+
+	./run ./df/virt-df -c test:///path/to/tests/guests/guests.xml
+	./run ./align/virt-alignment-scan -c test:///path/to/tests/guests/guests.xml
+
+	which is kinda cool.
+
+	Cherry picked from commit 5ff3845d280515ab623d22666c3f5013f095d32a
+	and rebased to apply to the stable-1.20 branch.
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	df: Always have TESTS= line even if appliance is disabled. (cherry picked from commit f8b92c066805708766d9f1aa925721febed28068)
+
+	virt-alignment-scan: Set LANG=C in test. (cherry picked from commit a885dd025d9e8fa9ebaf0ffbeb4f7bd1f9629f4d)
+
+	lib: Add a global MIN macro to guestfs-internal-all.h. (cherry picked from commit 4a6c8021b599952b991725043bac5c722635b3f6)
+
+2013-03-05  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: fix test-tool
+	(Not entirely sure whether using Gnulib to replace standard functions
+	is a good idea at all.)
+
+	link with libgnu:
+	  CCLD   libguestfs-test-tool
+	libguestfs_test_tool-test-tool.o: In function `main':
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:103: undefined reference to `rpl_getopt_long'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:113: undefined reference to `rpl_optarg'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:125: undefined reference to `rpl_optarg'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:126: undefined reference to `rpl_optarg'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:109: undefined reference to `rpl_optarg'
+	libguestfs_test_tool-test-tool.o: In function `set_qemu':
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:382: undefined reference to `rpl_perror'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:366: undefined reference to `rpl_perror'
+	libguestfs_test_tool-test-tool.o: In function `make_files':
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:416: undefined reference to `rpl_perror'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:428: undefined reference to `rpl_perror'
+	(cherry picked from commit ff0269e80fcd2031afa7d48e414b7ca7e1ef4d7a)
+
+2013-03-05  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: fix daemon
+	  CC     guestfsd-9p.o
+	In file included from ../../../daemon/9p.c:32:0:
+	../../../daemon/daemon.h:33:34: fatal error: guestfs-internal-all.h: No such file or directory
+	(cherry picked from commit cd1558b89ea2081528daa8a2833b6291e68bf98a)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Update guestfs-performance with parallel scaling numbers and test script. (cherry picked from commit 680450f3b4f8c2da7a0b1d8f0bd8c2232efc4054)
+
+2013-03-05  Olaf Hering  <olaf@aepfle.de>
+
+	lib: avoid pragma usage in inspect-fs-windows
+	pragma GCC diagnostic is a gcc 4.6+ feature, compilation fails with
+	older compilers:
+
+	inspect-fs-windows.c: In function 'map_registry_disk_blob':
+	inspect-fs-windows.c:502: error: #pragma GCC diagnostic not allowed inside functions
+	inspect-fs-windows.c:503: error: #pragma GCC diagnostic not allowed inside functions
+	inspect-fs-windows.c:505: error: #pragma GCC diagnostic not allowed inside functions
+	make[3]: *** [libguestfs_la-inspect-fs-windows.lo] Error 1
+
+	Use memcpy instead of pragma to fix compile error.
+
+	(cherry picked from commit ff80a540117945046e4671907f3a6799384fe39b)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	recipes: Add example converting from one format/filesystem to another. (cherry picked from commit 455d6b1845b54649693d67cdf991a8ac470a395f)
+
+	daemon: protocol: Fix memory leak when receiving FileIn file (RHBZ#914934).
+	This fixes commit 950951c67de61da27dceca8ffb2079031c13e43b.
+	(cherry picked from commit fadec0687f67eb904b8c312d7d922fa7bd97147f)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	protocol: Don't segfault if appliance crashes during FileIn upload (RHBZ#914931).
+	Instead of the segfault you now get a more informative error:
+
+	*stdin*:0: libguestfs: error: connection to daemon was closed unexpectedly.
+	This usually means the libguestfs appliance crashed.  Please enable
+	debugging (LIBGUESTFS_DEBUG=1) and rerun the command, then look at the
+	debug messages output prior to this error.
+	libguestfs: error: /dev/stdout: write: Broken pipe
+	libguestfs: error: file receive cancelled by daemon
+	(cherry picked from commit 7953128ca66207a7a3ca44e02fec1de48253223e)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	run: Refer to README and correct documentation for linking to script.
+	Any link works, even a hard link.
+	(cherry picked from commit d950e1a3bc582e48839d800aa1522968a795a983)
+
+	run: Relicense as LGPLv2+.
+	To allow reuse in other projects and because of the equivalent change
+	made by Eric Blake to the libvirt 'run' script.
+	(cherry picked from commit 1ca842d98b2da7fb3cd09e572c88ddba5b52b673)
+
+	Use guestfs___count_strings instead of custom versions in various places. (cherry picked from commit 9d6aa8b537110ce52ffba6a9d70f9ccf6b392979)
+
+	python: Use guestfs___free_string_list instead of custom version. (cherry picked from commit 907fbfff53157b447079aab587cc0f01ed0f000a)
+
+	ocaml: Use guestfs___free_string_list instead of custom-coded one.
+	It should be possible to add the guestfs___free_string_list to
+	dllmlguestfs.so, but I cannot work out exactly how to do this.  As a
+	result we end up using src/utils.c directly.
+	(cherry picked from commit 4ede94ab7bc09c9dde8445b521387e343537c4ac)
+
+	ocaml: Missing #include <config.h> in generated file. (cherry picked from commit 6ee164d47ae29ad16b6184f8020841f860d93798)
+
+	lua: Use guestfs___free_string_list instead of custom-coded version. (cherry picked from commit 27e6347b759fc824f911835e7908f4daf7b3654f)
+
+	fish: Use guestfs___{free_string_list,count_strings} utility functions.
+	Instead of custom-coded versions.
+	(cherry picked from commit 0b7acf50b69cbc45b740f05115cbf44c232fae08)
+
+	libutils: Add guestfs___count_strings utility function to common library. (cherry picked from commit e27295c5780c1b42610f56be9082bb81f27f6fcd)
+
+	erlang: Use guestfs___free_string_list from libutils, instead of custom version. (cherry picked from commit 7ef461948ec79608e43166ba897338ea69041c47)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Create libutils convenience library.
+	The libutils convenience library is a place for code shared between
+	the main library, language bindings and virt tools.  Note that the
+	code is statically linked into both the library, each binding and each
+	tool, but this is an improvement because (a) the source is shared and
+	(b) libguestfs.so can export fewer private functions.
+
+	Currently it contains the cleanup functions, and the functions
+	guestfs___free_string_list function and guestfs___for_each_disk.
+
+	guestfs___for_each_disk has changed so that it no longer
+	unconditionally sets the error in the guestfs handle.  Instead callers
+	can control error handling.
+	(cherry picked from commit 04723b4dd105d204b5afa7201860c9a81eda05b2)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Rename guestfs_error_errno as guestfs___error_errno, etc.
+	These are internal functions.  Very old versions of libguestfs used to
+	export them, but they haven't been (and shouldn't be) exported for a
+	long time.
+
+	Also remove the unused guestfs_error function.
+	(cherry picked from commit a4953090e1515fed7a1c0945316435043740f7f2)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Remove long and mostly irrelevant comment about libtool versioning. (cherry picked from commit 1a2465c187e53ac26128cfdd9bcaae19475e2d0d)
+
+	build: Rearrange src/Makefile.am into a more logical order.
+	This is just code motion.
+	(cherry picked from commit 21013249659931aea326bd2a3f1ed1753b309963)
+
+	tests: Add valgrind suppression for libvirt 1.0.2 memory leak.
+	Leak reported as RHBZ#913145.
+	(cherry picked from commit 6566621345a46d5514565b59cc2889c1c4583169)
+
+	tests: Add valgrind suppression variant for new manifestation of an old libvirt memory leak. (cherry picked from commit b7ab6de628936868ce676820a3871cbf4d6ac372)
+
+	lib: Use CLEANUP_* macros to simplify XPath query code. (cherry picked from commit 61162bdce1a00a921a47eb3e788e8fb9e4bd07ac)
+
+	rescue: Improve error messages in the test script. (cherry picked from commit b10a6cfe24a20d59d6eb099454761f71573f478d)
+
+	faq: Add section for developers, including how to send patches and propose features. (cherry picked from commit 175d6ba432d804c835391b52c3362b9bbc3eccae)
+
+	docs: Rewrite security section (thanks Dan Berrange). (cherry picked from commit 065861ce6bd1069b0ae111bcd14057d82cfc3963)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Only add 'serial-tests' for automake >= 1.12 (thanks Hilko Bengen).
+	Earlier versions of automake complain if they get a configuration
+	parameter which they don't understand.  The error is:
+
+	configure.ac:27: error: option 'serial-tests' not recognized
+
+	Use some m4 hackery to work around this.
+	(cherry picked from commit a1c89bf03dd432f0e4c8c26fe01fd9b2a50df97e)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	handle: Define DEFAULT_MEMSIZE, MIN_MEMSIZE constants.
+	This is just code motion.
+	(cherry picked from commit c7ba91761c05cce3806b908cba8a7a0bd902c7be)
+
+	handle: Translatable string in guestfs_parse_environment. (cherry picked from commit 6902f093ffd2bfbd21fcc7bc682db8106fd2fd93)
+
+	generator: Whitespace changes. (cherry picked from commit 0e0eec76d9dca032e3eb45c0bbe024edc7bb16f8)
+
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Fix memory leak when the 'lpj' setting is read from dmesg.
+	It was failing to clean up and close the 'struct command' buffer,
+	because commit 94d90f03e2bbb595890b01e2a10b63e00e976691 added an
+	incomplete patch to use CLEANUP_CMD_CLOSE.
+
+	This fixes commit 94d90f03e2bbb595890b01e2a10b63e00e976691.
+	(cherry picked from commit cbfa394bfc7e980381097b457761ddc42d59d01f)
+
+2013-02-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Print a better error message when JVM version is too old.
+	This fixes commit 87d1f7714f8e1b0f595bad3b7932592f0f85d54b.
+	(cherry picked from commit 5c6895bda1053b4cbbcc8c72fe30d8fd17d403d6)
+
+	java: Note that JVM >= 1.6 is now required. (cherry picked from commit 87d1f7714f8e1b0f595bad3b7932592f0f85d54b)
+
+2013-02-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.20.2.
+
 2013-02-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	ruby: Enable C compiler warnings.

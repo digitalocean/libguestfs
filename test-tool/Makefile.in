@@ -214,7 +214,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_libguestfs_test_tool_OBJECTS =  \
 	libguestfs_test_tool-test-tool.$(OBJEXT)
 libguestfs_test_tool_OBJECTS = $(am_libguestfs_test_tool_OBJECTS)
-libguestfs_test_tool_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+libguestfs_test_tool_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -1360,7 +1361,8 @@ libguestfs_test_tool_CFLAGS = \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 libguestfs_test_tool_LDADD = \
-	$(top_builddir)/src/libguestfs.la
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
 
 all: all-am
 

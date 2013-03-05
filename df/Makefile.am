@@ -58,9 +58,11 @@ virt_df_CFLAGS = \
 
 virt_df_LDADD = \
 	$(LIBCONFIG_LIBS) \
+	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
-	../gnulib/lib/libgnu.la \
+	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
+	../gnulib/lib/libgnu.la \
 	-lm
 
 # Manual pages and HTML files for the website.
@@ -81,8 +83,10 @@ stamp-virt-df.pod: virt-df.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
+TESTS =
+
 if ENABLE_APPLIANCE
-TESTS = test-virt-df.sh
+TESTS += test-virt-df.sh
 endif ENABLE_APPLIANCE
 
 check-valgrind:

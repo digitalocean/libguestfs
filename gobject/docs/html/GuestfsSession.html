@@ -19072,8 +19072,7 @@ unmounted.
 </p>
 <p>
 Note you must *not* make concurrent libguestfs calls on the same handle
-from another thread, with the exception of
-<a class="link" href="GuestfsSession.html#guestfs-session-umount-local" title="guestfs_session_umount_local ()"><code class="function">guestfs_session_umount_local()</code></a>.
+from another thread.
 </p>
 <p>
 You may call this from a different thread than the one which called
@@ -23318,7 +23317,7 @@ pressing "^C") won't be received by the child process.
 The default for this flag is false, because usually you want "^C" to
 kill the subprocess. Guestfish sets this flag to true when used
 interactively, so that "^C" can cancel long-running commands gracefully
-(see <code class="function">guestfs_session_user_cancel()</code>).
+(see <a href="GuestfsSession.html#guestfs-session-user-cancel"><code class="function">guestfs_session_user_cancel()</code></a>).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>

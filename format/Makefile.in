@@ -219,8 +219,9 @@ am_virt_format_OBJECTS = $(am__objects_1) virt_format-format.$(OBJEXT)
 virt_format_OBJECTS = $(am_virt_format_OBJECTS)
 am__DEPENDENCIES_1 =
 virt_format_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libguestfs.la ../gnulib/lib/libgnu.la \
-	$(am__DEPENDENCIES_1)
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -1384,9 +1385,11 @@ virt_format_CFLAGS = \
 
 virt_format_LDADD = \
 	$(LIBCONFIG_LIBS) \
+	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
-	../gnulib/lib/libgnu.la \
-	$(LIBVIRT_LIBS)
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS) \
+	../gnulib/lib/libgnu.la
 
 
 # Manual pages and HTML files for the website.

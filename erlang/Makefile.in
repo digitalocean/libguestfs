@@ -224,9 +224,12 @@ am__erl_guestfs_SOURCES_DIST = erl-guestfs.c erl-guestfs-proto.c
 @HAVE_ERLANG_TRUE@	erl_guestfs-erl-guestfs.$(OBJEXT) \
 @HAVE_ERLANG_TRUE@	erl_guestfs-erl-guestfs-proto.$(OBJEXT)
 erl_guestfs_OBJECTS = $(am_erl_guestfs_OBJECTS)
+am__DEPENDENCIES_1 =
 @HAVE_ERLANG_TRUE@erl_guestfs_DEPENDENCIES = $(ERLANG_LIB_DIR_erl_interface)/lib/liberl_interface.a \
 @HAVE_ERLANG_TRUE@	$(ERLANG_LIB_DIR_erl_interface)/lib/libei.a \
+@HAVE_ERLANG_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_ERLANG_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_ERLANG_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_ERLANG_TRUE@	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -1387,7 +1390,10 @@ EXTRA_DIST = \
 @HAVE_ERLANG_TRUE@	$(ERLANG_LIB_DIR_erl_interface)/lib/liberl_interface.a \
 @HAVE_ERLANG_TRUE@	$(ERLANG_LIB_DIR_erl_interface)/lib/libei.a \
 @HAVE_ERLANG_TRUE@	-lpthread \
+@HAVE_ERLANG_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_ERLANG_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_ERLANG_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_ERLANG_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_ERLANG_TRUE@	../gnulib/lib/libgnu.la
 
 @HAVE_ERLANG_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test

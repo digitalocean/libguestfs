@@ -1051,7 +1051,7 @@ struct command_entry mount_local_cmd_entry = {
 
 struct command_entry mount_local_run_cmd_entry = {
   .name = "mount-local-run",
-  .help = "NAME\n    mount-local-run - run main loop of mount on the local filesystem\n\nSYNOPSIS\n     mount-local-run\n\nDESCRIPTION\n    Run the main loop which translates kernel calls to libguestfs calls.\n\n    This should only be called after \"mount_local\" returns successfully. The\n    call will not return until the filesystem is unmounted.\n\n    Note you must *not* make concurrent libguestfs calls on the same handle\n    from another thread, with the exception of \"umount_local\".\n\n    You may call this from a different thread than the one which called\n    \"mount_local\", subject to the usual rules for threads and libguestfs\n    (see \"MULTIPLE HANDLES AND MULTIPLE THREADS\" in guestfs(3)).\n\n    See \"MOUNT LOCAL\" in guestfs(3) for full documentation.\n\n",
+  .help = "NAME\n    mount-local-run - run main loop of mount on the local filesystem\n\nSYNOPSIS\n     mount-local-run\n\nDESCRIPTION\n    Run the main loop which translates kernel calls to libguestfs calls.\n\n    This should only be called after \"mount_local\" returns successfully. The\n    call will not return until the filesystem is unmounted.\n\n    Note you must *not* make concurrent libguestfs calls on the same handle\n    from another thread.\n\n    You may call this from a different thread than the one which called\n    \"mount_local\", subject to the usual rules for threads and libguestfs\n    (see \"MULTIPLE HANDLES AND MULTIPLE THREADS\" in guestfs(3)).\n\n    See \"MOUNT LOCAL\" in guestfs(3) for full documentation.\n\n",
   .run = run_mount_local_run
 };
 
@@ -5227,7 +5227,7 @@ run_inspect_os (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -5393,7 +5393,7 @@ run_inspect_get_mountpoints (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -5417,7 +5417,7 @@ run_inspect_get_filesystems (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -5480,7 +5480,7 @@ run_list_filesystems (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -5593,7 +5593,7 @@ run_inspect_get_roots (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -5614,7 +5614,7 @@ run_debug_drives (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -6016,7 +6016,7 @@ run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -6440,7 +6440,7 @@ run_find (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (directory);
  out_directory:
@@ -6499,7 +6499,7 @@ run_read_lines (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -6591,7 +6591,7 @@ run_lstatlist (const char *cmd, size_t argc, char *argv[])
   print_stat_list (r);
   guestfs_free_stat_list (r);
  out:
-  free_strings (names);
+  guestfs___free_string_list (names);
  out_names:
   free (path);
  out_path:
@@ -6623,7 +6623,7 @@ run_lxattrlist (const char *cmd, size_t argc, char *argv[])
   print_xattr_list (r);
   guestfs_free_xattr_list (r);
  out:
-  free_strings (names);
+  guestfs___free_string_list (names);
  out_names:
   free (path);
  out_path:
@@ -6653,9 +6653,9 @@ run_readlinklist (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
-  free_strings (names);
+  guestfs___free_string_list (names);
  out_names:
   free (path);
  out_path:
@@ -6682,7 +6682,7 @@ run_ls (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (directory);
  out_directory:
@@ -6838,7 +6838,7 @@ run_set_libvirt_supported_credentials (const char *cmd, size_t argc, char *argv[
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (creds);
+  guestfs___free_string_list (creds);
  out_creds:
  out_noargs:
   return ret;
@@ -6859,7 +6859,7 @@ run_get_libvirt_requested_credentials (const char *cmd, size_t argc, char *argv[
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7078,7 +7078,7 @@ run_parse_environment_list (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (environment);
+  guestfs___free_string_list (environment);
  out_environment:
  out_noargs:
   return ret;
@@ -7282,7 +7282,7 @@ run_list_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7303,7 +7303,7 @@ run_list_partitions (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7324,7 +7324,7 @@ run_pvs (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7345,7 +7345,7 @@ run_vgs (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7366,7 +7366,7 @@ run_lvs (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7693,7 +7693,7 @@ run_aug_match (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -7755,7 +7755,7 @@ run_aug_ls (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -8120,7 +8120,7 @@ run_vgcreate (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (physvols);
+  guestfs___free_string_list (physvols);
  out_physvols:
  out_noargs:
   return ret;
@@ -8252,7 +8252,7 @@ run_sfdisk (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (lines);
+  guestfs___free_string_list (lines);
  out_lines:
  out_sectors:
  out_heads:
@@ -8380,7 +8380,7 @@ run_mounts (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -8472,7 +8472,7 @@ run_command (const char *cmd, size_t argc, char *argv[])
   printf ("%s\n", r);
   free (r);
  out:
-  free_strings (arguments);
+  guestfs___free_string_list (arguments);
  out_arguments:
  out_noargs:
   return ret;
@@ -8497,9 +8497,9 @@ run_command_lines (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
-  free_strings (arguments);
+  guestfs___free_string_list (arguments);
  out_arguments:
  out_noargs:
   return ret;
@@ -8604,7 +8604,7 @@ run_tune2fs_l (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -9061,7 +9061,7 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
  out:
   if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK) &&
       optargs_s.excludes != NULL)
-    free_strings ((char **) optargs_s.excludes);
+    guestfs___free_string_list ((char **) optargs_s.excludes);
   free (tarfile);
  out_tarfile:
  out_noargs:
@@ -9229,7 +9229,7 @@ run_debug (const char *cmd, size_t argc, char *argv[])
   printf ("%s\n", r);
   free (r);
  out:
-  free_strings (extraargs);
+  guestfs___free_string_list (extraargs);
  out_extraargs:
  out_noargs:
   return ret;
@@ -9692,7 +9692,7 @@ run_strings (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -9721,7 +9721,7 @@ run_strings_e (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10023,7 +10023,7 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (volgroups);
+  guestfs___free_string_list (volgroups);
  out_volgroups:
  out_noargs:
   return ret;
@@ -10224,7 +10224,7 @@ run_sh_lines (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -10249,7 +10249,7 @@ run_glob_expand (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (pattern);
  out_pattern:
@@ -10453,7 +10453,7 @@ run_head (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10500,7 +10500,7 @@ run_head_n (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10528,7 +10528,7 @@ run_tail (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10575,7 +10575,7 @@ run_tail_n (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -10671,7 +10671,7 @@ run_initrd_list (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11210,7 +11210,7 @@ run_sfdiskM (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (lines);
+  guestfs___free_string_list (lines);
  out_lines:
  out_noargs:
   return ret;
@@ -11468,7 +11468,7 @@ run_mountpoints (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -11580,7 +11580,7 @@ run_grep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11609,7 +11609,7 @@ run_egrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11638,7 +11638,7 @@ run_fgrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11667,7 +11667,7 @@ run_grepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11696,7 +11696,7 @@ run_egrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11725,7 +11725,7 @@ run_fgrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11754,7 +11754,7 @@ run_zgrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11783,7 +11783,7 @@ run_zegrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11812,7 +11812,7 @@ run_zfgrep (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11841,7 +11841,7 @@ run_zgrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11870,7 +11870,7 @@ run_zegrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -11899,7 +11899,7 @@ run_zfgrepi (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
   free (path);
  out_path:
@@ -12487,7 +12487,7 @@ run_inotify_files (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -12917,7 +12917,7 @@ run_echo_daemon (const char *cmd, size_t argc, char *argv[])
   printf ("%s\n", r);
   free (r);
  out:
-  free_strings (words);
+  guestfs___free_string_list (words);
  out_words:
  out_noargs:
   return ret;
@@ -13661,7 +13661,7 @@ run_available (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (groups);
+  guestfs___free_string_list (groups);
  out_groups:
  out_noargs:
   return ret;
@@ -13895,7 +13895,7 @@ run_vgpvuuids (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -13919,7 +13919,7 @@ run_vglvuuids (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14737,7 +14737,7 @@ run_available_all_groups (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -14850,7 +14850,7 @@ run_lvm_set_filter (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (devices);
+  guestfs___free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -15903,7 +15903,7 @@ run_list_9p (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -15974,7 +15974,7 @@ run_list_dm_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -17004,7 +17004,7 @@ run_md_create (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (devices);
+  guestfs___free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -17025,7 +17025,7 @@ run_list_md_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -17049,7 +17049,7 @@ run_md_detail (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -17095,7 +17095,7 @@ run_blkid (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -17707,7 +17707,7 @@ run_mkfs_btrfs (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
-  free_strings (devices);
+  guestfs___free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -18080,7 +18080,7 @@ run_btrfs_device_add (const char *cmd, size_t argc, char *argv[])
  out:
   free (fs);
  out_fs:
-  free_strings (devices);
+  guestfs___free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -18110,7 +18110,7 @@ run_btrfs_device_delete (const char *cmd, size_t argc, char *argv[])
  out:
   free (fs);
  out_fs:
-  free_strings (devices);
+  guestfs___free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -20170,7 +20170,7 @@ run_list_disk_labels (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -20406,7 +20406,7 @@ run_list_ldm_volumes (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -20427,7 +20427,7 @@ run_list_ldm_partitions (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -20486,7 +20486,7 @@ run_ldmtool_scan (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -20511,9 +20511,9 @@ run_ldmtool_scan_devices (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
-  free_strings (devices);
+  guestfs___free_string_list (devices);
  out_devices:
  out_noargs:
   return ret;
@@ -20561,7 +20561,7 @@ run_ldmtool_diskgroup_volumes (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -20585,7 +20585,7 @@ run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;
@@ -20663,7 +20663,7 @@ run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   print_strings (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
  out:
  out_noargs:
   return ret;

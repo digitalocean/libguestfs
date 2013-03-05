@@ -5647,8 +5647,7 @@ guestfs_session_mount_local(GuestfsSession *session, const gchar *localmountpoin
  * unmounted.
  * 
  * Note you must *not* make concurrent libguestfs calls on the same handle
- * from another thread, with the exception of
- * guestfs_session_umount_local().
+ * from another thread.
  * 
  * You may call this from a different thread than the one which called
  * guestfs_session_mount_local(), subject to the usual rules for threads

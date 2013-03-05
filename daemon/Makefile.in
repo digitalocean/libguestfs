@@ -1420,7 +1420,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 CLEANFILES = stamp-guestfsd.pod
-libsrcdir = $(top_builddir)/src
 generator_built = \
 	actions.h \
 	stubs.c \
@@ -1575,6 +1574,7 @@ guestfsd_LDADD = \
 guestfsd_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib \
+	-I$(top_srcdir)/src \
 	-I$(top_builddir)/src
 
 guestfsd_CFLAGS = \
@@ -3437,14 +3437,14 @@ $(top_builddir)/generator/stamp-generator: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
-$(shared_with_library): %: $(libsrcdir)/%
+$(shared_with_library): %: $(top_srcdir)/src/%
 	rm -f $@
 	ln $< $@
 
-$(libsrcdir)/guestfs_protocol.c: force
-	$(MAKE) -C $(libsrcdir) guestfs_protocol.c
-$(libsrcdir)/guestfs_protocol.h: force
-	$(MAKE) -C $(libsrcdir) guestfs_protocol.h
+$(top_builddir)/src/guestfs_protocol.c: force
+	$(MAKE) -C $(top_builddir)/src guestfs_protocol.c
+$(top_builddir)/src/guestfs_protocol.h: force
+	$(MAKE) -C $(top_builddir)/src guestfs_protocol.h
 
 errnostring-gperf.c: errnostring-gperf.gperf
 	rm -f $@
