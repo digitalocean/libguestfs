@@ -138,7 +138,7 @@ To build language bindings:
 
 - Ruby, rake if you want to build the ruby bindings (optional)
 
-- Java, JNI, jpackage-utils if you want to build the java
+- Java >= 1.6, JNI, jpackage-utils if you want to build the java
   bindings (optional)
 
 - GHC if you want to build the Haskell bindings (optional)
@@ -208,8 +208,7 @@ command will also work:
 
   ../run ./guestfish [...]
 
-You can also make a symlink (note: NOT a hard link) from your $PATH to
-the run script, eg:
+You can also make a link from your $PATH to the run script, eg:
 
   cd ~/bin
   ln -s ~/libguestfs/run libguestfs-run

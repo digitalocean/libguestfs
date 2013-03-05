@@ -486,7 +486,7 @@ extern GUESTFS_DLL_PUBLIC guestfs_abort_cb guestfs_get_out_of_memory_handler (gu
       pr "#define GUESTFS_EVENT_%-16s 0x%04x\n"
         (String.uppercase name) bitmask
   ) events;
-  pr "#define GUESTFS_EVENT_%-16s 0x%x\n" "ALL" all_events_bitmask;
+  pr "#define GUESTFS_EVENT_%-16s 0x%04x\n" "ALL" all_events_bitmask;
   pr "\n";
 
   pr "\
@@ -701,8 +701,6 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
 
 /* Private functions. */
 
-extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomainPtr */ void *dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
-
 ";
 
   generate_all_headers private_functions_sorted;
@@ -713,16 +711,6 @@ extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomai
 ";
 
   generate_all_structs internal_structs;
-
-pr "\
-/* Deprecated macros for internal functions. */
-
-";
-
-  List.iter (
-    fun { name = shortname } ->
-      pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
-  ) private_functions_sorted;
 
 pr "\
 
@@ -824,9 +812,9 @@ and generate_internal_frontend_cleanups_h () =
 
   List.iter (
     fun { s_name = name } ->
-      pr "extern GUESTFS_DLL_PUBLIC void guestfs___cleanup_free_%s (void *ptr);\n"
+      pr "extern void guestfs___cleanup_free_%s (void *ptr);\n"
         name;
-      pr "extern GUESTFS_DLL_PUBLIC void guestfs___cleanup_free_%s_list (void *ptr);\n"
+      pr "extern void guestfs___cleanup_free_%s_list (void *ptr);\n"
         name
   ) structs;
 
@@ -878,21 +866,38 @@ and generate_client_free_structs () =
       pr "}\n";
       pr "\n";
 
-  ) structs;
+  ) structs
 
-  pr "/* Cleanup functions used by CLEANUP_* macros. */\n";
+(* Functions to free structures used by the CLEANUP_* macros. *)
+and generate_client_cleanup_structs () =
+  generate_header CStyle LGPLv2plus;
+
+  pr "\
+#include <config.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include \"guestfs.h\"
+#include \"guestfs-internal-frontend.h\"
+
+";
+
+  pr "/* Cleanup functions used by CLEANUP_* macros.  Do not call\n";
+  pr " * these functions directly.\n";
+  pr " */\n";
   pr "\n";
 
   List.iter (
     fun { s_name = typ } ->
-      pr "GUESTFS_DLL_PUBLIC void\n";
+      pr "void\n";
       pr "guestfs___cleanup_free_%s (void *ptr)\n" typ;
       pr "{\n";
       pr "  guestfs_free_%s (* (struct guestfs_%s **) ptr);\n" typ typ;
       pr "}\n";
       pr "\n";
 
-      pr "GUESTFS_DLL_PUBLIC void\n";
+      pr "void\n";
       pr "guestfs___cleanup_free_%s_list (void *ptr)\n" typ;
       pr "{\n";
       pr "  guestfs_free_%s_list (* (struct guestfs_%s_list **) ptr);\n"
@@ -1049,9 +1054,9 @@ and generate_client_actions hash () =
       pr "\n"
     );
 
-    pr "    trace_fp = guestfs___trace_open (g);\n";
+    pr "    guestfs___trace_open (&trace_buffer);\n";
 
-    pr "    fprintf (trace_fp, \"%%s\", \"%s\");\n" name;
+    pr "    fprintf (trace_buffer.fp, \"%%s\", \"%s\");\n" name;
 
     (* Required arguments. *)
     List.iter (
@@ -1063,33 +1068,35 @@ and generate_client_actions hash () =
       | FileIn n
       | FileOut n ->
           (* guestfish doesn't support string escaping, so neither do we *)
-          pr "    fprintf (trace_fp, \" \\\"%%s\\\"\", %s);\n" n
+          pr "    fprintf (trace_buffer.fp, \" \\\"%%s\\\"\", %s);\n" n
       | Key n ->
           (* don't print keys *)
-          pr "    fprintf (trace_fp, \" \\\"***\\\"\");\n"
+          pr "    fprintf (trace_buffer.fp, \" \\\"***\\\"\");\n"
       | OptString n ->			(* string option *)
-          pr "    if (%s) fprintf (trace_fp, \" \\\"%%s\\\"\", %s);\n" n n;
-          pr "    else fprintf (trace_fp, \" null\");\n"
+          pr "    if (%s)\n" n;
+          pr "      fprintf (trace_buffer.fp, \" \\\"%%s\\\"\", %s);\n" n;
+          pr "    else\n";
+          pr "      fprintf (trace_buffer.fp, \" null\");\n"
       | StringList n
       | DeviceList n ->			(* string list *)
-          pr "    fputc (' ', trace_fp);\n";
-          pr "    fputc ('\"', trace_fp);\n";
+          pr "    fputc (' ', trace_buffer.fp);\n";
+          pr "    fputc ('\"', trace_buffer.fp);\n";
           pr "    for (i = 0; %s[i]; ++i) {\n" n;
-          pr "      if (i > 0) fputc (' ', trace_fp);\n";
-          pr "      fputs (%s[i], trace_fp);\n" n;
+          pr "      if (i > 0) fputc (' ', trace_buffer.fp);\n";
+          pr "      fputs (%s[i], trace_buffer.fp);\n" n;
           pr "    }\n";
-          pr "    fputc ('\"', trace_fp);\n";
+          pr "    fputc ('\"', trace_buffer.fp);\n";
       | Bool n ->			(* boolean *)
-          pr "    fputs (%s ? \" true\" : \" false\", trace_fp);\n" n
+          pr "    fputs (%s ? \" true\" : \" false\", trace_buffer.fp);\n" n
       | Int n ->			(* int *)
-          pr "    fprintf (trace_fp, \" %%d\", %s);\n" n
+          pr "    fprintf (trace_buffer.fp, \" %%d\", %s);\n" n
       | Int64 n ->
-          pr "    fprintf (trace_fp, \" %%\" PRIi64, %s);\n" n
+          pr "    fprintf (trace_buffer.fp, \" %%\" PRIi64, %s);\n" n
       | BufferIn n ->                   (* RHBZ#646822 *)
-          pr "    fputc (' ', trace_fp);\n";
-          pr "    guestfs___print_BufferIn (trace_fp, %s, %s_size);\n" n n
+          pr "    fputc (' ', trace_buffer.fp);\n";
+          pr "    guestfs___print_BufferIn (trace_buffer.fp, %s, %s_size);\n" n n
       | Pointer (t, n) ->
-          pr "    fprintf (trace_fp, \" (%s)%%p\", %s);\n" t n
+          pr "    fprintf (trace_buffer.fp, \" (%s)%%p\", %s);\n" t n
     ) args;
 
     (* Optional arguments. *)
@@ -1100,25 +1107,25 @@ and generate_client_actions hash () =
           (String.uppercase c_name) (String.uppercase n);
         (match argt with
          | OString n ->
-             pr "      fprintf (trace_fp, \" \\\"%%s:%%s\\\"\", \"%s\", optargs->%s);\n" n n
+             pr "      fprintf (trace_buffer.fp, \" \\\"%%s:%%s\\\"\", \"%s\", optargs->%s);\n" n n
          | OStringList n ->
-             pr "      fprintf (trace_fp, \" \\\"%%s:\", \"%s\");\n" n;
+             pr "      fprintf (trace_buffer.fp, \" \\\"%%s:\", \"%s\");\n" n;
              pr "      for (i = 0; optargs->%s[i] != NULL; ++i) {\n" n;
-             pr "        if (i > 0) fputc (' ', trace_fp);\n";
-             pr "        fputs (optargs->%s[i], trace_fp);\n" n;
+             pr "        if (i > 0) fputc (' ', trace_buffer.fp);\n";
+             pr "        fputs (optargs->%s[i], trace_buffer.fp);\n" n;
              pr "      }\n";
-             pr "      fputc ('\\\"', trace_fp);\n"
+             pr "      fputc ('\\\"', trace_buffer.fp);\n"
          | OBool n ->
-             pr "      fprintf (trace_fp, \" \\\"%%s:%%s\\\"\", \"%s\", optargs->%s ? \"true\" : \"false\");\n" n n
+             pr "      fprintf (trace_buffer.fp, \" \\\"%%s:%%s\\\"\", \"%s\", optargs->%s ? \"true\" : \"false\");\n" n n
          | OInt n ->
-             pr "      fprintf (trace_fp, \" \\\"%%s:%%d\\\"\", \"%s\", optargs->%s);\n" n n
+             pr "      fprintf (trace_buffer.fp, \" \\\"%%s:%%d\\\"\", \"%s\", optargs->%s);\n" n n
          | OInt64 n ->
-             pr "      fprintf (trace_fp, \" \\\"%%s:%%\" PRIi64 \"\\\"\", \"%s\", optargs->%s);\n" n n
+             pr "      fprintf (trace_buffer.fp, \" \\\"%%s:%%\" PRIi64 \"\\\"\", \"%s\", optargs->%s);\n" n n
         );
         pr "    }\n"
     ) optargs;
 
-    pr "    guestfs___trace_send_line (g);\n";
+    pr "    guestfs___trace_send_line (g, &trace_buffer);\n";
     pr "  }\n";
     pr "\n";
   in
@@ -1137,43 +1144,43 @@ and generate_client_actions hash () =
       pr "\n"
     );
 
-    pr "%s  trace_fp = guestfs___trace_open (g);\n" indent;
+    pr "%s  guestfs___trace_open (&trace_buffer);\n" indent;
 
-    pr "%s  fprintf (trace_fp, \"%%s = \", \"%s\");\n" indent name;
+    pr "%s  fprintf (trace_buffer.fp, \"%%s = \", \"%s\");\n" indent name;
 
     (match ret with
      | RErr | RInt _ | RBool _ ->
-         pr "%s  fprintf (trace_fp, \"%%d\", %s);\n" indent rv
+         pr "%s  fprintf (trace_buffer.fp, \"%%d\", %s);\n" indent rv
      | RInt64 _ ->
-         pr "%s  fprintf (trace_fp, \"%%\" PRIi64, %s);\n" indent rv
+         pr "%s  fprintf (trace_buffer.fp, \"%%\" PRIi64, %s);\n" indent rv
      | RConstString _ | RString _ ->
-         pr "%s  fprintf (trace_fp, \"\\\"%%s\\\"\", %s);\n" indent rv
+         pr "%s  fprintf (trace_buffer.fp, \"\\\"%%s\\\"\", %s);\n" indent rv
      | RConstOptString _ ->
-         pr "%s  fprintf (trace_fp, \"\\\"%%s\\\"\", %s != NULL ? %s : \"NULL\");\n"
+         pr "%s  fprintf (trace_buffer.fp, \"\\\"%%s\\\"\", %s != NULL ? %s : \"NULL\");\n"
            indent rv rv
      | RBufferOut _ ->
-         pr "%s  guestfs___print_BufferOut (trace_fp, %s, *size_r);\n" indent rv
+         pr "%s  guestfs___print_BufferOut (trace_buffer.fp, %s, *size_r);\n" indent rv
      | RStringList _ | RHashtable _ ->
-         pr "%s  fputs (\"[\", trace_fp);\n" indent;
+         pr "%s  fputs (\"[\", trace_buffer.fp);\n" indent;
          pr "%s  for (i = 0; %s[i]; ++i) {\n" indent rv;
-         pr "%s    if (i > 0) fputs (\", \", trace_fp);\n" indent;
-         pr "%s    fputs (\"\\\"\", trace_fp);\n" indent;
-         pr "%s    fputs (%s[i], trace_fp);\n" indent rv;
-         pr "%s    fputs (\"\\\"\", trace_fp);\n" indent;
+         pr "%s    if (i > 0) fputs (\", \", trace_buffer.fp);\n" indent;
+         pr "%s    fputs (\"\\\"\", trace_buffer.fp);\n" indent;
+         pr "%s    fputs (%s[i], trace_buffer.fp);\n" indent rv;
+         pr "%s    fputs (\"\\\"\", trace_buffer.fp);\n" indent;
          pr "%s  }\n" indent;
-         pr "%s  fputs (\"]\", trace_fp);\n" indent;
+         pr "%s  fputs (\"]\", trace_buffer.fp);\n" indent;
      | RStruct (_, typ) ->
          (* XXX There is code generated for guestfish for printing
           * these structures.  We need to make it generally available
           * for all callers
           *)
-         pr "%s  fprintf (trace_fp, \"<struct guestfs_%s *>\");\n"
+         pr "%s  fprintf (trace_buffer.fp, \"<struct guestfs_%s *>\");\n"
            indent typ (* XXX *)
      | RStructList (_, typ) ->
-         pr "%s  fprintf (trace_fp, \"<struct guestfs_%s_list *>\");\n"
+         pr "%s  fprintf (trace_buffer.fp, \"<struct guestfs_%s_list *>\");\n"
            indent typ (* XXX *)
     );
-    pr "%s  guestfs___trace_send_line (g);\n" indent;
+    pr "%s  guestfs___trace_send_line (g, &trace_buffer);\n" indent;
     pr "%s}\n" indent;
     pr "\n";
   in
@@ -1217,7 +1224,7 @@ and generate_client_actions hash () =
     handle_null_optargs optargs c_name;
 
     pr "  int trace_flag = g->trace;\n";
-    pr "  FILE *trace_fp;\n";
+    pr "  struct trace_buffer trace_buffer;\n";
     (match ret with
     | RErr | RInt _ | RBool _ ->
       pr "  int r;\n"
@@ -1320,7 +1327,7 @@ and generate_client_actions hash () =
     pr "  int serial;\n";
     pr "  int r;\n";
     pr "  int trace_flag = g->trace;\n";
-    pr "  FILE *trace_fp;\n";
+    pr "  struct trace_buffer trace_buffer;\n";
     (match ret with
     | RErr | RInt _ | RBool _ -> pr "  int ret_v;\n"
     | RInt64 _ -> pr "  int64_t ret_v;\n"
@@ -1495,7 +1502,7 @@ and generate_client_actions hash () =
     pr "      error (g, \"%%s: %%s\", \"%s\", err.error_message);\n"
       name;
     pr "    else\n";
-    pr "      guestfs_error_errno (g, errnum, \"%%s: %%s\", \"%s\",\n"
+    pr "      guestfs___error_errno (g, errnum, \"%%s: %%s\", \"%s\",\n"
       name;
     pr "                           err.error_message);\n";
     pr "    free (err.error_message);\n";
@@ -1745,16 +1752,6 @@ and generate_linker_script () =
     (* Unofficial parts of the API: the bindings code use these
      * functions, so it is useful to export them.
      *)
-    "guestfs___cleanup_free";
-    "guestfs___cleanup_free_string_list";
-    "guestfs___cleanup_hash_free";
-    "guestfs___cleanup_unlink_free";
-    "guestfs___cleanup_xmlBufferFree";
-    "guestfs___cleanup_xmlFreeDoc";
-    "guestfs___cleanup_xmlFreeTextWriter";
-    "guestfs___cleanup_xmlXPathFreeContext";
-    "guestfs___cleanup_xmlXPathFreeObject";
-    "guestfs___for_each_disk";
     "guestfs___safe_calloc";
     "guestfs___safe_malloc";
     "guestfs___safe_strdup";
@@ -1785,17 +1782,9 @@ and generate_linker_script () =
                    "guestfs_free_" ^ typ ^ "_list"])
         structs
     ) in
-  let struct_cleanups =
-    List.concat (
-      List.map (fun { s_name = typ } ->
-                  ["guestfs___cleanup_free_" ^ typ;
-                   "guestfs___cleanup_free_" ^ typ ^ "_list"])
-        structs
-    ) in
   let globals = List.sort compare (globals @
                                      functions @
-                                     struct_frees @
-                                     struct_cleanups) in
+                                     struct_frees) in
 
   pr "{\n";
   pr "    global:\n";

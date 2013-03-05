@@ -24,7 +24,7 @@
 #include <string.h>
 
 #include "guestfs.h"
-#include "guestfs-internal.h"
+#include "guestfs-internal-frontend.h"
 
 void
 guestfs___free_string_list (char **argv)
@@ -37,4 +37,15 @@ guestfs___free_string_list (char **argv)
   for (i = 0; argv[i] != NULL; ++i)
     free (argv[i]);
   free (argv);
+}
+
+size_t
+guestfs___count_strings (char *const *argv)
+{
+  size_t r;
+
+  for (r = 0; argv[r]; ++r)
+    ;
+
+  return r;
 }

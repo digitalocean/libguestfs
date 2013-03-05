@@ -1860,8 +1860,7 @@ class GuestFS(object):
         filesystem is unmounted.
         
         Note you must *not* make concurrent libguestfs calls on
-        the same handle from another thread, with the exception
-        of "g.umount_local".
+        the same handle from another thread.
         
         You may call this from a different thread than the one
         which called "g.mount_local", subject to the usual rules

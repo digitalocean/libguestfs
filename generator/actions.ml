@@ -2069,8 +2069,7 @@ returns successfully.  The call will not return until the
 filesystem is unmounted.
 
 B<Note> you must I<not> make concurrent libguestfs calls
-on the same handle from another thread,
-with the exception of C<guestfs_umount_local>.
+on the same handle from another thread.
 
 You may call this from a different thread than the one which
 called C<guestfs_mount_local>, subject to the usual rules
@@ -4426,8 +4425,8 @@ to return the existing UUID of a filesystem." };
            ["set_e2uuid"; "/dev/sdc"; uuid];
            ["get_e2uuid"; "/dev/sdc"]], uuid)
       ]);
-      shortdesc = "get the ext2/3/4 filesystem UUID";
-      longdesc = "\
+    shortdesc = "get the ext2/3/4 filesystem UUID";
+    longdesc = "\
 This returns the ext2/3/4 filesystem UUID of the filesystem on
 C<device>." };
 
@@ -5430,7 +5429,7 @@ a limitation of the kernel or swap tools." };
         InitEmpty, Always, TestRun (
           [["part_disk"; "/dev/sda"; "mbr"];
            ["mkswap_U"; uuid; "/dev/sda1"]])
-       ]);
+      ]);
     shortdesc = "create a swap partition with an explicit UUID";
     longdesc = "\
 Create a swap partition on C<device> with UUID C<uuid>." };
@@ -6235,7 +6234,7 @@ labeled swap partition." };
           [["mkswap"; "/dev/sdc"; "NOARG"; uuid];
            ["swapon_uuid"; uuid];
            ["swapoff_uuid"; uuid]])
-       ]);
+      ]);
     shortdesc = "enable swap on swap partition by UUID";
     longdesc = "\
 This command enables swap to a swap partition with the given UUID.
@@ -6508,7 +6507,7 @@ This creates an ext2 external journal on C<device> with label C<label>." };
            ["mount"; "/dev/sda2"; "/"];
            ["write"; "/new"; "new file contents"];
            ["cat"; "/new"]], "new file contents")
-       ]);
+      ]);
     shortdesc = "make ext2/3/4 external journal with UUID";
     longdesc = "\
 This creates an ext2 external journal on C<device> with UUID C<uuid>." };
@@ -7842,7 +7841,7 @@ To find a filesystem from the label, use C<guestfs_findfs_label>." };
         InitBasicFS, Always, TestOutput (
           [["set_e2uuid"; "/dev/sda1"; uuid];
            ["vfs_uuid"; "/dev/sda1"]], uuid)
-       ]);
+      ]);
     shortdesc = "get the filesystem UUID";
     longdesc = "\
 This returns the filesystem UUID of the filesystem on
@@ -8187,7 +8186,7 @@ See also C<guestfs_upload>, C<guestfs_pwrite>." };
        let size = string_of_int ((Unix.stat "COPYING.LIB").Unix.st_size - 100) in
        [
          InitScratchFS, Always, TestOutput (
-          (* Pick a file from cwd which isn't likely to change. *)
+           (* Pick a file from cwd which isn't likely to change. *)
            [["mkdir"; "/download_offset"];
             ["upload"; "../../COPYING.LIB"; "/download_offset/COPYING.LIB"];
             ["download_offset"; "/download_offset/COPYING.LIB"; "testdownload.tmp"; offset; size];
@@ -10153,7 +10152,7 @@ This is a wrapper around the L<hivex(3)> call of the same name." };
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["xfs_repair"; "/dev/sda1"; ""; "true"; ""; ""; ""; ""; ""; ""; "NOARG"; "NOARG"]
-      ])
+        ])
     ];
     shortdesc = "repair an XFS filesystem";
     longdesc = "\

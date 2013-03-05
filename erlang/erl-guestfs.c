@@ -35,6 +35,7 @@ instead of erl_interface.
 */
 
 #include "guestfs.h"
+#include "guestfs-internal-frontend.h"
 
 extern guestfs_h *g;
 
@@ -50,7 +51,6 @@ extern char **get_string_list (ETERM *term);
 extern int get_bool (ETERM *term);
 extern int get_int (ETERM *term);
 extern int64_t get_int64 (ETERM *term);
-extern void free_strings (char **r);
 
 #define ARG(i) (ERL_TUPLE_ELEMENT(message,(i)+1))
 
@@ -954,7 +954,7 @@ run_aug_ls (ETERM *message)
     return make_error ("aug_ls");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -971,7 +971,7 @@ run_aug_match (ETERM *message)
     return make_error ("aug_match");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -1041,7 +1041,7 @@ run_available (ETERM *message)
   int r;
 
   r = guestfs_available (g, groups);
-  free_strings (groups);
+  guestfs___free_string_list (groups);
   if (r == -1)
     return make_error ("available");
 
@@ -1058,7 +1058,7 @@ run_available_all_groups (ETERM *message)
     return make_error ("available_all_groups");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -1107,7 +1107,7 @@ run_blkid (ETERM *message)
     return make_error ("blkid");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -1260,7 +1260,7 @@ run_btrfs_device_add (ETERM *message)
   int r;
 
   r = guestfs_btrfs_device_add (g, devices, fs);
-  free_strings (devices);
+  guestfs___free_string_list (devices);
   free (fs);
   if (r == -1)
     return make_error ("btrfs_device_add");
@@ -1276,7 +1276,7 @@ run_btrfs_device_delete (ETERM *message)
   int r;
 
   r = guestfs_btrfs_device_delete (g, devices, fs);
-  free_strings (devices);
+  guestfs___free_string_list (devices);
   free (fs);
   if (r == -1)
     return make_error ("btrfs_device_delete");
@@ -1643,7 +1643,7 @@ run_command (ETERM *message)
   char *r;
 
   r = guestfs_command (g, arguments);
-  free_strings (arguments);
+  guestfs___free_string_list (arguments);
   if (r == NULL)
     return make_error ("command");
 
@@ -1659,12 +1659,12 @@ run_command_lines (ETERM *message)
   char **r;
 
   r = guestfs_command_lines (g, arguments);
-  free_strings (arguments);
+  guestfs___free_string_list (arguments);
   if (r == NULL)
     return make_error ("command_lines");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -2011,7 +2011,7 @@ run_debug (ETERM *message)
 
   r = guestfs_debug (g, subcmd, extraargs);
   free (subcmd);
-  free_strings (extraargs);
+  guestfs___free_string_list (extraargs);
   if (r == NULL)
     return make_error ("debug");
 
@@ -2030,7 +2030,7 @@ run_debug_drives (ETERM *message)
     return make_error ("debug_drives");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -2271,7 +2271,7 @@ run_echo_daemon (ETERM *message)
   char *r;
 
   r = guestfs_echo_daemon (g, words);
-  free_strings (words);
+  guestfs___free_string_list (words);
   if (r == NULL)
     return make_error ("echo_daemon");
 
@@ -2294,7 +2294,7 @@ run_egrep (ETERM *message)
     return make_error ("egrep");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -2313,7 +2313,7 @@ run_egrepi (ETERM *message)
     return make_error ("egrepi");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -2392,7 +2392,7 @@ run_fgrep (ETERM *message)
     return make_error ("fgrep");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -2411,7 +2411,7 @@ run_fgrepi (ETERM *message)
     return make_error ("fgrepi");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -2536,7 +2536,7 @@ run_find (ETERM *message)
     return make_error ("find");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -2831,7 +2831,7 @@ run_get_libvirt_requested_credentials (ETERM *message)
     return make_error ("get_libvirt_requested_credentials");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3067,7 +3067,7 @@ run_glob_expand (ETERM *message)
     return make_error ("glob_expand");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3119,7 +3119,7 @@ run_grep (ETERM *message)
     return make_error ("grep");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3138,7 +3138,7 @@ run_grepi (ETERM *message)
     return make_error ("grepi");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3171,7 +3171,7 @@ run_head (ETERM *message)
     return make_error ("head");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3189,7 +3189,7 @@ run_head_n (ETERM *message)
     return make_error ("head_n");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3519,7 +3519,7 @@ run_initrd_list (ETERM *message)
     return make_error ("initrd_list");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3561,7 +3561,7 @@ run_inotify_files (ETERM *message)
     return make_error ("inotify_files");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3650,7 +3650,7 @@ run_inspect_get_drive_mappings (ETERM *message)
     return make_error ("inspect_get_drive_mappings");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -3666,7 +3666,7 @@ run_inspect_get_filesystems (ETERM *message)
     return make_error ("inspect_get_filesystems");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3783,7 +3783,7 @@ run_inspect_get_mountpoints (ETERM *message)
     return make_error ("inspect_get_mountpoints");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -3861,7 +3861,7 @@ run_inspect_get_roots (ETERM *message)
     return make_error ("inspect_get_roots");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -3998,7 +3998,7 @@ run_inspect_os (ETERM *message)
     return make_error ("inspect_os");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -4064,13 +4064,13 @@ run_internal_test (ETERM *message)
   r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
   free (str);
   free (optstr);
-  free_strings (strlist);
+  guestfs___free_string_list (strlist);
   free (filein);
   free (fileout);
   if ((optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRING_BITMASK))
     free ((char *) optargs_s.ostring);
   if ((optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK))
-    free_strings ((char **) optargs_s.ostringlist);
+    guestfs___free_string_list ((char **) optargs_s.ostringlist);
   if (r == -1)
     return make_error ("internal_test");
 
@@ -4587,7 +4587,7 @@ run_internal_test_rhashtable (ETERM *message)
     return make_error ("internal_test_rhashtable");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -4601,7 +4601,7 @@ run_internal_test_rhashtableerr (ETERM *message)
     return make_error ("internal_test_rhashtableerr");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -4699,7 +4699,7 @@ run_internal_test_rstringlist (ETERM *message)
     return make_error ("internal_test_rstringlist");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -4714,7 +4714,7 @@ run_internal_test_rstringlisterr (ETERM *message)
     return make_error ("internal_test_rstringlisterr");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5077,7 +5077,7 @@ run_ldmtool_diskgroup_disks (ETERM *message)
     return make_error ("ldmtool_diskgroup_disks");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5110,7 +5110,7 @@ run_ldmtool_diskgroup_volumes (ETERM *message)
     return make_error ("ldmtool_diskgroup_volumes");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5137,7 +5137,7 @@ run_ldmtool_scan (ETERM *message)
     return make_error ("ldmtool_scan");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5149,12 +5149,12 @@ run_ldmtool_scan_devices (ETERM *message)
   char **r;
 
   r = guestfs_ldmtool_scan_devices (g, devices);
-  free_strings (devices);
+  guestfs___free_string_list (devices);
   if (r == NULL)
     return make_error ("ldmtool_scan_devices");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5191,7 +5191,7 @@ run_ldmtool_volume_partitions (ETERM *message)
     return make_error ("ldmtool_volume_partitions");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5259,7 +5259,7 @@ run_list_9p (ETERM *message)
     return make_error ("list_9p");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5274,7 +5274,7 @@ run_list_devices (ETERM *message)
     return make_error ("list_devices");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5289,7 +5289,7 @@ run_list_disk_labels (ETERM *message)
     return make_error ("list_disk_labels");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -5303,7 +5303,7 @@ run_list_dm_devices (ETERM *message)
     return make_error ("list_dm_devices");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5318,7 +5318,7 @@ run_list_filesystems (ETERM *message)
     return make_error ("list_filesystems");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -5332,7 +5332,7 @@ run_list_ldm_partitions (ETERM *message)
     return make_error ("list_ldm_partitions");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5347,7 +5347,7 @@ run_list_ldm_volumes (ETERM *message)
     return make_error ("list_ldm_volumes");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5362,7 +5362,7 @@ run_list_md_devices (ETERM *message)
     return make_error ("list_md_devices");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5377,7 +5377,7 @@ run_list_partitions (ETERM *message)
     return make_error ("list_partitions");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5506,7 +5506,7 @@ run_ls (ETERM *message)
     return make_error ("ls");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5571,7 +5571,7 @@ run_lstatlist (ETERM *message)
 
   r = guestfs_lstatlist (g, path, names);
   free (path);
-  free_strings (names);
+  guestfs___free_string_list (names);
   if (r == NULL)
     return make_error ("lstatlist");
 
@@ -5783,7 +5783,7 @@ run_lvm_set_filter (ETERM *message)
   int r;
 
   r = guestfs_lvm_set_filter (g, devices);
-  free_strings (devices);
+  guestfs___free_string_list (devices);
   if (r == -1)
     return make_error ("lvm_set_filter");
 
@@ -5860,7 +5860,7 @@ run_lvs (ETERM *message)
     return make_error ("lvs");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -5904,7 +5904,7 @@ run_lxattrlist (ETERM *message)
 
   r = guestfs_lxattrlist (g, path, names);
   free (path);
-  free_strings (names);
+  guestfs___free_string_list (names);
   if (r == NULL)
     return make_error ("lxattrlist");
 
@@ -5972,7 +5972,7 @@ run_md_create (ETERM *message)
 
   r = guestfs_md_create_argv (g, name, devices, optargs);
   free (name);
-  free_strings (devices);
+  guestfs___free_string_list (devices);
   if ((optargs_s.bitmask & GUESTFS_MD_CREATE_LEVEL_BITMASK))
     free ((char *) optargs_s.level);
   if (r == -1)
@@ -5993,7 +5993,7 @@ run_md_detail (ETERM *message)
     return make_error ("md_detail");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -6566,7 +6566,7 @@ run_mkfs_btrfs (ETERM *message)
   int r;
 
   r = guestfs_mkfs_btrfs_argv (g, devices, optargs);
-  free_strings (devices);
+  guestfs___free_string_list (devices);
   if ((optargs_s.bitmask & GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK))
     free ((char *) optargs_s.datatype);
   if ((optargs_s.bitmask & GUESTFS_MKFS_BTRFS_LABEL_BITMASK))
@@ -6988,7 +6988,7 @@ run_mountpoints (ETERM *message)
     return make_error ("mountpoints");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -7002,7 +7002,7 @@ run_mounts (ETERM *message)
     return make_error ("mounts");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -7223,7 +7223,7 @@ run_parse_environment_list (ETERM *message)
   int r;
 
   r = guestfs_parse_environment_list (g, environment);
-  free_strings (environment);
+  guestfs___free_string_list (environment);
   if (r == -1)
     return make_error ("parse_environment_list");
 
@@ -7579,7 +7579,7 @@ run_pvs (ETERM *message)
     return make_error ("pvs");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -7679,7 +7679,7 @@ run_read_lines (ETERM *message)
     return make_error ("read_lines");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -7725,12 +7725,12 @@ run_readlinklist (ETERM *message)
 
   r = guestfs_readlinklist (g, path, names);
   free (path);
-  free_strings (names);
+  guestfs___free_string_list (names);
   if (r == NULL)
     return make_error ("readlinklist");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -8265,7 +8265,7 @@ run_set_libvirt_supported_credentials (ETERM *message)
   int r;
 
   r = guestfs_set_libvirt_supported_credentials (g, creds);
-  free_strings (creds);
+  guestfs___free_string_list (creds);
   if (r == -1)
     return make_error ("set_libvirt_supported_credentials");
 
@@ -8475,7 +8475,7 @@ run_sfdisk (ETERM *message)
 
   r = guestfs_sfdisk (g, device, cyls, heads, sectors, lines);
   free (device);
-  free_strings (lines);
+  guestfs___free_string_list (lines);
   if (r == -1)
     return make_error ("sfdisk");
 
@@ -8491,7 +8491,7 @@ run_sfdiskM (ETERM *message)
 
   r = guestfs_sfdiskM (g, device, lines);
   free (device);
-  free_strings (lines);
+  guestfs___free_string_list (lines);
   if (r == -1)
     return make_error ("sfdiskM");
 
@@ -8594,7 +8594,7 @@ run_sh_lines (ETERM *message)
     return make_error ("sh_lines");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -8668,7 +8668,7 @@ run_strings (ETERM *message)
     return make_error ("strings");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -8687,7 +8687,7 @@ run_strings_e (ETERM *message)
     return make_error ("strings_e");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -8828,7 +8828,7 @@ run_tail (ETERM *message)
     return make_error ("tail");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -8846,7 +8846,7 @@ run_tail_n (ETERM *message)
     return make_error ("tail_n");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -8928,7 +8928,7 @@ run_tar_out (ETERM *message)
   if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK))
     free ((char *) optargs_s.compress);
   if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK))
-    free_strings ((char **) optargs_s.excludes);
+    guestfs___free_string_list ((char **) optargs_s.excludes);
   if (r == -1)
     return make_error ("tar_out");
 
@@ -9103,7 +9103,7 @@ run_tune2fs_l (ETERM *message)
     return make_error ("tune2fs_l");
 
   ETERM *rt = make_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
   return rt;
 }
 
@@ -9366,7 +9366,7 @@ run_vg_activate (ETERM *message)
   int r;
 
   r = guestfs_vg_activate (g, activate, volgroups);
-  free_strings (volgroups);
+  guestfs___free_string_list (volgroups);
   if (r == -1)
     return make_error ("vg_activate");
 
@@ -9421,7 +9421,7 @@ run_vgcreate (ETERM *message)
 
   r = guestfs_vgcreate (g, volgroup, physvols);
   free (volgroup);
-  free_strings (physvols);
+  guestfs___free_string_list (physvols);
   if (r == -1)
     return make_error ("vgcreate");
 
@@ -9440,7 +9440,7 @@ run_vglvuuids (ETERM *message)
     return make_error ("vglvuuids");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -9474,7 +9474,7 @@ run_vgpvuuids (ETERM *message)
     return make_error ("vgpvuuids");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -9519,7 +9519,7 @@ run_vgs (ETERM *message)
     return make_error ("vgs");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -9929,7 +9929,7 @@ run_zegrep (ETERM *message)
     return make_error ("zegrep");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -9948,7 +9948,7 @@ run_zegrepi (ETERM *message)
     return make_error ("zegrepi");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -10023,7 +10023,7 @@ run_zfgrep (ETERM *message)
     return make_error ("zfgrep");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -10042,7 +10042,7 @@ run_zfgrepi (ETERM *message)
     return make_error ("zfgrepi");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -10079,7 +10079,7 @@ run_zgrep (ETERM *message)
     return make_error ("zgrep");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }
@@ -10098,7 +10098,7 @@ run_zgrepi (ETERM *message)
     return make_error ("zgrepi");
 
   ETERM *rt = make_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
   return rt;
 }

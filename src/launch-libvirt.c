@@ -128,6 +128,8 @@ struct libvirt_xml_params {
 
 static int parse_capabilities (guestfs_h *g, const char *capabilities_xml, struct libvirt_xml_params *params);
 static xmlChar *construct_libvirt_xml (guestfs_h *g, const struct libvirt_xml_params *params);
+static void debug_appliance_permissions (guestfs_h *g);
+static void debug_socket_permissions (guestfs_h *g);
 static void libvirt_error (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
 static int is_custom_qemu (guestfs_h *g);
 static int is_blk (const char *path);
@@ -138,6 +140,7 @@ static int make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv);
 static void drive_free_priv (void *);
 static void set_socket_create_context (guestfs_h *g);
 static void clear_socket_create_context (guestfs_h *g);
+static void selinux_warning (guestfs_h *g, const char *func, const char *selinux_op, const char *data);
 
 static int
 launch_libvirt (guestfs_h *g, const char *libvirt_uri)
@@ -354,6 +357,12 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   if (!xml)
     goto cleanup;
 
+  /* Debug permissions and SELinux contexts on appliance and sockets. */
+  if (g->verbose) {
+    debug_appliance_permissions (g);
+    debug_socket_permissions (g);
+  }
+
   /* Launch the libvirt guest. */
   if (g->verbose)
     guestfs___print_timestamped_message (g, "launch libvirt guest");
@@ -527,21 +536,24 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
 
   nodes = xpathObj->nodesetval;
   seen_qemu = seen_kvm = 0;
-  for (i = 0; i < (size_t) nodes->nodeNr; ++i) {
-    CLEANUP_FREE char *type = NULL;
 
-    if (seen_qemu && seen_kvm)
-      break;
+  if (nodes != NULL) {
+    for (i = 0; i < (size_t) nodes->nodeNr; ++i) {
+      CLEANUP_FREE char *type = NULL;
 
-    assert (nodes->nodeTab[i]);
-    assert (nodes->nodeTab[i]->type == XML_ATTRIBUTE_NODE);
-    attr = (xmlAttrPtr) nodes->nodeTab[i];
-    type = (char *) xmlNodeListGetString (doc, attr->children, 1);
+      if (seen_qemu && seen_kvm)
+        break;
 
-    if (STREQ (type, "qemu"))
-      seen_qemu++;
-    else if (STREQ (type, "kvm"))
-      seen_kvm++;
+      assert (nodes->nodeTab[i]);
+      assert (nodes->nodeTab[i]->type == XML_ATTRIBUTE_NODE);
+      attr = (xmlAttrPtr) nodes->nodeTab[i];
+      type = (char *) xmlNodeListGetString (doc, attr->children, 1);
+
+      if (STREQ (type, "qemu"))
+        seen_qemu++;
+      else if (STREQ (type, "kvm"))
+        seen_kvm++;
+    }
   }
 
   /* This was RHBZ#886915: in that case the default libvirt URI
@@ -588,30 +600,27 @@ set_socket_create_context (guestfs_h *g)
   context_t con;
 
   if (getcon (&scon) == -1) {
-    debug (g, "%s: getcon failed: %m", __func__);
+    selinux_warning (g, __func__, "getcon", NULL);
     return;
   }
 
   con = context_new (scon);
   if (!con) {
-    debug (g, "%s: context_new failed: %m", __func__);
+    selinux_warning (g, __func__, "context_new", scon);
     goto out1;
   }
 
   if (context_type_set (con, SOCKET_CONTEXT) == -1) {
-    debug (g, "%s: context_type_set failed: %m", __func__);
+    selinux_warning (g, __func__, "context_type_set", scon);
     goto out2;
   }
-
-#define SETSOCKCREATECON_WARNING_NOTICE "[you can ignore this UNLESS using SELinux + sVirt]"
 
   /* Note that setsockcreatecon sets the per-thread socket creation
    * context (/proc/self/task/<tid>/attr/sockcreate) so this is
    * thread-safe.
    */
   if (setsockcreatecon (context_str (con)) == -1) {
-    debug (g, "%s: setsockcreatecon (%s) failed: %m %s",
-           __func__, context_str (con), SETSOCKCREATECON_WARNING_NOTICE);
+    selinux_warning (g, __func__, "setsockcreatecon", context_str (con));
     goto out2;
   }
 
@@ -625,8 +634,7 @@ static void
 clear_socket_create_context (guestfs_h *g)
 {
   if (setsockcreatecon (NULL) == -1)
-    debug (g, "%s: setsockcreatecon (NULL) failed: %m %s", __func__,
-           SETSOCKCREATECON_WARNING_NOTICE);
+    selinux_warning (g, __func__, "setsockcreatecon", "NULL");
 }
 
 #else /* !HAVE_LIBSELINUX */
@@ -644,6 +652,46 @@ clear_socket_create_context (guestfs_h *g)
 }
 
 #endif /* !HAVE_LIBSELINUX */
+
+static void
+debug_permissions_cb (guestfs_h *g, void *data, const char *line, size_t len)
+{
+  debug (g, "%s", line);
+}
+
+static void
+debug_appliance_permissions (guestfs_h *g)
+{
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
+  CLEANUP_FREE char *cachedir = guestfs_get_cachedir (g);
+  CLEANUP_FREE char *appliance = NULL;
+
+  appliance = safe_asprintf (g, "%s/.guestfs-%d", cachedir, geteuid ());
+
+  guestfs___cmd_add_arg (cmd, "ls");
+  guestfs___cmd_add_arg (cmd, "-a");
+  guestfs___cmd_add_arg (cmd, "-l");
+  guestfs___cmd_add_arg (cmd, "-Z");
+  guestfs___cmd_add_arg (cmd, appliance);
+  guestfs___cmd_set_stdout_callback (cmd, debug_permissions_cb, NULL, 0);
+  guestfs___cmd_run (cmd);
+}
+
+static void
+debug_socket_permissions (guestfs_h *g)
+{
+  if (g->tmpdir) {
+    CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
+
+    guestfs___cmd_add_arg (cmd, "ls");
+    guestfs___cmd_add_arg (cmd, "-a");
+    guestfs___cmd_add_arg (cmd, "-l");
+    guestfs___cmd_add_arg (cmd, "-Z");
+    guestfs___cmd_add_arg (cmd, g->tmpdir);
+    guestfs___cmd_set_stdout_callback (cmd, debug_permissions_cb, NULL, 0);
+    guestfs___cmd_run (cmd);
+  }
+}
 
 static int construct_libvirt_xml_domain (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_name (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
@@ -1452,6 +1500,15 @@ libvirt_error (guestfs_h *g, const char *fs, ...)
 
   /* NB. 'err' must not be freed! */
   free (msg);
+}
+
+static void
+selinux_warning (guestfs_h *g, const char *func,
+                 const char *selinux_op, const char *data)
+{
+  debug (g, "%s: %s failed: %s: %m"
+         " [you can ignore this UNLESS using SELinux + sVirt]",
+         func, selinux_op, data ? data : "(none)");
 }
 
 /* This backend assumes virtio-scsi is available. */

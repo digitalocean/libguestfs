@@ -33,6 +33,7 @@ generator_built = \
 	actions-6.c \
 	actions-variants.c \
 	bindtests.c \
+	cleanup-structs.c \
 	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h \
@@ -62,75 +63,12 @@ include_HEADERS = guestfs.h
 
 lib_LTLIBRARIES = libguestfs.la
 
-# This convenience library is solely to compile its generated sources with
-# custom flags.
-libprotocol_la_SOURCES = guestfs_protocol.c  guestfs_protocol.h
-libprotocol_la_CFLAGS = \
-	-Wall -Wno-unused -fno-strict-aliasing $(GCC_VISIBILITY_HIDDEN)
-
-# Build the errnostring perfect hash code.  The generated code has lots
-# of warnings so we must compile it in a separate mini-library.
-liberrnostring_la_SOURCES = \
-	errnostring-gperf.c \
-	errnostring.h \
-	errnostring.c
-liberrnostring_la_CFLAGS = $(GCC_VISIBILITY_HIDDEN)
-
-errnostring-gperf.c: errnostring-gperf.gperf
-	rm -f $@
-	$(GPERF) -t $< > $@-t
-	mv $@-t $@
-
-# From the libtool info file, with comments:
-#
-# |  1. Start with version information of `0:0:0' for each libtool library.
-# |
-# |  2. Update the version information only immediately before a public
-# |     release of your software.  More frequent updates are unnecessary,
-# |     and only guarantee that the current interface number gets larger
-# |     faster.
-# |
-# |  3. If the library source code has changed at all since the last
-# |     update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
-#
-# [So it seems like we should always update the middle 'R' field
-# for any release.]
-#
-# |  4. If any interfaces have been added, removed, or changed since the
-# |     last update, increment CURRENT, and set REVISION to 0.
-# |
-# |  5. If any interfaces have been added since the last public release,
-# |     then increment AGE.
-#
-# [These two rules seem to mean that if any change is made to the
-# generator, we should increment C and A, and set R to 0, so:
-# C+1:0:A+1.]
-#
-# |  6. If any interfaces have been removed since the last public release,
-# |     then set AGE to 0.
-#
-# [Our ABI guarantee means we won't remove interfaces except in
-# very exceptional circumstances.]
-#
-# The maximum proc number (see guestfs_protocol.x:guestfs_procedure) is
-# a mostly accurate stand-in for C & A in rules 5 & 6, so we use that.  It
-# is always incremented when we add a new appliance interface, and easy to
-# calculate.
-#
-# The middle number is hard to increment-and-reset as described in rules
-# 4 & 5, so for the moment it is always set to 0.
-#
-# Note that this scheme means the real library version will always be
-# 'libguestfs.so.0.$(MAX_PROC_NR).0'.
-libguestfs_la_LDFLAGS = -version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR)
-
-libguestfs_la_LDFLAGS += $(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
-
 libguestfs_la_SOURCES = \
 	guestfs.h \
 	guestfs-internal.h \
 	guestfs-internal-all.h \
 	guestfs-internal-frontend.h \
+	guestfs-internal-frontend-cleanups.h \
 	guestfs_protocol.h \
 	actions-0.c \
 	actions-1.c \
@@ -175,25 +113,7 @@ libguestfs_la_SOURCES = \
 	private-data.c \
 	proto.c \
 	tmpdirs.c \
-	utils.c \
 	libguestfs.syms
-
-libguestfs_la_LIBADD = \
-	$(PCRE_LIBS) $(MAGIC_LIBS) \
-	$(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
-	../gnulib/lib/libgnu.la \
-	$(GETADDRINFO_LIB) \
-	$(HOSTENT_LIB) \
-	$(INET_NTOP_LIB) \
-	$(LIBSOCKET) \
-	$(LIB_CLOCK_GETTIME) \
-	$(LIBINTL) \
-	$(LTLIBTHREAD) \
-	$(SERVENT_LIB)
-
-# Make libguestfs include the convenience libraries.
-noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
-libguestfs_la_LIBADD += liberrnostring.la libprotocol.la
 
 libguestfs_la_CPPFLAGS = \
 	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
@@ -210,11 +130,55 @@ libguestfs_la_CFLAGS = \
 	$(LIBVIRT_CFLAGS) \
 	$(LIBXML2_CFLAGS)
 
+libguestfs_la_LIBADD = \
+	liberrnostring.la \
+	libprotocol.la \
+	libutils.la \
+	$(PCRE_LIBS) $(MAGIC_LIBS) \
+	$(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
+	../gnulib/lib/libgnu.la \
+	$(GETADDRINFO_LIB) \
+	$(HOSTENT_LIB) \
+	$(INET_NTOP_LIB) \
+	$(LIBSOCKET) \
+	$(LIB_CLOCK_GETTIME) \
+	$(LIBINTL) \
+	$(LTLIBTHREAD) \
+	$(SERVENT_LIB)
+
+# Force libtool to name the library 'libguestfs.so.0.$(MAX_PROC_NR).0'.
+# Include the version script to limit which symbols are exported.
+libguestfs_la_LDFLAGS = \
+	-version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR) \
+	$(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
+
 if HAVE_FUSE
 # XXX Unfortunately FUSE_CFLAGS defines _FILE_OFFSET_BITS=64.
 libguestfs_la_CFLAGS += $(FUSE_CFLAGS)
 libguestfs_la_LIBADD += $(FUSE_LIBS)
 endif
+
+# Convenience libraries.
+noinst_LTLIBRARIES = liberrnostring.la libprotocol.la libutils.la
+
+# Build the errnostring perfect hash code.  The generated code has lots
+# of warnings so we must compile it in a separate mini-library.
+liberrnostring_la_SOURCES = \
+	errnostring-gperf.c \
+	errnostring.h \
+	errnostring.c
+liberrnostring_la_CFLAGS = $(GCC_VISIBILITY_HIDDEN)
+
+errnostring-gperf.c: errnostring-gperf.gperf
+	rm -f $@
+	$(GPERF) -t $< > $@-t
+	mv $@-t $@
+
+# This convenience library is solely to compile its generated sources with
+# custom flags.
+libprotocol_la_SOURCES = guestfs_protocol.c  guestfs_protocol.h
+libprotocol_la_CFLAGS = \
+	-Wall -Wno-unused -fno-strict-aliasing $(GCC_VISIBILITY_HIDDEN)
 
 if HAVE_RPCGEN
 RPCGEN_DEFS =
@@ -238,6 +202,16 @@ guestfs_protocol.h: guestfs_protocol.x
 	$(RPCGEN) $(RPCGEN_DEFS) -h -o $@-t $(srcdir)/$<
 	mv $@-t $@
 endif
+
+# libutils.la contains code outside libguestfs which is also
+# included in tools and bindings.
+libutils_la_SOURCES = \
+	cleanup.c \
+	cleanup-structs.c \
+	for-each-disk.c \
+	utils.c
+libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
+libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
 
 # Pkgconfig.
 

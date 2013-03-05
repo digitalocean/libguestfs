@@ -116,16 +116,6 @@ put_table (char * const * const argv)
   return list;
 }
 
-static void
-free_strings (char **argv)
-{
-  size_t argc;
-
-  for (argc = 0; argv[argc] != NULL; ++argc)
-    free (argv[argc]);
-  free (argv);
-}
-
 static PyObject *
 put_int_bool (struct guestfs_int_bool *int_bool)
 {
@@ -2018,7 +2008,7 @@ py_guestfs_internal_test_rstringlist (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -2045,7 +2035,7 @@ py_guestfs_internal_test_rstringlisterr (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -2183,7 +2173,7 @@ py_guestfs_internal_test_rhashtable (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -2210,7 +2200,7 @@ py_guestfs_internal_test_rhashtableerr (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -3377,7 +3367,7 @@ py_guestfs_inspect_os (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -3636,7 +3626,7 @@ py_guestfs_inspect_get_mountpoints (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -3671,7 +3661,7 @@ py_guestfs_inspect_get_filesystems (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -3759,7 +3749,7 @@ py_guestfs_list_filesystems (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -3915,7 +3905,7 @@ py_guestfs_inspect_get_roots (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -3942,7 +3932,7 @@ py_guestfs_debug_drives (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -4532,7 +4522,7 @@ py_guestfs_inspect_get_drive_mappings (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -5018,7 +5008,7 @@ py_guestfs_find (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -5093,7 +5083,7 @@ py_guestfs_read_lines (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -5286,7 +5276,7 @@ py_guestfs_readlinklist (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   free (names);
@@ -5322,7 +5312,7 @@ py_guestfs_ls (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -5555,7 +5545,7 @@ py_guestfs_get_libvirt_requested_credentials (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -6036,7 +6026,7 @@ py_guestfs_list_devices (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -6070,7 +6060,7 @@ py_guestfs_list_partitions (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -6104,7 +6094,7 @@ py_guestfs_pvs (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -6138,7 +6128,7 @@ py_guestfs_vgs (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -6172,7 +6162,7 @@ py_guestfs_lvs (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -6633,7 +6623,7 @@ py_guestfs_aug_match (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -6736,7 +6726,7 @@ py_guestfs_aug_ls (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -7364,7 +7354,7 @@ py_guestfs_mounts (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -7552,7 +7542,7 @@ py_guestfs_command_lines (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   free (arguments);
@@ -7693,7 +7683,7 @@ py_guestfs_tune2fs_l (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -9142,7 +9132,7 @@ py_guestfs_strings (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -9178,7 +9168,7 @@ py_guestfs_strings_e (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -9769,7 +9759,7 @@ py_guestfs_sh_lines (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -9804,7 +9794,7 @@ py_guestfs_glob_expand (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -10085,7 +10075,7 @@ py_guestfs_head (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -10121,7 +10111,7 @@ py_guestfs_head_n (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -10156,7 +10146,7 @@ py_guestfs_tail (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -10192,7 +10182,7 @@ py_guestfs_tail_n (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -10337,7 +10327,7 @@ py_guestfs_initrd_list (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11058,7 +11048,7 @@ py_guestfs_mountpoints (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11193,7 +11183,7 @@ py_guestfs_grep (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11229,7 +11219,7 @@ py_guestfs_egrep (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11265,7 +11255,7 @@ py_guestfs_fgrep (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11301,7 +11291,7 @@ py_guestfs_grepi (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11337,7 +11327,7 @@ py_guestfs_egrepi (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11373,7 +11363,7 @@ py_guestfs_fgrepi (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11409,7 +11399,7 @@ py_guestfs_zgrep (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11445,7 +11435,7 @@ py_guestfs_zegrep (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11481,7 +11471,7 @@ py_guestfs_zfgrep (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11517,7 +11507,7 @@ py_guestfs_zgrepi (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11553,7 +11543,7 @@ py_guestfs_zegrepi (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -11589,7 +11579,7 @@ py_guestfs_zfgrepi (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -12335,7 +12325,7 @@ py_guestfs_inotify_files (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -13789,7 +13779,7 @@ py_guestfs_vgpvuuids (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -13824,7 +13814,7 @@ py_guestfs_vglvuuids (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -14651,7 +14641,7 @@ py_guestfs_available_all_groups (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -15900,7 +15890,7 @@ py_guestfs_list_9p (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -15986,7 +15976,7 @@ py_guestfs_list_dm_devices (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -16674,7 +16664,7 @@ py_guestfs_list_md_devices (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -16709,7 +16699,7 @@ py_guestfs_md_detail (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -16779,7 +16769,7 @@ py_guestfs_blkid (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -19842,7 +19832,7 @@ py_guestfs_list_disk_labels (PyObject *self, PyObject *args)
   }
 
   py_r = put_table (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -20153,7 +20143,7 @@ py_guestfs_list_ldm_volumes (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -20187,7 +20177,7 @@ py_guestfs_list_ldm_partitions (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -20289,7 +20279,7 @@ py_guestfs_ldmtool_scan (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -20327,7 +20317,7 @@ py_guestfs_ldmtool_scan_devices (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   free (devices);
@@ -20402,7 +20392,7 @@ py_guestfs_ldmtool_diskgroup_volumes (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -20437,7 +20427,7 @@ py_guestfs_ldmtool_diskgroup_disks (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;
@@ -20553,7 +20543,7 @@ py_guestfs_ldmtool_volume_partitions (PyObject *self, PyObject *args)
   }
 
   py_r = put_string_list (r);
-  free_strings (r);
+  guestfs___free_string_list (r);
 
  out:
   return py_r;

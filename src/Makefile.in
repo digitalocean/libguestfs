@@ -261,14 +261,14 @@ liberrnostring_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	-o $@
 am__DEPENDENCIES_1 =
 @HAVE_FUSE_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-libguestfs_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+libguestfs_la_DEPENDENCIES = liberrnostring.la libprotocol.la \
+	libutils.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la \
+	../gnulib/lib/libgnu.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) liberrnostring.la \
-	libprotocol.la $(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
 am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-actions-1.lo libguestfs_la-actions-2.lo \
 	libguestfs_la-actions-3.lo libguestfs_la-actions-4.lo \
@@ -293,7 +293,7 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-listfs.lo libguestfs_la-lpj.lo \
 	libguestfs_la-match.lo libguestfs_la-osinfo.lo \
 	libguestfs_la-private-data.lo libguestfs_la-proto.lo \
-	libguestfs_la-tmpdirs.lo libguestfs_la-utils.lo
+	libguestfs_la-tmpdirs.lo
 libguestfs_la_OBJECTS = $(am_libguestfs_la_OBJECTS)
 libguestfs_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libguestfs_la_CFLAGS) \
@@ -305,6 +305,14 @@ libprotocol_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libprotocol_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
 	$@
+libutils_la_LIBADD =
+am_libutils_la_OBJECTS = libutils_la-cleanup.lo \
+	libutils_la-cleanup-structs.lo libutils_la-for-each-disk.lo \
+	libutils_la-utils.lo
+libutils_la_OBJECTS = $(am_libutils_la_OBJECTS)
+libutils_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libutils_la_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -340,9 +348,9 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(liberrnostring_la_SOURCES) $(libguestfs_la_SOURCES) \
-	$(libprotocol_la_SOURCES)
+	$(libprotocol_la_SOURCES) $(libutils_la_SOURCES)
 DIST_SOURCES = $(liberrnostring_la_SOURCES) $(libguestfs_la_SOURCES) \
-	$(libprotocol_la_SOURCES)
+	$(libprotocol_la_SOURCES) $(libutils_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1419,6 +1427,7 @@ generator_built = \
 	actions-6.c \
 	actions-variants.c \
 	bindtests.c \
+	cleanup-structs.c \
 	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h \
@@ -1446,71 +1455,12 @@ EXTRA_DIST = \
 
 include_HEADERS = guestfs.h
 lib_LTLIBRARIES = libguestfs.la
-
-# This convenience library is solely to compile its generated sources with
-# custom flags.
-libprotocol_la_SOURCES = guestfs_protocol.c  guestfs_protocol.h
-libprotocol_la_CFLAGS = \
-	-Wall -Wno-unused -fno-strict-aliasing $(GCC_VISIBILITY_HIDDEN)
-
-
-# Build the errnostring perfect hash code.  The generated code has lots
-# of warnings so we must compile it in a separate mini-library.
-liberrnostring_la_SOURCES = \
-	errnostring-gperf.c \
-	errnostring.h \
-	errnostring.c
-
-liberrnostring_la_CFLAGS = $(GCC_VISIBILITY_HIDDEN)
-
-# From the libtool info file, with comments:
-#
-# |  1. Start with version information of `0:0:0' for each libtool library.
-# |
-# |  2. Update the version information only immediately before a public
-# |     release of your software.  More frequent updates are unnecessary,
-# |     and only guarantee that the current interface number gets larger
-# |     faster.
-# |
-# |  3. If the library source code has changed at all since the last
-# |     update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
-#
-# [So it seems like we should always update the middle 'R' field
-# for any release.]
-#
-# |  4. If any interfaces have been added, removed, or changed since the
-# |     last update, increment CURRENT, and set REVISION to 0.
-# |
-# |  5. If any interfaces have been added since the last public release,
-# |     then increment AGE.
-#
-# [These two rules seem to mean that if any change is made to the
-# generator, we should increment C and A, and set R to 0, so:
-# C+1:0:A+1.]
-#
-# |  6. If any interfaces have been removed since the last public release,
-# |     then set AGE to 0.
-#
-# [Our ABI guarantee means we won't remove interfaces except in
-# very exceptional circumstances.]
-#
-# The maximum proc number (see guestfs_protocol.x:guestfs_procedure) is
-# a mostly accurate stand-in for C & A in rules 5 & 6, so we use that.  It
-# is always incremented when we add a new appliance interface, and easy to
-# calculate.
-#
-# The middle number is hard to increment-and-reset as described in rules
-# 4 & 5, so for the moment it is always set to 0.
-#
-# Note that this scheme means the real library version will always be
-# 'libguestfs.so.0.$(MAX_PROC_NR).0'.
-libguestfs_la_LDFLAGS = -version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR) \
-	$(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
 libguestfs_la_SOURCES = \
 	guestfs.h \
 	guestfs-internal.h \
 	guestfs-internal-all.h \
 	guestfs-internal-frontend.h \
+	guestfs-internal-frontend-cleanups.h \
 	guestfs_protocol.h \
 	actions-0.c \
 	actions-1.c \
@@ -1555,17 +1505,8 @@ libguestfs_la_SOURCES = \
 	private-data.c \
 	proto.c \
 	tmpdirs.c \
-	utils.c \
 	libguestfs.syms
 
-libguestfs_la_LIBADD = $(PCRE_LIBS) $(MAGIC_LIBS) $(LIBVIRT_LIBS) \
-	$(LIBXML2_LIBS) ../gnulib/lib/libgnu.la $(GETADDRINFO_LIB) \
-	$(HOSTENT_LIB) $(INET_NTOP_LIB) $(LIBSOCKET) \
-	$(LIB_CLOCK_GETTIME) $(LIBINTL) $(LTLIBTHREAD) $(SERVENT_LIB) \
-	liberrnostring.la libprotocol.la $(am__append_2)
-
-# Make libguestfs include the convenience libraries.
-noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
 libguestfs_la_CPPFLAGS = \
 	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \
 	-DGUESTFS_WARN_DEPRECATED=1 \
@@ -1576,7 +1517,49 @@ libguestfs_la_CPPFLAGS = \
 libguestfs_la_CFLAGS = $(WARN_CFLAGS) $(WERROR_CFLAGS) $(GPROF_CFLAGS) \
 	$(GCOV_CFLAGS) $(GCC_VISIBILITY_HIDDEN) $(PCRE_CFLAGS) \
 	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) $(am__append_1)
+libguestfs_la_LIBADD = liberrnostring.la libprotocol.la libutils.la \
+	$(PCRE_LIBS) $(MAGIC_LIBS) $(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
+	../gnulib/lib/libgnu.la $(GETADDRINFO_LIB) $(HOSTENT_LIB) \
+	$(INET_NTOP_LIB) $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIBINTL) \
+	$(LTLIBTHREAD) $(SERVENT_LIB) $(am__append_2)
+
+# Force libtool to name the library 'libguestfs.so.0.$(MAX_PROC_NR).0'.
+# Include the version script to limit which symbols are exported.
+libguestfs_la_LDFLAGS = \
+	-version-info $(MAX_PROC_NR):0:$(MAX_PROC_NR) \
+	$(VERSION_SCRIPT_FLAGS)$(srcdir)/libguestfs.syms
+
+
+# Convenience libraries.
+noinst_LTLIBRARIES = liberrnostring.la libprotocol.la libutils.la
+
+# Build the errnostring perfect hash code.  The generated code has lots
+# of warnings so we must compile it in a separate mini-library.
+liberrnostring_la_SOURCES = \
+	errnostring-gperf.c \
+	errnostring.h \
+	errnostring.c
+
+liberrnostring_la_CFLAGS = $(GCC_VISIBILITY_HIDDEN)
+
+# This convenience library is solely to compile its generated sources with
+# custom flags.
+libprotocol_la_SOURCES = guestfs_protocol.c  guestfs_protocol.h
+libprotocol_la_CFLAGS = \
+	-Wall -Wno-unused -fno-strict-aliasing $(GCC_VISIBILITY_HIDDEN)
+
 @HAVE_RPCGEN_TRUE@RPCGEN_DEFS = $(am__append_3) $(am__append_4)
+
+# libutils.la contains code outside libguestfs which is also
+# included in tools and bindings.
+libutils_la_SOURCES = \
+	cleanup.c \
+	cleanup-structs.c \
+	for-each-disk.c \
+	utils.c
+
+libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
+libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)
 
 # Pkgconfig.
 pkgconfigdir = $(libdir)/pkgconfig
@@ -1674,6 +1657,8 @@ libguestfs.la: $(libguestfs_la_OBJECTS) $(libguestfs_la_DEPENDENCIES) $(EXTRA_li
 	$(AM_V_CCLD)$(libguestfs_la_LINK) -rpath $(libdir) $(libguestfs_la_OBJECTS) $(libguestfs_la_LIBADD) $(LIBS)
 libprotocol.la: $(libprotocol_la_OBJECTS) $(libprotocol_la_DEPENDENCIES) $(EXTRA_libprotocol_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libprotocol_la_LINK)  $(libprotocol_la_OBJECTS) $(libprotocol_la_LIBADD) $(LIBS)
+libutils.la: $(libutils_la_OBJECTS) $(libutils_la_DEPENDENCIES) $(EXTRA_libutils_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libutils_la_LINK)  $(libutils_la_OBJECTS) $(libutils_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1726,8 +1711,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-private-data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-proto.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-tmpdirs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_la-guestfs_protocol.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup-structs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-for-each-disk.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-utils.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -2065,19 +2053,40 @@ libguestfs_la-tmpdirs.lo: tmpdirs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-tmpdirs.lo `test -f 'tmpdirs.c' || echo '$(srcdir)/'`tmpdirs.c
 
-libguestfs_la-utils.lo: utils.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-utils.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-utils.Tpo -c -o libguestfs_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-utils.Tpo $(DEPDIR)/libguestfs_la-utils.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='libguestfs_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
-
 libprotocol_la-guestfs_protocol.lo: guestfs_protocol.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libprotocol_la_CFLAGS) $(CFLAGS) -MT libprotocol_la-guestfs_protocol.lo -MD -MP -MF $(DEPDIR)/libprotocol_la-guestfs_protocol.Tpo -c -o libprotocol_la-guestfs_protocol.lo `test -f 'guestfs_protocol.c' || echo '$(srcdir)/'`guestfs_protocol.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libprotocol_la-guestfs_protocol.Tpo $(DEPDIR)/libprotocol_la-guestfs_protocol.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestfs_protocol.c' object='libprotocol_la-guestfs_protocol.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libprotocol_la_CFLAGS) $(CFLAGS) -c -o libprotocol_la-guestfs_protocol.lo `test -f 'guestfs_protocol.c' || echo '$(srcdir)/'`guestfs_protocol.c
+
+libutils_la-cleanup.lo: cleanup.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-cleanup.lo -MD -MP -MF $(DEPDIR)/libutils_la-cleanup.Tpo -c -o libutils_la-cleanup.lo `test -f 'cleanup.c' || echo '$(srcdir)/'`cleanup.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-cleanup.Tpo $(DEPDIR)/libutils_la-cleanup.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cleanup.c' object='libutils_la-cleanup.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-cleanup.lo `test -f 'cleanup.c' || echo '$(srcdir)/'`cleanup.c
+
+libutils_la-cleanup-structs.lo: cleanup-structs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-cleanup-structs.lo -MD -MP -MF $(DEPDIR)/libutils_la-cleanup-structs.Tpo -c -o libutils_la-cleanup-structs.lo `test -f 'cleanup-structs.c' || echo '$(srcdir)/'`cleanup-structs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-cleanup-structs.Tpo $(DEPDIR)/libutils_la-cleanup-structs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cleanup-structs.c' object='libutils_la-cleanup-structs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-cleanup-structs.lo `test -f 'cleanup-structs.c' || echo '$(srcdir)/'`cleanup-structs.c
+
+libutils_la-for-each-disk.lo: for-each-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-for-each-disk.lo -MD -MP -MF $(DEPDIR)/libutils_la-for-each-disk.Tpo -c -o libutils_la-for-each-disk.lo `test -f 'for-each-disk.c' || echo '$(srcdir)/'`for-each-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-for-each-disk.Tpo $(DEPDIR)/libutils_la-for-each-disk.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='for-each-disk.c' object='libutils_la-for-each-disk.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-for-each-disk.lo `test -f 'for-each-disk.c' || echo '$(srcdir)/'`for-each-disk.c
+
+libutils_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-utils.lo -MD -MP -MF $(DEPDIR)/libutils_la-utils.Tpo -c -o libutils_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-utils.Tpo $(DEPDIR)/libutils_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='libutils_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

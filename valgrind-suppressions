@@ -209,6 +209,25 @@
    fun:virInitialize
 }
 
+# Variant of RHBZ#847429 with libvirt 1.0.2
+{
+   libvirt_leak_3
+   Memcheck:Leak
+   ...
+   fun:tryLoadOne
+   fun:VBoxCGlueInit
+   fun:vboxRegister
+   fun:virGlobalInit
+}
+
+# RHBZ#913145
+{
+   libvirt_leak_4
+   Memcheck:Leak
+   ...
+   fun:virNetClientProgramCall
+}
+
 # FUSE leaks the per-thread context (although the code looks
 # like it attempts to clean it up).  In older fuse, it uses
 # malloc.  In newer fuse it uses calloc.

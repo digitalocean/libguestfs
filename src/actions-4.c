@@ -40,7 +40,7 @@ guestfs_internal_test_rbool (guestfs_h *g,
                              const char *val)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -52,20 +52,20 @@ guestfs_internal_test_rbool (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "internal_test_rbool");
-    fprintf (trace_fp, " \"%s\"", val);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_test_rbool");
+    fprintf (trace_buffer.fp, " \"%s\"", val);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__internal_test_rbool (g, val);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "internal_test_rbool");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "internal_test_rbool");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -82,7 +82,7 @@ guestfs_internal_test_rstringlist (guestfs_h *g,
                                    const char *val)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -94,10 +94,10 @@ guestfs_internal_test_rstringlist (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "internal_test_rstringlist");
-    fprintf (trace_fp, " \"%s\"", val);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_test_rstringlist");
+    fprintf (trace_buffer.fp, " \"%s\"", val);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__internal_test_rstringlist (g, val);
@@ -106,17 +106,17 @@ guestfs_internal_test_rstringlist (guestfs_h *g,
     if (trace_flag) {
       size_t i;
 
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "internal_test_rstringlist");
-      fputs ("[", trace_fp);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "internal_test_rstringlist");
+      fputs ("[", trace_buffer.fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs (", ", trace_fp);
-        fputs ("\"", trace_fp);
-        fputs (r[i], trace_fp);
-        fputs ("\"", trace_fp);
+        if (i > 0) fputs (", ", trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+        fputs (r[i], trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
       }
-      fputs ("]", trace_fp);
-      guestfs___trace_send_line (g);
+      fputs ("]", trace_buffer.fp);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -132,15 +132,15 @@ GUESTFS_DLL_PUBLIC char **
 guestfs_internal_test_rstringlisterr (guestfs_h *g)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "internal_test_rstringlisterr", 28);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "internal_test_rstringlisterr");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_test_rstringlisterr");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__internal_test_rstringlisterr (g);
@@ -149,17 +149,17 @@ guestfs_internal_test_rstringlisterr (guestfs_h *g)
     if (trace_flag) {
       size_t i;
 
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "internal_test_rstringlisterr");
-      fputs ("[", trace_fp);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "internal_test_rstringlisterr");
+      fputs ("[", trace_buffer.fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs (", ", trace_fp);
-        fputs ("\"", trace_fp);
-        fputs (r[i], trace_fp);
-        fputs ("\"", trace_fp);
+        if (i > 0) fputs (", ", trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+        fputs (r[i], trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
       }
-      fputs ("]", trace_fp);
-      guestfs___trace_send_line (g);
+      fputs ("]", trace_buffer.fp);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -176,7 +176,7 @@ guestfs_internal_test_rhashtable (guestfs_h *g,
                                   const char *val)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -188,10 +188,10 @@ guestfs_internal_test_rhashtable (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "internal_test_rhashtable");
-    fprintf (trace_fp, " \"%s\"", val);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_test_rhashtable");
+    fprintf (trace_buffer.fp, " \"%s\"", val);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__internal_test_rhashtable (g, val);
@@ -200,17 +200,17 @@ guestfs_internal_test_rhashtable (guestfs_h *g,
     if (trace_flag) {
       size_t i;
 
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "internal_test_rhashtable");
-      fputs ("[", trace_fp);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "internal_test_rhashtable");
+      fputs ("[", trace_buffer.fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs (", ", trace_fp);
-        fputs ("\"", trace_fp);
-        fputs (r[i], trace_fp);
-        fputs ("\"", trace_fp);
+        if (i > 0) fputs (", ", trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+        fputs (r[i], trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
       }
-      fputs ("]", trace_fp);
-      guestfs___trace_send_line (g);
+      fputs ("]", trace_buffer.fp);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -227,7 +227,7 @@ guestfs_add_cdrom (guestfs_h *g,
                    const char *filename)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   if (g->state != CONFIG) {
@@ -244,20 +244,20 @@ guestfs_add_cdrom (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "add_cdrom");
-    fprintf (trace_fp, " \"%s\"", filename);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "add_cdrom");
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__add_cdrom (g, filename);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "add_cdrom");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "add_cdrom");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -273,25 +273,25 @@ GUESTFS_DLL_PUBLIC int
 guestfs_get_autosync (guestfs_h *g)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "get_autosync", 12);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "get_autosync");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_autosync");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__get_autosync (g);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "get_autosync");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_autosync");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -307,25 +307,25 @@ GUESTFS_DLL_PUBLIC int
 guestfs_is_ready (guestfs_h *g)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "is_ready", 8);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "is_ready");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "is_ready");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__is_ready (g);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "is_ready");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "is_ready");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -341,25 +341,25 @@ GUESTFS_DLL_PUBLIC int
 guestfs_is_busy (guestfs_h *g)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "is_busy", 7);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "is_busy");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "is_busy");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__is_busy (g);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "is_busy");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "is_busy");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -375,25 +375,25 @@ GUESTFS_DLL_PUBLIC int
 guestfs_get_pid (guestfs_h *g)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "get_pid", 7);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "get_pid");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_pid");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__get_pid (g);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "get_pid");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_pid");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -409,25 +409,25 @@ GUESTFS_DLL_PUBLIC int
 guestfs_get_selinux (guestfs_h *g)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "get_selinux", 11);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "get_selinux");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_selinux");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__get_selinux (g);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "get_selinux");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_selinux");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -444,7 +444,7 @@ guestfs_inspect_get_hostname (guestfs_h *g,
                               const char *root)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -456,20 +456,20 @@ guestfs_inspect_get_hostname (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "inspect_get_hostname");
-    fprintf (trace_fp, " \"%s\"", root);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "inspect_get_hostname");
+    fprintf (trace_buffer.fp, " \"%s\"", root);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__inspect_get_hostname (g, root);
 
   if (r != NULL) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "inspect_get_hostname");
-      fprintf (trace_fp, "\"%s\"", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "inspect_get_hostname");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -486,7 +486,7 @@ guestfs_inspect_get_format (guestfs_h *g,
                             const char *root)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -498,20 +498,20 @@ guestfs_inspect_get_format (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "inspect_get_format");
-    fprintf (trace_fp, " \"%s\"", root);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "inspect_get_format");
+    fprintf (trace_buffer.fp, " \"%s\"", root);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__inspect_get_format (g, root);
 
   if (r != NULL) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "inspect_get_format");
-      fprintf (trace_fp, "\"%s\"", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "inspect_get_format");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -528,7 +528,7 @@ guestfs_inspect_is_multipart (guestfs_h *g,
                               const char *root)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -540,20 +540,20 @@ guestfs_inspect_is_multipart (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "inspect_is_multipart");
-    fprintf (trace_fp, " \"%s\"", root);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "inspect_is_multipart");
+    fprintf (trace_buffer.fp, " \"%s\"", root);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__inspect_is_multipart (g, root);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "inspect_is_multipart");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "inspect_is_multipart");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -570,7 +570,7 @@ guestfs_canonical_device_name (guestfs_h *g,
                                const char *device)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -582,20 +582,20 @@ guestfs_canonical_device_name (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "canonical_device_name");
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "canonical_device_name");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__canonical_device_name (g, device);
 
   if (r != NULL) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "canonical_device_name");
-      fprintf (trace_fp, "\"%s\"", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "canonical_device_name");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -611,25 +611,25 @@ GUESTFS_DLL_PUBLIC int
 guestfs_shutdown (guestfs_h *g)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "shutdown", 8);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "shutdown");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "shutdown");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__shutdown (g);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "shutdown");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "shutdown");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -647,7 +647,7 @@ guestfs_readlinklist (guestfs_h *g,
                       char *const *names)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
@@ -666,17 +666,17 @@ guestfs_readlinklist (guestfs_h *g,
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "readlinklist");
-    fprintf (trace_fp, " \"%s\"", path);
-    fputc (' ', trace_fp);
-    fputc ('"', trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "readlinklist");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
     for (i = 0; names[i]; ++i) {
-      if (i > 0) fputc (' ', trace_fp);
-      fputs (names[i], trace_fp);
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (names[i], trace_buffer.fp);
     }
-    fputc ('"', trace_fp);
-    guestfs___trace_send_line (g);
+    fputc ('"', trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__readlinklist (g, path, names);
@@ -685,17 +685,17 @@ guestfs_readlinklist (guestfs_h *g,
     if (trace_flag) {
       size_t i;
 
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "readlinklist");
-      fputs ("[", trace_fp);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "readlinklist");
+      fputs ("[", trace_buffer.fp);
       for (i = 0; r[i]; ++i) {
-        if (i > 0) fputs (", ", trace_fp);
-        fputs ("\"", trace_fp);
-        fputs (r[i], trace_fp);
-        fputs ("\"", trace_fp);
+        if (i > 0) fputs (", ", trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+        fputs (r[i], trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
       }
-      fputs ("]", trace_fp);
-      guestfs___trace_send_line (g);
+      fputs ("]", trace_buffer.fp);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -712,26 +712,26 @@ guestfs_get_libvirt_requested_credential_challenge (guestfs_h *g,
                                                     int index)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *r;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "get_libvirt_requested_credential_challenge", 42);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "get_libvirt_requested_credential_challenge");
-    fprintf (trace_fp, " %d", index);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_libvirt_requested_credential_challenge");
+    fprintf (trace_buffer.fp, " %d", index);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__get_libvirt_requested_credential_challenge (g, index);
 
   if (r != NULL) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "get_libvirt_requested_credential_challenge");
-      fprintf (trace_fp, "\"%s\"", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_libvirt_requested_credential_challenge");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -748,7 +748,7 @@ guestfs_set_cachedir (guestfs_h *g,
                       const char *cachedir)
 {
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int r;
 
   if (g->state != CONFIG) {
@@ -759,21 +759,23 @@ guestfs_set_cachedir (guestfs_h *g,
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "set_cachedir", 12);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "set_cachedir");
-    if (cachedir) fprintf (trace_fp, " \"%s\"", cachedir);
-    else fprintf (trace_fp, " null");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_cachedir");
+    if (cachedir)
+      fprintf (trace_buffer.fp, " \"%s\"", cachedir);
+    else
+      fprintf (trace_buffer.fp, " null");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   r = guestfs__set_cachedir (g, cachedir);
 
   if (r != -1) {
     if (trace_flag) {
-      trace_fp = guestfs___trace_open (g);
-      fprintf (trace_fp, "%s = ", "set_cachedir");
-      fprintf (trace_fp, "%d", r);
-      guestfs___trace_send_line (g);
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_cachedir");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
     }
 
   } else {
@@ -796,7 +798,7 @@ guestfs_aug_init (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -809,11 +811,11 @@ guestfs_aug_init (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "aug_init");
-    fprintf (trace_fp, " \"%s\"", root);
-    fprintf (trace_fp, " %d", flags);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "aug_init");
+    fprintf (trace_buffer.fp, " \"%s\"", root);
+    fprintf (trace_buffer.fp, " %d", flags);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "aug_init") == -1) {
@@ -864,7 +866,7 @@ guestfs_aug_init (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_init", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_init",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_init",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -873,10 +875,10 @@ guestfs_aug_init (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "aug_init");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "aug_init");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -893,7 +895,7 @@ guestfs_aug_set (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -911,11 +913,11 @@ guestfs_aug_set (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "aug_set");
-    fprintf (trace_fp, " \"%s\"", augpath);
-    fprintf (trace_fp, " \"%s\"", val);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "aug_set");
+    fprintf (trace_buffer.fp, " \"%s\"", augpath);
+    fprintf (trace_buffer.fp, " \"%s\"", val);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "aug_set") == -1) {
@@ -966,7 +968,7 @@ guestfs_aug_set (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_set", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_set",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_set",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -975,10 +977,10 @@ guestfs_aug_set (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "aug_set");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "aug_set");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -996,7 +998,7 @@ guestfs_aug_insert (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1014,12 +1016,12 @@ guestfs_aug_insert (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "aug_insert");
-    fprintf (trace_fp, " \"%s\"", augpath);
-    fprintf (trace_fp, " \"%s\"", label);
-    fputs (before ? " true" : " false", trace_fp);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "aug_insert");
+    fprintf (trace_buffer.fp, " \"%s\"", augpath);
+    fprintf (trace_buffer.fp, " \"%s\"", label);
+    fputs (before ? " true" : " false", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "aug_insert") == -1) {
@@ -1071,7 +1073,7 @@ guestfs_aug_insert (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_insert", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_insert",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_insert",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1080,10 +1082,10 @@ guestfs_aug_insert (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "aug_insert");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "aug_insert");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1100,7 +1102,7 @@ guestfs_aug_rm (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1113,10 +1115,10 @@ guestfs_aug_rm (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "aug_rm");
-    fprintf (trace_fp, " \"%s\"", augpath);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "aug_rm");
+    fprintf (trace_buffer.fp, " \"%s\"", augpath);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "aug_rm") == -1) {
@@ -1167,7 +1169,7 @@ guestfs_aug_rm (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_rm", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_rm",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_rm",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1176,10 +1178,10 @@ guestfs_aug_rm (guestfs_h *g,
 
   ret_v = ret.nrnodes;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "aug_rm");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "aug_rm");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1193,16 +1195,16 @@ guestfs_aug_load (guestfs_h *g)
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "aug_load", 8);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "aug_load");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "aug_load");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "aug_load") == -1) {
@@ -1250,7 +1252,7 @@ guestfs_aug_load (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "aug_load", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_load",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_load",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1259,10 +1261,10 @@ guestfs_aug_load (guestfs_h *g)
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "aug_load");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "aug_load");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1279,7 +1281,7 @@ guestfs_tgz_out (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1297,11 +1299,11 @@ guestfs_tgz_out (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "tgz_out");
-    fprintf (trace_fp, " \"%s\"", directory);
-    fprintf (trace_fp, " \"%s\"", tarball);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "tgz_out");
+    fprintf (trace_buffer.fp, " \"%s\"", directory);
+    fprintf (trace_buffer.fp, " \"%s\"", tarball);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "tgz_out") == -1) {
@@ -1351,7 +1353,7 @@ guestfs_tgz_out (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "tgz_out", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "tgz_out",
+      guestfs___error_errno (g, errnum, "%s: %s", "tgz_out",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1367,10 +1369,10 @@ guestfs_tgz_out (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "tgz_out");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "tgz_out");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1388,7 +1390,7 @@ guestfs_mount_options (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1411,12 +1413,12 @@ guestfs_mount_options (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "mount_options");
-    fprintf (trace_fp, " \"%s\"", options);
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " \"%s\"", mountpoint);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "mount_options");
+    fprintf (trace_buffer.fp, " \"%s\"", options);
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", mountpoint);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "mount_options") == -1) {
@@ -1468,7 +1470,7 @@ guestfs_mount_options (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mount_options", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mount_options",
+      guestfs___error_errno (g, errnum, "%s: %s", "mount_options",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1477,10 +1479,10 @@ guestfs_mount_options (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "mount_options");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "mount_options");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1497,7 +1499,7 @@ guestfs_set_e2label (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1515,11 +1517,11 @@ guestfs_set_e2label (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "set_e2label");
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " \"%s\"", label);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_e2label");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", label);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "set_e2label") == -1) {
@@ -1570,7 +1572,7 @@ guestfs_set_e2label (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "set_e2label", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "set_e2label",
+      guestfs___error_errno (g, errnum, "%s: %s", "set_e2label",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1579,10 +1581,10 @@ guestfs_set_e2label (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "set_e2label");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "set_e2label");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1599,7 +1601,7 @@ guestfs_get_e2uuid (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1612,10 +1614,10 @@ guestfs_get_e2uuid (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "get_e2uuid");
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_e2uuid");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "get_e2uuid") == -1) {
@@ -1666,7 +1668,7 @@ guestfs_get_e2uuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "get_e2uuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "get_e2uuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "get_e2uuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1675,10 +1677,10 @@ guestfs_get_e2uuid (guestfs_h *g,
 
   ret_v = ret.uuid; /* caller will free */
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "get_e2uuid");
-    fprintf (trace_fp, "\"%s\"", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "get_e2uuid");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1695,7 +1697,7 @@ guestfs_hexdump (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1708,10 +1710,10 @@ guestfs_hexdump (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "hexdump");
-    fprintf (trace_fp, " \"%s\"", path);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "hexdump");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "hexdump") == -1) {
@@ -1762,7 +1764,7 @@ guestfs_hexdump (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "hexdump", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "hexdump",
+      guestfs___error_errno (g, errnum, "%s: %s", "hexdump",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1771,10 +1773,10 @@ guestfs_hexdump (guestfs_h *g,
 
   ret_v = ret.dump; /* caller will free */
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "hexdump");
-    fprintf (trace_fp, "\"%s\"", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "hexdump");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1791,7 +1793,7 @@ guestfs_lvresize (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1804,11 +1806,11 @@ guestfs_lvresize (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "lvresize");
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " %d", mbytes);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "lvresize");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " %d", mbytes);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "lvresize") == -1) {
@@ -1859,7 +1861,7 @@ guestfs_lvresize (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvresize", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvresize",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvresize",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1868,10 +1870,10 @@ guestfs_lvresize (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "lvresize");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "lvresize");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1888,7 +1890,7 @@ guestfs_sh_lines (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **ret_v;
   const uint64_t progress_hint = 0;
 
@@ -1901,10 +1903,10 @@ guestfs_sh_lines (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "sh_lines");
-    fprintf (trace_fp, " \"%s\"", command);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "sh_lines");
+    fprintf (trace_buffer.fp, " \"%s\"", command);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "sh_lines") == -1) {
@@ -1955,7 +1957,7 @@ guestfs_sh_lines (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "sh_lines", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "sh_lines",
+      guestfs___error_errno (g, errnum, "%s: %s", "sh_lines",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1971,17 +1973,17 @@ guestfs_sh_lines (guestfs_h *g,
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "sh_lines");
-    fputs ("[", trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "sh_lines");
+    fputs ("[", trace_buffer.fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs (", ", trace_fp);
-      fputs ("\"", trace_fp);
-      fputs (ret_v[i], trace_fp);
-      fputs ("\"", trace_fp);
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
     }
-    fputs ("]", trace_fp);
-    guestfs___trace_send_line (g);
+    fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -1997,7 +1999,7 @@ guestfs_scrub_device (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2010,10 +2012,10 @@ guestfs_scrub_device (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "scrub_device");
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "scrub_device");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "scrub_device") == -1) {
@@ -2063,7 +2065,7 @@ guestfs_scrub_device (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "scrub_device", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "scrub_device",
+      guestfs___error_errno (g, errnum, "%s: %s", "scrub_device",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2072,10 +2074,10 @@ guestfs_scrub_device (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "scrub_device");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "scrub_device");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2094,7 +2096,7 @@ guestfs_mknod_c (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2107,13 +2109,13 @@ guestfs_mknod_c (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "mknod_c");
-    fprintf (trace_fp, " %d", mode);
-    fprintf (trace_fp, " %d", devmajor);
-    fprintf (trace_fp, " %d", devminor);
-    fprintf (trace_fp, " \"%s\"", path);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "mknod_c");
+    fprintf (trace_buffer.fp, " %d", mode);
+    fprintf (trace_buffer.fp, " %d", devmajor);
+    fprintf (trace_buffer.fp, " %d", devminor);
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "mknod_c") == -1) {
@@ -2166,7 +2168,7 @@ guestfs_mknod_c (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mknod_c", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mknod_c",
+      guestfs___error_errno (g, errnum, "%s: %s", "mknod_c",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2175,10 +2177,10 @@ guestfs_mknod_c (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "mknod_c");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "mknod_c");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2195,17 +2197,17 @@ guestfs_umask (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "umask", 5);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "umask");
-    fprintf (trace_fp, " %d", mask);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "umask");
+    fprintf (trace_buffer.fp, " %d", mask);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "umask") == -1) {
@@ -2256,7 +2258,7 @@ guestfs_umask (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "umask", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "umask",
+      guestfs___error_errno (g, errnum, "%s: %s", "umask",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2265,10 +2267,10 @@ guestfs_umask (guestfs_h *g,
 
   ret_v = ret.oldmask;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "umask");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "umask");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2285,7 +2287,7 @@ guestfs_lgetxattrs (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   struct guestfs_xattr_list *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2298,10 +2300,10 @@ guestfs_lgetxattrs (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "lgetxattrs");
-    fprintf (trace_fp, " \"%s\"", path);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "lgetxattrs");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "lgetxattrs") == -1) {
@@ -2352,7 +2354,7 @@ guestfs_lgetxattrs (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lgetxattrs", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lgetxattrs",
+      guestfs___error_errno (g, errnum, "%s: %s", "lgetxattrs",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2362,10 +2364,10 @@ guestfs_lgetxattrs (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.xattrs, sizeof (ret.xattrs));
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "lgetxattrs");
-    fprintf (trace_fp, "<struct guestfs_xattr_list *>");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "lgetxattrs");
+    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list *>");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2381,7 +2383,7 @@ guestfs_rmmountpoint (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2394,10 +2396,10 @@ guestfs_rmmountpoint (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "rmmountpoint");
-    fprintf (trace_fp, " \"%s\"", exemptpath);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "rmmountpoint");
+    fprintf (trace_buffer.fp, " \"%s\"", exemptpath);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "rmmountpoint") == -1) {
@@ -2447,7 +2449,7 @@ guestfs_rmmountpoint (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "rmmountpoint", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "rmmountpoint",
+      guestfs___error_errno (g, errnum, "%s: %s", "rmmountpoint",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2456,10 +2458,10 @@ guestfs_rmmountpoint (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "rmmountpoint");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "rmmountpoint");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2477,7 +2479,7 @@ guestfs_grepi (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2495,11 +2497,11 @@ guestfs_grepi (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "grepi");
-    fprintf (trace_fp, " \"%s\"", regex);
-    fprintf (trace_fp, " \"%s\"", path);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "grepi");
+    fprintf (trace_buffer.fp, " \"%s\"", regex);
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "grepi") == -1) {
@@ -2551,7 +2553,7 @@ guestfs_grepi (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "grepi", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "grepi",
+      guestfs___error_errno (g, errnum, "%s: %s", "grepi",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2567,17 +2569,17 @@ guestfs_grepi (guestfs_h *g,
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "grepi");
-    fputs ("[", trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "grepi");
+    fputs ("[", trace_buffer.fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs (", ", trace_fp);
-      fputs ("\"", trace_fp);
-      fputs (ret_v[i], trace_fp);
-      fputs ("\"", trace_fp);
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
     }
-    fputs ("]", trace_fp);
-    guestfs___trace_send_line (g);
+    fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2593,7 +2595,7 @@ guestfs_swapon_file (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2606,10 +2608,10 @@ guestfs_swapon_file (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "swapon_file");
-    fprintf (trace_fp, " \"%s\"", file);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "swapon_file");
+    fprintf (trace_buffer.fp, " \"%s\"", file);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "swapon_file") == -1) {
@@ -2659,7 +2661,7 @@ guestfs_swapon_file (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "swapon_file", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "swapon_file",
+      guestfs___error_errno (g, errnum, "%s: %s", "swapon_file",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2668,10 +2670,10 @@ guestfs_swapon_file (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "swapon_file");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "swapon_file");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2689,7 +2691,7 @@ guestfs_mke2journal_U (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2707,12 +2709,12 @@ guestfs_mke2journal_U (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "mke2journal_U");
-    fprintf (trace_fp, " %d", blocksize);
-    fprintf (trace_fp, " \"%s\"", uuid);
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "mke2journal_U");
+    fprintf (trace_buffer.fp, " %d", blocksize);
+    fprintf (trace_buffer.fp, " \"%s\"", uuid);
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "mke2journal_U") == -1) {
@@ -2764,7 +2766,7 @@ guestfs_mke2journal_U (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mke2journal_U", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mke2journal_U",
+      guestfs___error_errno (g, errnum, "%s: %s", "mke2journal_U",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2773,10 +2775,10 @@ guestfs_mke2journal_U (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "mke2journal_U");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "mke2journal_U");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2795,7 +2797,7 @@ guestfs_mke2fs_J (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2818,13 +2820,13 @@ guestfs_mke2fs_J (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "mke2fs_J");
-    fprintf (trace_fp, " \"%s\"", fstype);
-    fprintf (trace_fp, " %d", blocksize);
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " \"%s\"", journal);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "mke2fs_J");
+    fprintf (trace_buffer.fp, " \"%s\"", fstype);
+    fprintf (trace_buffer.fp, " %d", blocksize);
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", journal);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "mke2fs_J") == -1) {
@@ -2877,7 +2879,7 @@ guestfs_mke2fs_J (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mke2fs_J", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mke2fs_J",
+      guestfs___error_errno (g, errnum, "%s: %s", "mke2fs_J",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2886,10 +2888,10 @@ guestfs_mke2fs_J (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "mke2fs_J");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "mke2fs_J");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -2906,7 +2908,7 @@ guestfs_case_sensitive_path (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -2919,10 +2921,10 @@ guestfs_case_sensitive_path (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "case_sensitive_path");
-    fprintf (trace_fp, " \"%s\"", path);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "case_sensitive_path");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "case_sensitive_path") == -1) {
@@ -2973,7 +2975,7 @@ guestfs_case_sensitive_path (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "case_sensitive_path", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "case_sensitive_path",
+      guestfs___error_errno (g, errnum, "%s: %s", "case_sensitive_path",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2982,10 +2984,10 @@ guestfs_case_sensitive_path (guestfs_h *g,
 
   ret_v = ret.rpath; /* caller will free */
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "case_sensitive_path");
-    fprintf (trace_fp, "\"%s\"", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "case_sensitive_path");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3003,7 +3005,7 @@ guestfs_internal_lstatlist (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   struct guestfs_stat_list *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3023,17 +3025,17 @@ guestfs_internal_lstatlist (guestfs_h *g,
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "internal_lstatlist");
-    fprintf (trace_fp, " \"%s\"", path);
-    fputc (' ', trace_fp);
-    fputc ('"', trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_lstatlist");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
     for (i = 0; names[i]; ++i) {
-      if (i > 0) fputc (' ', trace_fp);
-      fputs (names[i], trace_fp);
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (names[i], trace_buffer.fp);
     }
-    fputc ('"', trace_fp);
-    guestfs___trace_send_line (g);
+    fputc ('"', trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "internal_lstatlist") == -1) {
@@ -3086,7 +3088,7 @@ guestfs_internal_lstatlist (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "internal_lstatlist", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "internal_lstatlist",
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_lstatlist",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3096,10 +3098,10 @@ guestfs_internal_lstatlist (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.statbufs, sizeof (ret.statbufs));
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "internal_lstatlist");
-    fprintf (trace_fp, "<struct guestfs_stat_list *>");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "internal_lstatlist");
+    fprintf (trace_buffer.fp, "<struct guestfs_stat_list *>");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3117,7 +3119,7 @@ guestfs_internal_lxattrlist (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   struct guestfs_xattr_list *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3137,17 +3139,17 @@ guestfs_internal_lxattrlist (guestfs_h *g,
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "internal_lxattrlist");
-    fprintf (trace_fp, " \"%s\"", path);
-    fputc (' ', trace_fp);
-    fputc ('"', trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_lxattrlist");
+    fprintf (trace_buffer.fp, " \"%s\"", path);
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
     for (i = 0; names[i]; ++i) {
-      if (i > 0) fputc (' ', trace_fp);
-      fputs (names[i], trace_fp);
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (names[i], trace_buffer.fp);
     }
-    fputc ('"', trace_fp);
-    guestfs___trace_send_line (g);
+    fputc ('"', trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "internal_lxattrlist") == -1) {
@@ -3200,7 +3202,7 @@ guestfs_internal_lxattrlist (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "internal_lxattrlist", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "internal_lxattrlist",
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_lxattrlist",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3210,10 +3212,10 @@ guestfs_internal_lxattrlist (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.xattrs, sizeof (ret.xattrs));
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "internal_lxattrlist");
-    fprintf (trace_fp, "<struct guestfs_xattr_list *>");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "internal_lxattrlist");
+    fprintf (trace_buffer.fp, "<struct guestfs_xattr_list *>");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3230,7 +3232,7 @@ guestfs_part_init (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3248,11 +3250,11 @@ guestfs_part_init (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "part_init");
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " \"%s\"", parttype);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "part_init");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", parttype);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "part_init") == -1) {
@@ -3303,7 +3305,7 @@ guestfs_part_init (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_init", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_init",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_init",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3312,10 +3314,10 @@ guestfs_part_init (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "part_init");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "part_init");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3334,7 +3336,7 @@ guestfs_part_add (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3352,13 +3354,13 @@ guestfs_part_add (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "part_add");
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " \"%s\"", prlogex);
-    fprintf (trace_fp, " %" PRIi64, startsect);
-    fprintf (trace_fp, " %" PRIi64, endsect);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "part_add");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", prlogex);
+    fprintf (trace_buffer.fp, " %" PRIi64, startsect);
+    fprintf (trace_buffer.fp, " %" PRIi64, endsect);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "part_add") == -1) {
@@ -3411,7 +3413,7 @@ guestfs_part_add (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_add", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_add",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_add",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3420,10 +3422,10 @@ guestfs_part_add (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "part_add");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "part_add");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3440,7 +3442,7 @@ guestfs_lvrename (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3458,11 +3460,11 @@ guestfs_lvrename (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "lvrename");
-    fprintf (trace_fp, " \"%s\"", logvol);
-    fprintf (trace_fp, " \"%s\"", newlogvol);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "lvrename");
+    fprintf (trace_buffer.fp, " \"%s\"", logvol);
+    fprintf (trace_buffer.fp, " \"%s\"", newlogvol);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "lvrename") == -1) {
@@ -3513,7 +3515,7 @@ guestfs_lvrename (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvrename", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvrename",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvrename",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3522,10 +3524,10 @@ guestfs_lvrename (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "lvrename");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "lvrename");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3542,7 +3544,7 @@ guestfs_pvuuid (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3555,10 +3557,10 @@ guestfs_pvuuid (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "pvuuid");
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "pvuuid");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "pvuuid") == -1) {
@@ -3609,7 +3611,7 @@ guestfs_pvuuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "pvuuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "pvuuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "pvuuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3618,10 +3620,10 @@ guestfs_pvuuid (guestfs_h *g,
 
   ret_v = ret.uuid; /* caller will free */
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "pvuuid");
-    fprintf (trace_fp, "\"%s\"", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "pvuuid");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3638,7 +3640,7 @@ guestfs_lvuuid (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3651,10 +3653,10 @@ guestfs_lvuuid (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "lvuuid");
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "lvuuid");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "lvuuid") == -1) {
@@ -3705,7 +3707,7 @@ guestfs_lvuuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvuuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvuuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvuuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3714,10 +3716,10 @@ guestfs_lvuuid (guestfs_h *g,
 
   ret_v = ret.uuid; /* caller will free */
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "lvuuid");
-    fprintf (trace_fp, "\"%s\"", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "lvuuid");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3735,7 +3737,7 @@ guestfs_copy_size (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3753,12 +3755,12 @@ guestfs_copy_size (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "copy_size");
-    fprintf (trace_fp, " \"%s\"", src);
-    fprintf (trace_fp, " \"%s\"", dest);
-    fprintf (trace_fp, " %" PRIi64, size);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "copy_size");
+    fprintf (trace_buffer.fp, " \"%s\"", src);
+    fprintf (trace_buffer.fp, " \"%s\"", dest);
+    fprintf (trace_buffer.fp, " %" PRIi64, size);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "copy_size") == -1) {
@@ -3810,7 +3812,7 @@ guestfs_copy_size (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "copy_size", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "copy_size",
+      guestfs___error_errno (g, errnum, "%s: %s", "copy_size",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3819,10 +3821,10 @@ guestfs_copy_size (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "copy_size");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "copy_size");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3840,7 +3842,7 @@ guestfs_part_get_mbr_id (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -3853,11 +3855,11 @@ guestfs_part_get_mbr_id (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "part_get_mbr_id");
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " %d", partnum);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "part_get_mbr_id");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " %d", partnum);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "part_get_mbr_id") == -1) {
@@ -3909,7 +3911,7 @@ guestfs_part_get_mbr_id (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_get_mbr_id", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_get_mbr_id",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_get_mbr_id",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3918,10 +3920,10 @@ guestfs_part_get_mbr_id (guestfs_h *g,
 
   ret_v = ret.idbyte;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "part_get_mbr_id");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "part_get_mbr_id");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -3939,7 +3941,7 @@ guestfs_debug_upload (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   uint64_t progress_hint = 0;
   struct stat progress_stat;
@@ -3958,12 +3960,12 @@ guestfs_debug_upload (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "debug_upload");
-    fprintf (trace_fp, " \"%s\"", filename);
-    fprintf (trace_fp, " \"%s\"", tmpname);
-    fprintf (trace_fp, " %d", mode);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "debug_upload");
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    fprintf (trace_buffer.fp, " \"%s\"", tmpname);
+    fprintf (trace_buffer.fp, " %d", mode);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (stat (filename, &progress_stat) == 0 &&
@@ -4031,7 +4033,7 @@ guestfs_debug_upload (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "debug_upload", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "debug_upload",
+      guestfs___error_errno (g, errnum, "%s: %s", "debug_upload",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4040,10 +4042,10 @@ guestfs_debug_upload (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "debug_upload");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "debug_upload");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4061,7 +4063,7 @@ guestfs_luks_format (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4079,12 +4081,12 @@ guestfs_luks_format (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "luks_format");
-    fprintf (trace_fp, " \"%s\"", device);
-    fprintf (trace_fp, " \"***\"");
-    fprintf (trace_fp, " %d", keyslot);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "luks_format");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"***\"");
+    fprintf (trace_buffer.fp, " %d", keyslot);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "luks_format") == -1) {
@@ -4136,7 +4138,7 @@ guestfs_luks_format (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "luks_format", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "luks_format",
+      guestfs___error_errno (g, errnum, "%s: %s", "luks_format",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4145,10 +4147,10 @@ guestfs_luks_format (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "luks_format");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "luks_format");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4165,7 +4167,7 @@ guestfs_findfs_uuid (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4178,10 +4180,10 @@ guestfs_findfs_uuid (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "findfs_uuid");
-    fprintf (trace_fp, " \"%s\"", uuid);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "findfs_uuid");
+    fprintf (trace_buffer.fp, " \"%s\"", uuid);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "findfs_uuid") == -1) {
@@ -4232,7 +4234,7 @@ guestfs_findfs_uuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "findfs_uuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "findfs_uuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "findfs_uuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4241,10 +4243,10 @@ guestfs_findfs_uuid (guestfs_h *g,
 
   ret_v = ret.device; /* caller will free */
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "findfs_uuid");
-    fprintf (trace_fp, "\"%s\"", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "findfs_uuid");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4263,7 +4265,7 @@ guestfs_download_offset (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4281,13 +4283,13 @@ guestfs_download_offset (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "download_offset");
-    fprintf (trace_fp, " \"%s\"", remotefilename);
-    fprintf (trace_fp, " \"%s\"", filename);
-    fprintf (trace_fp, " %" PRIi64, offset);
-    fprintf (trace_fp, " %" PRIi64, size);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "download_offset");
+    fprintf (trace_buffer.fp, " \"%s\"", remotefilename);
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    fprintf (trace_buffer.fp, " %" PRIi64, offset);
+    fprintf (trace_buffer.fp, " %" PRIi64, size);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "download_offset") == -1) {
@@ -4339,7 +4341,7 @@ guestfs_download_offset (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "download_offset", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "download_offset",
+      guestfs___error_errno (g, errnum, "%s: %s", "download_offset",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4355,10 +4357,10 @@ guestfs_download_offset (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "download_offset");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "download_offset");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4375,7 +4377,7 @@ guestfs_lvm_canonical_lv_name (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char *ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4388,10 +4390,10 @@ guestfs_lvm_canonical_lv_name (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "lvm_canonical_lv_name");
-    fprintf (trace_fp, " \"%s\"", lvname);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "lvm_canonical_lv_name");
+    fprintf (trace_buffer.fp, " \"%s\"", lvname);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "lvm_canonical_lv_name") == -1) {
@@ -4442,7 +4444,7 @@ guestfs_lvm_canonical_lv_name (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvm_canonical_lv_name", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvm_canonical_lv_name",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvm_canonical_lv_name",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4451,10 +4453,10 @@ guestfs_lvm_canonical_lv_name (guestfs_h *g,
 
   ret_v = ret.lv; /* caller will free */
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "lvm_canonical_lv_name");
-    fprintf (trace_fp, "\"%s\"", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "lvm_canonical_lv_name");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4469,16 +4471,16 @@ guestfs_list_dm_devices (guestfs_h *g)
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **ret_v;
   const uint64_t progress_hint = 0;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "list_dm_devices", 15);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "list_dm_devices");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "list_dm_devices");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "list_dm_devices") == -1) {
@@ -4527,7 +4529,7 @@ guestfs_list_dm_devices (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "list_dm_devices", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "list_dm_devices",
+      guestfs___error_errno (g, errnum, "%s: %s", "list_dm_devices",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4543,17 +4545,17 @@ guestfs_list_dm_devices (guestfs_h *g)
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "list_dm_devices");
-    fputs ("[", trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "list_dm_devices");
+    fputs ("[", trace_buffer.fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs (", ", trace_fp);
-      fputs ("\"", trace_fp);
-      fputs (ret_v[i], trace_fp);
-      fputs ("\"", trace_fp);
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
     }
-    fputs ("]", trace_fp);
-    guestfs___trace_send_line (g);
+    fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4570,7 +4572,7 @@ guestfs_part_to_partnum (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4583,10 +4585,10 @@ guestfs_part_to_partnum (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "part_to_partnum");
-    fprintf (trace_fp, " \"%s\"", partition);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "part_to_partnum");
+    fprintf (trace_buffer.fp, " \"%s\"", partition);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "part_to_partnum") == -1) {
@@ -4637,7 +4639,7 @@ guestfs_part_to_partnum (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_to_partnum", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_to_partnum",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_to_partnum",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4646,10 +4648,10 @@ guestfs_part_to_partnum (guestfs_h *g,
 
   ret_v = ret.partnum;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "part_to_partnum");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "part_to_partnum");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4666,7 +4668,7 @@ guestfs_blkid (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4679,10 +4681,10 @@ guestfs_blkid (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "blkid");
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "blkid");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "blkid") == -1) {
@@ -4733,7 +4735,7 @@ guestfs_blkid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "blkid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "blkid",
+      guestfs___error_errno (g, errnum, "%s: %s", "blkid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4749,17 +4751,17 @@ guestfs_blkid (guestfs_h *g,
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "blkid");
-    fputs ("[", trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "blkid");
+    fputs ("[", trace_buffer.fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs (", ", trace_fp);
-      fputs ("\"", trace_fp);
-      fputs (ret_v[i], trace_fp);
-      fputs ("\"", trace_fp);
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
     }
-    fputs ("]", trace_fp);
-    guestfs___trace_send_line (g);
+    fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4775,7 +4777,7 @@ guestfs_wipefs (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4788,10 +4790,10 @@ guestfs_wipefs (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "wipefs");
-    fprintf (trace_fp, " \"%s\"", device);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "wipefs");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "wipefs") == -1) {
@@ -4841,7 +4843,7 @@ guestfs_wipefs (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "wipefs", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "wipefs",
+      guestfs___error_errno (g, errnum, "%s: %s", "wipefs",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4850,10 +4852,10 @@ guestfs_wipefs (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "wipefs");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "wipefs");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4876,7 +4878,7 @@ guestfs_ntfsfix_argv (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -4895,13 +4897,13 @@ guestfs_ntfsfix_argv (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "ntfsfix");
-    fprintf (trace_fp, " \"%s\"", device);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "ntfsfix");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
     if (optargs->bitmask & GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK) {
-      fprintf (trace_fp, " \"%s:%s\"", "clearbadsectors", optargs->clearbadsectors ? "true" : "false");
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "clearbadsectors", optargs->clearbadsectors ? "true" : "false");
     }
-    guestfs___trace_send_line (g);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "ntfsfix") == -1) {
@@ -4956,7 +4958,7 @@ guestfs_ntfsfix_argv (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "ntfsfix", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "ntfsfix",
+      guestfs___error_errno (g, errnum, "%s: %s", "ntfsfix",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4965,10 +4967,10 @@ guestfs_ntfsfix_argv (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "ntfsfix");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "ntfsfix");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -4992,7 +4994,7 @@ guestfs_set_e2attrs_argv (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -5016,14 +5018,14 @@ guestfs_set_e2attrs_argv (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "set_e2attrs");
-    fprintf (trace_fp, " \"%s\"", file);
-    fprintf (trace_fp, " \"%s\"", attrs);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_e2attrs");
+    fprintf (trace_buffer.fp, " \"%s\"", file);
+    fprintf (trace_buffer.fp, " \"%s\"", attrs);
     if (optargs->bitmask & GUESTFS_SET_E2ATTRS_CLEAR_BITMASK) {
-      fprintf (trace_fp, " \"%s:%s\"", "clear", optargs->clear ? "true" : "false");
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "clear", optargs->clear ? "true" : "false");
     }
-    guestfs___trace_send_line (g);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "set_e2attrs") == -1) {
@@ -5079,7 +5081,7 @@ guestfs_set_e2attrs_argv (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "set_e2attrs", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "set_e2attrs",
+      guestfs___error_errno (g, errnum, "%s: %s", "set_e2attrs",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5088,10 +5090,10 @@ guestfs_set_e2attrs_argv (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "set_e2attrs");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "set_e2attrs");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5108,7 +5110,7 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -5126,11 +5128,11 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "btrfs_subvolume_snapshot");
-    fprintf (trace_fp, " \"%s\"", source);
-    fprintf (trace_fp, " \"%s\"", dest);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_subvolume_snapshot");
+    fprintf (trace_buffer.fp, " \"%s\"", source);
+    fprintf (trace_buffer.fp, " \"%s\"", dest);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "btrfs_subvolume_snapshot") == -1) {
@@ -5181,7 +5183,7 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "btrfs_subvolume_snapshot", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "btrfs_subvolume_snapshot",
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_subvolume_snapshot",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5190,10 +5192,10 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "btrfs_subvolume_snapshot");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_subvolume_snapshot");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5209,7 +5211,7 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -5222,10 +5224,10 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "btrfs_subvolume_create");
-    fprintf (trace_fp, " \"%s\"", dest);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_subvolume_create");
+    fprintf (trace_buffer.fp, " \"%s\"", dest);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "btrfs_subvolume_create") == -1) {
@@ -5275,7 +5277,7 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "btrfs_subvolume_create", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "btrfs_subvolume_create",
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_subvolume_create",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5284,10 +5286,10 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "btrfs_subvolume_create");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_subvolume_create");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5304,7 +5306,7 @@ guestfs_btrfs_subvolume_set_default (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -5317,11 +5319,11 @@ guestfs_btrfs_subvolume_set_default (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "btrfs_subvolume_set_default");
-    fprintf (trace_fp, " %" PRIi64, id);
-    fprintf (trace_fp, " \"%s\"", fs);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "btrfs_subvolume_set_default");
+    fprintf (trace_buffer.fp, " %" PRIi64, id);
+    fprintf (trace_buffer.fp, " \"%s\"", fs);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "btrfs_subvolume_set_default") == -1) {
@@ -5372,7 +5374,7 @@ guestfs_btrfs_subvolume_set_default (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "btrfs_subvolume_set_default", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "btrfs_subvolume_set_default",
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_subvolume_set_default",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5381,10 +5383,10 @@ guestfs_btrfs_subvolume_set_default (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "btrfs_subvolume_set_default");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "btrfs_subvolume_set_default");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5407,7 +5409,7 @@ guestfs_fstrim_argv (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -5426,19 +5428,19 @@ guestfs_fstrim_argv (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "fstrim");
-    fprintf (trace_fp, " \"%s\"", mountpoint);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "fstrim");
+    fprintf (trace_buffer.fp, " \"%s\"", mountpoint);
     if (optargs->bitmask & GUESTFS_FSTRIM_OFFSET_BITMASK) {
-      fprintf (trace_fp, " \"%s:%" PRIi64 "\"", "offset", optargs->offset);
+      fprintf (trace_buffer.fp, " \"%s:%" PRIi64 "\"", "offset", optargs->offset);
     }
     if (optargs->bitmask & GUESTFS_FSTRIM_LENGTH_BITMASK) {
-      fprintf (trace_fp, " \"%s:%" PRIi64 "\"", "length", optargs->length);
+      fprintf (trace_buffer.fp, " \"%s:%" PRIi64 "\"", "length", optargs->length);
     }
     if (optargs->bitmask & GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK) {
-      fprintf (trace_fp, " \"%s:%" PRIi64 "\"", "minimumfreeextent", optargs->minimumfreeextent);
+      fprintf (trace_buffer.fp, " \"%s:%" PRIi64 "\"", "minimumfreeextent", optargs->minimumfreeextent);
     }
-    guestfs___trace_send_line (g);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "fstrim") == -1) {
@@ -5503,7 +5505,7 @@ guestfs_fstrim_argv (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "fstrim", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "fstrim",
+      guestfs___error_errno (g, errnum, "%s: %s", "fstrim",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5512,10 +5514,10 @@ guestfs_fstrim_argv (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "fstrim");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "fstrim");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5532,17 +5534,17 @@ guestfs_hivex_node_children (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   struct guestfs_hivex_node_list *ret_v;
   const uint64_t progress_hint = 0;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "hivex_node_children", 19);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "hivex_node_children");
-    fprintf (trace_fp, " %" PRIi64, nodeh);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "hivex_node_children");
+    fprintf (trace_buffer.fp, " %" PRIi64, nodeh);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "hivex_node_children") == -1) {
@@ -5593,7 +5595,7 @@ guestfs_hivex_node_children (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "hivex_node_children", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "hivex_node_children",
+      guestfs___error_errno (g, errnum, "%s: %s", "hivex_node_children",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5603,10 +5605,10 @@ guestfs_hivex_node_children (guestfs_h *g,
   /* caller will free this */
   ret_v = safe_memdup (g, &ret.nodehs, sizeof (ret.nodehs));
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "hivex_node_children");
-    fprintf (trace_fp, "<struct guestfs_hivex_node_list *>");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "hivex_node_children");
+    fprintf (trace_buffer.fp, "<struct guestfs_hivex_node_list *>");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5622,7 +5624,7 @@ guestfs_internal_hot_remove_drive (guestfs_h *g,
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   int ret_v;
   const uint64_t progress_hint = 0;
 
@@ -5635,10 +5637,10 @@ guestfs_internal_hot_remove_drive (guestfs_h *g,
   }
 
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "internal_hot_remove_drive");
-    fprintf (trace_fp, " \"%s\"", label);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_hot_remove_drive");
+    fprintf (trace_buffer.fp, " \"%s\"", label);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "internal_hot_remove_drive") == -1) {
@@ -5688,7 +5690,7 @@ guestfs_internal_hot_remove_drive (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "internal_hot_remove_drive", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "internal_hot_remove_drive",
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_hot_remove_drive",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5697,10 +5699,10 @@ guestfs_internal_hot_remove_drive (guestfs_h *g,
 
   ret_v = 0;
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "internal_hot_remove_drive");
-    fprintf (trace_fp, "%d", ret_v);
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "internal_hot_remove_drive");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5715,16 +5717,16 @@ guestfs_list_ldm_volumes (guestfs_h *g)
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **ret_v;
   const uint64_t progress_hint = 0;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "list_ldm_volumes", 16);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "list_ldm_volumes");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "list_ldm_volumes");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "list_ldm_volumes") == -1) {
@@ -5773,7 +5775,7 @@ guestfs_list_ldm_volumes (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "list_ldm_volumes", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "list_ldm_volumes",
+      guestfs___error_errno (g, errnum, "%s: %s", "list_ldm_volumes",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5789,17 +5791,17 @@ guestfs_list_ldm_volumes (guestfs_h *g)
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "list_ldm_volumes");
-    fputs ("[", trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "list_ldm_volumes");
+    fputs ("[", trace_buffer.fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs (", ", trace_fp);
-      fputs ("\"", trace_fp);
-      fputs (ret_v[i], trace_fp);
-      fputs ("\"", trace_fp);
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
     }
-    fputs ("]", trace_fp);
-    guestfs___trace_send_line (g);
+    fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;
@@ -5814,16 +5816,16 @@ guestfs_ldmtool_scan (guestfs_h *g)
   int serial;
   int r;
   int trace_flag = g->trace;
-  FILE *trace_fp;
+  struct trace_buffer trace_buffer;
   char **ret_v;
   const uint64_t progress_hint = 0;
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "ldmtool_scan", 12);
   if (trace_flag) {
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s", "ldmtool_scan");
-    guestfs___trace_send_line (g);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "ldmtool_scan");
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   if (guestfs___check_appliance_up (g, "ldmtool_scan") == -1) {
@@ -5872,7 +5874,7 @@ guestfs_ldmtool_scan (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "ldmtool_scan", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "ldmtool_scan",
+      guestfs___error_errno (g, errnum, "%s: %s", "ldmtool_scan",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5888,17 +5890,17 @@ guestfs_ldmtool_scan (guestfs_h *g)
   if (trace_flag) {
     size_t i;
 
-    trace_fp = guestfs___trace_open (g);
-    fprintf (trace_fp, "%s = ", "ldmtool_scan");
-    fputs ("[", trace_fp);
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "ldmtool_scan");
+    fputs ("[", trace_buffer.fp);
     for (i = 0; ret_v[i]; ++i) {
-      if (i > 0) fputs (", ", trace_fp);
-      fputs ("\"", trace_fp);
-      fputs (ret_v[i], trace_fp);
-      fputs ("\"", trace_fp);
+      if (i > 0) fputs (", ", trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
+      fputs (ret_v[i], trace_buffer.fp);
+      fputs ("\"", trace_buffer.fp);
     }
-    fputs ("]", trace_fp);
-    guestfs___trace_send_line (g);
+    fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
   }
 
   return ret_v;

@@ -229,8 +229,9 @@ virt_inspector_OBJECTS = $(am_virt_inspector_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_LIBXML2_TRUE@virt_inspector_DEPENDENCIES =  \
 @HAVE_LIBXML2_TRUE@	$(am__DEPENDENCIES_1) \
+@HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_LIBXML2_TRUE@	$(am__DEPENDENCIES_1) \
+@HAVE_LIBXML2_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_LIBXML2_TRUE@	../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -1404,8 +1405,10 @@ dist_doc_DATA = \
 
 @HAVE_LIBXML2_TRUE@virt_inspector_LDADD = \
 @HAVE_LIBXML2_TRUE@	$(LIBCONFIG_LIBS) \
+@HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libguestfs.la \
 @HAVE_LIBXML2_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_LIBXML2_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_LIBXML2_TRUE@	../gnulib/lib/libgnu.la
 
 

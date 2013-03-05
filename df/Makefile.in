@@ -87,6 +87,7 @@ host_triplet = @host@
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/subdir-rules.mk
 bin_PROGRAMS = virt-df$(EXEEXT)
+@ENABLE_APPLIANCE_TRUE@am__append_1 = test-virt-df.sh
 subdir = df
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -221,8 +222,9 @@ am_virt_df_OBJECTS = $(am__objects_1) virt_df-domains.$(OBJEXT) \
 virt_df_OBJECTS = $(am_virt_df_OBJECTS)
 am__DEPENDENCIES_1 =
 virt_df_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libguestfs.la ../gnulib/lib/libgnu.la \
-	$(am__DEPENDENCIES_1)
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -1395,9 +1397,11 @@ virt_df_CFLAGS = \
 
 virt_df_LDADD = \
 	$(LIBCONFIG_LIBS) \
+	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
-	../gnulib/lib/libgnu.la \
+	$(LIBXML2_LIBS) \
 	$(LIBVIRT_LIBS) \
+	../gnulib/lib/libgnu.la \
 	-lm
 
 
@@ -1407,7 +1411,7 @@ noinst_DATA = $(top_builddir)/html/virt-df.1.html
 
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@ENABLE_APPLIANCE_TRUE@TESTS = test-virt-df.sh
+TESTS = $(am__append_1)
 all: all-am
 
 .SUFFIXES:

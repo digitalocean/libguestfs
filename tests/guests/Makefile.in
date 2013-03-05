@@ -83,7 +83,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/subdir-rules.mk
+	$(srcdir)/guests.xml.in $(top_srcdir)/subdir-rules.mk
 subdir = tests/guests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -205,7 +205,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = guests.xml
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1289,12 +1289,25 @@ EXTRA_DIST = \
 	guest-aux/windows-software.reg \
 	guest-aux/windows-system \
 	guest-aux/windows-system.reg \
-	guest-aux/minimal-hive
+	guest-aux/minimal-hive \
+	guests.xml.in
 
 
 # This is 'check_DATA' because we don't need it until 'make check'
 # time and we need the tools we have built in order to make it.
-check_DATA = debian.img fedora.img fedora-md1.img fedora-md2.img ubuntu.img windows.img
+check_DATA = \
+	blank-disk.img \
+	blank-part.img \
+	blank-fs.img \
+	blank-bootroot.img \
+	blank-bootrootlv.img \
+	debian.img \
+	fedora.img \
+	fedora-md1.img \
+	fedora-md2.img \
+	ubuntu.img \
+	windows.img
+
 CLEANFILES = $(check_DATA) stamp-fedora-md.img *.tmp.*
 all: all-am
 
@@ -1330,6 +1343,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+guests.xml: $(top_builddir)/config.status $(srcdir)/guests.xml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1508,6 +1523,16 @@ $(top_builddir)/generator/stamp-generator: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
+# Make several different blank images.  These are not guests, but we
+# include them in the libvirt fake XML to make sure that virt-df and
+# virt-alignment-scan don't break when they encounter them.
+blank-%.img:
+	rm -f $@ test1.img
+	$(top_builddir)/run \
+	  ../../fish/guestfish \
+	    -N "$$(echo $@ | sed -e 's/blank-//' -e 's/.img//')" exit
+	mv test1.img $@
+
 # Make a (dummy) Fedora image.
 fedora.img: guest-aux/make-fedora-img.pl \
 		guest-aux/fedora-name.db \
@@ -1566,6 +1591,9 @@ guest-aux/windows-system: guest-aux/windows-system.reg
 # Don't construct the guests in parallel.  In automake 1.13, check_DATA
 # was changed so it can now run in parallel, but this causes everything
 # to fall over on machines with limited memory.
+#
+# ALSO: the guestfish rules above for making the blank-*.img files are
+# NOT safe to run in parallel.
 .NOTPARALLEL:
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
