@@ -24,11 +24,11 @@ index 19f01dc..169ea15 100644
  fs_DATA =
  superminfs_DATA = \
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 2c3af05..a5cb8b1 100644
+index 401b076..43ad424 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -196,7 +196,7 @@ noinst_LTLIBRARIES = liberrnostring.la libprotocol.la
- libguestfs_la_LIBADD += liberrnostring.la libprotocol.la
+@@ -116,7 +116,7 @@ libguestfs_la_SOURCES = \
+ 	libguestfs.syms
  
  libguestfs_la_CPPFLAGS = \
 -	-DGUESTFS_DEFAULT_PATH='"$(libdir)/guestfs"' \

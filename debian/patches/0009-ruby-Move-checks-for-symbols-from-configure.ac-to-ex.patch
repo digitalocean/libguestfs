@@ -11,10 +11,10 @@ Subject: ruby: Move checks for symbols from configure.ac to extconf.rb; add
  4 files changed, 10 insertions(+), 12 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index ee20911..d60127b 100644
+index 9d73c67..6e9a1c4 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1143,14 +1143,6 @@ AS_IF([test "x$enable_ruby" != "xno"],[
+@@ -1160,14 +1160,6 @@ AS_IF([test "x$enable_ruby" != "xno"],[
              AC_MSG_RESULT([-l$libruby])
              AC_CHECK_LIB([$libruby],[ruby_init],
                           [have_libruby=1],[have_libruby=])
@@ -53,7 +53,7 @@ index db16e2a..ba02fd1 100644
  #endif
  
 diff --git a/ruby/ext/guestfs/_guestfs.c b/ruby/ext/guestfs/_guestfs.c
-index c0d6ced..d4282f5 100644
+index 29e9feb..ad7e74e 100644
 --- a/ruby/ext/guestfs/_guestfs.c
 +++ b/ruby/ext/guestfs/_guestfs.c
 @@ -20,8 +20,6 @@
@@ -65,7 +65,7 @@ index c0d6ced..d4282f5 100644
  #include <stdio.h>
  #include <stdlib.h>
  #include <stdint.h>
-@@ -23467,6 +23465,9 @@ Init__guestfs (void)
+@@ -23466,6 +23464,9 @@ Init__guestfs (void)
    e_Error = rb_define_class_under (m_guestfs, "Error", rb_eStandardError);
  
  #ifdef HAVE_RB_DEFINE_ALLOC_FUNC
