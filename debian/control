@@ -6,7 +6,7 @@ Uploaders: Richard Jones <rjones@redhat.com>, Guido Günther <agx@sigxcpu.org>, 
 Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   dh-autoreconf,
   po-debconf, bash-completion,
-  febootstrap (>= 3.2),
+  febootstrap (>= 3.20~),
   libreadline-dev, libaugeas-dev, libselinux1-dev, libhivex-dev, libvirt-dev,
   libmagic-dev, libncurses5-dev, libpcre3-dev, libxml2-dev,
   libconfig-dev, libc-dev-bin, systemtap-sdt-dev,
@@ -93,7 +93,7 @@ Architecture: i386 amd64
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
-  febootstrap (>= 3.2),
+  febootstrap (>= 3.20~),
   qemu-kvm (>= 0.13),
   bsdmainutils,
   btrfs-tools,
