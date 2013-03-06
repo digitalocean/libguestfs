@@ -1,4 +1,5 @@
 usr/share/man/man3/*.3pm
 usr/share/man/man3/guestfs-perl.3*
+usr/share/man/*/man3/guestfs-perl.3*
 
 usr/lib/perl5

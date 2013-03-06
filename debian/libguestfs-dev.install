@@ -5,5 +5,7 @@ usr/lib/*-*/libguestfs.la
 usr/lib/*-*/pkgconfig/*
 
 usr/share/man/man3/guestfs.3*
+usr/share/man/*/man3/guestfs.3*
 usr/share/man/man3/libguestfs.3*
 usr/share/man/man3/guestfs-examples.3*
+usr/share/man/*/man3/guestfs-examples.3*

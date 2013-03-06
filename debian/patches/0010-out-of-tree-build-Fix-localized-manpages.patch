@@ -1,0 +1,129 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Thu, 7 Mar 2013 00:08:23 +0100
+Subject: out-of-tree build: Fix localized manpages
+
+---
+ po-docs/Makefile.am    |    6 +++---
+ po-docs/ja/Makefile.am |   16 ++++++++--------
+ po-docs/uk/Makefile.am |   16 ++++++++--------
+ 3 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/po-docs/Makefile.am b/po-docs/Makefile.am
+index b532683..1b1da88 100644
+--- a/po-docs/Makefile.am
++++ b/po-docs/Makefile.am
+@@ -51,15 +51,15 @@ libguestfs-docs.pot: po4a.conf
+ 	  --msgid-bugs-address libguestfs@redhat.com \
+ 	  --copyright-holder "Red Hat Inc." \
+ 	  po4a.conf
+-	for f in `find $(linguas) -name '*.pod' -o -name '*.pl'`; do \
++	for f in `cd $(srcdir); find $(linguas) -name '*.pod' -o -name '*.pl'`; do \
+ 	  echo '=encoding utf8' > $$f.new; \
+-	  awk 'FNR >= 14 { print }' < $$f >> $$f.new; \
++	  awk 'FNR >= 14 { print }' < $(srcdir)/$$f >> $$f.new; \
+ 	  mv $$f.new $$f; \
+ 	done
+ 
+ po4a.conf: podfiles
+ 	rm -f $@-t
+-	echo "[po_directory] ." >> $@-t
++	echo "[po_directory] $(srcdir)" >> $@-t
+ 	echo >> $@-t
+ 	for f in `cat podfiles`; do \
+ 	  b=`basename -- $$f`; \
+diff --git a/po-docs/ja/Makefile.am b/po-docs/ja/Makefile.am
+index d3413ec..f4fb3a8 100644
+--- a/po-docs/ja/Makefile.am
++++ b/po-docs/ja/Makefile.am
+@@ -65,7 +65,7 @@ MANPAGES = \
+ 	virt-tar-out.1 \
+ 	virt-win-reg.1
+ 
+-podfiles := $(shell for f in `cat ../podfiles`; do basename $$f; done)
++podfiles := $(shell for f in `cat $(top_srcdir)/po-docs/podfiles`; do basename $$f; done)
+ 
+ # Ship the POD files and the translated manpages in the tarball.  This
+ # just simplifies building from the tarball, at a small cost in extra
+@@ -82,9 +82,9 @@ guestfs.3: guestfs.pod guestfs-actions.pod guestfs-availability.pod guestfs-stru
+ 	  --man $@ \
+ 	  --section 3 \
+ 	  --license LGPLv2+ \
+-	  --insert $(srcdir)/guestfs-actions.pod:__ACTIONS__ \
+-	  --insert $(srcdir)/guestfs-availability.pod:__AVAILABILITY__ \
+-	  --insert $(srcdir)/guestfs-structs.pod:__STRUCTS__ \
++	  --insert $(builddir)/guestfs-actions.pod:__ACTIONS__ \
++	  --insert $(builddir)/guestfs-availability.pod:__AVAILABILITY__ \
++	  --insert $(builddir)/guestfs-structs.pod:__STRUCTS__ \
+ 	  $<
+ 
+ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+@@ -92,8 +92,8 @@ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+ 	  --no-strict-checks \
+ 	  --man $@ \
+ 	  --license GPLv2+ \
+-	  --insert $(srcdir)/guestfish-actions.pod:__ACTIONS__ \
+-	  --insert $(srcdir)/guestfish-commands.pod:__FISH_COMMANDS__ \
++	  --insert $(builddir)/guestfish-actions.pod:__ACTIONS__ \
++	  --insert $(builddir)/guestfish-commands.pod:__FISH_COMMANDS__ \
+ 	  $<
+ 
+ virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.pod
+@@ -101,8 +101,8 @@ virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.po
+ 	  --no-strict-checks \
+ 	  --man $@ \
+ 	  --license GPLv2+ \
+-          --insert sysprep-extra-options.pod:__EXTRA_OPTIONS__ \
+-          --insert sysprep-operations.pod:__OPERATIONS__ \
++          --insert $(builddir)/sysprep-extra-options.pod:__EXTRA_OPTIONS__ \
++          --insert $(builddir)/sysprep-operations.pod:__OPERATIONS__ \
+ 	  $<
+ 
+ %.1: %.pod
+diff --git a/po-docs/uk/Makefile.am b/po-docs/uk/Makefile.am
+index d3413ec..f4fb3a8 100644
+--- a/po-docs/uk/Makefile.am
++++ b/po-docs/uk/Makefile.am
+@@ -65,7 +65,7 @@ MANPAGES = \
+ 	virt-tar-out.1 \
+ 	virt-win-reg.1
+ 
+-podfiles := $(shell for f in `cat ../podfiles`; do basename $$f; done)
++podfiles := $(shell for f in `cat $(top_srcdir)/po-docs/podfiles`; do basename $$f; done)
+ 
+ # Ship the POD files and the translated manpages in the tarball.  This
+ # just simplifies building from the tarball, at a small cost in extra
+@@ -82,9 +82,9 @@ guestfs.3: guestfs.pod guestfs-actions.pod guestfs-availability.pod guestfs-stru
+ 	  --man $@ \
+ 	  --section 3 \
+ 	  --license LGPLv2+ \
+-	  --insert $(srcdir)/guestfs-actions.pod:__ACTIONS__ \
+-	  --insert $(srcdir)/guestfs-availability.pod:__AVAILABILITY__ \
+-	  --insert $(srcdir)/guestfs-structs.pod:__STRUCTS__ \
++	  --insert $(builddir)/guestfs-actions.pod:__ACTIONS__ \
++	  --insert $(builddir)/guestfs-availability.pod:__AVAILABILITY__ \
++	  --insert $(builddir)/guestfs-structs.pod:__STRUCTS__ \
+ 	  $<
+ 
+ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+@@ -92,8 +92,8 @@ guestfish.1: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+ 	  --no-strict-checks \
+ 	  --man $@ \
+ 	  --license GPLv2+ \
+-	  --insert $(srcdir)/guestfish-actions.pod:__ACTIONS__ \
+-	  --insert $(srcdir)/guestfish-commands.pod:__FISH_COMMANDS__ \
++	  --insert $(builddir)/guestfish-actions.pod:__ACTIONS__ \
++	  --insert $(builddir)/guestfish-commands.pod:__FISH_COMMANDS__ \
+ 	  $<
+ 
+ virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.pod
+@@ -101,8 +101,8 @@ virt-sysprep.1: virt-sysprep.pod sysprep-extra-options.pod sysprep-operations.po
+ 	  --no-strict-checks \
+ 	  --man $@ \
+ 	  --license GPLv2+ \
+-          --insert sysprep-extra-options.pod:__EXTRA_OPTIONS__ \
+-          --insert sysprep-operations.pod:__OPERATIONS__ \
++          --insert $(builddir)/sysprep-extra-options.pod:__EXTRA_OPTIONS__ \
++          --insert $(builddir)/sysprep-operations.pod:__OPERATIONS__ \
+ 	  $<
+ 
+ %.1: %.pod

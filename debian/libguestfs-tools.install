@@ -1,9 +1,11 @@
 usr/bin/virt-*
 usr/share/man/man1/virt-*
+usr/share/man/*/man1/virt-*
 etc/libguestfs-tools.conf
 
 usr/bin/libguestfs-test-tool
 usr/share/man/man1/libguestfs-test-tool*
+usr/share/man/*/man1/libguestfs-test-tool*
 
 usr/lib/guestfs
 debian/update-guestfs-appliance usr/sbin

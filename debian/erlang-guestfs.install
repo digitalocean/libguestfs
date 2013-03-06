@@ -1,3 +1,4 @@
 /usr/bin/erl-guestfs
 /usr/lib/erlang
 /usr/share/man/man3/guestfs-erlang.3*
+/usr/share/man/*/man3/guestfs-erlang.3*

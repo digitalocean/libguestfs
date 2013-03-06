@@ -1,4 +1,5 @@
 usr/bin/guestfish
 usr/share/man/man1/guestfish*
+usr/share/man/*/man1/guestfish*
 
 etc/bash_completion.d/guestfish-bash-completion.sh

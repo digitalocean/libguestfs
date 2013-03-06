@@ -26,7 +26,8 @@ Build-Depends: debhelper (>= 9~), autotools-dev, aptitude,
   libsys-virt-perl, libwin-hivex-perl,
   libfuse-dev, fuse,
   libglib2.0-dev, gjs, gobject-introspection, libgirepository1.0-dev, gtk-doc-tools,
-  netpbm, icoutils
+  netpbm, icoutils,
+  po4a,
 Homepage: http://libguestfs.org
 Standards-Version: 3.9.3
 Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git

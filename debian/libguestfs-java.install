@@ -3,3 +3,4 @@ usr/share/java
 usr/lib/*-*/*jni*
 
 usr/share/man/man3/guestfs-java.3*
+usr/share/man/*/man3/guestfs-java.3*

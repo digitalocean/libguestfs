@@ -1,3 +1,4 @@
 usr/lib/python*
 
 usr/share/man/man3/guestfs-python.3*
+usr/share/man/*/man3/guestfs-python.3*
