@@ -139,7 +139,7 @@ override_dh_install:
 # Workarounds for:
 # W: libguestfs-perl: script-not-executable usr/lib/perl5/Sys/bindtests.pl
 # E: libguestfs-dev: non-empty-dependency_libs-in-la-file
-	dh_install -X.la -Xbindtests.pl -X.so.owner -Xlibguestfs-make-fixed-appliance --fail-missing
+	dh_install -X.la -Xbindtests.pl -X.so.owner --fail-missing
 
 # Workaround for python3-defaults < 3.2~b2-1
 # ("do not rename .so files outside dist-packages directory")

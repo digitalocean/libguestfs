@@ -12,3 +12,7 @@ debian/update-guestfs-appliance usr/sbin
 
 usr/share/doc/libguestfs/example-*.xml
 usr/share/doc/libguestfs/virt-inspector.rng
+
+usr/sbin/libguestfs-make-fixed-appliance
+usr/share/man/man1/libguestfs-make-fixed-appliance*
+usr/share/man/*/man1/libguestfs-make-fixed-appliance*
