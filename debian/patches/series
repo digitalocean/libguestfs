@@ -6,5 +6,7 @@
 0006-erlang-Install-to-correct-directory.patch
 0007-out-of-tree-build-Fix-Ruby-bindings.patch
 0008-ruby-Don-t-compile-with-Werror.patch
-0009-ruby-Move-checks-for-symbols-from-configure.ac-to-ex.patch
+0009-Move-Ruby-related-checks-from-autoconf-to-extconf.rb.patch
 0010-out-of-tree-build-Fix-localized-manpages.patch
+0011-Change-conditional-build-disable-appliance-still-bui.patch
+0012-out-of-tree-build-Fix-link-creation.patch
