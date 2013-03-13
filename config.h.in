@@ -442,6 +442,9 @@
 /* Define to 1 if you have the `aug_load' function. */
 #undef HAVE_AUG_LOAD
 
+/* Define to 1 if you have the `be32toh' function. */
+#undef HAVE_BE32TOH
+
 /* Define to 1 if you have the <bp-sym.h> header file. */
 #undef HAVE_BP_SYM_H
 
@@ -1629,9 +1632,6 @@
 
 /* Define to 1 if _Exit is declared even after undefining macros. */
 #undef HAVE_RAW_DECL__EXIT
-
-/* Define to 1 if you have the `rb_hash_lookup' function. */
-#undef HAVE_RB_HASH_LOOKUP
 
 /* Define to 1 if you have the `readdir' function. */
 #undef HAVE_READDIR
