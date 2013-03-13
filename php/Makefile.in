@@ -1323,6 +1323,9 @@ EXTRA_DIST = \
 
 @HAVE_PHP_TRUE@phpdir = $(sysconfdir)/php.d
 @HAVE_PHP_TRUE@php_DATA = guestfs_php.ini
+
+# Don't use --test because PHP always returns a success code.
+@HAVE_PHP_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run
 @HAVE_PHP_TRUE@TESTS = run-php-tests.sh
 all: all-am
 

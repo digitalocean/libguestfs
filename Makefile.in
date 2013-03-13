@@ -101,8 +101,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @ENABLE_DAEMON_TRUE@am__append_1 = daemon
 
 # Tests - order is important.
-@ENABLE_APPLIANCE_TRUE@am__append_2 = appliance tests/qemu \
-@ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/tmpdirs \
+@ENABLE_APPLIANCE_TRUE@am__append_2 = tests/qemu tests/guests \
+@ENABLE_APPLIANCE_TRUE@	tests/c-api tests/tmpdirs \
 @ENABLE_APPLIANCE_TRUE@	tests/protocol tests/parallel \
 @ENABLE_APPLIANCE_TRUE@	tests/disks tests/lvm tests/luks \
 @ENABLE_APPLIANCE_TRUE@	tests/md tests/selinux tests/ntfsclone \
@@ -1442,12 +1442,13 @@ ACLOCAL_AMFLAGS = -I m4
 
 # Unconditional because nothing is built yet.
 SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
-	$(am__append_1) $(am__append_2) test-tool fish align cat df \
-	edit format inspector rescue $(am__append_3) $(am__append_4) \
-	$(am__append_5) $(am__append_6) $(am__append_7) \
-	$(am__append_8) $(am__append_9) $(am__append_10) \
-	$(am__append_11) $(am__append_12) csharp $(am__append_13) \
-	$(am__append_14) $(am__append_15) $(am__append_16)
+	$(am__append_1) appliance $(am__append_2) test-tool fish align \
+	cat df edit format inspector rescue $(am__append_3) \
+	$(am__append_4) $(am__append_5) $(am__append_6) \
+	$(am__append_7) $(am__append_8) $(am__append_9) \
+	$(am__append_10) $(am__append_11) $(am__append_12) csharp \
+	$(am__append_13) $(am__append_14) $(am__append_15) \
+	$(am__append_16)
 EXTRA_DIST = \
 	$(generator_built) \
 	BUGS HACKING ROADMAP TODO \

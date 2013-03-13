@@ -35,11 +35,19 @@ superminfsdir = $(libdir)/guestfs/supermin.d
 
 fs_DATA =
 superminfs_DATA = \
-	supermin.d/base.img \
-	supermin.d/daemon.img \
 	supermin.d/init.img \
-	supermin.d/hostfiles \
 	supermin.d/udev-rules.img
+
+if ENABLE_DAEMON
+superminfs_DATA += \
+	supermin.d/daemon.img
+endif
+
+if ENABLE_APPLIANCE
+superminfs_DATA += \
+	supermin.d/base.img \
+	supermin.d/hostfiles
+endif
 
 # This used to be a configure-generated file (as is update.sh still).
 # However config.status always touches the destination file, which
@@ -100,7 +108,7 @@ supermin.d/udev-rules.img: 99-guestfs-serial.rules
 	rm -f $@ $@-t
 	rm -rf tmp-u
 	mkdir -p tmp-u/etc/udev/rules.d
-	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$f; done
+	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$(basename $$f); done
 	( cd tmp-u && find | cpio --quiet -o -H newc ) > $@-t
 	rm -rf tmp-u
 	mv $@-t $@

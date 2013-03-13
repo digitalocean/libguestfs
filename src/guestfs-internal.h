@@ -87,7 +87,9 @@
 /* Maximum size of Windows explorer.exe.  2.6MB on Windows 7. */
 #define MAX_WINDOWS_EXPLORER_SIZE (4 * 1000 * 1000)
 
-/* GuestFS handle and connection. */
+/* Guestfs handle and associated structures. */
+
+/* State. */
 enum state { CONFIG, LAUNCHING, READY, NO_HANDLE };
 
 /* Attach method. */
@@ -156,6 +158,7 @@ struct error_cb_stack {
   void *                   error_cb_data;
 };
 
+/* The libguestfs handle. */
 struct guestfs_h
 {
   struct guestfs_h *next;	/* Linked list of open handles. */
@@ -482,7 +485,6 @@ extern int guestfs___recv (guestfs_h *g, const char *fn, struct guestfs_message_
 extern int guestfs___recv_discard (guestfs_h *g, const char *fn);
 extern int guestfs___send_file (guestfs_h *g, const char *filename);
 extern int guestfs___recv_file (guestfs_h *g, const char *filename);
-extern int guestfs___send_to_daemon (guestfs_h *g, const void *v_buf, size_t n);
 extern int guestfs___recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn);
 extern int guestfs___accept_from_daemon (guestfs_h *g);
 extern void guestfs___progress_message_callback (guestfs_h *g, const struct guestfs_progress *message);
