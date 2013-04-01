@@ -239,7 +239,7 @@ dist-hook:
 	$(top_srcdir)/update-bugs.sh > BUGS-t
 	mv BUGS-t BUGS
 	cp BUGS $(distdir)/BUGS
-	git shortlog -se | awk -F'\t' '{print $$2}' > AUTHORS-t
+	git shortlog -se | awk -F'\t' '{print $$2}' | sort -f > AUTHORS-t
 	mv AUTHORS-t AUTHORS
 	cp AUTHORS $(distdir)/AUTHORS
 
@@ -316,9 +316,10 @@ quickcheck:
 
 extra-tests:
 	$(MAKE) -j1 \
-	  valgrind \
-	  valgrind-local-guests \
+	  check-valgrind \
+	  check-valgrind-local-guests \
 	  check-with-appliance \
+	  check-valgrind-with-appliance \
 	  check-with-upstream-qemu \
 	  check-with-upstream-libvirt \
 	  check-slow
@@ -336,19 +337,16 @@ check-valgrind-local-guests:
 	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || exit $$?; \
 	done
 
-check-slow: build-test-guests
-	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
-	  echo $(MAKE) -C `dirname $$f` $@; \
-	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
-	done
-
-build-test-guests:
-	$(MAKE) -C tests/guests check
-
 check-with-appliance:
 	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
 	if [ "$$method" != "appliance" ]; then \
 	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check || exit $$?; \
+	fi
+
+check-valgrind-with-appliance:
+	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
+	if [ "$$method" != "appliance" ]; then \
+	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check-valgrind || exit $$?; \
 	fi
 
 QEMUDIR = $(HOME)/d/qemu
@@ -376,6 +374,15 @@ check-with-upstream-libvirt:
 	  $(LIBVIRTDIR)/run $(MAKE) check || exit $$?; \
 	fi
 
+check-slow: build-test-guests
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	  echo $(MAKE) -C `dirname $$f` $@; \
+	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
+	done
+
+build-test-guests:
+	$(MAKE) -C tests/guests check
+
 # Print subdirs.
 #
 # If you want to selectively run tests, or if the test suite fails half
@@ -401,12 +408,13 @@ help:
 	@echo "make -k check                       ... and display all errors at once."
 	@echo
 	@echo "make extra-tests                  ... runs all of the following tests:"
-	@echo "  make check-valgrind               Run a subset of the tests under valgrind."
-	@echo "  make check-valgrind-local-guests  Test under valgrind using local guests."
-	@echo "  make check-with-appliance         Test using appliance attach-method."
-	@echo "  make check-with-upstream-qemu     Test using upstream qemu."
-	@echo "  make check-with-upstream-libvirt  Test using upstream libvirt."
-	@echo "  make check-slow                   Slow/long-running tests."
+	@echo "  make check-valgrind                Run a subset of the tests under valgrind."
+	@echo "  make check-valgrind-local-guests   Test under valgrind using local guests."
+	@echo "  make check-with-appliance          Test using appliance attach-method."
+	@echo "  make check-valgrind-with-appliance Test valgrind + appliance attach-method."
+	@echo "  make check-with-upstream-qemu      Test using upstream qemu."
+	@echo "  make check-with-upstream-libvirt   Test using upstream libvirt."
+	@echo "  make check-slow                    Slow/long-running tests."
 	@echo
 	@echo "make syntax-check                 Check syntax and style problems in the code."
 	@echo "make print-subdirs                Print subdirectories."

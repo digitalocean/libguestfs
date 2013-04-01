@@ -83,7 +83,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/guests.xml.in $(top_srcdir)/subdir-rules.mk
+	$(srcdir)/guests-all-good.xml.in $(srcdir)/guests.xml.in \
+	$(top_srcdir)/subdir-rules.mk
 subdir = tests/guests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -205,7 +206,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = guests.xml
+CONFIG_CLEAN_FILES = guests.xml guests-all-good.xml
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1344,6 +1345,8 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 guests.xml: $(top_builddir)/config.status $(srcdir)/guests.xml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+guests-all-good.xml: $(top_builddir)/config.status $(srcdir)/guests-all-good.xml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:

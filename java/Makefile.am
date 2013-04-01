@@ -50,7 +50,14 @@ EXTRA_DIST = \
 	run-java-tests \
 	Makefile.inc
 
-CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_et_libguestfs_GuestFS.h *.class *.jar api/com/redhat/et/libguestfs/*.html api/*
+CLEANFILES = \
+	doc-stamp \
+	$(builddir)/com/redhat/et/libguestfs/*.class \
+	com_redhat_et_libguestfs_GuestFS.h \
+	*.class \
+	*.jar \
+	api/com/redhat/et/libguestfs/*.html \
+	api/*
 
 if HAVE_JAVA
 
@@ -127,7 +134,7 @@ t/%.class: t/%.java
 	mkdir -p t
 	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir)/t $<
 
-Bindtests.class: Bindtests.java
+Bindtests.class: Bindtests.java libguestfs-$(VERSION).jar
 	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir) $<
 
 endif

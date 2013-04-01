@@ -115,7 +115,7 @@ struct event {
 struct drive {
   char *path;
 
-  int readonly;
+  bool readonly;
   char *format;
   char *iface;
   char *name;
@@ -455,6 +455,8 @@ extern void guestfs___print_BufferOut (FILE *out, const char *buf, size_t buf_si
   }                                                      \
   while (0)
 
+extern void guestfs___external_command_failed (guestfs_h *g, int status, const char *cmd_name, const char *extra);
+
 /* actions-support.c */
 struct trace_buffer {
   FILE *fp;
@@ -500,6 +502,12 @@ extern int guestfs___lazy_make_tmpdir (guestfs_h *g);
 extern void guestfs___remove_tmpdir (guestfs_h *g);
 extern void guestfs___recursive_remove_dir (guestfs_h *g, const char *dir);
 
+/* drives.c */
+extern size_t guestfs___checkpoint_drives (guestfs_h *g);
+extern void guestfs___rollback_drives (guestfs_h *g, size_t);
+extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
+extern void guestfs___free_drives (guestfs_h *g);
+
 /* appliance.c */
 extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd, char **appliance);
 
@@ -507,11 +515,7 @@ extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd
 extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);
 extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
 extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
-extern size_t guestfs___checkpoint_drives (guestfs_h *g);
-extern void guestfs___rollback_drives (guestfs_h *g, size_t);
 extern void guestfs___launch_failed_error (guestfs_h *g);
-extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
-extern void guestfs___free_drives (guestfs_h *g);
 extern char *guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev, int flags);
 #define APPLIANCE_COMMAND_LINE_IS_TCG 1
 

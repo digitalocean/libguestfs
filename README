@@ -190,10 +190,15 @@ are not necessarily because of real problems.
 
 lists all 'make' targets.
 
-If everything works, you can install the library and tools by running
-this command as root:
+You may install the library by running the following command as root.
+However *most users should probably not do this*.  Instead, './run'
+the programs from the build directory as described below.
 
   make install
+
+Distro packagers should use this instead:
+
+ make INSTALLDIRS=vendor [DESTDIR=...] install
 
 You can run guestfish, guestmount and the virt tools without needing
 to install, using the "./run" script in the top directory.  This

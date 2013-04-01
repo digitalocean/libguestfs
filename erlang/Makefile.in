@@ -1373,7 +1373,7 @@ EXTRA_DIST = \
 	tests/*.erl \
 	README
 
-@HAVE_ERLANG_TRUE@erlang_bindir = $(libdir)/erlang/lib/$(PACKAGE_NAME)-$(PACKAGE_VERSION)/ebin
+@HAVE_ERLANG_TRUE@erlang_bindir = $(ERLANG_LIB_DIR)/$(PACKAGE_NAME)-$(PACKAGE_VERSION)/ebin
 @HAVE_ERLANG_TRUE@erlang_bin_DATA = guestfs.beam
 @HAVE_ERLANG_TRUE@erl_guestfs_SOURCES = erl-guestfs.c erl-guestfs-proto.c
 @HAVE_ERLANG_TRUE@erl_guestfs_CPPFLAGS = \

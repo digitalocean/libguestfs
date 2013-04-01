@@ -1428,7 +1428,15 @@ EXTRA_DIST = \
 	run-java-tests \
 	Makefile.inc
 
-CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_et_libguestfs_GuestFS.h *.class *.jar api/com/redhat/et/libguestfs/*.html api/*
+CLEANFILES = \
+	doc-stamp \
+	$(builddir)/com/redhat/et/libguestfs/*.class \
+	com_redhat_et_libguestfs_GuestFS.h \
+	*.class \
+	*.jar \
+	api/com/redhat/et/libguestfs/*.html \
+	api/*
+
 @HAVE_JAVA_TRUE@JAVAC_FLAGS = $(EXTRA_JAVAC_FLAGS) -encoding utf-8
 @HAVE_JAVA_TRUE@JAVADOC_FLAGS = -encoding utf-8
 
@@ -1965,7 +1973,7 @@ appliance: force
 @HAVE_JAVA_TRUE@	mkdir -p t
 @HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir)/t $<
 
-@HAVE_JAVA_TRUE@Bindtests.class: Bindtests.java
+@HAVE_JAVA_TRUE@Bindtests.class: Bindtests.java libguestfs-$(VERSION).jar
 @HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir) $<
 
 # Tell version 3.79 and up of GNU make to not build goals in this
