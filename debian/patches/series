@@ -1,6 +1,3 @@
-0001-Mount-run-as-tmpfs-inside-appliance-workaround-for-f.patch
-0002-Fix-for-systemd-based-Debian-systems.patch
-0003-out-of-tree-build-fix-building-Perl-bindings.patch
-0004-ruby-install-to-vendor_ruby.patch
-0005-Fix-guestfs-supermin-appliance-path.patch
-0006-erlang-Install-to-correct-directory.patch
+0001-Fix-for-systemd-based-Debian-systems.patch
+0002-out-of-tree-build-fix-building-Perl-bindings.patch
+0003-Fix-guestfs-supermin-appliance-path.patch

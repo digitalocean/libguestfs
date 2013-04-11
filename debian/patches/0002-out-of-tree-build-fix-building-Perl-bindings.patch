@@ -7,10 +7,10 @@ Subject: out-of-tree build: fix building Perl bindings
  1 file changed, 1 insertion(+)
 
 diff --git a/perl/Makefile.am b/perl/Makefile.am
-index 404a4e9..253d990 100644
+index b0f9b5c..55466ec 100644
 --- a/perl/Makefile.am
 +++ b/perl/Makefile.am
-@@ -65,6 +65,7 @@ all: Makefile-pl src_deps
+@@ -64,6 +64,7 @@ all: Makefile-pl src_deps
  	$(MAKE) -f Makefile-pl
  
  Makefile-pl: Makefile.PL
