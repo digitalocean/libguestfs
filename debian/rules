@@ -81,22 +81,21 @@ override_dh_strip:
 	dh_strip --dbg-package=libguestfs0-dbg
 
 override_dh_auto_build:
-# also build part of appliance
-	dh_auto_build --builddir=$(CURDIR)/debian/build-default \
-		-- INSTALLDIRS=vendor LD_RUN_PATH=""
-
-	$(MAKE) -C $(CURDIR)/debian/build-default/appliance \
-		make.sh \
-		packagelist excludelist \
-		supermin.d/daemon.img supermin.d/init.img
-
 	set -e; for p in \
 		$(filter-out $(PYTHON_DEFAULT), $(PYTHONS)) \
 		$(filter-out $(RUBY_DEFAULT), $(RUBIES)) \
 		$(filter-out $(LUA_DEFAULT), $(LUAS)) \
+		default \
 	; do \
-		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p ; \
+		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p \
+			-- INSTALLDIRS=vendor LD_RUN_PATH=""; \
 	done
+
+	# also build part of appliance
+	$(MAKE) -C $(CURDIR)/debian/build-default/appliance \
+		make.sh \
+		packagelist excludelist \
+		supermin.d/daemon.img supermin.d/init.img
 
 override_dh_auto_test:
 	set -e; for p in \
@@ -119,7 +118,8 @@ override_dh_auto_install:
 		$(filter-out $(LUA_DEFAULT), $(LUAS)) \
 		default \
 	; do \
-		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p ; \
+		dh_auto_install --builddir=$(CURDIR)/debian/build-$$p \
+			-- INSTALLDIRS=vendor; \
 	done
 
 override_dh_install:
