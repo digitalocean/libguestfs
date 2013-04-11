@@ -1,3 +1,268 @@
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.20.6.
+
+	inspection: Don't fail if libosinfo database is not found (RHBZ#948324). (cherry picked from commit b72daebaf4a859769455a1db70a40603cb5597be)
+
+	examples: Add example program showing enabling debugging and capturing log messages.
+	Cherry picked from commit e3546ad2ce2c0d953e3be2b072bacd48972450af and
+	updated so it doesn't require the guestfs_event_to_string API which
+	was added in 1.21.
+
+	pod: Fix "wide character in print" warnings by declaring encoding correctly. (cherry picked from commit a3de6eddd49c81349dbdb041ba0d4b40f1ef3fd3)
+
+	daemon/copy: Ensure errno is preserved along error paths. (cherry picked from commit 3cdca7616a5f5a550d93e4f088b1b97fd7c9a602)
+
+	php: Fix segfault when function has an OStringList optional argument.
+	How this PHP/Zend stuff is supposed to work is not documented, but at
+	least with these changes it no longer segfaults.
+	(cherry picked from commit 289fd29f0bfbb94566d9780dd8ac3fe15e55541d)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	python: Let RHashtable be returned as a Python dict.
+	The initial proposal was suggested by Matt Booth and discussed on the
+	mailing list here:
+
+	https://www.redhat.com/archives/libguestfs/2013-April/msg00007.html
+	(cherry picked from commit ba0199c487feec7f02cfc00ba3e900e6fa5ed4d8)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Better error messages for FUSE and other things not supported.
+	The bare message "FUSE not supported" wasn't actionable.
+	(cherry picked from commit 3dcb572bda87385ee9db4574b888120667aa4ece)
+
+	FAQ: In Fedora >= 19, the RPM detects if it can access the network when building. (cherry picked from commit d0a8cca9a1a399d43c6e44dfc655eedbe61d22ec)
+
+	virt-ls, virt-edit: Remove references to Sys::Guestfs::Lib and other irrelevant Perl libraries. (cherry picked from commit 288b2b2d4fa642e7a58728f1900d416ecb1e8328)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Make test cases depend on jar file.
+	This fixes parallel builds.  The error you would have seen was:
+
+	  error: error reading libguestfs-1.21.25.jar; zip file is empty
+	(cherry picked from commit 6fa1177b0a429b13034797e3471da0dbbc4ccac3)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: 'make clean' should remove whole api/ directory.
+	This directory (containing HTML documentation) can be removed
+	completely when making clean.  CLEANFILES cannot recursively remove a
+	directory, so use a clean-local rule instead.
+	(cherry picked from commit 1a2e03c323cdc28d74d276c5c2a5b02df41d38f7)
+
+	build: Change various check rules so they implicitly act like 'make -k'.
+	Rules such as 'make check-valgrind' are implemented using a for-loop.
+	They would always exit after the first error, even if 'make -k' was
+	used at the top-level.  Since 'make -k'-style behaviour is generally
+	more useful, change these for-loops so they run all the tests, and
+	report errors at the end.
+	(cherry picked from commit ce49e1fdc05ddad306fcf2278429f0433c7f954e)
+
+	make clean: Remove *~ (editor backup) files. (cherry picked from commit 599f5d7ddc793189a6ebfd61ccfac3abe6644cec)
+
+	make clean: Clean contents of tmp directory. (cherry picked from commit 5f5ce4f59fe9d27bddef9ad5fe9712fe6bc663dd)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	valgrind: Write separate log files in tmp/valgrind-<DATE>-<PID>.log
+	Current code wrote a single valgrind.log in the top-level directory.
+	This was overwritten with each valgrinded program, which wasn't much
+	use.  The new version writes multiple separate valgrind-*.log files
+	containing the date and PID (so each is unique).
+
+	It would nice if valgrind could delete log files that don't contain
+	errors, but this doesn't appear to be possible.
+	(cherry picked from commit b050d7e4bf2cdbd04e980511635687f1114035e0)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Clarify output of 'make help'. (cherry picked from commit f2b1a01e76ba8bd6865c5a2bed3204e222b43a08)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.20.5.
+
+	docs: Remove obsolete sections from libguestfs gotchas.
+	These refer to old behaviour in long-unsupported versions
+	of libguestfs.
+	(cherry picked from commit 75f2fcd68799f54951e9f75528ac7ea66c01ce69)
+
+	docs: Refresh API overview section. (cherry picked from commit 806289ec66ee2984cbd0840b5ed4e2e61e75a36e)
+
+	docs: Alternate ways to list filesystems through the API. (cherry picked from commit b2eef585710ddbff543a74a010ba524da61d78d8)
+
+	FAQ: Update distro support section. (cherry picked from commit 8e76cb451278676f4ede4d34a32ac15ba2251aae)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/guests: Add 'guests-all-good.xml{.in}' libvirt test guest set.
+	This differs from 'guests.xml' in that there are no guests with
+	missing disks, etc., so we can use this to test virt-alignment-scan
+	accurately.
+
+	(cherry picked from commit 2a090e0667b303df59f2fd068dcb61a5afe79a96)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Make bindtests depend on jar file so parallel builds work.
+	This fixes commit c36ced5e21348f5357fc70b402664c9a5d827b06.
+	(cherry picked from commit f55a2dbf29fb5c96e74b8ae663f313cc23a8a8b7)
+
+	daemon: file: Remove extraneous space after output of 'file' command (RHBZ#928995). (cherry picked from commit d6ea2f5911a6c7f3037ae822e872b810ad80ba51)
+
+	java: Format CLEANFILES rule. (cherry picked from commit c50cde67cc979d44d8459722ae9dba0700b6d031)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	OCaml tools: Use Common_gettext and Common_utils modules.
+	Share these modules across all three tools virt-resize, virt-sparsify
+	and virt-sysprep.
+
+	This is mostly code motion.
+	(cherry picked from commit 05ba39372468ccd383bb3808397b2b419a022b80)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	osinfo: Fix declaration of guestfs___osinfo_map to work when libxml2 is not installed. (cherry picked from commit 69e0f86cabfe132087ef9cda2eafd0d86b18c4a8)
+
+	build: Add 'make check-valgrind-with-appliance'. (cherry picked from commit 97be29893e6a760bd1082008645942814a904c63)
+
+	build: Small rearrangement of Makefile.am check-slow rule. (cherry picked from commit 62d940d2dd3a152736663ec5318b1b2e240653d6)
+
+	build: Fix 'make extra-tests' to call 'check-valgrind' instead of rule that doesn't exist. (cherry picked from commit 55ce68784f447826c8796e491e8279f0df22f22a)
+
+	build: Turn off warnings about overlength-strings and switch-default.
+	Cherry picked from commit 71de9ef03909218473d820938fff61665d35a6e7
+	and commit ae3011d5184eb7b9614695f87ba7d16460f558e4.
+
+	inspection: Remove unused #includes. (cherry picked from commit 766393d8542c9824c034016b7238c5e854ed323a)
+
+	lib: Add missing cases in switch statements.
+	These were being hidden by misguided use of the dangerous
+	-Wswitch-default flag.
+	(cherry picked from commit bf1c3196b53293c2f1c3cd37ab14b00b40d6e942)
+
+	appliance: Make sure cachedir has mode 0755 (RHBZ#921292).
+	See https://bugzilla.redhat.com/show_bug.cgi?id=921292#c4
+	(cherry picked from commit af1c53d104180415a8584c48f19fd4ea7df224f5)
+
+	appliance: Use ignore_value() macro instead of casting return to (void). (cherry picked from commit e7c78881fc539b10374d0507d6ca2c3edae65020)
+
+	drives: Make drv->readonly flag into a bool. (cherry picked from commit e7e2b56569ddba018912193c192210ae50950815)
+
+	drives: Refactor code to separate 'struct drive' creation from adding drives. (cherry picked from commit b1df9a9df121e8386222291aacac9f9f8602c620)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Move code concerned with adding drives to 'src/drives.c'.
+	Apart from adding a few comments, this is entirely code motion.
+
+	(cherry picked from commit 33ec3eca298c83d5af90a899fa5f22da6bd0a266)
+
+2013-03-31  Hilko Bengen  <bengen@debian.org>
+
+	Mount /run as tmpfs inside appliance (workaround for febootstrap's /init) (cherry picked from commit 85dd52f470f8cb84dbd83c8478b7f9feb3ab7b06)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	erlang: Use $(ERLANG_LIB_DIR) to get Erlang libdir.
+	Instead of previous custom hack which didn't work properly on Debian.
+
+	Thanks: Hilko Bengen.
+	(cherry picked from commit e29a130d8f3dbf8eab23ae78aabc2d95e7f56470)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	README: Discourage general users from doing 'make install'.
+	It causes plenty of problems with people have multiple parallel
+	versions of libguestfs installed, and there's no benefit because you
+	can easily run libguestfs and tools from the build directory.
+	(cherry picked from commit 04acc32abf5bea2ce53f695b4030be5f2147a469)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Support 'make INSTALLDIRS=vendor install' for Ruby as well as Perl.
+	As with Perl, you can now set INSTALLDIRS to control where Ruby places
+	its files (ie. in the site dir, which is the default, or in the vendor
+	dir).
+
+	The difference in file layout between 'make install' and
+	'make INSTALLDIRS=vendor install' is shown below (for Fedora 18).
+
+	--- /tmp/site	2013-03-14 12:14:35.740015694 +0000
+	+++ /tmp/vendor	2013-03-14 12:14:13.668093944 +0000
+	@@ -119,21 +119,20 @@
+	 ./usr/lib64/ocaml/guestfs/mlguestfs.cmxa
+	 ./usr/lib64/ocaml/stublibs/dllmlguestfs.so
+	 ./usr/lib64/ocaml/stublibs/dllmlguestfs.so.owner
+	-./usr/lib64/perl5/auto/Sys/Guestfs/Guestfs.bs
+	-./usr/lib64/perl5/auto/Sys/Guestfs/Guestfs.so
+	-./usr/lib64/perl5/auto/Sys/Guestfs/.packlist
+	 ./usr/lib64/perl5/perllocal.pod
+	-./usr/lib64/perl5/Sys/bindtests.pl
+	-./usr/lib64/perl5/Sys/Guestfs/Lib.pm
+	-./usr/lib64/perl5/Sys/Guestfs.pm
+	+./usr/lib64/perl5/vendor_perl/auto/Sys/Guestfs/Guestfs.bs
+	+./usr/lib64/perl5/vendor_perl/auto/Sys/Guestfs/Guestfs.so
+	+./usr/lib64/perl5/vendor_perl/auto/Sys/Guestfs/.packlist
+	+./usr/lib64/perl5/vendor_perl/Sys/bindtests.pl
+	+./usr/lib64/perl5/vendor_perl/Sys/Guestfs/Lib.pm
+	+./usr/lib64/perl5/vendor_perl/Sys/Guestfs.pm
+	 ./usr/lib64/php/modules/guestfs_php.so
+	 ./usr/lib64/pkgconfig/libguestfs-gobject-1.0.pc
+	 ./usr/lib64/pkgconfig/libguestfs.pc
+	 ./usr/lib64/python2.7/site-packages/guestfs.py
+	 ./usr/lib64/python2.7/site-packages/libguestfsmod.la
+	 ./usr/lib64/python2.7/site-packages/libguestfsmod.so
+	-./usr/local/lib64/ruby/site_ruby/_guestfs.so
+	-./usr/local/share/ruby/site_ruby/guestfs.rb
+	+./usr/lib64/ruby/vendor_ruby/_guestfs.so
+	 ./usr/sbin/libguestfs-make-fixed-appliance
+	 ./usr/share/doc/libguestfs/example-debian-netinst-cd.xml
+	 ./usr/share/doc/libguestfs/example-debian.xml
+	@@ -406,3 +405,4 @@
+	 ./usr/share/man/uk/man3/guestfs-perl.3
+	 ./usr/share/man/uk/man3/guestfs-python.3
+	 ./usr/share/man/uk/man3/guestfs-ruby.3
+	+./usr/share/ruby/vendor_ruby/guestfs.rb
+
+	For prompting me to fix this, thanks: Hilko Bengen.
+	(cherry picked from commit 87c9ec881cb695724e01d9f6fc9df996d4c67cb6)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Print attach-method, tmpdir, umask, euid when launching.
+	These are only printed when debugging is enabled, but should help
+	debugging hard-to-pin-down permissions problems.
+	(cherry picked from commit 0fd925da77983d6f438f2494d8dd3cd122234f68)
+
+	tests: Make it easier to grep failures out of the log file. (cherry picked from commit df656c9d5a49af97ecfce4147a276d478c78019e)
+
+2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	utils: Fix error messages for external commands that fail (RHBZ#921040).
+	This adds a common utility function (guestfs___exit_status_to_string)
+	and a common error function (guestfs___external_command_failed), and
+	uses them all over the library and tools when converting exit status
+	in error messages etc.
+
+	(cherry picked from commit 1b644ad64eb9b9c1d6e97953b98c8c00559bf37d)
+
+2013-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	rescue: Remove dead code.
+	This pty code was defended by #if 0 ... #endif and was dead code.
+	(cherry picked from commit e9d30742949e9e24259927fd0bd5104d6bb9bfff)
+
+	Ignore case when generating AUTHORS file. (cherry picked from commit 368b4c6480057ed090ee5793b6fdf88e138188e7)
+
+2013-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.20.4.
+
 2013-03-12  infernix  <infernix@infernix.net>
 
 	launch: appliance: Add custom parameters last.

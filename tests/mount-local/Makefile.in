@@ -218,7 +218,9 @@ test_parallel_mount_local_OBJECTS =  \
 am__DEPENDENCIES_1 =
 @HAVE_FUSE_TRUE@test_parallel_mount_local_DEPENDENCIES =  \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -1339,7 +1341,10 @@ top_srcdir = @top_srcdir@
 
 @HAVE_FUSE_TRUE@test_parallel_mount_local_LDADD = \
 @HAVE_FUSE_TRUE@	$(FUSE_LIBS) \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
 
 all: all-am

@@ -34,6 +34,7 @@
 #include <utime.h>
 
 #include "glthread/lock.h"
+#include "ignore-value.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
@@ -353,7 +354,8 @@ check_for_cached_appliance (guestfs_h *g,
   char filename[len];
   snprintf (filename, len, "%s/checksum", cachedir);
 
-  (void) mkdir (cachedir, 0755);
+  ignore_value (mkdir (cachedir, 0755));
+  ignore_value (chmod (cachedir, 0755)); /* RHBZ#921292 */
 
   /* See if the cache directory exists and passes some simple checks
    * to make sure it has not been tampered with.
@@ -689,7 +691,7 @@ run_supermin_helper (guestfs_h *g, const char *supermin_path,
   if (r == -1)
     return -1;
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
-    error (g, _("external command failed, see earlier error messages"));
+    guestfs___external_command_failed (g, r, SUPERMIN_HELPER, NULL);
     return -1;
   }
 

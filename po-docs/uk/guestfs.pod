@@ -74,13 +74,16 @@ The general structure of all libguestfs-using programs looks like this:
   */
  guestfs_launch (g);
  
- /* Тепер можна перевірити, які розділи, логічні томи тощо доступні.
-  */
+ /* Either: examine what partitions, LVs etc are available: */
  char **partitions = guestfs_list_partitions (g);
  char **logvols = guestfs_lvs (g);
  
- /* Щоб отримати доступ до файлової системи на образі, вам слід його змонтувати.
-  */
+ /* Or: ask libguestfs to find filesystems for you: */
+ char **filesystems = guestfs_list_filesystems (g);
+ 
+ /* Or: use inspection (see INSPECTION section below). */
+ 
+ /* To access a filesystem in the image, you must mount it. */
  guestfs_mount (g, "/dev/sda1", "/");
  
  /* Тепер ви можете виконувати дії з файловою системою на
@@ -125,16 +128,19 @@ specifying that the format is raw, do:
                          GUESTFS_ADD_DRIVE_OPTS_READONLY, 1,
                          -1);
 
-or by calling the older function L</guestfs_add_drive_ro>.  In either case
-libguestfs won't modify the file.  (See also L</DISK IMAGE FORMATS> below).
+or by calling the older function L</guestfs_add_drive_ro>.  If you use the
+readonly flag, libguestfs won't modify the file.  (See also L</DISK IMAGE
+FORMATS> below).
 
 Be extremely cautious if the disk image is in use, eg. if it is being used
 by a virtual machine.  Adding it read-write will almost certainly cause disk
 corruption, but adding it read-only is safe.
 
-You must add at least one disk image, and you may add multiple disk images.
-In the API, the disk images are usually referred to as C</dev/sda> (for the
-first one you added), C</dev/sdb> (for the second one you added), etc.
+You should usually add at least one disk image, and you may add multiple
+disk images.  If adding multiple disk images, they usually have to be
+"related", ie. from the same guest.  In the API, the disk images are usually
+referred to as C</dev/sda> (for the first one you added), C</dev/sdb> (for
+the second one you added), etc.
 
 Once L</guestfs_launch> has been called you cannot add any more images.  You
 can call L</guestfs_list_devices> to get a list of the device names, in the
@@ -167,8 +173,8 @@ examine them with L</guestfs_vfs_type> or L</guestfs_file>.  To list just
 filesystems, use L</guestfs_list_filesystems>.
 
 Libguestfs also has a set of APIs for inspection of unknown disk images (see
-L</INSPECTION> below).  But you might find it easier to look at higher level
-programs built on top of libguestfs, in particular L<virt-inspector(1)>.
+L</INSPECTION> below).  You might also want to look at higher level programs
+built on top of libguestfs, in particular L<virt-inspector(1)>.
 
 To mount a filesystem read-only, use L</guestfs_mount_ro>.  There are
 several other variations of the C<guestfs_mount_*> call.
@@ -248,8 +254,8 @@ L<http://tldp.org/HOWTO/LVM-HOWTO/>.
 =head2 ОТРИМАННЯ ДАНИХ
 
 Use L</guestfs_cat> to download small, text only files.  This call cannot
-handle files contain any ASCII NUL (C<\0>) characters.  However the API is
-very simple to use.
+handle files containing any ASCII NUL (C<\0>) characters.  However the API
+is very simple to use.
 
 L</guestfs_read_file> can be used to read files which contain arbitrary 8
 bit data, since it returns a (pointer, size) pair.
@@ -260,9 +266,6 @@ content or size.
 To download multiple files, see L</guestfs_tar_out> and L</guestfs_tgz_out>.
 
 =head2 ВИВАНТАЖЕННЯ
-
-It's often the case that you want to write a file or files to the disk
-image.
 
 To write a small file with fixed content, use L</guestfs_write>.  To create
 a file of all zeroes, use L</guestfs_truncate_size> (sparse) or
@@ -931,40 +934,6 @@ backwards compatibility or other reasons.  If there is ever a libguestfs 2.0
 release, you can expect these to change.  Beware of them.
 
 =over 4
-
-=item Autosync / forgetting to sync.
-
-I<Update:> Autosync is enabled by default for all API users starting from
-libguestfs 1.5.24.  This section only applies to older versions.
-
-When modifying a filesystem from C or another language, you B<must> unmount
-all filesystems and call L</guestfs_sync> explicitly before you close the
-libguestfs handle.  You can also call:
-
- guestfs_set_autosync (g, 1);
-
-to have the unmount/sync done automatically for you when the handle 'g' is
-closed.  (This feature is called "autosync", L</guestfs_set_autosync> q.v.)
-
-If you forget to do this, then it is entirely possible that your changes
-won't be written out, or will be partially written, or (very rarely) that
-you'll get disk corruption.
-
-Note that in L<guestfish(3)> autosync is the default.  So quick and dirty
-guestfish scripts that forget to sync will work just fine, which can make
-this very puzzling if you are trying to debug a problem.
-
-=item Mount option C<-o sync> should not be the default.
-
-I<Update:> L</guestfs_mount> no longer adds any options starting from
-libguestfs 1.13.16.  This section only applies to older versions.
-
-If you use L</guestfs_mount>, then C<-o sync,noatime> are added implicitly.
-However C<-o sync> does not add any reliability benefit, but does have a
-very large performance impact.
-
-The work around is to use L</guestfs_mount_options> and set the mount
-options that you actually want to use.
 
 =item Read-only should be the default.
 
@@ -2450,6 +2419,9 @@ moment this is only used for progress messages.
 
 =head2 EXAMPLE: CAPTURING LOG MESSAGES
 
+A working program demonstrating this can be found in
+C<examples/debug-logging.c> in the source of libguestfs.
+
 One motivation for the generic event API was to allow GUI programs to
 capture debug and other messages.  In libguestfs E<le> 1.8 these were sent
 unconditionally to C<stderr>.
@@ -3519,6 +3491,11 @@ libvirt guests (read-only).
 Runs all tests using default appliance back-end.  This only has any effect
 if a non-default attach-method was selected using C<./configure
 --with-default-attach-method=...>
+
+=item C<make check-valgrind-with-appliance>
+
+Run a subset of the test suite under valgrind using the default appliance
+back-end.
 
 =item C<make check-with-upstream-qemu>
 

@@ -7980,10 +7980,10 @@ PHP_FUNCTION (guestfs_internal_test)
   long optargs_t_oint64 = -1;
   char *optargs_t_ostring = NULL;
   int optargs_t_ostring_size = -1;
-  zval *z_ostringlist;
+  zval *optargs_t_ostringlist;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!abllsss|bllsa",
-        &z_g, &str, &str_size, &optstr, &optstr_size, &z_strlist, &b, &integer, &integer64, &filein, &filein_size, &fileout, &fileout_size, &bufferin, &bufferin_size, &optargs_t_obool, &optargs_t_oint, &optargs_t_oint64, &optargs_t_ostring, &optargs_t_ostring_size, &z_ostringlist) == FAILURE) {
+        &z_g, &str, &str_size, &optstr, &optstr_size, &z_strlist, &b, &integer, &integer64, &filein, &filein_size, &fileout, &fileout_size, &bufferin, &bufferin_size, &optargs_t_obool, &optargs_t_oint, &optargs_t_oint64, &optargs_t_ostring, &optargs_t_ostring_size, &optargs_t_ostringlist) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -8051,7 +8051,7 @@ PHP_FUNCTION (guestfs_internal_test)
     optargs_s.ostring = optargs_t_ostring;
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
   }
-  if (z_ostringlist != NULL) {
+  if (optargs_t_ostringlist != NULL && ! ZVAL_IS_NULL (optargs_t_ostringlist)) {
     char **r;
     HashTable *a;
     int n;
@@ -8059,7 +8059,7 @@ PHP_FUNCTION (guestfs_internal_test)
     zval **d;
     size_t c = 0;
 
-    a = Z_ARRVAL_P (z_ostringlist);
+    a = Z_ARRVAL_P (optargs_t_ostringlist);
     n = zend_hash_num_elements (a);
     r = safe_emalloc (n + 1, sizeof (char *), 0);
     for (zend_hash_internal_pointer_reset_ex (a, &p);
@@ -8072,8 +8072,8 @@ PHP_FUNCTION (guestfs_internal_test)
       c++;
     }
     r[c] = NULL;
-    optargs_s.ostringlist = r;
 
+    optargs_s.ostringlist = r;
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK;
   }
 
@@ -18138,10 +18138,10 @@ PHP_FUNCTION (guestfs_tar_out)
   char *optargs_t_compress = NULL;
   int optargs_t_compress_size = -1;
   zend_bool optargs_t_numericowner = -1;
-  zval *z_excludes;
+  zval *optargs_t_excludes;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|sba",
-        &z_g, &directory, &directory_size, &tarfile, &tarfile_size, &optargs_t_compress, &optargs_t_compress_size, &optargs_t_numericowner, &z_excludes) == FAILURE) {
+        &z_g, &directory, &directory_size, &tarfile, &tarfile_size, &optargs_t_compress, &optargs_t_compress_size, &optargs_t_numericowner, &optargs_t_excludes) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -18169,7 +18169,7 @@ PHP_FUNCTION (guestfs_tar_out)
     optargs_s.numericowner = optargs_t_numericowner;
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
   }
-  if (z_excludes != NULL) {
+  if (optargs_t_excludes != NULL && ! ZVAL_IS_NULL (optargs_t_excludes)) {
     char **r;
     HashTable *a;
     int n;
@@ -18177,7 +18177,7 @@ PHP_FUNCTION (guestfs_tar_out)
     zval **d;
     size_t c = 0;
 
-    a = Z_ARRVAL_P (z_excludes);
+    a = Z_ARRVAL_P (optargs_t_excludes);
     n = zend_hash_num_elements (a);
     r = safe_emalloc (n + 1, sizeof (char *), 0);
     for (zend_hash_internal_pointer_reset_ex (a, &p);
@@ -18190,8 +18190,8 @@ PHP_FUNCTION (guestfs_tar_out)
       c++;
     }
     r[c] = NULL;
-    optargs_s.excludes = r;
 
+    optargs_s.excludes = r;
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK;
   }
 
