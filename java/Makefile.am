@@ -55,9 +55,10 @@ CLEANFILES = \
 	$(builddir)/com/redhat/et/libguestfs/*.class \
 	com_redhat_et_libguestfs_GuestFS.h \
 	*.class \
-	*.jar \
-	api/com/redhat/et/libguestfs/*.html \
-	api/*
+	*.jar
+
+clean-local:
+	-rm -rf api
 
 if HAVE_JAVA
 
@@ -130,7 +131,7 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
 noinst_DATA = Bindtests.class $(java_tests:.java=.class)
 
-t/%.class: t/%.java
+t/%.class: t/%.java libguestfs-$(VERSION).jar
 	mkdir -p t
 	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir)/t $<
 

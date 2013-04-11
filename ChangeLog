@@ -1,3 +1,86 @@
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.20.6.
+
+	inspection: Don't fail if libosinfo database is not found (RHBZ#948324). (cherry picked from commit b72daebaf4a859769455a1db70a40603cb5597be)
+
+	examples: Add example program showing enabling debugging and capturing log messages.
+	Cherry picked from commit e3546ad2ce2c0d953e3be2b072bacd48972450af and
+	updated so it doesn't require the guestfs_event_to_string API which
+	was added in 1.21.
+
+	pod: Fix "wide character in print" warnings by declaring encoding correctly. (cherry picked from commit a3de6eddd49c81349dbdb041ba0d4b40f1ef3fd3)
+
+	daemon/copy: Ensure errno is preserved along error paths. (cherry picked from commit 3cdca7616a5f5a550d93e4f088b1b97fd7c9a602)
+
+	php: Fix segfault when function has an OStringList optional argument.
+	How this PHP/Zend stuff is supposed to work is not documented, but at
+	least with these changes it no longer segfaults.
+	(cherry picked from commit 289fd29f0bfbb94566d9780dd8ac3fe15e55541d)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	python: Let RHashtable be returned as a Python dict.
+	The initial proposal was suggested by Matt Booth and discussed on the
+	mailing list here:
+
+	https://www.redhat.com/archives/libguestfs/2013-April/msg00007.html
+	(cherry picked from commit ba0199c487feec7f02cfc00ba3e900e6fa5ed4d8)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Better error messages for FUSE and other things not supported.
+	The bare message "FUSE not supported" wasn't actionable.
+	(cherry picked from commit 3dcb572bda87385ee9db4574b888120667aa4ece)
+
+	FAQ: In Fedora >= 19, the RPM detects if it can access the network when building. (cherry picked from commit d0a8cca9a1a399d43c6e44dfc655eedbe61d22ec)
+
+	virt-ls, virt-edit: Remove references to Sys::Guestfs::Lib and other irrelevant Perl libraries. (cherry picked from commit 288b2b2d4fa642e7a58728f1900d416ecb1e8328)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Make test cases depend on jar file.
+	This fixes parallel builds.  The error you would have seen was:
+
+	  error: error reading libguestfs-1.21.25.jar; zip file is empty
+	(cherry picked from commit 6fa1177b0a429b13034797e3471da0dbbc4ccac3)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: 'make clean' should remove whole api/ directory.
+	This directory (containing HTML documentation) can be removed
+	completely when making clean.  CLEANFILES cannot recursively remove a
+	directory, so use a clean-local rule instead.
+	(cherry picked from commit 1a2e03c323cdc28d74d276c5c2a5b02df41d38f7)
+
+	build: Change various check rules so they implicitly act like 'make -k'.
+	Rules such as 'make check-valgrind' are implemented using a for-loop.
+	They would always exit after the first error, even if 'make -k' was
+	used at the top-level.  Since 'make -k'-style behaviour is generally
+	more useful, change these for-loops so they run all the tests, and
+	report errors at the end.
+	(cherry picked from commit ce49e1fdc05ddad306fcf2278429f0433c7f954e)
+
+	make clean: Remove *~ (editor backup) files. (cherry picked from commit 599f5d7ddc793189a6ebfd61ccfac3abe6644cec)
+
+	make clean: Clean contents of tmp directory. (cherry picked from commit 5f5ce4f59fe9d27bddef9ad5fe9712fe6bc663dd)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	valgrind: Write separate log files in tmp/valgrind-<DATE>-<PID>.log
+	Current code wrote a single valgrind.log in the top-level directory.
+	This was overwritten with each valgrinded program, which wasn't much
+	use.  The new version writes multiple separate valgrind-*.log files
+	containing the date and PID (so each is unique).
+
+	It would nice if valgrind could delete log files that don't contain
+	errors, but this doesn't appear to be possible.
+	(cherry picked from commit b050d7e4bf2cdbd04e980511635687f1114035e0)
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Clarify output of 'make help'. (cherry picked from commit f2b1a01e76ba8bd6865c5a2bed3204e222b43a08)
+
 2013-03-31  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.20.5.

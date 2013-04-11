@@ -199,7 +199,7 @@ read_osinfo_db (guestfs_h *g)
   dir = opendir (LIBOSINFO_DB_OS_PATH);
   if (!dir) {
     debug (g, "osinfo: %s: %s", LIBOSINFO_DB_OS_PATH, strerror (errno));
-    return -1;
+    return 0; /* This is not an error: RHBZ#948324. */
   }
 
   debug (g, "osinfo: loading database from %s", LIBOSINFO_DB_OS_PATH);
@@ -572,7 +572,7 @@ int
 guestfs___osinfo_map (guestfs_h *g, const struct guestfs_isoinfo *isoinfo,
                       const struct osinfo **osinfo_ret)
 {
-  debug (g, "osinfo: libxml2 not available");
+  debug (g, "osinfo: libxml2 not available at compile time");
   return 0;
 }
 

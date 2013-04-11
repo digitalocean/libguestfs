@@ -67,9 +67,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = create-disk$(EXEEXT) display-icon$(EXEEXT) \
-	inspect-vm$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
-	$(am__EXEEXT_3)
+noinst_PROGRAMS = create-disk$(EXEEXT) debug-logging$(EXEEXT) \
+	display-icon$(EXEEXT) inspect-vm$(EXEEXT) $(am__EXEEXT_1) \
+	$(am__EXEEXT_2) $(am__EXEEXT_3)
 @HAVE_LIBVIRT_TRUE@am__append_1 = copy-over libvirt-auth
 @HAVE_HIVEX_TRUE@am__append_2 = virt-dhcp-address
 @HAVE_FUSE_TRUE@am__append_3 = mount-local
@@ -224,6 +224,12 @@ create_disk_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
 create_disk_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(create_disk_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_debug_logging_OBJECTS = debug_logging-debug-logging.$(OBJEXT)
+debug_logging_OBJECTS = $(am_debug_logging_OBJECTS)
+debug_logging_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
+debug_logging_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(debug_logging_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_display_icon_OBJECTS = display_icon-display-icon.$(OBJEXT)
 display_icon_OBJECTS = $(am_display_icon_OBJECTS)
 display_icon_DEPENDENCIES = $(top_builddir)/src/libguestfs.la
@@ -299,12 +305,12 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(copy_over_SOURCES) $(create_disk_SOURCES) \
-	$(display_icon_SOURCES) $(inspect_vm_SOURCES) \
-	$(libvirt_auth_SOURCES) $(mount_local_SOURCES) \
-	$(virt_dhcp_address_SOURCES)
+	$(debug_logging_SOURCES) $(display_icon_SOURCES) \
+	$(inspect_vm_SOURCES) $(libvirt_auth_SOURCES) \
+	$(mount_local_SOURCES) $(virt_dhcp_address_SOURCES)
 DIST_SOURCES = $(am__copy_over_SOURCES_DIST) $(create_disk_SOURCES) \
-	$(display_icon_SOURCES) $(inspect_vm_SOURCES) \
-	$(am__libvirt_auth_SOURCES_DIST) \
+	$(debug_logging_SOURCES) $(display_icon_SOURCES) \
+	$(inspect_vm_SOURCES) $(am__libvirt_auth_SOURCES_DIST) \
 	$(am__mount_local_SOURCES_DIST) \
 	$(am__virt_dhcp_address_SOURCES_DIST)
 am__can_run_installinfo = \
@@ -1405,6 +1411,7 @@ EXTRA_DIST = \
 	guestfs-testing.pod \
 	copy-over.c \
 	create-disk.c \
+	debug-logging.c \
 	display-icon.c \
 	inspect-vm.c \
 	libvirt-auth.c \
@@ -1458,6 +1465,18 @@ create_disk_CFLAGS = \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 create_disk_LDADD = \
+	$(top_builddir)/src/libguestfs.la
+
+debug_logging_SOURCES = debug-logging.c
+debug_logging_CPPFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
+debug_logging_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+
+debug_logging_LDADD = \
 	$(top_builddir)/src/libguestfs.la
 
 display_icon_SOURCES = display-icon.c
@@ -1575,6 +1594,9 @@ copy-over$(EXEEXT): $(copy_over_OBJECTS) $(copy_over_DEPENDENCIES) $(EXTRA_copy_
 create-disk$(EXEEXT): $(create_disk_OBJECTS) $(create_disk_DEPENDENCIES) $(EXTRA_create_disk_DEPENDENCIES) 
 	@rm -f create-disk$(EXEEXT)
 	$(AM_V_CCLD)$(create_disk_LINK) $(create_disk_OBJECTS) $(create_disk_LDADD) $(LIBS)
+debug-logging$(EXEEXT): $(debug_logging_OBJECTS) $(debug_logging_DEPENDENCIES) $(EXTRA_debug_logging_DEPENDENCIES) 
+	@rm -f debug-logging$(EXEEXT)
+	$(AM_V_CCLD)$(debug_logging_LINK) $(debug_logging_OBJECTS) $(debug_logging_LDADD) $(LIBS)
 display-icon$(EXEEXT): $(display_icon_OBJECTS) $(display_icon_DEPENDENCIES) $(EXTRA_display_icon_DEPENDENCIES) 
 	@rm -f display-icon$(EXEEXT)
 	$(AM_V_CCLD)$(display_icon_LINK) $(display_icon_OBJECTS) $(display_icon_LDADD) $(LIBS)
@@ -1599,6 +1621,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copy_over-copy-over.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/create_disk-create-disk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug_logging-debug-logging.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/display_icon-display-icon.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect_vm-inspect-vm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvirt_auth-libvirt-auth.Po@am__quote@
@@ -1653,6 +1676,20 @@ create_disk-create-disk.obj: create-disk.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='create-disk.c' object='create_disk-create-disk.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(create_disk_CPPFLAGS) $(CPPFLAGS) $(create_disk_CFLAGS) $(CFLAGS) -c -o create_disk-create-disk.obj `if test -f 'create-disk.c'; then $(CYGPATH_W) 'create-disk.c'; else $(CYGPATH_W) '$(srcdir)/create-disk.c'; fi`
+
+debug_logging-debug-logging.o: debug-logging.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(debug_logging_CPPFLAGS) $(CPPFLAGS) $(debug_logging_CFLAGS) $(CFLAGS) -MT debug_logging-debug-logging.o -MD -MP -MF $(DEPDIR)/debug_logging-debug-logging.Tpo -c -o debug_logging-debug-logging.o `test -f 'debug-logging.c' || echo '$(srcdir)/'`debug-logging.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/debug_logging-debug-logging.Tpo $(DEPDIR)/debug_logging-debug-logging.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug-logging.c' object='debug_logging-debug-logging.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(debug_logging_CPPFLAGS) $(CPPFLAGS) $(debug_logging_CFLAGS) $(CFLAGS) -c -o debug_logging-debug-logging.o `test -f 'debug-logging.c' || echo '$(srcdir)/'`debug-logging.c
+
+debug_logging-debug-logging.obj: debug-logging.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(debug_logging_CPPFLAGS) $(CPPFLAGS) $(debug_logging_CFLAGS) $(CFLAGS) -MT debug_logging-debug-logging.obj -MD -MP -MF $(DEPDIR)/debug_logging-debug-logging.Tpo -c -o debug_logging-debug-logging.obj `if test -f 'debug-logging.c'; then $(CYGPATH_W) 'debug-logging.c'; else $(CYGPATH_W) '$(srcdir)/debug-logging.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/debug_logging-debug-logging.Tpo $(DEPDIR)/debug_logging-debug-logging.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug-logging.c' object='debug_logging-debug-logging.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(debug_logging_CPPFLAGS) $(CPPFLAGS) $(debug_logging_CFLAGS) $(CFLAGS) -c -o debug_logging-debug-logging.obj `if test -f 'debug-logging.c'; then $(CYGPATH_W) 'debug-logging.c'; else $(CYGPATH_W) '$(srcdir)/debug-logging.c'; fi`
 
 display_icon-display-icon.o: display-icon.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(display_icon_CPPFLAGS) $(CPPFLAGS) $(display_icon_CFLAGS) $(CFLAGS) -MT display_icon-display-icon.o -MD -MP -MF $(DEPDIR)/display_icon-display-icon.Tpo -c -o display_icon-display-icon.o `test -f 'display-icon.c' || echo '$(srcdir)/'`display-icon.c
@@ -2056,7 +2093,7 @@ uninstall-man: uninstall-man1 uninstall-man3
 
 guestfs-examples.3 $(top_builddir)/html/guestfs-examples.3.html: stamp-guestfs-examples.pod
 
-stamp-guestfs-examples.pod: guestfs-examples.pod copy-over.c create-disk.c display-icon.c inspect-vm.c libvirt-auth.c mount-local.c virt-dhcp-address.c
+stamp-guestfs-examples.pod: guestfs-examples.pod copy-over.c create-disk.c debug-logging.c display-icon.c inspect-vm.c libvirt-auth.c mount-local.c virt-dhcp-address.c
 	$(PODWRAPPER) \
 	  --section 3 \
 	  --man guestfs-examples.3 \

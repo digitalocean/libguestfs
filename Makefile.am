@@ -299,11 +299,18 @@ podwrapper.1: podwrapper.pl
 # Make clean.
 
 CLEANFILES = \
+	*~ \
 	html/*.html \
 	pod2htm?.tmp \
 	podwrapper.1 \
 	qemu-wrapper.sh \
-	stamp-guestfs-release-notes.pod
+	stamp-guestfs-release-notes.pod \
+	tmp/guestfs.* \
+	tmp/run-* \
+	tmp/valgrind-*.log
+
+clean-local:
+	-rm -rf tmp/libguestfs??????
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
@@ -325,17 +332,21 @@ extra-tests:
 	  check-slow
 
 check-valgrind: build-test-guests
-	@for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	@errors=0; \
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
 	  echo $(MAKE) -C `dirname $$f` $@; \
-	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
-	done
+	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
 
 check-valgrind-local-guests:
 	@GUESTS=`$(top_builddir)/run ./pick-guests.pl 5`; \
+	errors=0; \
 	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
 	  echo $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@; \
-	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || exit $$?; \
-	done
+	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
 
 check-with-appliance:
 	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
@@ -375,10 +386,12 @@ check-with-upstream-libvirt:
 	fi
 
 check-slow: build-test-guests
+	@errors=0; \
 	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
 	  echo $(MAKE) -C `dirname $$f` $@; \
-	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
-	done
+	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
 
 build-test-guests:
 	$(MAKE) -C tests/guests check
@@ -407,7 +420,7 @@ help:
 	@echo "make check                        Run the standard tests"
 	@echo "make -k check                       ... and display all errors at once."
 	@echo
-	@echo "make extra-tests                  ... runs all of the following tests:"
+	@echo "make extra-tests                  Runs all of the following tests:"
 	@echo "  make check-valgrind                Run a subset of the tests under valgrind."
 	@echo "  make check-valgrind-local-guests   Test under valgrind using local guests."
 	@echo "  make check-with-appliance          Test using appliance attach-method."

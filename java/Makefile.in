@@ -1433,9 +1433,7 @@ CLEANFILES = \
 	$(builddir)/com/redhat/et/libguestfs/*.class \
 	com_redhat_et_libguestfs_GuestFS.h \
 	*.class \
-	*.jar \
-	api/com/redhat/et/libguestfs/*.html \
-	api/*
+	*.jar
 
 @HAVE_JAVA_TRUE@JAVAC_FLAGS = $(EXTRA_JAVAC_FLAGS) -encoding utf-8
 @HAVE_JAVA_TRUE@JAVADOC_FLAGS = -encoding utf-8
@@ -1842,7 +1840,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-generic clean-jnilibLTLIBRARIES clean-libtool \
-	mostlyclean-am
+	clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1915,19 +1913,20 @@ uninstall-am: uninstall-jnilibLTLIBRARIES uninstall-libguestfs_jarDATA
 	install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-jnilibLTLIBRARIES clean-libtool cscopelist \
-	ctags distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-data-hook install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-jnilibLTLIBRARIES \
-	install-libguestfs_jarDATA install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-jnilibLTLIBRARIES \
+	clean-generic clean-jnilibLTLIBRARIES clean-libtool \
+	clean-local cscopelist ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-data-hook install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-jnilibLTLIBRARIES install-libguestfs_jarDATA \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-jnilibLTLIBRARIES \
 	uninstall-libguestfs_jarDATA
 
 
@@ -1947,6 +1946,9 @@ $(top_builddir)/generator/stamp-generator: force
 .PHONY: appliance
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
+
+clean-local:
+	-rm -rf api
 @HAVE_JAVA_TRUE@$(libguestfs_jar_class_files): %.class: %.java
 @HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -d $(builddir) -classpath $(srcdir):$(builddir) $(srcdir)/$<
 
@@ -1969,7 +1971,7 @@ appliance: force
 @HAVE_JAVA_TRUE@	mkdir -p $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
 @HAVE_JAVA_TRUE@	cp -a api/* $(DESTDIR)$(datadir)/javadoc/$(PACKAGE_NAME)-java-$(PACKAGE_VERSION)
 
-@HAVE_JAVA_TRUE@t/%.class: t/%.java
+@HAVE_JAVA_TRUE@t/%.class: t/%.java libguestfs-$(VERSION).jar
 @HAVE_JAVA_TRUE@	mkdir -p t
 @HAVE_JAVA_TRUE@	$(JAVAC) $(JAVAC_FLAGS) -classpath libguestfs-$(VERSION).jar -d $(builddir)/t $<
 
