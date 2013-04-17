@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [1])
+m4_define([libguestfs_release], [2])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -365,14 +365,27 @@ AC_CHECK_PROG([FEBOOTSTRAP],
               [febootstrap],[febootstrap],[no])
 
 dnl Pass a febootstrap --yum-config option.
-AC_MSG_CHECKING([if user requested febootstrap --yum-config option])
+dnl
+dnl Note that in febootstrap >= 3.21, this option is now called
+dnl --packager-config, although --yum-config can still be used
+dnl as a deprecated alias.
+AC_MSG_CHECKING([for --with-febootstrap-yum-config option (deprecated)])
 AC_ARG_WITH([febootstrap-yum-config],
     [AS_HELP_STRING([--with-febootstrap-yum-config=FILE],
-      [pass febootstrap --yum-config option @<:@default=no@:>@])],
-    [FEBOOTSTRAP_YUM_CONFIG="$withval"],
-    [FEBOOTSTRAP_YUM_CONFIG=no])
-AC_MSG_RESULT([$FEBOOTSTRAP_YUM_CONFIG])
-AC_SUBST([FEBOOTSTRAP_YUM_CONFIG])
+      [pass febootstrap --packager-config option @<:@default=no@:>@])],
+    [FEBOOTSTRAP_PACKAGER_CONFIG="$withval"],
+    [FEBOOTSTRAP_PACKAGER_CONFIG=no])
+AC_MSG_RESULT([$FEBOOTSTRAP_PACKAGER_CONFIG])
+AC_SUBST([FEBOOTSTRAP_PACKAGER_CONFIG])
+
+AC_MSG_CHECKING([for --with-febootstrap-packager-config option])
+AC_ARG_WITH([febootstrap-packager-config],
+    [AS_HELP_STRING([--with-febootstrap-packager-config=FILE],
+      [pass febootstrap --packager-config option @<:@default=no@:>@])],
+    [FEBOOTSTRAP_PACKAGER_CONFIG="$withval"],
+    [FEBOOTSTRAP_PACKAGER_CONFIG=no])
+AC_MSG_RESULT([$FEBOOTSTRAP_PACKAGER_CONFIG])
+AC_SUBST([FEBOOTSTRAP_PACKAGER_CONFIG])
 
 if test "x$enable_appliance" = "xyes"; then
     test "x$FEBOOTSTRAP" = "xno" &&
@@ -1295,26 +1308,36 @@ fi
 AM_CONDITIONAL([HAVE_ERLANG], [test "x$ERLANG" != "xno" && test "x$ERLC" != "xno"])
 
 dnl Lua
-LUA=no
 AC_ARG_ENABLE([lua],
     AS_HELP_STRING([--disable-lua], [disable Lua language bindings]),
         [],
         [enable_lua=yes])
 AS_IF([test "x$enable_lua" != "xno"],[
-        LUA=
         AC_CHECK_PROG([LUA],[lua],[lua],[no])
-        AC_CHECK_HEADER([lua.h],[have_lua_h=yes])
-        AC_CHECK_HEADER([lauxlib.h],[have_lauxlib_h=yes])
-        AC_CHECK_LIB([lua],[lua_checkstack],[have_lua_lib=yes])
-
         AS_IF([test "x$LUA" != "xno"],[
             AC_MSG_CHECKING([for Lua version])
             LUA_VERSION=`$LUA -e 'print(_VERSION)' | awk '{print $2}'`
             AC_MSG_RESULT([$LUA_VERSION])
-            AC_SUBST([LUA_VERSION])
+            dnl On Debian it's 'lua5.1', 'lua5.2' etc.  On Fedora, just 'lua'.
+            PKG_CHECK_MODULES([LUA], [lua$LUA_VERSION],[
+                AC_SUBST([LUA_CFLAGS])
+                AC_SUBST([LUA_LIBS])
+                AC_SUBST([LUA_VERSION])
+                AC_DEFINE([HAVE_LUA],[1],[Lua library found at compile time])
+            ],[
+                PKG_CHECK_MODULES([LUA], [lua],[
+                    AC_SUBST([LUA_CFLAGS])
+                    AC_SUBST([LUA_LIBS])
+                    AC_SUBST([LUA_VERSION])
+                    AC_DEFINE([HAVE_LUA],[1],[Lua library found at compile time])
+                ],[
+                    AC_MSG_WARN([lua $LUA_VERSION not found])
+                ])
+            ])
         ])
 ])
-AM_CONDITIONAL([HAVE_LUA], [test "x$LUA" != "xno" && test "x$have_lua_h" = "xyes" && test "x$have_lauxlib_h" = "xyes" && test "x$have_lua_lib" = "xyes"])
+AM_CONDITIONAL([HAVE_LUA],
+               [test "x$LUA_LIBS" != "x"])
 
 dnl Check for Perl modules needed by Perl virt tools (virt-df, etc.)
 AS_IF([test "x$PERL" != "xno"],

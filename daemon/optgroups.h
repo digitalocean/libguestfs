@@ -27,6 +27,7 @@ extern int optgroup_acl_available (void);
 extern int optgroup_augeas_available (void);
 extern int optgroup_btrfs_available (void);
 extern int optgroup_fstrim_available (void);
+extern int optgroup_gdisk_available (void);
 extern int optgroup_grub_available (void);
 extern int optgroup_hivex_available (void);
 extern int optgroup_inotify_available (void);
@@ -100,6 +101,11 @@ extern int optgroup_zerofree_available (void);
 #define OPTGROUP_FSTRIM_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_fstrim (const char *mountpoint, int64_t offset, int64_t length, int64_t minimumfreeextent) { abort (); } \
   int optgroup_fstrim_available (void) { return 0; }
+
+#define OPTGROUP_GDISK_NOT_AVAILABLE \
+  char *__attribute__((noreturn)) do_part_get_gpt_type (const char *device, int partnum) { abort (); } \
+  int __attribute__((noreturn)) do_part_set_gpt_type (const char *device, int partnum, const char *guid) { abort (); } \
+  int optgroup_gdisk_available (void) { return 0; }
 
 #define OPTGROUP_GRUB_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_grub_install (const char *root, const char *device) { abort (); } \

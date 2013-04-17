@@ -26,7 +26,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 #include <ruby.h>
+#pragma GCC diagnostic pop
 
 #include "guestfs.h"
 
@@ -4476,46 +4479,7 @@ ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
  * Set the method that libguestfs uses to connect to the
  * back end guestfsd daemon.
  * 
- * Possible attach methods are:
- * 
- * "appliance"
- * Launch an appliance and connect to it.
- * 
- * This is the ordinary method and normally the
- * default, but see the note below.
- * 
- * "libvirt"
- * "libvirt:*URI*"
- * Use libvirt to launch the appliance. The optional
- * *URI* is the libvirt connection URI to use (see
- * <http://libvirt.org/uri.html>).
- * 
- * "unix:*path*"
- * Connect to the Unix domain socket *path*.
- * 
- * This method lets you connect to an existing daemon
- * or (using virtio-serial) to a live guest. For more
- * information, see "ATTACHING TO RUNNING DAEMONS" in
- * guestfs(3).
- * 
- * "appliance" is usually the default attach method.
- * However since libguestfs ≥ 1.19.24 it has been possible
- * to change the default in two ways:
- * 
- * Setting LIBGUESTFS_ATTACH_METHOD
- * Users can set this environment variable to change
- * the default.
- * 
- * Configuring the default attach method when building
- * libguestfs
- * Distributors can override the default when
- * libguestfs is built (using "./configure
- * --with-default-attach-method=...").
- * 
- * To find out if libguestfs was compiled with a
- * different default attach method, do:
- * 
- * guestfish get-attach-method
+ * See "ATTACH METHOD" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -4546,8 +4510,10 @@ ruby_guestfs_set_attach_method (VALUE gv, VALUE attachmethodv)
  *
  * get the attach method
  *
- * Return the current attach method. See
- * "g.set_attach_method".
+ * Return the current attach method.
+ * 
+ * See "g.set_attach_method" and "ATTACH METHOD" in
+ * guestfs(3).
  *
  *
  * (For the C API documentation for this function, see

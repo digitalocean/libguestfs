@@ -1,4 +1,7 @@
-#!/usr/bin/lua
+#!/bin/sh
+# -*- lua -*-
+test -z "$LUA" && LUA=lua
+exec $LUA << END_OF_FILE
 -- libguestfs Lua bindings -*- lua -*-
 -- Copyright (C) 2012 Red Hat Inc.
 --

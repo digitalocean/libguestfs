@@ -30,6 +30,7 @@ struct optgroup optgroups[] = {
   { "augeas", optgroup_augeas_available },
   { "btrfs", optgroup_btrfs_available },
   { "fstrim", optgroup_fstrim_available },
+  { "gdisk", optgroup_gdisk_available },
   { "grub", optgroup_grub_available },
   { "hivex", optgroup_hivex_available },
   { "inotify", optgroup_inotify_available },

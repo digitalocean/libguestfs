@@ -47,6 +47,12 @@ L</guestfs_mkfs_btrfs>
 The following functions:
 L</guestfs_fstrim>
 
+=item B<gdisk>
+
+The following functions:
+L</guestfs_part_get_gpt_type>
+L</guestfs_part_set_gpt_type>
+
 =item B<grub>
 
 The following functions:

@@ -1,4 +1,110 @@
+2012-12-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Change --with-febootstrap-yum-config to --with-febootstrap-packager-config
+	For the rationale behind this renaming, see:
+	https://github.com/libguestfs/febootstrap/commit/b8cbe191d0f03af1f6a42a07795995b16d5a8c24
+
+	You can still, for the time being, use
+	./configure --with-febootstrap-yum-config
+	but it's preferred to switch to the new option.  The new option is
+	identical, just renamed.
+
+	Qe still pass the deprecated --yum-config option to febootstrap
+	itself, since both old and new febootstrap support this.
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Set fs->device field on swap devices.
+	For some reason the fs->device field was not set for swap devices.
+
+	Apparently this did not matter before (this bug has existed since at
+	least libguestfs 1.16), but in commit 6ee80b8dac we started to depend
+	on the fs->device field being non-NULL.  This resulted in segfaults
+	when inspecting any guest which had a swap device, eg:
+
+	 #0  __strcmp_sse42 () at ../sysdeps/x86_64/multiarch/strcmp-sse42.S:164
+	 #1  0x00007ffff7d740cb in parent_device_already_probed (g=0x703a70,
+	                        partition=0x6f79b0 "/dev/vda4") at inspect.c:156
+	 #2  0x00007ffff7d73e00 in guestfs__inspect_os (g=0x703a70) at inspect.c:83
+	 #3  0x00007ffff7cee11d in guestfs_inspect_os (g=0x703a70) at actions-1.c:397
+
+	This commit sets fs->device to the device name.
+
+	(Thanks Matthew Booth for first noticing this problem.)
+
+2012-12-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Pass noapic on i686 kernel command line.
+	qemu 1.2 i686 TCG is buggy and hangs when emulating APIC.
+	https://bugzilla.redhat.com/show_bug.cgi?id=857026
+
+2012-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	faq: Suggest 'approx' (apt proxy) to speed up Debian builds.
+	Thanks Hilko Bengen.
+
+2012-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Skip windows.img tests if it is zero-sized.
+	If ntfs-3g is not installed, then tests/guests creates a 'windows.img'
+	file which is zero-sized.
+
+	This is problematical because other tests which use this image will
+	fail at best, or hit RHBZ#847549 (qemu/virtio-scsi bug) at worst.
+
+	Change the tests which use windows.img so they skip if 'windows.img'
+	has zero size.
+
+2012-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Add 'make print-subdirs' rule, useful for selectively running tests.
+	If you want to selectively run tests, or if the test suite fails half
+	way through, use:
+
+	  make print-subdirs
+
+	to print the subdirectories, select the ones you want to run / the
+	remaining ones, and do:
+
+	  make check SUBDIRS="..."
+
+2012-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Make gdisk into an optional dependency and optgroup.
+	Also document that gdisk is a dependency at all.
+
+	This fixes commit 956e30effa25eee00fb9e8f5303a6a1fe7409037.
+
+2012-12-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	lua: tests: If $LUA is not set, set it to 'lua' instead of '/usr/bin/lua'.
+
+	lua: Fix misapplied patch.
+	This fixes commit 5b70120293f3702f290fba5023a7016fa5ff1beb.
+
+	ruby: Disable -Wstrict-prototypes warning for Ruby headers.
+
 2012-12-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Properly document attach methods in the guestfs(3) man page.
+
+	lua: Fix Lua configure test on Fedora.
+	On Debian, the lua pkg-config file is called "lua5.1.pc" (etc)
+	whereas on Fedora it's called "lua.pc" for all versions.
+
+2012-12-17  Hilko Bengen  <bengen@hilluzination.de>
+
+	lua: Use correct binary for tests
+
+	lua: Add ifdefs for Lua 5.2 compatibility
+
+	lua: Use pkg-config to determine Lua version, parameters
+
+2012-12-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Use pvcreate --force option (RHBZ#887971).
+	pvcreate fails if the partition contains a swap space signature.  Use
+	more force to stop it from complaining.
 
 	Version 1.21.1.
 

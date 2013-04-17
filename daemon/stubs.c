@@ -15258,6 +15258,16 @@ part_set_gpt_type_stub (XDR *xdr_in)
   int partnum;
   char *guid;
 
+  /* The caller should have checked before calling this. */
+  if (! optgroup_gdisk_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "gdisk");
+    goto done_no_free;
+  }
+
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
     goto done_no_free;
@@ -15293,6 +15303,16 @@ part_get_gpt_type_stub (XDR *xdr_in)
   struct guestfs_part_get_gpt_type_args args;
   char *device;
   int partnum;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_gdisk_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "gdisk");
+    goto done_no_free;
+  }
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");

@@ -29,6 +29,11 @@ L</guestfs_mkfs_btrfs>
 
 以下の関数: L</guestfs_fstrim>
 
+=item B<gdisk>
+
+The following functions: L</guestfs_part_get_gpt_type>
+L</guestfs_part_set_gpt_type>
+
 =item B<grub>
 
 以下の関数: L</guestfs_grub_install>
