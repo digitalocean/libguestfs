@@ -1,3 +1,99 @@
+2013-03-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	qemu-img info: Use --output json and YAJL (JSON parser) to safely parse output (RHBZ#920225).
+	The old parser is still used if either YAJL is not available or
+	qemu-img info doesn't support the --output json option.
+
+2013-03-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	qemu-img info: Prefix parsing functions as old_parser_*.
+	Prefix functions in this file with old_parser_... to make it clear
+	this is the old / slightly unsafe human output parser, which is
+	shortly to be replaced by a safer JSON parser.
+
+	This is just code motion.
+
+2013-03-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: Fix tests.
+	- Use ./run script to run the tests.
+	- Set environment variables correctly, including $PATH.
+	- Test the locally built, not installed, copy of libguestfs.
+
+	php: Revise README-PHP documentation.
+
+	docs: Note that $PATH affects libguestfs.
+	If $PATH is not set, libguestfs and/or libvirt tend to break.
+
+	launch: libvirt: Unset $PATH can cause libvirt launch to fail.
+	Note this fact in the error message that is printed in this situation.
+
+	launch: libvirt: Print proper dotted libvirt version.
+
+	php: Print libguestfs error string if test fails.
+
+	php: Fix test, /dev/null format must be "raw".
+
+2013-03-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Give values for each state in 'enum state'.
+	The values of CONFIG, LAUNCHING and READY and (kind of) exposed
+	through the API so shouldn't change.
+
+	Use a bad sentinel for NO_HANDLE since that indicates a serious error.
+
+2013-03-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Add comment for libguestfs handle.
+
+	RHEL 5: tests/xml: Define O_CLOEXEC in LD_PRELOAD library.
+
+2013-03-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	RHEL 5: tests: Use gnulib.
+	Gnulib defines O_CLOEXEC which is missing on RHEL 5.
+
+2013-03-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	RHEL 5: Replacement for 'Unix.isatty stdout' for old OCaml versions.
+	Unix.isatty missing on RHEL 5-era OCaml 3.09.3.
+
+	RHEL 5: gnulib: Use module mkstemps.
+	RHEL 5 glibc doesn't have this function.
+
+	RHEL 5: inspect: Add macro for be32toh if one is not defined in the header files.
+
+2013-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add suppression for memory leak in libmagic.
+
+	filearch: Use a more logical way to construct the cpio command.
+
+	filearch: Don't print errno if cpio command fails, print command status instead.
+	errno is meaningless here.
+
+2013-03-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Small fix for OCaml 3.12.1.
+	OCaml 3.12.1 (unlike 4.00.1) doesn't let you use printf formatters
+	in this way:
+
+	  printf (if foo then "&%s" else "%s") str
+
+2013-03-08  Hilko Bengen  <bengen@hilluzination.de>
+
+	Move Ruby-related checks from autoconf to extconf.rb; add extra check for rb_alloc_func_t
+	Ruby ships its own config.h which may or may not define the same
+	relevant constants as our autoconf-generated config.h. Instead of
+	trying to specify the exact path to the wanted header file we may just
+	as well simply use Ruby's autoconf-inspired checks and macros.
+
+2013-03-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	df/parallel.c: Fix if libvirt is not available at compile time.
+
+	Version 1.21.18.
+
 2013-03-07  Hilko Bengen  <bengen@hilluzination.de>
 
 	out-of-tree build: Fix link creation

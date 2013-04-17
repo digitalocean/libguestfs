@@ -87,8 +87,11 @@
 /* Maximum size of Windows explorer.exe.  2.6MB on Windows 7. */
 #define MAX_WINDOWS_EXPLORER_SIZE (4 * 1000 * 1000)
 
-/* GuestFS handle and connection. */
-enum state { CONFIG, LAUNCHING, READY, NO_HANDLE };
+/* Guestfs handle and associated structures. */
+
+/* State. */
+enum state { CONFIG = 0, LAUNCHING = 1, READY = 2,
+             NO_HANDLE = 0xebadebad };
 
 /* Attach method. */
 enum attach_method {
@@ -198,6 +201,7 @@ struct error_cb_stack {
   void *                   error_cb_data;
 };
 
+/* The libguestfs handle. */
 struct guestfs_h
 {
   struct guestfs_h *next;	/* Linked list of open handles. */
@@ -303,6 +307,12 @@ struct guestfs_h
    * globally unique.
    */
   int unique;
+
+  /* In src/info.c: Use new (JSON) or old (human) qemu-img info parser. */
+  int qemu_img_info_parser;
+#define QEMU_IMG_INFO_UNKNOWN_PARSER 0
+#define QEMU_IMG_INFO_NEW_PARSER 1
+#define QEMU_IMG_INFO_OLD_PARSER 2
 
   /*** Protocol. ***/
   struct connection *conn;              /* Connection to appliance. */

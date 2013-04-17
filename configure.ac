@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [18])
+m4_define([libguestfs_release], [19])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -279,6 +279,7 @@ AC_CHECK_HEADERS([\
 
 dnl Functions.
 AC_CHECK_FUNCS([\
+    be32toh \
     fsync \
     futimens \
     getxattr \
@@ -1168,14 +1169,6 @@ AS_IF([test "x$enable_ruby" != "xno"],[
             AC_MSG_RESULT([-l$libruby])
             AC_CHECK_LIB([$libruby],[ruby_init],
                          [have_libruby=1],[have_libruby=])
-
-            dnl Symbols that we substitute when missing.
-            AS_IF([test -n "$have_libruby"],[
-                old_LIBS="$LIBS"
-                LIBS="$LIBS -l$libruby"
-                AC_CHECK_FUNCS([rb_hash_lookup])
-                LIBS="$old_LIBS"
-            ])
         ],[
             AC_MSG_RESULT([not found])
         ])

@@ -173,7 +173,9 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   }
 
   virGetVersion (&version, NULL, NULL);
-  debug (g, "libvirt version = %lu", version);
+  debug (g, "libvirt version = %lu (%lu.%lu.%lu)",
+         version,
+         version / 1000000UL, version / 1000UL % 1000UL, version % 1000UL);
   if (version < MIN_LIBVIRT_VERSION) {
     error (g, _("you must have libvirt >= %d.%d.%d "
                 "to use the 'libvirt' attach-method"),
@@ -556,13 +558,14 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
     error (g,
            _("libvirt hypervisor doesn't support qemu or KVM,\n"
              "so we cannot create the libguestfs appliance.\n"
-             "The current attach-method is:\n"
-             "  %s\n"
-             "Try setting:\n"
+             "The current attach-method is '%s'.\n"
+             "Check that the PATH environment variable is set and contains\n"
+             "the path to the qemu ('qemu-system-*') or KVM ('qemu-kvm', 'kvm' etc).\n"
+             "Or: try setting:\n"
              "  export LIBGUESTFS_ATTACH_METHOD=libvirt:qemu:///session\n"
-             "or if you want to have libguestfs run qemu directly, try:\n"
+             "Or: if you want to have libguestfs run qemu directly, try:\n"
              "  export LIBGUESTFS_ATTACH_METHOD=appliance\n"
-             "or read the guestfs(3) man page"),
+             "For further help, read the guestfs(3) man page and libguestfs FAQ."),
            guestfs__get_attach_method (g));
     return -1;
   }

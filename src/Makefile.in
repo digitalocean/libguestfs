@@ -268,11 +268,12 @@ am__DEPENDENCIES_1 =
 libguestfs_la_DEPENDENCIES = liberrnostring.la libprotocol.la \
 	libutils.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	../gnulib/lib/libgnu.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_2)
 am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-actions-1.lo libguestfs_la-actions-2.lo \
 	libguestfs_la-actions-3.lo libguestfs_la-actions-4.lo \
@@ -1523,12 +1524,14 @@ libguestfs_la_CPPFLAGS = \
 
 libguestfs_la_CFLAGS = $(WARN_CFLAGS) $(WERROR_CFLAGS) $(GPROF_CFLAGS) \
 	$(GCOV_CFLAGS) $(GCC_VISIBILITY_HIDDEN) $(PCRE_CFLAGS) \
-	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) $(am__append_1)
+	$(LIBVIRT_CFLAGS) $(LIBXML2_CFLAGS) $(YAJL_CFLAGS) \
+	$(am__append_1)
 libguestfs_la_LIBADD = liberrnostring.la libprotocol.la libutils.la \
 	$(PCRE_LIBS) $(MAGIC_LIBS) $(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
-	../gnulib/lib/libgnu.la $(GETADDRINFO_LIB) $(HOSTENT_LIB) \
-	$(INET_NTOP_LIB) $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIBINTL) \
-	$(LTLIBTHREAD) $(SERVENT_LIB) $(am__append_2)
+	$(YAJL_LIBS) ../gnulib/lib/libgnu.la $(GETADDRINFO_LIB) \
+	$(HOSTENT_LIB) $(INET_NTOP_LIB) $(LIBSOCKET) \
+	$(LIB_CLOCK_GETTIME) $(LIBINTL) $(LTLIBTHREAD) $(SERVENT_LIB) \
+	$(am__append_2)
 
 # Force libtool to name the library 'libguestfs.so.0.$(MAX_PROC_NR).0'.
 # Include the version script to limit which symbols are exported.
