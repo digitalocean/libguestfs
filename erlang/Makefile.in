@@ -1376,6 +1376,7 @@ EXTRA_DIST = \
 @HAVE_ERLANG_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
 @HAVE_ERLANG_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 @HAVE_ERLANG_TRUE@	-I$(ERLANG_LIB_DIR_erl_interface)/include \
+@HAVE_ERLANG_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_ERLANG_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_ERLANG_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 

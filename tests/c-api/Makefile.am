@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ TESTS_ENVIRONMENT = \
 tests_SOURCES = tests.c
 tests_CFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-DGUESTFS_PRIVATE=1 \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 tests_LDADD = $(top_builddir)/src/libguestfs.la

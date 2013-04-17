@@ -1415,315 +1415,6 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_application2_list *guestfs_inspect_list
 #define GUESTFS_HAVE_INSPECT_OS 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_os (guestfs_h *g);
 
-#define GUESTFS_HAVE_INTERNAL_AUTOSYNC 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_autosync (guestfs_h *g);
-
-#define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
-
-#define GUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive (guestfs_h *g, const char *label);
-
-#define GUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive_precheck (guestfs_h *g, const char *label);
-
-#define GUESTFS_HAVE_INTERNAL_LSTATLIST 1
-extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_internal_lstatlist (guestfs_h *g, const char *path, char *const *names);
-
-#define GUESTFS_HAVE_INTERNAL_LXATTRLIST 1
-extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_internal_lxattrlist (guestfs_h *g, const char *path, char *const *names);
-
-#define GUESTFS_HAVE_INTERNAL_READLINKLIST 1
-extern GUESTFS_DLL_PUBLIC char **guestfs_internal_readlinklist (guestfs_h *g, const char *path, char *const *names);
-
-#define GUESTFS_INTERNAL_TEST_OBOOL 0
-#define GUESTFS_INTERNAL_TEST_OINT 1
-#define GUESTFS_INTERNAL_TEST_OINT64 2
-#define GUESTFS_INTERNAL_TEST_OSTRING 3
-#define GUESTFS_INTERNAL_TEST_OSTRINGLIST 4
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, ...);
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_va (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, va_list args);
-
-struct guestfs_internal_test_argv {
-  uint64_t bitmask;
-# define GUESTFS_INTERNAL_TEST_OBOOL_BITMASK (UINT64_C(1)<<0)
-  int obool;
-# define GUESTFS_INTERNAL_TEST_OINT_BITMASK (UINT64_C(1)<<1)
-  int oint;
-# define GUESTFS_INTERNAL_TEST_OINT64_BITMASK (UINT64_C(1)<<2)
-  int64_t oint64;
-# define GUESTFS_INTERNAL_TEST_OSTRING_BITMASK (UINT64_C(1)<<3)
-  const char *ostring;
-# define GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK (UINT64_C(1)<<4)
-  char *const *ostringlist;
-};
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_argv (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, const struct guestfs_internal_test_argv *optargs);
-
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1 0
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2 1
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3 2
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4 3
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5 4
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6 5
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7 6
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8 7
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9 8
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10 9
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11 10
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12 11
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13 12
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14 13
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15 14
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16 15
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17 16
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18 17
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19 18
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20 19
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21 20
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22 21
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23 22
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24 23
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25 24
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26 25
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27 26
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28 27
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29 28
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30 29
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31 30
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32 31
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33 32
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34 33
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35 34
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36 35
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37 36
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38 37
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39 38
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40 39
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41 40
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42 41
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43 42
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44 43
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45 44
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46 45
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47 46
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48 47
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49 48
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50 49
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51 50
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52 51
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53 52
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54 53
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55 54
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56 55
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57 56
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58 57
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59 58
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60 59
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61 60
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62 61
-#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63 62
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_63_optargs (guestfs_h *g, ...);
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_63_optargs_va (guestfs_h *g, va_list args);
-
-struct guestfs_internal_test_63_optargs_argv {
-  uint64_t bitmask;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK (UINT64_C(1)<<0)
-  int opt1;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK (UINT64_C(1)<<1)
-  int opt2;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK (UINT64_C(1)<<2)
-  int opt3;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK (UINT64_C(1)<<3)
-  int opt4;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK (UINT64_C(1)<<4)
-  int opt5;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK (UINT64_C(1)<<5)
-  int opt6;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK (UINT64_C(1)<<6)
-  int opt7;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK (UINT64_C(1)<<7)
-  int opt8;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK (UINT64_C(1)<<8)
-  int opt9;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK (UINT64_C(1)<<9)
-  int opt10;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK (UINT64_C(1)<<10)
-  int opt11;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK (UINT64_C(1)<<11)
-  int opt12;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK (UINT64_C(1)<<12)
-  int opt13;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK (UINT64_C(1)<<13)
-  int opt14;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK (UINT64_C(1)<<14)
-  int opt15;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK (UINT64_C(1)<<15)
-  int opt16;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK (UINT64_C(1)<<16)
-  int opt17;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK (UINT64_C(1)<<17)
-  int opt18;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK (UINT64_C(1)<<18)
-  int opt19;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK (UINT64_C(1)<<19)
-  int opt20;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK (UINT64_C(1)<<20)
-  int opt21;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK (UINT64_C(1)<<21)
-  int opt22;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK (UINT64_C(1)<<22)
-  int opt23;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK (UINT64_C(1)<<23)
-  int opt24;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK (UINT64_C(1)<<24)
-  int opt25;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK (UINT64_C(1)<<25)
-  int opt26;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK (UINT64_C(1)<<26)
-  int opt27;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK (UINT64_C(1)<<27)
-  int opt28;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK (UINT64_C(1)<<28)
-  int opt29;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK (UINT64_C(1)<<29)
-  int opt30;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK (UINT64_C(1)<<30)
-  int opt31;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK (UINT64_C(1)<<31)
-  int opt32;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK (UINT64_C(1)<<32)
-  int opt33;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK (UINT64_C(1)<<33)
-  int opt34;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK (UINT64_C(1)<<34)
-  int opt35;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK (UINT64_C(1)<<35)
-  int opt36;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK (UINT64_C(1)<<36)
-  int opt37;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK (UINT64_C(1)<<37)
-  int opt38;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK (UINT64_C(1)<<38)
-  int opt39;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK (UINT64_C(1)<<39)
-  int opt40;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK (UINT64_C(1)<<40)
-  int opt41;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK (UINT64_C(1)<<41)
-  int opt42;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK (UINT64_C(1)<<42)
-  int opt43;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK (UINT64_C(1)<<43)
-  int opt44;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK (UINT64_C(1)<<44)
-  int opt45;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK (UINT64_C(1)<<45)
-  int opt46;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK (UINT64_C(1)<<46)
-  int opt47;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK (UINT64_C(1)<<47)
-  int opt48;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK (UINT64_C(1)<<48)
-  int opt49;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK (UINT64_C(1)<<49)
-  int opt50;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK (UINT64_C(1)<<50)
-  int opt51;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK (UINT64_C(1)<<51)
-  int opt52;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK (UINT64_C(1)<<52)
-  int opt53;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK (UINT64_C(1)<<53)
-  int opt54;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK (UINT64_C(1)<<54)
-  int opt55;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK (UINT64_C(1)<<55)
-  int opt56;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK (UINT64_C(1)<<56)
-  int opt57;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK (UINT64_C(1)<<57)
-  int opt58;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK (UINT64_C(1)<<58)
-  int opt59;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK (UINT64_C(1)<<59)
-  int opt60;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK (UINT64_C(1)<<60)
-  int opt61;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK (UINT64_C(1)<<61)
-  int opt62;
-# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK (UINT64_C(1)<<62)
-  int opt63;
-};
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_63_optargs_argv (guestfs_h *g, const struct guestfs_internal_test_63_optargs_argv *optargs);
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_close_output (guestfs_h *g);
-
-#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST 0
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_only_optargs (guestfs_h *g, ...);
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_only_optargs_va (guestfs_h *g, va_list args);
-
-struct guestfs_internal_test_only_optargs_argv {
-  uint64_t bitmask;
-# define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK (UINT64_C(1)<<0)
-  int test;
-};
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_only_optargs_argv (guestfs_h *g, const struct guestfs_internal_test_only_optargs_argv *optargs);
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rbool (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rboolerr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rbufferout (guestfs_h *g, const char *val, size_t *size_r);
-
-extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rbufferouterr (guestfs_h *g, size_t *size_r);
-
-extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconstoptstring (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconstoptstringerr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconststring (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconststringerr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rhashtable (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rhashtableerr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rint (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC int64_t guestfs_internal_test_rint64 (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC int64_t guestfs_internal_test_rint64err (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rinterr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rstring (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rstringerr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rstringlist (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rstringlisterr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv *guestfs_internal_test_rstruct (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv *guestfs_internal_test_rstructerr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_internal_test_rstructlist (guestfs_h *g, const char *val);
-
-extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_internal_test_rstructlisterr (guestfs_h *g);
-
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_set_output (guestfs_h *g, const char *filename);
-
-#define GUESTFS_HAVE_INTERNAL_WRITE 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_write (guestfs_h *g, const char *path, const char *content, size_t content_size);
-
-#define GUESTFS_HAVE_INTERNAL_WRITE_APPEND 1
-extern GUESTFS_DLL_PUBLIC int guestfs_internal_write_append (guestfs_h *g, const char *path, const char *content, size_t content_size);
-
 #define GUESTFS_HAVE_IS_BLOCKDEV 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_blockdev (guestfs_h *g, const char *path);
 
@@ -3121,23 +2812,367 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_zgrep (guestfs_h *g, const char *regex,
 extern GUESTFS_DLL_PUBLIC char **guestfs_zgrepi (guestfs_h *g, const char *regex, const char *path)
   GUESTFS_DEPRECATED_BY ("grep");
 
-#if GUESTFS_PRIVATE_FUNCTIONS
-
-/* Private functions.
- *
- * These are NOT part of the public, stable API, and can change at any
- * time!  We export them because they are used by some of the language
- * bindings.
+#if GUESTFS_PRIVATE
+/* Symbols protected by GUESTFS_PRIVATE are NOT part of the public,
+ * stable API, and can change at any time!  We export them because
+ * they are used by some of the language bindings.
  */
 
-extern GUESTFS_DLL_PUBLIC void *guestfs___safe_malloc (guestfs_h *g, size_t nbytes);
-extern GUESTFS_DLL_PUBLIC void *guestfs___safe_calloc (guestfs_h *g, size_t n, size_t s);
-extern GUESTFS_DLL_PUBLIC char *guestfs___safe_strdup (guestfs_h *g, const char *str);
-extern GUESTFS_DLL_PUBLIC void *guestfs___safe_memdup (guestfs_h *g, const void *ptr, size_t size);
+/* Private functions. */
 
 extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomainPtr */ void *dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
 
-#endif /* End of private functions. */
+#define GUESTFS_HAVE_INTERNAL_AUTOSYNC 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_autosync (guestfs_h *g);
+
+#define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
+
+#define GUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive (guestfs_h *g, const char *label);
+
+#define GUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive_precheck (guestfs_h *g, const char *label);
+
+#define GUESTFS_HAVE_INTERNAL_LSTATLIST 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_internal_lstatlist (guestfs_h *g, const char *path, char *const *names);
+
+#define GUESTFS_HAVE_INTERNAL_LXATTRLIST 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_internal_lxattrlist (guestfs_h *g, const char *path, char *const *names);
+
+#define GUESTFS_HAVE_INTERNAL_READLINKLIST 1
+extern GUESTFS_DLL_PUBLIC char **guestfs_internal_readlinklist (guestfs_h *g, const char *path, char *const *names);
+
+#define GUESTFS_INTERNAL_TEST_OBOOL 0
+#define GUESTFS_INTERNAL_TEST_OINT 1
+#define GUESTFS_INTERNAL_TEST_OINT64 2
+#define GUESTFS_INTERNAL_TEST_OSTRING 3
+#define GUESTFS_INTERNAL_TEST_OSTRINGLIST 4
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_va (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, va_list args);
+
+struct guestfs_internal_test_argv {
+  uint64_t bitmask;
+# define GUESTFS_INTERNAL_TEST_OBOOL_BITMASK (UINT64_C(1)<<0)
+  int obool;
+# define GUESTFS_INTERNAL_TEST_OINT_BITMASK (UINT64_C(1)<<1)
+  int oint;
+# define GUESTFS_INTERNAL_TEST_OINT64_BITMASK (UINT64_C(1)<<2)
+  int64_t oint64;
+# define GUESTFS_INTERNAL_TEST_OSTRING_BITMASK (UINT64_C(1)<<3)
+  const char *ostring;
+# define GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK (UINT64_C(1)<<4)
+  char *const *ostringlist;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_argv (guestfs_h *g, const char *str, const char *optstr, char *const *strlist, int b, int integer, int64_t integer64, const char *filein, const char *fileout, const char *bufferin, size_t bufferin_size, const struct guestfs_internal_test_argv *optargs);
+
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1 0
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2 1
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3 2
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4 3
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5 4
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6 5
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7 6
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8 7
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9 8
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10 9
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11 10
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12 11
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13 12
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14 13
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15 14
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16 15
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17 16
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18 17
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19 18
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20 19
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21 20
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22 21
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23 22
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24 23
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25 24
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26 25
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27 26
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28 27
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29 28
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30 29
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31 30
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32 31
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33 32
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34 33
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35 34
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36 35
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37 36
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38 37
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39 38
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40 39
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41 40
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42 41
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43 42
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44 43
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45 44
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46 45
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47 46
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48 47
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49 48
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50 49
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51 50
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52 51
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53 52
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54 53
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55 54
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56 55
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57 56
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58 57
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59 58
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60 59
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61 60
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62 61
+#define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63 62
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_63_optargs (guestfs_h *g, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_63_optargs_va (guestfs_h *g, va_list args);
+
+struct guestfs_internal_test_63_optargs_argv {
+  uint64_t bitmask;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK (UINT64_C(1)<<0)
+  int opt1;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK (UINT64_C(1)<<1)
+  int opt2;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK (UINT64_C(1)<<2)
+  int opt3;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK (UINT64_C(1)<<3)
+  int opt4;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK (UINT64_C(1)<<4)
+  int opt5;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK (UINT64_C(1)<<5)
+  int opt6;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK (UINT64_C(1)<<6)
+  int opt7;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK (UINT64_C(1)<<7)
+  int opt8;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK (UINT64_C(1)<<8)
+  int opt9;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK (UINT64_C(1)<<9)
+  int opt10;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK (UINT64_C(1)<<10)
+  int opt11;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK (UINT64_C(1)<<11)
+  int opt12;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK (UINT64_C(1)<<12)
+  int opt13;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK (UINT64_C(1)<<13)
+  int opt14;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK (UINT64_C(1)<<14)
+  int opt15;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK (UINT64_C(1)<<15)
+  int opt16;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK (UINT64_C(1)<<16)
+  int opt17;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK (UINT64_C(1)<<17)
+  int opt18;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK (UINT64_C(1)<<18)
+  int opt19;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK (UINT64_C(1)<<19)
+  int opt20;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK (UINT64_C(1)<<20)
+  int opt21;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK (UINT64_C(1)<<21)
+  int opt22;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK (UINT64_C(1)<<22)
+  int opt23;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK (UINT64_C(1)<<23)
+  int opt24;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK (UINT64_C(1)<<24)
+  int opt25;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK (UINT64_C(1)<<25)
+  int opt26;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK (UINT64_C(1)<<26)
+  int opt27;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK (UINT64_C(1)<<27)
+  int opt28;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK (UINT64_C(1)<<28)
+  int opt29;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK (UINT64_C(1)<<29)
+  int opt30;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK (UINT64_C(1)<<30)
+  int opt31;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK (UINT64_C(1)<<31)
+  int opt32;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK (UINT64_C(1)<<32)
+  int opt33;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK (UINT64_C(1)<<33)
+  int opt34;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK (UINT64_C(1)<<34)
+  int opt35;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK (UINT64_C(1)<<35)
+  int opt36;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK (UINT64_C(1)<<36)
+  int opt37;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK (UINT64_C(1)<<37)
+  int opt38;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK (UINT64_C(1)<<38)
+  int opt39;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK (UINT64_C(1)<<39)
+  int opt40;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK (UINT64_C(1)<<40)
+  int opt41;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK (UINT64_C(1)<<41)
+  int opt42;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK (UINT64_C(1)<<42)
+  int opt43;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK (UINT64_C(1)<<43)
+  int opt44;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK (UINT64_C(1)<<44)
+  int opt45;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK (UINT64_C(1)<<45)
+  int opt46;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK (UINT64_C(1)<<46)
+  int opt47;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK (UINT64_C(1)<<47)
+  int opt48;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK (UINT64_C(1)<<48)
+  int opt49;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK (UINT64_C(1)<<49)
+  int opt50;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK (UINT64_C(1)<<50)
+  int opt51;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK (UINT64_C(1)<<51)
+  int opt52;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK (UINT64_C(1)<<52)
+  int opt53;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK (UINT64_C(1)<<53)
+  int opt54;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK (UINT64_C(1)<<54)
+  int opt55;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK (UINT64_C(1)<<55)
+  int opt56;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK (UINT64_C(1)<<56)
+  int opt57;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK (UINT64_C(1)<<57)
+  int opt58;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK (UINT64_C(1)<<58)
+  int opt59;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK (UINT64_C(1)<<59)
+  int opt60;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK (UINT64_C(1)<<60)
+  int opt61;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK (UINT64_C(1)<<61)
+  int opt62;
+# define GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK (UINT64_C(1)<<62)
+  int opt63;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_63_optargs_argv (guestfs_h *g, const struct guestfs_internal_test_63_optargs_argv *optargs);
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_close_output (guestfs_h *g);
+
+#define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST 0
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_only_optargs (guestfs_h *g, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_only_optargs_va (guestfs_h *g, va_list args);
+
+struct guestfs_internal_test_only_optargs_argv {
+  uint64_t bitmask;
+# define GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK (UINT64_C(1)<<0)
+  int test;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_only_optargs_argv (guestfs_h *g, const struct guestfs_internal_test_only_optargs_argv *optargs);
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rbool (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rboolerr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rbufferout (guestfs_h *g, const char *val, size_t *size_r);
+
+extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rbufferouterr (guestfs_h *g, size_t *size_r);
+
+extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconstoptstring (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconstoptstringerr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconststring (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC const char *guestfs_internal_test_rconststringerr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rhashtable (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rhashtableerr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rint (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_internal_test_rint64 (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_internal_test_rint64err (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_rinterr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rstring (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC char *guestfs_internal_test_rstringerr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rstringlist (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC char **guestfs_internal_test_rstringlisterr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv *guestfs_internal_test_rstruct (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv *guestfs_internal_test_rstructerr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_internal_test_rstructlist (guestfs_h *g, const char *val);
+
+extern GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *guestfs_internal_test_rstructlisterr (guestfs_h *g);
+
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_test_set_output (guestfs_h *g, const char *filename);
+
+#define GUESTFS_HAVE_INTERNAL_WRITE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_write (guestfs_h *g, const char *path, const char *content, size_t content_size);
+
+#define GUESTFS_HAVE_INTERNAL_WRITE_APPEND 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_write_append (guestfs_h *g, const char *path, const char *content, size_t content_size);
+
+/* Private structures. */
+
+/* Deprecated macros for internal functions. */
+
+#define LIBGUESTFS_HAVE_INTERNAL_AUTOSYNC 1
+#define LIBGUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
+#define LIBGUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE 1
+#define LIBGUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK 1
+#define LIBGUESTFS_HAVE_INTERNAL_LSTATLIST 1
+#define LIBGUESTFS_HAVE_INTERNAL_LXATTRLIST 1
+#define LIBGUESTFS_HAVE_INTERNAL_READLINKLIST 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_CLOSE_OUTPUT 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_ONLY_OPTARGS 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBOOL 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBOOLERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUT 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUTERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRING 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRINGERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRING 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRINGERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RHASHTABLE 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RHASHTABLEERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINT 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINT64 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINT64ERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINTERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRING 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRINGERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRINGLIST 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRINGLISTERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCT 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCTERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLIST 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLISTERR 1
+#define LIBGUESTFS_HAVE_INTERNAL_TEST_SET_OUTPUT 1
+#define LIBGUESTFS_HAVE_INTERNAL_WRITE 1
+#define LIBGUESTFS_HAVE_INTERNAL_WRITE_APPEND 1
+
+#endif /* End of GUESTFS_PRIVATE. */
 
 /* Deprecated macros.  Use GUESTFS_HAVE_* instead. */
 
@@ -3352,42 +3387,6 @@ extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomai
 #define LIBGUESTFS_HAVE_INSPECT_LIST_APPLICATIONS 1
 #define LIBGUESTFS_HAVE_INSPECT_LIST_APPLICATIONS2 1
 #define LIBGUESTFS_HAVE_INSPECT_OS 1
-#define LIBGUESTFS_HAVE_INTERNAL_AUTOSYNC 1
-#define LIBGUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
-#define LIBGUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE 1
-#define LIBGUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK 1
-#define LIBGUESTFS_HAVE_INTERNAL_LSTATLIST 1
-#define LIBGUESTFS_HAVE_INTERNAL_LXATTRLIST 1
-#define LIBGUESTFS_HAVE_INTERNAL_READLINKLIST 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_CLOSE_OUTPUT 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_ONLY_OPTARGS 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBOOL 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBOOLERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUT 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RBUFFEROUTERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRING 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTOPTSTRINGERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRING 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RCONSTSTRINGERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RHASHTABLE 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RHASHTABLEERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINT 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINT64 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINT64ERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RINTERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRING 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRINGERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRINGLIST 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRINGLISTERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCT 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCTERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLIST 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_RSTRUCTLISTERR 1
-#define LIBGUESTFS_HAVE_INTERNAL_TEST_SET_OUTPUT 1
-#define LIBGUESTFS_HAVE_INTERNAL_WRITE 1
-#define LIBGUESTFS_HAVE_INTERNAL_WRITE_APPEND 1
 #define LIBGUESTFS_HAVE_IS_BLOCKDEV 1
 #define LIBGUESTFS_HAVE_IS_BUSY 1
 #define LIBGUESTFS_HAVE_IS_CHARDEV 1

@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,7 +240,7 @@ free_strings (char **argv)
       pr "};\n";
       pr "\n";
 
-  ) structs;
+  ) external_structs;
 
   (* Emit a put_TYPE_list function definition only if that function is used. *)
   List.iter (

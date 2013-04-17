@@ -1,5 +1,5 @@
 /* libguestfs - the guestfsd daemon
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include <rpc/xdr.h>
 
 #include "guestfs_protocol.h"
+
+#include "guestfs-internal-all.h"
 
 /*-- in guestfsd.c --*/
 extern int verbose;
@@ -388,26 +390,6 @@ is_zero (const char *buffer, size_t size)
       return (errcode);                                 \
     }                                                   \
     while (0)
-
-#ifndef __attribute__
-# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)
-#  define __attribute__(x) /* empty */
-# endif
-#endif
-
-#ifndef ATTRIBUTE_UNUSED
-# define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
-#endif
-
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
-#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
-#define STRNEQ(a,b) (strcmp((a),(b)) != 0)
-#define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
-#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
-#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
-#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
-#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
-#define STRPREFIX(a,b) (strncmp((a),(b),strlen((b))) == 0)
 
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 #define CLEANUP_FREE __attribute__((cleanup(cleanup_free)))

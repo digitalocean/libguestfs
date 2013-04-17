@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,13 @@ let rec generate_ruby_c () =
 #include <ruby.h>
 #pragma GCC diagnostic pop
 
+/* ruby/defines.h defines '_'. */
+#ifdef _
+#undef _
+#endif
+
 #include \"guestfs.h\"
+#include \"guestfs-internal-frontend.h\"
 
 #include \"extconf.h\"
 

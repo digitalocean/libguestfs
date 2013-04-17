@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,7 +279,7 @@ Guestfish will prompt for these separately."
       ) cols;
       pr "}\n";
       pr "\n";
-  ) structs;
+  ) external_structs;
 
   (* Emit a print_TYPE_list function definition only if that function is used. *)
   List.iter (
@@ -440,7 +440,11 @@ Guestfish will prompt for these separately."
             pr "    input_lineno++;\n";
             pr "  if (%s == NULL) goto out_%s;\n" name name
         | Bool name ->
-            pr "  %s = is_true (argv[i++]) ? 1 : 0;\n" name
+            pr "  switch (is_true (argv[i++])) {\n";
+            pr "    case -1: goto out_%s;\n" name;
+            pr "    case 0:  %s = 0; break;\n" name;
+            pr "    default: %s = 1;\n" name;
+            pr "  }\n"
         | Int name ->
             let range =
               let min = "(-(2LL<<30))"
@@ -475,8 +479,11 @@ Guestfish will prompt for these separately."
             pr "if (STRPREFIX (argv[i], \"%s:\")) {\n" n;
             (match argt with
              | OBool n ->
-                 pr "      optargs_s.%s = is_true (&argv[i][%d]) ? 1 : 0;\n"
-                   n (len+1);
+                 pr "      switch (is_true (&argv[i][%d])) {\n" (len+1);
+                 pr "        case -1: goto out;\n";
+                 pr "        case 0:  optargs_s.%s = 0; break;\n" n;
+                 pr "        default: optargs_s.%s = 1;\n" n;
+                 pr "      }\n"
              | OInt n ->
                  let range =
                    let min = "(-(2LL<<30))"
@@ -617,8 +624,9 @@ Guestfish will prompt for these separately."
       List.iter (
         function
         | Device _ | String _
-        | OptString _ | Bool _
+        | OptString _
         | BufferIn _ -> ()
+        | Bool name
         | Int name | Int64 name ->
             pr " out_%s:\n" name
         | Pathname name | Dev_or_Path name | FileOut name

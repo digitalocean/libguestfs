@@ -1,5 +1,5 @@
 (* libguestfs
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -170,7 +170,7 @@ Run it from the top source directory using the command
       output_to filename (generate_gobject_struct_header short typ cols);
       let filename = sprintf "gobject/src/%s.c" short in
       output_to filename (generate_gobject_struct_source short typ cols)
-  ) structs;
+  ) external_structs;
   delete_except_generated "gobject/include/guestfs-gobject/struct-*.h";
   delete_except_generated "gobject/src/struct-*.c";
 

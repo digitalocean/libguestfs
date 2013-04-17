@@ -1,4 +1,132 @@
+2013-02-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Be stricter about boolean values.
+	Previously I noticed that bfan used this command without any error:
+
+	><fs> hivex-open /WINDOWS/system32/config/software write:ture
+	                                                   ^^^^^^^^^^
+
+	This was because the code allowed any string to be evaluated as a
+	boolean.
+
+	The new code is stricter.  It allows the following strings only case
+	insensitive (everything else is an error):
+
+	  1
+	  true
+	  t
+	  yes
+	  y
+	  on
+
+	  0
+	  false
+	  f
+	  no
+	  n
+	  off
+
+2013-02-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Include "guestfs-internal-frontend.h" in extension.
+	Also undefine '_' symbol defined by Ruby's internal headers.
+
+	This fixes commit ec3b75e5ffd1abea1400f6609ae9c61eab0dfa71.
+
+2013-02-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Include "guestfs-internal-frontend.h" in XS file.
+	Also undefine '_' symbol defined by Perl's internal headers.
+
+	This fixes commit ec3b75e5ffd1abea1400f6609ae9c61eab0dfa71.
+
+2013-02-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	README: Format the list of requirements better.
+
+	Update copyright dates for 2013.
+
+2013-02-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Use CLEANUP_* macros in a lot of places.
+
+	fish: Use CLEANUP_FREE in parse_config.
+
+	Remove TMP_TEMPLATE_ON_STACK macro.
+
+2013-02-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove all occurrences of the bad_cast (lowercase) function.
+	Not to be confused with the libxml2 macro 'BAD_CAST' which converts
+	from 'signed char *' to 'unsigned char *'.
+
+	The 'bad_cast' function was defined and used all over the place as a
+	replacement for a '(char *)' cast.  I think it is better to make these
+	casts explicit, instead of hiding them in an obscure function.
+
+2013-02-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	Rearrange internal header files.
+	This commit rearranges the internal header files.
+
+	"src/guestfs-internal.h" is just for the library, as before.
+
+	"src/guestfs-internal-frontend.h" is for use by all library, bindings,
+	tools C code, but NOT the daemon.
+
+	"src/guestfs-internal-all.h" is for use by all C code including the
+	daemon.
+
+	This is just code motion, but it has some important consequences:
+
+	(1) We can use the CLEANUP_* macros in bindings and tools code.
+
+	(2) We can get rid of TMP_TEMPLATE_ON_STACK.
+
+	(3) We will (in future) be able to stop bindings and tools code from
+	using the safe_* allocation functions (which are NOT safe to use
+	outside the library alone).
+
+2013-01-31  Cole Robinson  <crobinso@redhat.com>
+
+	tests: Handle changing QEMUDIR
+	qemu-wrapper isn't regenerated if QEMUDIR is changed, so just
+	delete it and force regeneration.
+
+	Additionally we can drop the silent binary check, since
+	check-with-upstream-qemu-1 already does a similar test with --version
+	that will actually report an error to the user.
+
+2013-01-30  Matthew Booth  <mbooth@redhat.com>
+
+	Make internal-only functions and structures private
+	Certain functions are intended to be internal only, but we currently
+	export them anyway. This change moves them into a separate section of
+	guestfs.h protected by a GUESTFS_PRIVATE variable. This change also
+	enables private structs, but doesn't implement any.
+
+	This change only affects the C api. Language bindings aren't affected,
+	but probably should be in the future.
+
+2013-01-30  Matthew Booth  <mbooth@redhat.com>
+
+	build: Fix haskell dependencies and parallel build
+	Without this change all the tests in the haskell bindings are rebuilt
+	every time. The primary motivation for this change is to fix this.
+
+	The fix for the above also allows parallel builds to be re-enabled.
+
+2013-01-29  Matthew Booth  <mbooth@redhat.com>
+
+	build: Add common rule for sources shared between daemon and library
+
+2013-01-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: hivex: Rewrite filename param of hivex_commit to include sysroot (RHBZ#905341).
+
 2013-01-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.6.
 
 	daemon: Use the new CLEANUP_* macros to simplify code.
 

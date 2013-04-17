@@ -1446,7 +1446,7 @@ CLEANFILES = doc-stamp $(builddir)/com/redhat/et/libguestfs/*.class com_redhat_e
 @HAVE_JAVA_TRUE@libguestfs_jni_la_LIBADD = $(top_builddir)/src/libguestfs.la
 @HAVE_JAVA_TRUE@libguestfs_jni_la_LDFLAGS = -version-info $(JNI_VERSION_INFO) -shared
 @HAVE_JAVA_TRUE@libguestfs_jni_la_CFLAGS = \
-@HAVE_JAVA_TRUE@	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
+@HAVE_JAVA_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_JAVA_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_JAVA_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
 @HAVE_JAVA_TRUE@	$(JNI_CFLAGS)

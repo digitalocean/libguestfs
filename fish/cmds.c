@@ -4824,11 +4824,16 @@ run_set_autosync (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  autosync = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_autosync;
+    case 0:  autosync = 0; break;
+    default: autosync = 1;
+  }
   r = guestfs_set_autosync (g, autosync);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_autosync:
  out_noargs:
   return ret;
 }
@@ -4866,11 +4871,16 @@ run_set_verbose (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  verbose = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_verbose;
+    case 0:  verbose = 0; break;
+    default: verbose = 1;
+  }
   r = guestfs_set_verbose (g, verbose);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_verbose:
  out_noargs:
   return ret;
 }
@@ -5110,11 +5120,16 @@ run_set_selinux (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  selinux = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_selinux;
+    case 0:  selinux = 0; break;
+    default: selinux = 1;
+  }
   r = guestfs_set_selinux (g, selinux);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_selinux:
  out_noargs:
   return ret;
 }
@@ -5152,11 +5167,16 @@ run_set_trace (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  trace = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_trace;
+    case 0:  trace = 0; break;
+    default: trace = 1;
+  }
   r = guestfs_set_trace (g, trace);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_trace:
  out_noargs:
   return ret;
 }
@@ -5194,11 +5214,16 @@ run_set_direct (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  direct = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_direct;
+    case 0:  direct = 0; break;
+    default: direct = 1;
+  }
   r = guestfs_set_direct (g, direct);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_direct:
  out_noargs:
   return ret;
 }
@@ -5236,11 +5261,16 @@ run_set_recovery_proc (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  recoveryproc = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_recoveryproc;
+    case 0:  recoveryproc = 0; break;
+    default: recoveryproc = 1;
+  }
   r = guestfs_set_recovery_proc (g, recoveryproc);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_recoveryproc:
  out_noargs:
   return ret;
 }
@@ -5564,11 +5594,16 @@ run_set_network (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  network = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_network;
+    case 0:  network = 0; break;
+    default: network = 1;
+  }
   r = guestfs_set_network (g, network);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_network:
  out_noargs:
   return ret;
 }
@@ -5636,7 +5671,11 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      optargs_s.readonly = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.readonly = 0; break;
+        default: optargs_s.readonly = 1;
+      }
       this_mask = GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK;
       this_arg = "readonly";
     }
@@ -5775,7 +5814,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "libvirturi";
     }
     else if (STRPREFIX (argv[i], "readonly:")) {
-      optargs_s.readonly = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.readonly = 0; break;
+        default: optargs_s.readonly = 1;
+      }
       this_mask = GUESTFS_ADD_DOMAIN_READONLY_BITMASK;
       this_arg = "readonly";
     }
@@ -5785,12 +5828,20 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "iface";
     }
     else if (STRPREFIX (argv[i], "live:")) {
-      optargs_s.live = is_true (&argv[i][5]) ? 1 : 0;
+      switch (is_true (&argv[i][5])) {
+        case -1: goto out;
+        case 0:  optargs_s.live = 0; break;
+        default: optargs_s.live = 1;
+      }
       this_mask = GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
       this_arg = "live";
     }
     else if (STRPREFIX (argv[i], "allowuuid:")) {
-      optargs_s.allowuuid = is_true (&argv[i][10]) ? 1 : 0;
+      switch (is_true (&argv[i][10])) {
+        case -1: goto out;
+        case 0:  optargs_s.allowuuid = 0; break;
+        default: optargs_s.allowuuid = 1;
+      }
       this_mask = GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
       this_arg = "allowuuid";
     }
@@ -6173,12 +6224,20 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "favicon:")) {
-      optargs_s.favicon = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.favicon = 0; break;
+        default: optargs_s.favicon = 1;
+      }
       this_mask = GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
       this_arg = "favicon";
     }
     else if (STRPREFIX (argv[i], "highquality:")) {
-      optargs_s.highquality = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.highquality = 0; break;
+        default: optargs_s.highquality = 1;
+      }
       this_mask = GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
       this_arg = "highquality";
     }
@@ -6223,11 +6282,16 @@ run_set_pgroup (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  pgroup = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_pgroup;
+    case 0:  pgroup = 0; break;
+    default: pgroup = 1;
+  }
   r = guestfs_set_pgroup (g, pgroup);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_pgroup:
  out_noargs:
   return ret;
 }
@@ -6335,7 +6399,11 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      optargs_s.readonly = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.readonly = 0; break;
+        default: optargs_s.readonly = 1;
+      }
       this_mask = GUESTFS_MOUNT_LOCAL_READONLY_BITMASK;
       this_arg = "readonly";
     }
@@ -6368,7 +6436,11 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
       this_arg = "cachetimeout";
     }
     else if (STRPREFIX (argv[i], "debugcalls:")) {
-      optargs_s.debugcalls = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.debugcalls = 0; break;
+        default: optargs_s.debugcalls = 1;
+      }
       this_mask = GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK;
       this_arg = "debugcalls";
     }
@@ -6433,7 +6505,11 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "retry:")) {
-      optargs_s.retry = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.retry = 0; break;
+        default: optargs_s.retry = 1;
+      }
       this_mask = GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK;
       this_arg = "retry";
     }
@@ -7747,11 +7823,16 @@ run_aug_insert (const char *cmd, size_t argc, char *argv[])
   }
   augpath = argv[i++];
   label = argv[i++];
-  before = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_before;
+    case 0:  before = 0; break;
+    default: before = 1;
+  }
   r = guestfs_aug_insert (g, augpath, label, before);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_before:
  out_noargs:
   return ret;
 }
@@ -8460,12 +8541,20 @@ run_umount (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
       this_arg = "force";
     }
     else if (STRPREFIX (argv[i], "lazyunmount:")) {
-      optargs_s.lazyunmount = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazyunmount = 0; break;
+        default: optargs_s.lazyunmount = 1;
+      }
       this_mask = GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
       this_arg = "lazyunmount";
     }
@@ -9159,7 +9248,11 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "compress";
     }
     else if (STRPREFIX (argv[i], "numericowner:")) {
-      optargs_s.numericowner = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.numericowner = 0; break;
+        default: optargs_s.numericowner = 1;
+      }
       this_mask = GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
       this_arg = "numericowner";
     }
@@ -10121,11 +10214,16 @@ run_vg_activate_all (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  activate = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_activate;
+    case 0:  activate = 0; break;
+    default: activate = 1;
+  }
   r = guestfs_vg_activate_all (g, activate);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_activate:
  out_noargs:
   return ret;
 }
@@ -10144,7 +10242,11 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  activate = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_activate;
+    case 0:  activate = 0; break;
+    default: activate = 1;
+  }
   volgroups = parse_string_list (argv[i++]);
   if (volgroups == NULL) goto out_volgroups;
   r = guestfs_vg_activate (g, activate, volgroups);
@@ -10153,6 +10255,7 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
  out:
   free_strings (volgroups);
  out_volgroups:
+ out_activate:
  out_noargs:
   return ret;
 }
@@ -10299,13 +10402,18 @@ run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  rw = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_rw;
+    case 0:  rw = 0; break;
+    default: rw = 1;
+  }
   device = argv[i++];
   r = guestfs_ntfs_3g_probe (g, rw, device);
   if (r == -1) goto out;
   ret = 0;
   printf ("%d\n", r);
  out:
+ out_rw:
  out_noargs:
   return ret;
 }
@@ -11671,22 +11779,38 @@ run_grep (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extended:")) {
-      optargs_s.extended = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.extended = 0; break;
+        default: optargs_s.extended = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
       this_arg = "extended";
     }
     else if (STRPREFIX (argv[i], "fixed:")) {
-      optargs_s.fixed = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.fixed = 0; break;
+        default: optargs_s.fixed = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_FIXED_BITMASK;
       this_arg = "fixed";
     }
     else if (STRPREFIX (argv[i], "insensitive:")) {
-      optargs_s.insensitive = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.insensitive = 0; break;
+        default: optargs_s.insensitive = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
       this_arg = "insensitive";
     }
     else if (STRPREFIX (argv[i], "compressed:")) {
-      optargs_s.compressed = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.compressed = 0; break;
+        default: optargs_s.compressed = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
       this_arg = "compressed";
     }
@@ -13600,11 +13724,16 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
-  bootable = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_bootable;
+    case 0:  bootable = 0; break;
+    default: bootable = 1;
+  }
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_bootable:
  out_partnum:
  out_noargs:
   return ret;
@@ -16147,7 +16276,11 @@ run_ntfsresize (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
       this_arg = "force";
     }
@@ -16826,7 +16959,11 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_TUNE2FS_FORCE_BITMASK;
       this_arg = "force";
     }
@@ -17251,12 +17388,20 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "correct:")) {
-      optargs_s.correct = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.correct = 0; break;
+        default: optargs_s.correct = 1;
+      }
       this_mask = GUESTFS_E2FSCK_CORRECT_BITMASK;
       this_arg = "correct";
     }
     else if (STRPREFIX (argv[i], "forceall:")) {
-      optargs_s.forceall = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.forceall = 0; break;
+        default: optargs_s.forceall = 1;
+      }
       this_mask = GUESTFS_E2FSCK_FORCEALL_BITMASK;
       this_arg = "forceall";
     }
@@ -17353,7 +17498,11 @@ run_ntfsfix (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clearbadsectors:")) {
-      optargs_s.clearbadsectors = is_true (&argv[i][16]) ? 1 : 0;
+      switch (is_true (&argv[i][16])) {
+        case -1: goto out;
+        case 0:  optargs_s.clearbadsectors = 0; break;
+        default: optargs_s.clearbadsectors = 1;
+      }
       this_mask = GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK;
       this_arg = "clearbadsectors";
     }
@@ -17404,27 +17553,47 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "metadataonly:")) {
-      optargs_s.metadataonly = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.metadataonly = 0; break;
+        default: optargs_s.metadataonly = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK;
       this_arg = "metadataonly";
     }
     else if (STRPREFIX (argv[i], "rescue:")) {
-      optargs_s.rescue = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.rescue = 0; break;
+        default: optargs_s.rescue = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK;
       this_arg = "rescue";
     }
     else if (STRPREFIX (argv[i], "ignorefscheck:")) {
-      optargs_s.ignorefscheck = is_true (&argv[i][14]) ? 1 : 0;
+      switch (is_true (&argv[i][14])) {
+        case -1: goto out;
+        case 0:  optargs_s.ignorefscheck = 0; break;
+        default: optargs_s.ignorefscheck = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK;
       this_arg = "ignorefscheck";
     }
     else if (STRPREFIX (argv[i], "preservetimestamps:")) {
-      optargs_s.preservetimestamps = is_true (&argv[i][19]) ? 1 : 0;
+      switch (is_true (&argv[i][19])) {
+        case -1: goto out;
+        case 0:  optargs_s.preservetimestamps = 0; break;
+        default: optargs_s.preservetimestamps = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK;
       this_arg = "preservetimestamps";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK;
       this_arg = "force";
     }
@@ -17893,7 +18062,11 @@ run_set_e2attrs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clear:")) {
-      optargs_s.clear = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.clear = 0; break;
+        default: optargs_s.clear = 1;
+      }
       this_mask = GUESTFS_SET_E2ATTRS_CLEAR_BITMASK;
       this_arg = "clear";
     }
@@ -18259,11 +18432,16 @@ run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   device = argv[i++];
-  seeding = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_seeding;
+    case 0:  seeding = 0; break;
+    default: seeding = 1;
+  }
   r = guestfs_btrfs_set_seeding (g, device, seeding);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_seeding:
  out_noargs:
   return ret;
 }
@@ -18307,7 +18485,11 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
       this_arg = "superblock";
     }
     else if (STRPREFIX (argv[i], "repair:")) {
-      optargs_s.repair = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.repair = 0; break;
+        default: optargs_s.repair = 1;
+      }
       this_mask = GUESTFS_BTRFS_FSCK_REPAIR_BITMASK;
       this_arg = "repair";
     }
@@ -18649,17 +18831,29 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "datasec:")) {
-      optargs_s.datasec = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.datasec = 0; break;
+        default: optargs_s.datasec = 1;
+      }
       this_mask = GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
       this_arg = "datasec";
     }
     else if (STRPREFIX (argv[i], "logsec:")) {
-      optargs_s.logsec = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.logsec = 0; break;
+        default: optargs_s.logsec = 1;
+      }
       this_mask = GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
       this_arg = "logsec";
     }
     else if (STRPREFIX (argv[i], "rtsec:")) {
-      optargs_s.rtsec = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.rtsec = 0; break;
+        default: optargs_s.rtsec = 1;
+      }
       this_mask = GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
       this_arg = "rtsec";
     }
@@ -18804,12 +18998,20 @@ run_rsync (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.archive = 0; break;
+        default: optargs_s.archive = 1;
+      }
       this_mask = GUESTFS_RSYNC_ARCHIVE_BITMASK;
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.deletedest = 0; break;
+        default: optargs_s.deletedest = 1;
+      }
       this_mask = GUESTFS_RSYNC_DELETEDEST_BITMASK;
       this_arg = "deletedest";
     }
@@ -18864,12 +19066,20 @@ run_rsync_in (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.archive = 0; break;
+        default: optargs_s.archive = 1;
+      }
       this_mask = GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.deletedest = 0; break;
+        default: optargs_s.deletedest = 1;
+      }
       this_mask = GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
       this_arg = "deletedest";
     }
@@ -18922,12 +19132,20 @@ run_rsync_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.archive = 0; break;
+        default: optargs_s.archive = 1;
+      }
       this_mask = GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.deletedest = 0; break;
+        default: optargs_s.deletedest = 1;
+      }
       this_mask = GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
       this_arg = "deletedest";
     }
@@ -19053,27 +19271,47 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extunwritten:")) {
-      optargs_s.extunwritten = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.extunwritten = 0; break;
+        default: optargs_s.extunwritten = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
       this_arg = "extunwritten";
     }
     else if (STRPREFIX (argv[i], "imgfile:")) {
-      optargs_s.imgfile = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.imgfile = 0; break;
+        default: optargs_s.imgfile = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
       this_arg = "imgfile";
     }
     else if (STRPREFIX (argv[i], "v2log:")) {
-      optargs_s.v2log = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.v2log = 0; break;
+        default: optargs_s.v2log = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
       this_arg = "v2log";
     }
     else if (STRPREFIX (argv[i], "projid32bit:")) {
-      optargs_s.projid32bit = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.projid32bit = 0; break;
+        default: optargs_s.projid32bit = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
       this_arg = "projid32bit";
     }
     else if (STRPREFIX (argv[i], "lazycounter:")) {
-      optargs_s.lazycounter = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazycounter = 0; break;
+        default: optargs_s.lazycounter = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
       this_arg = "lazycounter";
     }
@@ -19132,17 +19370,29 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "verbose:")) {
-      optargs_s.verbose = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.verbose = 0; break;
+        default: optargs_s.verbose = 1;
+      }
       this_mask = GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
       this_arg = "verbose";
     }
     else if (STRPREFIX (argv[i], "debug:")) {
-      optargs_s.debug = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.debug = 0; break;
+        default: optargs_s.debug = 1;
+      }
       this_mask = GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
       this_arg = "debug";
     }
     else if (STRPREFIX (argv[i], "write:")) {
-      optargs_s.write = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.write = 0; break;
+        default: optargs_s.write = 1;
+      }
       this_mask = GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
       this_arg = "write";
     }
@@ -19723,22 +19973,38 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "forcelogzero:")) {
-      optargs_s.forcelogzero = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.forcelogzero = 0; break;
+        default: optargs_s.forcelogzero = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
       this_arg = "forcelogzero";
     }
     else if (STRPREFIX (argv[i], "nomodify:")) {
-      optargs_s.nomodify = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.nomodify = 0; break;
+        default: optargs_s.nomodify = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
       this_arg = "nomodify";
     }
     else if (STRPREFIX (argv[i], "noprefetch:")) {
-      optargs_s.noprefetch = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.noprefetch = 0; break;
+        default: optargs_s.noprefetch = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
       this_arg = "noprefetch";
     }
     else if (STRPREFIX (argv[i], "forcegeometry:")) {
-      optargs_s.forcegeometry = is_true (&argv[i][14]) ? 1 : 0;
+      switch (is_true (&argv[i][14])) {
+        case -1: goto out;
+        case 0:  optargs_s.forcegeometry = 0; break;
+        default: optargs_s.forcegeometry = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
       this_arg = "forcegeometry";
     }
@@ -20177,87 +20443,155 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "uuid";
     }
     else if (STRPREFIX (argv[i], "forcecreate:")) {
-      optargs_s.forcecreate = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.forcecreate = 0; break;
+        default: optargs_s.forcecreate = 1;
+      }
       this_mask = GUESTFS_MKE2FS_FORCECREATE_BITMASK;
       this_arg = "forcecreate";
     }
     else if (STRPREFIX (argv[i], "writesbandgrouponly:")) {
-      optargs_s.writesbandgrouponly = is_true (&argv[i][20]) ? 1 : 0;
+      switch (is_true (&argv[i][20])) {
+        case -1: goto out;
+        case 0:  optargs_s.writesbandgrouponly = 0; break;
+        default: optargs_s.writesbandgrouponly = 1;
+      }
       this_mask = GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
       this_arg = "writesbandgrouponly";
     }
     else if (STRPREFIX (argv[i], "lazyitableinit:")) {
-      optargs_s.lazyitableinit = is_true (&argv[i][15]) ? 1 : 0;
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazyitableinit = 0; break;
+        default: optargs_s.lazyitableinit = 1;
+      }
       this_mask = GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
       this_arg = "lazyitableinit";
     }
     else if (STRPREFIX (argv[i], "lazyjournalinit:")) {
-      optargs_s.lazyjournalinit = is_true (&argv[i][16]) ? 1 : 0;
+      switch (is_true (&argv[i][16])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazyjournalinit = 0; break;
+        default: optargs_s.lazyjournalinit = 1;
+      }
       this_mask = GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
       this_arg = "lazyjournalinit";
     }
     else if (STRPREFIX (argv[i], "testfs:")) {
-      optargs_s.testfs = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.testfs = 0; break;
+        default: optargs_s.testfs = 1;
+      }
       this_mask = GUESTFS_MKE2FS_TESTFS_BITMASK;
       this_arg = "testfs";
     }
     else if (STRPREFIX (argv[i], "discard:")) {
-      optargs_s.discard = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.discard = 0; break;
+        default: optargs_s.discard = 1;
+      }
       this_mask = GUESTFS_MKE2FS_DISCARD_BITMASK;
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "quotatype:")) {
-      optargs_s.quotatype = is_true (&argv[i][10]) ? 1 : 0;
+      switch (is_true (&argv[i][10])) {
+        case -1: goto out;
+        case 0:  optargs_s.quotatype = 0; break;
+        default: optargs_s.quotatype = 1;
+      }
       this_mask = GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
       this_arg = "quotatype";
     }
     else if (STRPREFIX (argv[i], "extent:")) {
-      optargs_s.extent = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.extent = 0; break;
+        default: optargs_s.extent = 1;
+      }
       this_mask = GUESTFS_MKE2FS_EXTENT_BITMASK;
       this_arg = "extent";
     }
     else if (STRPREFIX (argv[i], "filetype:")) {
-      optargs_s.filetype = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.filetype = 0; break;
+        default: optargs_s.filetype = 1;
+      }
       this_mask = GUESTFS_MKE2FS_FILETYPE_BITMASK;
       this_arg = "filetype";
     }
     else if (STRPREFIX (argv[i], "flexbg:")) {
-      optargs_s.flexbg = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.flexbg = 0; break;
+        default: optargs_s.flexbg = 1;
+      }
       this_mask = GUESTFS_MKE2FS_FLEXBG_BITMASK;
       this_arg = "flexbg";
     }
     else if (STRPREFIX (argv[i], "hasjournal:")) {
-      optargs_s.hasjournal = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.hasjournal = 0; break;
+        default: optargs_s.hasjournal = 1;
+      }
       this_mask = GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
       this_arg = "hasjournal";
     }
     else if (STRPREFIX (argv[i], "journaldev:")) {
-      optargs_s.journaldev = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.journaldev = 0; break;
+        default: optargs_s.journaldev = 1;
+      }
       this_mask = GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
       this_arg = "journaldev";
     }
     else if (STRPREFIX (argv[i], "largefile:")) {
-      optargs_s.largefile = is_true (&argv[i][10]) ? 1 : 0;
+      switch (is_true (&argv[i][10])) {
+        case -1: goto out;
+        case 0:  optargs_s.largefile = 0; break;
+        default: optargs_s.largefile = 1;
+      }
       this_mask = GUESTFS_MKE2FS_LARGEFILE_BITMASK;
       this_arg = "largefile";
     }
     else if (STRPREFIX (argv[i], "quota:")) {
-      optargs_s.quota = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.quota = 0; break;
+        default: optargs_s.quota = 1;
+      }
       this_mask = GUESTFS_MKE2FS_QUOTA_BITMASK;
       this_arg = "quota";
     }
     else if (STRPREFIX (argv[i], "resizeinode:")) {
-      optargs_s.resizeinode = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.resizeinode = 0; break;
+        default: optargs_s.resizeinode = 1;
+      }
       this_mask = GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
       this_arg = "resizeinode";
     }
     else if (STRPREFIX (argv[i], "sparsesuper:")) {
-      optargs_s.sparsesuper = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparsesuper = 0; break;
+        default: optargs_s.sparsesuper = 1;
+      }
       this_mask = GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
       this_arg = "sparsesuper";
     }
     else if (STRPREFIX (argv[i], "uninitbg:")) {
-      optargs_s.uninitbg = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.uninitbg = 0; break;
+        default: optargs_s.uninitbg = 1;
+      }
       this_mask = GUESTFS_MKE2FS_UNINITBG_BITMASK;
       this_arg = "uninitbg";
     }

@@ -1662,6 +1662,7 @@ abs_srcdir ?= $(shell cd $(top_srcdir)/php && pwd)
 @HAVE_PHP_TRUE@	$(MAKE) -C extension \
 @HAVE_PHP_TRUE@	  EXTRA_INCLUDES="-I$(abs_srcdir)/../src" \
 @HAVE_PHP_TRUE@	  EXTRA_LDFLAGS="-L$(abs_srcdir)/../src/.libs -lguestfs" \
+@HAVE_PHP_TRUE@	  EXTRA_CFLAGS="-DGUESTFS_PRIVATE=1" \
 @HAVE_PHP_TRUE@	  all
 
 @HAVE_PHP_TRUE@extension/config.h: extension/config.m4 ../config.status

@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -357,9 +357,8 @@ QEMUDIR = $(HOME)/d/qemu
 QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
 
 check-with-upstream-qemu:
-	@if $(QEMUBINARY) --help >/dev/null 2>&1; then \
-	  $(MAKE) check-with-upstream-qemu-1 || exit $$?; \
-	fi
+	rm -f $(top_builddir)/qemu-wrapper.sh
+	$(MAKE) check-with-upstream-qemu-1 || exit $$?
 
 check-with-upstream-qemu-1: $(top_builddir)/qemu-wrapper.sh
 	$(QEMUBINARY) --version

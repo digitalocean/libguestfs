@@ -1438,6 +1438,13 @@ EXTRA_DIST = \
 	$(BUILT_SOURCES) \
 	guestfsd.pod
 
+shared_with_library = \
+	guestfs_protocol.c \
+	guestfs_protocol.h \
+	errnostring-gperf.gperf \
+	errnostring.c \
+	errnostring.h
+
 
 # Build the errnostring perfect hash code.  The generated code has lots
 # of warnings so we must compile it in a separate mini-library.
@@ -1567,7 +1574,11 @@ guestfsd_LDADD = \
 	$(LIBINTL) \
 	$(SERVENT_LIB)
 
-guestfsd_CPPFLAGS = -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
+guestfsd_CPPFLAGS = \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib \
+	-I$(top_builddir)/src
+
 guestfsd_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(AUGEAS_CFLAGS) \
@@ -3427,12 +3438,10 @@ $(top_builddir)/generator/stamp-generator: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
-guestfs_protocol.c: $(libsrcdir)/guestfs_protocol.c
+$(shared_with_library): %: $(libsrcdir)/%
 	rm -f $@
 	ln $< $@
-guestfs_protocol.h: $(libsrcdir)/guestfs_protocol.h
-	rm -f $@
-	ln $< $@
+
 $(libsrcdir)/guestfs_protocol.c: force
 	$(MAKE) -C $(libsrcdir) guestfs_protocol.c
 $(libsrcdir)/guestfs_protocol.h: force
@@ -3442,15 +3451,6 @@ errnostring-gperf.c: errnostring-gperf.gperf
 	rm -f $@
 	$(GPERF) -t $< > $@-t
 	mv $@-t $@
-errnostring-gperf.gperf: $(libsrcdir)/errnostring-gperf.gperf
-	rm -f $@
-	ln $< $@
-errnostring.c: $(libsrcdir)/errnostring.c
-	rm -f $@
-	ln $< $@
-errnostring.h: $(libsrcdir)/errnostring.h
-	rm -f $@
-	ln $< $@
 
 guestfsd.8 $(top_builddir)/html/guestfsd.8.html: stamp-guestfsd.pod
 

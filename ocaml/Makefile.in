@@ -1358,7 +1358,7 @@ CLEANFILES = *.cmi *.cmo *.cmx *.cma *.cmxa *.o *.a *.so t/*.cmi \
 # library; we link with the object files that it generates.
 @HAVE_OCAML_TRUE@noinst_LIBRARIES = libguestfsocaml.a
 @HAVE_OCAML_TRUE@libguestfsocaml_a_CFLAGS = \
-@HAVE_OCAML_TRUE@	-DGUESTFS_PRIVATE_FUNCTIONS=1 \
+@HAVE_OCAML_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_OCAML_TRUE@	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
 @HAVE_OCAML_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
 @HAVE_OCAML_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \

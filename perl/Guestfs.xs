@@ -30,9 +30,13 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include <guestfs.h>
+/* perl CORE/config.h defines '_' to something completely bonkers. */
+#ifdef _
+#undef _
+#endif
 
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
+#include <guestfs.h>
+#include "guestfs-internal-frontend.h"
 
 static SV *
 my_newSVll(long long val) {

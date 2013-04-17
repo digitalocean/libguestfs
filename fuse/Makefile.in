@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs
-# Copyright (C) 2009-2012 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -214,7 +214,7 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__guestmount_SOURCES_DIST = ../fish/config.c ../fish/domain.c \
 	../fish/inspect.c ../fish/keys.c ../fish/options.h \
-	../fish/options.c guestmount.c guestmount.h
+	../fish/options.c guestmount.c
 @HAVE_FUSE_TRUE@am__objects_1 = guestmount-config.$(OBJEXT) \
 @HAVE_FUSE_TRUE@	guestmount-domain.$(OBJEXT) \
 @HAVE_FUSE_TRUE@	guestmount-inspect.$(OBJEXT) \
@@ -1376,8 +1376,7 @@ CLEANFILES = stamp-guestmount.pod
 
 @HAVE_FUSE_TRUE@guestmount_SOURCES = \
 @HAVE_FUSE_TRUE@	$(SHARED_SOURCE_FILES) \
-@HAVE_FUSE_TRUE@	guestmount.c \
-@HAVE_FUSE_TRUE@	guestmount.h
+@HAVE_FUSE_TRUE@	guestmount.c
 
 @HAVE_FUSE_TRUE@guestmount_CFLAGS = \
 @HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
