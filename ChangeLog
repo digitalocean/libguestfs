@@ -1,6 +1,79 @@
+2013-02-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.13.
+
+	Use guestfs___count_strings instead of custom versions in various places.
+
+	python: Use guestfs___free_string_list instead of custom version.
+
+	ocaml: Use guestfs___free_string_list instead of custom-coded one.
+	It should be possible to add the guestfs___free_string_list to
+	dllmlguestfs.so, but I cannot work out exactly how to do this.  As a
+	result we end up using src/utils.c directly.
+
+	ocaml: Missing #include <config.h> in generated file.
+
+	lua: Use guestfs___free_string_list instead of custom-coded version.
+
+	fish: Use guestfs___{free_string_list,count_strings} utility functions.
+	Instead of custom-coded versions.
+
+	libutils: Add guestfs___count_strings utility function to common library.
+
+	erlang: Use guestfs___free_string_list from libutils, instead of custom version.
+
+2013-02-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Create libutils convenience library.
+	The libutils convenience library is a place for code shared between
+	the main library, language bindings and virt tools.  Note that the
+	code is statically linked into both the library, each binding and each
+	tool, but this is an improvement because (a) the source is shared and
+	(b) libguestfs.so can export fewer private functions.
+
+	Currently it contains the cleanup functions, and the functions
+	guestfs___free_string_list function and guestfs___for_each_disk.
+
+	guestfs___for_each_disk has changed so that it no longer
+	unconditionally sets the error in the guestfs handle.  Instead callers
+	can control error handling.
+
+2013-02-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Rename guestfs_error_errno as guestfs___error_errno, etc.
+	These are internal functions.  Very old versions of libguestfs used to
+	export them, but they haven't been (and shouldn't be) exported for a
+	long time.
+
+	Also remove the unused guestfs_error function.
+
+2013-02-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Remove long and mostly irrelevant comment about libtool versioning.
+
+	build: Rearrange src/Makefile.am into a more logical order.
+	This is just code motion.
+
+	tests: Add valgrind suppression for libvirt 1.0.2 memory leak.
+	Leak reported as RHBZ#913145.
+
+	tests: Add valgrind suppression variant for new manifestation of an old libvirt memory leak.
+
+	lib: Use CLEANUP_* macros to simplify XPath query code.
+
+	rescue: Improve error messages in the test script.
+
+	faq: Add section for developers, including how to send patches and propose features.
+
+	docs: Rewrite security section (thanks Dan Berrange).
+
 2013-02-19  Richard W.M. Jones  <rjones@redhat.com>
 
-	build: Only add 'serial-tests' for automake >= 1.12.
+	Version 1.21.12.
+
+2013-02-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Only add 'serial-tests' for automake >= 1.12 (thanks Hilko Bengen).
 	Earlier versions of automake complain if they get a configuration
 	parameter which they don't understand.  The error is:
 

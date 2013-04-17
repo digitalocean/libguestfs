@@ -2825,8 +2825,6 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_zgrepi (guestfs_h *g, const char *regex
 
 /* Private functions. */
 
-extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomainPtr */ void *dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
-
 #define GUESTFS_HAVE_INTERNAL_AUTOSYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_autosync (guestfs_h *g);
 

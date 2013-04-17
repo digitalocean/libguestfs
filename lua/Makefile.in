@@ -261,8 +261,12 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(lualibdir)"
 LTLIBRARIES = $(lualib_LTLIBRARIES)
+am__DEPENDENCIES_1 =
 @HAVE_LUA_TRUE@libluaguestfs_la_DEPENDENCIES =  \
-@HAVE_LUA_TRUE@	$(top_builddir)/src/libguestfs.la
+@HAVE_LUA_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_LUA_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_LUA_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_LUA_TRUE@	../gnulib/lib/libgnu.la
 am__libluaguestfs_la_SOURCES_DIST = lua-guestfs.c
 @HAVE_LUA_TRUE@am_libluaguestfs_la_OBJECTS =  \
 @HAVE_LUA_TRUE@	libluaguestfs_la-lua-guestfs.lo
@@ -1395,7 +1399,13 @@ CLEANFILES = *~ guestfs.so
 @HAVE_LUA_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 @HAVE_LUA_TRUE@	$(LUA_CFLAGS)
 
-@HAVE_LUA_TRUE@libluaguestfs_la_LIBADD = $(top_builddir)/src/libguestfs.la
+@HAVE_LUA_TRUE@libluaguestfs_la_LIBADD = \
+@HAVE_LUA_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_LUA_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_LUA_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_LUA_TRUE@	$(LIBVIRT_LIBS) \
+@HAVE_LUA_TRUE@	../gnulib/lib/libgnu.la
+
 @HAVE_LUA_TRUE@libluaguestfs_la_LDFLAGS = -avoid-version -shared
 
 # Hack so we can run without installing.

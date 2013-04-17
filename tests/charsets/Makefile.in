@@ -217,8 +217,10 @@ am__EXEEXT_1 = test-charset-fidelity$(EXEEXT)
 am_test_charset_fidelity_OBJECTS =  \
 	test_charset_fidelity-test-charset-fidelity.$(OBJEXT)
 test_charset_fidelity_OBJECTS = $(am_test_charset_fidelity_OBJECTS)
-test_charset_fidelity_DEPENDENCIES =  \
-	$(top_builddir)/src/libguestfs.la
+am__DEPENDENCIES_1 =
+test_charset_fidelity_DEPENDENCIES = $(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -1333,7 +1335,10 @@ test_charset_fidelity_CFLAGS = \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
 test_charset_fidelity_LDADD = \
-	$(top_builddir)/src/libguestfs.la
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS)
 
 all: all-am
 

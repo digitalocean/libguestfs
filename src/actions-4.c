@@ -864,7 +864,7 @@ guestfs_aug_init (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_init", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_init",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_init",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -966,7 +966,7 @@ guestfs_aug_set (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_set", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_set",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_set",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1071,7 +1071,7 @@ guestfs_aug_insert (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_insert", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_insert",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_insert",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1167,7 +1167,7 @@ guestfs_aug_rm (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "aug_rm", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_rm",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_rm",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1250,7 +1250,7 @@ guestfs_aug_load (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "aug_load", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "aug_load",
+      guestfs___error_errno (g, errnum, "%s: %s", "aug_load",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1351,7 +1351,7 @@ guestfs_tgz_out (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "tgz_out", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "tgz_out",
+      guestfs___error_errno (g, errnum, "%s: %s", "tgz_out",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1468,7 +1468,7 @@ guestfs_mount_options (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mount_options", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mount_options",
+      guestfs___error_errno (g, errnum, "%s: %s", "mount_options",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1570,7 +1570,7 @@ guestfs_set_e2label (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "set_e2label", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "set_e2label",
+      guestfs___error_errno (g, errnum, "%s: %s", "set_e2label",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1666,7 +1666,7 @@ guestfs_get_e2uuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "get_e2uuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "get_e2uuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "get_e2uuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1762,7 +1762,7 @@ guestfs_hexdump (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "hexdump", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "hexdump",
+      guestfs___error_errno (g, errnum, "%s: %s", "hexdump",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1859,7 +1859,7 @@ guestfs_lvresize (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvresize", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvresize",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvresize",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -1955,7 +1955,7 @@ guestfs_sh_lines (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "sh_lines", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "sh_lines",
+      guestfs___error_errno (g, errnum, "%s: %s", "sh_lines",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2063,7 +2063,7 @@ guestfs_scrub_device (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "scrub_device", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "scrub_device",
+      guestfs___error_errno (g, errnum, "%s: %s", "scrub_device",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2166,7 +2166,7 @@ guestfs_mknod_c (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mknod_c", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mknod_c",
+      guestfs___error_errno (g, errnum, "%s: %s", "mknod_c",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2256,7 +2256,7 @@ guestfs_umask (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "umask", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "umask",
+      guestfs___error_errno (g, errnum, "%s: %s", "umask",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2352,7 +2352,7 @@ guestfs_lgetxattrs (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lgetxattrs", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lgetxattrs",
+      guestfs___error_errno (g, errnum, "%s: %s", "lgetxattrs",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2447,7 +2447,7 @@ guestfs_rmmountpoint (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "rmmountpoint", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "rmmountpoint",
+      guestfs___error_errno (g, errnum, "%s: %s", "rmmountpoint",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2551,7 +2551,7 @@ guestfs_grepi (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "grepi", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "grepi",
+      guestfs___error_errno (g, errnum, "%s: %s", "grepi",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2659,7 +2659,7 @@ guestfs_swapon_file (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "swapon_file", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "swapon_file",
+      guestfs___error_errno (g, errnum, "%s: %s", "swapon_file",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2764,7 +2764,7 @@ guestfs_mke2journal_U (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mke2journal_U", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mke2journal_U",
+      guestfs___error_errno (g, errnum, "%s: %s", "mke2journal_U",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2877,7 +2877,7 @@ guestfs_mke2fs_J (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "mke2fs_J", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "mke2fs_J",
+      guestfs___error_errno (g, errnum, "%s: %s", "mke2fs_J",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -2973,7 +2973,7 @@ guestfs_case_sensitive_path (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "case_sensitive_path", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "case_sensitive_path",
+      guestfs___error_errno (g, errnum, "%s: %s", "case_sensitive_path",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3086,7 +3086,7 @@ guestfs_internal_lstatlist (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "internal_lstatlist", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "internal_lstatlist",
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_lstatlist",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3200,7 +3200,7 @@ guestfs_internal_lxattrlist (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "internal_lxattrlist", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "internal_lxattrlist",
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_lxattrlist",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3303,7 +3303,7 @@ guestfs_part_init (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_init", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_init",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_init",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3411,7 +3411,7 @@ guestfs_part_add (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_add", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_add",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_add",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3513,7 +3513,7 @@ guestfs_lvrename (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvrename", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvrename",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvrename",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3609,7 +3609,7 @@ guestfs_pvuuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "pvuuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "pvuuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "pvuuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3705,7 +3705,7 @@ guestfs_lvuuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvuuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvuuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvuuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3810,7 +3810,7 @@ guestfs_copy_size (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "copy_size", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "copy_size",
+      guestfs___error_errno (g, errnum, "%s: %s", "copy_size",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -3909,7 +3909,7 @@ guestfs_part_get_mbr_id (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_get_mbr_id", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_get_mbr_id",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_get_mbr_id",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4031,7 +4031,7 @@ guestfs_debug_upload (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "debug_upload", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "debug_upload",
+      guestfs___error_errno (g, errnum, "%s: %s", "debug_upload",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4136,7 +4136,7 @@ guestfs_luks_format (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "luks_format", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "luks_format",
+      guestfs___error_errno (g, errnum, "%s: %s", "luks_format",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4232,7 +4232,7 @@ guestfs_findfs_uuid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "findfs_uuid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "findfs_uuid",
+      guestfs___error_errno (g, errnum, "%s: %s", "findfs_uuid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4339,7 +4339,7 @@ guestfs_download_offset (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "download_offset", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "download_offset",
+      guestfs___error_errno (g, errnum, "%s: %s", "download_offset",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4442,7 +4442,7 @@ guestfs_lvm_canonical_lv_name (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "lvm_canonical_lv_name", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "lvm_canonical_lv_name",
+      guestfs___error_errno (g, errnum, "%s: %s", "lvm_canonical_lv_name",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4527,7 +4527,7 @@ guestfs_list_dm_devices (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "list_dm_devices", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "list_dm_devices",
+      guestfs___error_errno (g, errnum, "%s: %s", "list_dm_devices",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4637,7 +4637,7 @@ guestfs_part_to_partnum (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "part_to_partnum", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "part_to_partnum",
+      guestfs___error_errno (g, errnum, "%s: %s", "part_to_partnum",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4733,7 +4733,7 @@ guestfs_blkid (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "blkid", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "blkid",
+      guestfs___error_errno (g, errnum, "%s: %s", "blkid",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4841,7 +4841,7 @@ guestfs_wipefs (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "wipefs", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "wipefs",
+      guestfs___error_errno (g, errnum, "%s: %s", "wipefs",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -4956,7 +4956,7 @@ guestfs_ntfsfix_argv (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "ntfsfix", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "ntfsfix",
+      guestfs___error_errno (g, errnum, "%s: %s", "ntfsfix",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5079,7 +5079,7 @@ guestfs_set_e2attrs_argv (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "set_e2attrs", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "set_e2attrs",
+      guestfs___error_errno (g, errnum, "%s: %s", "set_e2attrs",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5181,7 +5181,7 @@ guestfs_btrfs_subvolume_snapshot (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "btrfs_subvolume_snapshot", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "btrfs_subvolume_snapshot",
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_subvolume_snapshot",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5275,7 +5275,7 @@ guestfs_btrfs_subvolume_create (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "btrfs_subvolume_create", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "btrfs_subvolume_create",
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_subvolume_create",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5372,7 +5372,7 @@ guestfs_btrfs_subvolume_set_default (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "btrfs_subvolume_set_default", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "btrfs_subvolume_set_default",
+      guestfs___error_errno (g, errnum, "%s: %s", "btrfs_subvolume_set_default",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5503,7 +5503,7 @@ guestfs_fstrim_argv (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "fstrim", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "fstrim",
+      guestfs___error_errno (g, errnum, "%s: %s", "fstrim",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5593,7 +5593,7 @@ guestfs_hivex_node_children (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "hivex_node_children", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "hivex_node_children",
+      guestfs___error_errno (g, errnum, "%s: %s", "hivex_node_children",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5688,7 +5688,7 @@ guestfs_internal_hot_remove_drive (guestfs_h *g,
     if (errnum <= 0)
       error (g, "%s: %s", "internal_hot_remove_drive", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "internal_hot_remove_drive",
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_hot_remove_drive",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5773,7 +5773,7 @@ guestfs_list_ldm_volumes (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "list_ldm_volumes", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "list_ldm_volumes",
+      guestfs___error_errno (g, errnum, "%s: %s", "list_ldm_volumes",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);
@@ -5872,7 +5872,7 @@ guestfs_ldmtool_scan (guestfs_h *g)
     if (errnum <= 0)
       error (g, "%s: %s", "ldmtool_scan", err.error_message);
     else
-      guestfs_error_errno (g, errnum, "%s: %s", "ldmtool_scan",
+      guestfs___error_errno (g, errnum, "%s: %s", "ldmtool_scan",
                            err.error_message);
     free (err.error_message);
     free (err.errno_string);

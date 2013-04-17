@@ -243,8 +243,12 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(pythondir)" "$(DESTDIR)$(pythondir)"
 LTLIBRARIES = $(python_LTLIBRARIES)
+am__DEPENDENCIES_1 =
 @HAVE_PYTHON_TRUE@libguestfsmod_la_DEPENDENCIES =  \
-@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libguestfs.la
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_PYTHON_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_PYTHON_TRUE@	../gnulib/lib/libgnu.la
 am__libguestfsmod_la_SOURCES_DIST = guestfs-py.c guestfs-py.h \
 	guestfs-py-byhand.c
 @HAVE_PYTHON_TRUE@am_libguestfsmod_la_OBJECTS =  \
@@ -1380,7 +1384,13 @@ EXTRA_DIST = \
 @HAVE_PYTHON_TRUE@libguestfsmod_la_CFLAGS = \
 @HAVE_PYTHON_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
-@HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = $(top_builddir)/src/libguestfs.la
+@HAVE_PYTHON_TRUE@libguestfsmod_la_LIBADD = \
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_PYTHON_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_PYTHON_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_PYTHON_TRUE@	$(LIBVIRT_LIBS) \
+@HAVE_PYTHON_TRUE@	../gnulib/lib/libgnu.la
+
 @HAVE_PYTHON_TRUE@libguestfsmod_la_LDFLAGS = -avoid-version -shared
 @HAVE_PYTHON_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_PYTHON_TRUE@TESTS = run-bindtests $(am__append_1)

@@ -20,6 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1731,7 +1733,7 @@ ocaml_guestfs_available (value gv, value groupsv)
   caml_enter_blocking_section ();
   r = guestfs_available (g, groups);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (groups);
+  guestfs___free_string_list (groups);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "available");
 
@@ -2206,7 +2208,7 @@ ocaml_guestfs_btrfs_device_add (value gv, value devicesv, value fsv)
   caml_enter_blocking_section ();
   r = guestfs_btrfs_device_add (g, devices, fs);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (devices);
+  guestfs___free_string_list (devices);
   free (fs);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "btrfs_device_add");
@@ -2239,7 +2241,7 @@ ocaml_guestfs_btrfs_device_delete (value gv, value devicesv, value fsv)
   caml_enter_blocking_section ();
   r = guestfs_btrfs_device_delete (g, devices, fs);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (devices);
+  guestfs___free_string_list (devices);
   free (fs);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "btrfs_device_delete");
@@ -2931,7 +2933,7 @@ ocaml_guestfs_command (value gv, value argumentsv)
   caml_enter_blocking_section ();
   r = guestfs_command (g, arguments);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (arguments);
+  guestfs___free_string_list (arguments);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "command");
 
@@ -2964,7 +2966,7 @@ ocaml_guestfs_command_lines (value gv, value argumentsv)
   caml_enter_blocking_section ();
   r = guestfs_command_lines (g, arguments);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (arguments);
+  guestfs___free_string_list (arguments);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "command_lines");
 
@@ -3475,7 +3477,7 @@ ocaml_guestfs_debug (value gv, value subcmdv, value extraargsv)
   r = guestfs_debug (g, subcmd, extraargs);
   caml_leave_blocking_section ();
   free (subcmd);
-  ocaml_guestfs_free_strings (extraargs);
+  guestfs___free_string_list (extraargs);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "debug");
 
@@ -3987,7 +3989,7 @@ ocaml_guestfs_echo_daemon (value gv, value wordsv)
   caml_enter_blocking_section ();
   r = guestfs_echo_daemon (g, words);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (words);
+  guestfs___free_string_list (words);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "echo_daemon");
 
@@ -7472,14 +7474,14 @@ ocaml_guestfs_internal_test (value gv, value oboolv, value ointv, value oint64v,
   r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
   free (str);
   free (optstr);
-  ocaml_guestfs_free_strings (strlist);
+  guestfs___free_string_list (strlist);
   free (filein);
   free (fileout);
   free (bufferin);
   if (ostringv != Val_int (0))
     free ((char *) optargs_s.ostring);
   if (ostringlistv != Val_int (0))
-    ocaml_guestfs_free_strings ((char **) optargs_s.ostringlist);
+    guestfs___free_string_list ((char **) optargs_s.ostringlist);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "internal_test");
 
@@ -9351,7 +9353,7 @@ ocaml_guestfs_ldmtool_scan_devices (value gv, value devicesv)
   caml_enter_blocking_section ();
   r = guestfs_ldmtool_scan_devices (g, devices);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (devices);
+  guestfs___free_string_list (devices);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "ldmtool_scan_devices");
 
@@ -10210,7 +10212,7 @@ ocaml_guestfs_lstatlist (value gv, value pathv, value namesv)
   r = guestfs_lstatlist (g, path, names);
   caml_leave_blocking_section ();
   free (path);
-  ocaml_guestfs_free_strings (names);
+  guestfs___free_string_list (names);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "lstatlist");
 
@@ -10641,7 +10643,7 @@ ocaml_guestfs_lvm_set_filter (value gv, value devicesv)
   caml_enter_blocking_section ();
   r = guestfs_lvm_set_filter (g, devices);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (devices);
+  guestfs___free_string_list (devices);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "lvm_set_filter");
 
@@ -10896,7 +10898,7 @@ ocaml_guestfs_lxattrlist (value gv, value pathv, value namesv)
   r = guestfs_lxattrlist (g, path, names);
   caml_leave_blocking_section ();
   free (path);
-  ocaml_guestfs_free_strings (names);
+  guestfs___free_string_list (names);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "lxattrlist");
 
@@ -10980,7 +10982,7 @@ ocaml_guestfs_md_create (value gv, value missingbitmapv, value nrdevicesv, value
   r = guestfs_md_create_argv (g, name, devices, optargs);
   caml_leave_blocking_section ();
   free (name);
-  ocaml_guestfs_free_strings (devices);
+  guestfs___free_string_list (devices);
   if (levelv != Val_int (0))
     free ((char *) optargs_s.level);
   if (r == -1)
@@ -11832,7 +11834,7 @@ ocaml_guestfs_mkfs_btrfs (value gv, value allocstartv, value bytecountv, value d
   caml_enter_blocking_section ();
   r = guestfs_mkfs_btrfs_argv (g, devices, optargs);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (devices);
+  guestfs___free_string_list (devices);
   if (datatypev != Val_int (0))
     free ((char *) optargs_s.datatype);
   if (labelv != Val_int (0))
@@ -12948,7 +12950,7 @@ ocaml_guestfs_parse_environment_list (value gv, value environmentv)
   int r;
 
   r = guestfs_parse_environment_list (g, environment);
-  ocaml_guestfs_free_strings (environment);
+  guestfs___free_string_list (environment);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "parse_environment_list");
 
@@ -14055,7 +14057,7 @@ ocaml_guestfs_readlinklist (value gv, value pathv, value namesv)
   r = guestfs_readlinklist (g, path, names);
   caml_leave_blocking_section ();
   free (path);
-  ocaml_guestfs_free_strings (names);
+  guestfs___free_string_list (names);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "readlinklist");
 
@@ -15032,7 +15034,7 @@ ocaml_guestfs_set_libvirt_supported_credentials (value gv, value credsv)
   int r;
 
   r = guestfs_set_libvirt_supported_credentials (g, creds);
-  ocaml_guestfs_free_strings (creds);
+  guestfs___free_string_list (creds);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_libvirt_supported_credentials");
 
@@ -15453,7 +15455,7 @@ ocaml_guestfs_sfdisk (value gv, value devicev, value cylsv, value headsv, value 
   r = guestfs_sfdisk (g, device, cyls, heads, sectors, lines);
   caml_leave_blocking_section ();
   free (device);
-  ocaml_guestfs_free_strings (lines);
+  guestfs___free_string_list (lines);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "sfdisk");
 
@@ -15495,7 +15497,7 @@ ocaml_guestfs_sfdiskM (value gv, value devicev, value linesv)
   r = guestfs_sfdiskM (g, device, lines);
   caml_leave_blocking_section ();
   free (device);
-  ocaml_guestfs_free_strings (lines);
+  guestfs___free_string_list (lines);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "sfdiskM");
 
@@ -16337,7 +16339,7 @@ ocaml_guestfs_tar_out (value gv, value compressv, value numericownerv, value exc
   if (compressv != Val_int (0))
     free ((char *) optargs_s.compress);
   if (excludesv != Val_int (0))
-    ocaml_guestfs_free_strings ((char **) optargs_s.excludes);
+    guestfs___free_string_list ((char **) optargs_s.excludes);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "tar_out");
 
@@ -17127,7 +17129,7 @@ ocaml_guestfs_vg_activate (value gv, value activatev, value volgroupsv)
   caml_enter_blocking_section ();
   r = guestfs_vg_activate (g, activate, volgroups);
   caml_leave_blocking_section ();
-  ocaml_guestfs_free_strings (volgroups);
+  guestfs___free_string_list (volgroups);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "vg_activate");
 
@@ -17250,7 +17252,7 @@ ocaml_guestfs_vgcreate (value gv, value volgroupv, value physvolsv)
   r = guestfs_vgcreate (g, volgroup, physvols);
   caml_leave_blocking_section ();
   free (volgroup);
-  ocaml_guestfs_free_strings (physvols);
+  guestfs___free_string_list (physvols);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "vgcreate");
 

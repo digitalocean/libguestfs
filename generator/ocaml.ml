@@ -312,6 +312,8 @@ and generate_ocaml_c () =
   generate_header CStyle LGPLv2plus;
 
   pr "\
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -594,7 +596,7 @@ copy_table (char * const * argv)
         | OptString n | FileIn n | FileOut n | BufferIn n | Key n ->
             pr "  free (%s);\n" n
         | StringList n | DeviceList n ->
-            pr "  ocaml_guestfs_free_strings (%s);\n" n;
+            pr "  guestfs___free_string_list (%s);\n" n;
         | Bool _ | Int _ | Int64 _ | Pointer _ -> ()
       ) args;
       List.iter (
@@ -605,7 +607,7 @@ copy_table (char * const * argv)
             pr "    free ((char *) optargs_s.%s);\n" n
         | OStringList n ->
             pr "  if (%sv != Val_int (0))\n" n;
-            pr "    ocaml_guestfs_free_strings ((char **) optargs_s.%s);\n" n;
+            pr "    guestfs___free_string_list ((char **) optargs_s.%s);\n" n;
       ) optargs;
 
       (match errcode_of_ret ret with

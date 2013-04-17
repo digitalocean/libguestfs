@@ -279,8 +279,9 @@ am_guestfish_OBJECTS = $(am__objects_1) $(am__objects_2) \
 guestfish_OBJECTS = $(am_guestfish_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfish_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libguestfs.la libcmds.la librc_protocol.la \
-	../gnulib/lib/libgnu.la
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/src/libutils.la $(am__DEPENDENCIES_1) \
+	libcmds.la librc_protocol.la ../gnulib/lib/libgnu.la
 guestfish_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(guestfish_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -1519,7 +1520,8 @@ guestfish_CFLAGS = \
 	$(LIBCONFIG_CFLAGS)
 
 guestfish_LDADD = $(LIBCONFIG_LIBS) $(LIBREADLINE) \
-	$(top_builddir)/src/libguestfs.la -lm libcmds.la \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/src/libutils.la $(LIBXML2_LIBS) -lm libcmds.la \
 	librc_protocol.la ../gnulib/lib/libgnu.la
 
 # Make guestfish use the convenience libraries.
