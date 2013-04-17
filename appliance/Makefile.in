@@ -87,7 +87,14 @@ host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/libguestfs-make-fixed-appliance.in \
 	$(top_srcdir)/subdir-rules.mk
-@VALGRIND_DAEMON_TRUE@am__append_1 = -DVALGRIND_DAEMON=1
+@ENABLE_DAEMON_TRUE@am__append_1 = \
+@ENABLE_DAEMON_TRUE@	supermin.d/daemon.img
+
+@ENABLE_APPLIANCE_TRUE@am__append_2 = \
+@ENABLE_APPLIANCE_TRUE@	supermin.d/base.img \
+@ENABLE_APPLIANCE_TRUE@	supermin.d/hostfiles
+
+@VALGRIND_DAEMON_TRUE@am__append_3 = -DVALGRIND_DAEMON=1
 subdir = appliance
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1331,14 +1338,9 @@ EXTRA_DIST = \
 fsdir = $(libdir)/guestfs
 superminfsdir = $(libdir)/guestfs/supermin.d
 fs_DATA = 
-superminfs_DATA = \
-	supermin.d/base.img \
-	supermin.d/daemon.img \
-	supermin.d/init.img \
-	supermin.d/hostfiles \
-	supermin.d/udev-rules.img
-
-PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 $(am__append_1)
+superminfs_DATA = supermin.d/init.img supermin.d/udev-rules.img \
+	$(am__append_1) $(am__append_2)
+PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 $(am__append_3)
 
 # If installing the daemon, install the udev rules too.
 @INSTALL_DAEMON_TRUE@udevrulesdir = /lib/udev/rules.d
@@ -1786,7 +1788,7 @@ supermin.d/udev-rules.img: 99-guestfs-serial.rules
 	rm -f $@ $@-t
 	rm -rf tmp-u
 	mkdir -p tmp-u/etc/udev/rules.d
-	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$f; done
+	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$(basename $$f); done
 	( cd tmp-u && find | cpio --quiet -o -H newc ) > $@-t
 	rm -rf tmp-u
 	mv $@-t $@

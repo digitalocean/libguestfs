@@ -119,15 +119,17 @@ struct libvirt_xml_params {
   char *appliance_overlay;      /* path to qcow2 overlay backed by appliance */
   char appliance_dev[64];       /* appliance device name */
   size_t appliance_index;       /* index of appliance */
-  char guestfsd_sock[UNIX_PATH_MAX]; /* paths to sockets */
-  char console_sock[UNIX_PATH_MAX];
+  char guestfsd_path[UNIX_PATH_MAX]; /* paths to sockets */
+  char console_path[UNIX_PATH_MAX];
   bool enable_svirt;            /* false if we decided to disable sVirt */
   bool is_kvm;                  /* false = qemu, true = kvm */
-  bool is_root;                 /* true = euid is root */
+  bool current_proc_is_root;    /* true = euid is root */
 };
 
 static int parse_capabilities (guestfs_h *g, const char *capabilities_xml, struct libvirt_xml_params *params);
 static xmlChar *construct_libvirt_xml (guestfs_h *g, const struct libvirt_xml_params *params);
+static void debug_appliance_permissions (guestfs_h *g);
+static void debug_socket_permissions (guestfs_h *g);
 static void libvirt_error (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
 static int is_custom_qemu (guestfs_h *g);
 static int is_blk (const char *path);
@@ -143,6 +145,7 @@ static void selinux_warning (guestfs_h *g, const char *func, const char *selinux
 static int
 launch_libvirt (guestfs_h *g, const char *libvirt_uri)
 {
+  int daemon_accept_sock = -1, console_sock = -1;
   unsigned long version;
   virConnectPtr conn = NULL;
   virDomainPtr dom = NULL;
@@ -155,13 +158,13 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   CLEANUP_FREE xmlChar *xml = NULL;
   CLEANUP_FREE char *appliance = NULL;
   struct sockaddr_un addr;
-  int console = -1, r;
+  int r;
   uint32_t size;
   CLEANUP_FREE void *buf = NULL;
   struct drive *drv;
   size_t i;
 
-  params.is_root = geteuid () == 0;
+  params.current_proc_is_root = geteuid () == 0;
 
   /* XXX: It should be possible to make this work. */
   if (g->direct) {
@@ -250,56 +253,51 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   /* Using virtio-serial, we need to create a local Unix domain socket
    * for qemu to connect to.
    */
-  snprintf (params.guestfsd_sock, sizeof params.guestfsd_sock,
+  snprintf (params.guestfsd_path, sizeof params.guestfsd_path,
             "%s/guestfsd.sock", g->tmpdir);
-  unlink (params.guestfsd_sock);
+  unlink (params.guestfsd_path);
 
   set_socket_create_context (g);
 
-  g->sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
-  if (g->sock == -1) {
+  daemon_accept_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
+  if (daemon_accept_sock == -1) {
     perrorf (g, "socket");
     goto cleanup;
   }
 
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
-    goto cleanup;
-  }
-
   addr.sun_family = AF_UNIX;
-  memcpy (addr.sun_path, params.guestfsd_sock, UNIX_PATH_MAX);
+  memcpy (addr.sun_path, params.guestfsd_path, UNIX_PATH_MAX);
 
-  if (bind (g->sock, &addr, sizeof addr) == -1) {
+  if (bind (daemon_accept_sock, &addr, sizeof addr) == -1) {
     perrorf (g, "bind");
     goto cleanup;
   }
 
-  if (listen (g->sock, 1) == -1) {
+  if (listen (daemon_accept_sock, 1) == -1) {
     perrorf (g, "listen");
     goto cleanup;
   }
 
   /* For the serial console. */
-  snprintf (params.console_sock, sizeof params.console_sock,
+  snprintf (params.console_path, sizeof params.console_path,
             "%s/console.sock", g->tmpdir);
-  unlink (params.console_sock);
+  unlink (params.console_path);
 
-  console = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
-  if (console == -1) {
+  console_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
+  if (console_sock == -1) {
     perrorf (g, "socket");
     goto cleanup;
   }
 
   addr.sun_family = AF_UNIX;
-  memcpy (addr.sun_path, params.console_sock, UNIX_PATH_MAX);
+  memcpy (addr.sun_path, params.console_path, UNIX_PATH_MAX);
 
-  if (bind (console, &addr, sizeof addr) == -1) {
+  if (bind (console_sock, &addr, sizeof addr) == -1) {
     perrorf (g, "bind");
     goto cleanup;
   }
 
-  if (listen (console, 1) == -1) {
+  if (listen (console_sock, 1) == -1) {
     perrorf (g, "listen");
     goto cleanup;
   }
@@ -309,33 +307,44 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   /* libvirt, if running as root, will run the qemu process as
    * qemu.qemu, which means it won't be able to access the socket.
    * There are roughly three things that get in the way:
+   *
    * (1) Permissions of the socket.
-   * (2) Permissions of the parent directory(-ies).  Remember this
-   *     if $TMPDIR is located in your home directory.
-   * (3) SELinux/sVirt will prevent access.  libvirt ought to
-   *     label the socket.
+   *
+   * (2) Permissions of the parent directory(-ies).  Remember this if
+   *     $TMPDIR is located in your home directory.
+   *
+   * (3) SELinux/sVirt will prevent access.  libvirt ought to label
+   *     the socket.
+   *
+   * Note that the 'current_proc_is_root' flag here just means that we
+   * are root.  It's also possible for non-root user to try to use the
+   * system libvirtd by specifying a qemu:///system URI (RHBZ#913774)
+   * but there's no sane way to test for that.
    */
-  if (params.is_root) {
+  if (params.current_proc_is_root) {
+    /* Current process is root, so try to create sockets that are
+     * owned by root.qemu with mode 0660 and hence accessible to qemu.
+     */
     struct group *grp;
 
-    if (chmod (params.guestfsd_sock, 0775) == -1) {
-      perrorf (g, "chmod: %s", params.guestfsd_sock);
+    if (chmod (params.guestfsd_path, 0660) == -1) {
+      perrorf (g, "chmod: %s", params.guestfsd_path);
       goto cleanup;
     }
 
-    if (chmod (params.console_sock, 0775) == -1) {
-      perrorf (g, "chmod: %s", params.console_sock);
+    if (chmod (params.console_path, 0660) == -1) {
+      perrorf (g, "chmod: %s", params.console_path);
       goto cleanup;
     }
 
     grp = getgrnam ("qemu");
     if (grp != NULL) {
-      if (chown (params.guestfsd_sock, 0, grp->gr_gid) == -1) {
-        perrorf (g, "chown: %s", params.guestfsd_sock);
+      if (chown (params.guestfsd_path, 0, grp->gr_gid) == -1) {
+        perrorf (g, "chown: %s", params.guestfsd_path);
         goto cleanup;
       }
-      if (chown (params.console_sock, 0, grp->gr_gid) == -1) {
-        perrorf (g, "chown: %s", params.console_sock);
+      if (chown (params.console_path, 0, grp->gr_gid) == -1) {
+        perrorf (g, "chown: %s", params.console_path);
         goto cleanup;
       }
     } else
@@ -355,6 +364,12 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   if (!xml)
     goto cleanup;
 
+  /* Debug permissions and SELinux contexts on appliance and sockets. */
+  if (g->verbose) {
+    debug_appliance_permissions (g);
+    debug_socket_permissions (g);
+  }
+
   /* Launch the libvirt guest. */
   if (g->verbose)
     guestfs___print_timestamped_message (g, "launch libvirt guest");
@@ -368,32 +383,37 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   g->state = LAUNCHING;
 
   /* Wait for console socket to open. */
-  r = accept4 (console, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC);
+  r = accept4 (console_sock, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC);
   if (r == -1) {
     perrorf (g, "accept");
     goto cleanup;
   }
-  if (close (console) == -1) {
+  if (close (console_sock) == -1) {
     perrorf (g, "close: console socket");
-    console = -1;
+    console_sock = -1;
     close (r);
     goto cleanup;
   }
-  console = -1;
-  g->fd[0] = r; /* This is the accepted console socket. */
-
-  g->fd[1] = dup (g->fd[0]);
-  if (g->fd[1] == -1) {
-    perrorf (g, "dup");
-    goto cleanup;
-  }
+  console_sock = r;         /* This is the accepted console socket. */
 
   /* Wait for libvirt domain to start and to connect back to us via
    * virtio-serial and send the GUESTFS_LAUNCH_FLAG message.
    */
-  r = guestfs___accept_from_daemon (g);
+  g->conn =
+    guestfs___new_conn_socket_listening (g, daemon_accept_sock, console_sock);
+  if (!g->conn)
+    goto cleanup;
+
+  /* g->conn now owns these sockets. */
+  daemon_accept_sock = console_sock = -1;
+
+  r = g->conn->ops->accept_connection (g, g->conn);
   if (r == -1)
     goto cleanup;
+  if (r == 0) {
+    guestfs___launch_failed_error (g);
+    goto cleanup;
+  }
 
   /* NB: We reach here just because qemu has opened the socket.  It
    * does not mean the daemon is up until we read the
@@ -401,20 +421,6 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
    * happen even if we reach here, even early failures like not being
    * able to open a drive.
    */
-
-  /* Close the listening socket. */
-  if (close (g->sock) == -1) {
-    perrorf (g, "close: listening socket");
-    close (r);
-    g->sock = -1;
-    goto cleanup;
-  }
-  g->sock = r; /* This is the accepted data socket. */
-
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
-    goto cleanup;
-  }
 
   r = guestfs___recv_from_daemon (g, &size, &buf);
 
@@ -460,19 +466,13 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
  cleanup:
   clear_socket_create_context (g);
 
-  if (console >= 0)
-    close (console);
-  if (g->fd[0] >= 0) {
-    close (g->fd[0]);
-    g->fd[0] = -1;
-  }
-  if (g->fd[1] >= 0) {
-    close (g->fd[1]);
-    g->fd[1] = -1;
-  }
-  if (g->sock >= 0) {
-    close (g->sock);
-    g->sock = -1;
+  if (console_sock >= 0)
+    close (console_sock);
+  if (daemon_accept_sock >= 0)
+    close (daemon_accept_sock);
+  if (g->conn) {
+    g->conn->ops->free_connection (g, g->conn);
+    g->conn = NULL;
   }
 
   if (dom) {
@@ -644,6 +644,46 @@ clear_socket_create_context (guestfs_h *g)
 }
 
 #endif /* !HAVE_LIBSELINUX */
+
+static void
+debug_permissions_cb (guestfs_h *g, void *data, const char *line, size_t len)
+{
+  debug (g, "%s", line);
+}
+
+static void
+debug_appliance_permissions (guestfs_h *g)
+{
+  CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
+  CLEANUP_FREE char *cachedir = guestfs_get_cachedir (g);
+  CLEANUP_FREE char *appliance = NULL;
+
+  appliance = safe_asprintf (g, "%s/.guestfs-%d", cachedir, geteuid ());
+
+  guestfs___cmd_add_arg (cmd, "ls");
+  guestfs___cmd_add_arg (cmd, "-a");
+  guestfs___cmd_add_arg (cmd, "-l");
+  guestfs___cmd_add_arg (cmd, "-Z");
+  guestfs___cmd_add_arg (cmd, appliance);
+  guestfs___cmd_set_stdout_callback (cmd, debug_permissions_cb, NULL, 0);
+  guestfs___cmd_run (cmd);
+}
+
+static void
+debug_socket_permissions (guestfs_h *g)
+{
+  if (g->tmpdir) {
+    CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
+
+    guestfs___cmd_add_arg (cmd, "ls");
+    guestfs___cmd_add_arg (cmd, "-a");
+    guestfs___cmd_add_arg (cmd, "-l");
+    guestfs___cmd_add_arg (cmd, "-Z");
+    guestfs___cmd_add_arg (cmd, g->tmpdir);
+    guestfs___cmd_set_stdout_callback (cmd, debug_permissions_cb, NULL, 0);
+    guestfs___cmd_run (cmd);
+  }
+}
 
 static int construct_libvirt_xml_domain (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_name (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
@@ -957,7 +997,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
                                          BAD_CAST "connect"));
   XMLERROR (-1,
             xmlTextWriterWriteAttribute (xo, BAD_CAST "path",
-                                         BAD_CAST params->console_sock));
+                                         BAD_CAST params->console_path));
   XMLERROR (-1, xmlTextWriterEndElement (xo));
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "target"));
   XMLERROR (-1,
@@ -977,7 +1017,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
                                          BAD_CAST "connect"));
   XMLERROR (-1,
             xmlTextWriterWriteAttribute (xo, BAD_CAST "path",
-                                         BAD_CAST params->guestfsd_sock));
+                                         BAD_CAST params->guestfsd_path));
   XMLERROR (-1, xmlTextWriterEndElement (xo));
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "target"));
   XMLERROR (-1,

@@ -33,6 +33,7 @@
 
 #include <pcre.h>
 
+#include "cloexec.h"
 #include "ignore-value.h"
 
 #include "guestfs.h"
@@ -166,8 +167,9 @@ add_cmdline_shell_unquoted (guestfs_h *g, const char *options)
 static int
 launch_appliance (guestfs_h *g, const char *arg)
 {
+  int daemon_accept_sock = -1, console_sock = -1;
   int r;
-  int wfd[2], rfd[2];
+  int sv[2];
   char guestfsd_sock[256];
   struct sockaddr_un addr;
   CLEANUP_FREE char *kernel = NULL, *initrd = NULL, *appliance = NULL;
@@ -209,14 +211,9 @@ launch_appliance (guestfs_h *g, const char *arg)
   snprintf (guestfsd_sock, sizeof guestfsd_sock, "%s/guestfsd.sock", g->tmpdir);
   unlink (guestfsd_sock);
 
-  g->sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
-  if (g->sock == -1) {
+  daemon_accept_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
+  if (daemon_accept_sock == -1) {
     perrorf (g, "socket");
-    goto cleanup0;
-  }
-
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
     goto cleanup0;
   }
 
@@ -224,19 +221,19 @@ launch_appliance (guestfs_h *g, const char *arg)
   strncpy (addr.sun_path, guestfsd_sock, UNIX_PATH_MAX);
   addr.sun_path[UNIX_PATH_MAX-1] = '\0';
 
-  if (bind (g->sock, &addr, sizeof addr) == -1) {
+  if (bind (daemon_accept_sock, &addr, sizeof addr) == -1) {
     perrorf (g, "bind");
     goto cleanup0;
   }
 
-  if (listen (g->sock, 1) == -1) {
+  if (listen (daemon_accept_sock, 1) == -1) {
     perrorf (g, "listen");
     goto cleanup0;
   }
 
   if (!g->direct) {
-    if (pipe (wfd) == -1 || pipe (rfd) == -1) {
-      perrorf (g, "pipe");
+    if (socketpair (AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0, sv) == -1) {
+      perrorf (g, "socketpair");
       goto cleanup0;
     }
   }
@@ -248,10 +245,8 @@ launch_appliance (guestfs_h *g, const char *arg)
   if (r == -1) {
     perrorf (g, "fork");
     if (!g->direct) {
-      close (wfd[0]);
-      close (wfd[1]);
-      close (rfd[0]);
-      close (rfd[1]);
+      close (sv[0]);
+      close (sv[1]);
     }
     goto cleanup0;
   }
@@ -484,17 +479,22 @@ launch_appliance (guestfs_h *g, const char *arg)
       /* Set up stdin, stdout, stderr. */
       close (0);
       close (1);
-      close (wfd[1]);
-      close (rfd[0]);
+      close (sv[0]);
+
+      /* We set the FD_CLOEXEC flag on the socket above, but now (in
+       * the child) it's safe to unset this flag so qemu can use the
+       * socket.
+       */
+      set_cloexec_flag (sv[1], 0);
 
       /* Stdin. */
-      if (dup (wfd[0]) == -1) {
+      if (dup (sv[1]) == -1) {
       dup_failed:
         perror ("dup failed");
         _exit (EXIT_FAILURE);
       }
       /* Stdout. */
-      if (dup (rfd[1]) == -1)
+      if (dup (sv[1]) == -1)
         goto dup_failed;
 
       /* Particularly since qemu 0.15, qemu spews all sorts of debug
@@ -502,11 +502,10 @@ launch_appliance (guestfs_h *g, const char *arg)
        * not confuse casual users, so send stderr to the pipe as well.
        */
       close (2);
-      if (dup (rfd[1]) == -1)
+      if (dup (sv[1]) == -1)
         goto dup_failed;
 
-      close (wfd[0]);
-      close (rfd[1]);
+      close (sv[1]);
     }
 
     /* Dump the command line (after setting up stderr above). */
@@ -600,19 +599,11 @@ launch_appliance (guestfs_h *g, const char *arg)
   }
 
   if (!g->direct) {
-    /* Close the other ends of the pipe. */
-    close (wfd[0]);
-    close (rfd[1]);
+    /* Close the other end of the socketpair. */
+    close (sv[1]);
 
-    if (fcntl (wfd[1], F_SETFL, O_NONBLOCK) == -1 ||
-        fcntl (rfd[0], F_SETFL, O_NONBLOCK) == -1) {
-      perrorf (g, "fcntl");
-      goto cleanup1;
-    }
-
-    g->fd[0] = wfd[1];		/* stdin of child */
-    g->fd[1] = rfd[0];		/* stdout of child */
-    wfd[1] = rfd[0] = -1;
+    console_sock = sv[0];       /* stdin of child */
+    sv[0] = -1;
   }
 
   g->state = LAUNCHING;
@@ -620,9 +611,21 @@ launch_appliance (guestfs_h *g, const char *arg)
   /* Wait for qemu to start and to connect back to us via
    * virtio-serial and send the GUESTFS_LAUNCH_FLAG message.
    */
-  r = guestfs___accept_from_daemon (g);
+  g->conn =
+    guestfs___new_conn_socket_listening (g, daemon_accept_sock, console_sock);
+  if (!g->conn)
+    goto cleanup1;
+
+  /* g->conn now owns these sockets. */
+  daemon_accept_sock = console_sock = -1;
+
+  r = g->conn->ops->accept_connection (g, g->conn);
   if (r == -1)
     goto cleanup1;
+  if (r == 0) {
+    guestfs___launch_failed_error (g);
+    goto cleanup1;
+  }
 
   /* NB: We reach here just because qemu has opened the socket.  It
    * does not mean the daemon is up until we read the
@@ -630,20 +633,6 @@ launch_appliance (guestfs_h *g, const char *arg)
    * happen even if we reach here, even early failures like not being
    * able to open a drive.
    */
-
-  /* Close the listening socket. */
-  if (close (g->sock) != 0) {
-    perrorf (g, "close: listening socket");
-    close (r);
-    g->sock = -1;
-    goto cleanup1;
-  }
-  g->sock = r; /* This is the accepted data socket. */
-
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
-    goto cleanup1;
-  }
 
   r = guestfs___recv_from_daemon (g, &size, &buf);
 
@@ -680,26 +669,24 @@ launch_appliance (guestfs_h *g, const char *arg)
   return 0;
 
  cleanup1:
-  if (!g->direct) {
-    if (wfd[1] >= 0) close (wfd[1]);
-    if (rfd[1] >= 0) close (rfd[0]);
-  }
+  if (!g->direct && sv[0] >= 0)
+    close (sv[0]);
   if (g->app.pid > 0) kill (g->app.pid, 9);
   if (g->app.recoverypid > 0) kill (g->app.recoverypid, 9);
   if (g->app.pid > 0) waitpid (g->app.pid, NULL, 0);
   if (g->app.recoverypid > 0) waitpid (g->app.recoverypid, NULL, 0);
-  if (g->fd[0] >= 0) close (g->fd[0]);
-  if (g->fd[1] >= 0) close (g->fd[1]);
-  g->fd[0] = -1;
-  g->fd[1] = -1;
   g->app.pid = 0;
   g->app.recoverypid = 0;
   memset (&g->launch_t, 0, sizeof g->launch_t);
 
  cleanup0:
-  if (g->sock >= 0) {
-    close (g->sock);
-    g->sock = -1;
+  if (daemon_accept_sock >= 0)
+    close (daemon_accept_sock);
+  if (console_sock >= 0)
+    close (console_sock);
+  if (g->conn) {
+    g->conn->ops->free_connection (g, g->conn);
+    g->conn = NULL;
   }
   g->state = CONFIG;
   return -1;
