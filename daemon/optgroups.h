@@ -92,7 +92,7 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_set_seeding (const char *device, int seeding) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_create (const char *dest) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_delete (const char *subvolume) { abort (); } \
-  guestfs_int_btrfssubvolume_list *__attribute__((noreturn)) do_btrfs_subvolume_list (const char *fs) { abort (); } \
+  guestfs_int_btrfssubvolume_list *__attribute__((noreturn)) do_btrfs_subvolume_list (const mountable_t *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_set_default (int64_t id, const char *fs) { abort (); } \
   int __attribute__((noreturn)) do_btrfs_subvolume_snapshot (const char *source, const char *dest) { abort (); } \
   int __attribute__((noreturn)) do_mkfs_btrfs (char *const *devices, int64_t allocstart, int64_t bytecount, const char *datatype, int leafsize, const char *label, const char *metadata, int nodesize, int sectorsize) { abort (); } \

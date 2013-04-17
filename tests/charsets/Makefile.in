@@ -1325,8 +1325,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
 test_charset_fidelity_SOURCES = test-charset-fidelity.c
+test_charset_fidelity_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 test_charset_fidelity_CFLAGS = \
-	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1411,18 +1413,18 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 test_charset_fidelity-test-charset-fidelity.o: test-charset-fidelity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -MT test_charset_fidelity-test-charset-fidelity.o -MD -MP -MF $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Tpo -c -o test_charset_fidelity-test-charset-fidelity.o `test -f 'test-charset-fidelity.c' || echo '$(srcdir)/'`test-charset-fidelity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_charset_fidelity_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -MT test_charset_fidelity-test-charset-fidelity.o -MD -MP -MF $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Tpo -c -o test_charset_fidelity-test-charset-fidelity.o `test -f 'test-charset-fidelity.c' || echo '$(srcdir)/'`test-charset-fidelity.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Tpo $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-charset-fidelity.c' object='test_charset_fidelity-test-charset-fidelity.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -c -o test_charset_fidelity-test-charset-fidelity.o `test -f 'test-charset-fidelity.c' || echo '$(srcdir)/'`test-charset-fidelity.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_charset_fidelity_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -c -o test_charset_fidelity-test-charset-fidelity.o `test -f 'test-charset-fidelity.c' || echo '$(srcdir)/'`test-charset-fidelity.c
 
 test_charset_fidelity-test-charset-fidelity.obj: test-charset-fidelity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -MT test_charset_fidelity-test-charset-fidelity.obj -MD -MP -MF $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Tpo -c -o test_charset_fidelity-test-charset-fidelity.obj `if test -f 'test-charset-fidelity.c'; then $(CYGPATH_W) 'test-charset-fidelity.c'; else $(CYGPATH_W) '$(srcdir)/test-charset-fidelity.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_charset_fidelity_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -MT test_charset_fidelity-test-charset-fidelity.obj -MD -MP -MF $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Tpo -c -o test_charset_fidelity-test-charset-fidelity.obj `if test -f 'test-charset-fidelity.c'; then $(CYGPATH_W) 'test-charset-fidelity.c'; else $(CYGPATH_W) '$(srcdir)/test-charset-fidelity.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Tpo $(DEPDIR)/test_charset_fidelity-test-charset-fidelity.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-charset-fidelity.c' object='test_charset_fidelity-test-charset-fidelity.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -c -o test_charset_fidelity-test-charset-fidelity.obj `if test -f 'test-charset-fidelity.c'; then $(CYGPATH_W) 'test-charset-fidelity.c'; else $(CYGPATH_W) '$(srcdir)/test-charset-fidelity.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_charset_fidelity_CPPFLAGS) $(CPPFLAGS) $(test_charset_fidelity_CFLAGS) $(CFLAGS) -c -o test_charset_fidelity-test-charset-fidelity.obj `if test -f 'test-charset-fidelity.c'; then $(CYGPATH_W) 'test-charset-fidelity.c'; else $(CYGPATH_W) '$(srcdir)/test-charset-fidelity.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -16585,7 +16585,7 @@ public class GuestFS {
    * return the type of a Windows dynamic disk volume
    * <p>
    * Return the type of the volume named "volume" in the disk
-   * group with GUID <diskgroup>.
+   * group with GUID "diskgroup".
    * <p>
    * Possible volume types that can be returned here include:
    * "simple", "spanned", "striped", "mirrored", "raid5".
@@ -16609,7 +16609,7 @@ public class GuestFS {
    * return the hint field of a Windows dynamic disk volume
    * <p>
    * Return the hint field of the volume named "volume" in
-   * the disk group with GUID <diskgroup>. This may not be
+   * the disk group with GUID "diskgroup". This may not be
    * defined, in which case the empty string is returned. The
    * hint field is often, though not always, the name of a
    * Windows drive, eg. "E:".
@@ -16632,7 +16632,7 @@ public class GuestFS {
    * return the partitions in a Windows dynamic disk volume
    * <p>
    * Return the list of partitions in the volume named
-   * "volume" in the disk group with GUID <diskgroup>.
+   * "volume" in the disk group with GUID "diskgroup".
    * <p>
    * @throws LibGuestFSException
    */

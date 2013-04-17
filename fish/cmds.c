@@ -3478,19 +3478,19 @@ struct command_entry ldmtool_diskgroup_disks_cmd_entry = {
 
 struct command_entry ldmtool_volume_type_cmd_entry = {
   .name = "ldmtool-volume-type",
-  .help = "NAME\n    ldmtool-volume-type - return the type of a Windows dynamic disk volume\n\nSYNOPSIS\n     ldmtool-volume-type diskgroup volume\n\nDESCRIPTION\n    Return the type of the volume named \"volume\" in the disk group with GUID\n    <diskgroup>.\n\n    Possible volume types that can be returned here include: \"simple\",\n    \"spanned\", \"striped\", \"mirrored\", \"raid5\". Other types may also be\n    returned.\n\n",
+  .help = "NAME\n    ldmtool-volume-type - return the type of a Windows dynamic disk volume\n\nSYNOPSIS\n     ldmtool-volume-type diskgroup volume\n\nDESCRIPTION\n    Return the type of the volume named \"volume\" in the disk group with GUID\n    \"diskgroup\".\n\n    Possible volume types that can be returned here include: \"simple\",\n    \"spanned\", \"striped\", \"mirrored\", \"raid5\". Other types may also be\n    returned.\n\n",
   .run = run_ldmtool_volume_type
 };
 
 struct command_entry ldmtool_volume_hint_cmd_entry = {
   .name = "ldmtool-volume-hint",
-  .help = "NAME\n    ldmtool-volume-hint - return the hint field of a Windows dynamic disk\n    volume\n\nSYNOPSIS\n     ldmtool-volume-hint diskgroup volume\n\nDESCRIPTION\n    Return the hint field of the volume named \"volume\" in the disk group\n    with GUID <diskgroup>. This may not be defined, in which case the empty\n    string is returned. The hint field is often, though not always, the name\n    of a Windows drive, eg. \"E:\".\n\n",
+  .help = "NAME\n    ldmtool-volume-hint - return the hint field of a Windows dynamic disk\n    volume\n\nSYNOPSIS\n     ldmtool-volume-hint diskgroup volume\n\nDESCRIPTION\n    Return the hint field of the volume named \"volume\" in the disk group\n    with GUID \"diskgroup\". This may not be defined, in which case the empty\n    string is returned. The hint field is often, though not always, the name\n    of a Windows drive, eg. \"E:\".\n\n",
   .run = run_ldmtool_volume_hint
 };
 
 struct command_entry ldmtool_volume_partitions_cmd_entry = {
   .name = "ldmtool-volume-partitions",
-  .help = "NAME\n    ldmtool-volume-partitions - return the partitions in a Windows dynamic\n    disk volume\n\nSYNOPSIS\n     ldmtool-volume-partitions diskgroup volume\n\nDESCRIPTION\n    Return the list of partitions in the volume named \"volume\" in the disk\n    group with GUID <diskgroup>.\n\n",
+  .help = "NAME\n    ldmtool-volume-partitions - return the partitions in a Windows dynamic\n    disk volume\n\nSYNOPSIS\n     ldmtool-volume-partitions diskgroup volume\n\nDESCRIPTION\n    Return the list of partitions in the volume named \"volume\" in the disk\n    group with GUID \"diskgroup\".\n\n",
   .run = run_ldmtool_volume_partitions
 };
 

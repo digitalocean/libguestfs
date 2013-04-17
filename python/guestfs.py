@@ -7659,7 +7659,7 @@ class GuestFS(object):
 
     def ldmtool_volume_type (self, diskgroup, volume):
         """Return the type of the volume named "volume" in the disk
-        group with GUID <diskgroup>.
+        group with GUID "diskgroup".
         
         Possible volume types that can be returned here include:
         "simple", "spanned", "striped", "mirrored", "raid5".
@@ -7670,7 +7670,7 @@ class GuestFS(object):
 
     def ldmtool_volume_hint (self, diskgroup, volume):
         """Return the hint field of the volume named "volume" in
-        the disk group with GUID <diskgroup>. This may not be
+        the disk group with GUID "diskgroup". This may not be
         defined, in which case the empty string is returned. The
         hint field is often, though not always, the name of a
         Windows drive, eg. "E:".
@@ -7680,7 +7680,7 @@ class GuestFS(object):
 
     def ldmtool_volume_partitions (self, diskgroup, volume):
         """Return the list of partitions in the volume named
-        "volume" in the disk group with GUID <diskgroup>.
+        "volume" in the disk group with GUID "diskgroup".
         
         This function returns a list of strings.
         """

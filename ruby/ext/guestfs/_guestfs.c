@@ -23322,7 +23322,7 @@ ruby_guestfs_ldmtool_diskgroup_disks (VALUE gv, VALUE diskgroupv)
  * return the type of a Windows dynamic disk volume
  *
  * Return the type of the volume named "volume" in the disk
- * group with GUID <diskgroup>.
+ * group with GUID "diskgroup".
  * 
  * Possible volume types that can be returned here include:
  * "simple", "spanned", "striped", "mirrored", "raid5".
@@ -23361,7 +23361,7 @@ ruby_guestfs_ldmtool_volume_type (VALUE gv, VALUE diskgroupv, VALUE volumev)
  * return the hint field of a Windows dynamic disk volume
  *
  * Return the hint field of the volume named "volume" in
- * the disk group with GUID <diskgroup>. This may not be
+ * the disk group with GUID "diskgroup". This may not be
  * defined, in which case the empty string is returned. The
  * hint field is often, though not always, the name of a
  * Windows drive, eg. "E:".
@@ -23399,7 +23399,7 @@ ruby_guestfs_ldmtool_volume_hint (VALUE gv, VALUE diskgroupv, VALUE volumev)
  * return the partitions in a Windows dynamic disk volume
  *
  * Return the list of partitions in the volume named
- * "volume" in the disk group with GUID <diskgroup>.
+ * "volume" in the disk group with GUID "diskgroup".
  *
  *
  * (For the C API documentation for this function, see

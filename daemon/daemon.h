@@ -34,12 +34,6 @@
 
 /* Mountables */
 
-typedef enum {
-  MOUNTABLE_DEVICE,     /* A bare device */
-  MOUNTABLE_BTRFSVOL,   /* A btrfs subvolume: device + volume */
-  MOUNTABLE_PATH        /* An already mounted path: device = path */
-} mountable_type_t;
-
 typedef struct {
   mountable_type_t type;
   const char *device;
@@ -64,6 +58,12 @@ extern int xread (int sock, void *buf, size_t len)
   __attribute__((__warn_unused_result__));
 
 extern char *mountable_to_string (const mountable_t *mountable);
+
+/*-- in mount.c --*/
+
+extern int mount_vfs_nochroot (const char *options, const char *vfstype,
+                               const mountable_t *mountable,
+                               const char *mp, const char *user_mp);
 
 /* Growable strings buffer. */
 struct stringsbuf {
@@ -370,7 +370,7 @@ is_zero (const char *buffer, size_t size)
  */
 #define RESOLVE_MOUNTABLE(string,mountable,cancel_stmt,fail_stmt)       \
   do {                                                                  \
-    if (STRPREFIX ((string), "btrfsvol:")) {   \
+    if (STRPREFIX ((string), "btrfsvol:")) {                            \
       if (parse_btrfsvol ((string) + strlen ("btrfsvol:"), &(mountable)) == -1)\
       {                                                                 \
         cancel_stmt;                                                    \
@@ -383,6 +383,7 @@ is_zero (const char *buffer, size_t size)
     else {                                                              \
       (mountable).type = MOUNTABLE_DEVICE;                              \
       (mountable).device = (string);                                    \
+      (mountable).volume = NULL;                                        \
       RESOLVE_DEVICE((string), cancel_stmt, fail_stmt);                 \
     }                                                                   \
   } while (0)

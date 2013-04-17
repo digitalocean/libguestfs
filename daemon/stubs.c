@@ -12302,7 +12302,7 @@ btrfs_subvolume_list_stub (XDR *xdr_in)
 {
   guestfs_int_btrfssubvolume_list *r;
   struct guestfs_btrfs_subvolume_list_args args;
-  char *fs;
+  mountable_t fs;
 
   /* The caller should have checked before calling this. */
   if (! optgroup_btrfs_available ()) {
@@ -12325,11 +12325,9 @@ btrfs_subvolume_list_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  fs = args.fs;
-  ABS_PATH (fs, , goto done);
+  REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE(args.fs, fs, , goto done);
 
-  NEED_ROOT (, goto done);
-  r = do_btrfs_subvolume_list (fs);
+  r = do_btrfs_subvolume_list (&fs);
   if (r == NULL)
     /* do_btrfs_subvolume_list has already called reply_with_error */
     goto done;
@@ -15408,6 +15406,42 @@ done_no_free:
   return;
 }
 
+static void
+internal_parse_mountable_stub (XDR *xdr_in)
+{
+  guestfs_int_internal_mountable *r;
+  struct guestfs_internal_parse_mountable_args args;
+  mountable_t mountable;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_internal_parse_mountable_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
+
+  r = do_internal_parse_mountable (&mountable);
+  if (r == NULL)
+    /* do_internal_parse_mountable has already called reply_with_error */
+    goto done;
+
+  struct guestfs_internal_parse_mountable_ret ret;
+  ret.mountable = *r;
+  free (r);
+  reply ((xdrproc_t) xdr_guestfs_internal_parse_mountable_ret, (char *) &ret);
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_parse_mountable_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_internal_parse_mountable_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16574,6 +16608,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_IS_WHOLE_DEVICE:
       is_whole_device_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE:
+      internal_parse_mountable_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

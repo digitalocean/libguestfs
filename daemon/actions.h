@@ -487,7 +487,7 @@ extern int do_set_e2generation (const char *file, int64_t generation);
 extern int do_btrfs_subvolume_snapshot (const char *source, const char *dest);
 extern int do_btrfs_subvolume_delete (const char *subvolume);
 extern int do_btrfs_subvolume_create (const char *dest);
-extern guestfs_int_btrfssubvolume_list *do_btrfs_subvolume_list (const char *fs);
+extern guestfs_int_btrfssubvolume_list *do_btrfs_subvolume_list (const mountable_t *fs);
 extern int do_btrfs_subvolume_set_default (int64_t id, const char *fs);
 extern int do_btrfs_filesystem_sync (const char *fs);
 extern int do_btrfs_filesystem_balance (const char *fs);
@@ -558,5 +558,6 @@ extern int do_part_set_gpt_type (const char *device, int partnum, const char *gu
 extern char *do_part_get_gpt_type (const char *device, int partnum);
 extern int do_rename (const char *oldpath, const char *newpath);
 extern int do_is_whole_device (const char *device);
+extern guestfs_int_internal_mountable *do_internal_parse_mountable (const mountable_t *mountable);
 
 #endif /* GUESTFSD_ACTIONS_H */

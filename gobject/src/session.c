@@ -4170,9 +4170,7 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * Automatic detection of the format opens you up to a potential
  * security hole when dealing with untrusted raw-format images. See
- * <ulink
- * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'>
- * CVE-2010-3851 </ulink> and <ulink
+ * CVE-2010-3851 and <ulink
  * url='https://bugzilla.redhat.com/show_bug.cgi?id=642934'>
  * RHBZ&num;642934 </ulink>. Specifying the format closes this security
  * hole.
@@ -6381,9 +6379,7 @@ guestfs_session_hivex_value_utf8(GuestfsSession *session, gint64 valueh, GError 
  * could not be detected, then "unknown" is returned.
  * 
  * Note that detecting the disk format can be insecure under some
- * circumstances. See "<ulink
- * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'" in
- * guestfs(3) CVE-2010-3851 </ulink>>.
+ * circumstances. See "CVE-2010-3851" in guestfs(3).
  * 
  * See also: "DISK IMAGE FORMATS" in guestfs(3)
  * 
@@ -6421,9 +6417,7 @@ guestfs_session_disk_format(GuestfsSession *session, const gchar *filename, GErr
  * @filename.
  * 
  * Note that detecting disk features can be insecure under some
- * circumstances. See "<ulink
- * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'" in
- * guestfs(3) CVE-2010-3851 </ulink>>.
+ * circumstances. See "CVE-2010-3851" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
  */
@@ -6458,9 +6452,7 @@ guestfs_session_disk_virtual_size(GuestfsSession *session, const gchar *filename
  * Detect and return whether the disk image @filename has a backing file.
  * 
  * Note that detecting disk features can be insecure under some
- * circumstances. See "<ulink
- * url='https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3851'" in
- * guestfs(3) CVE-2010-3851 </ulink>>.
+ * circumstances. See "CVE-2010-3851" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
  */
@@ -23269,7 +23261,7 @@ guestfs_session_ldmtool_diskgroup_disks(GuestfsSession *session, const gchar *di
  * return the type of a Windows dynamic disk volume
  *
  * Return the type of the volume named @volume in the disk group with GUID
- * <diskgroup>.
+ * @diskgroup.
  * 
  * Possible volume types that can be returned here include: @simple,
  * @spanned, @striped, @mirrored, @raid5. Other types may also be returned.
@@ -23306,9 +23298,9 @@ guestfs_session_ldmtool_volume_type(GuestfsSession *session, const gchar *diskgr
  * return the hint field of a Windows dynamic disk volume
  *
  * Return the hint field of the volume named @volume in the disk group with
- * GUID <diskgroup>. This may not be defined, in which case the empty
- * string is returned. The hint field is often, though not always, the name
- * of a Windows drive, eg. "E:".
+ * GUID @diskgroup. This may not be defined, in which case the empty string
+ * is returned. The hint field is often, though not always, the name of a
+ * Windows drive, eg. "E:".
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  */
@@ -23342,7 +23334,7 @@ guestfs_session_ldmtool_volume_hint(GuestfsSession *session, const gchar *diskgr
  * return the partitions in a Windows dynamic disk volume
  *
  * Return the list of partitions in the volume named @volume in the disk
- * group with GUID <diskgroup>.
+ * group with GUID @diskgroup.
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */

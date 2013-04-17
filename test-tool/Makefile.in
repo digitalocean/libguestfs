@@ -1353,10 +1353,13 @@ EXTRA_DIST = libguestfs-test-tool.pod
 CLEANFILES = libguestfs-test-tool.1 stamp-libguestfs-test-tool.pod
 man_MANS = libguestfs-test-tool.1
 libguestfs_test_tool_SOURCES = test-tool.c
-libguestfs_test_tool_CFLAGS = \
-	-DGUESTFS_WARN_DEPRECATED=1 \
-	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+libguestfs_test_tool_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
+
+libguestfs_test_tool_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 
@@ -1478,18 +1481,18 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 libguestfs_test_tool-test-tool.o: test-tool.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -MT libguestfs_test_tool-test-tool.o -MD -MP -MF $(DEPDIR)/libguestfs_test_tool-test-tool.Tpo -c -o libguestfs_test_tool-test-tool.o `test -f 'test-tool.c' || echo '$(srcdir)/'`test-tool.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_test_tool_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -MT libguestfs_test_tool-test-tool.o -MD -MP -MF $(DEPDIR)/libguestfs_test_tool-test-tool.Tpo -c -o libguestfs_test_tool-test-tool.o `test -f 'test-tool.c' || echo '$(srcdir)/'`test-tool.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_test_tool-test-tool.Tpo $(DEPDIR)/libguestfs_test_tool-test-tool.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-tool.c' object='libguestfs_test_tool-test-tool.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -c -o libguestfs_test_tool-test-tool.o `test -f 'test-tool.c' || echo '$(srcdir)/'`test-tool.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_test_tool_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -c -o libguestfs_test_tool-test-tool.o `test -f 'test-tool.c' || echo '$(srcdir)/'`test-tool.c
 
 libguestfs_test_tool-test-tool.obj: test-tool.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -MT libguestfs_test_tool-test-tool.obj -MD -MP -MF $(DEPDIR)/libguestfs_test_tool-test-tool.Tpo -c -o libguestfs_test_tool-test-tool.obj `if test -f 'test-tool.c'; then $(CYGPATH_W) 'test-tool.c'; else $(CYGPATH_W) '$(srcdir)/test-tool.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_test_tool_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -MT libguestfs_test_tool-test-tool.obj -MD -MP -MF $(DEPDIR)/libguestfs_test_tool-test-tool.Tpo -c -o libguestfs_test_tool-test-tool.obj `if test -f 'test-tool.c'; then $(CYGPATH_W) 'test-tool.c'; else $(CYGPATH_W) '$(srcdir)/test-tool.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_test_tool-test-tool.Tpo $(DEPDIR)/libguestfs_test_tool-test-tool.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-tool.c' object='libguestfs_test_tool-test-tool.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -c -o libguestfs_test_tool-test-tool.obj `if test -f 'test-tool.c'; then $(CYGPATH_W) 'test-tool.c'; else $(CYGPATH_W) '$(srcdir)/test-tool.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_test_tool_CPPFLAGS) $(CPPFLAGS) $(libguestfs_test_tool_CFLAGS) $(CFLAGS) -c -o libguestfs_test_tool-test-tool.obj `if test -f 'test-tool.c'; then $(CYGPATH_W) 'test-tool.c'; else $(CYGPATH_W) '$(srcdir)/test-tool.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

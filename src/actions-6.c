@@ -6518,3 +6518,100 @@ guestfs_list_ldm_partitions (guestfs_h *g)
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC struct guestfs_internal_mountable *
+guestfs_internal_parse_mountable (guestfs_h *g,
+                                  const char *mountable)
+{
+  struct guestfs_internal_parse_mountable_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_internal_parse_mountable_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  struct guestfs_internal_mountable *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_parse_mountable", 24);
+  if (mountable == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_parse_mountable", "mountable");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s", "internal_parse_mountable");
+    fprintf (trace_fp, " \"%s\"", mountable);
+    guestfs___trace_send_line (g);
+  }
+
+  if (guestfs___check_appliance_up (g, "internal_parse_mountable") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_parse_mountable", "NULL");
+    return NULL;
+  }
+
+  args.mountable = (char *) mountable;
+  serial = guestfs___send (g, GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_internal_parse_mountable_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_parse_mountable", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "internal_parse_mountable", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_internal_parse_mountable_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_parse_mountable", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_parse_mountable", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_parse_mountable", "NULL");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "internal_parse_mountable", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "internal_parse_mountable",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  /* caller will free this */
+  ret_v = safe_memdup (g, &ret.mountable, sizeof (ret.mountable));
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s = ", "internal_parse_mountable");
+    fprintf (trace_fp, "<struct guestfs_internal_mountable *>");
+    guestfs___trace_send_line (g);
+  }
+
+  return ret_v;
+}
+

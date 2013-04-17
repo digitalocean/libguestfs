@@ -1,4 +1,89 @@
+2013-02-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.11.
+
+	tests: mountable: Add test-mountable-inspect.sh to EXTRA_DIST.
+	This fixes commit 7d976657e6f02ca0b61858f668ae792a70327309.
+
+2013-02-13  Matthew Booth  <mbooth@redhat.com>
+
+	Fix API doc errors
+
+	gobject: Fix doc generation of L<guestfs(3)/CVE-2010-3851>
+
+2013-02-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Fix RESOLVE_MOUNTABLE, internal_parse_mountable.
+	- The mountable->volume field was not being initialized on the
+	  device path.
+
+	- XDR string fields cannot be NULL.
+
+	This fixes commit 7d976657e6f02ca0b61858f668ae792a70327309.
+
+2013-02-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: mountable: Print error message if guestfs_create fails.
+
+	tests: Add Fedora btrfs phony guest to target list.
+	This fixes commit 754e8194382a9ed265c7fa172e438049e4eb8389.
+
+	tests: Reorder the tests so test guest is created before it's used by mountable test.
+	This fixes commit 7d976657e6f02ca0b61858f668ae792a70327309.
+
+	examples: Ensure each example program is documented.
+
+	examples: Rename example programs, replacing '_' with '-'.
+
+2013-02-12  Matthew Booth  <mbooth@redhat.com>
+
+	mountable: Test inspection of fedora image
+
+	inspect: Update inspect_os to use mountables
+	This fixes inspection of guests which use btrfs subvolumes.
+
+	New internal API: internal_parse_mountable
+
+	build: Minor cleanup in daemon/Makefile.am
+
+	btrfs: Make a stub Fedora btrfs guest for inspection testing
+
+	mountable: Make list-filesystems return btrfsvols
+
+	btrfs: Update btrfs_subvolume_list to take Mountable_or_Path
+	btrfs_subvolume_list can now take either the path of a mounted btrfs
+	filesystem, or a mountable describing the location of a btrfs
+	filesystem, or one of its volumes. In the latter case, the filesystem
+	will be automatically mounted outside of /sysroot before running the
+	btrfs tool, and unmounted afterwards.
+
+	mount: Add mount_vfs_nochroot
+	This internal function allows mounting a mountable outside /sysroot.
+
+2013-02-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	faq: Add common questions about virt-resize/virt-sparsify in place support.
+
+	faq: Fix some small typos in section on virt-sparsify.
+
+	faq: Update RHEL information.
+
+	test-tool: Point to SELinux documentation for further information.
+
 2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	examples: Add all the C examples to the guestfs-examples(3) man page.
+
+	build: Separate out *_CPPFLAGS from *_CFLAGS.
+	This is pretty pointless.
+
+	test-tool: Get rid of the "=== Test starts here ===" banner.
+	It confuses things, because that is not always the start
+	of the output.
+
+	test-tool: Display SELinux status in output of libguestfs-test-tool.
+
+	Version 1.21.10.
 
 	tests: Add a regression test for stack overflow in events (RHBZ#909624).
 	Note this is a check-slow test since generating 1,000,000 progress

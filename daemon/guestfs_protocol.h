@@ -379,6 +379,18 @@ typedef struct {
 	guestfs_int_hivex_value *guestfs_int_hivex_value_list_val;
 } guestfs_int_hivex_value_list;
 
+struct guestfs_int_internal_mountable {
+	int im_type;
+	char *im_device;
+	char *im_volume;
+};
+typedef struct guestfs_int_internal_mountable guestfs_int_internal_mountable;
+
+typedef struct {
+	u_int guestfs_int_internal_mountable_list_len;
+	guestfs_int_internal_mountable *guestfs_int_internal_mountable_list_val;
+} guestfs_int_internal_mountable_list;
+
 struct guestfs_mount_args {
 	char *mountable;
 	char *mountpoint;
@@ -3559,6 +3571,16 @@ struct guestfs_is_whole_device_ret {
 };
 typedef struct guestfs_is_whole_device_ret guestfs_is_whole_device_ret;
 
+struct guestfs_internal_parse_mountable_args {
+	char *mountable;
+};
+typedef struct guestfs_internal_parse_mountable_args guestfs_internal_parse_mountable_args;
+
+struct guestfs_internal_parse_mountable_ret {
+	guestfs_int_internal_mountable mountable;
+};
+typedef struct guestfs_internal_parse_mountable_ret guestfs_internal_parse_mountable_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3948,9 +3970,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
 	GUESTFS_PROC_RENAME = 394,
 	GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
+	GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 395
+#define GUESTFS_MAX_PROC_NR 396
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4051,6 +4074,8 @@ extern  bool_t xdr_guestfs_int_hivex_node (XDR *, guestfs_int_hivex_node*);
 extern  bool_t xdr_guestfs_int_hivex_node_list (XDR *, guestfs_int_hivex_node_list*);
 extern  bool_t xdr_guestfs_int_hivex_value (XDR *, guestfs_int_hivex_value*);
 extern  bool_t xdr_guestfs_int_hivex_value_list (XDR *, guestfs_int_hivex_value_list*);
+extern  bool_t xdr_guestfs_int_internal_mountable (XDR *, guestfs_int_internal_mountable*);
+extern  bool_t xdr_guestfs_int_internal_mountable_list (XDR *, guestfs_int_internal_mountable_list*);
 extern  bool_t xdr_guestfs_mount_args (XDR *, guestfs_mount_args*);
 extern  bool_t xdr_guestfs_touch_args (XDR *, guestfs_touch_args*);
 extern  bool_t xdr_guestfs_ll_args (XDR *, guestfs_ll_args*);
@@ -4566,6 +4591,8 @@ extern  bool_t xdr_guestfs_part_get_gpt_type_ret (XDR *, guestfs_part_get_gpt_ty
 extern  bool_t xdr_guestfs_rename_args (XDR *, guestfs_rename_args*);
 extern  bool_t xdr_guestfs_is_whole_device_args (XDR *, guestfs_is_whole_device_args*);
 extern  bool_t xdr_guestfs_is_whole_device_ret (XDR *, guestfs_is_whole_device_ret*);
+extern  bool_t xdr_guestfs_internal_parse_mountable_args (XDR *, guestfs_internal_parse_mountable_args*);
+extern  bool_t xdr_guestfs_internal_parse_mountable_ret (XDR *, guestfs_internal_parse_mountable_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -4616,6 +4643,8 @@ extern bool_t xdr_guestfs_int_hivex_node ();
 extern bool_t xdr_guestfs_int_hivex_node_list ();
 extern bool_t xdr_guestfs_int_hivex_value ();
 extern bool_t xdr_guestfs_int_hivex_value_list ();
+extern bool_t xdr_guestfs_int_internal_mountable ();
+extern bool_t xdr_guestfs_int_internal_mountable_list ();
 extern bool_t xdr_guestfs_mount_args ();
 extern bool_t xdr_guestfs_touch_args ();
 extern bool_t xdr_guestfs_ll_args ();
@@ -5131,6 +5160,8 @@ extern bool_t xdr_guestfs_part_get_gpt_type_ret ();
 extern bool_t xdr_guestfs_rename_args ();
 extern bool_t xdr_guestfs_is_whole_device_args ();
 extern bool_t xdr_guestfs_is_whole_device_ret ();
+extern bool_t xdr_guestfs_internal_parse_mountable_args ();
+extern bool_t xdr_guestfs_internal_parse_mountable_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

@@ -1387,10 +1387,12 @@ CLEANFILES = *~ guestfs.so
 # being built at all.
 @HAVE_LUA_TRUE@lualib_LTLIBRARIES = libluaguestfs.la
 @HAVE_LUA_TRUE@libluaguestfs_la_SOURCES = lua-guestfs.c
+@HAVE_LUA_TRUE@libluaguestfs_la_CPPFLAGS = \
+@HAVE_LUA_TRUE@	-DGUESTFS_PRIVATE=1 \
+@HAVE_LUA_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+
 @HAVE_LUA_TRUE@libluaguestfs_la_CFLAGS = \
 @HAVE_LUA_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_LUA_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
-@HAVE_LUA_TRUE@	-DGUESTFS_PRIVATE=1 \
 @HAVE_LUA_TRUE@	$(LUA_CFLAGS)
 
 @HAVE_LUA_TRUE@libluaguestfs_la_LIBADD = $(top_builddir)/src/libguestfs.la
@@ -1510,11 +1512,11 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 libluaguestfs_la-lua-guestfs.lo: lua-guestfs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libluaguestfs_la_CFLAGS) $(CFLAGS) -MT libluaguestfs_la-lua-guestfs.lo -MD -MP -MF $(DEPDIR)/libluaguestfs_la-lua-guestfs.Tpo -c -o libluaguestfs_la-lua-guestfs.lo `test -f 'lua-guestfs.c' || echo '$(srcdir)/'`lua-guestfs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libluaguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libluaguestfs_la_CFLAGS) $(CFLAGS) -MT libluaguestfs_la-lua-guestfs.lo -MD -MP -MF $(DEPDIR)/libluaguestfs_la-lua-guestfs.Tpo -c -o libluaguestfs_la-lua-guestfs.lo `test -f 'lua-guestfs.c' || echo '$(srcdir)/'`lua-guestfs.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libluaguestfs_la-lua-guestfs.Tpo $(DEPDIR)/libluaguestfs_la-lua-guestfs.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lua-guestfs.c' object='libluaguestfs_la-lua-guestfs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libluaguestfs_la_CFLAGS) $(CFLAGS) -c -o libluaguestfs_la-lua-guestfs.lo `test -f 'lua-guestfs.c' || echo '$(srcdir)/'`lua-guestfs.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libluaguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libluaguestfs_la_CFLAGS) $(CFLAGS) -c -o libluaguestfs_la-lua-guestfs.lo `test -f 'lua-guestfs.c' || echo '$(srcdir)/'`lua-guestfs.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

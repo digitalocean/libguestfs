@@ -43,6 +43,7 @@ SUBDIRS += tests/tmpdirs
 SUBDIRS += tests/protocol
 SUBDIRS += tests/parallel
 SUBDIRS += tests/disks
+SUBDIRS += tests/mountable
 SUBDIRS += tests/lvm
 SUBDIRS += tests/luks
 SUBDIRS += tests/md

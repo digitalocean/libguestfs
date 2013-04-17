@@ -1383,13 +1383,15 @@ virt_df_SOURCES = \
 	main.c \
 	output.c
 
-virt_df_CFLAGS = \
+virt_df_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DGUESTFS_PRIVATE=1 \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
 	-I$(top_srcdir)/fish \
-	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
-	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+virt_df_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
@@ -1533,130 +1535,130 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 virt_df-config.o: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-config.o -MD -MP -MF $(DEPDIR)/virt_df-config.Tpo -c -o virt_df-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-config.o -MD -MP -MF $(DEPDIR)/virt_df-config.Tpo -c -o virt_df-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-config.Tpo $(DEPDIR)/virt_df-config.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_df-config.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
 
 virt_df-config.obj: ../fish/config.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-config.obj -MD -MP -MF $(DEPDIR)/virt_df-config.Tpo -c -o virt_df-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-config.obj -MD -MP -MF $(DEPDIR)/virt_df-config.Tpo -c -o virt_df-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-config.Tpo $(DEPDIR)/virt_df-config.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/config.c' object='virt_df-config.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-config.obj `if test -f '../fish/config.c'; then $(CYGPATH_W) '../fish/config.c'; else $(CYGPATH_W) '$(srcdir)/../fish/config.c'; fi`
 
 virt_df-domain.o: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domain.o -MD -MP -MF $(DEPDIR)/virt_df-domain.Tpo -c -o virt_df-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domain.o -MD -MP -MF $(DEPDIR)/virt_df-domain.Tpo -c -o virt_df-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-domain.Tpo $(DEPDIR)/virt_df-domain.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_df-domain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domain.o `test -f '../fish/domain.c' || echo '$(srcdir)/'`../fish/domain.c
 
 virt_df-domain.obj: ../fish/domain.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domain.obj -MD -MP -MF $(DEPDIR)/virt_df-domain.Tpo -c -o virt_df-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domain.obj -MD -MP -MF $(DEPDIR)/virt_df-domain.Tpo -c -o virt_df-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-domain.Tpo $(DEPDIR)/virt_df-domain.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/domain.c' object='virt_df-domain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domain.obj `if test -f '../fish/domain.c'; then $(CYGPATH_W) '../fish/domain.c'; else $(CYGPATH_W) '$(srcdir)/../fish/domain.c'; fi`
 
 virt_df-inspect.o: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-inspect.o -MD -MP -MF $(DEPDIR)/virt_df-inspect.Tpo -c -o virt_df-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-inspect.o -MD -MP -MF $(DEPDIR)/virt_df-inspect.Tpo -c -o virt_df-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-inspect.Tpo $(DEPDIR)/virt_df-inspect.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_df-inspect.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-inspect.o `test -f '../fish/inspect.c' || echo '$(srcdir)/'`../fish/inspect.c
 
 virt_df-inspect.obj: ../fish/inspect.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-inspect.obj -MD -MP -MF $(DEPDIR)/virt_df-inspect.Tpo -c -o virt_df-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-inspect.obj -MD -MP -MF $(DEPDIR)/virt_df-inspect.Tpo -c -o virt_df-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-inspect.Tpo $(DEPDIR)/virt_df-inspect.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/inspect.c' object='virt_df-inspect.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-inspect.obj `if test -f '../fish/inspect.c'; then $(CYGPATH_W) '../fish/inspect.c'; else $(CYGPATH_W) '$(srcdir)/../fish/inspect.c'; fi`
 
 virt_df-keys.o: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-keys.o -MD -MP -MF $(DEPDIR)/virt_df-keys.Tpo -c -o virt_df-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-keys.o -MD -MP -MF $(DEPDIR)/virt_df-keys.Tpo -c -o virt_df-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-keys.Tpo $(DEPDIR)/virt_df-keys.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_df-keys.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-keys.o `test -f '../fish/keys.c' || echo '$(srcdir)/'`../fish/keys.c
 
 virt_df-keys.obj: ../fish/keys.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-keys.obj -MD -MP -MF $(DEPDIR)/virt_df-keys.Tpo -c -o virt_df-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-keys.obj -MD -MP -MF $(DEPDIR)/virt_df-keys.Tpo -c -o virt_df-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-keys.Tpo $(DEPDIR)/virt_df-keys.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/keys.c' object='virt_df-keys.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-keys.obj `if test -f '../fish/keys.c'; then $(CYGPATH_W) '../fish/keys.c'; else $(CYGPATH_W) '$(srcdir)/../fish/keys.c'; fi`
 
 virt_df-options.o: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-options.o -MD -MP -MF $(DEPDIR)/virt_df-options.Tpo -c -o virt_df-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-options.o -MD -MP -MF $(DEPDIR)/virt_df-options.Tpo -c -o virt_df-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-options.Tpo $(DEPDIR)/virt_df-options.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_df-options.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-options.o `test -f '../fish/options.c' || echo '$(srcdir)/'`../fish/options.c
 
 virt_df-options.obj: ../fish/options.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-options.obj -MD -MP -MF $(DEPDIR)/virt_df-options.Tpo -c -o virt_df-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-options.obj -MD -MP -MF $(DEPDIR)/virt_df-options.Tpo -c -o virt_df-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-options.Tpo $(DEPDIR)/virt_df-options.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_df-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
 
 virt_df-domains.o: domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domains.o -MD -MP -MF $(DEPDIR)/virt_df-domains.Tpo -c -o virt_df-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domains.o -MD -MP -MF $(DEPDIR)/virt_df-domains.Tpo -c -o virt_df-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-domains.Tpo $(DEPDIR)/virt_df-domains.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domains.c' object='virt_df-domains.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
 
 virt_df-domains.obj: domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domains.obj -MD -MP -MF $(DEPDIR)/virt_df-domains.Tpo -c -o virt_df-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-domains.obj -MD -MP -MF $(DEPDIR)/virt_df-domains.Tpo -c -o virt_df-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-domains.Tpo $(DEPDIR)/virt_df-domains.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domains.c' object='virt_df-domains.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
 
 virt_df-df.o: df.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-df.o -MD -MP -MF $(DEPDIR)/virt_df-df.Tpo -c -o virt_df-df.o `test -f 'df.c' || echo '$(srcdir)/'`df.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-df.o -MD -MP -MF $(DEPDIR)/virt_df-df.Tpo -c -o virt_df-df.o `test -f 'df.c' || echo '$(srcdir)/'`df.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-df.Tpo $(DEPDIR)/virt_df-df.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='df.c' object='virt_df-df.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-df.o `test -f 'df.c' || echo '$(srcdir)/'`df.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-df.o `test -f 'df.c' || echo '$(srcdir)/'`df.c
 
 virt_df-df.obj: df.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-df.obj -MD -MP -MF $(DEPDIR)/virt_df-df.Tpo -c -o virt_df-df.obj `if test -f 'df.c'; then $(CYGPATH_W) 'df.c'; else $(CYGPATH_W) '$(srcdir)/df.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-df.obj -MD -MP -MF $(DEPDIR)/virt_df-df.Tpo -c -o virt_df-df.obj `if test -f 'df.c'; then $(CYGPATH_W) 'df.c'; else $(CYGPATH_W) '$(srcdir)/df.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-df.Tpo $(DEPDIR)/virt_df-df.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='df.c' object='virt_df-df.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-df.obj `if test -f 'df.c'; then $(CYGPATH_W) 'df.c'; else $(CYGPATH_W) '$(srcdir)/df.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-df.obj `if test -f 'df.c'; then $(CYGPATH_W) 'df.c'; else $(CYGPATH_W) '$(srcdir)/df.c'; fi`
 
 virt_df-main.o: main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-main.o -MD -MP -MF $(DEPDIR)/virt_df-main.Tpo -c -o virt_df-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-main.o -MD -MP -MF $(DEPDIR)/virt_df-main.Tpo -c -o virt_df-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-main.Tpo $(DEPDIR)/virt_df-main.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='virt_df-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 
 virt_df-main.obj: main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-main.obj -MD -MP -MF $(DEPDIR)/virt_df-main.Tpo -c -o virt_df-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-main.obj -MD -MP -MF $(DEPDIR)/virt_df-main.Tpo -c -o virt_df-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-main.Tpo $(DEPDIR)/virt_df-main.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='virt_df-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 
 virt_df-output.o: output.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-output.o -MD -MP -MF $(DEPDIR)/virt_df-output.Tpo -c -o virt_df-output.o `test -f 'output.c' || echo '$(srcdir)/'`output.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-output.o -MD -MP -MF $(DEPDIR)/virt_df-output.Tpo -c -o virt_df-output.o `test -f 'output.c' || echo '$(srcdir)/'`output.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-output.Tpo $(DEPDIR)/virt_df-output.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='output.c' object='virt_df-output.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-output.o `test -f 'output.c' || echo '$(srcdir)/'`output.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-output.o `test -f 'output.c' || echo '$(srcdir)/'`output.c
 
 virt_df-output.obj: output.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-output.obj -MD -MP -MF $(DEPDIR)/virt_df-output.Tpo -c -o virt_df-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -MT virt_df-output.obj -MD -MP -MF $(DEPDIR)/virt_df-output.Tpo -c -o virt_df-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_df-output.Tpo $(DEPDIR)/virt_df-output.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='output.c' object='virt_df-output.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_df_CPPFLAGS) $(CPPFLAGS) $(virt_df_CFLAGS) $(CFLAGS) -c -o virt_df-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

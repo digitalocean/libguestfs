@@ -322,6 +322,14 @@ struct guestfs_int_hivex_value {
 
 typedef struct guestfs_int_hivex_value guestfs_int_hivex_value_list<>;
 
+struct guestfs_int_internal_mountable {
+  int im_type;
+  string im_device<>;
+  string im_volume<>;
+};
+
+typedef struct guestfs_int_internal_mountable guestfs_int_internal_mountable_list<>;
+
 /* Function arguments and return values. */
 
 struct guestfs_mount_args {
@@ -2746,6 +2754,14 @@ struct guestfs_is_whole_device_ret {
   bool flag;
 };
 
+struct guestfs_internal_parse_mountable_args {
+  string mountable<>;
+};
+
+struct guestfs_internal_parse_mountable_ret {
+  guestfs_int_internal_mountable mountable;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3135,10 +3151,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
   GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
   GUESTFS_PROC_RENAME = 394,
-  GUESTFS_PROC_IS_WHOLE_DEVICE = 395
+  GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
+  GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396
 };
 
-const GUESTFS_MAX_PROC_NR = 395;
+const GUESTFS_MAX_PROC_NR = 396;
 
 /* The remote procedure call protocol. */
 

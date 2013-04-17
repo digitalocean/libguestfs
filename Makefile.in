@@ -104,9 +104,10 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @ENABLE_APPLIANCE_TRUE@am__append_2 = appliance tests/qemu \
 @ENABLE_APPLIANCE_TRUE@	tests/guests tests/c-api tests/tmpdirs \
 @ENABLE_APPLIANCE_TRUE@	tests/protocol tests/parallel \
-@ENABLE_APPLIANCE_TRUE@	tests/disks tests/lvm tests/luks \
-@ENABLE_APPLIANCE_TRUE@	tests/md tests/selinux tests/ntfsclone \
-@ENABLE_APPLIANCE_TRUE@	tests/btrfs tests/charsets tests/xml \
+@ENABLE_APPLIANCE_TRUE@	tests/disks tests/mountable tests/lvm \
+@ENABLE_APPLIANCE_TRUE@	tests/luks tests/md tests/selinux \
+@ENABLE_APPLIANCE_TRUE@	tests/ntfsclone tests/btrfs \
+@ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
 @ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
 @ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/regressions
@@ -333,9 +334,9 @@ CSCOPE = cscope
 DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	examples po daemon appliance tests/qemu tests/guests \
 	tests/c-api tests/tmpdirs tests/protocol tests/parallel \
-	tests/disks tests/lvm tests/luks tests/md tests/selinux \
-	tests/ntfsclone tests/btrfs tests/charsets tests/xml \
-	tests/mount-local tests/9p tests/rsync tests/bigdirs \
+	tests/disks tests/mountable tests/lvm tests/luks tests/md \
+	tests/selinux tests/ntfsclone tests/btrfs tests/charsets \
+	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/regressions test-tool \
 	fish align cat df edit format inspector rescue perl \
 	perl/examples ocaml ocaml/examples python python/examples ruby \

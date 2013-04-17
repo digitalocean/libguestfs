@@ -38,6 +38,8 @@
         guestfs___cleanup_free_inotify_event_list;
         guestfs___cleanup_free_int_bool;
         guestfs___cleanup_free_int_bool_list;
+        guestfs___cleanup_free_internal_mountable;
+        guestfs___cleanup_free_internal_mountable_list;
         guestfs___cleanup_free_isoinfo;
         guestfs___cleanup_free_isoinfo_list;
         guestfs___cleanup_free_lvm_lv;
@@ -228,6 +230,8 @@
         guestfs_free_inotify_event_list;
         guestfs_free_int_bool;
         guestfs_free_int_bool_list;
+        guestfs_free_internal_mountable;
+        guestfs_free_internal_mountable_list;
         guestfs_free_isoinfo;
         guestfs_free_isoinfo_list;
         guestfs_free_lvm_lv;
@@ -358,6 +362,7 @@
         guestfs_internal_hot_remove_drive_precheck;
         guestfs_internal_lstatlist;
         guestfs_internal_lxattrlist;
+        guestfs_internal_parse_mountable;
         guestfs_internal_readlinklist;
         guestfs_internal_test;
         guestfs_internal_test_63_optargs;

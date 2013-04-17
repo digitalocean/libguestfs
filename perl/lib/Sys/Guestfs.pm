@@ -86,7 +86,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.395';
+$VERSION = '0.396';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -3494,19 +3494,19 @@ scanned.  If this list is empty, all block devices are scanned.
 =item $hint = $g->ldmtool_volume_hint ($diskgroup, $volume);
 
 Return the hint field of the volume named C<volume> in the disk
-group with GUID <diskgroup>.  This may not be defined, in which
+group with GUID C<diskgroup>.  This may not be defined, in which
 case the empty string is returned.  The hint field is often, though
 not always, the name of a Windows drive, eg. C<E:>.
 
 =item @partitions = $g->ldmtool_volume_partitions ($diskgroup, $volume);
 
 Return the list of partitions in the volume named C<volume> in the disk
-group with GUID <diskgroup>.
+group with GUID C<diskgroup>.
 
 =item $voltype = $g->ldmtool_volume_type ($diskgroup, $volume);
 
 Return the type of the volume named C<volume> in the disk
-group with GUID <diskgroup>.
+group with GUID C<diskgroup>.
 
 Possible volume types that can be returned here include:
 C<simple>, C<spanned>, C<striped>, C<mirrored>, C<raid5>.
@@ -7128,7 +7128,7 @@ use vars qw(%guestfs_introspection);
   "btrfs_subvolume_list" => {
     ret => 'struct btrfssubvolume list',
     args => [
-      [ 'fs', 'string(path)', 0 ],
+      [ 'fs', 'string(mountable_or_path)', 0 ],
     ],
     name => "btrfs_subvolume_list",
     description => "list btrfs snapshots and subvolumes",

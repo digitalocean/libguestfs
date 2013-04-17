@@ -2843,6 +2843,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_internal_lstatlist (
 #define GUESTFS_HAVE_INTERNAL_LXATTRLIST 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_internal_lxattrlist (guestfs_h *g, const char *path, char *const *names);
 
+#define GUESTFS_HAVE_INTERNAL_PARSE_MOUNTABLE 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_internal_mountable *guestfs_internal_parse_mountable (guestfs_h *g, const char *mountable);
+
 #define GUESTFS_HAVE_INTERNAL_READLINKLIST 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_internal_readlinklist (guestfs_h *g, const char *path, char *const *names);
 
@@ -3136,6 +3139,20 @@ extern GUESTFS_DLL_PUBLIC int guestfs_internal_write_append (guestfs_h *g, const
 
 /* Private structures. */
 
+struct guestfs_internal_mountable {
+  int32_t im_type;
+  char *im_device;
+  char *im_volume;
+};
+
+struct guestfs_internal_mountable_list {
+  uint32_t len;
+  struct guestfs_internal_mountable *val;
+};
+
+extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable (struct guestfs_internal_mountable *);
+extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct guestfs_internal_mountable_list *);
+
 /* Deprecated macros for internal functions. */
 
 #define LIBGUESTFS_HAVE_INTERNAL_AUTOSYNC 1
@@ -3144,6 +3161,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_internal_write_append (guestfs_h *g, const
 #define LIBGUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK 1
 #define LIBGUESTFS_HAVE_INTERNAL_LSTATLIST 1
 #define LIBGUESTFS_HAVE_INTERNAL_LXATTRLIST 1
+#define LIBGUESTFS_HAVE_INTERNAL_PARSE_MOUNTABLE 1
 #define LIBGUESTFS_HAVE_INTERNAL_READLINKLIST 1
 #define LIBGUESTFS_HAVE_INTERNAL_TEST 1
 #define LIBGUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS 1

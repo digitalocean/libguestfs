@@ -1020,6 +1020,31 @@ xdr_guestfs_int_hivex_value_list (XDR *xdrs, guestfs_int_hivex_value_list *objp)
 }
 
 bool_t
+xdr_guestfs_int_internal_mountable (XDR *xdrs, guestfs_int_internal_mountable *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->im_type))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->im_device, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->im_volume, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_int_internal_mountable_list (XDR *xdrs, guestfs_int_internal_mountable_list *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->guestfs_int_internal_mountable_list_val, (u_int *) &objp->guestfs_int_internal_mountable_list_len, ~0,
+		sizeof (guestfs_int_internal_mountable), (xdrproc_t) xdr_guestfs_int_internal_mountable))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_mount_args (XDR *xdrs, guestfs_mount_args *objp)
 {
 	register int32_t *buf;
@@ -7724,6 +7749,26 @@ xdr_guestfs_is_whole_device_ret (XDR *xdrs, guestfs_is_whole_device_ret *objp)
 	register int32_t *buf;
 
 	 if (!xdr_bool (xdrs, &objp->flag))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_internal_parse_mountable_args (XDR *xdrs, guestfs_internal_parse_mountable_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_internal_parse_mountable_ret (XDR *xdrs, guestfs_internal_parse_mountable_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_guestfs_int_internal_mountable (xdrs, &objp->mountable))
 		 return FALSE;
 	return TRUE;
 }
