@@ -118,6 +118,7 @@
 -export([egrepi/3]).
 -export([equal/3]).
 -export([exists/2]).
+-export([extlinux/2]).
 -export([fallocate/3]).
 -export([fallocate64/3]).
 -export([feature_available/2]).
@@ -480,6 +481,7 @@
 -export([swapon_label/2]).
 -export([swapon_uuid/2]).
 -export([sync/1]).
+-export([syslinux/2, syslinux/3]).
 -export([tail/2]).
 -export([tail_n/3]).
 -export([tar_in/3, tar_in/4]).
@@ -892,6 +894,9 @@ equal(G, File1, File2) ->
 
 exists(G, Path) ->
   call_port(G, {exists, Path}).
+
+extlinux(G, Directory) ->
+  call_port(G, {extlinux, Directory}).
 
 fallocate(G, Path, Len) ->
   call_port(G, {fallocate, Path, Len}).
@@ -2026,6 +2031,11 @@ swapon_uuid(G, Uuid) ->
 
 sync(G) ->
   call_port(G, {sync}).
+
+syslinux(G, Device, Optargs) ->
+  call_port(G, {syslinux, Device, Optargs}).
+syslinux(G, Device) ->
+  syslinux(G, Device, []).
 
 tail(G, Path) ->
   call_port(G, {tail, Path}).

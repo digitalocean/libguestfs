@@ -455,7 +455,8 @@ module Guestfs (
   part_get_gpt_type,
   rename,
   is_whole_device,
-  feature_available
+  feature_available,
+  extlinux
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -5722,4 +5723,16 @@ feature_available h groups = do
       err <- last_error h
       fail err
     else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_extlinux" c_extlinux
+  :: GuestfsP -> CString -> IO CInt
+
+extlinux :: GuestfsH -> String -> IO ()
+extlinux h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_extlinux p directory)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 

@@ -1,4 +1,70 @@
+2013-04-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	New APIs: Add support for syslinux and extlinux (bootloaders).
+	This also adds tests of SYSLINUX and EXTLINUX which create bootable
+	guests.
+
+2013-04-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Don't delete iconv locale data from the appliance.
+	- /usr/lib{,64}/gconv/*:
+
+	This is the iconv data, required for APIs like iconv_open to work.  In
+	particular, the mtools 'mcopy' program fails completely if it cannot
+	use iconv.  'mcopy' is used by SYSLINUX to copy files to the disk.
+
+	The error you would have seen is:
+
+	  Error converting to codepage 850 Invalid argument
+	  Cannot initialize 'S:'
+	  Bad target s:/ldlinux.sys
+
+	- /usr/bin/localedef and /usr/sbin/build-locale-archive:
+
+	These are not really needed, but both are simply small binaries so we
+	might as well not delete them.
+
+2013-04-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon/copy: Ensure errno is preserved along error paths.
+
+2013-04-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add 'sparse' option to copy-{device,file}-to-{device,file} calls.
+	Setting the 'sparse' optional boolean causes writes to be omitted if
+	the block to be written contains all zero bytes.
+
+	This should help with sparse backing files (eg. raw, qcow2, dm-thin, etc).
+
+	Also, modify virt-resize to use this option by default when copying
+	devices.  The savings in virt-resize can be quite startling, eg
+	'du -sh' (ie. true size) of a resized disk image:
+
+	8.1G      /tmp/f15x32-resized.img    # before this change
+	3.2G      /tmp/f15x32-resized.img    # after this change
+
+2013-04-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: Fix segfault when function has an OStringList optional argument.
+	How this PHP/Zend stuff is supposed to work is not documented, but at
+	least with these changes it no longer segfaults.
+
+2013-04-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	python: Let RHashtable be returned as a Python dict.
+	The initial proposal was suggested by Matt Booth and discussed on the
+	mailing list here:
+
+	https://www.redhat.com/archives/libguestfs/2013-April/msg00007.html
+
+2013-04-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Better error messages for FUSE and other things not supported.
+	The bare message "FUSE not supported" wasn't actionable.
+
 2013-04-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: In Fedora >= 19, the RPM detects if it can access the network when building.
 
 	Version 1.21.26.
 

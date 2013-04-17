@@ -411,6 +411,9 @@ guestfs_copy_device_to_device_va (guestfs_h *g,
     case GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE:
       optargs_s.size = va_arg (args, int64_t);
       break;
+    case GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE:
+      optargs_s.sparse = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "copy_device_to_device", i);
@@ -466,6 +469,9 @@ guestfs_copy_device_to_file_va (guestfs_h *g,
       break;
     case GUESTFS_COPY_DEVICE_TO_FILE_SIZE:
       optargs_s.size = va_arg (args, int64_t);
+      break;
+    case GUESTFS_COPY_DEVICE_TO_FILE_SPARSE:
+      optargs_s.sparse = va_arg (args, int);
       break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
@@ -523,6 +529,9 @@ guestfs_copy_file_to_device_va (guestfs_h *g,
     case GUESTFS_COPY_FILE_TO_DEVICE_SIZE:
       optargs_s.size = va_arg (args, int64_t);
       break;
+    case GUESTFS_COPY_FILE_TO_DEVICE_SPARSE:
+      optargs_s.sparse = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "copy_file_to_device", i);
@@ -578,6 +587,9 @@ guestfs_copy_file_to_file_va (guestfs_h *g,
       break;
     case GUESTFS_COPY_FILE_TO_FILE_SIZE:
       optargs_s.size = va_arg (args, int64_t);
+      break;
+    case GUESTFS_COPY_FILE_TO_FILE_SPARSE:
+      optargs_s.sparse = va_arg (args, int);
       break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
@@ -2189,6 +2201,54 @@ guestfs_set_e2attrs_va (guestfs_h *g,
   }
 
   return guestfs_set_e2attrs_argv (g, file, attrs, optargs);
+}
+
+int
+guestfs_syslinux (guestfs_h *g,
+                  const char *device,
+                  ...)
+{
+  va_list optargs;
+
+  va_start (optargs, device);
+  int r = guestfs_syslinux_va (g, device, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_syslinux_va (guestfs_h *g,
+                     const char *device,
+                     va_list args)
+{
+  struct guestfs_syslinux_argv optargs_s;
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_SYSLINUX_DIRECTORY:
+      optargs_s.directory = va_arg (args, const char *);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "syslinux", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "syslinux");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_syslinux_argv (g, device, optargs);
 }
 
 int

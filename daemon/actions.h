@@ -51,15 +51,19 @@
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
+#define GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK (UINT64_C(1)<<3)
 #define GUESTFS_TUNE2FS_FORCE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK (UINT64_C(1)<<2)
@@ -170,6 +174,7 @@
 #define GUESTFS_MKE2FS_SPARSESUPER_BITMASK (UINT64_C(1)<<36)
 #define GUESTFS_MKE2FS_UNINITBG_BITMASK (UINT64_C(1)<<37)
 #define GUESTFS_MKTEMP_SUFFIX_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_SYSLINUX_DIRECTORY_BITMASK (UINT64_C(1)<<0)
 extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -456,10 +461,10 @@ extern int do_internal_write_append (const char *path, const char *content, size
 extern int do_compress_out (const char *ctype, const char *file, int level);
 extern int do_compress_device_out (const char *ctype, const char *device, int level);
 extern int do_part_to_partnum (const char *partition);
-extern int do_copy_device_to_device (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
-extern int do_copy_device_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
-extern int do_copy_file_to_device (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
-extern int do_copy_file_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size);
+extern int do_copy_device_to_device (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size, int sparse);
+extern int do_copy_device_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size, int sparse);
+extern int do_copy_file_to_device (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size, int sparse);
+extern int do_copy_file_to_file (const char *src, const char *dest, int64_t srcoffset, int64_t destoffset, int64_t size, int sparse);
 extern int do_tune2fs (const char *device, int force, int maxmountcount, int mountcount, const char *errorbehavior, int64_t group, int intervalbetweenchecks, int reservedblockspercentage, const char *lastmounteddirectory, int64_t reservedblockscount, int64_t user);
 extern int do_md_create (const char *name, char *const *devices, int64_t missingbitmap, int nrdevices, int spare, int64_t chunk, const char *level);
 extern char **do_list_md_devices (void);
@@ -561,5 +566,7 @@ extern int do_is_whole_device (const char *device);
 extern guestfs_int_internal_mountable *do_internal_parse_mountable (const mountable_t *mountable);
 extern int do_internal_rhbz914931 (int count);
 extern int do_feature_available (char *const *groups);
+extern int do_syslinux (const char *device, const char *directory);
+extern int do_extlinux (const char *directory);
 
 #endif /* GUESTFSD_ACTIONS_H */

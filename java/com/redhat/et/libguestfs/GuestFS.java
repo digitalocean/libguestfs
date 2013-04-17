@@ -12939,6 +12939,13 @@ public class GuestFS {
    * If the destination file is not large enough, it is
    * extended.
    * <p>
+   * If the "sparse" flag is true then the call avoids
+   * writing blocks that contain only zeroes, which can help
+   * in some situations where the backing disk is
+   * thin-provisioned. Note that unless the target is already
+   * zeroed, using this option will result in incorrect
+   * copying.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -12979,8 +12986,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_device_to_device (String src, String dest)
@@ -12989,7 +13004,7 @@ public class GuestFS {
     copy_device_to_device (src, dest, null);
   }
 
-  private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -13038,8 +13053,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_device_to_file (String src, String dest)
@@ -13048,7 +13071,7 @@ public class GuestFS {
     copy_device_to_file (src, dest, null);
   }
 
-  private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -13097,8 +13120,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_file_to_device (String src, String dest)
@@ -13107,7 +13138,7 @@ public class GuestFS {
     copy_file_to_device (src, dest, null);
   }
 
-  private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -13161,8 +13192,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_file_to_file (String src, String dest)
@@ -13171,7 +13210,7 @@ public class GuestFS {
     copy_file_to_file (src, dest, null);
   }
 
-  private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -16908,6 +16947,112 @@ public class GuestFS {
   }
 
   private native boolean _feature_available (long g, String[] groups)
+    throws LibGuestFSException;
+
+  /**
+   * install the SYSLINUX bootloader
+   * <p>
+   * Install the SYSLINUX bootloader on "device".
+   * <p>
+   * The device parameter must be either a whole disk
+   * formatted as a FAT filesystem, or a partition formatted
+   * as a FAT filesystem. In the latter case, the partition
+   * should be marked as "active" ("g.part_set_bootable") and
+   * a Master Boot Record must be installed (eg. using
+   * "g.pwrite_device") on the first sector of the whole
+   * disk. The SYSLINUX package comes with some suitable
+   * Master Boot Records. See the syslinux(1) man page for
+   * further information.
+   * <p>
+   * The optional arguments are:
+   * <p>
+   * "directory"
+   * Install SYSLINUX in the named subdirectory, instead
+   * of in the root directory of the FAT filesystem.
+   * <p>
+   * Additional configuration can be supplied to SYSLINUX by
+   * placing a file called "syslinux.cfg" on the FAT
+   * filesystem, either in the root directory, or under
+   * "directory" if that optional argument is being used. For
+   * further information about the contents of this file, see
+   * syslinux(1).
+   * <p>
+   * See also "g.extlinux".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void syslinux (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("syslinux: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String directory = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("directory");
+    if (_optobj != null) {
+      directory = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+
+    _syslinux (g, device, _optargs_bitmask, directory);
+  }
+
+  public void syslinux (String device)
+    throws LibGuestFSException
+  {
+    syslinux (device, null);
+  }
+
+  private native void _syslinux (long g, String device, long _optargs_bitmask, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+   * <p>
+   * Install the SYSLINUX bootloader on the device mounted at
+   * "directory". Unlike "g.syslinux" which requires a FAT
+   * filesystem, this can be used on an ext2/3/4 or btrfs
+   * filesystem.
+   * <p>
+   * The "directory" parameter can be either a mountpoint, or
+   * a directory within the mountpoint.
+   * <p>
+   * You also have to marked the partition as "active"
+   * ("g.part_set_bootable") and a Master Boot Record must be
+   * installed (eg. using "g.pwrite_device") on the first
+   * sector of the whole disk. The SYSLINUX package comes
+   * with some suitable Master Boot Records. See the
+   * extlinux(1) man page for further information.
+   * <p>
+   * Additional configuration can be supplied to SYSLINUX by
+   * placing a file called "extlinux.conf" on the filesystem
+   * under "directory". For further information about the
+   * contents of this file, see extlinux(1).
+   * <p>
+   * See also "g.syslinux".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void extlinux (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("extlinux: handle is closed");
+
+    _extlinux (g, directory);
+  }
+
+  private native void _extlinux (long g, String directory)
     throws LibGuestFSException;
 
 }

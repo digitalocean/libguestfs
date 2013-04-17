@@ -527,6 +527,8 @@ static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_rename (const char *cmd, size_t argc, char *argv[]);
 static int run_is_whole_device (const char *cmd, size_t argc, char *argv[]);
 static int run_feature_available (const char *cmd, size_t argc, char *argv[]);
+static int run_syslinux (const char *cmd, size_t argc, char *argv[]);
+static int run_extlinux (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -2948,25 +2950,25 @@ struct command_entry part_to_partnum_cmd_entry = {
 
 struct command_entry copy_device_to_device_cmd_entry = {
   .name = "copy-device-to-device",
-  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n",
+  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n    If the \"sparse\" flag is true then the call avoids writing blocks that\n    contain only zeroes, which can help in some situations where the backing\n    disk is thin-provisioned. Note that unless the target is already zeroed,\n    using this option will result in incorrect copying.\n\n",
   .run = run_copy_device_to_device
 };
 
 struct command_entry copy_device_to_file_cmd_entry = {
   .name = "copy-device-to-file",
-  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
   .run = run_copy_device_to_file
 };
 
 struct command_entry copy_file_to_device_cmd_entry = {
   .name = "copy-file-to-device",
-  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
   .run = run_copy_file_to_device
 };
 
 struct command_entry copy_file_to_file_cmd_entry = {
   .name = "copy-file-to-file",
-  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
+  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
   .run = run_copy_file_to_file
 };
 
@@ -3546,6 +3548,18 @@ struct command_entry feature_available_cmd_entry = {
   .run = run_feature_available
 };
 
+struct command_entry syslinux_cmd_entry = {
+  .name = "syslinux",
+  .help = "NAME\n    syslinux - install the SYSLINUX bootloader\n\nSYNOPSIS\n     syslinux device [directory:..]\n\nDESCRIPTION\n    Install the SYSLINUX bootloader on \"device\".\n\n    The device parameter must be either a whole disk formatted as a FAT\n    filesystem, or a partition formatted as a FAT filesystem. In the latter\n    case, the partition should be marked as \"active\" (\"part_set_bootable\")\n    and a Master Boot Record must be installed (eg. using \"pwrite_device\")\n    on the first sector of the whole disk. The SYSLINUX package comes with\n    some suitable Master Boot Records. See the syslinux(1) man page for\n    further information.\n\n    The optional arguments are:\n\n    \"directory\"\n        Install SYSLINUX in the named subdirectory, instead of in the root\n        directory of the FAT filesystem.\n\n    Additional configuration can be supplied to SYSLINUX by placing a file\n    called \"syslinux.cfg\" on the FAT filesystem, either in the root\n    directory, or under \"directory\" if that optional argument is being used.\n    For further information about the contents of this file, see\n    syslinux(1).\n\n    See also \"extlinux\".\n\n",
+  .run = run_syslinux
+};
+
+struct command_entry extlinux_cmd_entry = {
+  .name = "extlinux",
+  .help = "NAME\n    extlinux - install the SYSLINUX bootloader on an ext2/3/4 or btrfs\n    filesystem\n\nSYNOPSIS\n     extlinux directory\n\nDESCRIPTION\n    Install the SYSLINUX bootloader on the device mounted at \"directory\".\n    Unlike \"syslinux\" which requires a FAT filesystem, this can be used on\n    an ext2/3/4 or btrfs filesystem.\n\n    The \"directory\" parameter can be either a mountpoint, or a directory\n    within the mountpoint.\n\n    You also have to marked the partition as \"active\" (\"part_set_bootable\")\n    and a Master Boot Record must be installed (eg. using \"pwrite_device\")\n    on the first sector of the whole disk. The SYSLINUX package comes with\n    some suitable Master Boot Records. See the extlinux(1) man page for\n    further information.\n\n    Additional configuration can be supplied to SYSLINUX by placing a file\n    called \"extlinux.conf\" on the filesystem under \"directory\". For further\n    information about the contents of this file, see extlinux(1).\n\n    See also \"syslinux\".\n\n",
+  .run = run_extlinux
+};
+
 void
 list_commands (void)
 {
@@ -3653,6 +3667,7 @@ list_commands (void)
   printf ("%-20s %s\n", "equal", _("test if two files have equal contents"));
   printf ("%-20s %s\n", "event", _("register a handler for an event or events"));
   printf ("%-20s %s\n", "exists", _("test if file or directory exists"));
+  printf ("%-20s %s\n", "extlinux", _("install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem"));
   printf ("%-20s %s\n", "fallocate", _("preallocate a file in the guest filesystem"));
   printf ("%-20s %s\n", "fallocate64", _("preallocate a file in the guest filesystem"));
   printf ("%-20s %s\n", "feature-available", _("test availability of some parts of the API"));
@@ -3990,6 +4005,7 @@ list_commands (void)
   printf ("%-20s %s\n", "swapon-label", _("enable swap on labeled swap partition"));
   printf ("%-20s %s\n", "swapon-uuid", _("enable swap on swap partition by UUID"));
   printf ("%-20s %s\n", "sync", _("sync disks, writes are flushed through to the disk image"));
+  printf ("%-20s %s\n", "syslinux", _("install the SYSLINUX bootloader"));
   printf ("%-20s %s\n", "tail", _("return last 10 lines of a file"));
   printf ("%-20s %s\n", "tail-n", _("return last N lines of a file"));
   printf ("%-20s %s\n", "tar-in", _("unpack tarfile to directory"));
@@ -16556,8 +16572,8 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16619,6 +16635,15 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
       this_arg = "size";
     }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+      this_arg = "sparse";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -16652,8 +16677,8 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16716,6 +16741,15 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       this_arg = "size";
     }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+      this_arg = "sparse";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -16751,8 +16785,8 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16815,6 +16849,15 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
       this_arg = "size";
     }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+      this_arg = "sparse";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -16850,8 +16893,8 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16914,6 +16957,15 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
       }
       this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       this_arg = "size";
+    }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+      this_arg = "sparse";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
@@ -21300,6 +21352,79 @@ run_feature_available (const char *cmd, size_t argc, char *argv[])
  out:
   guestfs___free_string_list (groups);
  out_groups:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_syslinux (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "directory:")) {
+      optargs_s.directory = &argv[i][10];
+      this_mask = GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+      this_arg = "directory";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_extlinux (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_extlinux (g, directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (directory);
+ out_directory:
  out_noargs:
   return ret;
 }

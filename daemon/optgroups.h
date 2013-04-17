@@ -26,6 +26,7 @@
 extern int optgroup_acl_available (void);
 extern int optgroup_augeas_available (void);
 extern int optgroup_btrfs_available (void);
+extern int optgroup_extlinux_available (void);
 extern int optgroup_fstrim_available (void);
 extern int optgroup_gdisk_available (void);
 extern int optgroup_grub_available (void);
@@ -46,6 +47,7 @@ extern int optgroup_realpath_available (void);
 extern int optgroup_rsync_available (void);
 extern int optgroup_scrub_available (void);
 extern int optgroup_selinux_available (void);
+extern int optgroup_syslinux_available (void);
 extern int optgroup_wipefs_available (void);
 extern int optgroup_xfs_available (void);
 extern int optgroup_xz_available (void);
@@ -97,6 +99,10 @@ extern int optgroup_zerofree_available (void);
   int __attribute__((noreturn)) do_btrfs_subvolume_snapshot (const char *source, const char *dest) { abort (); } \
   int __attribute__((noreturn)) do_mkfs_btrfs (char *const *devices, int64_t allocstart, int64_t bytecount, const char *datatype, int leafsize, const char *label, const char *metadata, int nodesize, int sectorsize) { abort (); } \
   int optgroup_btrfs_available (void) { return 0; }
+
+#define OPTGROUP_EXTLINUX_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_extlinux (const char *directory) { abort (); } \
+  int optgroup_extlinux_available (void) { return 0; }
 
 #define OPTGROUP_FSTRIM_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_fstrim (const char *mountpoint, int64_t offset, int64_t length, int64_t minimumfreeextent) { abort (); } \
@@ -269,6 +275,10 @@ extern int optgroup_zerofree_available (void);
   char *__attribute__((noreturn)) do_getcon (void) { abort (); } \
   int __attribute__((noreturn)) do_setcon (const char *context) { abort (); } \
   int optgroup_selinux_available (void) { return 0; }
+
+#define OPTGROUP_SYSLINUX_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_syslinux (const char *device, const char *directory) { abort (); } \
+  int optgroup_syslinux_available (void) { return 0; }
 
 #define OPTGROUP_WIPEFS_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_wipefs (const char *device) { abort (); } \

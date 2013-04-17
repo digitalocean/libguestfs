@@ -25,6 +25,10 @@ L</guestfs_btrfs_subvolume_delete> L</guestfs_btrfs_subvolume_list>
 L</guestfs_btrfs_subvolume_set_default> L</guestfs_btrfs_subvolume_snapshot>
 L</guestfs_mkfs_btrfs>
 
+=item B<extlinux>
+
+The following functions: L</guestfs_extlinux>
+
 =item B<fstrim>
 
 以下の関数: L</guestfs_fstrim>
@@ -138,6 +142,10 @@ L</guestfs_scrub_freespace>
 =item B<selinux>
 
 以下の関数: L</guestfs_getcon> L</guestfs_setcon>
+
+=item B<syslinux>
+
+The following functions: L</guestfs_syslinux>
 
 =item B<wipefs>
 

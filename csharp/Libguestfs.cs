@@ -1710,6 +1710,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_extlinux (IntPtr h, [In] string directory);
+
+    /// <summary>
+    /// install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+    /// </summary>
+    public void extlinux (string directory)
+    {
+      int r;
+      r = guestfs_extlinux (_handle, directory);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_fallocate (IntPtr h, [In] string path, int len);
 
     /// <summary>
@@ -6956,6 +6970,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_sync (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_syslinux_argv (IntPtr h, [In] string device, void *);
+
+    /// <summary>
+    /// install the SYSLINUX bootloader
+    /// </summary>
+    public void syslinux (string device)
+    {
+      int r;
+      r = guestfs_syslinux_argv (_handle, device, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

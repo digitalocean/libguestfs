@@ -8784,7 +8784,7 @@ See also C<guestfs_part_to_dev>." };
 
   { defaults with
     name = "copy_device_to_device";
-    style = RErr, [Device "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"];
+    style = RErr, [Device "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
     proc_nr = Some 294;
     progress = true;
     shortdesc = "copy from source device to destination device";
@@ -8806,11 +8806,17 @@ The source and destination may be the same object.  However
 overlapping regions may not be copied correctly.
 
 If the destination is a file, it is created if required.  If
-the destination file is not large enough, it is extended." };
+the destination file is not large enough, it is extended.
+
+If the C<sparse> flag is true then the call avoids writing
+blocks that contain only zeroes, which can help in some situations
+where the backing disk is thin-provisioned.  Note that unless
+the target is already zeroed, using this option will result
+in incorrect copying." };
 
   { defaults with
     name = "copy_device_to_file";
-    style = RErr, [Device "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"];
+    style = RErr, [Device "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
     proc_nr = Some 295;
     progress = true;
     shortdesc = "copy from source device to destination file";
@@ -8820,7 +8826,7 @@ of this call." };
 
   { defaults with
     name = "copy_file_to_device";
-    style = RErr, [Pathname "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"];
+    style = RErr, [Pathname "src"; Device "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
     proc_nr = Some 296;
     progress = true;
     shortdesc = "copy from source file to destination device";
@@ -8830,15 +8836,23 @@ of this call." };
 
   { defaults with
     name = "copy_file_to_file";
-    style = RErr, [Pathname "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"];
+    style = RErr, [Pathname "src"; Pathname "dest"], [OInt64 "srcoffset"; OInt64 "destoffset"; OInt64 "size"; OBool "sparse"];
     proc_nr = Some 297;
     progress = true;
     tests = [
       InitScratchFS, Always, TestOutputBuffer (
         [["mkdir"; "/copyff"];
          ["write"; "/copyff/src"; "hello, world"];
-         ["copy_file_to_file"; "/copyff/src"; "/copyff/dest"; ""; ""; ""];
-         ["read_file"; "/copyff/dest"]], "hello, world")
+         ["copy_file_to_file"; "/copyff/src"; "/copyff/dest"; ""; ""; ""; ""];
+         ["read_file"; "/copyff/dest"]], "hello, world");
+      let size = 1024 * 1024 in
+      InitScratchFS, Always, TestOutputTrue (
+        [["mkdir"; "/copyff2"];
+         ["fill"; "0"; string_of_int size; "/copyff2/src"];
+         ["touch"; "/copyff2/dest"];
+         ["truncate_size"; "/copyff2/dest"; string_of_int size];
+         ["copy_file_to_file"; "/copyff2/src"; "/copyff2/dest"; ""; ""; ""; "true"];
+         ["is_zero"; "/copyff2/dest"]])
     ];
     shortdesc = "copy from source file to destination file";
     longdesc = "\
@@ -10924,6 +10938,71 @@ This is the same as C<guestfs_available>, but unlike that
 call it returns a simple true/false boolean result, instead
 of throwing an exception if a feature is not found.  For
 other documentation see C<guestfs_available>." };
+
+  { defaults with
+    name = "syslinux";
+    style = RErr, [Device "device"], [OString "directory"];
+    proc_nr = Some 399;
+    optional = Some "syslinux";
+    shortdesc = "install the SYSLINUX bootloader";
+    longdesc = "\
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted
+as a FAT filesystem, or a partition formatted as a FAT filesystem.
+In the latter case, the partition should be marked as \"active\"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must be
+installed (eg. using C<guestfs_pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<syslinux(1)> man page for further information.
+
+The optional arguments are:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the
+root directory of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<syslinux.cfg> on the FAT filesystem,
+either in the root directory, or under C<directory> if that
+optional argument is being used.  For further information
+about the contents of this file, see L<syslinux(1)>.
+
+See also C<guestfs_extlinux>." };
+
+  { defaults with
+    name = "extlinux";
+    style = RErr, [Pathname "directory"], [];
+    proc_nr = Some 400;
+    optional = Some "extlinux";
+    shortdesc = "install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem";
+    longdesc = "\
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike C<guestfs_syslinux> which requires a FAT filesystem, this can
+be used on an ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a
+directory within the mountpoint.
+
+You also have to marked the partition as \"active\"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must
+be installed (eg. using C<guestfs_pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<extlinux(1)> man page for further information.
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<extlinux.conf> on the filesystem
+under C<directory>.  For further information
+about the contents of this file, see L<extlinux(1)>.
+
+See also C<guestfs_syslinux>." };
 
 ]
 

@@ -18559,6 +18559,11 @@ guestfs_session_part_to_partnum(GuestfsSession *session, const gchar *partition,
  * If the destination is a file, it is created if required. If the
  * destination file is not large enough, it is extended.
  * 
+ * If the @sparse flag is true then the call avoids writing blocks that
+ * contain only zeroes, which can help in some situations where the backing
+ * disk is thin-provisioned. Note that unless the target is already zeroed,
+ * using this option will result in incorrect copying.
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -18601,6 +18606,14 @@ guestfs_session_copy_device_to_device(GuestfsSession *session, const gchar *src,
     if (size != -1) {
       argv.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
       argv.size = size;
+    }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+      argv.sparse = sparse;
     }
     argvp = &argv;
   }
@@ -18669,6 +18682,14 @@ guestfs_session_copy_device_to_file(GuestfsSession *session, const gchar *src, c
       argv.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       argv.size = size;
     }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+      argv.sparse = sparse;
+    }
     argvp = &argv;
   }
   int ret = guestfs_copy_device_to_file_argv (g, src, dest, argvp);
@@ -18735,6 +18756,14 @@ guestfs_session_copy_file_to_device(GuestfsSession *session, const gchar *src, c
     if (size != -1) {
       argv.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
       argv.size = size;
+    }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+      argv.sparse = sparse;
     }
     argvp = &argv;
   }
@@ -18807,6 +18836,14 @@ guestfs_session_copy_file_to_file(GuestfsSession *session, const gchar *src, con
     if (size != -1) {
       argv.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       argv.size = size;
+    }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+      argv.sparse = sparse;
     }
     argvp = &argv;
   }
@@ -23746,4 +23783,126 @@ guestfs_session_feature_available(GuestfsSession *session, gchar *const *groups,
   }
 
   return ret;
+}
+
+/**
+ * guestfs_session_syslinux:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsSyslinux containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * install the SYSLINUX bootloader
+ *
+ * Install the SYSLINUX bootloader on @device.
+ * 
+ * The device parameter must be either a whole disk formatted as a FAT
+ * filesystem, or a partition formatted as a FAT filesystem. In the latter
+ * case, the partition should be marked as "active"
+ * (guestfs_session_part_set_bootable()) and a Master Boot Record must be
+ * installed (eg. using guestfs_session_pwrite_device()) on the first
+ * sector of the whole disk. The SYSLINUX package comes with some suitable
+ * Master Boot Records. See the syslinux(1) man page for further
+ * information.
+ * 
+ * The optional arguments are:
+ * 
+ * @directory
+ * Install SYSLINUX in the named subdirectory, instead of in the root
+ * directory of the FAT filesystem.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by placing a file
+ * called "syslinux.cfg" on the FAT filesystem, either in the root
+ * directory, or under @directory if that optional argument is being used.
+ * For further information about the contents of this file, see
+ * syslinux(1).
+ * 
+ * See also guestfs_session_extlinux().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_syslinux(GuestfsSession *session, const gchar *device, GuestfsSyslinux *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "syslinux");
+    return FALSE;
+  }
+
+  struct guestfs_syslinux_argv argv;
+  struct guestfs_syslinux_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue directory_v = {0, };
+    g_value_init(&directory_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "directory", &directory_v);
+    const gchar *directory = g_value_get_string(&directory_v);
+    if (directory != NULL) {
+      argv.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+      argv.directory = directory;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_syslinux_argv (g, device, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_extlinux:
+ * @session: (transfer none): A GuestfsSession object
+ * @directory: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+ *
+ * Install the SYSLINUX bootloader on the device mounted at @directory.
+ * Unlike guestfs_session_syslinux() which requires a FAT filesystem, this
+ * can be used on an ext2/3/4 or btrfs filesystem.
+ * 
+ * The @directory parameter can be either a mountpoint, or a directory
+ * within the mountpoint.
+ * 
+ * You also have to marked the partition as "active"
+ * (guestfs_session_part_set_bootable()) and a Master Boot Record must be
+ * installed (eg. using guestfs_session_pwrite_device()) on the first
+ * sector of the whole disk. The SYSLINUX package comes with some suitable
+ * Master Boot Records. See the extlinux(1) man page for further
+ * information.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by placing a file
+ * called "extlinux.conf" on the filesystem under @directory. For further
+ * information about the contents of this file, see extlinux(1).
+ * 
+ * See also guestfs_session_syslinux().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "extlinux");
+    return FALSE;
+  }
+
+  int ret = guestfs_extlinux (g, directory);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
 }

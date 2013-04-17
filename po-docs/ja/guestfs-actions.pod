@@ -1710,6 +1710,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,
+ GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,
 
 4 つの呼び出し C<guestfs_copy_device_to_device>, C<guestfs_copy_device_to_file>,
 C<guestfs_copy_file_to_device>, および C<guestfs_copy_file_to_file> は、ソース
@@ -1723,6 +1724,11 @@ defaults to copying as much as possible until we hit the end of the source.
 ソースと宛先は同じオブジェクトである可能性があります。しかしながら、重なり合う領域は正しくコピーされないかもしれません。
 
 宛先がファイルならば、必要に応じて作成されます。宛先ファイルが十分に大きくなければ、拡張されます。
+
+If the C<sparse> flag is true then the call avoids writing blocks that
+contain only zeroes, which can help in some situations where the backing
+disk is thin-provisioned.  Note that unless the target is already zeroed,
+using this option will result in incorrect copying.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -1772,6 +1778,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,
+ GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -1823,6 +1830,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,
+ GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -1874,6 +1882,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,
+ GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -2375,6 +2384,33 @@ C<guestfs_is_file>, C<guestfs_is_dir>, C<guestfs_stat> 参照。
 This function returns a C truth value on success or -1 on error.
 
 (0.8 において追加)
+
+=head2 guestfs_extlinux
+
+ int
+ guestfs_extlinux (guestfs_h *g,
+                   const char *directory);
+
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike C<guestfs_syslinux> which requires a FAT filesystem, this can be used
+on an ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a directory within
+the mountpoint.
+
+You also have to marked the partition as "active"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must be installed
+(eg. using C<guestfs_pwrite_device>) on the first sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.  See the
+L<extlinux(1)> man page for further information.
+
+Additional configuration can be supplied to SYSLINUX by placing a file
+called C<extlinux.conf> on the filesystem under C<directory>.  For further
+information about the contents of this file, see L<extlinux(1)>.
+
+See also C<guestfs_syslinux>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 =head2 guestfs_fallocate
 
@@ -10133,6 +10169,71 @@ closing the handle.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (0.3 において追加)
+
+=head2 guestfs_syslinux
+
+ int
+ guestfs_syslinux (guestfs_h *g,
+                   const char *device,
+                   ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_SYSLINUX_DIRECTORY, const char *directory,
+
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted as a FAT
+filesystem, or a partition formatted as a FAT filesystem.  In the latter
+case, the partition should be marked as "active"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must be installed
+(eg. using C<guestfs_pwrite_device>) on the first sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.  See the
+L<syslinux(1)> man page for further information.
+
+オプション引数は次のとおりです:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the root directory
+of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by placing a file
+called C<syslinux.cfg> on the FAT filesystem, either in the root directory,
+or under C<directory> if that optional argument is being used.  For further
+information about the contents of this file, see L<syslinux(1)>.
+
+See also C<guestfs_extlinux>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_syslinux_va
+
+ int
+ guestfs_syslinux_va (guestfs_h *g,
+                      const char *device,
+                      va_list args);
+
+This is the "va_list variant" of L</guestfs_syslinux>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
+=head2 guestfs_syslinux_argv
+
+ int
+ guestfs_syslinux_argv (guestfs_h *g,
+                        const char *device,
+                        const struct guestfs_syslinux_argv *optargs);
+
+This is the "argv variant" of L</guestfs_syslinux>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
 =head2 guestfs_tail
 

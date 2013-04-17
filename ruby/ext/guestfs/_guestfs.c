@@ -18745,6 +18745,13 @@ ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
  * If the destination file is not large enough, it is
  * extended.
  * 
+ * If the "sparse" flag is true then the call avoids
+ * writing blocks that contain only zeroes, which can help
+ * in some situations where the backing disk is
+ * thin-provisioned. Note that unless the target is already
+ * zeroed, using this option will result in incorrect
+ * copying.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -18789,6 +18796,11 @@ ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
   }
 
   int r;
@@ -18854,6 +18866,11 @@ ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+  }
 
   int r;
 
@@ -18917,6 +18934,11 @@ ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
   }
 
   int r;
@@ -18986,6 +19008,11 @@ ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
   }
 
   int r;
@@ -23868,6 +23895,133 @@ ruby_guestfs_feature_available (VALUE gv, VALUE groupsv)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.syslinux(device, {optargs...}) -> nil
+ *
+ * install the SYSLINUX bootloader
+ *
+ * Install the SYSLINUX bootloader on "device".
+ * 
+ * The device parameter must be either a whole disk
+ * formatted as a FAT filesystem, or a partition formatted
+ * as a FAT filesystem. In the latter case, the partition
+ * should be marked as "active" ("g.part_set_bootable") and
+ * a Master Boot Record must be installed (eg. using
+ * "g.pwrite_device") on the first sector of the whole
+ * disk. The SYSLINUX package comes with some suitable
+ * Master Boot Records. See the syslinux(1) man page for
+ * further information.
+ * 
+ * The optional arguments are:
+ * 
+ * "directory"
+ * Install SYSLINUX in the named subdirectory, instead
+ * of in the root directory of the FAT filesystem.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by
+ * placing a file called "syslinux.cfg" on the FAT
+ * filesystem, either in the root directory, or under
+ * "directory" if that optional argument is being used. For
+ * further information about the contents of this file, see
+ * syslinux(1).
+ * 
+ * See also "g.extlinux".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_syslinux+[http://libguestfs.org/guestfs.3.html#guestfs_syslinux]).
+ */
+static VALUE
+ruby_guestfs_syslinux (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "syslinux");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("directory")));
+  if (v != Qnil) {
+    optargs_s.directory = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.extlinux(directory) -> nil
+ *
+ * install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+ *
+ * Install the SYSLINUX bootloader on the device mounted at
+ * "directory". Unlike "g.syslinux" which requires a FAT
+ * filesystem, this can be used on an ext2/3/4 or btrfs
+ * filesystem.
+ * 
+ * The "directory" parameter can be either a mountpoint, or
+ * a directory within the mountpoint.
+ * 
+ * You also have to marked the partition as "active"
+ * ("g.part_set_bootable") and a Master Boot Record must be
+ * installed (eg. using "g.pwrite_device") on the first
+ * sector of the whole disk. The SYSLINUX package comes
+ * with some suitable Master Boot Records. See the
+ * extlinux(1) man page for further information.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by
+ * placing a file called "extlinux.conf" on the filesystem
+ * under "directory". For further information about the
+ * contents of this file, see extlinux(1).
+ * 
+ * See also "g.syslinux".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_extlinux+[http://libguestfs.org/guestfs.3.html#guestfs_extlinux]).
+ */
+static VALUE
+ruby_guestfs_extlinux (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "extlinux");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  int r;
+
+  r = guestfs_extlinux (g, directory);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -24961,4 +25115,8 @@ Init__guestfs (void)
         ruby_guestfs_is_whole_device, 1);
   rb_define_method (c_guestfs, "feature_available",
         ruby_guestfs_feature_available, 1);
+  rb_define_method (c_guestfs, "syslinux",
+        ruby_guestfs_syslinux, -1);
+  rb_define_method (c_guestfs, "extlinux",
+        ruby_guestfs_extlinux, 1);
 }

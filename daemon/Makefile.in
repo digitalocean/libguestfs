@@ -274,12 +274,13 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-sleep.$(OBJEXT) guestfsd-stat.$(OBJEXT) \
 	guestfsd-statvfs.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
 	guestfsd-stubs.$(OBJEXT) guestfsd-swap.$(OBJEXT) \
-	guestfsd-sync.$(OBJEXT) guestfsd-tar.$(OBJEXT) \
-	guestfsd-truncate.$(OBJEXT) guestfsd-umask.$(OBJEXT) \
-	guestfsd-upload.$(OBJEXT) guestfsd-utimens.$(OBJEXT) \
-	guestfsd-utsname.$(OBJEXT) guestfsd-wc.$(OBJEXT) \
-	guestfsd-xattr.$(OBJEXT) guestfsd-xfs.$(OBJEXT) \
-	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
+	guestfsd-sync.$(OBJEXT) guestfsd-syslinux.$(OBJEXT) \
+	guestfsd-tar.$(OBJEXT) guestfsd-truncate.$(OBJEXT) \
+	guestfsd-umask.$(OBJEXT) guestfsd-upload.$(OBJEXT) \
+	guestfsd-utimens.$(OBJEXT) guestfsd-utsname.$(OBJEXT) \
+	guestfsd-wc.$(OBJEXT) guestfsd-xattr.$(OBJEXT) \
+	guestfsd-xfs.$(OBJEXT) guestfsd-zero.$(OBJEXT) \
+	guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfsd_DEPENDENCIES = liberrnostring.a libprotocol.a \
@@ -1549,6 +1550,7 @@ guestfsd_SOURCES = \
 	stubs.c \
 	swap.c \
 	sync.c \
+	syslinux.c \
 	tar.c \
 	truncate.c \
 	umask.c \
@@ -1790,6 +1792,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-stubs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-swap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-sync.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-syslinux.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-tar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-truncate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-umask.Po@am__quote@
@@ -3001,6 +3004,20 @@ guestfsd-sync.obj: sync.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sync.c' object='guestfsd-sync.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-sync.obj `if test -f 'sync.c'; then $(CYGPATH_W) 'sync.c'; else $(CYGPATH_W) '$(srcdir)/sync.c'; fi`
+
+guestfsd-syslinux.o: syslinux.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-syslinux.o -MD -MP -MF $(DEPDIR)/guestfsd-syslinux.Tpo -c -o guestfsd-syslinux.o `test -f 'syslinux.c' || echo '$(srcdir)/'`syslinux.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-syslinux.Tpo $(DEPDIR)/guestfsd-syslinux.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='syslinux.c' object='guestfsd-syslinux.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-syslinux.o `test -f 'syslinux.c' || echo '$(srcdir)/'`syslinux.c
+
+guestfsd-syslinux.obj: syslinux.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-syslinux.obj -MD -MP -MF $(DEPDIR)/guestfsd-syslinux.Tpo -c -o guestfsd-syslinux.obj `if test -f 'syslinux.c'; then $(CYGPATH_W) 'syslinux.c'; else $(CYGPATH_W) '$(srcdir)/syslinux.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-syslinux.Tpo $(DEPDIR)/guestfsd-syslinux.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='syslinux.c' object='guestfsd-syslinux.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-syslinux.obj `if test -f 'syslinux.c'; then $(CYGPATH_W) 'syslinux.c'; else $(CYGPATH_W) '$(srcdir)/syslinux.c'; fi`
 
 guestfsd-tar.o: tar.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-tar.o -MD -MP -MF $(DEPDIR)/guestfsd-tar.Tpo -c -o guestfsd-tar.o `test -f 'tar.c' || echo '$(srcdir)/'`tar.c

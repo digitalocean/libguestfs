@@ -148,6 +148,7 @@
         guestfs_equal;
         guestfs_event_to_string;
         guestfs_exists;
+        guestfs_extlinux;
         guestfs_fallocate;
         guestfs_fallocate64;
         guestfs_feature_available;
@@ -627,6 +628,9 @@
         guestfs_swapon_label;
         guestfs_swapon_uuid;
         guestfs_sync;
+        guestfs_syslinux;
+        guestfs_syslinux_argv;
+        guestfs_syslinux_va;
         guestfs_tail;
         guestfs_tail_n;
         guestfs_tar_in;

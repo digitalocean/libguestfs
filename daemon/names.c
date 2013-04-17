@@ -417,4 +417,6 @@ const char *function_names[] = {
   [396] = "internal_parse_mountable",
   [397] = "internal_rhbz914931",
   [398] = "feature_available",
+  [399] = "syslinux",
+  [400] = "extlinux",
 };

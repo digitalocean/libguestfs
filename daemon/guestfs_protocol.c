@@ -5598,6 +5598,8 @@ xdr_guestfs_copy_device_to_device_args (XDR *xdrs, guestfs_copy_device_to_device
 		 return FALSE;
 	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->sparse))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -5615,6 +5617,8 @@ xdr_guestfs_copy_device_to_file_args (XDR *xdrs, guestfs_copy_device_to_file_arg
 	 if (!xdr_int64_t (xdrs, &objp->destoffset))
 		 return FALSE;
 	 if (!xdr_int64_t (xdrs, &objp->size))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->sparse))
 		 return FALSE;
 	return TRUE;
 }
@@ -5634,6 +5638,8 @@ xdr_guestfs_copy_file_to_device_args (XDR *xdrs, guestfs_copy_file_to_device_arg
 		 return FALSE;
 	 if (!xdr_int64_t (xdrs, &objp->size))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->sparse))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -5651,6 +5657,8 @@ xdr_guestfs_copy_file_to_file_args (XDR *xdrs, guestfs_copy_file_to_file_args *o
 	 if (!xdr_int64_t (xdrs, &objp->destoffset))
 		 return FALSE;
 	 if (!xdr_int64_t (xdrs, &objp->size))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->sparse))
 		 return FALSE;
 	return TRUE;
 }
@@ -7800,6 +7808,28 @@ xdr_guestfs_feature_available_ret (XDR *xdrs, guestfs_feature_available_ret *obj
 	register int32_t *buf;
 
 	 if (!xdr_bool (xdrs, &objp->isavailable))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_syslinux_args (XDR *xdrs, guestfs_syslinux_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->directory, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_extlinux_args (XDR *xdrs, guestfs_extlinux_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->directory, ~0))
 		 return FALSE;
 	return TRUE;
 }

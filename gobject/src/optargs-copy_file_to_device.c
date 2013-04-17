@@ -40,6 +40,7 @@ struct _GuestfsCopyFileToDevicePrivate {
   gint64 srcoffset;
   gint64 destoffset;
   gint64 size;
+  GuestfsTristate sparse;
 };
 
 G_DEFINE_TYPE(GuestfsCopyFileToDevice, guestfs_copy_file_to_device, G_TYPE_OBJECT);
@@ -48,7 +49,8 @@ enum {
   PROP_GUESTFS_COPY_FILE_TO_DEVICE_PROP0,
   PROP_GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET,
   PROP_GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET,
-  PROP_GUESTFS_COPY_FILE_TO_DEVICE_SIZE
+  PROP_GUESTFS_COPY_FILE_TO_DEVICE_SIZE,
+  PROP_GUESTFS_COPY_FILE_TO_DEVICE_SPARSE
 };
 
 static void
@@ -68,6 +70,10 @@ guestfs_copy_file_to_device_set_property(GObject *object, guint property_id, con
 
     case PROP_GUESTFS_COPY_FILE_TO_DEVICE_SIZE:
       priv->size = g_value_get_int64 (value);
+      break;
+
+    case PROP_GUESTFS_COPY_FILE_TO_DEVICE_SPARSE:
+      priv->sparse = g_value_get_enum (value);
       break;
 
     default:
@@ -93,6 +99,10 @@ guestfs_copy_file_to_device_get_property(GObject *object, guint property_id, GVa
 
     case PROP_GUESTFS_COPY_FILE_TO_DEVICE_SIZE:
       g_value_set_int64(value, priv->size);
+      break;
+
+    case PROP_GUESTFS_COPY_FILE_TO_DEVICE_SPARSE:
+      g_value_set_enum(value, priv->sparse);
       break;
 
     default:
@@ -165,6 +175,23 @@ guestfs_copy_file_to_device_class_init(GuestfsCopyFileToDeviceClass *klass)
       "size",
       "A 64-bit integer.",
       G_MININT64, G_MAXINT64, -1,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsCopyFileToDevice:sparse:
+   *
+   * A boolean.
+   */
+  g_object_class_install_property(
+    object_class,
+    PROP_GUESTFS_COPY_FILE_TO_DEVICE_SPARSE,
+    g_param_spec_enum(
+      "sparse",
+      "sparse",
+      "A boolean.",
+      GUESTFS_TYPE_TRISTATE, GUESTFS_TRISTATE_NONE,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
     )
   );

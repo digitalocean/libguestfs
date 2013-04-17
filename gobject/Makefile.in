@@ -334,7 +334,8 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-optargs-hivex_open.lo \
 	libguestfs_gobject_1_0_la-optargs-xfs_repair.lo \
 	libguestfs_gobject_1_0_la-optargs-mke2fs.lo \
-	libguestfs_gobject_1_0_la-optargs-mktemp.lo
+	libguestfs_gobject_1_0_la-optargs-mktemp.lo \
+	libguestfs_gobject_1_0_la-optargs-syslinux.lo
 am_libguestfs_gobject_1_0_la_OBJECTS = $(am__objects_1)
 libguestfs_gobject_1_0_la_OBJECTS =  \
 	$(am_libguestfs_gobject_1_0_la_OBJECTS)
@@ -1551,7 +1552,8 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-hivex_open.h \
   include/guestfs-gobject/optargs-xfs_repair.h \
   include/guestfs-gobject/optargs-mke2fs.h \
-  include/guestfs-gobject/optargs-mktemp.h
+  include/guestfs-gobject/optargs-mktemp.h \
+  include/guestfs-gobject/optargs-syslinux.h
 
 guestfs_gobject_sources = \
   src/session.c \
@@ -1616,7 +1618,8 @@ guestfs_gobject_sources = \
   src/optargs-hivex_open.c \
   src/optargs-xfs_repair.c \
   src/optargs-mke2fs.c \
-  src/optargs-mktemp.c
+  src/optargs-mktemp.c \
+  src/optargs-syslinux.c
 
 generator_built = \
 	$(guestfs_gobject_headers) \
@@ -1783,6 +1786,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_in.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-set_e2attrs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-syslinux.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_in.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tar_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-tune2fs.Plo@am__quote@
@@ -2275,6 +2279,13 @@ libguestfs_gobject_1_0_la-optargs-mktemp.lo: src/optargs-mktemp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-mktemp.c' object='libguestfs_gobject_1_0_la-optargs-mktemp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-mktemp.lo `test -f 'src/optargs-mktemp.c' || echo '$(srcdir)/'`src/optargs-mktemp.c
+
+libguestfs_gobject_1_0_la-optargs-syslinux.lo: src/optargs-syslinux.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-syslinux.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-syslinux.Tpo -c -o libguestfs_gobject_1_0_la-optargs-syslinux.lo `test -f 'src/optargs-syslinux.c' || echo '$(srcdir)/'`src/optargs-syslinux.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-syslinux.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-syslinux.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-syslinux.c' object='libguestfs_gobject_1_0_la-optargs-syslinux.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-syslinux.lo `test -f 'src/optargs-syslinux.c' || echo '$(srcdir)/'`src/optargs-syslinux.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

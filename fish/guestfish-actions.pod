@@ -1144,7 +1144,7 @@ C<qemuvalue> can be NULL.
 
 =head2 copy-device-to-device
 
- copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 The four calls L</copy-device-to-device>,
 L</copy-device-to-file>,
@@ -1165,11 +1165,17 @@ overlapping regions may not be copied correctly.
 If the destination is a file, it is created if required.  If
 the destination file is not large enough, it is extended.
 
+If the C<sparse> flag is true then the call avoids writing
+blocks that contain only zeroes, which can help in some situations
+where the backing disk is thin-provisioned.  Note that unless
+the target is already zeroed, using this option will result
+in incorrect copying.
+
 This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 copy-device-to-file
 
- copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 See L</copy-device-to-device> for a general overview
 of this call.
@@ -1178,7 +1184,7 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 copy-file-to-device
 
- copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 See L</copy-device-to-device> for a general overview
 of this call.
@@ -1187,7 +1193,7 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 copy-file-to-file
 
- copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 See L</copy-device-to-device> for a general overview
 of this call.
@@ -1495,6 +1501,31 @@ This returns C<true> if and only if there is a file, directory
 (or anything) with the given C<path> name.
 
 See also L</is-file>, L</is-dir>, L</stat>.
+
+=head2 extlinux
+
+ extlinux directory
+
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike L</syslinux> which requires a FAT filesystem, this can
+be used on an ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a
+directory within the mountpoint.
+
+You also have to marked the partition as "active"
+(L</part-set-bootable>) and a Master Boot Record must
+be installed (eg. using L</pwrite-device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<extlinux(1)> man page for further information.
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<extlinux.conf> on the filesystem
+under C<directory>.  For further information
+about the contents of this file, see L<extlinux(1)>.
+
+See also L</syslinux>.
 
 =head2 fallocate
 
@@ -6658,6 +6689,42 @@ underlying disk image.
 
 You should always call this if you have modified a disk image, before
 closing the handle.
+
+=head2 syslinux
+
+ syslinux device [directory:..]
+
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted
+as a FAT filesystem, or a partition formatted as a FAT filesystem.
+In the latter case, the partition should be marked as "active"
+(L</part-set-bootable>) and a Master Boot Record must be
+installed (eg. using L</pwrite-device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<syslinux(1)> man page for further information.
+
+The optional arguments are:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the
+root directory of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<syslinux.cfg> on the FAT filesystem,
+either in the root directory, or under C<directory> if that
+optional argument is being used.  For further information
+about the contents of this file, see L<syslinux(1)>.
+
+See also L</extlinux>.
+
+This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 tail
 

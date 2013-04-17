@@ -640,6 +640,8 @@ gchar *guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *d
 gboolean guestfs_session_rename(GuestfsSession *session, const gchar *oldpath, const gchar *newpath, GError **err);
 gint8 guestfs_session_is_whole_device(GuestfsSession *session, const gchar *device, GError **err);
 gint8 guestfs_session_feature_available(GuestfsSession *session, gchar *const *groups, GError **err);
+gboolean guestfs_session_syslinux(GuestfsSession *session, const gchar *device, GuestfsSyslinux *optargs, GError **err);
+gboolean guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError **err);
 
 G_END_DECLS
 

@@ -10960,8 +10960,9 @@ copy_device_to_device_stub (XDR *xdr_in)
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  int sparse;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -10979,8 +10980,9 @@ copy_device_to_device_stub (XDR *xdr_in)
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
   size = args.size;
+  sparse = args.sparse;
 
-  r = do_copy_device_to_device (src, dest, srcoffset, destoffset, size);
+  r = do_copy_device_to_device (src, dest, srcoffset, destoffset, size, sparse);
   if (r == -1)
     /* do_copy_device_to_device has already called reply_with_error */
     goto done;
@@ -11002,8 +11004,9 @@ copy_device_to_file_stub (XDR *xdr_in)
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  int sparse;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -11021,9 +11024,10 @@ copy_device_to_file_stub (XDR *xdr_in)
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
   size = args.size;
+  sparse = args.sparse;
 
   NEED_ROOT (, goto done);
-  r = do_copy_device_to_file (src, dest, srcoffset, destoffset, size);
+  r = do_copy_device_to_file (src, dest, srcoffset, destoffset, size, sparse);
   if (r == -1)
     /* do_copy_device_to_file has already called reply_with_error */
     goto done;
@@ -11045,8 +11049,9 @@ copy_file_to_device_stub (XDR *xdr_in)
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  int sparse;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -11064,9 +11069,10 @@ copy_file_to_device_stub (XDR *xdr_in)
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
   size = args.size;
+  sparse = args.sparse;
 
   NEED_ROOT (, goto done);
-  r = do_copy_file_to_device (src, dest, srcoffset, destoffset, size);
+  r = do_copy_file_to_device (src, dest, srcoffset, destoffset, size, sparse);
   if (r == -1)
     /* do_copy_file_to_device has already called reply_with_error */
     goto done;
@@ -11088,8 +11094,9 @@ copy_file_to_file_stub (XDR *xdr_in)
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  int sparse;
 
-  if (optargs_bitmask & UINT64_C(0xfffffffffffffff8)) {
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffff0)) {
     reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
@@ -11107,9 +11114,10 @@ copy_file_to_file_stub (XDR *xdr_in)
   srcoffset = args.srcoffset;
   destoffset = args.destoffset;
   size = args.size;
+  sparse = args.sparse;
 
   NEED_ROOT (, goto done);
-  r = do_copy_file_to_file (src, dest, srcoffset, destoffset, size);
+  r = do_copy_file_to_file (src, dest, srcoffset, destoffset, size, sparse);
   if (r == -1)
     /* do_copy_file_to_file has already called reply_with_error */
     goto done;
@@ -15517,6 +15525,95 @@ done_no_free:
   return;
 }
 
+static void
+syslinux_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_syslinux_args args;
+  char *device;
+  char *directory;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_syslinux_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "syslinux");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_syslinux_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  directory = args.directory;
+
+  r = do_syslinux (device, directory);
+  if (r == -1)
+    /* do_syslinux has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_syslinux_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+extlinux_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_extlinux_args args;
+  char *directory;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_extlinux_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "extlinux");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_extlinux_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  directory = args.directory;
+  ABS_PATH (directory, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_extlinux (directory);
+  if (r == -1)
+    /* do_extlinux has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_extlinux_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16692,6 +16789,12 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_FEATURE_AVAILABLE:
       feature_available_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_SYSLINUX:
+      syslinux_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_EXTLINUX:
+      extlinux_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

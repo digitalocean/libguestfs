@@ -5177,7 +5177,7 @@ guestfs_copy_file_to_device_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffff8)) {
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "copy_file_to_device", "copy_file_to_device");
     return -1;
@@ -5196,6 +5196,9 @@ guestfs_copy_file_to_device_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%" PRIi64 "\"", "size", optargs->size);
+    }
+    if (optargs->bitmask & GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "sparse", optargs->sparse ? "true" : "false");
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -5223,6 +5226,11 @@ guestfs_copy_file_to_device_argv (guestfs_h *g,
     args.size = optargs->size;
   } else {
     args.size = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK) {
+    args.sparse = optargs->sparse;
+  } else {
+    args.sparse = 0;
   }
   serial = guestfs___send (g, GUESTFS_PROC_COPY_FILE_TO_DEVICE,
                            progress_hint, optargs->bitmask,
@@ -5316,7 +5324,7 @@ guestfs_copy_file_to_file_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffff8)) {
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "copy_file_to_file", "copy_file_to_file");
     return -1;
@@ -5335,6 +5343,9 @@ guestfs_copy_file_to_file_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%" PRIi64 "\"", "size", optargs->size);
+    }
+    if (optargs->bitmask & GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "sparse", optargs->sparse ? "true" : "false");
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -5362,6 +5373,11 @@ guestfs_copy_file_to_file_argv (guestfs_h *g,
     args.size = optargs->size;
   } else {
     args.size = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK) {
+    args.sparse = optargs->sparse;
+  } else {
+    args.sparse = 0;
   }
   serial = guestfs___send (g, GUESTFS_PROC_COPY_FILE_TO_FILE,
                            progress_hint, optargs->bitmask,

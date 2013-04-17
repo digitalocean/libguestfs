@@ -7210,6 +7210,10 @@ PREINIT:
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
         }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -7250,6 +7254,10 @@ PREINIT:
         else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -7292,6 +7300,10 @@ PREINIT:
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
         }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -7332,6 +7344,10 @@ PREINIT:
         else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -9529,4 +9545,47 @@ PREINIT:
       RETVAL = newSViv (r);
  OUTPUT:
       RETVAL
+
+void
+syslinux (g, device, ...)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+      struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_syslinux_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "directory")) {
+          optargs_s.directory = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_syslinux_argv (g, device, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+extlinux (g, directory)
+      guestfs_h *g;
+      char *directory;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_extlinux (g, directory);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 

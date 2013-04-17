@@ -565,6 +565,23 @@ guestfs_set_e2attrs_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-syslinux</FILE>
+<TITLE>GuestfsSyslinux</TITLE>
+GuestfsSyslinux
+GuestfsSyslinuxClass
+guestfs_syslinux_new
+<SUBSECTION Standard>
+GUESTFS_IS_SYSLINUX
+GUESTFS_IS_SYSLINUX_CLASS
+GUESTFS_SYSLINUX
+GUESTFS_SYSLINUX_CLASS
+GUESTFS_SYSLINUX_GET_CLASS
+GUESTFS_TYPE_SYSLINUX
+GuestfsSyslinuxPrivate
+guestfs_syslinux_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-tar_in</FILE>
 <TITLE>GuestfsTarIn</TITLE>
 GuestfsTarIn
@@ -802,6 +819,7 @@ guestfs_session_egrep
 guestfs_session_egrepi
 guestfs_session_equal
 guestfs_session_exists
+guestfs_session_extlinux
 guestfs_session_fallocate
 guestfs_session_fallocate64
 guestfs_session_feature_available
@@ -1160,6 +1178,7 @@ guestfs_session_swapon_file
 guestfs_session_swapon_label
 guestfs_session_swapon_uuid
 guestfs_session_sync
+guestfs_session_syslinux
 guestfs_session_tail
 guestfs_session_tail_n
 guestfs_session_tar_in

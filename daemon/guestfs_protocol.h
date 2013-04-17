@@ -2697,6 +2697,7 @@ struct guestfs_copy_device_to_device_args {
 	int64_t srcoffset;
 	int64_t destoffset;
 	int64_t size;
+	bool_t sparse;
 };
 typedef struct guestfs_copy_device_to_device_args guestfs_copy_device_to_device_args;
 
@@ -2706,6 +2707,7 @@ struct guestfs_copy_device_to_file_args {
 	int64_t srcoffset;
 	int64_t destoffset;
 	int64_t size;
+	bool_t sparse;
 };
 typedef struct guestfs_copy_device_to_file_args guestfs_copy_device_to_file_args;
 
@@ -2715,6 +2717,7 @@ struct guestfs_copy_file_to_device_args {
 	int64_t srcoffset;
 	int64_t destoffset;
 	int64_t size;
+	bool_t sparse;
 };
 typedef struct guestfs_copy_file_to_device_args guestfs_copy_file_to_device_args;
 
@@ -2724,6 +2727,7 @@ struct guestfs_copy_file_to_file_args {
 	int64_t srcoffset;
 	int64_t destoffset;
 	int64_t size;
+	bool_t sparse;
 };
 typedef struct guestfs_copy_file_to_file_args guestfs_copy_file_to_file_args;
 
@@ -3599,6 +3603,17 @@ struct guestfs_feature_available_ret {
 };
 typedef struct guestfs_feature_available_ret guestfs_feature_available_ret;
 
+struct guestfs_syslinux_args {
+	char *device;
+	char *directory;
+};
+typedef struct guestfs_syslinux_args guestfs_syslinux_args;
+
+struct guestfs_extlinux_args {
+	char *directory;
+};
+typedef struct guestfs_extlinux_args guestfs_extlinux_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3991,9 +4006,11 @@ enum guestfs_procedure {
 	GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
 	GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
 	GUESTFS_PROC_FEATURE_AVAILABLE = 398,
+	GUESTFS_PROC_SYSLINUX = 399,
+	GUESTFS_PROC_EXTLINUX = 400,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 398
+#define GUESTFS_MAX_PROC_NR 400
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4616,6 +4633,8 @@ extern  bool_t xdr_guestfs_internal_parse_mountable_ret (XDR *, guestfs_internal
 extern  bool_t xdr_guestfs_internal_rhbz914931_args (XDR *, guestfs_internal_rhbz914931_args*);
 extern  bool_t xdr_guestfs_feature_available_args (XDR *, guestfs_feature_available_args*);
 extern  bool_t xdr_guestfs_feature_available_ret (XDR *, guestfs_feature_available_ret*);
+extern  bool_t xdr_guestfs_syslinux_args (XDR *, guestfs_syslinux_args*);
+extern  bool_t xdr_guestfs_extlinux_args (XDR *, guestfs_extlinux_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5188,6 +5207,8 @@ extern bool_t xdr_guestfs_internal_parse_mountable_ret ();
 extern bool_t xdr_guestfs_internal_rhbz914931_args ();
 extern bool_t xdr_guestfs_feature_available_args ();
 extern bool_t xdr_guestfs_feature_available_ret ();
+extern bool_t xdr_guestfs_syslinux_args ();
+extern bool_t xdr_guestfs_extlinux_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

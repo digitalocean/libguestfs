@@ -114,6 +114,7 @@
 <ANCHOR id="guestfs-session-egrepi" href="guestfs/GuestfsSession.html#guestfs-session-egrepi">
 <ANCHOR id="guestfs-session-equal" href="guestfs/GuestfsSession.html#guestfs-session-equal">
 <ANCHOR id="guestfs-session-exists" href="guestfs/GuestfsSession.html#guestfs-session-exists">
+<ANCHOR id="guestfs-session-extlinux" href="guestfs/GuestfsSession.html#guestfs-session-extlinux">
 <ANCHOR id="guestfs-session-fallocate" href="guestfs/GuestfsSession.html#guestfs-session-fallocate">
 <ANCHOR id="guestfs-session-fallocate64" href="guestfs/GuestfsSession.html#guestfs-session-fallocate64">
 <ANCHOR id="guestfs-session-feature-available" href="guestfs/GuestfsSession.html#guestfs-session-feature-available">
@@ -472,6 +473,7 @@
 <ANCHOR id="guestfs-session-swapon-label" href="guestfs/GuestfsSession.html#guestfs-session-swapon-label">
 <ANCHOR id="guestfs-session-swapon-uuid" href="guestfs/GuestfsSession.html#guestfs-session-swapon-uuid">
 <ANCHOR id="guestfs-session-sync" href="guestfs/GuestfsSession.html#guestfs-session-sync">
+<ANCHOR id="guestfs-session-syslinux" href="guestfs/GuestfsSession.html#guestfs-session-syslinux">
 <ANCHOR id="guestfs-session-tail" href="guestfs/GuestfsSession.html#guestfs-session-tail">
 <ANCHOR id="guestfs-session-tail-n" href="guestfs/GuestfsSession.html#guestfs-session-tail-n">
 <ANCHOR id="guestfs-session-tar-in" href="guestfs/GuestfsSession.html#guestfs-session-tar-in">
@@ -985,6 +987,7 @@
 <ANCHOR id="GuestfsCopyDeviceToDevice.property-details" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice.property-details">
 <ANCHOR id="GuestfsCopyDeviceToDevice--destoffset" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--destoffset">
 <ANCHOR id="GuestfsCopyDeviceToDevice--size" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--size">
+<ANCHOR id="GuestfsCopyDeviceToDevice--sparse" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--sparse">
 <ANCHOR id="GuestfsCopyDeviceToDevice--srcoffset" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--srcoffset">
 <ANCHOR id="GuestfsCopyDeviceToFile" href="guestfs/GuestfsCopyDeviceToFile.html">
 <ANCHOR id="GuestfsCopyDeviceToFile.synopsis" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile.synopsis">
@@ -998,6 +1001,7 @@
 <ANCHOR id="GuestfsCopyDeviceToFile.property-details" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile.property-details">
 <ANCHOR id="GuestfsCopyDeviceToFile--destoffset" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--destoffset">
 <ANCHOR id="GuestfsCopyDeviceToFile--size" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--size">
+<ANCHOR id="GuestfsCopyDeviceToFile--sparse" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--sparse">
 <ANCHOR id="GuestfsCopyDeviceToFile--srcoffset" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--srcoffset">
 <ANCHOR id="GuestfsCopyFileToDevice" href="guestfs/GuestfsCopyFileToDevice.html">
 <ANCHOR id="GuestfsCopyFileToDevice.synopsis" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice.synopsis">
@@ -1011,6 +1015,7 @@
 <ANCHOR id="GuestfsCopyFileToDevice.property-details" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice.property-details">
 <ANCHOR id="GuestfsCopyFileToDevice--destoffset" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--destoffset">
 <ANCHOR id="GuestfsCopyFileToDevice--size" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--size">
+<ANCHOR id="GuestfsCopyFileToDevice--sparse" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--sparse">
 <ANCHOR id="GuestfsCopyFileToDevice--srcoffset" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--srcoffset">
 <ANCHOR id="GuestfsCopyFileToFile" href="guestfs/GuestfsCopyFileToFile.html">
 <ANCHOR id="GuestfsCopyFileToFile.synopsis" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile.synopsis">
@@ -1024,6 +1029,7 @@
 <ANCHOR id="GuestfsCopyFileToFile.property-details" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile.property-details">
 <ANCHOR id="GuestfsCopyFileToFile--destoffset" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--destoffset">
 <ANCHOR id="GuestfsCopyFileToFile--size" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--size">
+<ANCHOR id="GuestfsCopyFileToFile--sparse" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--sparse">
 <ANCHOR id="GuestfsCopyFileToFile--srcoffset" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--srcoffset">
 <ANCHOR id="GuestfsTune2FS" href="guestfs/GuestfsTune2FS.html">
 <ANCHOR id="GuestfsTune2FS.synopsis" href="guestfs/GuestfsTune2FS.html#GuestfsTune2FS.synopsis">
@@ -1315,6 +1321,17 @@
 <ANCHOR id="guestfs-mktemp-new" href="guestfs/GuestfsMktemp.html#guestfs-mktemp-new">
 <ANCHOR id="GuestfsMktemp.property-details" href="guestfs/GuestfsMktemp.html#GuestfsMktemp.property-details">
 <ANCHOR id="GuestfsMktemp--suffix" href="guestfs/GuestfsMktemp.html#GuestfsMktemp--suffix">
+<ANCHOR id="GuestfsSyslinux" href="guestfs/GuestfsSyslinux.html">
+<ANCHOR id="GuestfsSyslinux.synopsis" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.synopsis">
+<ANCHOR id="GuestfsSyslinux.object-hierarchy" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.object-hierarchy">
+<ANCHOR id="GuestfsSyslinux.properties" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.properties">
+<ANCHOR id="GuestfsSyslinux.description" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.description">
+<ANCHOR id="GuestfsSyslinux.details" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.details">
+<ANCHOR id="GuestfsSyslinux-struct" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux-struct">
+<ANCHOR id="GuestfsSyslinuxClass" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinuxClass">
+<ANCHOR id="guestfs-syslinux-new" href="guestfs/GuestfsSyslinux.html#guestfs-syslinux-new">
+<ANCHOR id="GuestfsSyslinux.property-details" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.property-details">
+<ANCHOR id="GuestfsSyslinux--directory" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux--directory">
 <ANCHOR id="annotation-glossterm-array" href="guestfs/annotation-glossary.html#annotation-glossterm-array">
 <ANCHOR id="annotation-glossterm-allow-none" href="guestfs/annotation-glossary.html#annotation-glossterm-allow-none">
 <ANCHOR id="annotation-glossterm-element-type" href="guestfs/annotation-glossary.html#annotation-glossterm-element-type">

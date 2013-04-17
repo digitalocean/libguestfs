@@ -16336,11 +16336,12 @@ py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
   PyObject *py_srcoffset;
   PyObject *py_destoffset;
   PyObject *py_size;
+  PyObject *py_sparse;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOO:guestfs_copy_device_to_device",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_device_to_device",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
     goto out;
   g = get_handle (py_g);
 
@@ -16357,6 +16358,11 @@ py_guestfs_copy_device_to_device (PyObject *self, PyObject *args)
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_sparse != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+    optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -16395,11 +16401,12 @@ py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
   PyObject *py_srcoffset;
   PyObject *py_destoffset;
   PyObject *py_size;
+  PyObject *py_sparse;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOO:guestfs_copy_device_to_file",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_device_to_file",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
     goto out;
   g = get_handle (py_g);
 
@@ -16416,6 +16423,11 @@ py_guestfs_copy_device_to_file (PyObject *self, PyObject *args)
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_sparse != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+    optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -16454,11 +16466,12 @@ py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
   PyObject *py_srcoffset;
   PyObject *py_destoffset;
   PyObject *py_size;
+  PyObject *py_sparse;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOO:guestfs_copy_file_to_device",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_file_to_device",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
     goto out;
   g = get_handle (py_g);
 
@@ -16475,6 +16488,11 @@ py_guestfs_copy_file_to_device (PyObject *self, PyObject *args)
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_sparse != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+    optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -16513,11 +16531,12 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
   PyObject *py_srcoffset;
   PyObject *py_destoffset;
   PyObject *py_size;
+  PyObject *py_sparse;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OssOOO:guestfs_copy_file_to_file",
-                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size))
+  if (!PyArg_ParseTuple (args, (char *) "OssOOOO:guestfs_copy_file_to_file",
+                         &py_g, &src, &dest, &py_srcoffset, &py_destoffset, &py_size, &py_sparse))
     goto out;
   g = get_handle (py_g);
 
@@ -16534,6 +16553,11 @@ py_guestfs_copy_file_to_file (PyObject *self, PyObject *args)
   if (py_size != Py_None) {
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
     optargs_s.size = PyLong_AsLongLong (py_size);
+    if (PyErr_Occurred ()) goto out;
+  }
+  if (py_sparse != Py_None) {
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+    optargs_s.sparse = PyLong_AsLong (py_sparse);
     if (PyErr_Occurred ()) goto out;
   }
 
@@ -20845,6 +20869,92 @@ py_guestfs_feature_available (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_syslinux (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_syslinux_argv optargs_s;
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  int r;
+  const char *device;
+  PyObject *py_directory;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_syslinux",
+                         &py_g, &device, &py_directory))
+    goto out;
+  g = get_handle (py_g);
+
+  if (py_directory != Py_None) {
+    optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.directory = PyString_AsString (py_directory);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_directory);
+    optargs_s.directory = PyBytes_AS_STRING (bytes);
+#endif
+  }
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_extlinux (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *directory;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_extlinux",
+                         &py_g, &directory))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_extlinux (g, directory);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21369,6 +21479,8 @@ static PyMethodDef methods[] = {
   { (char *) "rename", py_guestfs_rename, METH_VARARGS, NULL },
   { (char *) "is_whole_device", py_guestfs_is_whole_device, METH_VARARGS, NULL },
   { (char *) "feature_available", py_guestfs_feature_available, METH_VARARGS, NULL },
+  { (char *) "syslinux", py_guestfs_syslinux, METH_VARARGS, NULL },
+  { (char *) "extlinux", py_guestfs_extlinux, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

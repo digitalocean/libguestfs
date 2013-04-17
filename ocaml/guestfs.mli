@@ -553,16 +553,16 @@ val compress_out : t -> ?level:int -> string -> string -> string -> unit
 val config : t -> string -> string option -> unit
 (** add qemu parameters *)
 
-val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source device to destination device *)
 
-val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source device to destination file *)
 
-val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source file to destination device *)
 
-val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source file to destination file *)
 
 val copy_size : t -> string -> string -> int64 -> unit
@@ -651,6 +651,9 @@ val equal : t -> string -> string -> bool
 
 val exists : t -> string -> bool
 (** test if file or directory exists *)
+
+val extlinux : t -> string -> unit
+(** install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem *)
 
 val fallocate : t -> string -> int -> unit
 (** preallocate a file in the guest filesystem
@@ -1782,6 +1785,9 @@ val swapon_uuid : t -> string -> unit
 val sync : t -> unit
 (** sync disks, writes are flushed through to the disk image *)
 
+val syslinux : t -> ?directory:string -> string -> unit
+(** install the SYSLINUX bootloader *)
+
 val tail : t -> string -> string array
 (** return last 10 lines of a file *)
 
@@ -2110,10 +2116,10 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method compress_device_out : ?level:int -> string -> string -> string -> unit
   method compress_out : ?level:int -> string -> string -> string -> unit
   method config : string -> string option -> unit
-  method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
-  method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
-  method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
-  method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+  method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
   method copy_size : string -> string -> int64 -> unit
   method cp : string -> string -> unit
   method cp_a : string -> string -> unit
@@ -2139,6 +2145,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method egrepi : string -> string -> string array
   method equal : string -> string -> bool
   method exists : string -> bool
+  method extlinux : string -> unit
   method fallocate : string -> int -> unit
   method fallocate64 : string -> int64 -> unit
   method feature_available : string array -> bool
@@ -2501,6 +2508,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method swapon_label : string -> unit
   method swapon_uuid : string -> unit
   method sync : unit -> unit
+  method syslinux : ?directory:string -> string -> unit
   method tail : string -> string array
   method tail_n : int -> string -> string array
   method tar_in : ?compress:string -> string -> string -> unit

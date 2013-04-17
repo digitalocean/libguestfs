@@ -36,6 +36,11 @@ GuestfsCopyFileToFile
 
 </para>
 
+<!-- ##### ARG GuestfsCopyFileToFile:sparse ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsCopyFileToFile:srcoffset ##### -->
 <para>
 

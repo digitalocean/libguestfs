@@ -2070,6 +2070,7 @@ struct guestfs_copy_device_to_device_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_copy_device_to_file_args {
@@ -2078,6 +2079,7 @@ struct guestfs_copy_device_to_file_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_copy_file_to_device_args {
@@ -2086,6 +2088,7 @@ struct guestfs_copy_file_to_device_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_copy_file_to_file_args {
@@ -2094,6 +2097,7 @@ struct guestfs_copy_file_to_file_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_tune2fs_args {
@@ -2774,6 +2778,15 @@ struct guestfs_feature_available_ret {
   bool isavailable;
 };
 
+struct guestfs_syslinux_args {
+  string device<>;
+  string directory<>;
+};
+
+struct guestfs_extlinux_args {
+  string directory<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3166,10 +3179,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
   GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
   GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
-  GUESTFS_PROC_FEATURE_AVAILABLE = 398
+  GUESTFS_PROC_FEATURE_AVAILABLE = 398,
+  GUESTFS_PROC_SYSLINUX = 399,
+  GUESTFS_PROC_EXTLINUX = 400
 };
 
-const GUESTFS_MAX_PROC_NR = 398;
+const GUESTFS_MAX_PROC_NR = 400;
 
 /* The remote procedure call protocol. */
 

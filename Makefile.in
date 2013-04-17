@@ -110,7 +110,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
 @ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
-@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd \
+@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/syslinux \
 @ENABLE_APPLIANCE_TRUE@	tests/regressions
 
 # Language bindings.
@@ -338,12 +338,12 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	tests/disks tests/mountable tests/lvm tests/luks tests/md \
 	tests/selinux tests/ntfsclone tests/btrfs tests/charsets \
 	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
-	tests/disk-labels tests/hotplug tests/nbd tests/regressions \
-	test-tool fish align cat df edit format inspector rescue bash \
-	perl perl/examples ocaml ocaml/examples python python/examples \
-	ruby ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject csharp resize \
-	sparsify sysprep tools fuse po-docs
+	tests/disk-labels tests/hotplug tests/nbd tests/syslinux \
+	tests/regressions test-tool fish align cat df edit format \
+	inspector rescue bash perl perl/examples ocaml ocaml/examples \
+	python python/examples ruby ruby/examples java java/examples \
+	haskell php erlang erlang/examples lua lua/examples gobject \
+	csharp resize sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)

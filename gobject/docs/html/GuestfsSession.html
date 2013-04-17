@@ -409,6 +409,9 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionEven
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-exists" title="guestfs_session_exists ()">guestfs_session_exists</a>              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-extlinux" title="guestfs_session_extlinux ()">guestfs_session_extlinux</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-fallocate" title="guestfs_session_fallocate ()">guestfs_session_fallocate</a>           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">gint32</span> len</code></em>,
@@ -1675,6 +1678,10 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *uuid</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-sync" title="guestfs_session_sync ()">guestfs_session_sync</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()">guestfs_session_syslinux</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsSyslinux.html" title="GuestfsSyslinux"><span class="type">GuestfsSyslinux</span></a> *optargs</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> **            <a class="link" href="GuestfsSession.html#guestfs-session-tail" title="guestfs_session_tail ()">guestfs_session_tail</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
@@ -5702,6 +5709,12 @@ regions may not be copied correctly.
 If the destination is a file, it is created if required. If the
 destination file is not large enough, it is extended.
 </p>
+<p>
+If the <em class="parameter"><code>sparse</code></em> flag is true then the call avoids writing blocks that
+contain only zeroes, which can help in some situations where the backing
+disk is thin-provisioned. Note that unless the target is already zeroed,
+using this option will result in incorrect copying.
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">
@@ -7118,6 +7131,67 @@ See also <a class="link" href="GuestfsSession.html#guestfs-session-is-file" titl
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-extlinux"></a><h3>guestfs_session_extlinux ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_extlinux            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+</p>
+<p>
+Install the SYSLINUX bootloader on the device mounted at <em class="parameter"><code>directory</code></em>.
+Unlike <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()"><code class="function">guestfs_session_syslinux()</code></a> which requires a FAT filesystem, this
+can be used on an ext2/3/4 or btrfs filesystem.
+</p>
+<p>
+The <em class="parameter"><code>directory</code></em> parameter can be either a mountpoint, or a directory
+within the mountpoint.
+</p>
+<p>
+You also have to marked the partition as "active"
+(<a class="link" href="GuestfsSession.html#guestfs-session-part-set-bootable" title="guestfs_session_part_set_bootable ()"><code class="function">guestfs_session_part_set_bootable()</code></a>) and a Master Boot Record must be
+installed (eg. using <a class="link" href="GuestfsSession.html#guestfs-session-pwrite-device" title="guestfs_session_pwrite_device ()"><code class="function">guestfs_session_pwrite_device()</code></a>) on the first
+sector of the whole disk. The SYSLINUX package comes with some suitable
+Master Boot Records. See the extlinux(1) man page for further
+information.
+</p>
+<p>
+Additional configuration can be supplied to SYSLINUX by placing a file
+called "extlinux.conf" on the filesystem under <em class="parameter"><code>directory</code></em>. For further
+information about the contents of this file, see extlinux(1).
+</p>
+<p>
+See also <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()"><code class="function">guestfs_session_syslinux()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>directory</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
 </tr>
 </tbody>
 </table></div>
@@ -25304,6 +25378,79 @@ closing the handle.
 <tr>
 <td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
 <td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-syslinux"></a><h3>guestfs_session_syslinux ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_syslinux            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsSyslinux.html" title="GuestfsSyslinux"><span class="type">GuestfsSyslinux</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+install the SYSLINUX bootloader
+</p>
+<p>
+Install the SYSLINUX bootloader on <em class="parameter"><code>device</code></em>.
+</p>
+<p>
+The device parameter must be either a whole disk formatted as a FAT
+filesystem, or a partition formatted as a FAT filesystem. In the latter
+case, the partition should be marked as "active"
+(<a class="link" href="GuestfsSession.html#guestfs-session-part-set-bootable" title="guestfs_session_part_set_bootable ()"><code class="function">guestfs_session_part_set_bootable()</code></a>) and a Master Boot Record must be
+installed (eg. using <a class="link" href="GuestfsSession.html#guestfs-session-pwrite-device" title="guestfs_session_pwrite_device ()"><code class="function">guestfs_session_pwrite_device()</code></a>) on the first
+sector of the whole disk. The SYSLINUX package comes with some suitable
+Master Boot Records. See the syslinux(1) man page for further
+information.
+</p>
+<p>
+The optional arguments are:
+</p>
+<p>
+<em class="parameter"><code>directory</code></em>
+Install SYSLINUX in the named subdirectory, instead of in the root
+directory of the FAT filesystem.
+</p>
+<p>
+Additional configuration can be supplied to SYSLINUX by placing a file
+called "syslinux.cfg" on the FAT filesystem, either in the root
+directory, or under <em class="parameter"><code>directory</code></em> if that optional argument is being used.
+For further information about the contents of this file, see
+syslinux(1).
+</p>
+<p>
+See also <a class="link" href="GuestfsSession.html#guestfs-session-extlinux" title="guestfs_session_extlinux ()"><code class="function">guestfs_session_extlinux()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>optargs</code></em> :</span></p></td>
+<td>a GuestfsSyslinux containing optional arguments. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
 <tr>

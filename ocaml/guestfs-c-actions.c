@@ -3105,17 +3105,17 @@ ocaml_guestfs_config (value gv, value qemuparamv, value qemuvaluev)
 }
 
 /* Automatically generated wrapper for function
- * val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+ * val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv);
 
 value
-ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
+ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv)
 {
-  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
-  CAMLxparam1 (destv);
+  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, sparsev);
+  CAMLxparam2 (srcv, destv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -3138,6 +3138,10 @@ ocaml_guestfs_copy_device_to_device (value gv, value srcoffsetv, value destoffse
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
     optargs_s.size = Int64_val (Field (sizev, 0));
   }
+  if (sparsev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+    optargs_s.sparse = Bool_val (Field (sparsev, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -3158,21 +3162,21 @@ value ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn);
 value
 ocaml_guestfs_copy_device_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_device_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  return ocaml_guestfs_copy_device_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
 }
 
 /* Automatically generated wrapper for function
- * val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+ * val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv);
 
 value
-ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
+ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv)
 {
-  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
-  CAMLxparam1 (destv);
+  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, sparsev);
+  CAMLxparam2 (srcv, destv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -3195,6 +3199,10 @@ ocaml_guestfs_copy_device_to_file (value gv, value srcoffsetv, value destoffsetv
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
     optargs_s.size = Int64_val (Field (sizev, 0));
   }
+  if (sparsev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+    optargs_s.sparse = Bool_val (Field (sparsev, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -3215,21 +3223,21 @@ value ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn);
 value
 ocaml_guestfs_copy_device_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_device_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  return ocaml_guestfs_copy_device_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
 }
 
 /* Automatically generated wrapper for function
- * val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+ * val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv);
 
 value
-ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
+ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv)
 {
-  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
-  CAMLxparam1 (destv);
+  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, sparsev);
+  CAMLxparam2 (srcv, destv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -3252,6 +3260,10 @@ ocaml_guestfs_copy_file_to_device (value gv, value srcoffsetv, value destoffsetv
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
     optargs_s.size = Int64_val (Field (sizev, 0));
   }
+  if (sparsev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+    optargs_s.sparse = Bool_val (Field (sparsev, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -3272,21 +3284,21 @@ value ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn);
 value
 ocaml_guestfs_copy_file_to_device_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_file_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  return ocaml_guestfs_copy_file_to_device (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
 }
 
 /* Automatically generated wrapper for function
- * val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+ * val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv);
+value ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv);
 
 value
-ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value srcv, value destv)
+ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, value sizev, value sparsev, value srcv, value destv)
 {
-  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, srcv);
-  CAMLxparam1 (destv);
+  CAMLparam5 (gv, srcoffsetv, destoffsetv, sizev, sparsev);
+  CAMLxparam2 (srcv, destv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -3309,6 +3321,10 @@ ocaml_guestfs_copy_file_to_file (value gv, value srcoffsetv, value destoffsetv, 
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
     optargs_s.size = Int64_val (Field (sizev, 0));
   }
+  if (sparsev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+    optargs_s.sparse = Bool_val (Field (sparsev, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
@@ -3329,7 +3345,7 @@ value ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn);
 value
 ocaml_guestfs_copy_file_to_file_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_copy_file_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+  return ocaml_guestfs_copy_file_to_file (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
 }
 
 /* Automatically generated wrapper for function
@@ -4144,6 +4160,37 @@ ocaml_guestfs_exists (value gv, value pathv)
     ocaml_guestfs_raise_error (g, "exists");
 
   rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val extlinux : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_extlinux (value gv, value directoryv);
+
+value
+ocaml_guestfs_extlinux (value gv, value directoryv)
+{
+  CAMLparam2 (gv, directoryv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("extlinux");
+
+  char *directory = guestfs___safe_strdup (g, String_val (directoryv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_extlinux (g, directory);
+  caml_leave_blocking_section ();
+  free (directory);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "extlinux");
+
+  rv = Val_unit;
   CAMLreturn (rv);
 }
 
@@ -16280,6 +16327,45 @@ ocaml_guestfs_sync (value gv)
   caml_leave_blocking_section ();
   if (r == -1)
     ocaml_guestfs_raise_error (g, "sync");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val syslinux : t -> ?directory:string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_syslinux (value gv, value directoryv, value devicev);
+
+value
+ocaml_guestfs_syslinux (value gv, value directoryv, value devicev)
+{
+  CAMLparam3 (gv, directoryv, devicev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("syslinux");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  if (directoryv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+    optargs_s.directory = guestfs___safe_strdup (g, String_val (Field (directoryv, 0)));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_syslinux_argv (g, device, optargs);
+  caml_leave_blocking_section ();
+  free (device);
+  if (directoryv != Val_int (0))
+    free ((char *) optargs_s.directory);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "syslinux");
 
   rv = Val_unit;
   CAMLreturn (rv);

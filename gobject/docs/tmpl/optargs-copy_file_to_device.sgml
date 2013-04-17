@@ -36,6 +36,11 @@ GuestfsCopyFileToDevice
 
 </para>
 
+<!-- ##### ARG GuestfsCopyFileToDevice:sparse ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsCopyFileToDevice:srcoffset ##### -->
 <para>
 

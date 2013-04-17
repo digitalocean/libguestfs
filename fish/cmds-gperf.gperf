@@ -137,6 +137,7 @@ extern struct command_entry egrepi_cmd_entry;
 extern struct command_entry equal_cmd_entry;
 extern struct command_entry event_cmd_entry;
 extern struct command_entry exists_cmd_entry;
+extern struct command_entry extlinux_cmd_entry;
 extern struct command_entry fallocate_cmd_entry;
 extern struct command_entry fallocate64_cmd_entry;
 extern struct command_entry feature_available_cmd_entry;
@@ -474,6 +475,7 @@ extern struct command_entry swapon_file_cmd_entry;
 extern struct command_entry swapon_label_cmd_entry;
 extern struct command_entry swapon_uuid_cmd_entry;
 extern struct command_entry sync_cmd_entry;
+extern struct command_entry syslinux_cmd_entry;
 extern struct command_entry tail_cmd_entry;
 extern struct command_entry tail_n_cmd_entry;
 extern struct command_entry tar_in_cmd_entry;
@@ -729,6 +731,7 @@ egrepi, &egrepi_cmd_entry
 equal, &equal_cmd_entry
 event, &event_cmd_entry
 exists, &exists_cmd_entry
+extlinux, &extlinux_cmd_entry
 fallocate, &fallocate_cmd_entry
 fallocate64, &fallocate64_cmd_entry
 feature_available, &feature_available_cmd_entry
@@ -1334,6 +1337,7 @@ swapon-label, &swapon_label_cmd_entry
 swapon_uuid, &swapon_uuid_cmd_entry
 swapon-uuid, &swapon_uuid_cmd_entry
 sync, &sync_cmd_entry
+syslinux, &syslinux_cmd_entry
 tail, &tail_cmd_entry
 tail_n, &tail_n_cmd_entry
 tail-n, &tail_n_cmd_entry

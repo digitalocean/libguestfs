@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.398';
+$VERSION = '0.400';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -1276,7 +1276,7 @@ The first character of C<qemuparam> string must be a C<-> (dash).
 
 C<qemuvalue> can be NULL.
 
-=item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+=item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 The four calls C<$g-E<gt>copy_device_to_device>,
 C<$g-E<gt>copy_device_to_file>,
@@ -1297,17 +1297,23 @@ overlapping regions may not be copied correctly.
 If the destination is a file, it is created if required.  If
 the destination file is not large enough, it is extended.
 
-=item $g->copy_device_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+If the C<sparse> flag is true then the call avoids writing
+blocks that contain only zeroes, which can help in some situations
+where the backing disk is thin-provisioned.  Note that unless
+the target is already zeroed, using this option will result
+in incorrect copying.
+
+=item $g->copy_device_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
 
-=item $g->copy_file_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+=item $g->copy_file_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
 
-=item $g->copy_file_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+=item $g->copy_file_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
@@ -1563,6 +1569,29 @@ This returns C<true> if and only if there is a file, directory
 (or anything) with the given C<path> name.
 
 See also C<$g-E<gt>is_file>, C<$g-E<gt>is_dir>, C<$g-E<gt>stat>.
+
+=item $g->extlinux ($directory);
+
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike C<$g-E<gt>syslinux> which requires a FAT filesystem, this can
+be used on an ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a
+directory within the mountpoint.
+
+You also have to marked the partition as "active"
+(C<$g-E<gt>part_set_bootable>) and a Master Boot Record must
+be installed (eg. using C<$g-E<gt>pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<extlinux(1)> man page for further information.
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<extlinux.conf> on the filesystem
+under C<directory>.  For further information
+about the contents of this file, see L<extlinux(1)>.
+
+See also C<$g-E<gt>syslinux>.
 
 =item $g->fallocate ($path, $len);
 
@@ -6039,6 +6068,38 @@ underlying disk image.
 You should always call this if you have modified a disk image, before
 closing the handle.
 
+=item $g->syslinux ($device [, directory => $directory]);
+
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted
+as a FAT filesystem, or a partition formatted as a FAT filesystem.
+In the latter case, the partition should be marked as "active"
+(C<$g-E<gt>part_set_bootable>) and a Master Boot Record must be
+installed (eg. using C<$g-E<gt>pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<syslinux(1)> man page for further information.
+
+The optional arguments are:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the
+root directory of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<syslinux.cfg> on the FAT filesystem,
+either in the root directory, or under C<directory> if that
+optional argument is being used.  For further information
+about the contents of this file, see L<syslinux(1)>.
+
+See also C<$g-E<gt>extlinux>.
+
 =item @lines = $g->tail ($path);
 
 This command returns up to the last 10 lines of a file as
@@ -7444,6 +7505,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_device_to_device",
     description => "copy from source device to destination device",
@@ -7458,6 +7520,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_device_to_file",
     description => "copy from source device to destination file",
@@ -7472,6 +7535,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_file_to_device",
     description => "copy from source file to destination device",
@@ -7486,6 +7550,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_file_to_file",
     description => "copy from source file to destination file",
@@ -7704,6 +7769,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "exists",
     description => "test if file or directory exists",
+  },
+  "extlinux" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "extlinux",
+    description => "install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem",
   },
   "fallocate" => {
     ret => 'void',
@@ -10862,6 +10935,17 @@ use vars qw(%guestfs_introspection);
     ],
     name => "sync",
     description => "sync disks, writes are flushed through to the disk image",
+  },
+  "syslinux" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      directory => [ 'directory', 'string', 0 ],
+    },
+    name => "syslinux",
+    description => "install the SYSLINUX bootloader",
   },
   "tail" => {
     ret => 'string list',

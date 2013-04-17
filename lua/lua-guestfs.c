@@ -2035,6 +2035,10 @@ guestfs_lua_copy_device_to_device (lua_State *L)
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
       optargs_s.size = get_int64 (L, -1);
     );
+    OPTARG_IF_SET (4, "sparse",
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+      optargs_s.sparse = lua_toboolean (L, -1);
+    );
   }
 
   r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
@@ -2075,6 +2079,10 @@ guestfs_lua_copy_device_to_file (lua_State *L)
     OPTARG_IF_SET (4, "size",
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       optargs_s.size = get_int64 (L, -1);
+    );
+    OPTARG_IF_SET (4, "sparse",
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+      optargs_s.sparse = lua_toboolean (L, -1);
     );
   }
 
@@ -2117,6 +2125,10 @@ guestfs_lua_copy_file_to_device (lua_State *L)
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
       optargs_s.size = get_int64 (L, -1);
     );
+    OPTARG_IF_SET (4, "sparse",
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+      optargs_s.sparse = lua_toboolean (L, -1);
+    );
   }
 
   r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
@@ -2157,6 +2169,10 @@ guestfs_lua_copy_file_to_file (lua_State *L)
     OPTARG_IF_SET (4, "size",
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       optargs_s.size = get_int64 (L, -1);
+    );
+    OPTARG_IF_SET (4, "sparse",
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+      optargs_s.sparse = lua_toboolean (L, -1);
     );
   }
 
@@ -2752,6 +2768,27 @@ guestfs_lua_exists (lua_State *L)
 
   lua_pushboolean (L, r);
   return 1;
+}
+
+static int
+guestfs_lua_extlinux (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *directory;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "extlinux");
+
+  directory = luaL_checkstring (L, 2);
+
+  r = guestfs_extlinux (g, directory);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
 }
 
 static int
@@ -11567,6 +11604,37 @@ guestfs_lua_sync (lua_State *L)
 }
 
 static int
+guestfs_lua_syslinux (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "syslinux");
+
+  device = luaL_checkstring (L, 2);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "directory",
+      optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+      optargs_s.directory = luaL_checkstring (L, -1);
+    );
+  }
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_tail (lua_State *L)
 {
   char **r;
@@ -14327,6 +14395,7 @@ static luaL_Reg methods[] = {
   { "egrepi", guestfs_lua_egrepi },
   { "equal", guestfs_lua_equal },
   { "exists", guestfs_lua_exists },
+  { "extlinux", guestfs_lua_extlinux },
   { "fallocate", guestfs_lua_fallocate },
   { "fallocate64", guestfs_lua_fallocate64 },
   { "feature_available", guestfs_lua_feature_available },
@@ -14685,6 +14754,7 @@ static luaL_Reg methods[] = {
   { "swapon_label", guestfs_lua_swapon_label },
   { "swapon_uuid", guestfs_lua_swapon_uuid },
   { "sync", guestfs_lua_sync },
+  { "syslinux", guestfs_lua_syslinux },
   { "tail", guestfs_lua_tail },
   { "tail_n", guestfs_lua_tail_n },
   { "tar_in", guestfs_lua_tar_in },

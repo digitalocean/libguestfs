@@ -1234,6 +1234,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_extlinux ##### -->
+<para>
+
+</para>
+
+@session: 
+@directory: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_fallocate ##### -->
 <para>
 
@@ -5301,6 +5312,18 @@ GuestfsSession
 </para>
 
 @session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_syslinux ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@optargs: 
 @err: 
 @Returns: 
 

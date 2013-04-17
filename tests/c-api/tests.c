@@ -158,6 +158,7 @@ no_test_warnings (void)
     "debug_upload",
     "df",
     "df_h",
+    "extlinux",
     "filesystem_available",
     "fill_dir",
     "find0",
@@ -371,6 +372,7 @@ no_test_warnings (void)
     "sh",
     "sh_lines",
     "shutdown",
+    "syslinux",
     "tar_out",
     "tgz_out",
     "txz_out",
@@ -1634,7 +1636,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    optargs.uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     optargs.journaldev = 1;
     optargs.bitmask = UINT64_C(0x100100002);
     int r;
@@ -1646,7 +1648,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda2";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.journaldevice = "UUID=7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    optargs.journaldevice = "UUID=713817b9-3c81-c55e-338d-0923ca4248eb";
     optargs.label = "JOURNAL";
     optargs.fstype = "ext2";
     optargs.forcecreate = 1;
@@ -5498,6 +5500,111 @@ test_copy_file_to_file_0 (void)
 }
 
 static int
+test_copy_file_to_file_1_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "copy_file_to_file") == NULL;
+  str = getenv ("SKIP_TEST_COPY_FILE_TO_FILE_1");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_COPY_FILE_TO_FILE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_copy_file_to_file_1 (void)
+{
+  if (test_copy_file_to_file_1_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_copy_file_to_file_1");
+    return 0;
+  }
+
+  /* InitScratchFS for test_copy_file_to_file_1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *mountable = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    r = guestfs_mount (g, mountable, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for copy_file_to_file (1) */
+  {
+    const char *path = "/copyff2";
+    int r;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/copyff2/src";
+    int r;
+    r = guestfs_fill (g, 0, 1048576, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/copyff2/dest";
+    int r;
+    r = guestfs_touch (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/copyff2/dest";
+    int r;
+    r = guestfs_truncate_size (g, path, 1048576);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *src = "/copyff2/src";
+    const char *dest = "/copyff2/dest";
+    struct guestfs_copy_file_to_file_argv optargs;
+    optargs.sparse = 1;
+    optargs.bitmask = UINT64_C(0x8);
+    int r;
+    r = guestfs_copy_file_to_file_argv (g, src, dest, &optargs);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/copyff2/dest";
+    int r;
+    r = guestfs_is_zero (g, path);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "%s: expected true, got false\n", "test_copy_file_to_file_1");
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int
 test_part_to_partnum_0_skip (void)
 {
   const char *str;
@@ -7750,10 +7857,10 @@ test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+  const char *expected = "713817b9-3c81-c55e-338d-0923ca4248eb";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -12699,7 +12806,7 @@ test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mke2journal_U (g, 4096, uuid, device);
@@ -12709,7 +12816,7 @@ test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     int r;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
     if (r == -1)
@@ -13660,7 +13767,7 @@ test_swapon_uuid_0 (void)
   {
     const char *device = "/dev/sdc";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    optargs.uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -13668,14 +13775,14 @@ test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     int r;
     r = guestfs_swapon_uuid (g, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     int r;
     r = guestfs_swapoff_uuid (g, uuid);
     if (r == -1)
@@ -17512,7 +17619,7 @@ test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mkswap_U (g, uuid, device);
@@ -17774,7 +17881,7 @@ test_mkswap_2 (void)
   {
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    optargs.uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -17845,7 +17952,7 @@ test_mkswap_3 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
     optargs.label = "hello";
-    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    optargs.uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     optargs.bitmask = UINT64_C(0x3);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -22643,7 +22750,7 @@ test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+  const char *expected = "713817b9-3c81-c55e-338d-0923ca4248eb";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -22653,7 +22760,7 @@ test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -22744,10 +22851,10 @@ test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+  const char *expected = "713817b9-3c81-c55e-338d-0923ca4248eb";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
+    const char *uuid = "713817b9-3c81-c55e-338d-0923ca4248eb";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -37421,7 +37528,7 @@ main (int argc, char *argv[])
 {
   const char *filename;
   int fd;
-  const size_t nr_tests = 425;
+  const size_t nr_tests = 426;
   size_t test_num = 0;
   size_t nr_failed = 0;
 
@@ -37867,6 +37974,12 @@ main (int argc, char *argv[])
   next_test (g, test_num, nr_tests, "test_copy_file_to_file_0");
   if (test_copy_file_to_file_0 () == -1) {
     printf ("FAIL: %s\n", "test_copy_file_to_file_0");
+    nr_failed++;
+  }
+  test_num++;
+  next_test (g, test_num, nr_tests, "test_copy_file_to_file_1");
+  if (test_copy_file_to_file_1 () == -1) {
+    printf ("FAIL: %s\n", "test_copy_file_to_file_1");
     nr_failed++;
   }
   test_num++;

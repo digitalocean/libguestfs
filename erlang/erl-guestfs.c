@@ -1804,6 +1804,11 @@ run_copy_device_to_device (ETERM *message)
       optargs_s.size = get_int64 (hd_value);
     }
     else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("copy_device_to_device", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -1846,6 +1851,11 @@ run_copy_device_to_file (ETERM *message)
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       optargs_s.size = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
     }
     else
       return unknown_optarg ("copy_device_to_file", hd_name);
@@ -1892,6 +1902,11 @@ run_copy_file_to_device (ETERM *message)
       optargs_s.size = get_int64 (hd_value);
     }
     else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("copy_file_to_device", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -1934,6 +1949,11 @@ run_copy_file_to_file (ETERM *message)
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       optargs_s.size = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
     }
     else
       return unknown_optarg ("copy_file_to_file", hd_name);
@@ -2360,6 +2380,20 @@ run_exists (ETERM *message)
     return make_error ("exists");
 
   return make_bool (r);
+}
+
+static ETERM *
+run_extlinux (ETERM *message)
+{
+  char *directory = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_extlinux (g, directory);
+  free (directory);
+  if (r == -1)
+    return make_error ("extlinux");
+
+  return erl_mk_atom ("ok");
 }
 
 static ETERM *
@@ -8921,6 +8955,40 @@ run_sync (ETERM *message)
 }
 
 static ETERM *
+run_syslinux (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "directory")) {
+      optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+      optargs_s.directory = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("syslinux", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+  free (device);
+  if ((optargs_s.bitmask & GUESTFS_SYSLINUX_DIRECTORY_BITMASK))
+    free ((char *) optargs_s.directory);
+  if (r == -1)
+    return make_error ("syslinux");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_tail (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
@@ -10416,6 +10484,8 @@ dispatch (ETERM *message)
     return run_equal (message);
   else if (atom_equals (fun, "exists"))
     return run_exists (message);
+  else if (atom_equals (fun, "extlinux"))
+    return run_extlinux (message);
   else if (atom_equals (fun, "fallocate"))
     return run_fallocate (message);
   else if (atom_equals (fun, "fallocate64"))
@@ -11132,6 +11202,8 @@ dispatch (ETERM *message)
     return run_swapon_uuid (message);
   else if (atom_equals (fun, "sync"))
     return run_sync (message);
+  else if (atom_equals (fun, "syslinux"))
+    return run_syslinux (message);
   else if (atom_equals (fun, "tail"))
     return run_tail (message);
   else if (atom_equals (fun, "tail_n"))

@@ -886,6 +886,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_config (guestfs_h *g, const char *qemupara
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET 0
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET 1
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE 2
+#define GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE 3
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -897,6 +898,8 @@ struct guestfs_copy_device_to_device_argv {
   int64_t destoffset;
 # define GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
   int64_t size;
+# define GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK (UINT64_C(1)<<3)
+  int sparse;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_device_to_device_argv *optargs);
@@ -905,6 +908,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_device_argv (guestfs_h *g, 
 #define GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET 0
 #define GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET 1
 #define GUESTFS_COPY_DEVICE_TO_FILE_SIZE 2
+#define GUESTFS_COPY_DEVICE_TO_FILE_SPARSE 3
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -916,6 +920,8 @@ struct guestfs_copy_device_to_file_argv {
   int64_t destoffset;
 # define GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
   int64_t size;
+# define GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK (UINT64_C(1)<<3)
+  int sparse;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_device_to_file_argv *optargs);
@@ -924,6 +930,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_copy_device_to_file_argv (guestfs_h *g, co
 #define GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET 0
 #define GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET 1
 #define GUESTFS_COPY_FILE_TO_DEVICE_SIZE 2
+#define GUESTFS_COPY_FILE_TO_DEVICE_SPARSE 3
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -935,6 +942,8 @@ struct guestfs_copy_file_to_device_argv {
   int64_t destoffset;
 # define GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK (UINT64_C(1)<<2)
   int64_t size;
+# define GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK (UINT64_C(1)<<3)
+  int sparse;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_file_to_device_argv *optargs);
@@ -943,6 +952,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_device_argv (guestfs_h *g, co
 #define GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET 0
 #define GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET 1
 #define GUESTFS_COPY_FILE_TO_FILE_SIZE 2
+#define GUESTFS_COPY_FILE_TO_FILE_SPARSE 3
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_file (guestfs_h *g, const char *src, const char *dest, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_file_va (guestfs_h *g, const char *src, const char *dest, va_list args);
 
@@ -954,6 +964,8 @@ struct guestfs_copy_file_to_file_argv {
   int64_t destoffset;
 # define GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK (UINT64_C(1)<<2)
   int64_t size;
+# define GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK (UINT64_C(1)<<3)
+  int sparse;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_copy_file_to_file_argv (guestfs_h *g, const char *src, const char *dest, const struct guestfs_copy_file_to_file_argv *optargs);
@@ -1042,6 +1054,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_equal (guestfs_h *g, const char *file1, co
 
 #define GUESTFS_HAVE_EXISTS 1
 extern GUESTFS_DLL_PUBLIC int guestfs_exists (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_EXTLINUX 1
+extern GUESTFS_DLL_PUBLIC int guestfs_extlinux (guestfs_h *g, const char *directory);
 
 extern GUESTFS_DLL_PUBLIC int guestfs_fallocate (guestfs_h *g, const char *path, int len)
   GUESTFS_DEPRECATED_BY ("fallocate64");
@@ -2451,6 +2466,19 @@ extern GUESTFS_DLL_PUBLIC int guestfs_swapon_uuid (guestfs_h *g, const char *uui
 #define GUESTFS_HAVE_SYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_sync (guestfs_h *g);
 
+#define GUESTFS_HAVE_SYSLINUX 1
+#define GUESTFS_SYSLINUX_DIRECTORY 0
+extern GUESTFS_DLL_PUBLIC int guestfs_syslinux (guestfs_h *g, const char *device, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_syslinux_va (guestfs_h *g, const char *device, va_list args);
+
+struct guestfs_syslinux_argv {
+  uint64_t bitmask;
+# define GUESTFS_SYSLINUX_DIRECTORY_BITMASK (UINT64_C(1)<<0)
+  const char *directory;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_syslinux_argv (guestfs_h *g, const char *device, const struct guestfs_syslinux_argv *optargs);
+
 #define GUESTFS_HAVE_TAIL 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_tail (guestfs_h *g, const char *path);
 
@@ -3288,6 +3316,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_EGREPI 1
 #define LIBGUESTFS_HAVE_EQUAL 1
 #define LIBGUESTFS_HAVE_EXISTS 1
+#define LIBGUESTFS_HAVE_EXTLINUX 1
 #define LIBGUESTFS_HAVE_FALLOCATE 1
 #define LIBGUESTFS_HAVE_FALLOCATE64 1
 #define LIBGUESTFS_HAVE_FEATURE_AVAILABLE 1
@@ -3619,6 +3648,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SWAPON_LABEL 1
 #define LIBGUESTFS_HAVE_SWAPON_UUID 1
 #define LIBGUESTFS_HAVE_SYNC 1
+#define LIBGUESTFS_HAVE_SYSLINUX 1
 #define LIBGUESTFS_HAVE_TAIL 1
 #define LIBGUESTFS_HAVE_TAIL_N 1
 #define LIBGUESTFS_HAVE_TAR_IN 1

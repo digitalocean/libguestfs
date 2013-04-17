@@ -53,6 +53,7 @@ gobject/include/guestfs-gobject/optargs-rsync.h
 gobject/include/guestfs-gobject/optargs-rsync_in.h
 gobject/include/guestfs-gobject/optargs-rsync_out.h
 gobject/include/guestfs-gobject/optargs-set_e2attrs.h
+gobject/include/guestfs-gobject/optargs-syslinux.h
 gobject/include/guestfs-gobject/optargs-tar_in.h
 gobject/include/guestfs-gobject/optargs-tar_out.h
 gobject/include/guestfs-gobject/optargs-tune2fs.h
@@ -116,6 +117,7 @@ gobject/src/optargs-rsync.c
 gobject/src/optargs-rsync_in.c
 gobject/src/optargs-rsync_out.c
 gobject/src/optargs-set_e2attrs.c
+gobject/src/optargs-syslinux.c
 gobject/src/optargs-tar_in.c
 gobject/src/optargs-tar_out.c
 gobject/src/optargs-tune2fs.c
