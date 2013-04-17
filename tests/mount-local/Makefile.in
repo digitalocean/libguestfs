@@ -215,14 +215,19 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_FUSE_TRUE@am__EXEEXT_1 = test-parallel-mount-local$(EXEEXT)
 am__test_parallel_mount_local_SOURCES_DIST =  \
-	test-parallel-mount-local.c
-@HAVE_FUSE_TRUE@am_test_parallel_mount_local_OBJECTS = test_parallel_mount_local-test-parallel-mount-local.$(OBJEXT)
+	test-parallel-mount-local.c \
+	$(top_srcdir)/df/estimate-max-threads.c \
+	$(top_srcdir)/df/estimate-max-threads.h
+@HAVE_FUSE_TRUE@am_test_parallel_mount_local_OBJECTS = test_parallel_mount_local-test-parallel-mount-local.$(OBJEXT) \
+@HAVE_FUSE_TRUE@	test_parallel_mount_local-estimate-max-threads.$(OBJEXT)
 test_parallel_mount_local_OBJECTS =  \
 	$(am_test_parallel_mount_local_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_FUSE_TRUE@test_parallel_mount_local_DEPENDENCIES =  \
 @HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -1329,11 +1334,16 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
-@HAVE_FUSE_TRUE@test_parallel_mount_local_SOURCES = test-parallel-mount-local.c
+@HAVE_FUSE_TRUE@test_parallel_mount_local_SOURCES = \
+@HAVE_FUSE_TRUE@	test-parallel-mount-local.c \
+@HAVE_FUSE_TRUE@	$(top_srcdir)/df/estimate-max-threads.c \
+@HAVE_FUSE_TRUE@	$(top_srcdir)/df/estimate-max-threads.h
+
 @HAVE_FUSE_TRUE@test_parallel_mount_local_CPPFLAGS = \
 @HAVE_FUSE_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
 @HAVE_FUSE_TRUE@	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/df
 
 @HAVE_FUSE_TRUE@test_parallel_mount_local_CFLAGS = \
 @HAVE_FUSE_TRUE@	-pthread \
@@ -1343,7 +1353,10 @@ top_srcdir = @top_srcdir@
 
 @HAVE_FUSE_TRUE@test_parallel_mount_local_LDADD = \
 @HAVE_FUSE_TRUE@	$(FUSE_LIBS) \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
 @HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
 @HAVE_FUSE_TRUE@	$(top_builddir)/gnulib/lib/libgnu.la
 
 all: all-am
@@ -1400,6 +1413,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_parallel_mount_local-test-parallel-mount-local.Po@am__quote@
 
 .c.o:
@@ -1436,6 +1450,20 @@ test_parallel_mount_local-test-parallel-mount-local.obj: test-parallel-mount-loc
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-parallel-mount-local.c' object='test_parallel_mount_local-test-parallel-mount-local.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -c -o test_parallel_mount_local-test-parallel-mount-local.obj `if test -f 'test-parallel-mount-local.c'; then $(CYGPATH_W) 'test-parallel-mount-local.c'; else $(CYGPATH_W) '$(srcdir)/test-parallel-mount-local.c'; fi`
+
+test_parallel_mount_local-estimate-max-threads.o: $(top_srcdir)/df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -MT test_parallel_mount_local-estimate-max-threads.o -MD -MP -MF $(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo -c -o test_parallel_mount_local-estimate-max-threads.o `test -f '$(top_srcdir)/df/estimate-max-threads.c' || echo '$(srcdir)/'`$(top_srcdir)/df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo $(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/df/estimate-max-threads.c' object='test_parallel_mount_local-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -c -o test_parallel_mount_local-estimate-max-threads.o `test -f '$(top_srcdir)/df/estimate-max-threads.c' || echo '$(srcdir)/'`$(top_srcdir)/df/estimate-max-threads.c
+
+test_parallel_mount_local-estimate-max-threads.obj: $(top_srcdir)/df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -MT test_parallel_mount_local-estimate-max-threads.obj -MD -MP -MF $(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo -c -o test_parallel_mount_local-estimate-max-threads.obj `if test -f '$(top_srcdir)/df/estimate-max-threads.c'; then $(CYGPATH_W) '$(top_srcdir)/df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/df/estimate-max-threads.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Tpo $(DEPDIR)/test_parallel_mount_local-estimate-max-threads.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/df/estimate-max-threads.c' object='test_parallel_mount_local-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_parallel_mount_local_CPPFLAGS) $(CPPFLAGS) $(test_parallel_mount_local_CFLAGS) $(CFLAGS) -c -o test_parallel_mount_local-estimate-max-threads.obj `if test -f '$(top_srcdir)/df/estimate-max-threads.c'; then $(CYGPATH_W) '$(top_srcdir)/df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/df/estimate-max-threads.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

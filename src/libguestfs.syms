@@ -21,6 +21,7 @@
 
 {
     global:
+        guestfs___add_libvirt_dom;
         guestfs___safe_calloc;
         guestfs___safe_malloc;
         guestfs___safe_memdup;

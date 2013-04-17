@@ -88,7 +88,8 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/subdir-rules.mk
 bin_PROGRAMS = virt-alignment-scan$(EXEEXT)
 @ENABLE_APPLIANCE_TRUE@am__append_1 = \
-@ENABLE_APPLIANCE_TRUE@	test-virt-alignment-scan.sh
+@ENABLE_APPLIANCE_TRUE@	test-virt-alignment-scan.sh \
+@ENABLE_APPLIANCE_TRUE@	test-virt-alignment-scan-guests.sh
 
 subdir = align
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -219,13 +220,15 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = virt_alignment_scan-config.$(OBJEXT) \
+am__objects_1 = virt_alignment_scan-domains.$(OBJEXT) \
+	virt_alignment_scan-estimate-max-threads.$(OBJEXT) \
+	virt_alignment_scan-parallel.$(OBJEXT) \
+	virt_alignment_scan-config.$(OBJEXT) \
 	virt_alignment_scan-domain.$(OBJEXT) \
 	virt_alignment_scan-inspect.$(OBJEXT) \
 	virt_alignment_scan-keys.$(OBJEXT) \
 	virt_alignment_scan-options.$(OBJEXT)
 am_virt_alignment_scan_OBJECTS = $(am__objects_1) \
-	virt_alignment_scan-domains.$(OBJEXT) \
 	virt_alignment_scan-scan.$(OBJEXT)
 virt_alignment_scan_OBJECTS = $(am_virt_alignment_scan_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -1370,10 +1373,17 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	test-virt-alignment-scan.sh \
+	test-virt-alignment-scan-guests.sh \
 	virt-alignment-scan.pod
 
 CLEANFILES = stamp-virt-alignment-scan.pod
 SHARED_SOURCE_FILES = \
+	../df/domains.c \
+	../df/domains.h \
+	../df/estimate-max-threads.c \
+	../df/estimate-max-threads.h \
+	../df/parallel.c \
+	../df/parallel.h \
 	../fish/config.c \
 	../fish/domain.c \
 	../fish/inspect.c \
@@ -1383,19 +1393,19 @@ SHARED_SOURCE_FILES = \
 
 virt_alignment_scan_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
-	domains.c \
-	scan.c \
-	scan.h
+	scan.c
 
 virt_alignment_scan_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-DGUESTFS_PRIVATE=1 \
 	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/df \
 	-I$(top_srcdir)/fish \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib \
 	-DLOCALEBASEDIR=\""$(datadir)/locale"\"
 
 virt_alignment_scan_CFLAGS = \
+	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
@@ -1512,9 +1522,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-domain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-domains.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-parallel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virt_alignment_scan-scan.Po@am__quote@
 
 .c.o:
@@ -1537,6 +1549,48 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+virt_alignment_scan-domains.o: ../df/domains.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-domains.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-domains.Tpo -c -o virt_alignment_scan-domains.o `test -f '../df/domains.c' || echo '$(srcdir)/'`../df/domains.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-domains.Tpo $(DEPDIR)/virt_alignment_scan-domains.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/domains.c' object='virt_alignment_scan-domains.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-domains.o `test -f '../df/domains.c' || echo '$(srcdir)/'`../df/domains.c
+
+virt_alignment_scan-domains.obj: ../df/domains.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-domains.obj -MD -MP -MF $(DEPDIR)/virt_alignment_scan-domains.Tpo -c -o virt_alignment_scan-domains.obj `if test -f '../df/domains.c'; then $(CYGPATH_W) '../df/domains.c'; else $(CYGPATH_W) '$(srcdir)/../df/domains.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-domains.Tpo $(DEPDIR)/virt_alignment_scan-domains.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/domains.c' object='virt_alignment_scan-domains.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-domains.obj `if test -f '../df/domains.c'; then $(CYGPATH_W) '../df/domains.c'; else $(CYGPATH_W) '$(srcdir)/../df/domains.c'; fi`
+
+virt_alignment_scan-estimate-max-threads.o: ../df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-estimate-max-threads.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo -c -o virt_alignment_scan-estimate-max-threads.o `test -f '../df/estimate-max-threads.c' || echo '$(srcdir)/'`../df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo $(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/estimate-max-threads.c' object='virt_alignment_scan-estimate-max-threads.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-estimate-max-threads.o `test -f '../df/estimate-max-threads.c' || echo '$(srcdir)/'`../df/estimate-max-threads.c
+
+virt_alignment_scan-estimate-max-threads.obj: ../df/estimate-max-threads.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-estimate-max-threads.obj -MD -MP -MF $(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo -c -o virt_alignment_scan-estimate-max-threads.obj `if test -f '../df/estimate-max-threads.c'; then $(CYGPATH_W) '../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../df/estimate-max-threads.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-estimate-max-threads.Tpo $(DEPDIR)/virt_alignment_scan-estimate-max-threads.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/estimate-max-threads.c' object='virt_alignment_scan-estimate-max-threads.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-estimate-max-threads.obj `if test -f '../df/estimate-max-threads.c'; then $(CYGPATH_W) '../df/estimate-max-threads.c'; else $(CYGPATH_W) '$(srcdir)/../df/estimate-max-threads.c'; fi`
+
+virt_alignment_scan-parallel.o: ../df/parallel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-parallel.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-parallel.Tpo -c -o virt_alignment_scan-parallel.o `test -f '../df/parallel.c' || echo '$(srcdir)/'`../df/parallel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-parallel.Tpo $(DEPDIR)/virt_alignment_scan-parallel.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/parallel.c' object='virt_alignment_scan-parallel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-parallel.o `test -f '../df/parallel.c' || echo '$(srcdir)/'`../df/parallel.c
+
+virt_alignment_scan-parallel.obj: ../df/parallel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-parallel.obj -MD -MP -MF $(DEPDIR)/virt_alignment_scan-parallel.Tpo -c -o virt_alignment_scan-parallel.obj `if test -f '../df/parallel.c'; then $(CYGPATH_W) '../df/parallel.c'; else $(CYGPATH_W) '$(srcdir)/../df/parallel.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-parallel.Tpo $(DEPDIR)/virt_alignment_scan-parallel.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../df/parallel.c' object='virt_alignment_scan-parallel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-parallel.obj `if test -f '../df/parallel.c'; then $(CYGPATH_W) '../df/parallel.c'; else $(CYGPATH_W) '$(srcdir)/../df/parallel.c'; fi`
 
 virt_alignment_scan-config.o: ../fish/config.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-config.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-config.Tpo -c -o virt_alignment_scan-config.o `test -f '../fish/config.c' || echo '$(srcdir)/'`../fish/config.c
@@ -1607,20 +1661,6 @@ virt_alignment_scan-options.obj: ../fish/options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../fish/options.c' object='virt_alignment_scan-options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-options.obj `if test -f '../fish/options.c'; then $(CYGPATH_W) '../fish/options.c'; else $(CYGPATH_W) '$(srcdir)/../fish/options.c'; fi`
-
-virt_alignment_scan-domains.o: domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-domains.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-domains.Tpo -c -o virt_alignment_scan-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-domains.Tpo $(DEPDIR)/virt_alignment_scan-domains.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domains.c' object='virt_alignment_scan-domains.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-domains.o `test -f 'domains.c' || echo '$(srcdir)/'`domains.c
-
-virt_alignment_scan-domains.obj: domains.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-domains.obj -MD -MP -MF $(DEPDIR)/virt_alignment_scan-domains.Tpo -c -o virt_alignment_scan-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/virt_alignment_scan-domains.Tpo $(DEPDIR)/virt_alignment_scan-domains.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='domains.c' object='virt_alignment_scan-domains.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -c -o virt_alignment_scan-domains.obj `if test -f 'domains.c'; then $(CYGPATH_W) 'domains.c'; else $(CYGPATH_W) '$(srcdir)/domains.c'; fi`
 
 virt_alignment_scan-scan.o: scan.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(virt_alignment_scan_CPPFLAGS) $(CPPFLAGS) $(virt_alignment_scan_CFLAGS) $(CFLAGS) -MT virt_alignment_scan-scan.o -MD -MP -MF $(DEPDIR)/virt_alignment_scan-scan.Tpo -c -o virt_alignment_scan-scan.o `test -f 'scan.c' || echo '$(srcdir)/'`scan.c

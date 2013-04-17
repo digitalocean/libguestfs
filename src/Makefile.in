@@ -284,10 +284,11 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-dbdump.lo libguestfs_la-errors.lo \
 	libguestfs_la-event-string.lo libguestfs_la-events.lo \
 	libguestfs_la-file.lo libguestfs_la-filearch.lo \
-	libguestfs_la-free-structs.lo libguestfs_la-fuse.lo \
-	libguestfs_la-handle.lo libguestfs_la-info.lo \
-	libguestfs_la-inspect.lo libguestfs_la-inspect-apps.lo \
-	libguestfs_la-inspect-fs.lo libguestfs_la-inspect-fs-cd.lo \
+	libguestfs_la-for-each-disk.lo libguestfs_la-free-structs.lo \
+	libguestfs_la-fuse.lo libguestfs_la-handle.lo \
+	libguestfs_la-info.lo libguestfs_la-inspect.lo \
+	libguestfs_la-inspect-apps.lo libguestfs_la-inspect-fs.lo \
+	libguestfs_la-inspect-fs-cd.lo \
 	libguestfs_la-inspect-fs-unix.lo \
 	libguestfs_la-inspect-fs-windows.lo \
 	libguestfs_la-inspect-icon.lo libguestfs_la-launch.lo \
@@ -311,8 +312,7 @@ libprotocol_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$@
 libutils_la_LIBADD =
 am_libutils_la_OBJECTS = libutils_la-cleanup.lo \
-	libutils_la-cleanup-structs.lo libutils_la-for-each-disk.lo \
-	libutils_la-utils.lo
+	libutils_la-cleanup-structs.lo libutils_la-utils.lo
 libutils_la_OBJECTS = $(am_libutils_la_OBJECTS)
 libutils_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libutils_la_CFLAGS) \
@@ -1487,6 +1487,7 @@ libguestfs_la_SOURCES = \
 	events.c \
 	file.c \
 	filearch.c \
+	for-each-disk.c \
 	free-structs.c \
 	fuse.c \
 	handle.c \
@@ -1561,7 +1562,6 @@ libprotocol_la_CFLAGS = \
 libutils_la_SOURCES = \
 	cleanup.c \
 	cleanup-structs.c \
-	for-each-disk.c \
 	utils.c
 
 libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
@@ -1694,6 +1694,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-events.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-filearch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-for-each-disk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-free-structs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-fuse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-handle.Plo@am__quote@
@@ -1721,7 +1722,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libprotocol_la-guestfs_protocol.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup-structs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-cleanup.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-for-each-disk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libutils_la-utils.Plo@am__quote@
 
 .c.o:
@@ -1898,6 +1898,13 @@ libguestfs_la-filearch.lo: filearch.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='filearch.c' object='libguestfs_la-filearch.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-filearch.lo `test -f 'filearch.c' || echo '$(srcdir)/'`filearch.c
+
+libguestfs_la-for-each-disk.lo: for-each-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-for-each-disk.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-for-each-disk.Tpo -c -o libguestfs_la-for-each-disk.lo `test -f 'for-each-disk.c' || echo '$(srcdir)/'`for-each-disk.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-for-each-disk.Tpo $(DEPDIR)/libguestfs_la-for-each-disk.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='for-each-disk.c' object='libguestfs_la-for-each-disk.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-for-each-disk.lo `test -f 'for-each-disk.c' || echo '$(srcdir)/'`for-each-disk.c
 
 libguestfs_la-free-structs.lo: free-structs.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-free-structs.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-free-structs.Tpo -c -o libguestfs_la-free-structs.lo `test -f 'free-structs.c' || echo '$(srcdir)/'`free-structs.c
@@ -2087,13 +2094,6 @@ libutils_la-cleanup-structs.lo: cleanup-structs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cleanup-structs.c' object='libutils_la-cleanup-structs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-cleanup-structs.lo `test -f 'cleanup-structs.c' || echo '$(srcdir)/'`cleanup-structs.c
-
-libutils_la-for-each-disk.lo: for-each-disk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-for-each-disk.lo -MD -MP -MF $(DEPDIR)/libutils_la-for-each-disk.Tpo -c -o libutils_la-for-each-disk.lo `test -f 'for-each-disk.c' || echo '$(srcdir)/'`for-each-disk.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libutils_la-for-each-disk.Tpo $(DEPDIR)/libutils_la-for-each-disk.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='for-each-disk.c' object='libutils_la-for-each-disk.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -c -o libutils_la-for-each-disk.lo `test -f 'for-each-disk.c' || echo '$(srcdir)/'`for-each-disk.c
 
 libutils_la-utils.lo: utils.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libutils_la_CPPFLAGS) $(CPPFLAGS) $(libutils_la_CFLAGS) $(CFLAGS) -MT libutils_la-utils.lo -MD -MP -MF $(DEPDIR)/libutils_la-utils.Tpo -c -o libutils_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c

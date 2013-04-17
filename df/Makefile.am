@@ -20,6 +20,7 @@ include $(top_srcdir)/subdir-rules.mk
 EXTRA_DIST = \
 	README \
 	test-virt-df.sh \
+	test-virt-df-guests.sh \
 	virt-df.pod
 
 CLEANFILES = stamp-virt-df.pod
@@ -38,9 +39,14 @@ virt_df_SOURCES = \
 	$(SHARED_SOURCE_FILES) \
 	virt-df.h \
 	domains.c \
+	domains.h \
 	df.c \
+	estimate-max-threads.c \
+	estimate-max-threads.h \
 	main.c \
-	output.c
+	output.c \
+	parallel.c \
+	parallel.h
 
 virt_df_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
@@ -51,6 +57,7 @@ virt_df_CPPFLAGS = \
 	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
 virt_df_CFLAGS = \
+	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
@@ -83,8 +90,12 @@ stamp-virt-df.pod: virt-df.pod
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 
+TESTS =
+
 if ENABLE_APPLIANCE
-TESTS = test-virt-df.sh
+TESTS += \
+	test-virt-df.sh \
+	test-virt-df-guests.sh
 endif ENABLE_APPLIANCE
 
 check-valgrind:

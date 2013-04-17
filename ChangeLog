@@ -1,3 +1,81 @@
+2013-02-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.15.
+
+	lib: Fix memory leak in guestfs_list_filesystems.
+	This fixes commit 6e7f052ef40fc799605f13e21e1dc4928d274f41.
+
+	tests: Add tests of guests to virt-df and virt-alignment-scan.
+
+2013-02-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: guests: Add blank disks plus libvirt test:// XML.
+	You can now run virt-df and virt-alignment-scan on all of the test
+	guests by doing:
+
+	./run ./df/virt-df -c test:///path/to/tests/guests/guests.xml
+	./run ./align/virt-alignment-scan -c test:///path/to/tests/guests/guests.xml
+
+	which is kinda cool.
+
+2013-02-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Turn guestfs___for_each_disk back into an internal library function.
+	Since the refactoring of virt-df and virt-alignment-scan, those
+	tools no longer use this function.
+
+	Partial rewrite of virt-alignment-scan to use parallel threads.
+	See previous commit (virt-df equivalent change) for the rationale.
+
+2013-02-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Partial rewrite of virt-df to use parallel threads instead of single appliance.
+	Previously when you asked virt-df to show stats for all your libvirt
+	guests, it used a single appliance and tried to attach as many disks
+	as possible to it, even disks from different guests.
+
+	However this has been problematic: Not only is the code to do this
+	horrendously complex, but it's also insecure, and it doesn't interact
+	well with sVirt labels (see RHBZ#912499 comment 7).
+
+	In the meantime we discovered that running parallel appliances gives
+	you most of the performance of using a single appliance, but with a
+	lot less complexity and better guest isolation (see the documentation
+	in commit 680450f3b4f8c2da7a0b1d8f0bd8c2232efc4054).
+
+	Therefore this is a partial rewrite of virt-df so that in this case it
+	now uses parallel appliances.
+
+	Notes:
+
+	The '--one-per-guest' option is now the default and only way to do
+	things; this option now does nothing.
+
+	By default, the amount of parallelism to use is controlled by the
+	amount of free memory seen when virt-df starts up (subject to some
+	minima and maxima).  The user can control this through new command
+	line option '-P'.
+
+2013-02-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Export guestfs___add_libvirt_dom for use by virt-df and virt-alignment-scan.
+	See the comment in guestfs-internal-frontend.h in this commit.
+
+	tools: Introduce a mini-library for estimating max threads based on free memory.
+	This mini-library runs the 'free -m' command and greps the output to
+	estimate the max. number of libguestfs appliances we could run in
+	parallel in the remaining free memory.
+
+	df: Always have TESTS= line even if appliance is disabled.
+
+	virt-alignment-scan: Set LANG=C in test.
+
+	lib: Add a global MIN macro to guestfs-internal-all.h.
+
+2013-02-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.14.
+
 2013-02-25  Hilko Bengen  <bengen@hilluzination.de>
 
 	out-of-tree build: fix test-tool

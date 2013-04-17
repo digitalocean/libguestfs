@@ -94,8 +94,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/build-aux/ltmain.sh \
 	$(top_srcdir)/build-aux/missing $(top_srcdir)/configure \
 	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
-	$(top_srcdir)/subdir-rules.mk AUTHORS COPYING COPYING.LIB TODO \
-	build-aux/compile build-aux/config.guess \
+	$(top_srcdir)/subdir-rules.mk AUTHORS COPYING COPYING.LIB \
+	ChangeLog TODO build-aux/compile build-aux/config.guess \
 	build-aux/config.rpath build-aux/config.sub build-aux/depcomp \
 	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
 @ENABLE_DAEMON_TRUE@am__append_1 = daemon
