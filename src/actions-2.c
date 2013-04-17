@@ -574,6 +574,40 @@ guestfs_inspect_get_windows_systemroot (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC char *
+guestfs_get_backend (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char *r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "get_backend", 11);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_backend");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__get_backend (g);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_backend");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "get_backend", "NULL");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC char *
 guestfs_inspect_get_windows_current_control_set (guestfs_h *g,
                                                  const char *root)
 {

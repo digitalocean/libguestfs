@@ -7784,6 +7784,27 @@ xdr_guestfs_internal_rhbz914931_args (XDR *xdrs, guestfs_internal_rhbz914931_arg
 }
 
 bool_t
+xdr_guestfs_feature_available_args (XDR *xdrs, guestfs_feature_available_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->groups.groups_val, (u_int *) &objp->groups.groups_len, ~0,
+		sizeof (guestfs_str), (xdrproc_t) xdr_guestfs_str))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_feature_available_ret (XDR *xdrs, guestfs_feature_available_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->isavailable))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

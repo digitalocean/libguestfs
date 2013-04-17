@@ -417,6 +417,9 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionEven
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">gint64</span> len</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()">guestfs_session_feature_available</a>   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *groups</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> **            <a class="link" href="GuestfsSession.html#guestfs-session-fgrep" title="guestfs_session_fgrep ()">guestfs_session_fgrep</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *pattern</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
@@ -479,6 +482,8 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-attach-method" title="guestfs_session_get_attach_method ()">guestfs_session_get_attach_method</a>   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-get-autosync" title="guestfs_session_get_autosync ()">guestfs_session_get_autosync</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-backend" title="guestfs_session_get_backend ()">guestfs_session_get_backend</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-cachedir" title="guestfs_session_get_cachedir ()">guestfs_session_get_cachedir</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -1504,10 +1509,13 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *append</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-attach-method" title="guestfs_session_set_attach_method ()">guestfs_session_set_attach_method</a>   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *attachmethod</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-autosync" title="guestfs_session_set_autosync ()">guestfs_session_set_autosync</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> autosync</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title="guestfs_session_set_backend ()">guestfs_session_set_backend</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-cachedir" title="guestfs_session_set_cachedir ()">guestfs_session_set_cachedir</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *cachedir</code></em>,
@@ -3482,6 +3490,11 @@ is always returned.
 *Notes:*
 </p>
 <p>
+*   <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a> is the same as this call, but
+with a slightly simpler to use API: that call returns a boolean
+true/false instead of throwing an error.
+</p>
+<p>
 *   You must call <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a> before calling this function.
 </p>
 <p>
@@ -3548,10 +3561,12 @@ return a list of all optional groups
 This command returns a list of all optional groups that this daemon
 knows about. Note this returns both supported and unsupported groups. To
 find out which ones the daemon can actually support you have to call
-<a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> on each member of the returned list.
+<a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> / <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a> on
+each member of the returned list.
 </p>
 <p>
-See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> and "AVAILABILITY" in guestfs(3).
+See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>,
+<a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a> and "AVAILABILITY" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -7219,6 +7234,48 @@ commands which create a file in the host and attach it as a device.
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-feature-available"></a><h3>guestfs_session_feature_available ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint8</span>               guestfs_session_feature_available   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *groups</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+test availability of some parts of the API
+</p>
+<p>
+This is the same as <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>, but unlike that call it
+returns a simple true/false boolean result, instead of throwing an
+exception if a feature is not found. For other documentation see
+<a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>groups</code></em> :</span></p></td>
+<td>an array of strings. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-fgrep"></a><h3>guestfs_session_fgrep ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> **            guestfs_session_fgrep               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *pattern</code></em>,
@@ -7563,7 +7620,8 @@ filesystems can fail for other reasons such as it being a later version
 of the filesystem, or having incompatible features.
 </p>
 <p>
-See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>, "AVAILABILITY" in guestfs(3).
+See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>,
+<a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>, "AVAILABILITY" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -8157,14 +8215,13 @@ If <em class="parameter"><code>NULL</code></em> then no options are added.
 <pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_get_attach_method   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-get the attach method
+get the backend
 </p>
 <p>
-Return the current attach method.
+Return the current backend.
 </p>
 <p>
-See <a class="link" href="GuestfsSession.html#guestfs-session-set-attach-method" title="guestfs_session_set_attach_method ()"><code class="function">guestfs_session_set_attach_method()</code></a> and "ATTACH METHOD" in
-guestfs(3).
+See <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title="guestfs_session_set_backend ()"><code class="function">guestfs_session_set_backend()</code></a> and "BACKEND" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -8218,6 +8275,46 @@ Get the autosync flag.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-get-backend"></a><h3>guestfs_session_get_backend ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_get_backend         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get the backend
+</p>
+<p>
+Return the current backend.
+</p>
+<p>
+This handle property was previously called the "attach method".
+</p>
+<p>
+See <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title="guestfs_session_set_backend ()"><code class="function">guestfs_session_set_backend()</code></a> and "BACKEND" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -21955,10 +22052,10 @@ If you didn't use a label, then they cannot be removed.
 </p>
 <p>
 You can call this function before or after launching the handle. If
-called after launch, if the attach-method supports it, we try to hot
-unplug the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be
-in use (eg. mounted) when you do this. We try to detect if the disk is
-in use and stop you from doing this.
+called after launch, if the backend supports it, we try to hot unplug
+the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be in use
+(eg. mounted) when you do this. We try to detect if the disk is in use
+and stop you from doing this.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -22831,17 +22928,17 @@ Setting <em class="parameter"><code>append</code></em> to <em class="parameter">
 <div class="refsect2">
 <a name="guestfs-session-set-attach-method"></a><h3>guestfs_session_set_attach_method ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_attach_method   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *attachmethod</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-set the attach method
+set the backend
 </p>
 <p>
-Set the method that libguestfs uses to connect to the back end guestfsd
+Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 </p>
 <p>
-See "ATTACH METHOD" in guestfs(3).
+See "BACKEND" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -22855,7 +22952,7 @@ See "ATTACH METHOD" in guestfs(3).
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>attachmethod</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>backend</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> utf8]</span>
 </td>
 </tr>
@@ -22902,6 +22999,52 @@ disabled by default).
 <tr>
 <td><p><span class="term"><em class="parameter"><code>autosync</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> gboolean]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-set-backend"></a><h3>guestfs_session_set_backend ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_backend         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set the backend
+</p>
+<p>
+Set the method that libguestfs uses to connect to the backend guestfsd
+daemon.
+</p>
+<p>
+This handle property was previously called the "attach method".
+</p>
+<p>
+See "BACKEND" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>backend</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> utf8]</span>
 </td>
 </tr>
 <tr>
@@ -26440,7 +26583,8 @@ See also: "LIBGUESTFS VERSION NUMBERS" in guestfs(3).
 *Note:* Don't use this call to test for availability of features. In
 enterprise distributions we backport features from later versions into
 earlier versions, making this an unreliable way to test for features.
-Use <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> instead.
+Use <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> or <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>
+instead.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>

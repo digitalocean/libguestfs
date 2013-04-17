@@ -139,6 +139,7 @@ extern struct command_entry event_cmd_entry;
 extern struct command_entry exists_cmd_entry;
 extern struct command_entry fallocate_cmd_entry;
 extern struct command_entry fallocate64_cmd_entry;
+extern struct command_entry feature_available_cmd_entry;
 extern struct command_entry fgrep_cmd_entry;
 extern struct command_entry fgrepi_cmd_entry;
 extern struct command_entry file_cmd_entry;
@@ -157,6 +158,7 @@ extern struct command_entry fstrim_cmd_entry;
 extern struct command_entry get_append_cmd_entry;
 extern struct command_entry get_attach_method_cmd_entry;
 extern struct command_entry get_autosync_cmd_entry;
+extern struct command_entry get_backend_cmd_entry;
 extern struct command_entry get_cachedir_cmd_entry;
 extern struct command_entry get_direct_cmd_entry;
 extern struct command_entry get_e2attrs_cmd_entry;
@@ -423,6 +425,7 @@ extern struct command_entry scrub_freespace_cmd_entry;
 extern struct command_entry set_append_cmd_entry;
 extern struct command_entry set_attach_method_cmd_entry;
 extern struct command_entry set_autosync_cmd_entry;
+extern struct command_entry set_backend_cmd_entry;
 extern struct command_entry set_cachedir_cmd_entry;
 extern struct command_entry set_direct_cmd_entry;
 extern struct command_entry set_e2attrs_cmd_entry;
@@ -728,6 +731,8 @@ event, &event_cmd_entry
 exists, &exists_cmd_entry
 fallocate, &fallocate_cmd_entry
 fallocate64, &fallocate64_cmd_entry
+feature_available, &feature_available_cmd_entry
+feature-available, &feature_available_cmd_entry
 fgrep, &fgrep_cmd_entry
 fgrepi, &fgrepi_cmd_entry
 file, &file_cmd_entry
@@ -755,6 +760,8 @@ get_attach_method, &get_attach_method_cmd_entry
 get-attach-method, &get_attach_method_cmd_entry
 get_autosync, &get_autosync_cmd_entry
 get-autosync, &get_autosync_cmd_entry
+get_backend, &get_backend_cmd_entry
+get-backend, &get_backend_cmd_entry
 get_cachedir, &get_cachedir_cmd_entry
 get-cachedir, &get_cachedir_cmd_entry
 get_direct, &get_direct_cmd_entry
@@ -1229,6 +1236,9 @@ attach-method, &set_attach_method_cmd_entry
 set_autosync, &set_autosync_cmd_entry
 set-autosync, &set_autosync_cmd_entry
 autosync, &set_autosync_cmd_entry
+set_backend, &set_backend_cmd_entry
+set-backend, &set_backend_cmd_entry
+backend, &set_backend_cmd_entry
 set_cachedir, &set_cachedir_cmd_entry
 set-cachedir, &set_cachedir_cmd_entry
 cachedir, &set_cachedir_cmd_entry

@@ -1738,6 +1738,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_feature_available (IntPtr h, [In] string[] groups);
+
+    /// <summary>
+    /// test availability of some parts of the API
+    /// </summary>
+    public bool feature_available (string[] groups)
+    {
+      int r;
+      r = guestfs_feature_available (_handle, groups);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string[] guestfs_fgrep (IntPtr h, [In] string pattern, [In] string path);
 
     /// <summary>
@@ -1976,7 +1991,7 @@ namespace Guestfs
     static extern string guestfs_get_attach_method (IntPtr h);
 
     /// <summary>
-    /// get the attach method
+    /// get the backend
     /// </summary>
     public string get_attach_method ()
     {
@@ -2000,6 +2015,21 @@ namespace Guestfs
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_backend (IntPtr h);
+
+    /// <summary>
+    /// get the backend
+    /// </summary>
+    public string get_backend ()
+    {
+      string r;
+      r = guestfs_get_backend (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -6250,15 +6280,15 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_set_attach_method (IntPtr h, [In] string attachmethod);
+    static extern int guestfs_set_attach_method (IntPtr h, [In] string backend);
 
     /// <summary>
-    /// set the attach method
+    /// set the backend
     /// </summary>
-    public void set_attach_method (string attachmethod)
+    public void set_attach_method (string backend)
     {
       int r;
-      r = guestfs_set_attach_method (_handle, attachmethod);
+      r = guestfs_set_attach_method (_handle, backend);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -6273,6 +6303,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_autosync (_handle, autosync);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_backend (IntPtr h, [In] string backend);
+
+    /// <summary>
+    /// set the backend
+    /// </summary>
+    public void set_backend (string backend)
+    {
+      int r;
+      r = guestfs_set_backend (_handle, backend);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

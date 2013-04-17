@@ -2544,17 +2544,17 @@ Java_com_redhat_et_libguestfs_GuestFS__1inspect_1is_1multipart  (JNIEnv *env, jo
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1attach_1method  (JNIEnv *env, jobject obj, jlong jg, jstring jattachmethod)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1attach_1method  (JNIEnv *env, jobject obj, jlong jg, jstring jbackend)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
-  const char *attachmethod;
+  const char *backend;
 
-  attachmethod = (*env)->GetStringUTFChars (env, jattachmethod, NULL);
+  backend = (*env)->GetStringUTFChars (env, jbackend, NULL);
 
-  r = guestfs_set_attach_method (g, attachmethod);
+  r = guestfs_set_attach_method (g, backend);
 
-  (*env)->ReleaseStringUTFChars (env, jattachmethod, attachmethod);
+  (*env)->ReleaseStringUTFChars (env, jbackend, backend);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -2571,6 +2571,45 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1attach_1method  (JNIEnv *env, jobje
 
 
   r = guestfs_get_attach_method (g);
+
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  jr = (*env)->NewStringUTF (env, r);
+  free (r);
+  return jr;
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1set_1backend  (JNIEnv *env, jobject obj, jlong jg, jstring jbackend)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *backend;
+
+  backend = (*env)->GetStringUTFChars (env, jbackend, NULL);
+
+  r = guestfs_set_backend (g, backend);
+
+  (*env)->ReleaseStringUTFChars (env, jbackend, backend);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1get_1backend  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  jstring jr;
+  char *r;
+
+
+  r = guestfs_get_backend (g);
 
 
   if (r == NULL) {
@@ -13452,6 +13491,38 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1whole_1device  (JNIEnv *env, jobject
   r = guestfs_is_whole_device (g, device);
 
   (*env)->ReleaseStringUTFChars (env, jdevice, device);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return -1;
+  }
+  return (jboolean) r;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1feature_1available  (JNIEnv *env, jobject obj, jlong jg, jobjectArray jgroups)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  size_t groups_len;
+  char **groups;
+  size_t i;
+
+  groups_len = (*env)->GetArrayLength (env, jgroups);
+  groups = guestfs___safe_malloc (g, sizeof (char *) * (groups_len+1));
+  for (i = 0; i < groups_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jgroups, i);
+    groups[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
+  }
+  groups[groups_len] = NULL;
+
+  r = guestfs_feature_available (g, groups);
+
+  for (i = 0; i < groups_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jgroups, i);
+    (*env)->ReleaseStringUTFChars (env, o, groups[i]);
+  }
+  free (groups);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

@@ -150,6 +150,7 @@
         guestfs_exists;
         guestfs_fallocate;
         guestfs_fallocate64;
+        guestfs_feature_available;
         guestfs_fgrep;
         guestfs_fgrepi;
         guestfs_file;
@@ -213,6 +214,7 @@
         guestfs_get_append;
         guestfs_get_attach_method;
         guestfs_get_autosync;
+        guestfs_get_backend;
         guestfs_get_cachedir;
         guestfs_get_direct;
         guestfs_get_e2attrs;
@@ -568,6 +570,7 @@
         guestfs_set_append;
         guestfs_set_attach_method;
         guestfs_set_autosync;
+        guestfs_set_backend;
         guestfs_set_cachedir;
         guestfs_set_close_callback;
         guestfs_set_direct;

@@ -695,10 +695,6 @@ LVs, what filesystem is in each LV, etc.).  It can also run commands
 in the context of the guest.  Also you can access filesystems over
 FUSE.
 
-See also L<Sys::Guestfs::Lib(3)> for a set of useful library
-functions for using libguestfs from Perl, including integration
-with libvirt.
-
 =head1 ERRORS
 
 All errors turn into calls to C<croak> (see L<Carp(3)>).
@@ -1037,15 +1033,10 @@ containing useful introspection information about the method
   }
 
 To test if particular features are supported by the current
-build, use the L</available> method like the example below.  Note
+build, use the L</feature_available> method like the example below.  Note
 that the appliance must be launched first.
 
- $g->available ( [\"augeas\"] );
-
-Since the L</available> method croaks if the feature is not supported,
-you might also want to wrap this in an eval and return a boolean.
-In fact this has already been done for you: use
-L<Sys::Guestfs::Lib(3)/feature_available>.
+ $g->feature_available ( [\"augeas\"] );
 
 For further discussion on this topic, refer to
 L<guestfs(3)/AVAILABILITY>.
@@ -1081,8 +1072,7 @@ Please see the file COPYING.LIB for the full license.
 
 L<guestfs(3)>,
 L<guestfish(1)>,
-L<http://libguestfs.org>,
-L<Sys::Guestfs::Lib(3)>.
+L<http://libguestfs.org>.
 
 =cut
 " copyright_years

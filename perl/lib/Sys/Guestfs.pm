@@ -60,10 +60,6 @@ LVs, what filesystem is in each LV, etc.).  It can also run commands
 in the context of the guest.  Also you can access filesystems over
 FUSE.
 
-See also L<Sys::Guestfs::Lib(3)> for a set of useful library
-functions for using libguestfs from Perl, including integration
-with libvirt.
-
 =head1 ERRORS
 
 All errors turn into calls to C<croak> (see L<Carp(3)>).
@@ -86,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.397';
+$VERSION = '0.398';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -793,6 +789,12 @@ I<Notes:>
 
 =item *
 
+C<$g-E<gt>feature_available> is the same as this call, but
+with a slightly simpler to use API: that call returns a boolean
+true/false instead of throwing an error.
+
+=item *
+
 You must call C<$g-E<gt>launch> before calling this function.
 
 The reason is because we don't know what groups are
@@ -829,10 +831,11 @@ See also C<$g-E<gt>filesystem_available>.
 This command returns a list of all optional groups that this
 daemon knows about.  Note this returns both supported and unsupported
 groups.  To find out which ones the daemon can actually support
-you have to call C<$g-E<gt>available> on each member of the
-returned list.
+you have to call C<$g-E<gt>available> / C<$g-E<gt>feature_available>
+on each member of the returned list.
 
-See also C<$g-E<gt>available> and L<guestfs(3)/AVAILABILITY>.
+See also C<$g-E<gt>available>, C<$g-E<gt>feature_available>
+and L<guestfs(3)/AVAILABILITY>.
 
 =item $g->base64_in ($base64file, $filename);
 
@@ -1596,6 +1599,13 @@ Do not confuse this with the guestfish-specific
 C<alloc> and C<sparse> commands which create
 a file in the host and attach it as a device.
 
+=item $isavailable = $g->feature_available (\@groups);
+
+This is the same as C<$g-E<gt>available>, but unlike that
+call it returns a simple true/false boolean result, instead
+of throwing an exception if a feature is not found.  For
+other documentation see C<$g-E<gt>available>.
+
 =item @lines = $g->fgrep ($pattern, $path);
 
 This calls the external C<fgrep> program and returns the
@@ -1769,7 +1779,8 @@ it doesn't mean that a particular filesystem can be mounted,
 since filesystems can fail for other reasons such as it being
 a later version of the filesystem, or having incompatible features.
 
-See also C<$g-E<gt>available>, L<guestfs(3)/AVAILABILITY>.
+See also C<$g-E<gt>available>, C<$g-E<gt>feature_available>,
+L<guestfs(3)/AVAILABILITY>.
 
 =item $g->fill ($c, $len, $path);
 
@@ -1922,15 +1933,30 @@ guest kernel command line.
 
 If C<NULL> then no options are added.
 
-=item $attachmethod = $g->get_attach_method ();
+=item $backend = $g->get_attach_method ();
 
-Return the current attach method.
+Return the current backend.
 
-See C<$g-E<gt>set_attach_method> and L<guestfs(3)/ATTACH METHOD>.
+See C<$g-E<gt>set_backend> and L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.>
+In new code, use the L</get_backend> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $autosync = $g->get_autosync ();
 
 Get the autosync flag.
+
+=item $backend = $g->get_backend ();
+
+Return the current backend.
+
+This handle property was previously called the "attach method".
+
+See C<$g-E<gt>set_backend> and L<guestfs(3)/BACKEND>.
 
 =item $cachedir = $g->get_cachedir ();
 
@@ -5242,7 +5268,7 @@ labels (see the optional C<label> argument to C<$g-E<gt>add_drive_opts>).
 If you didn't use a label, then they cannot be removed.
 
 You can call this function before or after launching the handle.
-If called after launch, if the attach-method supports it, we try to hot
+If called after launch, if the backend supports it, we try to hot
 unplug the drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not>
 be in use (eg. mounted) when you do this.  We try to detect if the
 disk is in use and stop you from doing this.
@@ -5423,12 +5449,19 @@ C<LIBGUESTFS_APPEND> environment variable.
 Setting C<append> to C<NULL> means I<no> additional options
 are passed (libguestfs always adds a few of its own).
 
-=item $g->set_attach_method ($attachmethod);
+=item $g->set_attach_method ($backend);
 
-Set the method that libguestfs uses to connect to the back end
+Set the method that libguestfs uses to connect to the backend
 guestfsd daemon.
 
-See L<guestfs(3)/ATTACH METHOD>.
+See L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.>
+In new code, use the L</set_backend> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->set_autosync ($autosync);
 
@@ -5439,6 +5472,15 @@ when the handle is closed
 
 This is enabled by default (since libguestfs 1.5.24, previously it was
 disabled by default).
+
+=item $g->set_backend ($backend);
+
+Set the method that libguestfs uses to connect to the backend
+guestfsd daemon.
+
+This handle property was previously called the "attach method".
+
+See L<guestfs(3)/BACKEND>.
 
 =item $g->set_cachedir ($cachedir);
 
@@ -6402,7 +6444,7 @@ I<Note:> Don't use this call to test for availability
 of features.  In enterprise distributions we backport
 features from later versions into earlier versions,
 making this an unreliable way to test for features.
-Use C<$g-E<gt>available> instead.
+Use C<$g-E<gt>available> or C<$g-E<gt>feature_available> instead.
 
 =item $label = $g->vfs_label ($mountable);
 
@@ -7681,6 +7723,14 @@ use vars qw(%guestfs_introspection);
     name => "fallocate64",
     description => "preallocate a file in the guest filesystem",
   },
+  "feature_available" => {
+    ret => 'bool',
+    args => [
+      [ 'groups', 'string list', 0 ],
+    ],
+    name => "feature_available",
+    description => "test availability of some parts of the API",
+  },
   "fgrep" => {
     ret => 'string list',
     args => [
@@ -7827,7 +7877,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_attach_method",
-    description => "get the attach method",
+    description => "get the backend",
   },
   "get_autosync" => {
     ret => 'bool',
@@ -7835,6 +7885,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_autosync",
     description => "get autosync mode",
+  },
+  "get_backend" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_backend",
+    description => "get the backend",
   },
   "get_cachedir" => {
     ret => 'string',
@@ -10404,10 +10461,10 @@ use vars qw(%guestfs_introspection);
   "set_attach_method" => {
     ret => 'void',
     args => [
-      [ 'attachmethod', 'string', 0 ],
+      [ 'backend', 'string', 0 ],
     ],
     name => "set_attach_method",
-    description => "set the attach method",
+    description => "set the backend",
   },
   "set_autosync" => {
     ret => 'void',
@@ -10416,6 +10473,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_autosync",
     description => "set autosync mode",
+  },
+  "set_backend" => {
+    ret => 'void',
+    args => [
+      [ 'backend', 'string', 0 ],
+    ],
+    name => "set_backend",
+    description => "set the backend",
   },
   "set_cachedir" => {
     ret => 'void',
@@ -11448,15 +11513,10 @@ containing useful introspection information about the method
   }
 
 To test if particular features are supported by the current
-build, use the L</available> method like the example below.  Note
+build, use the L</feature_available> method like the example below.  Note
 that the appliance must be launched first.
 
- $g->available ( ["augeas"] );
-
-Since the L</available> method croaks if the feature is not supported,
-you might also want to wrap this in an eval and return a boolean.
-In fact this has already been done for you: use
-L<Sys::Guestfs::Lib(3)/feature_available>.
+ $g->feature_available ( ["augeas"] );
 
 For further discussion on this topic, refer to
 L<guestfs(3)/AVAILABILITY>.
@@ -11492,7 +11552,6 @@ Please see the file COPYING.LIB for the full license.
 
 L<guestfs(3)>,
 L<guestfish(1)>,
-L<http://libguestfs.org>,
-L<Sys::Guestfs::Lib(3)>.
+L<http://libguestfs.org>.
 
 =cut

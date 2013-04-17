@@ -797,6 +797,22 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1attach_1m
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_backend
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1backend
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_backend
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1backend
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _inspect_get_product_variant
  * Signature: (JLjava/lang/String;)Ljava/lang/String;
  */
@@ -4162,6 +4178,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1rename
  */
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1whole_1device
   (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _feature_available
+ * Signature: (J[Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1feature_1available
+  (JNIEnv *, jobject, jlong, jobjectArray);
 
 #ifdef __cplusplus
 }

@@ -42,8 +42,8 @@
 /* Name of db_load program. */
 #undef DB_LOAD
 
-/* Default attach method. */
-#undef DEFAULT_ATTACH_METHOD
+/* Default backend. */
+#undef DEFAULT_BACKEND
 
 /* the name of the file descriptor member of DIR */
 #undef DIR_FD_MEMBER_NAME

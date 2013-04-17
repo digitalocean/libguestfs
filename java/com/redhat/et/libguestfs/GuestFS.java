@@ -1812,7 +1812,7 @@ public class GuestFS {
    * features. In enterprise distributions we backport
    * features from later versions into earlier versions,
    * making this an unreliable way to test for features. Use
-   * "g.available" instead.
+   * "g.available" or "g.feature_available" instead.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3550,34 +3550,47 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * set the attach method
+   * set the backend
    * <p>
    * Set the method that libguestfs uses to connect to the
-   * back end guestfsd daemon.
+   * backend guestfsd daemon.
    * <p>
-   * See "ATTACH METHOD" in guestfs(3).
+   * See "BACKEND" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "set_backend" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
-  public void set_attach_method (String attachmethod)
+  public void set_attach_method (String backend)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("set_attach_method: handle is closed");
 
-    _set_attach_method (g, attachmethod);
+    _set_attach_method (g, backend);
   }
 
-  private native void _set_attach_method (long g, String attachmethod)
+  private native void _set_attach_method (long g, String backend)
     throws LibGuestFSException;
 
   /**
-   * get the attach method
+   * get the backend
    * <p>
-   * Return the current attach method.
+   * Return the current backend.
    * <p>
-   * See "g.set_attach_method" and "ATTACH METHOD" in
-   * guestfs(3).
+   * See "g.set_backend" and "BACKEND" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "get_backend" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3591,6 +3604,55 @@ public class GuestFS {
   }
 
   private native String _get_attach_method (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the backend
+   * <p>
+   * Set the method that libguestfs uses to connect to the
+   * backend guestfsd daemon.
+   * <p>
+   * This handle property was previously called the "attach
+   * method".
+   * <p>
+   * See "BACKEND" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_backend (String backend)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_backend: handle is closed");
+
+    _set_backend (g, backend);
+  }
+
+  private native void _set_backend (long g, String backend)
+    throws LibGuestFSException;
+
+  /**
+   * get the backend
+   * <p>
+   * Return the current backend.
+   * <p>
+   * This handle property was previously called the "attach
+   * method".
+   * <p>
+   * See "g.set_backend" and "BACKEND" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_backend ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_backend: handle is closed");
+
+    return _get_backend (g);
+  }
+
+  private native String _get_backend (long g)
     throws LibGuestFSException;
 
   /**
@@ -4582,11 +4644,11 @@ public class GuestFS {
    * they cannot be removed.
    * <p>
    * You can call this function before or after launching the
-   * handle. If called after launch, if the attach-method
-   * supports it, we try to hot unplug the drive: see
-   * "HOTPLUGGING" in guestfs(3). The disk must not be in use
-   * (eg. mounted) when you do this. We try to detect if the
-   * disk is in use and stop you from doing this.
+   * handle. If called after launch, if the backend supports
+   * it, we try to hot unplug the drive: see "HOTPLUGGING" in
+   * guestfs(3). The disk must not be in use (eg. mounted)
+   * when you do this. We try to detect if the disk is in use
+   * and stop you from doing this.
    * <p>
    * @throws LibGuestFSException
    */
@@ -10736,6 +10798,11 @@ public class GuestFS {
    * <p>
    * *Notes:*
    * <p>
+   * *   "g.feature_available" is the same as this call, but
+   * with a slightly simpler to use API: that call
+   * returns a boolean true/false instead of throwing an
+   * error.
+   * <p>
    * *   You must call "g.launch" before calling this
    * function.
    * <p>
@@ -11544,9 +11611,11 @@ public class GuestFS {
    * this daemon knows about. Note this returns both
    * supported and unsupported groups. To find out which ones
    * the daemon can actually support you have to call
-   * "g.available" on each member of the returned list.
+   * "g.available" / "g.feature_available" on each member of
+   * the returned list.
    * <p>
-   * See also "g.available" and "AVAILABILITY" in guestfs(3).
+   * See also "g.available", "g.feature_available" and
+   * "AVAILABILITY" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -14586,7 +14655,8 @@ public class GuestFS {
    * for other reasons such as it being a later version of
    * the filesystem, or having incompatible features.
    * <p>
-   * See also "g.available", "AVAILABILITY" in guestfs(3).
+   * See also "g.available", "g.feature_available",
+   * "AVAILABILITY" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -16816,6 +16886,28 @@ public class GuestFS {
   }
 
   private native boolean _is_whole_device (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * test availability of some parts of the API
+   * <p>
+   * This is the same as "g.available", but unlike that call
+   * it returns a simple true/false boolean result, instead
+   * of throwing an exception if a feature is not found. For
+   * other documentation see "g.available".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean feature_available (String[] groups)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("feature_available: handle is closed");
+
+    return _feature_available (g, groups);
+  }
+
+  private native boolean _feature_available (long g, String[] groups)
     throws LibGuestFSException;
 
 }

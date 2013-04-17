@@ -764,7 +764,7 @@ guestfs_inspect_get_roots (guestfs_h *g)
 
 GUESTFS_DLL_PUBLIC int
 guestfs_set_attach_method (guestfs_h *g,
-                           const char *attachmethod)
+                           const char *backend)
 {
   int trace_flag = g->trace;
   struct trace_buffer trace_buffer;
@@ -777,20 +777,20 @@ guestfs_set_attach_method (guestfs_h *g,
   }
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "set_attach_method", 17);
-  if (attachmethod == NULL) {
+  if (backend == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "set_attach_method", "attachmethod");
+           "set_attach_method", "backend");
     return -1;
   }
 
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "set_attach_method");
-    fprintf (trace_buffer.fp, " \"%s\"", attachmethod);
+    fprintf (trace_buffer.fp, " \"%s\"", backend);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
-  r = guestfs__set_attach_method (g, attachmethod);
+  r = guestfs__set_attach_method (g, backend);
 
   if (r != -1) {
     if (trace_flag) {
@@ -7590,6 +7590,111 @@ guestfs_part_set_gpt_type (guestfs_h *g,
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "part_set_gpt_type");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_feature_available (guestfs_h *g,
+                           char *const *groups)
+{
+  struct guestfs_feature_available_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_feature_available_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "feature_available", 17);
+  if (groups == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "feature_available", "groups");
+    return -1;
+  }
+
+  if (trace_flag) {
+    size_t i;
+
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "feature_available");
+    fputc (' ', trace_buffer.fp);
+    fputc ('"', trace_buffer.fp);
+    for (i = 0; groups[i]; ++i) {
+      if (i > 0) fputc (' ', trace_buffer.fp);
+      fputs (groups[i], trace_buffer.fp);
+    }
+    fputc ('"', trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "feature_available") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "feature_available", "-1");
+    return -1;
+  }
+
+  args.groups.groups_val = (char **) groups;
+  for (args.groups.groups_len = 0; groups[args.groups.groups_len]; args.groups.groups_len++) ;
+  serial = guestfs___send (g, GUESTFS_PROC_FEATURE_AVAILABLE,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_feature_available_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "feature_available", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "feature_available", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_feature_available_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "feature_available", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_FEATURE_AVAILABLE, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "feature_available", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "feature_available", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "feature_available", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "feature_available",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.isavailable;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "feature_available");
     fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }

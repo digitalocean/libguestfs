@@ -533,6 +533,12 @@ I<Нотатки:>
 
 =item *
 
+L</feature-available> is the same as this call, but with a slightly simpler
+to use API: that call returns a boolean true/false instead of throwing an
+error.
+
+=item *
+
 You must call L</launch> before calling this function.
 
 The reason is because we don't know what groups are supported by the
@@ -567,9 +573,10 @@ find out if the daemon implemented it.  See also L</version>.
 This command returns a list of all optional groups that this daemon knows
 about.  Note this returns both supported and unsupported groups.  To find
 out which ones the daemon can actually support you have to call
-L</available> on each member of the returned list.
+L</available> / L</feature-available> on each member of the returned list.
 
-See also L</available> and L<guestfs(3)/AVAILABILITY>.
+See also L</available>, L</feature-available> and
+L<guestfs(3)/AVAILABILITY>.
 
 =head2 base64-in
 
@@ -1463,6 +1470,14 @@ maximum size of files created through that call to 1GB.
 Do not confuse this with the guestfish-specific C<alloc> and C<sparse>
 commands which create a file in the host and attach it as a device.
 
+=head2 feature-available
+
+ feature-available 'groups ...'
+
+This is the same as L</available>, but unlike that call it returns a simple
+true/false boolean result, instead of throwing an exception if a feature is
+not found.  For other documentation see L</available>.
+
 =head2 fgrep
 
  fgrep шаблон шлях
@@ -1642,7 +1657,7 @@ mean that a particular filesystem can be mounted, since filesystems can fail
 for other reasons such as it being a later version of the filesystem, or
 having incompatible features.
 
-See also L</available>, L<guestfs(3)/AVAILABILITY>.
+See also L</available>, L</feature-available>, L<guestfs(3)/AVAILABILITY>.
 
 =head2 fill
 
@@ -1814,15 +1829,32 @@ If C<NULL> then no options are added.
 
  get-attach-method
 
-Return the current attach method.
+Return the current backend.
 
-See L</set-attach-method> and L<guestfs(3)/ATTACH METHOD>.
+See L</set-backend> and L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.> In new code, use the L</get-backend> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 get-autosync
 
  get-autosync
 
 Get the autosync flag.
+
+=head2 get-backend
+
+ get-backend
+
+Return the current backend.
+
+This handle property was previously called the "attach method".
+
+See L</set-backend> and L<guestfs(3)/BACKEND>.
 
 =head2 get-cachedir
 
@@ -5449,10 +5481,10 @@ the optional C<label> argument to L</add-drive-opts>).  If you didn't use a
 label, then they cannot be removed.
 
 You can call this function before or after launching the handle.  If called
-after launch, if the attach-method supports it, we try to hot unplug the
-drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use
-(eg. mounted) when you do this.  We try to detect if the disk is in use and
-stop you from doing this.
+after launch, if the backend supports it, we try to hot unplug the drive:
+see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use (eg. mounted)
+when you do this.  We try to detect if the disk is in use and stop you from
+doing this.
 
 =head2 removexattr
 
@@ -5671,12 +5703,19 @@ Setting C<append> to C<NULL> means I<no> additional options are passed
 
 =head2 attach-method
 
- set-attach-method attachmethod
+ set-attach-method backend
 
-Set the method that libguestfs uses to connect to the back end guestfsd
+Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 
-See L<guestfs(3)/ATTACH METHOD>.
+See L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.> In new code, use the L</set-backend> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 set-autosync
 
@@ -5690,6 +5729,19 @@ handle is closed (also if the program exits without closing handles).
 
 This is enabled by default (since libguestfs 1.5.24, previously it was
 disabled by default).
+
+=head2 set-backend
+
+=head2 backend
+
+ set-backend backend
+
+Set the method that libguestfs uses to connect to the backend guestfsd
+daemon.
+
+This handle property was previously called the "attach method".
+
+See L<guestfs(3)/BACKEND>.
 
 =head2 set-cachedir
 
@@ -6763,7 +6815,7 @@ To construct the original version string: C<$major.$minor.$release$extra>
 I<Note:> Don't use this call to test for availability of features.  In
 enterprise distributions we backport features from later versions into
 earlier versions, making this an unreliable way to test for features.  Use
-L</available> instead.
+L</available> or L</feature-available> instead.
 
 =head2 vfs-label
 

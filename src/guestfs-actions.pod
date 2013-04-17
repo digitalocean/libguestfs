@@ -785,6 +785,12 @@ I<Notes:>
 
 =item *
 
+C<guestfs_feature_available> is the same as this call, but
+with a slightly simpler to use API: that call returns a boolean
+true/false instead of throwing an error.
+
+=item *
+
 You must call C<guestfs_launch> before calling this function.
 
 The reason is because we don't know what groups are
@@ -828,10 +834,11 @@ This function returns 0 on success or -1 on error.
 This command returns a list of all optional groups that this
 daemon knows about.  Note this returns both supported and unsupported
 groups.  To find out which ones the daemon can actually support
-you have to call C<guestfs_available> on each member of the
-returned list.
+you have to call C<guestfs_available> / C<guestfs_feature_available>
+on each member of the returned list.
 
-See also C<guestfs_available> and L<guestfs(3)/AVAILABILITY>.
+See also C<guestfs_available>, C<guestfs_feature_available>
+and L<guestfs(3)/AVAILABILITY>.
 
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
@@ -2541,6 +2548,19 @@ This function returns 0 on success or -1 on error.
 
 (Added in 1.3.17)
 
+=head2 guestfs_feature_available
+
+ int
+ guestfs_feature_available (guestfs_h *g,
+                            char *const *groups);
+
+This is the same as C<guestfs_available>, but unlike that
+call it returns a simple true/false boolean result, instead
+of throwing an exception if a feature is not found.  For
+other documentation see C<guestfs_available>.
+
+This function returns a C truth value on success or -1 on error.
+
 =head2 guestfs_fgrep
 
  char **
@@ -2766,7 +2786,8 @@ it doesn't mean that a particular filesystem can be mounted,
 since filesystems can fail for other reasons such as it being
 a later version of the filesystem, or having incompatible features.
 
-See also C<guestfs_available>, L<guestfs(3)/AVAILABILITY>.
+See also C<guestfs_available>, C<guestfs_feature_available>,
+L<guestfs(3)/AVAILABILITY>.
 
 This function returns a C truth value on success or -1 on error.
 
@@ -3062,9 +3083,16 @@ The string is owned by the guest handle and must I<not> be freed.
  char *
  guestfs_get_attach_method (guestfs_h *g);
 
-Return the current attach method.
+I<This function is deprecated.>
+In new code, use the L</guestfs_get_backend> call instead.
 
-See C<guestfs_set_attach_method> and L<guestfs(3)/ATTACH METHOD>.
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+Return the current backend.
+
+See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
 
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
@@ -3081,6 +3109,20 @@ Get the autosync flag.
 This function returns a C truth value on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_get_backend
+
+ char *
+ guestfs_get_backend (guestfs_h *g);
+
+Return the current backend.
+
+This handle property was previously called the "attach method".
+
+See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
 
 =head2 guestfs_get_cachedir
 
@@ -9123,7 +9165,7 @@ labels (see the optional C<label> argument to C<guestfs_add_drive_opts>).
 If you didn't use a label, then they cannot be removed.
 
 You can call this function before or after launching the handle.
-If called after launch, if the attach-method supports it, we try to hot
+If called after launch, if the backend supports it, we try to hot
 unplug the drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not>
 be in use (eg. mounted) when you do this.  We try to detect if the
 disk is in use and stop you from doing this.
@@ -9553,12 +9595,19 @@ This function returns 0 on success or -1 on error.
 
  int
  guestfs_set_attach_method (guestfs_h *g,
-                            const char *attachmethod);
+                            const char *backend);
 
-Set the method that libguestfs uses to connect to the back end
+I<This function is deprecated.>
+In new code, use the L</guestfs_set_backend> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+Set the method that libguestfs uses to connect to the backend
 guestfsd daemon.
 
-See L<guestfs(3)/ATTACH METHOD>.
+See L<guestfs(3)/BACKEND>.
 
 This function returns 0 on success or -1 on error.
 
@@ -9581,6 +9630,21 @@ disabled by default).
 This function returns 0 on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_set_backend
+
+ int
+ guestfs_set_backend (guestfs_h *g,
+                      const char *backend);
+
+Set the method that libguestfs uses to connect to the backend
+guestfsd daemon.
+
+This handle property was previously called the "attach method".
+
+See L<guestfs(3)/BACKEND>.
+
+This function returns 0 on success or -1 on error.
 
 =head2 guestfs_set_cachedir
 
@@ -11348,7 +11412,7 @@ I<Note:> Don't use this call to test for availability
 of features.  In enterprise distributions we backport
 features from later versions into earlier versions,
 making this an unreliable way to test for features.
-Use C<guestfs_available> instead.
+Use C<guestfs_available> or C<guestfs_feature_available> instead.
 
 This function returns a C<struct guestfs_version *>,
 or NULL if there was an error.

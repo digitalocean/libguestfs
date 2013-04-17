@@ -2801,6 +2801,29 @@ guestfs_lua_fallocate64 (lua_State *L)
 }
 
 static int
+guestfs_lua_feature_available (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  char **groups;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "feature_available");
+
+  groups = get_string_list (L, 2);
+
+  r = guestfs_feature_available (g, groups);
+  free (groups);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushboolean (L, r);
+  return 1;
+}
+
+static int
 guestfs_lua_fgrep (lua_State *L)
 {
   char **r;
@@ -3223,6 +3246,27 @@ guestfs_lua_get_autosync (lua_State *L)
     return last_error (L, g);
 
   lua_pushboolean (L, r);
+  return 1;
+}
+
+static int
+guestfs_lua_get_backend (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "get_backend");
+
+
+  r = guestfs_get_backend (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
   return 1;
 }
 
@@ -10452,15 +10496,15 @@ guestfs_lua_set_attach_method (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *attachmethod;
+  const char *backend;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "set_attach_method");
 
-  attachmethod = luaL_checkstring (L, 2);
+  backend = luaL_checkstring (L, 2);
 
-  r = guestfs_set_attach_method (g, attachmethod);
+  r = guestfs_set_attach_method (g, backend);
   if (r == -1)
     return last_error (L, g);
 
@@ -10482,6 +10526,27 @@ guestfs_lua_set_autosync (lua_State *L)
   autosync = lua_toboolean (L, 2);
 
   r = guestfs_set_autosync (g, autosync);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_set_backend (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *backend;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_backend");
+
+  backend = luaL_checkstring (L, 2);
+
+  r = guestfs_set_backend (g, backend);
   if (r == -1)
     return last_error (L, g);
 
@@ -14264,6 +14329,7 @@ static luaL_Reg methods[] = {
   { "exists", guestfs_lua_exists },
   { "fallocate", guestfs_lua_fallocate },
   { "fallocate64", guestfs_lua_fallocate64 },
+  { "feature_available", guestfs_lua_feature_available },
   { "fgrep", guestfs_lua_fgrep },
   { "fgrepi", guestfs_lua_fgrepi },
   { "file", guestfs_lua_file },
@@ -14282,6 +14348,7 @@ static luaL_Reg methods[] = {
   { "get_append", guestfs_lua_get_append },
   { "get_attach_method", guestfs_lua_get_attach_method },
   { "get_autosync", guestfs_lua_get_autosync },
+  { "get_backend", guestfs_lua_get_backend },
   { "get_cachedir", guestfs_lua_get_cachedir },
   { "get_direct", guestfs_lua_get_direct },
   { "get_e2attrs", guestfs_lua_get_e2attrs },
@@ -14572,6 +14639,7 @@ static luaL_Reg methods[] = {
   { "set_append", guestfs_lua_set_append },
   { "set_attach_method", guestfs_lua_set_attach_method },
   { "set_autosync", guestfs_lua_set_autosync },
+  { "set_backend", guestfs_lua_set_backend },
   { "set_cachedir", guestfs_lua_set_cachedir },
   { "set_direct", guestfs_lua_set_direct },
   { "set_e2attrs", guestfs_lua_set_e2attrs },

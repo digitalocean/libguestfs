@@ -1049,6 +1049,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_fallocate (guestfs_h *g, const char *path,
 #define GUESTFS_HAVE_FALLOCATE64 1
 extern GUESTFS_DLL_PUBLIC int guestfs_fallocate64 (guestfs_h *g, const char *path, int64_t len);
 
+#define GUESTFS_HAVE_FEATURE_AVAILABLE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_feature_available (guestfs_h *g, char *const *groups);
+
 extern GUESTFS_DLL_PUBLIC char **guestfs_fgrep (guestfs_h *g, const char *pattern, const char *path)
   GUESTFS_DEPRECATED_BY ("grep");
 
@@ -1113,11 +1116,14 @@ extern GUESTFS_DLL_PUBLIC int guestfs_fstrim_argv (guestfs_h *g, const char *mou
 #define GUESTFS_HAVE_GET_APPEND 1
 extern GUESTFS_DLL_PUBLIC const char *guestfs_get_append (guestfs_h *g);
 
-#define GUESTFS_HAVE_GET_ATTACH_METHOD 1
-extern GUESTFS_DLL_PUBLIC char *guestfs_get_attach_method (guestfs_h *g);
+extern GUESTFS_DLL_PUBLIC char *guestfs_get_attach_method (guestfs_h *g)
+  GUESTFS_DEPRECATED_BY ("get_backend");
 
 #define GUESTFS_HAVE_GET_AUTOSYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_get_autosync (guestfs_h *g);
+
+#define GUESTFS_HAVE_GET_BACKEND 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend (guestfs_h *g);
 
 #define GUESTFS_HAVE_GET_CACHEDIR 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_cachedir (guestfs_h *g);
@@ -2291,11 +2297,14 @@ extern GUESTFS_DLL_PUBLIC int guestfs_scrub_freespace (guestfs_h *g, const char 
 #define GUESTFS_HAVE_SET_APPEND 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_append (guestfs_h *g, const char *append);
 
-#define GUESTFS_HAVE_SET_ATTACH_METHOD 1
-extern GUESTFS_DLL_PUBLIC int guestfs_set_attach_method (guestfs_h *g, const char *attachmethod);
+extern GUESTFS_DLL_PUBLIC int guestfs_set_attach_method (guestfs_h *g, const char *backend)
+  GUESTFS_DEPRECATED_BY ("set_backend");
 
 #define GUESTFS_HAVE_SET_AUTOSYNC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_autosync (guestfs_h *g, int autosync);
+
+#define GUESTFS_HAVE_SET_BACKEND 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_backend (guestfs_h *g, const char *backend);
 
 #define GUESTFS_HAVE_SET_CACHEDIR 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_cachedir (guestfs_h *g, const char *cachedir);
@@ -3281,6 +3290,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_EXISTS 1
 #define LIBGUESTFS_HAVE_FALLOCATE 1
 #define LIBGUESTFS_HAVE_FALLOCATE64 1
+#define LIBGUESTFS_HAVE_FEATURE_AVAILABLE 1
 #define LIBGUESTFS_HAVE_FGREP 1
 #define LIBGUESTFS_HAVE_FGREPI 1
 #define LIBGUESTFS_HAVE_FILE 1
@@ -3299,6 +3309,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_GET_APPEND 1
 #define LIBGUESTFS_HAVE_GET_ATTACH_METHOD 1
 #define LIBGUESTFS_HAVE_GET_AUTOSYNC 1
+#define LIBGUESTFS_HAVE_GET_BACKEND 1
 #define LIBGUESTFS_HAVE_GET_CACHEDIR 1
 #define LIBGUESTFS_HAVE_GET_DIRECT 1
 #define LIBGUESTFS_HAVE_GET_E2ATTRS 1
@@ -3562,6 +3573,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_APPEND 1
 #define LIBGUESTFS_HAVE_SET_ATTACH_METHOD 1
 #define LIBGUESTFS_HAVE_SET_AUTOSYNC 1
+#define LIBGUESTFS_HAVE_SET_BACKEND 1
 #define LIBGUESTFS_HAVE_SET_CACHEDIR 1
 #define LIBGUESTFS_HAVE_SET_DIRECT 1
 #define LIBGUESTFS_HAVE_SET_E2ATTRS 1

@@ -3586,6 +3586,19 @@ struct guestfs_internal_rhbz914931_args {
 };
 typedef struct guestfs_internal_rhbz914931_args guestfs_internal_rhbz914931_args;
 
+struct guestfs_feature_available_args {
+	struct {
+		u_int groups_len;
+		guestfs_str *groups_val;
+	} groups;
+};
+typedef struct guestfs_feature_available_args guestfs_feature_available_args;
+
+struct guestfs_feature_available_ret {
+	bool_t isavailable;
+};
+typedef struct guestfs_feature_available_ret guestfs_feature_available_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3977,9 +3990,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
 	GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
 	GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
+	GUESTFS_PROC_FEATURE_AVAILABLE = 398,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 397
+#define GUESTFS_MAX_PROC_NR 398
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4600,6 +4614,8 @@ extern  bool_t xdr_guestfs_is_whole_device_ret (XDR *, guestfs_is_whole_device_r
 extern  bool_t xdr_guestfs_internal_parse_mountable_args (XDR *, guestfs_internal_parse_mountable_args*);
 extern  bool_t xdr_guestfs_internal_parse_mountable_ret (XDR *, guestfs_internal_parse_mountable_ret*);
 extern  bool_t xdr_guestfs_internal_rhbz914931_args (XDR *, guestfs_internal_rhbz914931_args*);
+extern  bool_t xdr_guestfs_feature_available_args (XDR *, guestfs_feature_available_args*);
+extern  bool_t xdr_guestfs_feature_available_ret (XDR *, guestfs_feature_available_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5170,6 +5186,8 @@ extern bool_t xdr_guestfs_is_whole_device_ret ();
 extern bool_t xdr_guestfs_internal_parse_mountable_args ();
 extern bool_t xdr_guestfs_internal_parse_mountable_ret ();
 extern bool_t xdr_guestfs_internal_rhbz914931_args ();
+extern bool_t xdr_guestfs_feature_available_args ();
+extern bool_t xdr_guestfs_feature_available_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

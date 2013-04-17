@@ -873,6 +873,53 @@ guestfs_get_attach_method (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_set_backend (guestfs_h *g,
+                     const char *backend)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  if (g->state != CONFIG) {
+    error (g, "%s: this function can only be called in the config state",
+              "set_backend");
+    return -1;
+  }
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_backend", 11);
+  if (backend == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_backend", "backend");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_backend");
+    fprintf (trace_buffer.fp, " \"%s\"", backend);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__set_backend (g, backend);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_backend");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_backend", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char *
 guestfs_inspect_get_product_variant (guestfs_h *g,
                                      const char *root)

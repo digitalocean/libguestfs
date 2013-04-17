@@ -1,4 +1,95 @@
+2013-04-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.26.
+
+2013-04-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Remove Sys::Guestfs::Lib.
+	See announcement on the mailing list for more details about this change:
+
+	https://www.redhat.com/archives/libguestfs/2013-April/msg00001.html
+
+2013-04-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Remove use of Sys::Guestfs::Lib::open_guest function.
+	This obsolete function does all sorts of libvirt/XML things, which can
+	now be replaced by using ordinary API calls; especially $g->add_domain.
+
+	tests/data: Update README and comments about initrd binary files.
+	These are used for testing the C, not Perl, file_architecture API.
+
+2013-04-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	New API: feature-available.
+	This API is an easier to use version of the existing guestfs_available,
+	because the new API returns true/false instead of throwing an error
+	when a feature from the list is not available.
+
+	In truth we've had this implementation internally in the library
+	and several tools and in Sys::Guestfs::Lib for a long time.  This
+	change just turns it into a publicly consumable API.
+
+2013-04-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-ls, virt-edit: Remove references to Sys::Guestfs::Lib and other irrelevant Perl libraries.
+
+2013-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Make test cases depend on jar file.
+	This fixes parallel builds.  The error you would have seen was:
+
+	  error: error reading libguestfs-1.21.25.jar; zip file is empty
+
+2013-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: 'make clean' should remove whole api/ directory.
+	This directory (containing HTML documentation) can be removed
+	completely when making clean.  CLEANFILES cannot recursively remove a
+	directory, so use a clean-local rule instead.
+
+	build: Change various check rules so they implicitly act like 'make -k'.
+	Rules such as 'make check-valgrind' are implemented using a for-loop.
+	They would always exit after the first error, even if 'make -k' was
+	used at the top-level.  Since 'make -k'-style behaviour is generally
+	more useful, change these for-loops so they run all the tests, and
+	report errors at the end.
+
+	make clean: Remove *~ (editor backup) files.
+
+	make clean: Clean contents of tmp directory.
+
+2013-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	valgrind: Write separate log files in tmp/valgrind-<DATE>-<PID>.log
+	Current code wrote a single valgrind.log in the top-level directory.
+	This was overwritten with each valgrinded program, which wasn't much
+	use.  The new version writes multiple separate valgrind-*.log files
+	containing the date and PID (so each is unique).
+
+	It would nice if valgrind could delete log files that don't contain
+	errors, but this doesn't appear to be possible.
+
+2013-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	"attach method" is from now on known as "backend".
+	This large, but mainly mechanical commit, renames "attach method"
+	everywhere to "backend".
+
+	Backwards compatibility of the API (guestfs_{set,get}_attach_method)
+	and environment (LIBGUESTFS_ATTACH_METHOD) is maintained, but in new
+	code use guestfs_{set,get}_backend and LIBGUESTFS_BACKEND instead.
+
+	The default backend (launching qemu directly) is now called 'direct'
+	instead of 'appliance', although you can still use 'appliance' as a
+	synonym.
+
+2013-04-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Clarify output of 'make help'.
+
 2013-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.25.
 
 	docs: Remove obsolete sections from libguestfs gotchas.
 	These refer to old behaviour in long-unsupported versions

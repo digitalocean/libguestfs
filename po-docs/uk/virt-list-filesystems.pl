@@ -85,7 +85,7 @@ L<sh(1)> for details.
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-tar(1)>,
 L<virt-filesystems(1)>, L<virt-list-partitions(1)>, L<Sys::Guestfs(3)>,
-L<Sys::Guestfs::Lib(3)>, L<Sys::Virt(3)>, L<http://libguestfs.org/>.
+L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
 =head1 АВТОР
 

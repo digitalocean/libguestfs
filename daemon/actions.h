@@ -560,5 +560,6 @@ extern int do_rename (const char *oldpath, const char *newpath);
 extern int do_is_whole_device (const char *device);
 extern guestfs_int_internal_mountable *do_internal_parse_mountable (const mountable_t *mountable);
 extern int do_internal_rhbz914931 (int count);
+extern int do_feature_available (char *const *groups);
 
 #endif /* GUESTFSD_ACTIONS_H */

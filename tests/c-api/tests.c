@@ -345,6 +345,7 @@ no_test_warnings (void)
     "set_append",
     "set_attach_method",
     "set_autosync",
+    "set_backend",
     "set_cachedir",
     "set_direct",
     "set_libvirt_requested_credential",
@@ -389,6 +390,64 @@ no_test_warnings (void)
   for (i = 0; no_tests[i] != NULL; ++i)
     fprintf (stderr, "warning: \"guestfs_%s\" has no tests\n",
              no_tests[i]);
+}
+
+static int
+test_feature_available_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "feature_available") == NULL;
+  str = getenv ("SKIP_TEST_FEATURE_AVAILABLE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_FEATURE_AVAILABLE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_feature_available_0 (void)
+{
+  if (test_feature_available_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_feature_available_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_feature_available_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutputTrue for feature_available (0) */
+  {
+    const char *const groups[1] = { NULL };
+    int r;
+    r = guestfs_feature_available (g, (char **) groups);
+    if (r == -1)
+      return -1;
+    if (!r) {
+      fprintf (stderr, "%s: expected true, got false\n", "test_feature_available_0");
+      return -1;
+    }
+  }
+  return 0;
 }
 
 static int
@@ -1575,7 +1634,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     optargs.journaldev = 1;
     optargs.bitmask = UINT64_C(0x100100002);
     int r;
@@ -1587,7 +1646,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda2";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.journaldevice = "UUID=c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    optargs.journaldevice = "UUID=7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     optargs.label = "JOURNAL";
     optargs.fstype = "ext2";
     optargs.forcecreate = 1;
@@ -7691,10 +7750,10 @@ test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+  const char *expected = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -12640,7 +12699,7 @@ test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mke2journal_U (g, 4096, uuid, device);
@@ -12650,7 +12709,7 @@ test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     int r;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
     if (r == -1)
@@ -13601,7 +13660,7 @@ test_swapon_uuid_0 (void)
   {
     const char *device = "/dev/sdc";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -13609,14 +13668,14 @@ test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     int r;
     r = guestfs_swapon_uuid (g, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     int r;
     r = guestfs_swapoff_uuid (g, uuid);
     if (r == -1)
@@ -17453,7 +17512,7 @@ test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mkswap_U (g, uuid, device);
@@ -17715,7 +17774,7 @@ test_mkswap_2 (void)
   {
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -17786,7 +17845,7 @@ test_mkswap_3 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
     optargs.label = "hello";
-    optargs.uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    optargs.uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     optargs.bitmask = UINT64_C(0x3);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -22584,7 +22643,7 @@ test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+  const char *expected = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -22594,7 +22653,7 @@ test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -22685,10 +22744,10 @@ test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+  const char *expected = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "c83bc9c7-e046-e756-7ee5-ca222359a1b6";
+    const char *uuid = "7ccd5cbd-b6d7-741b-2f28-dc97a1fe375b";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -35864,6 +35923,60 @@ test_cat_0 (void)
 }
 
 static int
+test_get_backend_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "get_backend") == NULL;
+  str = getenv ("SKIP_TEST_GET_BACKEND_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_GET_BACKEND");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_get_backend_0 (void)
+{
+  if (test_get_backend_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_get_backend_0");
+    return 0;
+  }
+
+  /* InitNone|InitEmpty for test_get_backend_0 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  /* TestRun for get_backend (0) */
+  {
+    char *r;
+    r = guestfs_get_backend (g);
+    if (r == NULL)
+      return -1;
+    free (r);
+  }
+  return 0;
+}
+
+static int
 test_get_attach_method_0_skip (void)
 {
   const char *str;
@@ -37308,7 +37421,7 @@ main (int argc, char *argv[])
 {
   const char *filename;
   int fd;
-  const size_t nr_tests = 423;
+  const size_t nr_tests = 425;
   size_t test_num = 0;
   size_t nr_failed = 0;
 
@@ -37414,6 +37527,12 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
+  test_num++;
+  next_test (g, test_num, nr_tests, "test_feature_available_0");
+  if (test_feature_available_0 () == -1) {
+    printf ("FAIL: %s\n", "test_feature_available_0");
+    nr_failed++;
+  }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_whole_device_0");
   if (test_is_whole_device_0 () == -1) {
@@ -39812,6 +39931,12 @@ main (int argc, char *argv[])
   next_test (g, test_num, nr_tests, "test_cat_0");
   if (test_cat_0 () == -1) {
     printf ("FAIL: %s\n", "test_cat_0");
+    nr_failed++;
+  }
+  test_num++;
+  next_test (g, test_num, nr_tests, "test_get_backend_0");
+  if (test_get_backend_0 () == -1) {
+    printf ("FAIL: %s\n", "test_get_backend_0");
     nr_failed++;
   }
   test_num++;

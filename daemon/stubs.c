@@ -15476,6 +15476,47 @@ done_no_free:
   return;
 }
 
+static void
+feature_available_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_feature_available_args args;
+  char **groups;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_feature_available_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  groups = realloc (args.groups.groups_val,
+                sizeof (char *) * (args.groups.groups_len+1));
+  if (groups == NULL) {
+    reply_with_perror ("realloc");
+    goto done;
+  }
+  groups[args.groups.groups_len] = NULL;
+  args.groups.groups_val = groups;
+
+  r = do_feature_available (groups);
+  if (r == -1)
+    /* do_feature_available has already called reply_with_error */
+    goto done;
+
+  struct guestfs_feature_available_ret ret;
+  ret.isavailable = r;
+  reply ((xdrproc_t) &xdr_guestfs_feature_available_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_feature_available_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16648,6 +16689,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_INTERNAL_RHBZ914931:
       internal_rhbz914931_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_FEATURE_AVAILABLE:
+      feature_available_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

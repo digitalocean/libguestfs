@@ -2393,6 +2393,20 @@ run_fallocate64 (ETERM *message)
 }
 
 static ETERM *
+run_feature_available (ETERM *message)
+{
+  char **groups = get_string_list (ARG (0));
+  int r;
+
+  r = guestfs_feature_available (g, groups);
+  guestfs___free_string_list (groups);
+  if (r == -1)
+    return make_error ("feature_available");
+
+  return make_bool (r);
+}
+
+static ETERM *
 run_fgrep (ETERM *message)
 {
   char *pattern = erl_iolist_to_string (ARG (0));
@@ -2700,6 +2714,20 @@ run_get_autosync (ETERM *message)
     return make_error ("get_autosync");
 
   return make_bool (r);
+}
+
+static ETERM *
+run_get_backend (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_get_backend (g);
+  if (r == NULL)
+    return make_error ("get_backend");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
 }
 
 static ETERM *
@@ -8152,11 +8180,11 @@ run_set_append (ETERM *message)
 static ETERM *
 run_set_attach_method (ETERM *message)
 {
-  char *attachmethod = erl_iolist_to_string (ARG (0));
+  char *backend = erl_iolist_to_string (ARG (0));
   int r;
 
-  r = guestfs_set_attach_method (g, attachmethod);
-  free (attachmethod);
+  r = guestfs_set_attach_method (g, backend);
+  free (backend);
   if (r == -1)
     return make_error ("set_attach_method");
 
@@ -8172,6 +8200,20 @@ run_set_autosync (ETERM *message)
   r = guestfs_set_autosync (g, autosync);
   if (r == -1)
     return make_error ("set_autosync");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_set_backend (ETERM *message)
+{
+  char *backend = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_backend (g, backend);
+  free (backend);
+  if (r == -1)
+    return make_error ("set_backend");
 
   return erl_mk_atom ("ok");
 }
@@ -10378,6 +10420,8 @@ dispatch (ETERM *message)
     return run_fallocate (message);
   else if (atom_equals (fun, "fallocate64"))
     return run_fallocate64 (message);
+  else if (atom_equals (fun, "feature_available"))
+    return run_feature_available (message);
   else if (atom_equals (fun, "fgrep"))
     return run_fgrep (message);
   else if (atom_equals (fun, "fgrepi"))
@@ -10414,6 +10458,8 @@ dispatch (ETERM *message)
     return run_get_attach_method (message);
   else if (atom_equals (fun, "get_autosync"))
     return run_get_autosync (message);
+  else if (atom_equals (fun, "get_backend"))
+    return run_get_backend (message);
   else if (atom_equals (fun, "get_cachedir"))
     return run_get_cachedir (message);
   else if (atom_equals (fun, "get_direct"))
@@ -10994,6 +11040,8 @@ dispatch (ETERM *message)
     return run_set_attach_method (message);
   else if (atom_equals (fun, "set_autosync"))
     return run_set_autosync (message);
+  else if (atom_equals (fun, "set_backend"))
+    return run_set_backend (message);
   else if (atom_equals (fun, "set_cachedir"))
     return run_set_cachedir (message);
   else if (atom_equals (fun, "set_direct"))

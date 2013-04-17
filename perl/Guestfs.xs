@@ -2106,13 +2106,13 @@ PREINIT:
       RETVAL
 
 void
-set_attach_method (g, attachmethod)
+set_attach_method (g, backend)
       guestfs_h *g;
-      char *attachmethod;
+      char *backend;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_set_attach_method (g, attachmethod);
+      r = guestfs_set_attach_method (g, backend);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -2123,6 +2123,31 @@ PREINIT:
       char *r;
    CODE:
       r = guestfs_get_attach_method (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+set_backend (g, backend)
+      guestfs_h *g;
+      char *backend;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_backend (g, backend);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_backend (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_backend (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -9484,6 +9509,21 @@ PREINIT:
       int r;
    CODE:
       r = guestfs_is_whole_device (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+feature_available (g, groups)
+      guestfs_h *g;
+      char **groups;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_feature_available (g, groups);
+      free (groups);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);

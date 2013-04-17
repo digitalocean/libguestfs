@@ -3007,7 +3007,8 @@ guestfs_session_get_pid(GuestfsSession *session, GError **err)
  * *Note:* Don't use this call to test for availability of features. In
  * enterprise distributions we backport features from later versions into
  * earlier versions, making this an unreliable way to test for features.
- * Use guestfs_session_available() instead.
+ * Use guestfs_session_available() or guestfs_session_feature_available()
+ * instead.
  * 
  * Returns: (transfer full): a Version object, or NULL on error
  */
@@ -5153,20 +5154,20 @@ guestfs_session_inspect_is_multipart(GuestfsSession *session, const gchar *root,
 /**
  * guestfs_session_set_attach_method:
  * @session: (transfer none): A GuestfsSession object
- * @attachmethod: (transfer none) (type utf8):
+ * @backend: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
- * set the attach method
+ * set the backend
  *
- * Set the method that libguestfs uses to connect to the back end guestfsd
+ * Set the method that libguestfs uses to connect to the backend guestfsd
  * daemon.
  * 
- * See "ATTACH METHOD" in guestfs(3).
+ * See "BACKEND" in guestfs(3).
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachmethod, GError **err)
+guestfs_session_set_attach_method(GuestfsSession *session, const gchar *backend, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -5176,7 +5177,7 @@ guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachme
     return FALSE;
   }
 
-  int ret = guestfs_set_attach_method (g, attachmethod);
+  int ret = guestfs_set_attach_method (g, backend);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5190,12 +5191,11 @@ guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachme
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * get the attach method
+ * get the backend
  *
- * Return the current attach method.
+ * Return the current backend.
  * 
- * See guestfs_session_set_attach_method() and "ATTACH METHOD" in
- * guestfs(3).
+ * See guestfs_session_set_backend() and "BACKEND" in guestfs(3).
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  */
@@ -5211,6 +5211,78 @@ guestfs_session_get_attach_method(GuestfsSession *session, GError **err)
   }
 
   char *ret = guestfs_get_attach_method (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_set_backend:
+ * @session: (transfer none): A GuestfsSession object
+ * @backend: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the backend
+ *
+ * Set the method that libguestfs uses to connect to the backend guestfsd
+ * daemon.
+ * 
+ * This handle property was previously called the "attach method".
+ * 
+ * See "BACKEND" in guestfs(3).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_backend(GuestfsSession *session, const gchar *backend, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_backend");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_backend (g, backend);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_backend:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the backend
+ *
+ * Return the current backend.
+ * 
+ * This handle property was previously called the "attach method".
+ * 
+ * See guestfs_session_set_backend() and "BACKEND" in guestfs(3).
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_backend(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_backend");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_backend (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6568,10 +6640,10 @@ guestfs_session_disk_has_backing_file(GuestfsSession *session, const gchar *file
  * If you didn't use a label, then they cannot be removed.
  * 
  * You can call this function before or after launching the handle. If
- * called after launch, if the attach-method supports it, we try to hot
- * unplug the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be
- * in use (eg. mounted) when you do this. We try to detect if the disk is
- * in use and stop you from doing this.
+ * called after launch, if the backend supports it, we try to hot unplug
+ * the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be in use
+ * (eg. mounted) when you do this. We try to detect if the disk is in use
+ * and stop you from doing this.
  * 
  * Returns: true on success, false on error
  */
@@ -15358,6 +15430,10 @@ guestfs_session_fill(GuestfsSession *session, gint32 c, gint32 len, const gchar 
  * 
  * *Notes:*
  * 
+ * *   guestfs_session_feature_available() is the same as this call, but
+ * with a slightly simpler to use API: that call returns a boolean
+ * true/false instead of throwing an error.
+ * 
  * *   You must call guestfs_session_launch() before calling this function.
  * 
  * The reason is because we don't know what groups are supported by the
@@ -16645,9 +16721,11 @@ guestfs_session_ntfsresize_size(GuestfsSession *session, const gchar *device, gi
  * This command returns a list of all optional groups that this daemon
  * knows about. Note this returns both supported and unsupported groups. To
  * find out which ones the daemon can actually support you have to call
- * guestfs_session_available() on each member of the returned list.
+ * guestfs_session_available() / guestfs_session_feature_available() on
+ * each member of the returned list.
  * 
- * See also guestfs_session_available() and "AVAILABILITY" in guestfs(3).
+ * See also guestfs_session_available(),
+ * guestfs_session_feature_available() and "AVAILABILITY" in guestfs(3).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */
@@ -20692,7 +20770,8 @@ guestfs_session_btrfs_fsck(GuestfsSession *session, const gchar *device, Guestfs
  * filesystems can fail for other reasons such as it being a later version
  * of the filesystem, or having incompatible features.
  * 
- * See also guestfs_session_available(), "AVAILABILITY" in guestfs(3).
+ * See also guestfs_session_available(),
+ * guestfs_session_feature_available(), "AVAILABILITY" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
  */
@@ -23626,6 +23705,41 @@ guestfs_session_is_whole_device(GuestfsSession *session, const gchar *device, GE
   }
 
   int ret = guestfs_is_whole_device (g, device);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_feature_available:
+ * @session: (transfer none): A GuestfsSession object
+ * @groups: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * test availability of some parts of the API
+ *
+ * This is the same as guestfs_session_available(), but unlike that call it
+ * returns a simple true/false boolean result, instead of throwing an
+ * exception if a feature is not found. For other documentation see
+ * guestfs_session_available().
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_feature_available(GuestfsSession *session, gchar *const *groups, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "feature_available");
+    return -1;
+  }
+
+  int ret = guestfs_feature_available (g, groups);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;

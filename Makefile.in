@@ -1571,11 +1571,15 @@ noinst_MANS = podwrapper.1
 
 # Make clean.
 CLEANFILES = \
+	*~ \
 	html/*.html \
 	pod2htm?.tmp \
 	podwrapper.1 \
 	qemu-wrapper.sh \
-	stamp-guestfs-release-notes.pod
+	stamp-guestfs-release-notes.pod \
+	tmp/guestfs.* \
+	tmp/run-* \
+	tmp/valgrind-*.log
 
 QEMUDIR = $(HOME)/d/qemu
 QEMUBINARY = $(QEMUDIR)/x86_64-softmmu/qemu-system-x86_64
@@ -2069,7 +2073,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -2145,21 +2149,22 @@ uninstall-man: uninstall-man1
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am all-local am--refresh check check-am clean \
-	clean-cscope clean-generic clean-libtool cscope cscopelist \
-	cscopelist-recursive ctags ctags-recursive dist dist-all \
-	dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar dist-tarZ \
-	dist-xz dist-zip distcheck distclean distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags distcleancheck \
-	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-man1 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am uninstall-man uninstall-man1
+	clean-cscope clean-generic clean-libtool clean-local cscope \
+	cscopelist cscopelist-recursive ctags ctags-recursive dist \
+	dist-all dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar \
+	dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
+	ps ps-am tags tags-recursive uninstall uninstall-am \
+	uninstall-man uninstall-man1
 
 
 -include $(top_builddir)/localenv
@@ -2245,6 +2250,9 @@ podwrapper.1: podwrapper.pl
 	  $<
 	mv $@-t $@
 
+clean-local:
+	-rm -rf tmp/libguestfs??????
+
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
 # is NOT a substitute for proper testing!
@@ -2258,36 +2266,44 @@ extra-tests:
 	$(MAKE) -j1 \
 	  check-valgrind \
 	  check-valgrind-local-guests \
-	  check-with-appliance \
-	  check-valgrind-with-appliance \
+	  check-direct \
+	  check-valgrind-direct \
 	  check-with-upstream-qemu \
 	  check-with-upstream-libvirt \
 	  check-slow
 
 check-valgrind: build-test-guests
-	@for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
+	@errors=0; \
+	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
 	  echo $(MAKE) -C `dirname $$f` $@; \
-	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
-	done
+	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
 
 check-valgrind-local-guests:
 	@GUESTS=`$(top_builddir)/run ./pick-guests.pl 5`; \
+	errors=0; \
 	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
 	  echo $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@; \
-	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || exit $$?; \
-	done
+	  $(MAKE) GUESTS="$$GUESTS" -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
 
-check-with-appliance:
-	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
-	if [ "$$method" != "appliance" ]; then \
-	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check || exit $$?; \
+check-direct:
+	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
+	if [ "$$backend" != "direct" ]; then \
+	  $(MAKE) LIBGUESTFS_BACKEND=direct check || exit $$?; \
 	fi
 
-check-valgrind-with-appliance:
-	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
-	if [ "$$method" != "appliance" ]; then \
-	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check-valgrind || exit $$?; \
+check-with-appliance: check-direct
+
+check-valgrind-direct:
+	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
+	if [ "$$backend" != "direct" ]; then \
+	  $(MAKE) LIBGUESTFS_BACKEND=direct check-valgrind || exit $$?; \
 	fi
+
+check-valgrind-with-appliance: check-valgrind-direct
 
 check-with-upstream-qemu:
 	rm -f $(top_builddir)/qemu-wrapper.sh
@@ -2304,16 +2320,18 @@ $(top_builddir)/qemu-wrapper.sh: Makefile
 	mv $@-t $@
 
 check-with-upstream-libvirt:
-	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
-	if [ "$$method" = "libvirt" ] && [ -x "$(LIBVIRTDIR)/run" ]; then \
+	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
+	if [ "$$backend" = "libvirt" ] && [ -x "$(LIBVIRTDIR)/run" ]; then \
 	  $(LIBVIRTDIR)/run $(MAKE) check || exit $$?; \
 	fi
 
 check-slow: build-test-guests
+	@errors=0; \
 	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
 	  echo $(MAKE) -C `dirname $$f` $@; \
-	  $(MAKE) -C `dirname $$f` $@ || exit $$?; \
-	done
+	  $(MAKE) -C `dirname $$f` $@ || (( errors++ )); \
+	done; \
+	exit $$(( $$errors ? 1 : 0 ))
 
 build-test-guests:
 	$(MAKE) -C tests/guests check
@@ -2342,11 +2360,11 @@ help:
 	@echo "make check                        Run the standard tests"
 	@echo "make -k check                       ... and display all errors at once."
 	@echo
-	@echo "make extra-tests                  ... runs all of the following tests:"
+	@echo "make extra-tests                  Runs all of the following tests:"
 	@echo "  make check-valgrind                Run a subset of the tests under valgrind."
 	@echo "  make check-valgrind-local-guests   Test under valgrind using local guests."
-	@echo "  make check-with-appliance          Test using appliance attach-method."
-	@echo "  make check-valgrind-with-appliance Test valgrind + appliance attach-method."
+	@echo "  make check-direct                  Test using direct backend."
+	@echo "  make check-valgrind-direct         Test valgrind + direct backend."
 	@echo "  make check-with-upstream-qemu      Test using upstream qemu."
 	@echo "  make check-with-upstream-libvirt   Test using upstream libvirt."
 	@echo "  make check-slow                    Slow/long-running tests."

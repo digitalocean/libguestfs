@@ -116,6 +116,7 @@
 <ANCHOR id="guestfs-session-exists" href="guestfs/GuestfsSession.html#guestfs-session-exists">
 <ANCHOR id="guestfs-session-fallocate" href="guestfs/GuestfsSession.html#guestfs-session-fallocate">
 <ANCHOR id="guestfs-session-fallocate64" href="guestfs/GuestfsSession.html#guestfs-session-fallocate64">
+<ANCHOR id="guestfs-session-feature-available" href="guestfs/GuestfsSession.html#guestfs-session-feature-available">
 <ANCHOR id="guestfs-session-fgrep" href="guestfs/GuestfsSession.html#guestfs-session-fgrep">
 <ANCHOR id="guestfs-session-fgrepi" href="guestfs/GuestfsSession.html#guestfs-session-fgrepi">
 <ANCHOR id="guestfs-session-file" href="guestfs/GuestfsSession.html#guestfs-session-file">
@@ -134,6 +135,7 @@
 <ANCHOR id="guestfs-session-get-append" href="guestfs/GuestfsSession.html#guestfs-session-get-append">
 <ANCHOR id="guestfs-session-get-attach-method" href="guestfs/GuestfsSession.html#guestfs-session-get-attach-method">
 <ANCHOR id="guestfs-session-get-autosync" href="guestfs/GuestfsSession.html#guestfs-session-get-autosync">
+<ANCHOR id="guestfs-session-get-backend" href="guestfs/GuestfsSession.html#guestfs-session-get-backend">
 <ANCHOR id="guestfs-session-get-cachedir" href="guestfs/GuestfsSession.html#guestfs-session-get-cachedir">
 <ANCHOR id="guestfs-session-get-direct" href="guestfs/GuestfsSession.html#guestfs-session-get-direct">
 <ANCHOR id="guestfs-session-get-e2attrs" href="guestfs/GuestfsSession.html#guestfs-session-get-e2attrs">
@@ -424,6 +426,7 @@
 <ANCHOR id="guestfs-session-set-append" href="guestfs/GuestfsSession.html#guestfs-session-set-append">
 <ANCHOR id="guestfs-session-set-attach-method" href="guestfs/GuestfsSession.html#guestfs-session-set-attach-method">
 <ANCHOR id="guestfs-session-set-autosync" href="guestfs/GuestfsSession.html#guestfs-session-set-autosync">
+<ANCHOR id="guestfs-session-set-backend" href="guestfs/GuestfsSession.html#guestfs-session-set-backend">
 <ANCHOR id="guestfs-session-set-cachedir" href="guestfs/GuestfsSession.html#guestfs-session-set-cachedir">
 <ANCHOR id="guestfs-session-set-direct" href="guestfs/GuestfsSession.html#guestfs-session-set-direct">
 <ANCHOR id="guestfs-session-set-e2attrs" href="guestfs/GuestfsSession.html#guestfs-session-set-e2attrs">

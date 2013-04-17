@@ -120,6 +120,7 @@
 -export([exists/2]).
 -export([fallocate/3]).
 -export([fallocate64/3]).
+-export([feature_available/2]).
 -export([fgrep/3]).
 -export([fgrepi/3]).
 -export([file/2]).
@@ -138,6 +139,7 @@
 -export([get_append/1]).
 -export([get_attach_method/1]).
 -export([get_autosync/1]).
+-export([get_backend/1]).
 -export([get_cachedir/1]).
 -export([get_direct/1]).
 -export([get_e2attrs/2]).
@@ -432,6 +434,7 @@
 -export([set_append/2]).
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
+-export([set_backend/2]).
 -export([set_cachedir/2]).
 -export([set_direct/2]).
 -export([set_e2attrs/3, set_e2attrs/4]).
@@ -896,6 +899,9 @@ fallocate(G, Path, Len) ->
 fallocate64(G, Path, Len) ->
   call_port(G, {fallocate64, Path, Len}).
 
+feature_available(G, Groups) ->
+  call_port(G, {feature_available, Groups}).
+
 fgrep(G, Pattern, Path) ->
   call_port(G, {fgrep, Pattern, Path}).
 
@@ -951,6 +957,9 @@ get_attach_method(G) ->
 
 get_autosync(G) ->
   call_port(G, {get_autosync}).
+
+get_backend(G) ->
+  call_port(G, {get_backend}).
 
 get_cachedir(G) ->
   call_port(G, {get_cachedir}).
@@ -1872,11 +1881,14 @@ scrub_freespace(G, Dir) ->
 set_append(G, Append) ->
   call_port(G, {set_append, Append}).
 
-set_attach_method(G, Attachmethod) ->
-  call_port(G, {set_attach_method, Attachmethod}).
+set_attach_method(G, Backend) ->
+  call_port(G, {set_attach_method, Backend}).
 
 set_autosync(G, Autosync) ->
   call_port(G, {set_autosync, Autosync}).
+
+set_backend(G, Backend) ->
+  call_port(G, {set_backend, Backend}).
 
 set_cachedir(G, Cachedir) ->
   call_port(G, {set_cachedir, Cachedir}).

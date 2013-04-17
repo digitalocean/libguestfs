@@ -4212,6 +4212,37 @@ ocaml_guestfs_fallocate64 (value gv, value pathv, value lenv)
 }
 
 /* Automatically generated wrapper for function
+ * val feature_available : t -> string array -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_feature_available (value gv, value groupsv);
+
+value
+ocaml_guestfs_feature_available (value gv, value groupsv)
+{
+  CAMLparam2 (gv, groupsv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("feature_available");
+
+  char **groups = ocaml_guestfs_strings_val (g, groupsv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_feature_available (g, groups);
+  caml_leave_blocking_section ();
+  guestfs___free_string_list (groups);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "feature_available");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val fgrep : t -> string -> string -> string array
  */
 
@@ -4799,6 +4830,34 @@ ocaml_guestfs_get_autosync (value gv)
     ocaml_guestfs_raise_error (g, "get_autosync");
 
   rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val get_backend : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_get_backend (value gv);
+
+value
+ocaml_guestfs_get_backend (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_backend");
+
+  char *r;
+
+  r = guestfs_get_backend (g);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_backend");
+
+  rv = caml_copy_string (r);
+  free (r);
   CAMLreturn (rv);
 }
 
@@ -14714,23 +14773,23 @@ ocaml_guestfs_set_append (value gv, value appendv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_set_attach_method (value gv, value attachmethodv);
+value ocaml_guestfs_set_attach_method (value gv, value backendv);
 
 value
-ocaml_guestfs_set_attach_method (value gv, value attachmethodv)
+ocaml_guestfs_set_attach_method (value gv, value backendv)
 {
-  CAMLparam2 (gv, attachmethodv);
+  CAMLparam2 (gv, backendv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("set_attach_method");
 
-  char *attachmethod = guestfs___safe_strdup (g, String_val (attachmethodv));
+  char *backend = guestfs___safe_strdup (g, String_val (backendv));
   int r;
 
-  r = guestfs_set_attach_method (g, attachmethod);
-  free (attachmethod);
+  r = guestfs_set_attach_method (g, backend);
+  free (backend);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_attach_method");
 
@@ -14761,6 +14820,35 @@ ocaml_guestfs_set_autosync (value gv, value autosyncv)
   r = guestfs_set_autosync (g, autosync);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_autosync");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_backend : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_backend (value gv, value backendv);
+
+value
+ocaml_guestfs_set_backend (value gv, value backendv)
+{
+  CAMLparam2 (gv, backendv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_backend");
+
+  char *backend = guestfs___safe_strdup (g, String_val (backendv));
+  int r;
+
+  r = guestfs_set_backend (g, backend);
+  free (backend);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_backend");
 
   rv = Val_unit;
   CAMLreturn (rv);

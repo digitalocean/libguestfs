@@ -98,6 +98,8 @@ module Guestfs (
   inspect_is_multipart,
   set_attach_method,
   get_attach_method,
+  set_backend,
+  get_backend,
   inspect_get_product_variant,
   inspect_get_windows_current_control_set,
   inspect_get_drive_mappings,
@@ -452,7 +454,8 @@ module Guestfs (
   part_set_gpt_type,
   part_get_gpt_type,
   rename,
-  is_whole_device
+  is_whole_device,
+  feature_available
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -1386,8 +1389,8 @@ foreign import ccall unsafe "guestfs.h guestfs_set_attach_method" c_set_attach_m
   :: GuestfsP -> CString -> IO CInt
 
 set_attach_method :: GuestfsH -> String -> IO ()
-set_attach_method h attachmethod = do
-  r <- withCString attachmethod $ \attachmethod -> withForeignPtr h (\p -> c_set_attach_method p attachmethod)
+set_attach_method h backend = do
+  r <- withCString backend $ \backend -> withForeignPtr h (\p -> c_set_attach_method p backend)
   if (r == -1)
     then do
       err <- last_error h
@@ -1400,6 +1403,30 @@ foreign import ccall unsafe "guestfs.h guestfs_get_attach_method" c_get_attach_m
 get_attach_method :: GuestfsH -> IO String
 get_attach_method h = do
   r <- withForeignPtr h (\p -> c_get_attach_method p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_backend" c_set_backend
+  :: GuestfsP -> CString -> IO CInt
+
+set_backend :: GuestfsH -> String -> IO ()
+set_backend h backend = do
+  r <- withCString backend $ \backend -> withForeignPtr h (\p -> c_set_backend p backend)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_get_backend" c_get_backend
+  :: GuestfsP -> IO CString
+
+get_backend :: GuestfsH -> IO String
+get_backend h = do
+  r <- withForeignPtr h (\p -> c_get_backend p)
   if (r == nullPtr)
     then do
       err <- last_error h
@@ -5678,6 +5705,18 @@ foreign import ccall unsafe "guestfs.h guestfs_is_whole_device" c_is_whole_devic
 is_whole_device :: GuestfsH -> String -> IO Bool
 is_whole_device h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_is_whole_device p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_feature_available" c_feature_available
+  :: GuestfsP -> Ptr CString -> IO CInt
+
+feature_available :: GuestfsH -> [String] -> IO Bool
+feature_available h groups = do
+  r <- withMany withCString groups $ \groups -> withArray0 nullPtr groups $ \groups -> withForeignPtr h (\p -> c_feature_available p groups)
   if (r == -1)
     then do
       err <- last_error h

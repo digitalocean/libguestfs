@@ -4388,14 +4388,14 @@ py_guestfs_set_attach_method (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *attachmethod;
+  const char *backend;
 
   if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_attach_method",
-                         &py_g, &attachmethod))
+                         &py_g, &backend))
     goto out;
   g = get_handle (py_g);
 
-  r = guestfs_set_attach_method (g, attachmethod);
+  r = guestfs_set_attach_method (g, backend);
 
   if (r == -1) {
     PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
@@ -4423,6 +4423,65 @@ py_guestfs_get_attach_method (PyObject *self, PyObject *args)
   g = get_handle (py_g);
 
   r = guestfs_get_attach_method (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_set_backend (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *backend;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_backend",
+                         &py_g, &backend))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_set_backend (g, backend);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_backend (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_get_backend",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_backend (g);
 
   if (r == NULL) {
     PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
@@ -20748,6 +20807,44 @@ py_guestfs_is_whole_device (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_feature_available (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  PyObject *py_groups;
+  char **groups = NULL;
+
+  if (!PyArg_ParseTuple (args, (char *) "OO:guestfs_feature_available",
+                         &py_g, &py_groups))
+    goto out;
+  g = get_handle (py_g);
+  groups = get_string_list (py_groups);
+  if (!groups) goto out;
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_feature_available (g, groups);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  py_r = PyLong_FromLong ((long) r);
+
+ out:
+  free (groups);
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -20848,6 +20945,8 @@ static PyMethodDef methods[] = {
   { (char *) "inspect_is_multipart", py_guestfs_inspect_is_multipart, METH_VARARGS, NULL },
   { (char *) "set_attach_method", py_guestfs_set_attach_method, METH_VARARGS, NULL },
   { (char *) "get_attach_method", py_guestfs_get_attach_method, METH_VARARGS, NULL },
+  { (char *) "set_backend", py_guestfs_set_backend, METH_VARARGS, NULL },
+  { (char *) "get_backend", py_guestfs_get_backend, METH_VARARGS, NULL },
   { (char *) "inspect_get_product_variant", py_guestfs_inspect_get_product_variant, METH_VARARGS, NULL },
   { (char *) "inspect_get_windows_current_control_set", py_guestfs_inspect_get_windows_current_control_set, METH_VARARGS, NULL },
   { (char *) "inspect_get_drive_mappings", py_guestfs_inspect_get_drive_mappings, METH_VARARGS, NULL },
@@ -21269,6 +21368,7 @@ static PyMethodDef methods[] = {
   { (char *) "part_get_gpt_type", py_guestfs_part_get_gpt_type, METH_VARARGS, NULL },
   { (char *) "rename", py_guestfs_rename, METH_VARARGS, NULL },
   { (char *) "is_whole_device", py_guestfs_is_whole_device, METH_VARARGS, NULL },
+  { (char *) "feature_available", py_guestfs_feature_available, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

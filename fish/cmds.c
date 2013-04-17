@@ -103,6 +103,8 @@ static int run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_is_multipart (const char *cmd, size_t argc, char *argv[]);
 static int run_set_attach_method (const char *cmd, size_t argc, char *argv[]);
 static int run_get_attach_method (const char *cmd, size_t argc, char *argv[]);
+static int run_set_backend (const char *cmd, size_t argc, char *argv[]);
+static int run_get_backend (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_product_variant (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_windows_current_control_set (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[]);
@@ -524,6 +526,7 @@ static int run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_rename (const char *cmd, size_t argc, char *argv[]);
 static int run_is_whole_device (const char *cmd, size_t argc, char *argv[]);
+static int run_feature_available (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -761,7 +764,7 @@ struct command_entry get_pid_cmd_entry = {
 
 struct command_entry version_cmd_entry = {
   .name = "version",
-  .help = "NAME\n    version - get the library version number\n\nSYNOPSIS\n     version\n\nDESCRIPTION\n    Return the libguestfs version number that the program is linked against.\n\n    Note that because of dynamic linking this is not necessarily the version\n    of libguestfs that you compiled against. You can compile the program,\n    and then at runtime dynamically link against a completely different\n    \"libguestfs.so\" library.\n\n    This call was added in version 1.0.58. In previous versions of\n    libguestfs there was no way to get the version number. From C code you\n    can use dynamic linker functions to find out if this symbol exists (if\n    it doesn't, then it's an earlier version).\n\n    The call returns a structure with four elements. The first three\n    (\"major\", \"minor\" and \"release\") are numbers and correspond to the usual\n    version triplet. The fourth element (\"extra\") is a string and is\n    normally empty, but may be used for distro-specific information.\n\n    To construct the original version string: \"$major.$minor.$release$extra\"\n\n    See also: \"LIBGUESTFS VERSION NUMBERS\" in guestfs(3).\n\n    *Note:* Don't use this call to test for availability of features. In\n    enterprise distributions we backport features from later versions into\n    earlier versions, making this an unreliable way to test for features.\n    Use \"available\" instead.\n\n",
+  .help = "NAME\n    version - get the library version number\n\nSYNOPSIS\n     version\n\nDESCRIPTION\n    Return the libguestfs version number that the program is linked against.\n\n    Note that because of dynamic linking this is not necessarily the version\n    of libguestfs that you compiled against. You can compile the program,\n    and then at runtime dynamically link against a completely different\n    \"libguestfs.so\" library.\n\n    This call was added in version 1.0.58. In previous versions of\n    libguestfs there was no way to get the version number. From C code you\n    can use dynamic linker functions to find out if this symbol exists (if\n    it doesn't, then it's an earlier version).\n\n    The call returns a structure with four elements. The first three\n    (\"major\", \"minor\" and \"release\") are numbers and correspond to the usual\n    version triplet. The fourth element (\"extra\") is a string and is\n    normally empty, but may be used for distro-specific information.\n\n    To construct the original version string: \"$major.$minor.$release$extra\"\n\n    See also: \"LIBGUESTFS VERSION NUMBERS\" in guestfs(3).\n\n    *Note:* Don't use this call to test for availability of features. In\n    enterprise distributions we backport features from later versions into\n    earlier versions, making this an unreliable way to test for features.\n    Use \"available\" or \"feature_available\" instead.\n\n",
   .run = run_version
 };
 
@@ -989,14 +992,26 @@ struct command_entry inspect_is_multipart_cmd_entry = {
 
 struct command_entry set_attach_method_cmd_entry = {
   .name = "set-attach-method",
-  .help = "NAME\n    set-attach-method - set the attach method\n\nSYNOPSIS\n     set-attach-method attachmethod\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the back end guestfsd\n    daemon.\n\n    See \"ATTACH METHOD\" in guestfs(3).\n\n    You can use 'attach-method' as an alias for this command.\n\n",
+  .help = "NAME\n    set-attach-method - set the backend\n\nSYNOPSIS\n     set-attach-method backend\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the backend guestfsd\n    daemon.\n\n    See \"BACKEND\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"set-backend\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n    You can use 'attach-method' as an alias for this command.\n\n",
   .run = run_set_attach_method
 };
 
 struct command_entry get_attach_method_cmd_entry = {
   .name = "get-attach-method",
-  .help = "NAME\n    get-attach-method - get the attach method\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current attach method.\n\n    See \"set_attach_method\" and \"ATTACH METHOD\" in guestfs(3).\n\n",
+  .help = "NAME\n    get-attach-method - get the backend\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current backend.\n\n    See \"set_backend\" and \"BACKEND\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"get-backend\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_attach_method
+};
+
+struct command_entry set_backend_cmd_entry = {
+  .name = "set-backend",
+  .help = "NAME\n    set-backend - set the backend\n\nSYNOPSIS\n     set-backend backend\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the backend guestfsd\n    daemon.\n\n    This handle property was previously called the \"attach method\".\n\n    See \"BACKEND\" in guestfs(3).\n\n    You can use 'backend' as an alias for this command.\n\n",
+  .run = run_set_backend
+};
+
+struct command_entry get_backend_cmd_entry = {
+  .name = "get-backend",
+  .help = "NAME\n    get-backend - get the backend\n\nSYNOPSIS\n     get-backend\n\nDESCRIPTION\n    Return the current backend.\n\n    This handle property was previously called the \"attach method\".\n\n    See \"set_backend\" and \"BACKEND\" in guestfs(3).\n\n",
+  .run = run_get_backend
 };
 
 struct command_entry inspect_get_product_variant_cmd_entry = {
@@ -1169,7 +1184,7 @@ struct command_entry disk_has_backing_file_cmd_entry = {
 
 struct command_entry remove_drive_cmd_entry = {
   .name = "remove-drive",
-  .help = "NAME\n    remove-drive - remove a disk image\n\nSYNOPSIS\n     remove-drive label\n\nDESCRIPTION\n    This function is conceptually the opposite of \"add_drive_opts\". It\n    removes the drive that was previously added with label \"label\".\n\n    Note that in order to remove drives, you have to add them with labels\n    (see the optional \"label\" argument to \"add_drive_opts\"). If you didn't\n    use a label, then they cannot be removed.\n\n    You can call this function before or after launching the handle. If\n    called after launch, if the attach-method supports it, we try to hot\n    unplug the drive: see \"HOTPLUGGING\" in guestfs(3). The disk must not be\n    in use (eg. mounted) when you do this. We try to detect if the disk is\n    in use and stop you from doing this.\n\n",
+  .help = "NAME\n    remove-drive - remove a disk image\n\nSYNOPSIS\n     remove-drive label\n\nDESCRIPTION\n    This function is conceptually the opposite of \"add_drive_opts\". It\n    removes the drive that was previously added with label \"label\".\n\n    Note that in order to remove drives, you have to add them with labels\n    (see the optional \"label\" argument to \"add_drive_opts\"). If you didn't\n    use a label, then they cannot be removed.\n\n    You can call this function before or after launching the handle. If\n    called after launch, if the backend supports it, we try to hot unplug\n    the drive: see \"HOTPLUGGING\" in guestfs(3). The disk must not be in use\n    (eg. mounted) when you do this. We try to detect if the disk is in use\n    and stop you from doing this.\n\n",
   .run = run_remove_drive
 };
 
@@ -2489,7 +2504,7 @@ struct command_entry fill_cmd_entry = {
 
 struct command_entry available_cmd_entry = {
   .name = "available",
-  .help = "NAME\n    available - test availability of some parts of the API\n\nSYNOPSIS\n     available groups\n\nDESCRIPTION\n    This command is used to check the availability of some groups of\n    functionality in the appliance, which not all builds of the libguestfs\n    appliance will be able to provide.\n\n    The libguestfs groups, and the functions that those groups correspond\n    to, are listed in \"AVAILABILITY\" in guestfs(3). You can also fetch this\n    list at runtime by calling \"available_all_groups\".\n\n    The argument \"groups\" is a list of group names, eg: \"[\"inotify\",\n    \"augeas\"]\" would check for the availability of the Linux inotify\n    functions and Augeas (configuration file editing) functions.\n\n    The command returns no error if *all* requested groups are available.\n\n    It fails with an error if one or more of the requested groups is\n    unavailable in the appliance.\n\n    If an unknown group name is included in the list of groups then an error\n    is always returned.\n\n    *Notes:*\n\n    *   You must call \"launch\" before calling this function.\n\n        The reason is because we don't know what groups are supported by the\n        appliance/daemon until it is running and can be queried.\n\n    *   If a group of functions is available, this does not necessarily mean\n        that they will work. You still have to check for errors when calling\n        individual API functions even if they are available.\n\n    *   It is usually the job of distro packagers to build complete\n        functionality into the libguestfs appliance. Upstream libguestfs, if\n        built from source with all requirements satisfied, will support\n        everything.\n\n    *   This call was added in version 1.0.80. In previous versions of\n        libguestfs all you could do would be to speculatively execute a\n        command to find out if the daemon implemented it. See also\n        \"version\".\n\n    See also \"filesystem_available\".\n\n",
+  .help = "NAME\n    available - test availability of some parts of the API\n\nSYNOPSIS\n     available groups\n\nDESCRIPTION\n    This command is used to check the availability of some groups of\n    functionality in the appliance, which not all builds of the libguestfs\n    appliance will be able to provide.\n\n    The libguestfs groups, and the functions that those groups correspond\n    to, are listed in \"AVAILABILITY\" in guestfs(3). You can also fetch this\n    list at runtime by calling \"available_all_groups\".\n\n    The argument \"groups\" is a list of group names, eg: \"[\"inotify\",\n    \"augeas\"]\" would check for the availability of the Linux inotify\n    functions and Augeas (configuration file editing) functions.\n\n    The command returns no error if *all* requested groups are available.\n\n    It fails with an error if one or more of the requested groups is\n    unavailable in the appliance.\n\n    If an unknown group name is included in the list of groups then an error\n    is always returned.\n\n    *Notes:*\n\n    *   \"feature_available\" is the same as this call, but with a slightly\n        simpler to use API: that call returns a boolean true/false instead\n        of throwing an error.\n\n    *   You must call \"launch\" before calling this function.\n\n        The reason is because we don't know what groups are supported by the\n        appliance/daemon until it is running and can be queried.\n\n    *   If a group of functions is available, this does not necessarily mean\n        that they will work. You still have to check for errors when calling\n        individual API functions even if they are available.\n\n    *   It is usually the job of distro packagers to build complete\n        functionality into the libguestfs appliance. Upstream libguestfs, if\n        built from source with all requirements satisfied, will support\n        everything.\n\n    *   This call was added in version 1.0.80. In previous versions of\n        libguestfs all you could do would be to speculatively execute a\n        command to find out if the daemon implemented it. See also\n        \"version\".\n\n    See also \"filesystem_available\".\n\n",
   .run = run_available
 };
 
@@ -2687,7 +2702,7 @@ struct command_entry ntfsresize_size_cmd_entry = {
 
 struct command_entry available_all_groups_cmd_entry = {
   .name = "available-all-groups",
-  .help = "NAME\n    available-all-groups - return a list of all optional groups\n\nSYNOPSIS\n     available-all-groups\n\nDESCRIPTION\n    This command returns a list of all optional groups that this daemon\n    knows about. Note this returns both supported and unsupported groups. To\n    find out which ones the daemon can actually support you have to call\n    \"available\" on each member of the returned list.\n\n    See also \"available\" and \"AVAILABILITY\" in guestfs(3).\n\n",
+  .help = "NAME\n    available-all-groups - return a list of all optional groups\n\nSYNOPSIS\n     available-all-groups\n\nDESCRIPTION\n    This command returns a list of all optional groups that this daemon\n    knows about. Note this returns both supported and unsupported groups. To\n    find out which ones the daemon can actually support you have to call\n    \"available\" / \"feature_available\" on each member of the returned list.\n\n    See also \"available\", \"feature_available\" and \"AVAILABILITY\" in\n    guestfs(3).\n\n",
   .run = run_available_all_groups
 };
 
@@ -3167,7 +3182,7 @@ struct command_entry btrfs_fsck_cmd_entry = {
 
 struct command_entry filesystem_available_cmd_entry = {
   .name = "filesystem-available",
-  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be mounted, since\n    filesystems can fail for other reasons such as it being a later version\n    of the filesystem, or having incompatible features.\n\n    See also \"available\", \"AVAILABILITY\" in guestfs(3).\n\n",
+  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be mounted, since\n    filesystems can fail for other reasons such as it being a later version\n    of the filesystem, or having incompatible features.\n\n    See also \"available\", \"feature_available\", \"AVAILABILITY\" in guestfs(3).\n\n",
   .run = run_filesystem_available
 };
 
@@ -3525,6 +3540,12 @@ struct command_entry is_whole_device_cmd_entry = {
   .run = run_is_whole_device
 };
 
+struct command_entry feature_available_cmd_entry = {
+  .name = "feature-available",
+  .help = "NAME\n    feature-available - test availability of some parts of the API\n\nSYNOPSIS\n     feature-available groups\n\nDESCRIPTION\n    This is the same as \"available\", but unlike that call it returns a\n    simple true/false boolean result, instead of throwing an exception if a\n    feature is not found. For other documentation see \"available\".\n\n",
+  .run = run_feature_available
+};
+
 void
 list_commands (void)
 {
@@ -3634,6 +3655,7 @@ list_commands (void)
   printf ("%-20s %s\n", "exists", _("test if file or directory exists"));
   printf ("%-20s %s\n", "fallocate", _("preallocate a file in the guest filesystem"));
   printf ("%-20s %s\n", "fallocate64", _("preallocate a file in the guest filesystem"));
+  printf ("%-20s %s\n", "feature-available", _("test availability of some parts of the API"));
   printf ("%-20s %s\n", "fgrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "fgrepi", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "file", _("determine file type"));
@@ -3650,8 +3672,9 @@ list_commands (void)
   printf ("%-20s %s\n", "fsck", _("run the filesystem checker"));
   printf ("%-20s %s\n", "fstrim", _("trim free space in a filesystem"));
   printf ("%-20s %s\n", "get-append", _("get the additional kernel options"));
-  printf ("%-20s %s\n", "get-attach-method", _("get the attach method"));
+  printf ("%-20s %s\n", "get-attach-method", _("get the backend"));
   printf ("%-20s %s\n", "get-autosync", _("get autosync mode"));
+  printf ("%-20s %s\n", "get-backend", _("get the backend"));
   printf ("%-20s %s\n", "get-cachedir", _("get the appliance cache directory"));
   printf ("%-20s %s\n", "get-direct", _("get direct appliance mode flag"));
   printf ("%-20s %s\n", "get-e2attrs", _("get ext2 file attributes of a file"));
@@ -3916,8 +3939,9 @@ list_commands (void)
   printf ("%-20s %s\n", "scrub-file", _("scrub (securely wipe) a file"));
   printf ("%-20s %s\n", "scrub-freespace", _("scrub (securely wipe) free space"));
   printf ("%-20s %s\n", "set-append", _("add options to kernel command line"));
-  printf ("%-20s %s\n", "set-attach-method", _("set the attach method"));
+  printf ("%-20s %s\n", "set-attach-method", _("set the backend"));
   printf ("%-20s %s\n", "set-autosync", _("set autosync mode"));
+  printf ("%-20s %s\n", "set-backend", _("set the backend"));
   printf ("%-20s %s\n", "set-cachedir", _("set the appliance cache directory"));
   printf ("%-20s %s\n", "set-direct", _("enable or disable direct appliance mode"));
   printf ("%-20s %s\n", "set-e2attrs", _("set ext2 file attributes of a file"));
@@ -6009,7 +6033,7 @@ run_set_attach_method (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *attachmethod;
+  const char *backend;
   size_t i = 0;
 
   if (argc != 1) {
@@ -6017,8 +6041,8 @@ run_set_attach_method (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  attachmethod = argv[i++];
-  r = guestfs_set_attach_method (g, attachmethod);
+  backend = argv[i++];
+  r = guestfs_set_attach_method (g, backend);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -6038,6 +6062,49 @@ run_get_attach_method (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   r = guestfs_get_attach_method (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_backend (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *backend;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  backend = argv[i++];
+  r = guestfs_set_backend (g, backend);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_backend (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_backend (g);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -21207,6 +21274,32 @@ run_is_whole_device (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_feature_available (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char **groups;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  groups = parse_string_list (argv[i++]);
+  if (groups == NULL) goto out_groups;
+  r = guestfs_feature_available (g, groups);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
+  guestfs___free_string_list (groups);
+ out_groups:
  out_noargs:
   return ret;
 }

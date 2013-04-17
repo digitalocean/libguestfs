@@ -359,9 +359,8 @@ L<sh(1)> for details.
 =head1 関連項目
 
 L<hivex(3)>, L<hivexsh(1)>, L<hivexregedit(1)>, L<guestfs(3)>,
-L<guestfish(1)>, L<virt-cat(1)>, L<Sys::Guestfs(3)>,
-L<Sys::Guestfs::Lib(3)>, L<Win::Hivex(3)>, L<Win::Hivex::Regedit(3)>,
-L<Sys::Virt(3)>, L<http://libguestfs.org/>.
+L<guestfish(1)>, L<virt-cat(1)>, L<Sys::Guestfs(3)>, L<Win::Hivex(3)>,
+L<Win::Hivex::Regedit(3)>, L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

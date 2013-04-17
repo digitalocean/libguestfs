@@ -214,8 +214,10 @@ gchar *guestfs_session_inspect_get_format(GuestfsSession *session, const gchar *
 gint8 guestfs_session_inspect_is_live(GuestfsSession *session, const gchar *root, GError **err);
 gint8 guestfs_session_inspect_is_netinst(GuestfsSession *session, const gchar *root, GError **err);
 gint8 guestfs_session_inspect_is_multipart(GuestfsSession *session, const gchar *root, GError **err);
-gboolean guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachmethod, GError **err);
+gboolean guestfs_session_set_attach_method(GuestfsSession *session, const gchar *backend, GError **err);
 gchar *guestfs_session_get_attach_method(GuestfsSession *session, GError **err);
+gboolean guestfs_session_set_backend(GuestfsSession *session, const gchar *backend, GError **err);
+gchar *guestfs_session_get_backend(GuestfsSession *session, GError **err);
 gchar *guestfs_session_inspect_get_product_variant(GuestfsSession *session, const gchar *root, GError **err);
 gchar *guestfs_session_inspect_get_windows_current_control_set(GuestfsSession *session, const gchar *root, GError **err);
 GHashTable *guestfs_session_inspect_get_drive_mappings(GuestfsSession *session, const gchar *root, GError **err);
@@ -637,6 +639,7 @@ gboolean guestfs_session_part_set_gpt_type(GuestfsSession *session, const gchar 
 gchar *guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gboolean guestfs_session_rename(GuestfsSession *session, const gchar *oldpath, const gchar *newpath, GError **err);
 gint8 guestfs_session_is_whole_device(GuestfsSession *session, const gchar *device, GError **err);
+gint8 guestfs_session_feature_available(GuestfsSession *session, gchar *const *groups, GError **err);
 
 G_END_DECLS
 

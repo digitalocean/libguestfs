@@ -1258,6 +1258,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_feature_available ##### -->
+<para>
+
+</para>
+
+@session: 
+@groups: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_fgrep ##### -->
 <para>
 
@@ -1455,6 +1466,16 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_get_autosync ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_backend ##### -->
 <para>
 
 </para>
@@ -4742,7 +4763,7 @@ GuestfsSession
 </para>
 
 @session: 
-@attachmethod: 
+@backend: 
 @err: 
 @Returns: 
 
@@ -4754,6 +4775,17 @@ GuestfsSession
 
 @session: 
 @autosync: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_backend ##### -->
+<para>
+
+</para>
+
+@session: 
+@backend: 
 @err: 
 @Returns: 
 

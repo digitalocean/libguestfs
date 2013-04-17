@@ -661,6 +661,9 @@ val fallocate : t -> string -> int -> unit
 val fallocate64 : t -> string -> int64 -> unit
 (** preallocate a file in the guest filesystem *)
 
+val feature_available : t -> string array -> bool
+(** test availability of some parts of the API *)
+
 val fgrep : t -> string -> string -> string array
 (** return lines matching a pattern
 
@@ -716,10 +719,16 @@ val get_append : t -> string option
 (** get the additional kernel options *)
 
 val get_attach_method : t -> string
-(** get the attach method *)
+(** get the backend
+
+    @deprecated Use {!get_backend} instead
+ *)
 
 val get_autosync : t -> bool
 (** get autosync mode *)
+
+val get_backend : t -> string
+(** get the backend *)
 
 val get_cachedir : t -> string
 (** get the appliance cache directory *)
@@ -1612,10 +1621,16 @@ val set_append : t -> string option -> unit
 (** add options to kernel command line *)
 
 val set_attach_method : t -> string -> unit
-(** set the attach method *)
+(** set the backend
+
+    @deprecated Use {!set_backend} instead
+ *)
 
 val set_autosync : t -> bool -> unit
 (** set autosync mode *)
+
+val set_backend : t -> string -> unit
+(** set the backend *)
 
 val set_cachedir : t -> string option -> unit
 (** set the appliance cache directory *)
@@ -2126,6 +2141,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method exists : string -> bool
   method fallocate : string -> int -> unit
   method fallocate64 : string -> int64 -> unit
+  method feature_available : string array -> bool
   method fgrep : string -> string -> string array
   method fgrepi : string -> string -> string array
   method file : string -> string
@@ -2144,6 +2160,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_append : unit -> string option
   method get_attach_method : unit -> string
   method get_autosync : unit -> bool
+  method get_backend : unit -> string
   method get_cachedir : unit -> string
   method get_direct : unit -> bool
   method get_e2attrs : string -> string
@@ -2438,6 +2455,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_append : string option -> unit
   method set_attach_method : string -> unit
   method set_autosync : bool -> unit
+  method set_backend : string -> unit
   method set_cachedir : string option -> unit
   method set_direct : bool -> unit
   method set_e2attrs : ?clear:bool -> string -> string -> unit

@@ -2342,7 +2342,7 @@ ruby_guestfs_get_pid (VALUE gv)
  * features. In enterprise distributions we backport
  * features from later versions into earlier versions,
  * making this an unreliable way to test for features. Use
- * "g.available" instead.
+ * "g.available" or "g.feature_available" instead.
  *
  *
  * (For the C API documentation for this function, see
@@ -4590,32 +4590,39 @@ ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
 
 /*
  * call-seq:
- *   g.set_attach_method(attachmethod) -> nil
+ *   g.set_attach_method(backend) -> nil
  *
- * set the attach method
+ * set the backend
  *
  * Set the method that libguestfs uses to connect to the
- * back end guestfsd daemon.
+ * backend guestfsd daemon.
  * 
- * See "ATTACH METHOD" in guestfs(3).
+ * See "BACKEND" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "set_backend" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_set_attach_method+[http://libguestfs.org/guestfs.3.html#guestfs_set_attach_method]).
  */
 static VALUE
-ruby_guestfs_set_attach_method (VALUE gv, VALUE attachmethodv)
+ruby_guestfs_set_attach_method (VALUE gv, VALUE backendv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "set_attach_method");
 
-  const char *attachmethod = StringValueCStr (attachmethodv);
+  const char *backend = StringValueCStr (backendv);
 
   int r;
 
-  r = guestfs_set_attach_method (g, attachmethod);
+  r = guestfs_set_attach_method (g, backend);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -4626,12 +4633,18 @@ ruby_guestfs_set_attach_method (VALUE gv, VALUE attachmethodv)
  * call-seq:
  *   g.get_attach_method() -> string
  *
- * get the attach method
+ * get the backend
  *
- * Return the current attach method.
+ * Return the current backend.
  * 
- * See "g.set_attach_method" and "ATTACH METHOD" in
- * guestfs(3).
+ * See "g.set_backend" and "BACKEND" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "get_backend" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -4649,6 +4662,80 @@ ruby_guestfs_get_attach_method (VALUE gv)
   char *r;
 
   r = guestfs_get_attach_method (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.set_backend(backend) -> nil
+ *
+ * set the backend
+ *
+ * Set the method that libguestfs uses to connect to the
+ * backend guestfsd daemon.
+ * 
+ * This handle property was previously called the "attach
+ * method".
+ * 
+ * See "BACKEND" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_backend+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend]).
+ */
+static VALUE
+ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_backend");
+
+  const char *backend = StringValueCStr (backendv);
+
+  int r;
+
+  r = guestfs_set_backend (g, backend);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_backend() -> string
+ *
+ * get the backend
+ *
+ * Return the current backend.
+ * 
+ * This handle property was previously called the "attach
+ * method".
+ * 
+ * See "g.set_backend" and "BACKEND" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_backend+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend]).
+ */
+static VALUE
+ruby_guestfs_get_backend (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_backend");
+
+
+  char *r;
+
+  r = guestfs_get_backend (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -6090,11 +6177,11 @@ ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
  * they cannot be removed.
  * 
  * You can call this function before or after launching the
- * handle. If called after launch, if the attach-method
- * supports it, we try to hot unplug the drive: see
- * "HOTPLUGGING" in guestfs(3). The disk must not be in use
- * (eg. mounted) when you do this. We try to detect if the
- * disk is in use and stop you from doing this.
+ * handle. If called after launch, if the backend supports
+ * it, we try to hot unplug the drive: see "HOTPLUGGING" in
+ * guestfs(3). The disk must not be in use (eg. mounted)
+ * when you do this. We try to detect if the disk is in use
+ * and stop you from doing this.
  *
  *
  * (For the C API documentation for this function, see
@@ -15522,6 +15609,11 @@ ruby_guestfs_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
  * 
  * *Notes:*
  * 
+ * *   "g.feature_available" is the same as this call, but
+ * with a slightly simpler to use API: that call
+ * returns a boolean true/false instead of throwing an
+ * error.
+ * 
  * *   You must call "g.launch" before calling this
  * function.
  * 
@@ -16791,9 +16883,11 @@ ruby_guestfs_ntfsresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * this daemon knows about. Note this returns both
  * supported and unsupported groups. To find out which ones
  * the daemon can actually support you have to call
- * "g.available" on each member of the returned list.
+ * "g.available" / "g.feature_available" on each member of
+ * the returned list.
  * 
- * See also "g.available" and "AVAILABILITY" in guestfs(3).
+ * See also "g.available", "g.feature_available" and
+ * "AVAILABILITY" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -20847,7 +20941,8 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
  * for other reasons such as it being a later version of
  * the filesystem, or having incompatible features.
  * 
- * See also "g.available", "AVAILABILITY" in guestfs(3).
+ * See also "g.available", "g.feature_available",
+ * "AVAILABILITY" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -23727,6 +23822,52 @@ ruby_guestfs_is_whole_device (VALUE gv, VALUE devicev)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.feature_available(groups) -> [True|False]
+ *
+ * test availability of some parts of the API
+ *
+ * This is the same as "g.available", but unlike that call
+ * it returns a simple true/false boolean result, instead
+ * of throwing an exception if a feature is not found. For
+ * other documentation see "g.available".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_feature_available+[http://libguestfs.org/guestfs.3.html#guestfs_feature_available]).
+ */
+static VALUE
+ruby_guestfs_feature_available (VALUE gv, VALUE groupsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "feature_available");
+
+  char **groups;
+  Check_Type (groupsv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (groupsv);
+    groups = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (groupsv, i);
+      groups[i] = StringValueCStr (v);
+    }
+    groups[len] = NULL;
+  }
+
+  int r;
+
+  r = guestfs_feature_available (g, groups);
+  free (groups);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -23958,6 +24099,10 @@ Init__guestfs (void)
         ruby_guestfs_set_attach_method, 1);
   rb_define_method (c_guestfs, "get_attach_method",
         ruby_guestfs_get_attach_method, 0);
+  rb_define_method (c_guestfs, "set_backend",
+        ruby_guestfs_set_backend, 1);
+  rb_define_method (c_guestfs, "get_backend",
+        ruby_guestfs_get_backend, 0);
   rb_define_method (c_guestfs, "inspect_get_product_variant",
         ruby_guestfs_inspect_get_product_variant, 1);
   rb_define_method (c_guestfs, "inspect_get_windows_current_control_set",
@@ -24814,4 +24959,6 @@ Init__guestfs (void)
         ruby_guestfs_rename, 2);
   rb_define_method (c_guestfs, "is_whole_device",
         ruby_guestfs_is_whole_device, 1);
+  rb_define_method (c_guestfs, "feature_available",
+        ruby_guestfs_feature_available, 1);
 }

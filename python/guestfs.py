@@ -583,7 +583,7 @@ class GuestFS(object):
         features. In enterprise distributions we backport
         features from later versions into earlier versions,
         making this an unreliable way to test for features. Use
-        "g.available" instead.
+        "g.available" or "g.feature_available" instead.
         
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_version structure.
@@ -1698,23 +1698,59 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.inspect_is_multipart (self._o, root)
 
-    def set_attach_method (self, attachmethod):
+    def set_attach_method (self, backend):
         """Set the method that libguestfs uses to connect to the
-        back end guestfsd daemon.
+        backend guestfsd daemon.
         
-        See "ATTACH METHOD" in guestfs(3).
+        See "BACKEND" in guestfs(3).
+        
+        *This function is deprecated.* In new code, use the
+        "set_backend" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
-        return libguestfsmod.set_attach_method (self._o, attachmethod)
+        return libguestfsmod.set_attach_method (self._o, backend)
 
     def get_attach_method (self):
-        """Return the current attach method.
+        """Return the current backend.
         
-        See "g.set_attach_method" and "ATTACH METHOD" in
-        guestfs(3).
+        See "g.set_backend" and "BACKEND" in guestfs(3).
+        
+        *This function is deprecated.* In new code, use the
+        "get_backend" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         return libguestfsmod.get_attach_method (self._o)
+
+    def set_backend (self, backend):
+        """Set the method that libguestfs uses to connect to the
+        backend guestfsd daemon.
+        
+        This handle property was previously called the "attach
+        method".
+        
+        See "BACKEND" in guestfs(3).
+        """
+        self._check_not_closed ()
+        return libguestfsmod.set_backend (self._o, backend)
+
+    def get_backend (self):
+        """Return the current backend.
+        
+        This handle property was previously called the "attach
+        method".
+        
+        See "g.set_backend" and "BACKEND" in guestfs(3).
+        """
+        self._check_not_closed ()
+        return libguestfsmod.get_backend (self._o)
 
     def inspect_get_product_variant (self, root):
         """This returns the product variant of the inspected
@@ -2252,11 +2288,11 @@ class GuestFS(object):
         they cannot be removed.
         
         You can call this function before or after launching the
-        handle. If called after launch, if the attach-method
-        supports it, we try to hot unplug the drive: see
-        "HOTPLUGGING" in guestfs(3). The disk must not be in use
-        (eg. mounted) when you do this. We try to detect if the
-        disk is in use and stop you from doing this.
+        handle. If called after launch, if the backend supports
+        it, we try to hot unplug the drive: see "HOTPLUGGING" in
+        guestfs(3). The disk must not be in use (eg. mounted)
+        when you do this. We try to detect if the disk is in use
+        and stop you from doing this.
         """
         self._check_not_closed ()
         return libguestfsmod.remove_drive (self._o, label)
@@ -5434,6 +5470,11 @@ class GuestFS(object):
         
         *Notes:*
         
+        *   "g.feature_available" is the same as this call, but
+        with a slightly simpler to use API: that call
+        returns a boolean true/false instead of throwing an
+        error.
+        
         *   You must call "g.launch" before calling this
         function.
         
@@ -5823,9 +5864,11 @@ class GuestFS(object):
         this daemon knows about. Note this returns both
         supported and unsupported groups. To find out which ones
         the daemon can actually support you have to call
-        "g.available" on each member of the returned list.
+        "g.available" / "g.feature_available" on each member of
+        the returned list.
         
-        See also "g.available" and "AVAILABILITY" in guestfs(3).
+        See also "g.available", "g.feature_available" and
+        "AVAILABILITY" in guestfs(3).
         
         This function returns a list of strings.
         """
@@ -7106,7 +7149,8 @@ class GuestFS(object):
         for other reasons such as it being a later version of
         the filesystem, or having incompatible features.
         
-        See also "g.available", "AVAILABILITY" in guestfs(3).
+        See also "g.available", "g.feature_available",
+        "AVAILABILITY" in guestfs(3).
         """
         self._check_not_closed ()
         return libguestfsmod.filesystem_available (self._o, filesystem)
@@ -7825,4 +7869,14 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         return libguestfsmod.is_whole_device (self._o, device)
+
+    def feature_available (self, groups):
+        """This is the same as "g.available", but unlike that call
+        it returns a simple true/false boolean result, instead
+        of throwing an exception if a feature is not found. For
+        other documentation see "g.available".
+        """
+        groups = list (groups)
+        self._check_not_closed ()
+        return libguestfsmod.feature_available (self._o, groups)
 

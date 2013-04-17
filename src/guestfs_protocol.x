@@ -2766,6 +2766,14 @@ struct guestfs_internal_rhbz914931_args {
   int count;
 };
 
+struct guestfs_feature_available_args {
+  guestfs_str groups<>;
+};
+
+struct guestfs_feature_available_ret {
+  bool isavailable;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3157,10 +3165,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_RENAME = 394,
   GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
   GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
-  GUESTFS_PROC_INTERNAL_RHBZ914931 = 397
+  GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
+  GUESTFS_PROC_FEATURE_AVAILABLE = 398
 };
 
-const GUESTFS_MAX_PROC_NR = 397;
+const GUESTFS_MAX_PROC_NR = 398;
 
 /* The remote procedure call protocol. */
 

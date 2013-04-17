@@ -158,6 +158,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_exists, NULL)
   PHP_FE (guestfs_fallocate, NULL)
   PHP_FE (guestfs_fallocate64, NULL)
+  PHP_FE (guestfs_feature_available, NULL)
   PHP_FE (guestfs_fgrep, NULL)
   PHP_FE (guestfs_fgrepi, NULL)
   PHP_FE (guestfs_file, NULL)
@@ -176,6 +177,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_get_append, NULL)
   PHP_FE (guestfs_get_attach_method, NULL)
   PHP_FE (guestfs_get_autosync, NULL)
+  PHP_FE (guestfs_get_backend, NULL)
   PHP_FE (guestfs_get_cachedir, NULL)
   PHP_FE (guestfs_get_direct, NULL)
   PHP_FE (guestfs_get_e2attrs, NULL)
@@ -466,6 +468,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_set_append, NULL)
   PHP_FE (guestfs_set_attach_method, NULL)
   PHP_FE (guestfs_set_autosync, NULL)
+  PHP_FE (guestfs_set_backend, NULL)
   PHP_FE (guestfs_set_cachedir, NULL)
   PHP_FE (guestfs_set_direct, NULL)
   PHP_FE (guestfs_set_e2attrs, NULL)
@@ -4531,6 +4534,64 @@ PHP_FUNCTION (guestfs_fallocate64)
   RETURN_TRUE;
 }
 
+PHP_FUNCTION (guestfs_feature_available)
+{
+  zval *z_g;
+  guestfs_h *g;
+  zval *z_groups;
+  char **groups;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "ra",
+        &z_g, &z_groups) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  {
+    HashTable *a;
+    int n;
+    HashPosition p;
+    zval **d;
+    size_t c = 0;
+
+    a = Z_ARRVAL_P (z_groups);
+    n = zend_hash_num_elements (a);
+    groups = safe_emalloc (n + 1, sizeof (char *), 0);
+    for (zend_hash_internal_pointer_reset_ex (a, &p);
+         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
+         zend_hash_move_forward_ex (a, &p)) {
+      zval t = **d;
+      zval_copy_ctor (&t);
+      convert_to_string (&t);
+      groups[c] = Z_STRVAL (t);
+      c++;
+    }
+    groups[c] = NULL;
+  }
+
+  int r;
+  r = guestfs_feature_available (g, groups);
+
+  {
+    size_t c = 0;
+
+    for (c = 0; groups[c] != NULL; ++c)
+      efree (groups[c]);
+    efree (groups);
+  }
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_BOOL (r);
+}
+
 PHP_FUNCTION (guestfs_fgrep)
 {
   zval *z_g;
@@ -5185,6 +5246,34 @@ PHP_FUNCTION (guestfs_get_autosync)
   }
 
   RETURN_BOOL (r);
+}
+
+PHP_FUNCTION (guestfs_get_backend)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_get_backend (g);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  RETURN_STRING (r_copy, 0);
 }
 
 PHP_FUNCTION (guestfs_get_cachedir)
@@ -16466,11 +16555,11 @@ PHP_FUNCTION (guestfs_set_attach_method)
 {
   zval *z_g;
   guestfs_h *g;
-  char *attachmethod;
-  int attachmethod_size;
+  char *backend;
+  int backend_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &attachmethod, &attachmethod_size) == FAILURE) {
+        &z_g, &backend, &backend_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -16480,13 +16569,13 @@ PHP_FUNCTION (guestfs_set_attach_method)
     RETURN_FALSE;
   }
 
-  if (strlen (attachmethod) != attachmethod_size) {
-    fprintf (stderr, "libguestfs: set_attach_method: parameter 'attachmethod' contains embedded ASCII NUL.\n");
+  if (strlen (backend) != backend_size) {
+    fprintf (stderr, "libguestfs: set_attach_method: parameter 'backend' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
   int r;
-  r = guestfs_set_attach_method (g, attachmethod);
+  r = guestfs_set_attach_method (g, backend);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -16514,6 +16603,39 @@ PHP_FUNCTION (guestfs_set_autosync)
 
   int r;
   r = guestfs_set_autosync (g, autosync);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_set_backend)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *backend;
+  int backend_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &backend, &backend_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (backend) != backend_size) {
+    fprintf (stderr, "libguestfs: set_backend: parameter 'backend' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_set_backend (g, backend);
 
   if (r == -1) {
     RETURN_FALSE;

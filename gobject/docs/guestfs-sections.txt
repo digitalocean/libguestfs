@@ -804,6 +804,7 @@ guestfs_session_equal
 guestfs_session_exists
 guestfs_session_fallocate
 guestfs_session_fallocate64
+guestfs_session_feature_available
 guestfs_session_fgrep
 guestfs_session_fgrepi
 guestfs_session_file
@@ -822,6 +823,7 @@ guestfs_session_fstrim
 guestfs_session_get_append
 guestfs_session_get_attach_method
 guestfs_session_get_autosync
+guestfs_session_get_backend
 guestfs_session_get_cachedir
 guestfs_session_get_direct
 guestfs_session_get_e2attrs
@@ -1112,6 +1114,7 @@ guestfs_session_scrub_freespace
 guestfs_session_set_append
 guestfs_session_set_attach_method
 guestfs_session_set_autosync
+guestfs_session_set_backend
 guestfs_session_set_cachedir
 guestfs_session_set_direct
 guestfs_session_set_e2attrs
