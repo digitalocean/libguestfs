@@ -1,3 +1,24 @@
+2013-02-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Use 'supermin' and 'supermin-helper' in preference to febootstrap.
+	Febootstrap has been renamed upstream to 'supermin':
+	https://www.redhat.com/archives/libguestfs/2013-February/msg00004.html
+
+	This commit changes libguestfs so it can use either program to build
+	the supermin appliance.
+
+2013-02-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Call wipefs before mkfs to work around pathological behaviour in btrfs.
+	See: RHBZ#907554, http://www.spinics.net/lists/linux-btrfs/msg21197.html
+
+	FAQ: Update section on sVirt.
+
+	build: Add src/guestfs-internal-{all,frontend}.h to EXTRA_DIST.
+	This fixes commit ec3b75e5ffd1abea1400f6609ae9c61eab0dfa71.
+
+	Version 1.21.7.
+
 2013-02-04  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: Be stricter about boolean values.
