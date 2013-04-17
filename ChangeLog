@@ -1,4 +1,70 @@
+2013-03-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	bash completion: Extend this script to work with other virt tools.
+
+2013-03-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add --long-options option to most tools.
+	For example:
+
+	$ guestfish --long-options
+	--add
+	--cmd-help
+	--connect
+	--csh
+	--domain
+	--echo-keys
+	[etc.]
+
+	The idea of this is to make it easier to write a bash completion
+	script that accurately expands --<TAB> options for each command.
+
+2013-03-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Better tab completion for guestfish.
+
+2013-03-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	OCaml tools: Use Common_gettext and Common_utils modules.
+	Share these modules across all three tools virt-resize, virt-sparsify
+	and virt-sysprep.
+
+	This is mostly code motion.
+
+2013-03-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	osinfo: Fix declaration of guestfs___osinfo_map to work when libxml2 is not installed.
+
+2013-03-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add support for: Gluster, Ceph (rbd), Sheepdog.
+	These are not tested at all, and so probably won't work.  However the
+	code and infrastructure is in place so we can fix bugs easily as they
+	arise.
+
+	build: Add 'make check-valgrind-with-appliance'.
+
+	build: Small rearrangement of Makefile.am check-slow rule.
+
+	build: Fix 'make extra-tests' to call 'check-valgrind' instead of rule that doesn't exist.
+
+2013-03-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Turn off warning about overlength-strings.
+	ISO apparently specified a limit of 4096 bytes/characters for strings.
+	The description of the guestfish command 'add-drive' is now longer
+	than this limit, causing this warning.
+
+	Turn off this warning, since GCC has no problems with these strings.
+
 2013-03-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	nbd: Update and clarify the documentation for NBD.
+
+	drives: Make parse_servers return an int (number of servers).
+	This is just a code refactoring.
+
+	Version 1.21.22.
 
 	nbd: Allow 'unix' transport & socket to be specified.
 	This allows the server string to contain "unix:/path/to/socket",

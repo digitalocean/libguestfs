@@ -2511,7 +2511,10 @@ See "DISK LABELS" in guestfs(3).
 <p>
 <em class="parameter"><code>protocol</code></em>
 The optional protocol argument can be used to select an alternate
-source protocol:
+source protocol.
+</p>
+<p>
+See also: "REMOTE STORAGE" in guestfs(3).
 </p>
 <p>
 "protocol = "file""
@@ -2519,29 +2522,78 @@ source protocol:
 default if the optional protocol parameter is omitted.
 </p>
 <p>
-"protocol = "nbd""
-Connect to the Network Block Device server at "server:port".
+"protocol = "gluster""
+Connect to the GlusterFS server. The <em class="parameter"><code>server</code></em> parameter must also
+be supplied - see below.
 </p>
 <p>
-See: "NETWORK BLOCK DEVICES" in guestfs(3).
+See also: "GLUSTER" in guestfs(3)
+</p>
+<p>
+"protocol = "nbd""
+Connect to the Network Block Device server. The <em class="parameter"><code>server</code></em>
+parameter must also be supplied - see below.
+</p>
+<p>
+See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+</p>
+<p>
+"protocol = "rbd""
+Connect to the Ceph (librbd/RBD) server. The <em class="parameter"><code>server</code></em> parameter
+must also be supplied - see below.
+</p>
+<p>
+See also: "CEPH" in guestfs(3).
+</p>
+<p>
+"protocol = "sheepdog""
+Connect to the Sheepdog server. The <em class="parameter"><code>server</code></em> parameter may also
+be supplied - see below.
+</p>
+<p>
+See also: "SHEEPDOG" in guestfs(3).
 </p>
 <p>
 <em class="parameter"><code>server</code></em>
 For protocols which require access to a remote server, this is a
-list of servers and port numbers. Each element is a string in one of
-the following formats:
+list of server(s).
 </p>
 <p>
-server
+Protocol       Number of servers required
 </p>
 <p>
-server:port
+--------       --------------------------
 </p>
 <p>
-tcp:server
+file           List must be empty or param not used at all
 </p>
 <p>
-tcp:server:port
+gluster        Exactly one
+</p>
+<p>
+nbd            Exactly one
+</p>
+<p>
+rbd            One or more
+</p>
+<p>
+sheepdog       Zero or more
+</p>
+<p>
+Each list element is a string specifying a server. The string must
+be in one of the following formats:
+</p>
+<p>
+hostname
+</p>
+<p>
+hostname:port
+</p>
+<p>
+tcp:hostname
+</p>
+<p>
+tcp:hostname:port
 </p>
 <p>
 unix:/path/to/socket

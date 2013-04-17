@@ -1330,17 +1330,15 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-sparsify test.img \
 
 # Alphabetical order.
 SOURCES = \
-	sparsify.ml \
-	sparsify_gettext.ml \
-	sparsify_utils.ml
+	sparsify.ml
 
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/progress-c.o \
-@HAVE_OCAML_TRUE@	sparsify_gettext.cmx \
-@HAVE_OCAML_TRUE@	sparsify_utils.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_gettext.cmx \
+@HAVE_OCAML_TRUE@	$(top_builddir)/resize/common_utils.cmx \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/progress.cmx \
 @HAVE_OCAML_TRUE@	sparsify.cmx
 
@@ -1349,7 +1347,7 @@ SOURCES = \
 # -I $(top_builddir)/src/.libs is a hack which forces corresponding -L
 # option to be passed to gcc, so we don't try linking against an
 # installed copy of libguestfs.
-@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package unix -I \
+@HAVE_OCAML_TRUE@OCAMLPACKAGES = -package str,unix -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/src/.libs -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/ocaml -I \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize $(am__append_1)

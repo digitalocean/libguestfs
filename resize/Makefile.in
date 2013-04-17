@@ -1331,21 +1331,21 @@ CLEANFILES = *~ *.cmi *.cmo *.cmx *.cmxa *.o virt-resize test.img \
 
 # Alphabetical order.
 SOURCES = \
+	common_gettext.ml \
+	common_utils.ml \
+	common_utils_tests.ml \
 	progress-c.c \
 	progress.mli \
 	progress.ml \
-	resize.ml \
-	resize_gettext.ml \
-	resize_utils.ml \
-	resize_utils_tests.ml
+	resize.ml
 
 
 # Note this list must be in dependency order.
 @HAVE_OCAML_TRUE@OBJECTS = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-progress.o \
 @HAVE_OCAML_TRUE@	progress-c.o \
-@HAVE_OCAML_TRUE@	resize_gettext.cmx \
-@HAVE_OCAML_TRUE@	resize_utils.cmx \
+@HAVE_OCAML_TRUE@	common_gettext.cmx \
+@HAVE_OCAML_TRUE@	common_utils.cmx \
 @HAVE_OCAML_TRUE@	progress.cmx \
 @HAVE_OCAML_TRUE@	resize.cmx
 
@@ -1369,9 +1369,9 @@ SOURCES = \
 @HAVE_OCAML_TRUE@noinst_DATA = $(top_builddir)/html/virt-resize.1.html
 
 # Tests.
-@HAVE_OCAML_TRUE@check_SCRIPTS = resize_utils_tests
+@HAVE_OCAML_TRUE@check_SCRIPTS = common_utils_tests
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_OCAML_TRUE@TESTS = resize_utils_tests $(am__append_3)
+@HAVE_OCAML_TRUE@TESTS = common_utils_tests $(am__append_3)
 all: all-am
 
 .SUFFIXES:
@@ -1807,7 +1807,7 @@ appliance: force
 @HAVE_OCAML_TRUE@	  $<
 @HAVE_OCAML_TRUE@	touch $@
 
-@HAVE_OCAML_TRUE@resize_utils_tests: resize_gettext.cmx resize_utils.cmx resize_utils_tests.cmx
+@HAVE_OCAML_TRUE@common_utils_tests: common_gettext.cmx common_utils.cmx common_utils_tests.cmx
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) \
 @HAVE_OCAML_TRUE@	  mlguestfs.cmxa -linkpkg $^ -cclib -lncurses -o $@
 

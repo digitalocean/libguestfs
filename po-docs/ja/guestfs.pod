@@ -567,7 +567,44 @@ Backends that support hotplugging do not require that you add E<ge> 1 disk
 before calling launch.  When hotplugging is supported you don't need to add
 any disks.
 
-=head2 NETWORK BLOCK DEVICES
+=head2 REMOTE STORAGE
+
+=head3 CEPH
+
+Libguestfs can access Ceph (librbd/RBD) disks.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **servers = { "ceph1.example.org:3000", /* ... */, NULL };
+ guestfs_add_drive_opts (g, "pool/image",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "rbd",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         -1);
+
+C<servers> (the C<server> parameter) is a list of one or more Ceph servers.
+The server string is documented in L</guestfs_add_drive_opts>.
+
+=head3 GLUSTER
+
+Libguestfs can access Gluster disks.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **servers = { "gluster.example.org:3000", NULL };
+ guestfs_add_drive_opts (g, "volname/image",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "gluster",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         -1);
+
+C<servers> (the C<server> parameter) is a list which must have a single
+element.  The single element is a string defining the Gluster server.  The
+format of this string is documented in L</guestfs_add_drive_opts>.
+
+=head3 NETWORK BLOCK DEVICE
 
 Libguestfs can access Network Block Device (NBD) disks remotely.
 
@@ -587,26 +624,63 @@ L</guestfs_add_drive_opts> like this:
 
 =item *
 
-The C<server> string is documented in L</guestfs_add_drive_opts>.
+C<server> is in fact a list of servers.  For NBD you must always supply a
+list with a single element.  (Other remote protocols require zero or more
+than one server, hence the requirement for this parameter to be a list).
+
+=item *
+
+The C<server> string is documented in L</guestfs_add_drive_opts>.  To
+connect to a local qemu-nbd instance over a Unix domain socket, use
+C<"unix:/path/to/socket">.
 
 =item *
 
 The C<filename> parameter is the NBD export name.  Use an empty string to
-mean the default export.
-
-(Not all NBD servers support this feature.)
+mean the default export.  Many NBD servers, including qemu-nbd, do not
+support export names.
 
 =item *
 
-The libvirt backend requires that you set the C<format> parameter of
+If using qemu-nbd as your server, you should always specify the C<-t>
+option.  The reason is that libguestfs may open several connections to the
+server.
+
+=item *
+
+The libvirt attach-method requires that you set the C<format> parameter of
 L</guestfs_add_drive_opts> accurately when you use writable NBD disks.
 
 =item *
 
-The appliance backend does not support readonly connections because of a bug
-in qemu: L<https://bugs.launchpad.net/qemu/+bug/1155677>
+The libvirt attach-method has a bug that stops Unix domain socket
+connections from working:
+L<https://bugzilla.redhat.com/show_bug.cgi?id=922888>
+
+=item *
+
+The appliance attach-method does not support readonly connections because of
+a bug in qemu: L<https://bugs.launchpad.net/qemu/+bug/1155677>
 
 =back
+
+=head3 SHEEPDOG
+
+Libguestfs can access Sheepdog disks.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **servers = { /* optional servers ... */ NULL };
+ guestfs_add_drive_opts (g, "volume",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "sheepdog",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         -1);
+
+The optional list of C<servers> may be zero or more server addresses
+(C<"hostname:port">).  The format of the server strings is documented in
+L</guestfs_add_drive_opts>.
 
 =head2 INSPECTION
 
@@ -3499,6 +3573,11 @@ libvirt guests (read-only).
 Runs all tests using default appliance back-end.  This only has any effect
 if a non-default attach-method was selected using C<./configure
 --with-default-attach-method=...>
+
+=item C<make check-valgrind-with-appliance>
+
+Run a subset of the test suite under valgrind using the default appliance
+back-end.
 
 =item C<make check-with-upstream-qemu>
 

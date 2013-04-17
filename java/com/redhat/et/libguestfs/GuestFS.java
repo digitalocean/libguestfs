@@ -2738,29 +2738,60 @@ public class GuestFS {
    * <p>
    * "protocol"
    * The optional protocol argument can be used to select
-   * an alternate source protocol:
+   * an alternate source protocol.
+   * <p>
+   * See also: "REMOTE STORAGE" in guestfs(3).
    * <p>
    * "protocol = "file""
    * "filename" is interpreted as a local file or
    * device. This is the default if the optional
    * protocol parameter is omitted.
    * <p>
-   * "protocol = "nbd""
-   * Connect to the Network Block Device server at
-   * "server:port".
+   * "protocol = "gluster""
+   * Connect to the GlusterFS server. The "server"
+   * parameter must also be supplied - see below.
    * <p>
-   * See: "NETWORK BLOCK DEVICES" in guestfs(3).
+   * See also: "GLUSTER" in guestfs(3)
+   * <p>
+   * "protocol = "nbd""
+   * Connect to the Network Block Device server. The
+   * "server" parameter must also be supplied - see
+   * below.
+   * <p>
+   * See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+   * <p>
+   * "protocol = "rbd""
+   * Connect to the Ceph (librbd/RBD) server. The
+   * "server" parameter must also be supplied - see
+   * below.
+   * <p>
+   * See also: "CEPH" in guestfs(3).
+   * <p>
+   * "protocol = "sheepdog""
+   * Connect to the Sheepdog server. The "server"
+   * parameter may also be supplied - see below.
+   * <p>
+   * See also: "SHEEPDOG" in guestfs(3).
    * <p>
    * "server"
    * For protocols which require access to a remote
-   * server, this is a list of servers and port numbers.
-   * Each element is a string in one of the following
-   * formats:
+   * server, this is a list of server(s).
    * <p>
-   * server
-   * server:port
-   * tcp:server
-   * tcp:server:port
+   * Protocol       Number of servers required
+   * --------       --------------------------
+   * file           List must be empty or param not used at all
+   * gluster        Exactly one
+   * nbd            Exactly one
+   * rbd            One or more
+   * sheepdog       Zero or more
+   * <p>
+   * Each list element is a string specifying a server.
+   * The string must be in one of the following formats:
+   * <p>
+   * hostname
+   * hostname:port
+   * tcp:hostname
+   * tcp:hostname:port
    * unix:/path/to/socket
    * <p>
    * If the port number is omitted, then the standard

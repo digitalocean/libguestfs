@@ -4194,29 +4194,66 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * @protocol
  * The optional protocol argument can be used to select an alternate
- * source protocol:
+ * source protocol.
+ * 
+ * See also: "REMOTE STORAGE" in guestfs(3).
  * 
  * "protocol = "file""
  * @filename is interpreted as a local file or device. This is the
  * default if the optional protocol parameter is omitted.
  * 
- * "protocol = "nbd""
- * Connect to the Network Block Device server at "server:port".
+ * "protocol = "gluster""
+ * Connect to the GlusterFS server. The @server parameter must also
+ * be supplied - see below.
  * 
- * See: "NETWORK BLOCK DEVICES" in guestfs(3).
+ * See also: "GLUSTER" in guestfs(3)
+ * 
+ * "protocol = "nbd""
+ * Connect to the Network Block Device server. The @server
+ * parameter must also be supplied - see below.
+ * 
+ * See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+ * 
+ * "protocol = "rbd""
+ * Connect to the Ceph (librbd/RBD) server. The @server parameter
+ * must also be supplied - see below.
+ * 
+ * See also: "CEPH" in guestfs(3).
+ * 
+ * "protocol = "sheepdog""
+ * Connect to the Sheepdog server. The @server parameter may also
+ * be supplied - see below.
+ * 
+ * See also: "SHEEPDOG" in guestfs(3).
  * 
  * @server
  * For protocols which require access to a remote server, this is a
- * list of servers and port numbers. Each element is a string in one of
- * the following formats:
+ * list of server(s).
  * 
- * <![CDATA[server]]>
+ * <![CDATA[Protocol       Number of servers required]]>
  * 
- * <![CDATA[server:port]]>
+ * <![CDATA[--------       --------------------------]]>
  * 
- * <![CDATA[tcp:server]]>
+ * <![CDATA[file           List must be empty or param not used at all]]>
  * 
- * <![CDATA[tcp:server:port]]>
+ * <![CDATA[gluster        Exactly one]]>
+ * 
+ * <![CDATA[nbd            Exactly one]]>
+ * 
+ * <![CDATA[rbd            One or more]]>
+ * 
+ * <![CDATA[sheepdog       Zero or more]]>
+ * 
+ * Each list element is a string specifying a server. The string must
+ * be in one of the following formats:
+ * 
+ * <![CDATA[hostname]]>
+ * 
+ * <![CDATA[hostname:port]]>
+ * 
+ * <![CDATA[tcp:hostname]]>
+ * 
+ * <![CDATA[tcp:hostname:port]]>
  * 
  * <![CDATA[unix:/path/to/socket]]>
  * 

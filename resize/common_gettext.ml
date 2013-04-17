@@ -1,10 +1,9 @@
 (* This file is generated automatically by ./configure. *)
 
-(** Gettext functions for virt-resize.
+(** Gettext functions for OCaml virt tools.
 
-    The resize_gettext module provides gettext functions for
-    resize, or dummy functions if ocaml-gettext was not available
-    at configure time.
+    The Common_gettext module provides gettext functions, or dummy
+    functions if ocaml-gettext was not available at configure time.
 
     {b Note}: Don't translate debug strings, or strings which are
     meant to be read/written only by machine.
