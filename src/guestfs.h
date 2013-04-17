@@ -138,6 +138,8 @@ typedef void (*guestfs_event_callback) (
 extern GUESTFS_DLL_PUBLIC int guestfs_set_event_callback (guestfs_h *g, guestfs_event_callback cb, uint64_t event_bitmask, int flags, void *opaque);
 #define GUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_delete_event_callback (guestfs_h *g, int event_handle);
+#define GUESTFS_HAVE_EVENT_TO_STRING 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_event_to_string (uint64_t event);
 
 /* Old-style event handling. */
 #ifndef GUESTFS_TYPEDEF_LOG_MESSAGE_CB

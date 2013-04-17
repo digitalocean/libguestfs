@@ -202,6 +202,7 @@ src/bindtests.c
 src/errnostring-gperf.gperf
 src/errnostring.c
 src/errnostring.h
+src/event-string.c
 src/free-structs.c
 src/guestfs-actions.pod
 src/guestfs-availability.pod

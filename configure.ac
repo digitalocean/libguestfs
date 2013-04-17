@@ -20,11 +20,28 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [11])
+m4_define([libguestfs_release], [12])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([foreign serial-tests])
+
+dnl Initialize automake.  automake < 1.12 didn't have serial-tests and
+dnl gives an error if it sees this, but for automake >= 1.13
+dnl serial-tests is required so we have to include it.  Solution is to
+dnl test for the version of automake (by running an external command)
+dnl and provide it if necessary.  Note we have to do this entirely using
+dnl m4 macros since automake queries this macro by running
+dnl 'autoconf --trace'.
+m4_define([serial_tests], [
+    m4_esyscmd([automake --version | head -1 | awk '
+                     {
+                       split ($NF, version, ".");
+                       if (version[1] == 1 && version[2] >= 12)
+                         print "serial-tests";
+                     }'
+    ])
+])
+AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this parameter.
 
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
@@ -933,6 +950,14 @@ AM_CONDITIONAL([HAVE_OCAML],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno"])
 AM_CONDITIONAL([HAVE_OCAMLDOC],
                [test "x$OCAMLDOC" != "xno"])
+
+AS_IF([test "x$OCAMLC" != "xno"],[
+    dnl Check for <caml/unixsupport.h> header.
+    old_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS -I`$OCAMLC -where`"
+    AC_CHECK_HEADERS([caml/unixsupport.h],[],[],[#include <caml/mlvalues.h>])
+    CPPFLAGS="$old_CPPFLAGS"
+])
 
 OCAML_PKG_gettext=no
 AS_IF([test "x$OCAMLC" != "xno"],[

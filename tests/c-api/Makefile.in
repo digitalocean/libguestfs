@@ -89,13 +89,14 @@ check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 	test-config$(EXEEXT) test-add-drive-opts$(EXEEXT) \
 	test-last-errno$(EXEEXT) test-private-data$(EXEEXT) \
 	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
-	test-environment$(EXEEXT) test-pwd$(EXEEXT) $(am__EXEEXT_1)
+	test-environment$(EXEEXT) test-pwd$(EXEEXT) \
+	test-event-string$(EXEEXT) $(am__EXEEXT_1)
 TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
 	test-create-handle$(EXEEXT) test-config$(EXEEXT) \
 	test-add-drive-opts$(EXEEXT) test-last-errno$(EXEEXT) \
 	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
 	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
-	$(am__EXEEXT_1)
+	test-event-string$(EXEEXT) $(am__EXEEXT_1)
 @HAVE_CXX_TRUE@am__append_1 = test-just-header-cxx
 @HAVE_CXX_TRUE@am__append_2 = test-just-header-cxx
 subdir = tests/c-api
@@ -276,6 +277,15 @@ test_environment_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_environment_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am_test_event_string_OBJECTS =  \
+	test_event_string-test-event-string.$(OBJEXT)
+test_event_string_OBJECTS = $(am_test_event_string_OBJECTS)
+test_event_string_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+test_event_string_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_event_string_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_test_just_header_OBJECTS =  \
 	test_just_header-test-just-header.$(OBJEXT)
 test_just_header_OBJECTS = $(am_test_just_header_OBJECTS)
@@ -384,14 +394,14 @@ am__v_CXXLD_1 =
 SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
-	$(test_just_header_SOURCES) $(test_just_header_cxx_SOURCES) \
-	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
-	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
-	$(tests_SOURCES)
+	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
+	$(test_just_header_cxx_SOURCES) $(test_last_errno_SOURCES) \
+	$(test_private_data_SOURCES) $(test_pwd_SOURCES) \
+	$(test_user_cancel_SOURCES) $(tests_SOURCES)
 DIST_SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
-	$(test_just_header_SOURCES) \
+	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
 	$(am__test_just_header_cxx_SOURCES_DIST) \
 	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
 	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
@@ -1609,6 +1619,20 @@ test_environment_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
+test_event_string_SOURCES = test-event-string.c
+test_event_string_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib
+
+test_event_string_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+
+test_event_string_LDADD = \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1672,6 +1696,9 @@ test-debug-to-file$(EXEEXT): $(test_debug_to_file_OBJECTS) $(test_debug_to_file_
 test-environment$(EXEEXT): $(test_environment_OBJECTS) $(test_environment_DEPENDENCIES) $(EXTRA_test_environment_DEPENDENCIES) 
 	@rm -f test-environment$(EXEEXT)
 	$(AM_V_CCLD)$(test_environment_LINK) $(test_environment_OBJECTS) $(test_environment_LDADD) $(LIBS)
+test-event-string$(EXEEXT): $(test_event_string_OBJECTS) $(test_event_string_DEPENDENCIES) $(EXTRA_test_event_string_DEPENDENCIES) 
+	@rm -f test-event-string$(EXEEXT)
+	$(AM_V_CCLD)$(test_event_string_LINK) $(test_event_string_OBJECTS) $(test_event_string_LDADD) $(LIBS)
 test-just-header$(EXEEXT): $(test_just_header_OBJECTS) $(test_just_header_DEPENDENCIES) $(EXTRA_test_just_header_DEPENDENCIES) 
 	@rm -f test-just-header$(EXEEXT)
 	$(AM_V_CCLD)$(test_just_header_LINK) $(test_just_header_OBJECTS) $(test_just_header_LDADD) $(LIBS)
@@ -1707,6 +1734,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_create_handle-test-create-handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_debug_to_file-test-debug-to-file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_environment-test-environment.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_event_string-test-event-string.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_just_header-test-just-header.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_last_errno-test-last-errno.Po@am__quote@
@@ -1804,6 +1832,20 @@ test_environment-test-environment.obj: test-environment.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-environment.c' object='test_environment-test-environment.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_environment_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
+
+test_event_string-test-event-string.o: test-event-string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -MT test_event_string-test-event-string.o -MD -MP -MF $(DEPDIR)/test_event_string-test-event-string.Tpo -c -o test_event_string-test-event-string.o `test -f 'test-event-string.c' || echo '$(srcdir)/'`test-event-string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_event_string-test-event-string.Tpo $(DEPDIR)/test_event_string-test-event-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-event-string.c' object='test_event_string-test-event-string.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -c -o test_event_string-test-event-string.o `test -f 'test-event-string.c' || echo '$(srcdir)/'`test-event-string.c
+
+test_event_string-test-event-string.obj: test-event-string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -MT test_event_string-test-event-string.obj -MD -MP -MF $(DEPDIR)/test_event_string-test-event-string.Tpo -c -o test_event_string-test-event-string.obj `if test -f 'test-event-string.c'; then $(CYGPATH_W) 'test-event-string.c'; else $(CYGPATH_W) '$(srcdir)/test-event-string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_event_string-test-event-string.Tpo $(DEPDIR)/test_event_string-test-event-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-event-string.c' object='test_event_string-test-event-string.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -c -o test_event_string-test-event-string.obj `if test -f 'test-event-string.c'; then $(CYGPATH_W) 'test-event-string.c'; else $(CYGPATH_W) '$(srcdir)/test-event-string.c'; fi`
 
 test_just_header-test-just-header.o: test-just-header.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -MT test_just_header-test-just-header.o -MD -MP -MF $(DEPDIR)/test_just_header-test-just-header.Tpo -c -o test_just_header-test-just-header.o `test -f 'test-just-header.c' || echo '$(srcdir)/'`test-just-header.c

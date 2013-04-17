@@ -255,6 +255,13 @@ this function.
 This removes the callback which was previously registered using
 C<set_event_callback>.
 
+=item $str = Sys::Guestfs::event_to_string ($events);
+
+C<$events> is either a single event or a bitmask of events.
+This returns a printable string, useful for debugging.
+
+Note that this is a class function, not a method.
+
 =item $errnum = $g->last_errno ();
 
 This returns the last error number (errno) that happened on the

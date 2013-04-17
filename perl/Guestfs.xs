@@ -24,7 +24,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
+#include <errno.h>
 
 #include "EXTERN.h"
 #include "perl.h"
@@ -278,6 +280,20 @@ PREINIT:
         guestfs_set_private (g, key, NULL);
         guestfs_delete_event_callback (g, event_handle);
       }
+
+SV *
+event_to_string (event_bitmask)
+      int event_bitmask;
+PREINIT:
+      char *str;
+   CODE:
+      str = guestfs_event_to_string (event_bitmask);
+      if (str == NULL)
+        croak ("%s", strerror (errno));
+      RETVAL = newSVpv (str, 0);
+      free (str);
+ OUTPUT:
+      RETVAL
 
 SV *
 last_errno (g)

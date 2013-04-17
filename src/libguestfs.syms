@@ -197,6 +197,7 @@
         guestfs_egrep;
         guestfs_egrepi;
         guestfs_equal;
+        guestfs_event_to_string;
         guestfs_exists;
         guestfs_fallocate;
         guestfs_fallocate64;

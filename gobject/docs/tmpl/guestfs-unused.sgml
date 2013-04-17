@@ -1,3 +1,45 @@
+<!-- ##### SIGNAL GuestfsSession::mutex-blocked ##### -->
+<para>
+
+</para>
+
+@guestfssession: the object which received the signal.
+@arg1: 
+
+<!-- ##### SIGNAL GuestfsSession::mutex-entered ##### -->
+<para>
+
+</para>
+
+@guestfssession: the object which received the signal.
+@arg1: 
+
+<!-- ##### SIGNAL GuestfsSession::mutex-released ##### -->
+<para>
+
+</para>
+
+@guestfssession: the object which received the signal.
+@arg1: 
+
+<!-- ##### FUNCTION guestfs_session_get_mutex_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION guestfs_session_get_mutex_limit ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
 <!-- ##### FUNCTION guestfs_session_internal_autosync ##### -->
 <para>
 
@@ -91,6 +133,26 @@
 @path: 
 @content: 
 @content_size: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION guestfs_session_set_mutex_file ##### -->
+<para>
+
+</para>
+
+@session: 
+@mutexfile: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION guestfs_session_set_mutex_limit ##### -->
+<para>
+
+</para>
+
+@session: 
+@limit: 
 @err: 
 @Returns: 
 

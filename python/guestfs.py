@@ -80,6 +80,11 @@ EVENT_ENTER = 0x80
 EVENT_LIBVIRT_AUTH = 0x100
 EVENT_ALL = 0x1ff
 
+
+def event_to_string (events):
+    """Return a printable string from an event or event bitmask"""
+    return libguestfsmod.event_to_string (events)
+
 class ClosedHandle(ValueError):
     pass
 

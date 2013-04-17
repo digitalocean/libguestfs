@@ -20719,6 +20719,8 @@ static PyMethodDef methods[] = {
     py_guestfs_set_event_callback, METH_VARARGS, NULL },
   { (char *) "delete_event_callback",
     py_guestfs_delete_event_callback, METH_VARARGS, NULL },
+  { (char *) "event_to_string",
+    py_guestfs_event_to_string, METH_VARARGS, NULL },
   { (char *) "internal_test", py_guestfs_internal_test, METH_VARARGS, NULL },
   { (char *) "internal_test_only_optargs", py_guestfs_internal_test_only_optargs, METH_VARARGS, NULL },
   { (char *) "internal_test_63_optargs", py_guestfs_internal_test_63_optargs, METH_VARARGS, NULL },

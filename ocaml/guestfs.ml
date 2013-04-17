@@ -61,6 +61,8 @@ external set_event_callback : t -> event_callback -> event list -> event_handle
   = "ocaml_guestfs_set_event_callback"
 external delete_event_callback : t -> event_handle -> unit
   = "ocaml_guestfs_delete_event_callback"
+external event_to_string : event list -> string
+  = "ocaml_guestfs_event_to_string"
 
 external last_errno : t -> int = "ocaml_guestfs_last_errno"
 

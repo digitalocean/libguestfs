@@ -1583,7 +1583,7 @@ stamp-guestfs-ocaml.pod: guestfs-ocaml.pod create_disk.ml inspect_vm.ml
 @HAVE_OCAML_TRUE@          -warn-error A -I .. mlguestfs.cmxa $< -o $@
 
 @HAVE_OCAML_TRUE@inspect_vm: inspect_vm.ml
-@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFINDFLAGS) \
+@HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLFINDFLAGS) -package unix -linkpkg \
 @HAVE_OCAML_TRUE@          -warn-error A -I .. mlguestfs.cmxa $< -o $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

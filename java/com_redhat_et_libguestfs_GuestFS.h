@@ -45,6 +45,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1close
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _event_to_string
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1event_1to_1string
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _set_event_callback
  * Signature: (JLcom/redhat/et/libguestfs/EventCallback;J)I
  */

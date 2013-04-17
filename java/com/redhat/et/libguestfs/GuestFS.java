@@ -185,58 +185,13 @@ public class GuestFS {
   /** Bitmask of all events. */
   public static final long EVENT_ALL = 0x1ff;
 
-  /** Utility function to turn an event number or bitmask into a string. */
+/** Utility function to turn an event number or bitmask into a string. */
   public static String eventToString (long events)
   {
-    if (events == 0)
-      return "";
-
-    String ret = "";
-
-    if ((events & EVENT_CLOSE) != 0) {
-      ret = ret + "|EVENT_CLOSE";
-      events &= ~0x1;
-    }
-    if ((events & EVENT_SUBPROCESS_QUIT) != 0) {
-      ret = ret + "|EVENT_SUBPROCESS_QUIT";
-      events &= ~0x2;
-    }
-    if ((events & EVENT_LAUNCH_DONE) != 0) {
-      ret = ret + "|EVENT_LAUNCH_DONE";
-      events &= ~0x4;
-    }
-    if ((events & EVENT_PROGRESS) != 0) {
-      ret = ret + "|EVENT_PROGRESS";
-      events &= ~0x8;
-    }
-    if ((events & EVENT_APPLIANCE) != 0) {
-      ret = ret + "|EVENT_APPLIANCE";
-      events &= ~0x10;
-    }
-    if ((events & EVENT_LIBRARY) != 0) {
-      ret = ret + "|EVENT_LIBRARY";
-      events &= ~0x20;
-    }
-    if ((events & EVENT_TRACE) != 0) {
-      ret = ret + "|EVENT_TRACE";
-      events &= ~0x40;
-    }
-    if ((events & EVENT_ENTER) != 0) {
-      ret = ret + "|EVENT_ENTER";
-      events &= ~0x80;
-    }
-    if ((events & EVENT_LIBVIRT_AUTH) != 0) {
-      ret = ret + "|EVENT_LIBVIRT_AUTH";
-      events &= ~0x100;
-    }
-
-    if (events != 0)
-      ret = events + ret;
-    else
-       ret = ret.substring (1);
-
-    return ret;
+    return _event_to_string (events);
   }
+
+  private static native String _event_to_string (long events);
 
   /**
    * Set an event handler.

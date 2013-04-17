@@ -1,4 +1,57 @@
+2013-02-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Only add 'serial-tests' for automake >= 1.12.
+	Earlier versions of automake complain if they get a configuration
+	parameter which they don't understand.  The error is:
+
+	configure.ac:27: error: option 'serial-tests' not recognized
+
+	Use some m4 hackery to work around this.
+
+2013-02-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	handle: Define DEFAULT_MEMSIZE, MIN_MEMSIZE constants.
+	This is just code motion.
+
+	ruby: Add binding for guestfs_event_to_string.
+
+	python: Add binding for guestfs_event_to_string.
+
+	perl: Add binding for guestfs_event_to_string.
+
+	java: Use guestfs_event_to_string instead of generated code.
+
+	fish: Use guestfs_event_to_string instead of guestfish-specific generated functions.
+
+	ocaml: Add binding for Guestfs.event_to_string and use it in events test.
+
+	New C only API: guestfs_event_to_string.
+
+2013-02-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	handle: Translatable string in guestfs_parse_environment.
+
+	generator: Whitespace changes.
+
+2013-02-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Fix memory leak when the 'lpj' setting is read from dmesg.
+	It was failing to clean up and close the 'struct command' buffer,
+	because commit 94d90f03e2bbb595890b01e2a10b63e00e976691 added an
+	incomplete patch to use CLEANUP_CMD_CLOSE.
+
+	This fixes commit 94d90f03e2bbb595890b01e2a10b63e00e976691.
+
+2013-02-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Print a better error message when JVM version is too old.
+	This fixes commit 87d1f7714f8e1b0f595bad3b7932592f0f85d54b.
+
+	java: Note that JVM >= 1.6 is now required.
+
 2013-02-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Use a glibc trick to try to display a stack trace if a program in the appliance segfaults.
 
 	Version 1.21.11.
 

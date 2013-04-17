@@ -132,6 +132,11 @@ guestfs_java_callback (guestfs_h *g,
                __func__, event, event_handle);
       return;
 
+    case JNI_EVERSION:
+      fprintf (stderr, "%s: event %" PRIu64 " (eh %d) failed because the JVM version is too old.  JVM >= 1.6 is required.\n",
+               __func__, event, event_handle);
+      return;
+
     default:
       fprintf (stderr, "%s: jvm->GetEnv failed! (JNI_* error code = %d)\n",
                __func__, r);
@@ -218,6 +223,26 @@ Java_com_redhat_et_libguestfs_GuestFS__1delete_1event_1callback
     guestfs_set_private (g, key, NULL);
     guestfs_delete_event_callback (g, eh);
   }
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1event_1to_1string
+  (JNIEnv *env, jclass cl, jlong jevents)
+{
+  uint64_t events = (uint64_t) jevents;
+  char *str;
+  jstring jr;
+
+  str = guestfs_event_to_string (events);
+  if (str == NULL) {
+    perror ("guestfs_event_to_string");
+    return NULL;
+  }
+
+  jr = (*env)->NewStringUTF (env, str);
+  free (str);
+
+  return jr;
 }
 
 static struct callback_data **
