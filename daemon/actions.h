@@ -559,5 +559,6 @@ extern char *do_part_get_gpt_type (const char *device, int partnum);
 extern int do_rename (const char *oldpath, const char *newpath);
 extern int do_is_whole_device (const char *device);
 extern guestfs_int_internal_mountable *do_internal_parse_mountable (const mountable_t *mountable);
+extern int do_internal_rhbz914931 (int count);
 
 #endif /* GUESTFSD_ACTIONS_H */

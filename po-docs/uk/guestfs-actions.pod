@@ -5282,6 +5282,8 @@ device. That is, not a partition or a logical device.
 
 This function returns a C truth value on success or -1 on error.
 
+(Added in 1.21.9)
+
 =head2 guestfs_is_zero
 
  int
@@ -5430,6 +5432,8 @@ Windows dynamic disk.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_diskgroup_disks
 
  char **
@@ -5444,6 +5448,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_diskgroup_name
 
  char *
@@ -5456,6 +5462,8 @@ C<guestfs_ldmtool_scan>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_diskgroup_volumes
 
@@ -5471,6 +5479,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_remove_all
 
  int
@@ -5480,6 +5490,8 @@ This is essentially the opposite of C<guestfs_ldmtool_create_all>.  It
 removes the device mapper mappings for all Windows dynamic disk volumes
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_scan
 
@@ -5496,6 +5508,8 @@ call C<guestfs_ldmtool_scan_devices> instead.
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_scan_devices
 
@@ -5514,6 +5528,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_volume_hint
 
  char *
@@ -5529,6 +5545,8 @@ Windows drive, eg. C<E:>.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_volume_partitions
 
  char **
@@ -5542,6 +5560,8 @@ group with GUID C<diskgroup>.
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_volume_type
 
@@ -5559,6 +5579,8 @@ returned.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_lgetxattr
 
@@ -5727,6 +5749,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_list_ldm_volumes
 
  char **
@@ -5738,6 +5762,8 @@ launch time.  It returns a list of device names.
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_list_md_devices
 
@@ -8067,6 +8093,8 @@ type. Behaviour is undefined for other partition types.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
+(Added in 1.21.1)
+
 =head2 guestfs_part_get_mbr_id
 
  int
@@ -8259,6 +8287,8 @@ L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
 for a useful list of type GUIDs.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.21.1)
 
 =head2 guestfs_part_set_mbr_id
 
@@ -8794,6 +8824,8 @@ the Linux L<rename(2)> system call.  In most cases you are better to use
 C<guestfs_mv> instead.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.21.5)
 
 =head2 guestfs_resize2fs
 

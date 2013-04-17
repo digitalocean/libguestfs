@@ -2849,6 +2849,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_internal_mountable *guestfs_internal_pa
 #define GUESTFS_HAVE_INTERNAL_READLINKLIST 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_internal_readlinklist (guestfs_h *g, const char *path, char *const *names);
 
+#define GUESTFS_HAVE_INTERNAL_RHBZ914931 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_rhbz914931 (guestfs_h *g, const char *filename, int count);
+
 #define GUESTFS_INTERNAL_TEST_OBOOL 0
 #define GUESTFS_INTERNAL_TEST_OINT 1
 #define GUESTFS_INTERNAL_TEST_OINT64 2
@@ -3163,6 +3166,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_INTERNAL_LXATTRLIST 1
 #define LIBGUESTFS_HAVE_INTERNAL_PARSE_MOUNTABLE 1
 #define LIBGUESTFS_HAVE_INTERNAL_READLINKLIST 1
+#define LIBGUESTFS_HAVE_INTERNAL_RHBZ914931 1
 #define LIBGUESTFS_HAVE_INTERNAL_TEST 1
 #define LIBGUESTFS_HAVE_INTERNAL_TEST_63_OPTARGS 1
 #define LIBGUESTFS_HAVE_INTERNAL_TEST_CLOSE_OUTPUT 1

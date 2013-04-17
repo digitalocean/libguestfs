@@ -1,4 +1,85 @@
+2013-02-25  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: fix test-tool
+	(Not entirely sure whether using Gnulib to replace standard functions
+	is a good idea at all.)
+
+	link with libgnu:
+	  CCLD   libguestfs-test-tool
+	libguestfs_test_tool-test-tool.o: In function `main':
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:103: undefined reference to `rpl_getopt_long'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:113: undefined reference to `rpl_optarg'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:125: undefined reference to `rpl_optarg'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:126: undefined reference to `rpl_optarg'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:109: undefined reference to `rpl_optarg'
+	libguestfs_test_tool-test-tool.o: In function `set_qemu':
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:382: undefined reference to `rpl_perror'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:366: undefined reference to `rpl_perror'
+	libguestfs_test_tool-test-tool.o: In function `make_files':
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:416: undefined reference to `rpl_perror'
+	/home/bengen/src/deb/pkg-libvirt/libguestfs/debian/build-default/test-tool/../../../test-tool/test-tool.c:428: undefined reference to `rpl_perror'
+
+2013-02-25  Hilko Bengen  <bengen@hilluzination.de>
+
+	out-of-tree build: fix daemon
+	  CC     guestfsd-9p.o
+	In file included from ../../../daemon/9p.c:32:0:
+	../../../daemon/daemon.h:33:34: fatal error: guestfs-internal-all.h: No such file or directory
+
+2013-02-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Update guestfs-performance with parallel scaling numbers and test script.
+
+2013-02-25  Olaf Hering  <olaf@aepfle.de>
+
+	lib: avoid pragma usage in inspect-fs-windows
+	pragma GCC diagnostic is a gcc 4.6+ feature, compilation fails with
+	older compilers:
+
+	inspect-fs-windows.c: In function 'map_registry_disk_blob':
+	inspect-fs-windows.c:502: error: #pragma GCC diagnostic not allowed inside functions
+	inspect-fs-windows.c:503: error: #pragma GCC diagnostic not allowed inside functions
+	inspect-fs-windows.c:505: error: #pragma GCC diagnostic not allowed inside functions
+	make[3]: *** [libguestfs_la-inspect-fs-windows.lo] Error 1
+
+	Use memcpy instead of pragma to fix compile error.
+
+2013-02-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	recipes: Add example converting from one format/filesystem to another.
+
+	daemon: protocol: Fix memory leak when receiving FileIn file (RHBZ#914934).
+	This fixes commit 950951c67de61da27dceca8ffb2079031c13e43b.
+
+	tests: Add a regression test for RHBZ#914931.
+	This involves adding a new test API which crashes the appliance in the
+	middle of a simulated upload, then a test which uses that API to test
+	for the libguestfs (library-side) crash.
+
+2013-02-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	protocol: Don't segfault if appliance crashes during FileIn upload (RHBZ#914931).
+	Instead of the segfault you now get a more informative error:
+
+	*stdin*:0: libguestfs: error: connection to daemon was closed unexpectedly.
+	This usually means the libguestfs appliance crashed.  Please enable
+	debugging (LIBGUESTFS_DEBUG=1) and rerun the command, then look at the
+	debug messages output prior to this error.
+	libguestfs: error: /dev/stdout: write: Broken pipe
+	libguestfs: error: file receive cancelled by daemon
+
+2013-02-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	run: Refer to README and correct documentation for linking to script.
+	Any link works, even a hard link.
+
+	run: Relicense as LGPLv2+.
+	To allow reuse in other projects and because of the equivalent change
+	made by Eric Blake to the libvirt 'run' script.
+
 2013-02-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update API support.
 
 	Version 1.21.13.
 

@@ -3581,6 +3581,11 @@ struct guestfs_internal_parse_mountable_ret {
 };
 typedef struct guestfs_internal_parse_mountable_ret guestfs_internal_parse_mountable_ret;
 
+struct guestfs_internal_rhbz914931_args {
+	int count;
+};
+typedef struct guestfs_internal_rhbz914931_args guestfs_internal_rhbz914931_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3971,9 +3976,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_RENAME = 394,
 	GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
 	GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
+	GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 396
+#define GUESTFS_MAX_PROC_NR 397
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4593,6 +4599,7 @@ extern  bool_t xdr_guestfs_is_whole_device_args (XDR *, guestfs_is_whole_device_
 extern  bool_t xdr_guestfs_is_whole_device_ret (XDR *, guestfs_is_whole_device_ret*);
 extern  bool_t xdr_guestfs_internal_parse_mountable_args (XDR *, guestfs_internal_parse_mountable_args*);
 extern  bool_t xdr_guestfs_internal_parse_mountable_ret (XDR *, guestfs_internal_parse_mountable_ret*);
+extern  bool_t xdr_guestfs_internal_rhbz914931_args (XDR *, guestfs_internal_rhbz914931_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5162,6 +5169,7 @@ extern bool_t xdr_guestfs_is_whole_device_args ();
 extern bool_t xdr_guestfs_is_whole_device_ret ();
 extern bool_t xdr_guestfs_internal_parse_mountable_args ();
 extern bool_t xdr_guestfs_internal_parse_mountable_ret ();
+extern bool_t xdr_guestfs_internal_rhbz914931_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

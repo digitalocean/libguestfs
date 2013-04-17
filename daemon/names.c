@@ -415,4 +415,5 @@ const char *function_names[] = {
   [394] = "rename",
   [395] = "is_whole_device",
   [396] = "internal_parse_mountable",
+  [397] = "internal_rhbz914931",
 };

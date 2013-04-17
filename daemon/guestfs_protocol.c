@@ -7774,6 +7774,16 @@ xdr_guestfs_internal_parse_mountable_ret (XDR *xdrs, guestfs_internal_parse_moun
 }
 
 bool_t
+xdr_guestfs_internal_rhbz914931_args (XDR *xdrs, guestfs_internal_rhbz914931_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->count))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

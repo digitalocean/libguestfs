@@ -2762,6 +2762,10 @@ struct guestfs_internal_parse_mountable_ret {
   guestfs_int_internal_mountable mountable;
 };
 
+struct guestfs_internal_rhbz914931_args {
+  int count;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3152,10 +3156,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
   GUESTFS_PROC_RENAME = 394,
   GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
-  GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396
+  GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
+  GUESTFS_PROC_INTERNAL_RHBZ914931 = 397
 };
 
-const GUESTFS_MAX_PROC_NR = 396;
+const GUESTFS_MAX_PROC_NR = 397;
 
 /* The remote procedure call protocol. */
 

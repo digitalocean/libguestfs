@@ -86,7 +86,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.396';
+$VERSION = '0.397';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
