@@ -7,6 +7,26 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_CLOSE
+#define com_redhat_et_libguestfs_GuestFS_EVENT_CLOSE 1LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_SUBPROCESS_QUIT
+#define com_redhat_et_libguestfs_GuestFS_EVENT_SUBPROCESS_QUIT 2LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_LAUNCH_DONE
+#define com_redhat_et_libguestfs_GuestFS_EVENT_LAUNCH_DONE 4LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_PROGRESS
+#define com_redhat_et_libguestfs_GuestFS_EVENT_PROGRESS 8LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_APPLIANCE
+#define com_redhat_et_libguestfs_GuestFS_EVENT_APPLIANCE 16LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_LIBRARY
+#define com_redhat_et_libguestfs_GuestFS_EVENT_LIBRARY 32LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_TRACE
+#define com_redhat_et_libguestfs_GuestFS_EVENT_TRACE 64LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_ENTER
+#define com_redhat_et_libguestfs_GuestFS_EVENT_ENTER 128LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_LIBVIRT_AUTH
+#define com_redhat_et_libguestfs_GuestFS_EVENT_LIBVIRT_AUTH 256LL
+#undef com_redhat_et_libguestfs_GuestFS_EVENT_ALL
+#define com_redhat_et_libguestfs_GuestFS_EVENT_ALL 511LL
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _create
@@ -22,6 +42,22 @@ JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1create
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1close
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_event_callback
+ * Signature: (JLcom/redhat/et/libguestfs/EventCallback;J)I
+ */
+JNIEXPORT jint JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1event_1callback
+  (JNIEnv *, jobject, jlong, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _delete_event_callback
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1delete_1event_1callback
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS

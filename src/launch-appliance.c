@@ -136,8 +136,12 @@ add_cmdline_shell_unquoted (guestfs_h *g, const char *options)
       endp = options + strlen (options);
     }
 
-    if (quote == ' ')
-      nextp = endp+1;
+    if (quote == ' ') {
+      if (endp[0] == '\0')
+        nextp = endp;
+      else
+        nextp = endp+1;
+    }
     else {
       if (!endp[1])
         nextp = endp+1;
@@ -427,14 +431,16 @@ launch_appliance (guestfs_h *g, const char *arg)
     add_cmdline (g, "stdio");
 #endif
 
-    /* Use sgabios instead of vgabios.  This means we'll see BIOS
-     * messages on the serial port, and also works around this bug
-     * in qemu 1.1.0:
-     * https://bugs.launchpad.net/qemu/+bug/1021649
-     * QEmu has included sgabios upstream since just before 1.0.
-     */
-    add_cmdline (g, "-device");
-    add_cmdline (g, "sga");
+    if (qemu_supports_device (g, "Serial Graphics Adapter")) {
+      /* Use sgabios instead of vgabios.  This means we'll see BIOS
+       * messages on the serial port, and also works around this bug
+       * in qemu 1.1.0:
+       * https://bugs.launchpad.net/qemu/+bug/1021649
+       * QEmu has included sgabios upstream since just before 1.0.
+       */
+      add_cmdline (g, "-device");
+      add_cmdline (g, "sga");
+    }
 
     /* Set up virtio-serial for the communications channel. */
     add_cmdline (g, "-chardev");
@@ -908,6 +914,16 @@ is_openable (guestfs_h *g, const char *path, int flags)
   return 1;
 }
 
+static int
+old_or_broken_virtio_scsi (guestfs_h *g)
+{
+  /* qemu 1.1 claims to support virtio-scsi but in reality it's broken. */
+  if (g->app.qemu_version_major == 1 && g->app.qemu_version_minor < 2)
+    return 1;
+
+  return 0;
+}
+
 /* Returns 1 = use virtio-scsi, or 0 = use virtio-blk. */
 static int
 qemu_supports_virtio_scsi (guestfs_h *g)
@@ -926,8 +942,7 @@ qemu_supports_virtio_scsi (guestfs_h *g)
    *   3 = test failed (use virtio-blk)
    */
   if (g->app.virtio_scsi == 0) {
-    /* qemu 1.1 claims to support virtio-scsi but in reality it's broken. */
-    if (g->app.qemu_version_major == 1 && g->app.qemu_version_minor < 2)
+    if (old_or_broken_virtio_scsi (g))
       g->app.virtio_scsi = 2;
     else {
       r = qemu_supports_device (g, "virtio-scsi-pci");

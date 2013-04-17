@@ -70,6 +70,7 @@
 /* Define this to 1 if F_DUPFD behavior does not match POSIX */
 #undef FCNTL_DUPFD_BUGGY
 
+
 /* Enable compile-time and run-time bounds-checking, and some warnings. */
 #if __OPTIMIZE__
 # define _FORTIFY_SOURCE 2

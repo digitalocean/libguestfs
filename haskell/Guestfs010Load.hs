@@ -16,8 +16,8 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 -}
 
-module Guestfs005Load where
-import qualified Guestfs
+module Guestfs010Load where
+import Guestfs as G
 
 main = do
-  Guestfs.create
+  G.create

@@ -84,6 +84,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/subdir-rules.mk
+@ENABLE_APPLIANCE_TRUE@@HAVE_HASKELL_TRUE@am__append_1 = Guestfs050LVCreate
 subdir = haskell
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -1288,13 +1289,14 @@ generator_built = \
 EXTRA_DIST = $(generator_built) *.hs run-bindtests
 @HAVE_HASKELL_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
 
-# Don't run the bindtests: they don't build since the addition of optargs.
+# XXX Don't run the bindtests: they don't build since the addition of optargs.
 # Haskell bindings are incomplete.
-@ENABLE_APPLIANCE_TRUE@@HAVE_HASKELL_TRUE@TESTS = Guestfs005Load Guestfs010Basic
+@HAVE_HASKELL_TRUE@TESTS = Guestfs010Load Guestfs030Config \
+@HAVE_HASKELL_TRUE@	$(am__append_1)
 
 #check_DATA = Bindtests
 @HAVE_HASKELL_TRUE@GHCFLAGS = -I$(top_builddir)/src -L$(top_builddir)/src/.libs -i$(srcdir)
-@HAVE_HASKELL_TRUE@all_targets = Guestfs005Load Guestfs010Basic
+@HAVE_HASKELL_TRUE@all_targets = Guestfs010Load Guestfs030Config Guestfs050LVCreate
 @HAVE_HASKELL_TRUE@CLEANFILES = $(all_targets) *~ *.hi *.o
 all: all-am
 
@@ -1608,11 +1610,18 @@ appliance: force
 @HAVE_HASKELL_TRUE@Bindtests: $(srcdir)/Bindtests.hs Guestfs.o
 @HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
-@HAVE_HASKELL_TRUE@Guestfs005Load: $(srcdir)/Guestfs005Load.hs Guestfs.o
+@HAVE_HASKELL_TRUE@Guestfs010Load: $(srcdir)/Guestfs010Load.hs Guestfs.o
 @HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
-@HAVE_HASKELL_TRUE@Guestfs010Basic: $(srcdir)/Guestfs010Basic.hs Guestfs.o
+@HAVE_HASKELL_TRUE@Guestfs030Config: $(srcdir)/Guestfs030Config.hs Guestfs.o
 @HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
+
+@HAVE_HASKELL_TRUE@Guestfs050LVCreate: $(srcdir)/Guestfs050LVCreate.hs Guestfs.o
+@HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
+
+# Building in parallel causes linker corruption errors since it
+# appears that multiple runs of ghc conflict with each other.
+.NOTPARALLEL:
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

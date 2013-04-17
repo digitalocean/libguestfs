@@ -29,17 +29,19 @@ if HAVE_HASKELL
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
 
-# Don't run the bindtests: they don't build since the addition of optargs.
+# XXX Don't run the bindtests: they don't build since the addition of optargs.
 # Haskell bindings are incomplete.
+
+TESTS = Guestfs010Load Guestfs030Config
 if ENABLE_APPLIANCE
-TESTS = Guestfs005Load Guestfs010Basic
+TESTS += Guestfs050LVCreate
 endif ENABLE_APPLIANCE
 
 #check_DATA = Bindtests
 
 GHCFLAGS = -I$(top_builddir)/src -L$(top_builddir)/src/.libs -i$(srcdir)
 
-all_targets = Guestfs005Load Guestfs010Basic
+all_targets = Guestfs010Load Guestfs030Config Guestfs050LVCreate
 $(all_targets): $(top_builddir)/src/libguestfs.la
 
 all: $(all_targets)
@@ -50,12 +52,19 @@ Guestfs.o: $(srcdir)/Guestfs.hs
 Bindtests: $(srcdir)/Bindtests.hs Guestfs.o
 	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
-Guestfs005Load: $(srcdir)/Guestfs005Load.hs Guestfs.o
+Guestfs010Load: $(srcdir)/Guestfs010Load.hs Guestfs.o
 	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
-Guestfs010Basic: $(srcdir)/Guestfs010Basic.hs Guestfs.o
+Guestfs030Config: $(srcdir)/Guestfs030Config.hs Guestfs.o
+	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
+
+Guestfs050LVCreate: $(srcdir)/Guestfs050LVCreate.hs Guestfs.o
 	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
 
 CLEANFILES = $(all_targets) *~ *.hi *.o
 
 endif
+
+# Building in parallel causes linker corruption errors since it
+# appears that multiple runs of ghc conflict with each other.
+.NOTPARALLEL:

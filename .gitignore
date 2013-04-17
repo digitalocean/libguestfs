@@ -160,8 +160,9 @@ Makefile.in
 /guestfsd-in-wine.log
 /haskell/Bindtests
 /haskell/Bindtests.hs
-/haskell/Guestfs005Load
-/haskell/Guestfs010Basic
+/haskell/Guestfs010Load
+/haskell/Guestfs030Config
+/haskell/Guestfs050LVCreate
 /haskell/Guestfs.hs
 /html/guestfish.1.html
 /html/guestfs.3.html
@@ -319,6 +320,7 @@ Makefile.in
 /po-docs/po4a.conf
 /po-docs/*/*.pod
 /po-docs/*/stamp-update-po
+/podwrapper.1
 /podwrapper.pl
 /po/*.gmo
 /python/bindtests.py

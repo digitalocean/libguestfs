@@ -3,7 +3,7 @@
  *   generator/ *.ml
  * ANY CHANGES YOU MAKE TO THIS FILE WILL BE LOST.
  *
- * Copyright (C) 2009-2012 Red Hat Inc.
+ * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The GuestFS object is a libguestfs handle.
+ * Libguestfs handle.
+ * <p>
+ * The <code>GuestFS</code> object corresponds to a libguestfs handle.
+ * <p>
+ * Note that the main documentation for the libguestfs API is in
+ * the following man pages:
+ * <p>
+ * <ol>
+ * <li> <a href="http://libguestfs.org/guestfs-java.3.html"><code>guestfs-java(3)</code></a> and </li>
+ * <li> <a href="http://libguestfs.org/guestfs.3.html"><code>guestfs(3)</code></a>. </li>
+ * </ol>
+ * <p>
+ * This javadoc is <b>not</b> a good introduction to using libguestfs.
  *
  * @author rjones
  */
@@ -40,6 +52,10 @@ public class GuestFS {
    * The native guestfs_h pointer.
    */
   long g;
+
+  /* guestfs_create_flags values defined in <guestfs.h> */
+  private static int CREATE_NO_ENVIRONMENT   = 1;
+  private static int CREATE_NO_CLOSE_ON_EXIT = 2;
 
   /**
    * Create a libguestfs handle, setting flags.
@@ -56,11 +72,11 @@ public class GuestFS {
     if (optargs != null)
       _optobj = optargs.get ("environment");
     if (_optobj != null && !((Boolean) _optobj).booleanValue())
-      flags |= 1;
+      flags |= CREATE_NO_ENVIRONMENT;
     if (optargs != null)
       _optobj = optargs.get ("close_on_exit");
     if (_optobj != null && !((Boolean) _optobj).booleanValue())
-      flags |= 2;
+      flags |= CREATE_NO_CLOSE_ON_EXIT;
 
     g = _create (flags);
   }
@@ -74,6 +90,7 @@ public class GuestFS {
   {
     g = _create (0);
   }
+
   private native long _create (int flags) throws LibGuestFSException;
 
   /**
@@ -99,6 +116,193 @@ public class GuestFS {
   {
     close ();
   }
+
+  // Event bitmasks.
+
+  /**
+   * Event 'close'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_CLOSE = 0x1;
+
+  /**
+   * Event 'subprocess_quit'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_SUBPROCESS_QUIT = 0x2;
+
+  /**
+   * Event 'launch_done'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_LAUNCH_DONE = 0x4;
+
+  /**
+   * Event 'progress'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_PROGRESS = 0x8;
+
+  /**
+   * Event 'appliance'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_APPLIANCE = 0x10;
+
+  /**
+   * Event 'library'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_LIBRARY = 0x20;
+
+  /**
+   * Event 'trace'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_TRACE = 0x40;
+
+  /**
+   * Event 'enter'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_ENTER = 0x80;
+
+  /**
+   * Event 'libvirt_auth'.
+   *
+   * @see #set_event_callback
+   */
+  public static final long EVENT_LIBVIRT_AUTH = 0x100;
+
+  /** Bitmask of all events. */
+  public static final long EVENT_ALL = 0x1ff;
+
+  /** Utility function to turn an event number or bitmask into a string. */
+  public static String eventToString (long events)
+  {
+    if (events == 0)
+      return "";
+
+    String ret = "";
+
+    if ((events & EVENT_CLOSE) != 0) {
+      ret = ret + "|EVENT_CLOSE";
+      events &= ~0x1;
+    }
+    if ((events & EVENT_SUBPROCESS_QUIT) != 0) {
+      ret = ret + "|EVENT_SUBPROCESS_QUIT";
+      events &= ~0x2;
+    }
+    if ((events & EVENT_LAUNCH_DONE) != 0) {
+      ret = ret + "|EVENT_LAUNCH_DONE";
+      events &= ~0x4;
+    }
+    if ((events & EVENT_PROGRESS) != 0) {
+      ret = ret + "|EVENT_PROGRESS";
+      events &= ~0x8;
+    }
+    if ((events & EVENT_APPLIANCE) != 0) {
+      ret = ret + "|EVENT_APPLIANCE";
+      events &= ~0x10;
+    }
+    if ((events & EVENT_LIBRARY) != 0) {
+      ret = ret + "|EVENT_LIBRARY";
+      events &= ~0x20;
+    }
+    if ((events & EVENT_TRACE) != 0) {
+      ret = ret + "|EVENT_TRACE";
+      events &= ~0x40;
+    }
+    if ((events & EVENT_ENTER) != 0) {
+      ret = ret + "|EVENT_ENTER";
+      events &= ~0x80;
+    }
+    if ((events & EVENT_LIBVIRT_AUTH) != 0) {
+      ret = ret + "|EVENT_LIBVIRT_AUTH";
+      events &= ~0x100;
+    }
+
+    if (events != 0)
+      ret = events + ret;
+    else
+       ret = ret.substring (1);
+
+    return ret;
+  }
+
+  /**
+   * Set an event handler.
+   * <p>
+   * Set an event handler (<code>callback</code>) which is called when any
+   * event from the set (<code>events</code>) is raised by the API.
+   * <code>events</code> is one or more <code>EVENT_*</code> constants,
+   * bitwise ORed together.
+   * <p>
+   * When an event happens, the callback object's <code>event</code> method
+   * is invoked like this:
+   * <pre>
+   * callback.event (event,    // the specific event which fired (long)
+   *                 eh,       // the event handle (int)
+   *                 buffer,   // event data (String)
+   *                 array     // event data (long[])
+   *                 );
+   * </pre>
+   * Note that you can pass arbitrary data from the main program to the
+   * callback by putting it into your {@link EventCallback callback object},
+   * then accessing it in the callback via <code>this</code>.
+   * <p>
+   * This function returns an event handle which may be used to delete
+   * the event.  Note that event handlers are deleted automatically when
+   * the libguestfs handle is closed.
+   *
+   * @throws LibGuestFSException
+   * @see The section "EVENTS" in the guestfs(3) manual
+   * @see #delete_event_callback
+   */
+  public int set_event_callback (EventCallback callback, long events)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_event_callback: handle is closed");
+
+    return _set_event_callback (g, callback, events);
+  }
+
+  private native int _set_event_callback (long g, EventCallback callback,
+                                          long events)
+    throws LibGuestFSException;
+
+  /**
+   * Delete an event handler.
+   * <p>
+   * Delete a previously registered event handler.  The 'eh' parameter is
+   * the event handle returned from a previous call to
+   * {@link #set_event_callback set_event_callback}.
+   * <p>
+   * Note that event handlers are deleted automatically when the
+   * libguestfs handle is closed.
+   *
+   * @throws LibGuestFSException
+   * @see #set_event_callback
+   */
+  public void delete_event_callback (int eh)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("delete_event_callback: handle is closed");
+
+    _delete_event_callback (g, eh);
+  }
+
+  private native void _delete_event_callback (long g, int eh);
 
   public void internal_test (String str, String optstr, String[] strlist, boolean b, int integer, long integer64, String filein, String fileout, byte[] bufferin, Map<String, Object> optargs)
     throws LibGuestFSException

@@ -1,3 +1,139 @@
+2013-01-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Use updated package names, but allow fallback to the old names (RHBZ#894545).
+	Thanks Dominic Cleal.
+
+2013-01-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Suppress two false positives from Coverity.
+	Using // coverity[...] or /* coverity[...] */ comments in the source
+	it is possible to suppress specific Coverity errors.  The suppressed
+	error should occur in the line following the comment.
+
+	In this case I have suppressed two false positives from Coverity:
+
+	(a) We deliberately assign to a NULL pointer in order to cause a
+	segfault, for testing how the library reacts when this happens.
+	Coverity flags this, but it is not an error in this case.
+
+	(b) Coverity does not model global variables (a known shortcoming).
+	Therefore the code 'errno = posix_memalign (...)' cannot be modelled
+	by Coverity, even though the code is correct.  Coverity raises a false
+	positive about this.
+
+	(Thanks Kamil Dudka, Coverity)
+
+2013-01-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Refresh podwrapper man page.
+	This also adds a rule so you can do:
+
+	 make podwrapper.1
+
+	if you want to read the documentation as a man page.
+
+2013-01-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Implement the event API.
+
+	java: Use defined constants for flags in call to guestfs_create_flags.
+
+	java: Change synopsis in man page to show use of add_drive.
+
+	java: Tidy up javadoc.
+
+	Refresh README file.
+
+	Update copyright dates for 2013.
+	On generated files in git and README.
+
+2012-12-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	haskell: Use unused bogus data types.
+
+	haskell: Typo in man page, lists -> list.
+
+	haskell: Implement 'head' and 'tail' by hiding the Prelude functions.
+
+	haskell: Use 'import Guestfs as G' in test code.
+	The code is equivalent but shorter.
+
+	haskell: Document current state of Haskell bindings.
+
+	haskell: Fix RHashtable in the generator.
+
+	haskell: Use .NOTPARALLEL in this directory.
+
+2012-12-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	haskell: Fix RStringList in generator.
+
+	haskell: Add tests of config functions.
+
+	haskell: Allow non-appliance tests to run when !ENABLE_APPLIANCE.
+
+	haskell: Renumber tests according to Perl scheme.
+
+	haskell: Enable RString, RConstString in generator.
+
+	haskell: Enable RBool in generator.
+
+	haskell: Replace deprecated INCLUDE directive.
+	The INCLUDE directive is obsolete.  You must now put the name of the
+	include file before the C function name.
+
+2012-12-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Recomment vexpress-a15 instead of vexpress-a9.
+	Neither works (because of lack of PCI) but A15 emulation is probably
+	better than A9 emulation.
+
+2012-12-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: appliance: Fix parsing of QEMU_OPTIONS.
+	If there was no quoting character, the options could run off the end
+	of the string and into whatever string which happened to be following
+	in memory.
+
+	This bug was revealed when libguestfs was compiled on arm.
+
+2012-12-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: appliance: Small refactoring of virtio-scsi detection code.
+	This is just code motion.
+
+	Fix whitespace in configure.ac.
+	Standardize on 4 spaces for indentation in configure.ac file.
+	This is just a change of whitespace.
+
+2012-12-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Prevent -Wcast-align warnings.
+	See link below for a general description of the problem:
+
+	https://github.com/libguestfs/hivex/commit/f8b62e4cd2f65cd712164c59094e81f2958aa000
+
+2012-12-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Only use -device sga if qemu supports this device.
+	qemu-system-arm does not have the sgabios device.
+
+	lib: Remove useless cast.
+	'strings' is declared as char **, so the return type of
+	this expression will already be char *.  The cast is both
+	useless and potentially hides errors.
+
+2012-12-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Fix ./configure --with-febootstrap-yum-config option.
+	This fixes commit bfddae7ceefa4a419ff56848122a46c71c4d6a3c.
+
+	Also tested that all variants actually work.
+
+2012-12-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.2.
+
 2012-12-22  Richard W.M. Jones  <rjones@redhat.com>
 
 	build: Change --with-febootstrap-yum-config to --with-febootstrap-packager-config

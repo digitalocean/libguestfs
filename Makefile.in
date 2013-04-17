@@ -1551,10 +1551,14 @@ noinst_DATA = \
 	$(top_builddir)/html/guestfs-release-notes.1.html
 
 
+# NB. podwrapper is an internal tool, so the man page mustn't be installed.
+noinst_MANS = podwrapper.1
+
 # Make clean.
 CLEANFILES = \
 	html/*.html \
 	pod2htm?.tmp \
+	podwrapper.1 \
 	qemu-wrapper.sh \
 	stamp-guestfs-release-notes.pod
 
@@ -2218,6 +2222,13 @@ stamp-guestfs-release-notes.pod: guestfs-release-notes.pod
 	  --license GPLv2+ \
 	  $<
 	touch $@
+podwrapper.1: podwrapper.pl
+	$(PODWRAPPER) \
+	  --section 1 \
+	  --man $@-t \
+	  --license GPLv2+ \
+	  $<
+	mv $@-t $@
 
 # If you don't want to run all of the tests ('make check') then this
 # will just run libguestfs-test-tool for a quick check.  Note this
