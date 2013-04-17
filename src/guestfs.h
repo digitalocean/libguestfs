@@ -1451,6 +1451,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_is_socket (guestfs_h *g, const char *path)
 #define GUESTFS_HAVE_IS_SYMLINK 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_symlink (guestfs_h *g, const char *path);
 
+#define GUESTFS_HAVE_IS_WHOLE_DEVICE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_is_whole_device (guestfs_h *g, const char *device);
+
 #define GUESTFS_HAVE_IS_ZERO 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_zero (guestfs_h *g, const char *path);
 
@@ -3399,6 +3402,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_internal_write_append (guestfs_h *g, const
 #define LIBGUESTFS_HAVE_IS_READY 1
 #define LIBGUESTFS_HAVE_IS_SOCKET 1
 #define LIBGUESTFS_HAVE_IS_SYMLINK 1
+#define LIBGUESTFS_HAVE_IS_WHOLE_DEVICE 1
 #define LIBGUESTFS_HAVE_IS_ZERO 1
 #define LIBGUESTFS_HAVE_IS_ZERO_DEVICE 1
 #define LIBGUESTFS_HAVE_ISOINFO 1

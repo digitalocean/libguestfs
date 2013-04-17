@@ -249,7 +249,7 @@ free_strings (char **argv)
         (* generate the function for typ *)
         emit_put_list_function typ
     | typ, _ -> () (* empty *)
-  ) (rstructs_used_by all_functions);
+  ) (rstructs_used_by external_functions);
 
   (* Python wrapper functions. *)
   List.iter (
@@ -289,7 +289,7 @@ free_strings (char **argv)
 
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | Key n
+        | Pathname n | Device n | Mountable n | Dev_or_Path n | String n | Key n
         | FileIn n | FileOut n ->
             pr "  const char *%s;\n" n
         | OptString n -> pr "  const char *%s;\n" n
@@ -326,7 +326,7 @@ free_strings (char **argv)
       pr "  if (!PyArg_ParseTuple (args, (char *) \"O";
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _ | Dev_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ -> pr "s"
         | OptString _ -> pr "z"
         | StringList _ | DeviceList _ -> pr "O"
@@ -347,7 +347,7 @@ free_strings (char **argv)
       pr "                         &py_g";
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | Key n
+        | Pathname n | Device n | Mountable n | Dev_or_Path n | String n | Key n
         | FileIn n | FileOut n -> pr ", &%s" n
         | OptString n -> pr ", &%s" n
         | StringList n | DeviceList n -> pr ", &py_%s" n
@@ -369,7 +369,7 @@ free_strings (char **argv)
       pr "  g = get_handle (py_g);\n";
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _ | Dev_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ -> ()
         | StringList n | DeviceList n ->
@@ -505,7 +505,7 @@ free_strings (char **argv)
 
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _ | Dev_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ | Pointer _ -> ()
         | StringList n | DeviceList n ->
@@ -523,7 +523,7 @@ free_strings (char **argv)
       pr "  return py_r;\n";
       pr "}\n";
       pr "\n"
-  ) all_functions;
+  ) external_functions;
 
   (* Table of functions. *)
   pr "static PyMethodDef methods[] = {\n";
@@ -537,7 +537,7 @@ free_strings (char **argv)
     fun { name = name } ->
       pr "  { (char *) \"%s\", py_guestfs_%s, METH_VARARGS, NULL },\n"
         name name
-  ) all_functions;
+  ) external_functions;
   pr "  { NULL, NULL, 0, NULL }\n";
   pr "};\n";
   pr "\n";
@@ -729,9 +729,9 @@ class GuestFS(object):
 ";
 
   List.iter (
-    fun ({ name = name; style = ret, args, optargs; in_docs = in_docs;
-          longdesc = longdesc; non_c_aliases = non_c_aliases } as f) ->
-      pr "    def %s (self" name;
+    fun f ->
+      let ret, args, optargs = f.style in
+      pr "    def %s (self" f.name;
       List.iter (fun arg -> pr ", %s" (name_of_argt arg)) args;
       List.iter (
         fun optarg ->
@@ -739,8 +739,8 @@ class GuestFS(object):
       ) optargs;
       pr "):\n";
 
-      if in_docs then (
-        let doc = replace_str longdesc "C<guestfs_" "C<g." in
+      if is_documented f then (
+        let doc = replace_str f.longdesc "C<guestfs_" "C<g." in
         let doc =
           match ret with
           | RErr | RInt _ | RInt64 _ | RBool _
@@ -762,7 +762,7 @@ class GuestFS(object):
           match deprecation_notice f with
           | None -> doc
           | Some txt -> doc ^ "\n\n" ^ txt in
-        let doc = pod2text ~width:60 name doc in
+        let doc = pod2text ~width:60 f.name doc in
         let doc = List.map (fun line -> replace_str line "\\" "\\\\") doc in
         let doc = String.concat "\n        " doc in
         pr "        \"\"\"%s\"\"\"\n" doc;
@@ -773,14 +773,14 @@ class GuestFS(object):
        *)
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _ | Dev_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ | Pointer _ -> ()
         | StringList n | DeviceList n ->
             pr "        %s = list (%s)\n" n n
       ) args;
       pr "        self._check_not_closed ()\n";
-      pr "        return libguestfsmod.%s (self._o" name;
+      pr "        return libguestfsmod.%s (self._o" f.name;
       List.iter (fun arg -> pr ", %s" (name_of_argt arg))
         (args @ args_of_optargs optargs);
       pr ")\n\n";
@@ -788,6 +788,6 @@ class GuestFS(object):
       (* Aliases. *)
       List.iter (
         fun alias ->
-          pr "    %s = %s\n\n" alias name
-      ) non_c_aliases
-  ) all_functions
+          pr "    %s = %s\n\n" alias f.name
+      ) f.non_c_aliases
+  ) external_functions

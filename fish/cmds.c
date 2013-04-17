@@ -59,11 +59,7 @@ static int run_set_autosync (const char *cmd, size_t argc, char *argv[]);
 static int run_get_autosync (const char *cmd, size_t argc, char *argv[]);
 static int run_set_verbose (const char *cmd, size_t argc, char *argv[]);
 static int run_get_verbose (const char *cmd, size_t argc, char *argv[]);
-static int run_is_ready (const char *cmd, size_t argc, char *argv[]);
 static int run_is_config (const char *cmd, size_t argc, char *argv[]);
-static int run_is_launching (const char *cmd, size_t argc, char *argv[]);
-static int run_is_busy (const char *cmd, size_t argc, char *argv[]);
-static int run_get_state (const char *cmd, size_t argc, char *argv[]);
 static int run_set_memsize (const char *cmd, size_t argc, char *argv[]);
 static int run_get_memsize (const char *cmd, size_t argc, char *argv[]);
 static int run_get_pid (const char *cmd, size_t argc, char *argv[]);
@@ -526,6 +522,7 @@ static int run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *ar
 static int run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_rename (const char *cmd, size_t argc, char *argv[]);
+static int run_is_whole_device (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -737,34 +734,10 @@ struct command_entry get_verbose_cmd_entry = {
   .run = run_get_verbose
 };
 
-struct command_entry is_ready_cmd_entry = {
-  .name = "is-ready",
-  .help = "NAME\n    is-ready - is ready to accept commands\n\nSYNOPSIS\n     is-ready\n\nDESCRIPTION\n    This returns true iff this handle is ready to accept commands (in the\n    \"READY\" state).\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_is_ready
-};
-
 struct command_entry is_config_cmd_entry = {
   .name = "is-config",
   .help = "NAME\n    is-config - is in configuration state\n\nSYNOPSIS\n     is-config\n\nDESCRIPTION\n    This returns true iff this handle is being configured (in the \"CONFIG\"\n    state).\n\n    For more information on states, see guestfs(3).\n\n",
   .run = run_is_config
-};
-
-struct command_entry is_launching_cmd_entry = {
-  .name = "is-launching",
-  .help = "NAME\n    is-launching - is launching subprocess\n\nSYNOPSIS\n     is-launching\n\nDESCRIPTION\n    This returns true iff this handle is launching the subprocess (in the\n    \"LAUNCHING\" state).\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_is_launching
-};
-
-struct command_entry is_busy_cmd_entry = {
-  .name = "is-busy",
-  .help = "NAME\n    is-busy - is busy processing a command\n\nSYNOPSIS\n     is-busy\n\nDESCRIPTION\n    This always returns false. Do not use this function.\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_is_busy
-};
-
-struct command_entry get_state_cmd_entry = {
-  .name = "get-state",
-  .help = "NAME\n    get-state - get the current state\n\nSYNOPSIS\n     get-state\n\nDESCRIPTION\n    This returns the current state as an opaque integer. This is only useful\n    for printing debug and internal error messages.\n\n    For more information on states, see guestfs(3).\n\n",
-  .run = run_get_state
 };
 
 struct command_entry set_memsize_cmd_entry = {
@@ -3539,6 +3512,12 @@ struct command_entry rename_cmd_entry = {
   .run = run_rename
 };
 
+struct command_entry is_whole_device_cmd_entry = {
+  .name = "is-whole-device",
+  .help = "NAME\n    is-whole-device - test if a device is a whole device\n\nSYNOPSIS\n     is-whole-device device\n\nDESCRIPTION\n    This returns \"true\" if and only if \"device\" refers to a whole block\n    device. That is, not a partition or a logical device.\n\n",
+  .run = run_is_whole_device
+};
+
 void
 list_commands (void)
 {
@@ -3685,7 +3664,6 @@ list_commands (void)
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
   printf ("%-20s %s\n", "get-smp", _("get number of virtual CPUs in appliance"));
-  printf ("%-20s %s\n", "get-state", _("get the current state"));
   printf ("%-20s %s\n", "get-tmpdir", _("get the temporary directory"));
   printf ("%-20s %s\n", "get-trace", _("get command trace enabled flag"));
   printf ("%-20s %s\n", "get-umask", _("get the current umask"));
@@ -3752,17 +3730,15 @@ list_commands (void)
   printf ("%-20s %s\n", "inspect-list-applications2", _("get list of applications installed in the operating system"));
   printf ("%-20s %s\n", "inspect-os", _("inspect disk and return list of operating systems found"));
   printf ("%-20s %s\n", "is-blockdev", _("test if block device"));
-  printf ("%-20s %s\n", "is-busy", _("is busy processing a command"));
   printf ("%-20s %s\n", "is-chardev", _("test if character device"));
   printf ("%-20s %s\n", "is-config", _("is in configuration state"));
   printf ("%-20s %s\n", "is-dir", _("test if a directory"));
   printf ("%-20s %s\n", "is-fifo", _("test if FIFO (named pipe)"));
   printf ("%-20s %s\n", "is-file", _("test if a regular file"));
-  printf ("%-20s %s\n", "is-launching", _("is launching subprocess"));
   printf ("%-20s %s\n", "is-lv", _("test if device is a logical volume"));
-  printf ("%-20s %s\n", "is-ready", _("is ready to accept commands"));
   printf ("%-20s %s\n", "is-socket", _("test if socket"));
   printf ("%-20s %s\n", "is-symlink", _("test if symbolic link"));
+  printf ("%-20s %s\n", "is-whole-device", _("test if a device is a whole device"));
   printf ("%-20s %s\n", "is-zero", _("test if a file contains all zero bytes"));
   printf ("%-20s %s\n", "is-zero-device", _("test if a device contains all zero bytes"));
   printf ("%-20s %s\n", "isoinfo", _("get ISO information from primary volume descriptor of ISO file"));
@@ -4906,26 +4882,6 @@ run_get_verbose (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
-run_is_ready (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_is_ready (g);
-  if (r == -1) goto out;
-  ret = 0;
-  if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
 run_is_config (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -4940,66 +4896,6 @@ run_is_config (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_is_launching (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_is_launching (g);
-  if (r == -1) goto out;
-  ret = 0;
-  if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_is_busy (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_is_busy (g);
-  if (r == -1) goto out;
-  ret = 0;
-  if (r) printf ("true\n"); else printf ("false\n");
- out:
- out_noargs:
-  return ret;
-}
-
-static int
-run_get_state (const char *cmd, size_t argc, char *argv[])
-{
-  int ret = -1;
-  int r;
-
-  if (argc != 0) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
-    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
-    goto out_noargs;
-  }
-  r = guestfs_get_state (g);
-  if (r == -1) goto out;
-  ret = 0;
-  printf ("%d\n", r);
  out:
  out_noargs:
   return ret;
@@ -21247,6 +21143,29 @@ run_rename (const char *cmd, size_t argc, char *argv[])
  out_newpath:
   free (oldpath);
  out_oldpath:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_is_whole_device (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_is_whole_device (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
  out_noargs:
   return ret;
 }

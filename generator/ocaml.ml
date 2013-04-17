@@ -130,12 +130,12 @@ val user_cancel : t -> unit
 
   (* The actions. *)
   List.iter (
-    fun { name = name; style = style; deprecated_by = deprecated_by;
+    fun ({ name = name; style = style; deprecated_by = deprecated_by;
           non_c_aliases = non_c_aliases;
-          in_docs = in_docs; shortdesc = shortdesc } ->
+          shortdesc = shortdesc } as f) ->
       generate_ocaml_prototype name style;
 
-      if in_docs then (
+      if is_documented f then (
         pr "(** %s" shortdesc;
         (match deprecated_by with
          | None -> ()
@@ -152,7 +152,7 @@ val user_cancel : t -> unit
           generate_ocaml_prototype alias style;
           pr "\n";
       ) non_c_aliases;
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   pr "\
 (** {2 Object-oriented API}
@@ -203,7 +203,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
         generate_ocaml_function_type style;
         pr "\n"
       ) non_c_aliases
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   pr "end\n"
 
@@ -268,7 +268,7 @@ let () =
     fun { name = name; style = style; non_c_aliases = non_c_aliases } ->
       generate_ocaml_prototype ~is_external:true name style;
       List.iter (fun alias -> pr "let %s = %s\n" alias name) non_c_aliases
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   (* OO API. *)
   pr "
@@ -297,7 +297,7 @@ class guestfs ?environment ?close_on_exit () =
       );
       List.iter
         (fun alias -> pr "    method %s = self#%s\n" alias name) non_c_aliases
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   pr "  end\n"
 
@@ -431,7 +431,7 @@ copy_table (char * const * argv)
         (* generate the function for typ *)
         emit_ocaml_copy_list_function typ
     | typ, _ -> () (* empty *)
-  ) (rstructs_used_by all_functions);
+  ) (rstructs_used_by external_functions);
 
   (* The wrappers. *)
   List.iter (
@@ -497,7 +497,7 @@ copy_table (char * const * argv)
       List.iter (
         function
         | Pathname n
-        | Device n | Dev_or_Path n
+        | Device n | Mountable n | Dev_or_Path n
         | String n
         | FileIn n
         | FileOut n
@@ -583,8 +583,8 @@ copy_table (char * const * argv)
       (* Free strings if we copied them above. *)
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | OptString n
-        | FileIn n | FileOut n | BufferIn n | Key n ->
+        | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
+        | OptString n | FileIn n | FileOut n | BufferIn n | Key n ->
             pr "  free (%s);\n" n
         | StringList n | DeviceList n ->
             pr "  ocaml_guestfs_free_strings (%s);\n" n;
@@ -668,7 +668,7 @@ copy_table (char * const * argv)
         pr "}\n";
         pr "\n"
       )
-  ) all_functions_sorted
+  ) external_functions_sorted
 
 and generate_ocaml_structure_decls () =
   List.iter (
@@ -712,8 +712,8 @@ and generate_ocaml_function_type ?(extra_unit = false) (ret, args, optargs) =
   ) optargs;
   List.iter (
     function
-    | Pathname _ | Device _ | Dev_or_Path _ | String _ | FileIn _ | FileOut _
-    | BufferIn _ | Key _ -> pr "string -> "
+    | Pathname _ | Device _ | Mountable _ | Dev_or_Path _ | String _
+    | FileIn _ | FileOut _ | BufferIn _ | Key _ -> pr "string -> "
     | OptString _ -> pr "string option -> "
     | StringList _ | DeviceList _ -> pr "string array -> "
     | Bool _ -> pr "bool -> "

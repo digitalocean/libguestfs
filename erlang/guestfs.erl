@@ -222,13 +222,6 @@
 -export([inspect_list_applications/2]).
 -export([inspect_list_applications2/2]).
 -export([inspect_os/1]).
--export([internal_autosync/1]).
--export([internal_hot_add_drive/2]).
--export([internal_hot_remove_drive/2]).
--export([internal_hot_remove_drive_precheck/2]).
--export([internal_lstatlist/3]).
--export([internal_lxattrlist/3]).
--export([internal_readlinklist/3]).
 -export([internal_test/10, internal_test/11]).
 -export([internal_test_63_optargs/1, internal_test_63_optargs/2]).
 -export([internal_test_close_output/1]).
@@ -256,8 +249,6 @@
 -export([internal_test_rstructlist/2]).
 -export([internal_test_rstructlisterr/1]).
 -export([internal_test_set_output/2]).
--export([internal_write/3]).
--export([internal_write_append/3]).
 -export([is_blockdev/2]).
 -export([is_busy/1]).
 -export([is_chardev/2]).
@@ -270,6 +261,7 @@
 -export([is_ready/1]).
 -export([is_socket/2]).
 -export([is_symlink/2]).
+-export([is_whole_device/2]).
 -export([is_zero/2]).
 -export([is_zero_device/2]).
 -export([isoinfo/2]).
@@ -1218,27 +1210,6 @@ inspect_list_applications2(G, Root) ->
 inspect_os(G) ->
   call_port(G, {inspect_os}).
 
-internal_autosync(G) ->
-  call_port(G, {internal_autosync}).
-
-internal_hot_add_drive(G, Label) ->
-  call_port(G, {internal_hot_add_drive, Label}).
-
-internal_hot_remove_drive(G, Label) ->
-  call_port(G, {internal_hot_remove_drive, Label}).
-
-internal_hot_remove_drive_precheck(G, Label) ->
-  call_port(G, {internal_hot_remove_drive_precheck, Label}).
-
-internal_lstatlist(G, Path, Names) ->
-  call_port(G, {internal_lstatlist, Path, Names}).
-
-internal_lxattrlist(G, Path, Names) ->
-  call_port(G, {internal_lxattrlist, Path, Names}).
-
-internal_readlinklist(G, Path, Names) ->
-  call_port(G, {internal_readlinklist, Path, Names}).
-
 internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs) ->
   call_port(G, {internal_test, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin, Optargs}).
 internal_test(G, Str, Optstr, Strlist, B, Integer, Integer64, Filein, Fileout, Bufferin) ->
@@ -1326,12 +1297,6 @@ internal_test_rstructlisterr(G) ->
 internal_test_set_output(G, Filename) ->
   call_port(G, {internal_test_set_output, Filename}).
 
-internal_write(G, Path, Content) ->
-  call_port(G, {internal_write, Path, Content}).
-
-internal_write_append(G, Path, Content) ->
-  call_port(G, {internal_write_append, Path, Content}).
-
 is_blockdev(G, Path) ->
   call_port(G, {is_blockdev, Path}).
 
@@ -1367,6 +1332,9 @@ is_socket(G, Path) ->
 
 is_symlink(G, Path) ->
   call_port(G, {is_symlink, Path}).
+
+is_whole_device(G, Device) ->
+  call_port(G, {is_whole_device, Device}).
 
 is_zero(G, Path) ->
   call_port(G, {is_zero, Path}).

@@ -413,4 +413,5 @@ const char *function_names[] = {
   [392] = "part_set_gpt_type",
   [393] = "part_get_gpt_type",
   [394] = "rename",
+  [395] = "is_whole_device",
 };

@@ -1,3 +1,140 @@
+2013-02-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	rescue: Count the mountable filesystems when displaying the 'suggest' message.
+
+	tools: Use CLEANUP_* macros in several C tools.
+
+	generator: Export libxml2 CLEANUP_* macros unconditionally.
+	These call abort() if libxml2 is not actually installed, but that
+	should never happen inside the library or tools.
+
+2013-02-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Define CLEANUP_CMD_CLOSE macro and use it throughout the library.
+
+	tools, tests: Use "guestfs-internal-frontend.h" header.
+	Instead of redefining STREQ, etc.
+
+	lib: Use CLEANUP_FREE_<struct>, CLEANUP_FREE_<struct>_LIST macros in a few places in the library.
+
+2013-02-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Add CLEANUP_FREE_<struct>, CLEANUP_FREE_<struct>_LIST macros for API structs.
+	For example:
+
+	 {
+	   CLEANUP_FREE_STAT struct guestfs_stat *stat = guestfs_stat (g, "/foo");
+
+	   // stat is freed automatically when we leave the scope.
+	 }
+
+	The new header file "guestfs-internal-frontend-cleanups.h"
+	includes definitions for these.  It should not be included
+	directly.
+
+2013-02-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Allow guestfs_free_* functions to be safely called with a NULL pointer.
+	This is so they work just like 'free'.
+
+	lib: Remove explicit defines of _BSD_SOURCE.
+	An equivalent is defined already in <config.h>.
+
+	generator: Add #ifndef defense around guestfs-internal-actions.h file.
+
+2013-02-08  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Add new Mountable argument type
+	This type is initially identical to Device.
+
+	inspect: Fix improperly ignored error in check_filesystem
+
+	inspect: Don't re-implement list_filesystems in inspect_os
+
+2013-02-08  Matthew Booth  <mbooth@redhat.com>
+
+	Fix bogus partition number passed to guestfs___check_for_filesystem_on
+	Partition number was being passed to guestfs___check_for_filesystem_on
+	based on an index in list_partition. However, this ignores the
+	possibility of multiple block devices.
+
+	This change makes guestfs___check_for_filesystem_on examine the
+	passed-in device directly to determine if it is a whole device, or
+	what its partition number is.
+
+2013-02-08  Matthew Booth  <mbooth@redhat.com>
+
+	New API: is_whole_device
+
+	btrfs: Fix btrfs_subvolume_list on F18 (RHBZ#903620).
+	The output of btrfs subvolume list has changed in F18 to include generation,
+	which breaks the parsing in btrfs_subvolume_list. This change replaces sscanf
+	with a more robust regular expression. The new regular expression should also
+	handle the addition of future unexpected columns.
+
+2013-02-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Check parameter of base64-out and tar-out before running external command (RHBZ#908322).
+	For base64-out, check the filename parameter exists and is not a
+	directory.
+
+	For tar-out, check the dir parameter exists and is a directory.
+
+2013-02-06  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Add visibility to action struct
+	The visibility field in action replaces in_fish, in_docs and internal.
+	The defined types are:
+
+	VPublic:
+	  A public API. This is exported and documented in all language
+	  bindings, and in guestfish.
+
+	VStateTest:
+	  A public API which queries the library state machine. It is exported
+	  and documented in all language bindings, but not guestfish.
+
+	VBindTest:
+	  An internal API used only for testing language bindings. It is
+	  guarded by GUESTFS_PRIVATE in the C api, but exported by all other
+	  language bindings as it is required for testing. If language
+	  bindings offer any way to guard use of these apis, that mechanism
+	  should be used. It is not documented anywhere.
+
+	VDebug:
+	  A debugging API. It is exported by all language bindings, and in
+	  guestfish, but is not documented anywhere.
+
+	VInternal:
+	  An internal-only API. It is guarded by GUESTFS_PRIVATE in the C api,
+	  and not exported at all in any other language binding. It is not
+	  documented anywhere.
+
+2013-02-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: download: Add extra check that download file is not a directory (RHBZ#908321).
+
+2013-02-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Add more information to certain calls to perror.
+	Replace selected calls to 'perror (filename)' with:
+
+	  fprintf (stderr, "syscall: %s: %m\n", filename);
+
+	so that more information is available about precisely which syscall
+	failed.
+
+	Note this is *not* reply_with_perror.  These messages are only printed
+	in verbose output, for the benefit of debugging.
+
+2013-02-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	9p: Missing call to reply_with_perror.
+
+2013-02-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.8.
+
 2013-02-05  Richard W.M. Jones  <rjones@redhat.com>
 
 	Use 'supermin' and 'supermin-helper' in preference to febootstrap.

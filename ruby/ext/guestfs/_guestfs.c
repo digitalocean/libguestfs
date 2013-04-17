@@ -2121,6 +2121,21 @@ ruby_guestfs_is_launching (VALUE gv)
   return INT2NUM (r);
 }
 
+/*
+ * call-seq:
+ *   g.is_busy() -> [True|False]
+ *
+ * is busy processing a command
+ *
+ * This always returns false. This function is deprecated
+ * with no replacement. Do not use this function.
+ * 
+ * For more information on states, see guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_is_busy+[http://libguestfs.org/guestfs.3.html#guestfs_is_busy]).
+ */
 static VALUE
 ruby_guestfs_is_busy (VALUE gv)
 {
@@ -14891,139 +14906,6 @@ ruby_guestfs_lchown (VALUE gv, VALUE ownerv, VALUE groupv, VALUE pathv)
   return Qnil;
 }
 
-static VALUE
-ruby_guestfs_internal_lstatlist (VALUE gv, VALUE pathv, VALUE namesv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_lstatlist");
-
-  const char *path = StringValueCStr (pathv);
-  char **names;
-  Check_Type (namesv, T_ARRAY);
-  {
-    size_t i, len;
-    len = RARRAY_LEN (namesv);
-    names = ALLOC_N (char *, len+1);
-    for (i = 0; i < len; ++i) {
-      volatile VALUE v = rb_ary_entry (namesv, i);
-      names[i] = StringValueCStr (v);
-    }
-    names[len] = NULL;
-  }
-
-  struct guestfs_stat_list *r;
-
-  r = guestfs_internal_lstatlist (g, path, names);
-  free (names);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  volatile VALUE rv = rb_ary_new2 (r->len);
-  size_t i;
-  for (i = 0; i < r->len; ++i) {
-    volatile VALUE hv = rb_hash_new ();
-    rb_hash_aset (hv, rb_str_new2 ("dev"), LL2NUM (r->val[i].dev));
-    rb_hash_aset (hv, rb_str_new2 ("ino"), LL2NUM (r->val[i].ino));
-    rb_hash_aset (hv, rb_str_new2 ("mode"), LL2NUM (r->val[i].mode));
-    rb_hash_aset (hv, rb_str_new2 ("nlink"), LL2NUM (r->val[i].nlink));
-    rb_hash_aset (hv, rb_str_new2 ("uid"), LL2NUM (r->val[i].uid));
-    rb_hash_aset (hv, rb_str_new2 ("gid"), LL2NUM (r->val[i].gid));
-    rb_hash_aset (hv, rb_str_new2 ("rdev"), LL2NUM (r->val[i].rdev));
-    rb_hash_aset (hv, rb_str_new2 ("size"), LL2NUM (r->val[i].size));
-    rb_hash_aset (hv, rb_str_new2 ("blksize"), LL2NUM (r->val[i].blksize));
-    rb_hash_aset (hv, rb_str_new2 ("blocks"), LL2NUM (r->val[i].blocks));
-    rb_hash_aset (hv, rb_str_new2 ("atime"), LL2NUM (r->val[i].atime));
-    rb_hash_aset (hv, rb_str_new2 ("mtime"), LL2NUM (r->val[i].mtime));
-    rb_hash_aset (hv, rb_str_new2 ("ctime"), LL2NUM (r->val[i].ctime));
-    rb_ary_push (rv, hv);
-  }
-  guestfs_free_stat_list (r);
-  return rv;
-}
-
-static VALUE
-ruby_guestfs_internal_lxattrlist (VALUE gv, VALUE pathv, VALUE namesv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_lxattrlist");
-
-  const char *path = StringValueCStr (pathv);
-  char **names;
-  Check_Type (namesv, T_ARRAY);
-  {
-    size_t i, len;
-    len = RARRAY_LEN (namesv);
-    names = ALLOC_N (char *, len+1);
-    for (i = 0; i < len; ++i) {
-      volatile VALUE v = rb_ary_entry (namesv, i);
-      names[i] = StringValueCStr (v);
-    }
-    names[len] = NULL;
-  }
-
-  struct guestfs_xattr_list *r;
-
-  r = guestfs_internal_lxattrlist (g, path, names);
-  free (names);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  volatile VALUE rv = rb_ary_new2 (r->len);
-  size_t i;
-  for (i = 0; i < r->len; ++i) {
-    volatile VALUE hv = rb_hash_new ();
-    rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
-    rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
-    rb_ary_push (rv, hv);
-  }
-  guestfs_free_xattr_list (r);
-  return rv;
-}
-
-static VALUE
-ruby_guestfs_internal_readlinklist (VALUE gv, VALUE pathv, VALUE namesv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_readlinklist");
-
-  const char *path = StringValueCStr (pathv);
-  char **names;
-  Check_Type (namesv, T_ARRAY);
-  {
-    size_t i, len;
-    len = RARRAY_LEN (namesv);
-    names = ALLOC_N (char *, len+1);
-    for (i = 0; i < len; ++i) {
-      volatile VALUE v = rb_ary_entry (namesv, i);
-      names[i] = StringValueCStr (v);
-    }
-    names[len] = NULL;
-  }
-
-  char **r;
-
-  r = guestfs_internal_readlinklist (g, path, names);
-  free (names);
-  if (r == NULL)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  size_t i, len = 0;
-  for (i = 0; r[i] != NULL; ++i) len++;
-  volatile VALUE rv = rb_ary_new2 (len);
-  for (i = 0; r[i] != NULL; ++i) {
-    rb_ary_push (rv, rb_str_new2 (r[i]));
-    free (r[i]);
-  }
-  free (r);
-  return rv;
-}
-
 /*
  * call-seq:
  *   g.pread(path, count, offset) -> string
@@ -16578,31 +16460,6 @@ ruby_guestfs_fill_pattern (VALUE gv, VALUE patternv, VALUE lenv, VALUE pathv)
   return Qnil;
 }
 
-static VALUE
-ruby_guestfs_internal_write (VALUE gv, VALUE pathv, VALUE contentv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_write");
-
-  const char *path = StringValueCStr (pathv);
-  Check_Type (contentv, T_STRING);
-  const char *content = RSTRING_PTR (contentv);
-  if (!content)
-    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
-              "content", "internal_write");
-  size_t content_size = RSTRING_LEN (contentv);
-
-  int r;
-
-  r = guestfs_internal_write (g, path, content, content_size);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
 /*
  * call-seq:
  *   g.pwrite(path, content, offset) -> fixnum
@@ -18097,24 +17954,6 @@ ruby_guestfs_resize2fs_M (VALUE gv, VALUE devicev)
   return Qnil;
 }
 
-static VALUE
-ruby_guestfs_internal_autosync (VALUE gv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_autosync");
-
-
-  int r;
-
-  r = guestfs_internal_autosync (g);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
 /*
  * call-seq:
  *   g.is_zero(path) -> [True|False]
@@ -18462,31 +18301,6 @@ ruby_guestfs_btrfs_filesystem_resize (int argc, VALUE *argv, VALUE gv)
   int r;
 
   r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
-static VALUE
-ruby_guestfs_internal_write_append (VALUE gv, VALUE pathv, VALUE contentv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_write_append");
-
-  const char *path = StringValueCStr (pathv);
-  Check_Type (contentv, T_STRING);
-  const char *content = RSTRING_PTR (contentv);
-  if (!content)
-    rb_raise (rb_eTypeError, "expected string for parameter %s of %s",
-              "content", "internal_write_append");
-  size_t content_size = RSTRING_LEN (contentv);
-
-  int r;
-
-  r = guestfs_internal_write_append (g, path, content, content_size);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -22817,63 +22631,6 @@ ruby_guestfs_list_disk_labels (VALUE gv)
   return rv;
 }
 
-static VALUE
-ruby_guestfs_internal_hot_add_drive (VALUE gv, VALUE labelv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_hot_add_drive");
-
-  const char *label = StringValueCStr (labelv);
-
-  int r;
-
-  r = guestfs_internal_hot_add_drive (g, label);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
-static VALUE
-ruby_guestfs_internal_hot_remove_drive_precheck (VALUE gv, VALUE labelv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_hot_remove_drive_precheck");
-
-  const char *label = StringValueCStr (labelv);
-
-  int r;
-
-  r = guestfs_internal_hot_remove_drive_precheck (g, label);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
-static VALUE
-ruby_guestfs_internal_hot_remove_drive (VALUE gv, VALUE labelv)
-{
-  guestfs_h *g;
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (!g)
-    rb_raise (rb_eArgError, "%s: used handle after closing it", "internal_hot_remove_drive");
-
-  const char *label = StringValueCStr (labelv);
-
-  int r;
-
-  r = guestfs_internal_hot_remove_drive (g, label);
-  if (r == -1)
-    rb_raise (e_Error, "%s", guestfs_last_error (g));
-
-  return Qnil;
-}
-
 /*
  * call-seq:
  *   g.mktemp(tmpl, {optargs...}) -> string
@@ -23778,6 +23535,39 @@ ruby_guestfs_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.is_whole_device(device) -> [True|False]
+ *
+ * test if a device is a whole device
+ *
+ * This returns "true" if and only if "device" refers to a
+ * whole block device. That is, not a partition or a
+ * logical device.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_is_whole_device+[http://libguestfs.org/guestfs.3.html#guestfs_is_whole_device]).
+ */
+static VALUE
+ruby_guestfs_is_whole_device (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "is_whole_device");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_is_whole_device (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -24492,12 +24282,6 @@ Init__guestfs (void)
         ruby_guestfs_mkdir_mode, 2);
   rb_define_method (c_guestfs, "lchown",
         ruby_guestfs_lchown, 3);
-  rb_define_method (c_guestfs, "internal_lstatlist",
-        ruby_guestfs_internal_lstatlist, 2);
-  rb_define_method (c_guestfs, "internal_lxattrlist",
-        ruby_guestfs_internal_lxattrlist, 2);
-  rb_define_method (c_guestfs, "internal_readlinklist",
-        ruby_guestfs_internal_readlinklist, 2);
   rb_define_method (c_guestfs, "pread",
         ruby_guestfs_pread, 3);
   rb_define_method (c_guestfs, "part_init",
@@ -24574,8 +24358,6 @@ Init__guestfs (void)
         ruby_guestfs_checksums_out, 3);
   rb_define_method (c_guestfs, "fill_pattern",
         ruby_guestfs_fill_pattern, 3);
-  rb_define_method (c_guestfs, "internal_write",
-        ruby_guestfs_internal_write, 2);
   rb_define_method (c_guestfs, "pwrite",
         ruby_guestfs_pwrite, 3);
   rb_define_method (c_guestfs, "resize2fs_size",
@@ -24648,8 +24430,6 @@ Init__guestfs (void)
         ruby_guestfs_lgetxattr, 2);
   rb_define_method (c_guestfs, "resize2fs_M",
         ruby_guestfs_resize2fs_M, 1);
-  rb_define_method (c_guestfs, "internal_autosync",
-        ruby_guestfs_internal_autosync, 0);
   rb_define_method (c_guestfs, "is_zero",
         ruby_guestfs_is_zero, 1);
   rb_define_method (c_guestfs, "is_zero_device",
@@ -24666,8 +24446,6 @@ Init__guestfs (void)
         ruby_guestfs_ntfsresize, -1);
   rb_define_method (c_guestfs, "btrfs_filesystem_resize",
         ruby_guestfs_btrfs_filesystem_resize, -1);
-  rb_define_method (c_guestfs, "internal_write_append",
-        ruby_guestfs_internal_write_append, 2);
   rb_define_method (c_guestfs, "compress_out",
         ruby_guestfs_compress_out, -1);
   rb_define_method (c_guestfs, "compress_device_out",
@@ -24826,12 +24604,6 @@ Init__guestfs (void)
         ruby_guestfs_mke2fs, -1);
   rb_define_method (c_guestfs, "list_disk_labels",
         ruby_guestfs_list_disk_labels, 0);
-  rb_define_method (c_guestfs, "internal_hot_add_drive",
-        ruby_guestfs_internal_hot_add_drive, 1);
-  rb_define_method (c_guestfs, "internal_hot_remove_drive_precheck",
-        ruby_guestfs_internal_hot_remove_drive_precheck, 1);
-  rb_define_method (c_guestfs, "internal_hot_remove_drive",
-        ruby_guestfs_internal_hot_remove_drive, 1);
   rb_define_method (c_guestfs, "mktemp",
         ruby_guestfs_mktemp, -1);
   rb_define_method (c_guestfs, "mklost_and_found",
@@ -24876,4 +24648,6 @@ Init__guestfs (void)
         ruby_guestfs_part_get_gpt_type, 2);
   rb_define_method (c_guestfs, "rename",
         ruby_guestfs_rename, 2);
+  rb_define_method (c_guestfs, "is_whole_device",
+        ruby_guestfs_is_whole_device, 1);
 }

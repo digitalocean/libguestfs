@@ -1702,6 +1702,16 @@ public class GuestFS {
   private native boolean _is_launching (long g)
     throws LibGuestFSException;
 
+  /**
+   * is busy processing a command
+   * <p>
+   * This always returns false. This function is deprecated
+   * with no replacement. Do not use this function.
+   * <p>
+   * For more information on states, see guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
   public boolean is_busy ()
     throws LibGuestFSException
   {
@@ -10320,42 +10330,6 @@ public class GuestFS {
   private native void _lchown (long g, int owner, int group, String path)
     throws LibGuestFSException;
 
-  public Stat[] internal_lstatlist (String path, String[] names)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_lstatlist: handle is closed");
-
-    return _internal_lstatlist (g, path, names);
-  }
-
-  private native Stat[] _internal_lstatlist (long g, String path, String[] names)
-    throws LibGuestFSException;
-
-  public XAttr[] internal_lxattrlist (String path, String[] names)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_lxattrlist: handle is closed");
-
-    return _internal_lxattrlist (g, path, names);
-  }
-
-  private native XAttr[] _internal_lxattrlist (long g, String path, String[] names)
-    throws LibGuestFSException;
-
-  public String[] internal_readlinklist (String path, String[] names)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_readlinklist: handle is closed");
-
-    return _internal_readlinklist (g, path, names);
-  }
-
-  private native String[] _internal_readlinklist (long g, String path, String[] names)
-    throws LibGuestFSException;
-
   /**
    * read part of a file
    * <p>
@@ -11368,18 +11342,6 @@ public class GuestFS {
   }
 
   private native void _fill_pattern (long g, String pattern, int len, String path)
-    throws LibGuestFSException;
-
-  public void internal_write (String path, byte[] content)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_write: handle is closed");
-
-    _internal_write (g, path, content);
-  }
-
-  private native void _internal_write (long g, String path, byte[] content)
     throws LibGuestFSException;
 
   /**
@@ -12398,18 +12360,6 @@ public class GuestFS {
   private native void _resize2fs_M (long g, String device)
     throws LibGuestFSException;
 
-  public void internal_autosync ()
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_autosync: handle is closed");
-
-    _internal_autosync (g);
-  }
-
-  private native void _internal_autosync (long g)
-    throws LibGuestFSException;
-
   /**
    * test if a file contains all zero bytes
    * <p>
@@ -12685,18 +12635,6 @@ public class GuestFS {
   }
 
   private native void _btrfs_filesystem_resize (long g, String mountpoint, long _optargs_bitmask, long size)
-    throws LibGuestFSException;
-
-  public void internal_write_append (String path, byte[] content)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_write_append: handle is closed");
-
-    _internal_write_append (g, path, content);
-  }
-
-  private native void _internal_write_append (long g, String path, byte[] content)
     throws LibGuestFSException;
 
   /**
@@ -16215,42 +16153,6 @@ public class GuestFS {
   private native String[] _list_disk_labels (long g)
     throws LibGuestFSException;
 
-  public void internal_hot_add_drive (String label)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_hot_add_drive: handle is closed");
-
-    _internal_hot_add_drive (g, label);
-  }
-
-  private native void _internal_hot_add_drive (long g, String label)
-    throws LibGuestFSException;
-
-  public void internal_hot_remove_drive_precheck (String label)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_hot_remove_drive_precheck: handle is closed");
-
-    _internal_hot_remove_drive_precheck (g, label);
-  }
-
-  private native void _internal_hot_remove_drive_precheck (long g, String label)
-    throws LibGuestFSException;
-
-  public void internal_hot_remove_drive (String label)
-    throws LibGuestFSException
-  {
-    if (g == 0)
-      throw new LibGuestFSException ("internal_hot_remove_drive: handle is closed");
-
-    _internal_hot_remove_drive (g, label);
-  }
-
-  private native void _internal_hot_remove_drive (long g, String label)
-    throws LibGuestFSException;
-
   /**
    * create a temporary file
    * <p>
@@ -16804,6 +16706,27 @@ public class GuestFS {
   }
 
   private native void _rename (long g, String oldpath, String newpath)
+    throws LibGuestFSException;
+
+  /**
+   * test if a device is a whole device
+   * <p>
+   * This returns "true" if and only if "device" refers to a
+   * whole block device. That is, not a partition or a
+   * logical device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_whole_device (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_whole_device: handle is closed");
+
+    return _is_whole_device (g, device);
+  }
+
+  private native boolean _is_whole_device (long g, String device)
     throws LibGuestFSException;
 
 }

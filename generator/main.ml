@@ -84,6 +84,8 @@ Run it from the top source directory using the command
   output_to "src/guestfs_protocol.x" generate_xdr;
   output_to "src/guestfs.h" generate_guestfs_h;
   output_to "src/guestfs-internal-actions.h" generate_internal_actions_h;
+  output_to "src/guestfs-internal-frontend-cleanups.h"
+    generate_internal_frontend_cleanups_h;
   output_to "src/bindtests.c" generate_bindtests;
   output_to "src/guestfs-structs.pod" generate_structs_pod;
   output_to "src/guestfs-actions.pod" generate_actions_pod;
@@ -136,7 +138,7 @@ Run it from the top source directory using the command
       let cols = cols_of_struct typ in
       let filename = sprintf "java/com/redhat/et/libguestfs/%s.java" jtyp in
       output_to filename (generate_java_struct jtyp cols)
-  ) structs;
+  ) external_structs;
   delete_except_generated
     ~skip:["java/com/redhat/et/libguestfs/LibGuestFSException.java";
            "java/com/redhat/et/libguestfs/EventCallback.java"]
@@ -186,7 +188,7 @@ Run it from the top source directory using the command
       output_to filename
         (generate_gobject_optargs_source short name optargs f)
     | { style = _, _, [] } -> ()
-  ) all_functions;
+  ) external_functions;
   delete_except_generated "gobject/include/guestfs-gobject/optargs-*.h";
   delete_except_generated "gobject/src/optargs-*.c";
 

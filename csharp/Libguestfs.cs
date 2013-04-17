@@ -3250,107 +3250,6 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_internal_autosync (IntPtr h);
-
-    /// <summary>
-    /// internal autosync operation
-    /// </summary>
-    public void internal_autosync ()
-    {
-      int r;
-      r = guestfs_internal_autosync (_handle);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_internal_hot_add_drive (IntPtr h, [In] string label);
-
-    /// <summary>
-    /// internal hotplugging operation
-    /// </summary>
-    public void internal_hot_add_drive (string label)
-    {
-      int r;
-      r = guestfs_internal_hot_add_drive (_handle, label);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_internal_hot_remove_drive (IntPtr h, [In] string label);
-
-    /// <summary>
-    /// internal hotplugging operation
-    /// </summary>
-    public void internal_hot_remove_drive (string label)
-    {
-      int r;
-      r = guestfs_internal_hot_remove_drive (_handle, label);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_internal_hot_remove_drive_precheck (IntPtr h, [In] string label);
-
-    /// <summary>
-    /// internal hotplugging operation
-    /// </summary>
-    public void internal_hot_remove_drive_precheck (string label)
-    {
-      int r;
-      r = guestfs_internal_hot_remove_drive_precheck (_handle, label);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern _stat[] guestfs_internal_lstatlist (IntPtr h, [In] string path, [In] string[] names);
-
-    /// <summary>
-    /// lstat on multiple files
-    /// </summary>
-    public _stat[] internal_lstatlist (string path, string[] names)
-    {
-      _stat[] r;
-      r = guestfs_internal_lstatlist (_handle, path, names);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern _xattr[] guestfs_internal_lxattrlist (IntPtr h, [In] string path, [In] string[] names);
-
-    /// <summary>
-    /// lgetxattr on multiple files
-    /// </summary>
-    public _xattr[] internal_lxattrlist (string path, string[] names)
-    {
-      _xattr[] r;
-      r = guestfs_internal_lxattrlist (_handle, path, names);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern string[] guestfs_internal_readlinklist (IntPtr h, [In] string path, [In] string[] names);
-
-    /// <summary>
-    /// readlink on multiple files
-    /// </summary>
-    public string[] internal_readlinklist (string path, string[] names)
-    {
-      string[] r;
-      r = guestfs_internal_readlinklist (_handle, path, names);
-      if (r == null)
-        throw new Error (guestfs_last_error (_handle));
-      return r;
-    }
-
-    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_internal_test_argv (IntPtr h, [In] string str, [In] string optstr, [In] string[] strlist, bool b, int integer, long integer64, [In] string filein, [In] string fileout, [In] string bufferin, void *);
 
     /// <summary>
@@ -3757,34 +3656,6 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_internal_write (IntPtr h, [In] string path, [In] string content);
-
-    /// <summary>
-    /// create a new file
-    /// </summary>
-    public void internal_write (string path, string content)
-    {
-      int r;
-      r = guestfs_internal_write (_handle, path, content);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-    }
-
-    [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_internal_write_append (IntPtr h, [In] string path, [In] string content);
-
-    /// <summary>
-    /// append content to end of file
-    /// </summary>
-    public void internal_write_append (string path, string content)
-    {
-      int r;
-      r = guestfs_internal_write_append (_handle, path, content);
-      if (r == -1)
-        throw new Error (guestfs_last_error (_handle));
-    }
-
-    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_is_blockdev (IntPtr h, [In] string path);
 
     /// <summary>
@@ -3959,6 +3830,21 @@ namespace Guestfs
     {
       int r;
       r = guestfs_is_symlink (_handle, path);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_is_whole_device (IntPtr h, [In] string device);
+
+    /// <summary>
+    /// test if a device is a whole device
+    /// </summary>
+    public bool is_whole_device (string device)
+    {
+      int r;
+      r = guestfs_is_whole_device (_handle, device);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;

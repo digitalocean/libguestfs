@@ -50,7 +50,7 @@ let rec generate_erlang_erl () =
       in
       export name;
       List.iter export aliases
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   pr "\n";
 
@@ -178,7 +178,7 @@ loop(Port) ->
       ) aliases;
 
       pr "\n"
-  ) all_functions_sorted
+  ) external_functions_sorted
 
 and generate_erlang_c () =
   generate_header CStyle GPLv2plus;
@@ -279,7 +279,7 @@ extern void free_strings (char **r);
         (* generate the function for typ *)
         emit_copy_list_function typ
     | typ, _ -> () (* empty *)
-  ) (rstructs_used_by all_functions);
+  ) (rstructs_used_by external_functions);
 
   (* The wrapper functions. *)
   List.iter (
@@ -293,7 +293,7 @@ extern void free_strings (char **r);
         fun i ->
           function
           | Pathname n
-          | Device n | Dev_or_Path n
+          | Device n | Mountable n | Dev_or_Path n
           | String n
           | FileIn n
           | FileOut n
@@ -386,8 +386,8 @@ extern void free_strings (char **r);
       (* Free strings if we copied them above. *)
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | OptString n
-        | FileIn n | FileOut n | Key n ->
+        | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
+        | OptString n | FileIn n | FileOut n | Key n ->
             pr "  free (%s);\n" n
         | StringList n | DeviceList n ->
             pr "  free_strings (%s);\n" n;
@@ -460,7 +460,7 @@ extern void free_strings (char **r);
 
       pr "}\n";
       pr "\n";
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   pr "\
 
@@ -479,7 +479,7 @@ dispatch (ETERM *message)
       pr "if (atom_equals (fun, \"%s\"))\n" name;
       pr "    return run_%s (message);\n" name;
       pr "  else ";
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   pr "return unknown_function (fun);
 }

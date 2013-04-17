@@ -556,5 +556,6 @@ extern char **do_ldmtool_volume_partitions (const char *diskgroup, const char *v
 extern int do_part_set_gpt_type (const char *device, int partnum, const char *guid);
 extern char *do_part_get_gpt_type (const char *device, int partnum);
 extern int do_rename (const char *oldpath, const char *newpath);
+extern int do_is_whole_device (const char *device);
 
 #endif /* GUESTFSD_ACTIONS_H */

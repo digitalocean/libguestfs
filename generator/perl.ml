@@ -342,7 +342,7 @@ user_cancel (g)
       iteri (
         fun i ->
           function
-          | Pathname n | Device n | Dev_or_Path n | String n
+          | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
           | FileIn n | FileOut n | Key n ->
               pr "      char *%s;\n" n
           | BufferIn n ->
@@ -491,8 +491,8 @@ user_cancel (g)
       (* Cleanup any arguments. *)
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | OptString _
-        | Bool _ | Int _ | Int64 _
+        | Pathname _ | Device _ | Mountable _ | Dev_or_Path _ | String _
+        | OptString _ | Bool _ | Int _ | Int64 _
         | FileIn _ | FileOut _
         | BufferIn _ | Key _ | Pointer _ -> ()
         | StringList n | DeviceList n -> pr "      free (%s);\n" n
@@ -562,7 +562,7 @@ user_cancel (g)
       );
 
       pr "\n"
-  ) all_functions
+  ) external_functions
 
 and generate_perl_struct_list_code typ cols name style n =
   pr "      if (r == NULL)\n";
@@ -860,10 +860,8 @@ handlers and threads.
    * they are pulled in from the XS code automatically.
    *)
   List.iter (
-    function
-    | { in_docs = false } -> ()
-    | ({ name = name; style = style; in_docs = true;
-         longdesc = longdesc; non_c_aliases = non_c_aliases } as f) ->
+    fun ({ name = name; style = style;
+           longdesc = longdesc; non_c_aliases = non_c_aliases } as f) ->
       let longdesc = replace_str longdesc "C<guestfs_" "C<$g-E<gt>" in
       pr "=item ";
       generate_perl_prototype name style;
@@ -893,7 +891,7 @@ handlers and threads.
           pr "=pod\n";
           pr "\n";
       ) non_c_aliases
-  ) all_functions_sorted;
+  ) documented_functions_sorted;
 
   pr "=cut\n\n";
 
@@ -922,6 +920,7 @@ handlers and threads.
       let pr_type i = function
         | Pathname n -> pr "[ '%s', 'string(path)', %d ]" n i
         | Device n -> pr "[ '%s', 'string(device)', %d ]" n i
+        | Mountable n -> pr "[ '%s', 'string(mountable)', %d ]" n i
         | Dev_or_Path n -> pr "[ '%s', 'string(dev_or_path)', %d ]" n i
         | String n -> pr "[ '%s', 'string', %d ]" n i
         | FileIn n -> pr "[ '%s', 'string(filename)', %d ]" n i
@@ -955,7 +954,7 @@ handlers and threads.
       pr "    name => \"%s\",\n" name;
       pr "    description => %S,\n" shortdesc;
       pr "  },\n";
-  ) all_functions_sorted;
+  ) external_functions_sorted;
   pr ");\n\n";
 
   pr "# Add aliases to the introspection hash.\n";
@@ -968,7 +967,7 @@ handlers and threads.
           pr "$guestfs_introspection{%s} = \\%%ielem%d;\n" alias !i;
           incr i
       ) non_c_aliases
-  ) all_functions_sorted;
+  ) external_functions_sorted;
   pr "\n";
 
   (* End of file. *)
@@ -1094,7 +1093,7 @@ and generate_perl_prototype name (ret, args, optargs) =
       if !comma then pr ", ";
       comma := true;
       match arg with
-      | Pathname n | Device n | Dev_or_Path n | String n
+      | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
       | OptString n | Bool n | Int n | Int64 n | FileIn n | FileOut n
       | BufferIn n | Key n | Pointer (_, n) ->
           pr "$%s" n

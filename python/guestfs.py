@@ -491,6 +491,11 @@ class GuestFS(object):
         return libguestfsmod.is_launching (self._o)
 
     def is_busy (self):
+        """This always returns false. This function is deprecated
+        with no replacement. Do not use this function.
+        
+        For more information on states, see guestfs(3).
+        """
         self._check_not_closed ()
         return libguestfsmod.is_busy (self._o)
 
@@ -5118,21 +5123,6 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.lchown (self._o, owner, group, path)
 
-    def internal_lstatlist (self, path, names):
-        names = list (names)
-        self._check_not_closed ()
-        return libguestfsmod.internal_lstatlist (self._o, path, names)
-
-    def internal_lxattrlist (self, path, names):
-        names = list (names)
-        self._check_not_closed ()
-        return libguestfsmod.internal_lxattrlist (self._o, path, names)
-
-    def internal_readlinklist (self, path, names):
-        names = list (names)
-        self._check_not_closed ()
-        return libguestfsmod.internal_readlinklist (self._o, path, names)
-
     def pread (self, path, count, offset):
         """This command lets you read part of a file. It reads
         "count" bytes of the file, starting at "offset", from
@@ -5666,10 +5656,6 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.fill_pattern (self._o, pattern, len, path)
 
-    def internal_write (self, path, content):
-        self._check_not_closed ()
-        return libguestfsmod.internal_write (self._o, path, content)
-
     def pwrite (self, path, content, offset):
         """This command writes to part of a file. It writes the
         data buffer "content" to the file "path" starting at
@@ -6177,10 +6163,6 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.resize2fs_M (self._o, device)
 
-    def internal_autosync (self):
-        self._check_not_closed ()
-        return libguestfsmod.internal_autosync (self._o)
-
     def is_zero (self, path):
         """This returns true iff the file exists and the file is
         empty or it contains all zero bytes.
@@ -6283,10 +6265,6 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         return libguestfsmod.btrfs_filesystem_resize (self._o, mountpoint, size)
-
-    def internal_write_append (self, path, content):
-        self._check_not_closed ()
-        return libguestfsmod.internal_write_append (self._o, path, content)
 
     def compress_out (self, ctype, file, zfile, level=None):
         """This command compresses "file" and writes it out to the
@@ -7469,18 +7447,6 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.list_disk_labels (self._o)
 
-    def internal_hot_add_drive (self, label):
-        self._check_not_closed ()
-        return libguestfsmod.internal_hot_add_drive (self._o, label)
-
-    def internal_hot_remove_drive_precheck (self, label):
-        self._check_not_closed ()
-        return libguestfsmod.internal_hot_remove_drive_precheck (self._o, label)
-
-    def internal_hot_remove_drive (self, label):
-        self._check_not_closed ()
-        return libguestfsmod.internal_hot_remove_drive (self._o, label)
-
     def mktemp (self, tmpl, suffix=None):
         """This command creates a temporary file. The "tmpl"
         parameter should be a full pathname for the temporary
@@ -7741,4 +7707,12 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         return libguestfsmod.rename (self._o, oldpath, newpath)
+
+    def is_whole_device (self, device):
+        """This returns "true" if and only if "device" refers to a
+        whole block device. That is, not a partition or a
+        logical device.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.is_whole_device (self._o, device)
 

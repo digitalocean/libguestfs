@@ -5007,6 +5007,20 @@ This function returns a C truth value on success or -1 on error.
 
 (1.5.10 において追加)
 
+=head2 guestfs_is_busy
+
+ int
+ guestfs_is_busy (guestfs_h *g);
+
+This always returns false.  This function is deprecated with no
+replacement.  Do not use this function.
+
+For more information on states, see L<guestfs(3)>.
+
+This function returns a C truth value on success or -1 on error.
+
+(1.0.2 において追加)
+
 =head2 guestfs_is_chardev
 
  int
@@ -5152,6 +5166,17 @@ C<guestfs_stat> 参照。
 This function returns a C truth value on success or -1 on error.
 
 (1.5.10 において追加)
+
+=head2 guestfs_is_whole_device
+
+ int
+ guestfs_is_whole_device (guestfs_h *g,
+                          const char *device);
+
+This returns C<true> if and only if C<device> refers to a whole block
+device. That is, not a partition or a logical device.
+
+This function returns a C truth value on success or -1 on error.
 
 =head2 guestfs_is_zero
 

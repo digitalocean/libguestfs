@@ -2362,85 +2362,6 @@ GuestfsSession
 @Returns: 
 
 
-<!-- ##### FUNCTION guestfs_session_internal_autosync ##### -->
-<para>
-
-</para>
-
-@session: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_hot_add_drive ##### -->
-<para>
-
-</para>
-
-@session: 
-@label: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_hot_remove_drive ##### -->
-<para>
-
-</para>
-
-@session: 
-@label: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_hot_remove_drive_precheck ##### -->
-<para>
-
-</para>
-
-@session: 
-@label: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_lstatlist ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@names: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_lxattrlist ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@names: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_readlinklist ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@names: 
-@err: 
-@Returns: 
-
-
 <!-- ##### FUNCTION guestfs_session_internal_test ##### -->
 <para>
 
@@ -2741,32 +2662,6 @@ GuestfsSession
 @Returns: 
 
 
-<!-- ##### FUNCTION guestfs_session_internal_write ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@content: 
-@content_size: 
-@err: 
-@Returns: 
-
-
-<!-- ##### FUNCTION guestfs_session_internal_write_append ##### -->
-<para>
-
-</para>
-
-@session: 
-@path: 
-@content: 
-@content_size: 
-@err: 
-@Returns: 
-
-
 <!-- ##### FUNCTION guestfs_session_is_blockdev ##### -->
 <para>
 
@@ -2891,6 +2786,17 @@ GuestfsSession
 
 @session: 
 @path: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_is_whole_device ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
 @err: 
 @Returns: 
 

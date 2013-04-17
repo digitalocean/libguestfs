@@ -44,6 +44,18 @@ let hash_matches h { name = name } =
 
 type optarg_proto = Dots | VA | Argv
 
+let is_public { visibility = v } = match v with
+  | VPublic | VStateTest | VDebug -> true
+  | VBindTest | VInternal -> false
+
+let is_private f = not (is_public f)
+
+let public_functions_sorted =
+  List.filter is_public all_functions_sorted
+
+let private_functions_sorted =
+  List.filter is_private all_functions_sorted
+
 (* Generate a C function prototype. *)
 let rec generate_prototype ?(extern = true) ?(static = false)
     ?(semicolon = true)
@@ -109,7 +121,7 @@ let rec generate_prototype ?(extern = true) ?(static = false)
     List.iter (
       function
       | Pathname n
-      | Device n | Dev_or_Path n
+      | Device n | Mountable n | Dev_or_Path n
       | String n
       | OptString n
       | Key n ->
@@ -186,13 +198,12 @@ and generate_c_call_args ?handle ?(implicit_size_ptr = "&size")
 and generate_actions_pod () =
   List.iter (
     function
-    | { in_docs = false } -> ()
-    | ({ in_docs = true; once_had_no_optargs = false } as f) ->
+    | ({ once_had_no_optargs = false } as f) ->
       generate_actions_pod_entry f
-    | ({ in_docs = true; once_had_no_optargs = true } as f) ->
+    | ({ once_had_no_optargs = true } as f) ->
       generate_actions_pod_back_compat_entry f;
       generate_actions_pod_entry f
-  ) all_functions_sorted
+  ) documented_functions_sorted
 
 and generate_actions_pod_entry ({ c_name = c_name;
                                   style = ret, args, optargs as style } as f) =
@@ -679,7 +690,7 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
         generate_action_header f
   ) in
 
-  generate_all_headers external_functions_sorted;
+  generate_all_headers public_functions_sorted;
 
   pr "\
 #if GUESTFS_PRIVATE
@@ -694,7 +705,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomai
 
 ";
 
-  generate_all_headers internal_functions_sorted;
+  generate_all_headers private_functions_sorted;
 
   pr "\
 /* Private structures. */
@@ -711,7 +722,7 @@ pr "\
   List.iter (
     fun { name = shortname } ->
       pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
-  ) internal_functions_sorted;
+  ) private_functions_sorted;
 
 pr "\
 
@@ -738,7 +749,7 @@ pr "\
   List.iter (
     fun { name = shortname } ->
       pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
-  ) external_functions_sorted;
+  ) public_functions_sorted;
 
   pr "
 /* End of deprecated macros. */
@@ -753,12 +764,74 @@ pr "\
 (* Generate the guestfs-internal-actions.h file. *)
 and generate_internal_actions_h () =
   generate_header CStyle LGPLv2plus;
+
+  pr "#ifndef GUESTFS_INTERNAL_ACTIONS_H_\n";
+  pr "#define GUESTFS_INTERNAL_ACTIONS_H_\n";
+  pr "\n";
+
   List.iter (
     fun { c_name = c_name; style = style } ->
       generate_prototype ~single_line:true ~newline:true ~handle:"g"
         ~prefix:"guestfs__" ~optarg_proto:Argv
         c_name style
-  ) non_daemon_functions
+  ) non_daemon_functions;
+
+  pr "\n";
+  pr "#endif /* GUESTFS_INTERNAL_ACTIONS_H_ */\n"
+
+(* Generate guestfs-internal-frontend-cleanups.h file. *)
+and generate_internal_frontend_cleanups_h () =
+  generate_header CStyle LGPLv2plus;
+
+  pr "\
+/* These CLEANUP_* macros automatically free the struct or struct list
+ * pointed to by the local variable at the end of the current scope.
+ *
+ * Don't include this file directly!  To use these cleanups in library
+ * bindings and tools, include \"guestfs-internal-frontend.h\" only.
+ */
+
+#ifndef GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_
+#define GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "#define CLEANUP_FREE_%s \\\n" (String.uppercase name);
+      pr "  __attribute__((cleanup(guestfs___cleanup_free_%s)))\n" name;
+      pr "#define CLEANUP_FREE_%s_LIST \\\n" (String.uppercase name);
+      pr "  __attribute__((cleanup(guestfs___cleanup_free_%s_list)))\n" name
+  ) structs;
+
+  pr "#else /* !HAVE_ATTRIBUTE_CLEANUP */\n";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "#define CLEANUP_FREE_%s\n" (String.uppercase name);
+      pr "#define CLEANUP_FREE_%s_LIST\n" (String.uppercase name)
+  ) structs;
+
+  pr "\
+#endif /* !HAVE_ATTRIBUTE_CLEANUP */
+
+/* These functions are used internally by the CLEANUP_* macros.
+ * Don't call them directly.
+ */
+
+";
+
+  List.iter (
+    fun { s_name = name } ->
+      pr "extern GUESTFS_DLL_PUBLIC void guestfs___cleanup_free_%s (void *ptr);\n"
+        name;
+      pr "extern GUESTFS_DLL_PUBLIC void guestfs___cleanup_free_%s_list (void *ptr);\n"
+        name
+  ) structs;
+
+  pr "\n";
+  pr "#endif /* GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_ */\n"
 
 (* Functions to free structures. *)
 and generate_client_free_structs () =
@@ -787,16 +860,43 @@ and generate_client_free_structs () =
       pr "GUESTFS_DLL_PUBLIC void\n";
       pr "guestfs_free_%s (struct guestfs_%s *x)\n" typ typ;
       pr "{\n";
-      pr "  xdr_free ((xdrproc_t) xdr_guestfs_int_%s, (char *) x);\n" typ;
-      pr "  free (x);\n";
+      pr "  if (x) {\n";
+      pr "    xdr_free ((xdrproc_t) xdr_guestfs_int_%s, (char *) x);\n" typ;
+      pr "    free (x);\n";
+      pr "  }\n";
       pr "}\n";
       pr "\n";
 
       pr "GUESTFS_DLL_PUBLIC void\n";
       pr "guestfs_free_%s_list (struct guestfs_%s_list *x)\n" typ typ;
       pr "{\n";
-      pr "  xdr_free ((xdrproc_t) xdr_guestfs_int_%s_list, (char *) x);\n" typ;
-      pr "  free (x);\n";
+      pr "  if (x) {\n";
+      pr "    xdr_free ((xdrproc_t) xdr_guestfs_int_%s_list, (char *) x);\n"
+        typ;
+      pr "    free (x);\n";
+      pr "  }\n";
+      pr "}\n";
+      pr "\n";
+
+  ) structs;
+
+  pr "/* Cleanup functions used by CLEANUP_* macros. */\n";
+  pr "\n";
+
+  List.iter (
+    fun { s_name = typ } ->
+      pr "GUESTFS_DLL_PUBLIC void\n";
+      pr "guestfs___cleanup_free_%s (void *ptr)\n" typ;
+      pr "{\n";
+      pr "  guestfs_free_%s (* (struct guestfs_%s **) ptr);\n" typ typ;
+      pr "}\n";
+      pr "\n";
+
+      pr "GUESTFS_DLL_PUBLIC void\n";
+      pr "guestfs___cleanup_free_%s_list (void *ptr)\n" typ;
+      pr "{\n";
+      pr "  guestfs_free_%s_list (* (struct guestfs_%s_list **) ptr);\n"
+        typ typ;
       pr "}\n";
       pr "\n";
 
@@ -841,6 +941,7 @@ and generate_client_actions hash () =
       (* parameters which should not be NULL *)
       | String n
       | Device n
+      | Mountable n
       | Pathname n
       | Dev_or_Path n
       | FileIn n
@@ -958,6 +1059,7 @@ and generate_client_actions hash () =
       function
       | String n			(* strings *)
       | Device n
+      | Mountable n
       | Pathname n
       | Dev_or_Path n
       | FileIn n
@@ -1273,7 +1375,8 @@ and generate_client_actions hash () =
     ) else (
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | Key n ->
+        | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
+        | Key n ->
           pr "  args.%s = (char *) %s;\n" n n
         | OptString n ->
           pr "  args.%s = %s ? (char **) &%s : NULL;\n" n n n
@@ -1649,13 +1752,11 @@ and generate_linker_script () =
     "guestfs___cleanup_free_string_list";
     "guestfs___cleanup_hash_free";
     "guestfs___cleanup_unlink_free";
-(*
     "guestfs___cleanup_xmlBufferFree";
     "guestfs___cleanup_xmlFreeDoc";
     "guestfs___cleanup_xmlFreeTextWriter";
     "guestfs___cleanup_xmlXPathFreeContext";
     "guestfs___cleanup_xmlXPathFreeObject";
-*)
     "guestfs___for_each_disk";
     "guestfs___safe_calloc";
     "guestfs___safe_malloc";
@@ -1680,13 +1781,24 @@ and generate_linker_script () =
              "guestfs_" ^ c_name ^ "_argv"]
       ) all_functions
     ) in
-  let structs =
+  let struct_frees =
     List.concat (
       List.map (fun { s_name = typ } ->
-                  ["guestfs_free_" ^ typ; "guestfs_free_" ^ typ ^ "_list"])
+                  ["guestfs_free_" ^ typ;
+                   "guestfs_free_" ^ typ ^ "_list"])
         structs
     ) in
-  let globals = List.sort compare (globals @ functions @ structs) in
+  let struct_cleanups =
+    List.concat (
+      List.map (fun { s_name = typ } ->
+                  ["guestfs___cleanup_free_" ^ typ;
+                   "guestfs___cleanup_free_" ^ typ ^ "_list"])
+        structs
+    ) in
+  let globals = List.sort compare (globals @
+                                     functions @
+                                     struct_frees @
+                                     struct_cleanups) in
 
   pr "{\n";
   pr "    global:\n";

@@ -75,7 +75,7 @@ let generate_gobject_proto name ?(single_line = true)
       | Int64 n->
         pr "gint64 %s" n
       | String n
-      | Device n
+      | Device n | Mountable n
       | Pathname n
       | Dev_or_Path n
       | OptString n
@@ -115,7 +115,7 @@ let filenames =
       function
       | { style = _, _, (_::_) } -> true
       | { style = _, _, [] } -> false
-    ) all_functions
+    ) external_functions
   )
 
 let header_start filename =
@@ -697,7 +697,7 @@ gboolean guestfs_session_close(GuestfsSession *session, GError **err);
     fun ({ name = name; style = style } as f) ->
       generate_gobject_proto name style f;
       pr ";\n";
-  ) all_functions;
+  ) external_functions;
 
   header_end filename
 
@@ -1033,7 +1033,8 @@ guestfs_session_close(GuestfsSession *session, GError **err)
             pr " (transfer none) (type utf8):"
           | OptString _ ->
             pr " (transfer none) (type utf8) (allow-none):"
-          | Device _ | Pathname _ | Dev_or_Path _ | FileIn _ | FileOut _ ->
+          | Device _ | Mountable _ | Pathname _ | Dev_or_Path _
+          | FileIn _ | FileOut _ ->
             pr " (transfer none) (type filename):"
           | StringList _ ->
             pr " (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings"
@@ -1183,9 +1184,9 @@ guestfs_session_close(GuestfsSession *session, GError **err)
           match argt with
           | BufferIn n ->
             pr "%s, %s_size" n n
-          | Bool n | Int n | Int64 n | String n | Device n | Pathname n
-          | Dev_or_Path n | OptString n | StringList n | DeviceList n
-          | Key n | FileIn n | FileOut n ->
+          | Bool n | Int n | Int64 n | String n | Device n | Mountable n
+          | Pathname n | Dev_or_Path n | OptString n | StringList n
+          | DeviceList n | Key n | FileIn n | FileOut n ->
             pr "%s" n
           | Pointer _ ->
             failwith "gobject bindings do not support Pointer arguments"
@@ -1276,4 +1277,4 @@ guestfs_session_close(GuestfsSession *session, GError **err)
       );
 
       pr "}\n";
-  ) all_functions
+  ) external_functions

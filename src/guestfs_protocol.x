@@ -2738,6 +2738,14 @@ struct guestfs_rename_args {
   string newpath<>;
 };
 
+struct guestfs_is_whole_device_args {
+  string device<>;
+};
+
+struct guestfs_is_whole_device_ret {
+  bool flag;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3126,10 +3134,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391,
   GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
   GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
-  GUESTFS_PROC_RENAME = 394
+  GUESTFS_PROC_RENAME = 394,
+  GUESTFS_PROC_IS_WHOLE_DEVICE = 395
 };
 
-const GUESTFS_MAX_PROC_NR = 394;
+const GUESTFS_MAX_PROC_NR = 395;
 
 /* The remote procedure call protocol. */
 

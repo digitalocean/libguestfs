@@ -524,7 +524,7 @@ extern struct inspect_fs *guestfs___search_for_root (guestfs_h *g, const char *r
 /* inspect-fs.c */
 extern int guestfs___is_file_nocase (guestfs_h *g, const char *);
 extern int guestfs___is_dir_nocase (guestfs_h *g, const char *);
-extern int guestfs___check_for_filesystem_on (guestfs_h *g, const char *device, int is_block, int is_partnum);
+extern int guestfs___check_for_filesystem_on (guestfs_h *g, const char *device);
 extern int guestfs___parse_unsigned_int (guestfs_h *g, const char *str);
 extern int guestfs___parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
 extern int guestfs___parse_major_minor (guestfs_h *g, struct inspect_fs *fs);
@@ -608,5 +608,12 @@ extern void guestfs___cmd_set_stderr_to_stdout (struct command *);
 extern void guestfs___cmd_clear_capture_errors (struct command *);
 extern int guestfs___cmd_run (struct command *);
 extern void guestfs___cmd_close (struct command *);
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+#define CLEANUP_CMD_CLOSE __attribute__((cleanup(guestfs___cleanup_cmd_close)))
+#else
+#define CLEANUP_CMD_CLOSE
+#endif
+extern void guestfs___cleanup_cmd_close (void *ptr);
 
 #endif /* GUESTFS_INTERNAL_H_ */

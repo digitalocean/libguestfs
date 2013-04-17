@@ -131,7 +131,7 @@ namespace Guestfs
       ) cols;
       pr "    }\n";
       pr "\n"
-  ) structs;
+  ) external_structs;
 
   (* Generate C# function bindings. *)
   List.iter (
@@ -187,7 +187,8 @@ namespace Guestfs
           (c_return_type ()) c_function;
         List.iter (
           function
-          | Pathname n | Device n | Dev_or_Path n | String n | OptString n
+          | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
+          | OptString n
           | FileIn n | FileOut n
           | Key n
           | BufferIn n ->
@@ -213,7 +214,8 @@ namespace Guestfs
         in
         List.iter (
           function
-          | Pathname n | Device n | Dev_or_Path n | String n | OptString n
+          | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
+          | OptString n
           | FileIn n | FileOut n
           | Key n
           | BufferIn n ->
@@ -282,7 +284,7 @@ namespace Guestfs
       pr "\n";
 
       List.iter generate_alias non_c_aliases
-  ) all_functions_sorted;
+  ) external_functions_sorted;
 
   pr "  }
 }

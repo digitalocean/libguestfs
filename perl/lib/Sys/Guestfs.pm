@@ -86,7 +86,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.394';
+$VERSION = '0.395';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -3285,6 +3285,13 @@ with the given C<path> name.
 
 See also C<$g-E<gt>stat>.
 
+=item $busy = $g->is_busy ();
+
+This always returns false.  This function is deprecated with no
+replacement.  Do not use this function.
+
+For more information on states, see L<guestfs(3)>.
+
 =item $flag = $g->is_chardev ($path);
 
 This returns C<true> if and only if there is a character device
@@ -3354,6 +3361,11 @@ This returns C<true> if and only if there is a symbolic link
 with the given C<path> name.
 
 See also C<$g-E<gt>stat>.
+
+=item $flag = $g->is_whole_device ($device);
+
+This returns C<true> if and only if C<device> refers to a whole block
+device. That is, not a partition or a logical device.
 
 =item $zeroflag = $g->is_zero ($path);
 
@@ -8384,64 +8396,6 @@ use vars qw(%guestfs_introspection);
     name => "inspect_os",
     description => "inspect disk and return list of operating systems found",
   },
-  "internal_autosync" => {
-    ret => 'void',
-    args => [
-    ],
-    name => "internal_autosync",
-    description => "internal autosync operation",
-  },
-  "internal_hot_add_drive" => {
-    ret => 'void',
-    args => [
-      [ 'label', 'string', 0 ],
-    ],
-    name => "internal_hot_add_drive",
-    description => "internal hotplugging operation",
-  },
-  "internal_hot_remove_drive" => {
-    ret => 'void',
-    args => [
-      [ 'label', 'string', 0 ],
-    ],
-    name => "internal_hot_remove_drive",
-    description => "internal hotplugging operation",
-  },
-  "internal_hot_remove_drive_precheck" => {
-    ret => 'void',
-    args => [
-      [ 'label', 'string', 0 ],
-    ],
-    name => "internal_hot_remove_drive_precheck",
-    description => "internal hotplugging operation",
-  },
-  "internal_lstatlist" => {
-    ret => 'struct stat list',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
-    ],
-    name => "internal_lstatlist",
-    description => "lstat on multiple files",
-  },
-  "internal_lxattrlist" => {
-    ret => 'struct xattr list',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
-    ],
-    name => "internal_lxattrlist",
-    description => "lgetxattr on multiple files",
-  },
-  "internal_readlinklist" => {
-    ret => 'string list',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'names', 'string list', 1 ],
-    ],
-    name => "internal_readlinklist",
-    description => "readlink on multiple files",
-  },
   "internal_test" => {
     ret => 'void',
     args => [
@@ -8727,24 +8681,6 @@ use vars qw(%guestfs_introspection);
     name => "internal_test_set_output",
     description => "internal test function - do not use",
   },
-  "internal_write" => {
-    ret => 'void',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'content', 'buffer', 1 ],
-    ],
-    name => "internal_write",
-    description => "create a new file",
-  },
-  "internal_write_append" => {
-    ret => 'void',
-    args => [
-      [ 'path', 'string(path)', 0 ],
-      [ 'content', 'buffer', 1 ],
-    ],
-    name => "internal_write_append",
-    description => "append content to end of file",
-  },
   "is_blockdev" => {
     ret => 'bool',
     args => [
@@ -8836,6 +8772,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "is_symlink",
     description => "test if symbolic link",
+  },
+  "is_whole_device" => {
+    ret => 'bool',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "is_whole_device",
+    description => "test if a device is a whole device",
   },
   "is_zero" => {
     ret => 'bool',

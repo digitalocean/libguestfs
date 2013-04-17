@@ -2806,7 +2806,8 @@ guestfs_session_is_launching(GuestfsSession *session, GError **err)
  *
  * is busy processing a command
  *
- * This always returns false. Do not use this function.
+ * This always returns false. This function is deprecated with no
+ * replacement. Do not use this function.
  * 
  * For more information on states, see guestfs(3).
  * 
@@ -14786,185 +14787,6 @@ guestfs_session_lchown(GuestfsSession *session, gint32 owner, gint32 group, cons
 }
 
 /**
- * guestfs_session_internal_lstatlist:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
- * @err: A GError object to receive any generated errors
- *
- * lstat on multiple files
- *
- * This call allows you to perform the guestfs_session_lstat() operation on
- * multiple files, where all files are in the directory @path. @names is
- * the list of files from this directory.
- * 
- * On return you get a list of stat structs, with a one-to-one
- * correspondence to the @names list. If any name did not exist or could
- * not be lstat'd, then the @ino field of that structure is set to @-1.
- * 
- * This call is intended for programs that want to efficiently list a
- * directory contents without making many round-trips. See also
- * guestfs_session_lxattrlist() for a similarly efficient call for getting
- * extended attributes. Very long directory listings might cause the
- * protocol message size to be exceeded, causing this call to fail. The
- * caller must split up such requests into smaller groups of names.
- * 
- * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsStat): an array of Stat objects, or NULL on error
- */
-GuestfsStat **
-guestfs_session_internal_lstatlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_lstatlist");
-    return NULL;
-  }
-
-  struct guestfs_stat_list *ret = guestfs_internal_lstatlist (g, path, names);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  GuestfsStat **l = g_malloc(sizeof(GuestfsStat*) * (ret->len + 1));
-  gsize i;
-  for (i = 0; i < ret->len; i++) {
-    l[i] = g_slice_new0(GuestfsStat);
-    l[i]->dev = ret->val[i].dev;
-    l[i]->ino = ret->val[i].ino;
-    l[i]->mode = ret->val[i].mode;
-    l[i]->nlink = ret->val[i].nlink;
-    l[i]->uid = ret->val[i].uid;
-    l[i]->gid = ret->val[i].gid;
-    l[i]->rdev = ret->val[i].rdev;
-    l[i]->size = ret->val[i].size;
-    l[i]->blksize = ret->val[i].blksize;
-    l[i]->blocks = ret->val[i].blocks;
-    l[i]->atime = ret->val[i].atime;
-    l[i]->mtime = ret->val[i].mtime;
-    l[i]->ctime = ret->val[i].ctime;
-  }
-  guestfs_free_stat_list(ret);
-  l[i] = NULL;
-  return l;
-}
-
-/**
- * guestfs_session_internal_lxattrlist:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
- * @err: A GError object to receive any generated errors
- *
- * lgetxattr on multiple files
- *
- * This call allows you to get the extended attributes of multiple files,
- * where all files are in the directory @path. @names is the list of files
- * from this directory.
- * 
- * On return you get a flat list of xattr structs which must be interpreted
- * sequentially. The first xattr struct always has a zero-length @attrname.
- * @attrval in this struct is zero-length to indicate there was an error
- * doing @lgetxattr for this file, *or* is a C string which is a decimal
- * number (the number of following attributes for this file, which could be
- * "0"). Then after the first xattr struct are the zero or more attributes
- * for the first named file. This repeats for the second and subsequent
- * files.
- * 
- * This call is intended for programs that want to efficiently list a
- * directory contents without making many round-trips. See also
- * guestfs_session_lstatlist() for a similarly efficient call for getting
- * standard stats. Very long directory listings might cause the protocol
- * message size to be exceeded, causing this call to fail. The caller must
- * split up such requests into smaller groups of names.
- * 
- * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
- */
-GuestfsXAttr **
-guestfs_session_internal_lxattrlist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_lxattrlist");
-    return NULL;
-  }
-
-  struct guestfs_xattr_list *ret = guestfs_internal_lxattrlist (g, path, names);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  GuestfsXAttr **l = g_malloc(sizeof(GuestfsXAttr*) * (ret->len + 1));
-  gsize i;
-  for (i = 0; i < ret->len; i++) {
-    l[i] = g_slice_new0(GuestfsXAttr);
-    if (ret->val[i].attrname) l[i]->attrname = g_strdup(ret->val[i].attrname);
-    if (ret->val[i].attrval) {
-      l[i]->attrval = g_byte_array_sized_new(ret->val[i].attrval_len);
-      g_byte_array_append(l[i]->attrval, ret->val[i].attrval, ret->val[i].attrval_len);
-    }
-  }
-  guestfs_free_xattr_list(ret);
-  l[i] = NULL;
-  return l;
-}
-
-/**
- * guestfs_session_internal_readlinklist:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @names: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
- * @err: A GError object to receive any generated errors
- *
- * readlink on multiple files
- *
- * This call allows you to do a @readlink operation on multiple files,
- * where all files are in the directory @path. @names is the list of files
- * from this directory.
- * 
- * On return you get a list of strings, with a one-to-one correspondence to
- * the @names list. Each string is the value of the symbolic link.
- * 
- * If the readlink(2) operation fails on any name, then the corresponding
- * result string is the empty string "". However the whole operation is
- * completed even if there were readlink(2) errors, and so you can call
- * this function with names where you don't know if they are symbolic links
- * already (albeit slightly less efficient).
- * 
- * This call is intended for programs that want to efficiently list a
- * directory contents without making many round-trips. Very long directory
- * listings might cause the protocol message size to be exceeded, causing
- * this call to fail. The caller must split up such requests into smaller
- * groups of names.
- * 
- * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
- */
-gchar **
-guestfs_session_internal_readlinklist(GuestfsSession *session, const gchar *path, gchar *const *names, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_readlinklist");
-    return NULL;
-  }
-
-  char **ret = guestfs_internal_readlinklist (g, path, names);
-  if (ret == NULL) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return NULL;
-  }
-
-  return ret;
-}
-
-/**
  * guestfs_session_pread:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
@@ -16538,43 +16360,6 @@ guestfs_session_fill_pattern(GuestfsSession *session, const gchar *pattern, gint
 }
 
 /**
- * guestfs_session_internal_write:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @content: (transfer none) (array length=content_size) (element-type guint8): an array of binary data
- * @content_size: The size of content, in bytes
- * @err: A GError object to receive any generated errors
- *
- * create a new file
- *
- * This call creates a file called @path. The content of the file is the
- * string @content (which can contain any 8 bit data).
- * 
- * See also guestfs_session_write_append().
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_internal_write(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_write");
-    return FALSE;
-  }
-
-  int ret = guestfs_internal_write (g, path, content, content_size);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
  * guestfs_session_pwrite:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
@@ -18030,40 +17815,6 @@ guestfs_session_resize2fs_M(GuestfsSession *session, const gchar *device, GError
 }
 
 /**
- * guestfs_session_internal_autosync:
- * @session: (transfer none): A GuestfsSession object
- * @err: A GError object to receive any generated errors
- *
- * internal autosync operation
- *
- * This command performs the autosync operation just before the handle is
- * closed. You should not call this command directly. Instead, use the
- * autosync flag (guestfs_session_set_autosync()) to control whether or not
- * this operation is performed when the handle is closed.
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_internal_autosync(GuestfsSession *session, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_autosync");
-    return FALSE;
-  }
-
-  int ret = guestfs_internal_autosync (g);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
  * guestfs_session_is_zero:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
@@ -18385,43 +18136,6 @@ guestfs_session_btrfs_filesystem_resize(GuestfsSession *session, const gchar *mo
     argvp = &argv;
   }
   int ret = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, argvp);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * guestfs_session_internal_write_append:
- * @session: (transfer none): A GuestfsSession object
- * @path: (transfer none) (type filename):
- * @content: (transfer none) (array length=content_size) (element-type guint8): an array of binary data
- * @content_size: The size of content, in bytes
- * @err: A GError object to receive any generated errors
- *
- * append content to end of file
- *
- * This call appends @content to the end of file @path. If @path does not
- * exist, then a new file is created.
- * 
- * See also guestfs_session_write().
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_internal_write_append(GuestfsSession *session, const gchar *path, const guint8 *content, gsize content_size, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_write_append");
-    return FALSE;
-  }
-
-  int ret = guestfs_internal_write_append (g, path, content, content_size);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -22936,102 +22650,6 @@ guestfs_session_list_disk_labels(GuestfsSession *session, GError **err)
 }
 
 /**
- * guestfs_session_internal_hot_add_drive:
- * @session: (transfer none): A GuestfsSession object
- * @label: (transfer none) (type utf8):
- * @err: A GError object to receive any generated errors
- *
- * internal hotplugging operation
- *
- * This function is used internally when hotplugging drives.
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_internal_hot_add_drive(GuestfsSession *session, const gchar *label, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_hot_add_drive");
-    return FALSE;
-  }
-
-  int ret = guestfs_internal_hot_add_drive (g, label);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * guestfs_session_internal_hot_remove_drive_precheck:
- * @session: (transfer none): A GuestfsSession object
- * @label: (transfer none) (type utf8):
- * @err: A GError object to receive any generated errors
- *
- * internal hotplugging operation
- *
- * This function is used internally when hotplugging drives.
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_internal_hot_remove_drive_precheck(GuestfsSession *session, const gchar *label, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_hot_remove_drive_precheck");
-    return FALSE;
-  }
-
-  int ret = guestfs_internal_hot_remove_drive_precheck (g, label);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * guestfs_session_internal_hot_remove_drive:
- * @session: (transfer none): A GuestfsSession object
- * @label: (transfer none) (type utf8):
- * @err: A GError object to receive any generated errors
- *
- * internal hotplugging operation
- *
- * This function is used internally when hotplugging drives.
- * 
- * Returns: true on success, false on error
- */
-gboolean
-guestfs_session_internal_hot_remove_drive(GuestfsSession *session, const gchar *label, GError **err)
-{
-  guestfs_h *g = session->priv->g;
-  if (g == NULL) {
-    g_set_error(err, GUESTFS_ERROR, 0,
-                "attempt to call %s after the session has been closed",
-                "internal_hot_remove_drive");
-    return FALSE;
-  }
-
-  int ret = guestfs_internal_hot_remove_drive (g, label);
-  if (ret == -1) {
-    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
  * guestfs_session_mktemp:
  * @session: (transfer none): A GuestfsSession object
  * @tmpl: (transfer none) (type filename):
@@ -23850,4 +23468,37 @@ guestfs_session_rename(GuestfsSession *session, const gchar *oldpath, const gcha
   }
 
   return TRUE;
+}
+
+/**
+ * guestfs_session_is_whole_device:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * test if a device is a whole device
+ *
+ * This returns @true if and only if @device refers to a whole block
+ * device. That is, not a partition or a logical device.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_is_whole_device(GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_whole_device");
+    return -1;
+  }
+
+  int ret = guestfs_is_whole_device (g, device);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
 }

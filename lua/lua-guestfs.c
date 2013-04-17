@@ -5130,166 +5130,6 @@ guestfs_lua_inspect_os (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_autosync (lua_State *L)
-{
-  int r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_autosync");
-
-
-  r = guestfs_internal_autosync (g);
-  if (r == -1)
-    return last_error (L, g);
-
-  return 0;
-}
-
-static int
-guestfs_lua_internal_hot_add_drive (lua_State *L)
-{
-  int r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *label;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_hot_add_drive");
-
-  label = luaL_checkstring (L, 2);
-
-  r = guestfs_internal_hot_add_drive (g, label);
-  if (r == -1)
-    return last_error (L, g);
-
-  return 0;
-}
-
-static int
-guestfs_lua_internal_hot_remove_drive (lua_State *L)
-{
-  int r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *label;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_hot_remove_drive");
-
-  label = luaL_checkstring (L, 2);
-
-  r = guestfs_internal_hot_remove_drive (g, label);
-  if (r == -1)
-    return last_error (L, g);
-
-  return 0;
-}
-
-static int
-guestfs_lua_internal_hot_remove_drive_precheck (lua_State *L)
-{
-  int r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *label;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_hot_remove_drive_precheck");
-
-  label = luaL_checkstring (L, 2);
-
-  r = guestfs_internal_hot_remove_drive_precheck (g, label);
-  if (r == -1)
-    return last_error (L, g);
-
-  return 0;
-}
-
-static int
-guestfs_lua_internal_lstatlist (lua_State *L)
-{
-  struct guestfs_stat_list *r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *path;
-  char **names;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_lstatlist");
-
-  path = luaL_checkstring (L, 2);
-  names = get_string_list (L, 3);
-
-  r = guestfs_internal_lstatlist (g, path, names);
-  free (names);
-  if (r == NULL)
-    return last_error (L, g);
-
-  push_stat_list (L, r);
-  guestfs_free_stat_list (r);
-  return 1;
-}
-
-static int
-guestfs_lua_internal_lxattrlist (lua_State *L)
-{
-  struct guestfs_xattr_list *r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *path;
-  char **names;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_lxattrlist");
-
-  path = luaL_checkstring (L, 2);
-  names = get_string_list (L, 3);
-
-  r = guestfs_internal_lxattrlist (g, path, names);
-  free (names);
-  if (r == NULL)
-    return last_error (L, g);
-
-  push_xattr_list (L, r);
-  guestfs_free_xattr_list (r);
-  return 1;
-}
-
-static int
-guestfs_lua_internal_readlinklist (lua_State *L)
-{
-  char **r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *path;
-  char **names;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_readlinklist");
-
-  path = luaL_checkstring (L, 2);
-  names = get_string_list (L, 3);
-
-  r = guestfs_internal_readlinklist (g, path, names);
-  free (names);
-  if (r == NULL)
-    return last_error (L, g);
-
-  push_string_list (L, r);
-  free_strings (r);
-  return 1;
-}
-
-static int
 guestfs_lua_internal_test (lua_State *L)
 {
   int r;
@@ -6172,54 +6012,6 @@ guestfs_lua_internal_test_set_output (lua_State *L)
 }
 
 static int
-guestfs_lua_internal_write (lua_State *L)
-{
-  int r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *path;
-  const char *content;
-  size_t content_size;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_write");
-
-  path = luaL_checkstring (L, 2);
-  content = luaL_checklstring (L, 3, &content_size);
-
-  r = guestfs_internal_write (g, path, content, content_size);
-  if (r == -1)
-    return last_error (L, g);
-
-  return 0;
-}
-
-static int
-guestfs_lua_internal_write_append (lua_State *L)
-{
-  int r;
-  struct userdata *u = get_handle (L, 1);
-  guestfs_h *g = u->g;
-  const char *path;
-  const char *content;
-  size_t content_size;
-
-  if (g == NULL)
-    luaL_error (L, "Guestfs.%s: handle is closed",
-                "internal_write_append");
-
-  path = luaL_checkstring (L, 2);
-  content = luaL_checklstring (L, 3, &content_size);
-
-  r = guestfs_internal_write_append (g, path, content, content_size);
-  if (r == -1)
-    return last_error (L, g);
-
-  return 0;
-}
-
-static int
 guestfs_lua_is_blockdev (lua_State *L)
 {
   int r;
@@ -6468,6 +6260,28 @@ guestfs_lua_is_symlink (lua_State *L)
   path = luaL_checkstring (L, 2);
 
   r = guestfs_is_symlink (g, path);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushboolean (L, r);
+  return 1;
+}
+
+static int
+guestfs_lua_is_whole_device (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "is_whole_device");
+
+  device = luaL_checkstring (L, 2);
+
+  r = guestfs_is_whole_device (g, device);
   if (r == -1)
     return last_error (L, g);
 
@@ -14547,13 +14361,6 @@ static luaL_Reg methods[] = {
   { "inspect_list_applications", guestfs_lua_inspect_list_applications },
   { "inspect_list_applications2", guestfs_lua_inspect_list_applications2 },
   { "inspect_os", guestfs_lua_inspect_os },
-  { "internal_autosync", guestfs_lua_internal_autosync },
-  { "internal_hot_add_drive", guestfs_lua_internal_hot_add_drive },
-  { "internal_hot_remove_drive", guestfs_lua_internal_hot_remove_drive },
-  { "internal_hot_remove_drive_precheck", guestfs_lua_internal_hot_remove_drive_precheck },
-  { "internal_lstatlist", guestfs_lua_internal_lstatlist },
-  { "internal_lxattrlist", guestfs_lua_internal_lxattrlist },
-  { "internal_readlinklist", guestfs_lua_internal_readlinklist },
   { "internal_test", guestfs_lua_internal_test },
   { "internal_test_63_optargs", guestfs_lua_internal_test_63_optargs },
   { "internal_test_close_output", guestfs_lua_internal_test_close_output },
@@ -14581,8 +14388,6 @@ static luaL_Reg methods[] = {
   { "internal_test_rstructlist", guestfs_lua_internal_test_rstructlist },
   { "internal_test_rstructlisterr", guestfs_lua_internal_test_rstructlisterr },
   { "internal_test_set_output", guestfs_lua_internal_test_set_output },
-  { "internal_write", guestfs_lua_internal_write },
-  { "internal_write_append", guestfs_lua_internal_write_append },
   { "is_blockdev", guestfs_lua_is_blockdev },
   { "is_busy", guestfs_lua_is_busy },
   { "is_chardev", guestfs_lua_is_chardev },
@@ -14595,6 +14400,7 @@ static luaL_Reg methods[] = {
   { "is_ready", guestfs_lua_is_ready },
   { "is_socket", guestfs_lua_is_socket },
   { "is_symlink", guestfs_lua_is_symlink },
+  { "is_whole_device", guestfs_lua_is_whole_device },
   { "is_zero", guestfs_lua_is_zero },
   { "is_zero_device", guestfs_lua_is_zero_device },
   { "isoinfo", guestfs_lua_isoinfo },

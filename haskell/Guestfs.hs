@@ -314,7 +314,6 @@ module Guestfs (
   utimens,
   mkdir_mode,
   lchown,
-  internal_readlinklist,
   part_init,
   part_add,
   part_disk,
@@ -350,7 +349,6 @@ module Guestfs (
   base64_out,
   checksums_out,
   fill_pattern,
-  internal_write,
   pwrite,
   resize2fs_size,
   pvresize_size,
@@ -382,12 +380,10 @@ module Guestfs (
   pwrite_device,
   lvm_canonical_lv_name,
   resize2fs_M,
-  internal_autosync,
   is_zero,
   is_zero_device,
   list_9p,
   list_dm_devices,
-  internal_write_append,
   part_to_partnum,
   list_md_devices,
   md_detail,
@@ -434,9 +430,6 @@ module Guestfs (
   hivex_node_set_value,
   rm_f,
   list_disk_labels,
-  internal_hot_add_drive,
-  internal_hot_remove_drive_precheck,
-  internal_hot_remove_drive,
   mklost_and_found,
   acl_get_file,
   acl_set_file,
@@ -457,7 +450,8 @@ module Guestfs (
   ldmtool_volume_partitions,
   part_set_gpt_type,
   part_get_gpt_type,
-  rename
+  rename,
+  is_whole_device
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -4012,18 +4006,6 @@ lchown h owner group path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs.h guestfs_internal_readlinklist" c_internal_readlinklist
-  :: GuestfsP -> CString -> Ptr CString -> IO (Ptr CString)
-
-internal_readlinklist :: GuestfsH -> String -> [String] -> IO [String]
-internal_readlinklist h path names = do
-  r <- withCString path $ \path -> withMany withCString names $ \names -> withArray0 nullPtr names $ \names -> withForeignPtr h (\p -> c_internal_readlinklist p path names)
-  if (r == nullPtr)
-    then do
-      err <- last_error h
-      fail err
-    else peekArray0 nullPtr r >>= mapM peekCString
-
 foreign import ccall unsafe "guestfs.h guestfs_part_init" c_part_init
   :: GuestfsP -> CString -> CString -> IO CInt
 
@@ -4444,18 +4426,6 @@ fill_pattern h pattern len path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs.h guestfs_internal_write" c_internal_write
-  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
-
-internal_write :: GuestfsH -> String -> String -> IO ()
-internal_write h path content = do
-  r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_internal_write p path content (fromIntegral content_size))
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
 foreign import ccall unsafe "guestfs.h guestfs_pwrite" c_pwrite
   :: GuestfsP -> CString -> CString -> CInt -> Int64 -> IO CInt
 
@@ -4828,18 +4798,6 @@ resize2fs_M h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs.h guestfs_internal_autosync" c_internal_autosync
-  :: GuestfsP -> IO CInt
-
-internal_autosync :: GuestfsH -> IO ()
-internal_autosync h = do
-  r <- withForeignPtr h (\p -> c_internal_autosync p)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
 foreign import ccall unsafe "guestfs.h guestfs_is_zero" c_is_zero
   :: GuestfsP -> CString -> IO CInt
 
@@ -4887,18 +4845,6 @@ list_dm_devices h = do
       err <- last_error h
       fail err
     else peekArray0 nullPtr r >>= mapM peekCString
-
-foreign import ccall unsafe "guestfs.h guestfs_internal_write_append" c_internal_write_append
-  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
-
-internal_write_append :: GuestfsH -> String -> String -> IO ()
-internal_write_append h path content = do
-  r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_internal_write_append p path content (fromIntegral content_size))
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
 
 foreign import ccall unsafe "guestfs.h guestfs_part_to_partnum" c_part_to_partnum
   :: GuestfsP -> CString -> IO CInt
@@ -5461,42 +5407,6 @@ list_disk_labels h = do
       arr <- mapM peekCString arr
       return (assocListOfHashtable arr)
 
-foreign import ccall unsafe "guestfs.h guestfs_internal_hot_add_drive" c_internal_hot_add_drive
-  :: GuestfsP -> CString -> IO CInt
-
-internal_hot_add_drive :: GuestfsH -> String -> IO ()
-internal_hot_add_drive h label = do
-  r <- withCString label $ \label -> withForeignPtr h (\p -> c_internal_hot_add_drive p label)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
-foreign import ccall unsafe "guestfs.h guestfs_internal_hot_remove_drive_precheck" c_internal_hot_remove_drive_precheck
-  :: GuestfsP -> CString -> IO CInt
-
-internal_hot_remove_drive_precheck :: GuestfsH -> String -> IO ()
-internal_hot_remove_drive_precheck h label = do
-  r <- withCString label $ \label -> withForeignPtr h (\p -> c_internal_hot_remove_drive_precheck p label)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
-foreign import ccall unsafe "guestfs.h guestfs_internal_hot_remove_drive" c_internal_hot_remove_drive
-  :: GuestfsP -> CString -> IO CInt
-
-internal_hot_remove_drive :: GuestfsH -> String -> IO ()
-internal_hot_remove_drive h label = do
-  r <- withCString label $ \label -> withForeignPtr h (\p -> c_internal_hot_remove_drive p label)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return ()
-
 foreign import ccall unsafe "guestfs.h guestfs_mklost_and_found" c_mklost_and_found
   :: GuestfsP -> CString -> IO CInt
 
@@ -5748,4 +5658,16 @@ rename h oldpath newpath = do
       err <- last_error h
       fail err
     else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_is_whole_device" c_is_whole_device
+  :: GuestfsP -> CString -> IO CInt
+
+is_whole_device :: GuestfsH -> String -> IO Bool
+is_whole_device h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_is_whole_device p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
 

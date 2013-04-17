@@ -2033,15 +2033,6 @@ For more information on the architecture of libguestfs, see L<guestfs(3)>.
 
 This returns the number of virtual CPUs assigned to the appliance.
 
-=head2 get-state
-
- get-state
-
-This returns the current state as an opaque integer.  This is only useful
-for printing debug and internal error messages.
-
-For more information on states, see L<guestfs(3)>.
-
 =head2 get-tmpdir
 
  get-tmpdir
@@ -3316,30 +3307,12 @@ directories.
 
 Див. також L</stat>.
 
-=head2 is-launching
-
- is-launching
-
-This returns true iff this handle is launching the subprocess (in the
-C<LAUNCHING> state).
-
-For more information on states, see L<guestfs(3)>.
-
 =head2 is-lv
 
  is-lv пристрій
 
 This command tests whether C<device> is a logical volume, and returns true
 iff this is the case.
-
-=head2 is-ready
-
- is-ready
-
-This returns true iff this handle is ready to accept commands (in the
-C<READY> state).
-
-For more information on states, see L<guestfs(3)>.
 
 =head2 is-socket
 
@@ -3358,6 +3331,13 @@ This returns C<true> if and only if there is a symbolic link with the given
 C<path> name.
 
 Див. також L</stat>.
+
+=head2 is-whole-device
+
+ is-whole-device device
+
+This returns C<true> if and only if C<device> refers to a whole block
+device. That is, not a partition or a logical device.
 
 =head2 is-zero
 

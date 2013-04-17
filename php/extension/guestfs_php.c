@@ -259,13 +259,6 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_inspect_list_applications, NULL)
   PHP_FE (guestfs_inspect_list_applications2, NULL)
   PHP_FE (guestfs_inspect_os, NULL)
-  PHP_FE (guestfs_internal_autosync, NULL)
-  PHP_FE (guestfs_internal_hot_add_drive, NULL)
-  PHP_FE (guestfs_internal_hot_remove_drive, NULL)
-  PHP_FE (guestfs_internal_hot_remove_drive_precheck, NULL)
-  PHP_FE (guestfs_internal_lstatlist, NULL)
-  PHP_FE (guestfs_internal_lxattrlist, NULL)
-  PHP_FE (guestfs_internal_readlinklist, NULL)
   PHP_FE (guestfs_internal_test, NULL)
   PHP_FE (guestfs_internal_test_63_optargs, NULL)
   PHP_FE (guestfs_internal_test_close_output, NULL)
@@ -293,8 +286,6 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_internal_test_rstructlist, NULL)
   PHP_FE (guestfs_internal_test_rstructlisterr, NULL)
   PHP_FE (guestfs_internal_test_set_output, NULL)
-  PHP_FE (guestfs_internal_write, NULL)
-  PHP_FE (guestfs_internal_write_append, NULL)
   PHP_FE (guestfs_is_blockdev, NULL)
   PHP_FE (guestfs_is_busy, NULL)
   PHP_FE (guestfs_is_chardev, NULL)
@@ -307,6 +298,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_is_ready, NULL)
   PHP_FE (guestfs_is_socket, NULL)
   PHP_FE (guestfs_is_symlink, NULL)
+  PHP_FE (guestfs_is_whole_device, NULL)
   PHP_FE (guestfs_is_zero, NULL)
   PHP_FE (guestfs_is_zero_device, NULL)
   PHP_FE (guestfs_isoinfo, NULL)
@@ -7965,363 +7957,6 @@ PHP_FUNCTION (guestfs_inspect_os)
   free (r);
 }
 
-PHP_FUNCTION (guestfs_internal_autosync)
-{
-  zval *z_g;
-  guestfs_h *g;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
-        &z_g) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  int r;
-  r = guestfs_internal_autosync (g);
-
-  if (r == -1) {
-    RETURN_FALSE;
-  }
-
-  RETURN_TRUE;
-}
-
-PHP_FUNCTION (guestfs_internal_hot_add_drive)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *label;
-  int label_size;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &label, &label_size) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (label) != label_size) {
-    fprintf (stderr, "libguestfs: internal_hot_add_drive: parameter 'label' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  int r;
-  r = guestfs_internal_hot_add_drive (g, label);
-
-  if (r == -1) {
-    RETURN_FALSE;
-  }
-
-  RETURN_TRUE;
-}
-
-PHP_FUNCTION (guestfs_internal_hot_remove_drive)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *label;
-  int label_size;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &label, &label_size) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (label) != label_size) {
-    fprintf (stderr, "libguestfs: internal_hot_remove_drive: parameter 'label' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  int r;
-  r = guestfs_internal_hot_remove_drive (g, label);
-
-  if (r == -1) {
-    RETURN_FALSE;
-  }
-
-  RETURN_TRUE;
-}
-
-PHP_FUNCTION (guestfs_internal_hot_remove_drive_precheck)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *label;
-  int label_size;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &label, &label_size) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (label) != label_size) {
-    fprintf (stderr, "libguestfs: internal_hot_remove_drive_precheck: parameter 'label' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  int r;
-  r = guestfs_internal_hot_remove_drive_precheck (g, label);
-
-  if (r == -1) {
-    RETURN_FALSE;
-  }
-
-  RETURN_TRUE;
-}
-
-PHP_FUNCTION (guestfs_internal_lstatlist)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *path;
-  int path_size;
-  zval *z_names;
-  char **names;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsa",
-        &z_g, &path, &path_size, &z_names) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (path) != path_size) {
-    fprintf (stderr, "libguestfs: internal_lstatlist: parameter 'path' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_names);
-    n = zend_hash_num_elements (a);
-    names = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      names[c] = Z_STRVAL (t);
-      c++;
-    }
-    names[c] = NULL;
-  }
-
-  struct guestfs_stat_list *r;
-  r = guestfs_internal_lstatlist (g, path, names);
-
-  {
-    size_t c = 0;
-
-    for (c = 0; names[c] != NULL; ++c)
-      efree (names[c]);
-    efree (names);
-  }
-
-  if (r == NULL) {
-    RETURN_FALSE;
-  }
-
-  array_init (return_value);
-  size_t c = 0;
-  for (c = 0; c < r->len; ++c) {
-    zval *z_elem;
-    ALLOC_INIT_ZVAL (z_elem);
-    array_init (z_elem);
-    add_assoc_long (z_elem, "dev", r->val[c].dev);
-    add_assoc_long (z_elem, "ino", r->val[c].ino);
-    add_assoc_long (z_elem, "mode", r->val[c].mode);
-    add_assoc_long (z_elem, "nlink", r->val[c].nlink);
-    add_assoc_long (z_elem, "uid", r->val[c].uid);
-    add_assoc_long (z_elem, "gid", r->val[c].gid);
-    add_assoc_long (z_elem, "rdev", r->val[c].rdev);
-    add_assoc_long (z_elem, "size", r->val[c].size);
-    add_assoc_long (z_elem, "blksize", r->val[c].blksize);
-    add_assoc_long (z_elem, "blocks", r->val[c].blocks);
-    add_assoc_long (z_elem, "atime", r->val[c].atime);
-    add_assoc_long (z_elem, "mtime", r->val[c].mtime);
-    add_assoc_long (z_elem, "ctime", r->val[c].ctime);
-    add_next_index_zval (return_value, z_elem);
-  }
-  guestfs_free_stat_list (r);
-}
-
-PHP_FUNCTION (guestfs_internal_lxattrlist)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *path;
-  int path_size;
-  zval *z_names;
-  char **names;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsa",
-        &z_g, &path, &path_size, &z_names) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (path) != path_size) {
-    fprintf (stderr, "libguestfs: internal_lxattrlist: parameter 'path' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_names);
-    n = zend_hash_num_elements (a);
-    names = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      names[c] = Z_STRVAL (t);
-      c++;
-    }
-    names[c] = NULL;
-  }
-
-  struct guestfs_xattr_list *r;
-  r = guestfs_internal_lxattrlist (g, path, names);
-
-  {
-    size_t c = 0;
-
-    for (c = 0; names[c] != NULL; ++c)
-      efree (names[c]);
-    efree (names);
-  }
-
-  if (r == NULL) {
-    RETURN_FALSE;
-  }
-
-  array_init (return_value);
-  size_t c = 0;
-  for (c = 0; c < r->len; ++c) {
-    zval *z_elem;
-    ALLOC_INIT_ZVAL (z_elem);
-    array_init (z_elem);
-    add_assoc_string (z_elem, "attrname", r->val[c].attrname, 1);
-    add_assoc_stringl (z_elem, "attrval", r->val[c].attrval, r->val[c].attrval_len, 1);
-    add_next_index_zval (return_value, z_elem);
-  }
-  guestfs_free_xattr_list (r);
-}
-
-PHP_FUNCTION (guestfs_internal_readlinklist)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *path;
-  int path_size;
-  zval *z_names;
-  char **names;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsa",
-        &z_g, &path, &path_size, &z_names) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (path) != path_size) {
-    fprintf (stderr, "libguestfs: internal_readlinklist: parameter 'path' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  {
-    HashTable *a;
-    int n;
-    HashPosition p;
-    zval **d;
-    size_t c = 0;
-
-    a = Z_ARRVAL_P (z_names);
-    n = zend_hash_num_elements (a);
-    names = safe_emalloc (n + 1, sizeof (char *), 0);
-    for (zend_hash_internal_pointer_reset_ex (a, &p);
-         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
-         zend_hash_move_forward_ex (a, &p)) {
-      zval t = **d;
-      zval_copy_ctor (&t);
-      convert_to_string (&t);
-      names[c] = Z_STRVAL (t);
-      c++;
-    }
-    names[c] = NULL;
-  }
-
-  char **r;
-  r = guestfs_internal_readlinklist (g, path, names);
-
-  {
-    size_t c = 0;
-
-    for (c = 0; names[c] != NULL; ++c)
-      efree (names[c]);
-    efree (names);
-  }
-
-  if (r == NULL) {
-    RETURN_FALSE;
-  }
-
-  size_t c = 0;
-  array_init (return_value);
-  for (c = 0; r[c] != NULL; ++c) {
-    add_next_index_string (return_value, r[c], 1);
-    free (r[c]);
-  }
-  free (r);
-}
-
 PHP_FUNCTION (guestfs_internal_test)
 {
   zval *z_g;
@@ -9655,76 +9290,6 @@ PHP_FUNCTION (guestfs_internal_test_set_output)
   RETURN_TRUE;
 }
 
-PHP_FUNCTION (guestfs_internal_write)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *path;
-  int path_size;
-  char *content;
-  int content_size;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
-        &z_g, &path, &path_size, &content, &content_size) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (path) != path_size) {
-    fprintf (stderr, "libguestfs: internal_write: parameter 'path' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  int r;
-  r = guestfs_internal_write (g, path, content, content_size);
-
-  if (r == -1) {
-    RETURN_FALSE;
-  }
-
-  RETURN_TRUE;
-}
-
-PHP_FUNCTION (guestfs_internal_write_append)
-{
-  zval *z_g;
-  guestfs_h *g;
-  char *path;
-  int path_size;
-  char *content;
-  int content_size;
-
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
-        &z_g, &path, &path_size, &content, &content_size) == FAILURE) {
-    RETURN_FALSE;
-  }
-
-  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
-                       res_guestfs_h);
-  if (g == NULL) {
-    RETURN_FALSE;
-  }
-
-  if (strlen (path) != path_size) {
-    fprintf (stderr, "libguestfs: internal_write_append: parameter 'path' contains embedded ASCII NUL.\n");
-    RETURN_FALSE;
-  }
-
-  int r;
-  r = guestfs_internal_write_append (g, path, content, content_size);
-
-  if (r == -1) {
-    RETURN_FALSE;
-  }
-
-  RETURN_TRUE;
-}
-
 PHP_FUNCTION (guestfs_is_blockdev)
 {
   zval *z_g;
@@ -10085,6 +9650,39 @@ PHP_FUNCTION (guestfs_is_symlink)
 
   int r;
   r = guestfs_is_symlink (g, path);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_BOOL (r);
+}
+
+PHP_FUNCTION (guestfs_is_whole_device)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *device;
+  int device_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &device, &device_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (device) != device_size) {
+    fprintf (stderr, "libguestfs: is_whole_device: parameter 'device' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_is_whole_device (g, device);
 
   if (r == -1) {
     RETURN_FALSE;

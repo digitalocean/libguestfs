@@ -3549,6 +3549,16 @@ struct guestfs_rename_args {
 };
 typedef struct guestfs_rename_args guestfs_rename_args;
 
+struct guestfs_is_whole_device_args {
+	char *device;
+};
+typedef struct guestfs_is_whole_device_args guestfs_is_whole_device_args;
+
+struct guestfs_is_whole_device_ret {
+	bool_t flag;
+};
+typedef struct guestfs_is_whole_device_ret guestfs_is_whole_device_ret;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3937,9 +3947,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
 	GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
 	GUESTFS_PROC_RENAME = 394,
+	GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 394
+#define GUESTFS_MAX_PROC_NR 395
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4553,6 +4564,8 @@ extern  bool_t xdr_guestfs_part_set_gpt_type_args (XDR *, guestfs_part_set_gpt_t
 extern  bool_t xdr_guestfs_part_get_gpt_type_args (XDR *, guestfs_part_get_gpt_type_args*);
 extern  bool_t xdr_guestfs_part_get_gpt_type_ret (XDR *, guestfs_part_get_gpt_type_ret*);
 extern  bool_t xdr_guestfs_rename_args (XDR *, guestfs_rename_args*);
+extern  bool_t xdr_guestfs_is_whole_device_args (XDR *, guestfs_is_whole_device_args*);
+extern  bool_t xdr_guestfs_is_whole_device_ret (XDR *, guestfs_is_whole_device_ret*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5116,6 +5129,8 @@ extern bool_t xdr_guestfs_part_set_gpt_type_args ();
 extern bool_t xdr_guestfs_part_get_gpt_type_args ();
 extern bool_t xdr_guestfs_part_get_gpt_type_ret ();
 extern bool_t xdr_guestfs_rename_args ();
+extern bool_t xdr_guestfs_is_whole_device_args ();
+extern bool_t xdr_guestfs_is_whole_device_ret ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

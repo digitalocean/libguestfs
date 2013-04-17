@@ -132,6 +132,7 @@ and argt =
   | Int64 of string	(* any 64 bit int *)
   | String of string	(* const char *name, cannot be NULL *)
   | Device of string	(* /dev device name, cannot be NULL *)
+  | Mountable of string	(* location of mountable filesystem, cannot be NULL *)
   | Pathname of string	(* file name, cannot be NULL *)
   | Dev_or_Path of string (* /dev device name or Pathname, cannot be NULL *)
   | OptString of string	(* const char *name, may be NULL *)
@@ -368,6 +369,14 @@ and test_init =
 and seq = cmd list
 and cmd = string list
 
+type visibility =
+  | VPublic                       (* Part of the public API *)
+  | VStateTest                    (* A function which tests the state
+                                     of the appliance *)
+  | VBindTest                     (* Only used for testing language bindings *)
+  | VDebug                        (* Exported everywhere, but not documented *)
+  | VInternal                     (* Not exported *)
+
 (* Type of an action as declared in Actions module. *)
 type action = {
   name : string;                  (* name, not including "guestfs_" *)
@@ -381,10 +390,7 @@ type action = {
   protocol_limit_warning : bool;  (* warn about protocol size limits *)
   fish_alias : string list;       (* alias(es) for this cmd in guestfish *)
   fish_output : fish_output_t option; (* how to display output in guestfish *)
-  in_fish : bool;                 (* export via guestfish *)
-  in_docs : bool;                 (* add this function to documentation *)
-  internal: bool;                 (* function is not part of the
-                                     external api *)
+  visibility: visibility;         (* The visbility of function *)
   deprecated_by : string option;  (* function is deprecated, use .. instead *)
   optional : string option;       (* function is part of an optional group *)
   progress : bool;                (* function can generate progress messages *)
