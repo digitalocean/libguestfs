@@ -9562,3 +9562,15 @@ PREINIT:
  OUTPUT:
       RETVAL
 
+void
+rename (g, oldpath, newpath)
+      guestfs_h *g;
+      char *oldpath;
+      char *newpath;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_rename (g, oldpath, newpath);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+

@@ -456,7 +456,8 @@ module Guestfs (
   ldmtool_volume_hint,
   ldmtool_volume_partitions,
   part_set_gpt_type,
-  part_get_gpt_type
+  part_get_gpt_type,
+  rename
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -5735,4 +5736,16 @@ part_get_gpt_type h device partnum = do
       err <- last_error h
       fail err
     else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_rename" c_rename
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+rename :: GuestfsH -> String -> String -> IO ()
+rename h oldpath newpath = do
+  r <- withCString oldpath $ \oldpath -> withCString newpath $ \newpath -> withForeignPtr h (\p -> c_rename p oldpath newpath)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 

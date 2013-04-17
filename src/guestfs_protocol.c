@@ -7697,6 +7697,18 @@ xdr_guestfs_part_get_gpt_type_ret (XDR *xdrs, guestfs_part_get_gpt_type_ret *obj
 }
 
 bool_t
+xdr_guestfs_rename_args (XDR *xdrs, guestfs_rename_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->oldpath, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->newpath, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

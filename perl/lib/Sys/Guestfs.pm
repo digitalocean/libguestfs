@@ -86,7 +86,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.393';
+$VERSION = '0.394';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -4546,6 +4546,8 @@ See also: C<$g-E<gt>mountpoints>
 This moves a file from C<src> to C<dest> where C<dest> is
 either a destination filename or destination directory.
 
+See also: C<$g-E<gt>rename>.
+
 =item $nrdisks = $g->nr_devices ();
 
 This returns the number of whole block devices that were
@@ -4933,7 +4935,7 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 =item $content = $g->pread_device ($device, $count, $offset);
 
-This command lets you read part of a file.  It reads C<count>
+This command lets you read part of a block device.  It reads C<count>
 bytes of C<device>, starting at C<offset>.
 
 This may read fewer bytes than requested.  For further details
@@ -5156,6 +5158,12 @@ This call removes the extended attribute named C<xattr>
 of the file C<path>.
 
 See also: C<$g-E<gt>lremovexattr>, L<attr(5)>.
+
+=item $g->rename ($oldpath, $newpath);
+
+Rename a file to a new place on the same filesystem.  This is
+the same as the Linux L<rename(2)> system call.  In most cases
+you are better to use C<$g-E<gt>mv> instead.
 
 =item $g->resize2fs ($device);
 
@@ -10188,6 +10196,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "removexattr",
     description => "remove extended attribute of a file or directory",
+  },
+  "rename" => {
+    ret => 'void',
+    args => [
+      [ 'oldpath', 'string(path)', 0 ],
+      [ 'newpath', 'string(path)', 1 ],
+    ],
+    name => "rename",
+    description => "rename a file on the same filesystem",
   },
   "resize2fs" => {
     ret => 'void',

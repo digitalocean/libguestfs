@@ -1577,6 +1577,9 @@ val remove_drive : t -> string -> unit
 val removexattr : t -> string -> string -> unit
 (** remove extended attribute of a file or directory *)
 
+val rename : t -> string -> string -> unit
+(** rename a file on the same filesystem *)
+
 val resize2fs : t -> string -> unit
 (** resize an ext2, ext3 or ext4 filesystem *)
 
@@ -2437,6 +2440,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method realpath : string -> string
   method remove_drive : string -> unit
   method removexattr : string -> string -> unit
+  method rename : string -> string -> unit
   method resize2fs : string -> unit
   method resize2fs_M : string -> unit
   method resize2fs_size : string -> int64 -> unit

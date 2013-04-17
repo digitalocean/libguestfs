@@ -2504,6 +2504,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_remove_drive (guestfs_h *g, const char *la
 #define LIBGUESTFS_HAVE_REMOVEXATTR 1
 extern GUESTFS_DLL_PUBLIC int guestfs_removexattr (guestfs_h *g, const char *xattr, const char *path);
 
+#define LIBGUESTFS_HAVE_RENAME 1
+extern GUESTFS_DLL_PUBLIC int guestfs_rename (guestfs_h *g, const char *oldpath, const char *newpath);
+
 #define LIBGUESTFS_HAVE_RESIZE2FS 1
 extern GUESTFS_DLL_PUBLIC int guestfs_resize2fs (guestfs_h *g, const char *device);
 

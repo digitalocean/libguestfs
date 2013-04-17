@@ -1102,6 +1102,7 @@ guestfs_session_readlinklist
 guestfs_session_realpath
 guestfs_session_remove_drive
 guestfs_session_removexattr
+guestfs_session_rename
 guestfs_session_resize2fs
 guestfs_session_resize2fs_M
 guestfs_session_resize2fs_size

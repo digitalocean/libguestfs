@@ -3543,6 +3543,12 @@ struct guestfs_part_get_gpt_type_ret {
 };
 typedef struct guestfs_part_get_gpt_type_ret guestfs_part_get_gpt_type_ret;
 
+struct guestfs_rename_args {
+	char *oldpath;
+	char *newpath;
+};
+typedef struct guestfs_rename_args guestfs_rename_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -3930,9 +3936,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391,
 	GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
 	GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
+	GUESTFS_PROC_RENAME = 394,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 393
+#define GUESTFS_MAX_PROC_NR 394
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4545,6 +4552,7 @@ extern  bool_t xdr_guestfs_ldmtool_volume_partitions_ret (XDR *, guestfs_ldmtool
 extern  bool_t xdr_guestfs_part_set_gpt_type_args (XDR *, guestfs_part_set_gpt_type_args*);
 extern  bool_t xdr_guestfs_part_get_gpt_type_args (XDR *, guestfs_part_get_gpt_type_args*);
 extern  bool_t xdr_guestfs_part_get_gpt_type_ret (XDR *, guestfs_part_get_gpt_type_ret*);
+extern  bool_t xdr_guestfs_rename_args (XDR *, guestfs_rename_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5107,6 +5115,7 @@ extern bool_t xdr_guestfs_ldmtool_volume_partitions_ret ();
 extern bool_t xdr_guestfs_part_set_gpt_type_args ();
 extern bool_t xdr_guestfs_part_get_gpt_type_args ();
 extern bool_t xdr_guestfs_part_get_gpt_type_ret ();
+extern bool_t xdr_guestfs_rename_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

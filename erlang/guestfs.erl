@@ -422,6 +422,7 @@
 -export([realpath/2]).
 -export([remove_drive/2]).
 -export([removexattr/3]).
+-export([rename/3]).
 -export([resize2fs/2]).
 -export([resize2fs_M/2]).
 -export([resize2fs_size/3]).
@@ -1847,6 +1848,9 @@ remove_drive(G, Label) ->
 
 removexattr(G, Xattr, Path) ->
   call_port(G, {removexattr, Xattr, Path}).
+
+rename(G, Oldpath, Newpath) ->
+  call_port(G, {rename, Oldpath, Newpath}).
 
 resize2fs(G, Device) ->
   call_port(G, {resize2fs, Device}).

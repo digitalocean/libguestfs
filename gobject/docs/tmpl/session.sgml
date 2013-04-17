@@ -4646,6 +4646,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_rename ##### -->
+<para>
+
+</para>
+
+@session: 
+@oldpath: 
+@newpath: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_resize2fs ##### -->
 <para>
 

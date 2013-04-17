@@ -456,6 +456,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_realpath, NULL)
   PHP_FE (guestfs_remove_drive, NULL)
   PHP_FE (guestfs_removexattr, NULL)
+  PHP_FE (guestfs_rename, NULL)
   PHP_FE (guestfs_resize2fs, NULL)
   PHP_FE (guestfs_resize2fs_M, NULL)
   PHP_FE (guestfs_resize2fs_size, NULL)
@@ -16226,6 +16227,46 @@ PHP_FUNCTION (guestfs_removexattr)
 
   int r;
   r = guestfs_removexattr (g, xattr, path);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_rename)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *oldpath;
+  int oldpath_size;
+  char *newpath;
+  int newpath_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
+        &z_g, &oldpath, &oldpath_size, &newpath, &newpath_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (oldpath) != oldpath_size) {
+    fprintf (stderr, "libguestfs: rename: parameter 'oldpath' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (newpath) != newpath_size) {
+    fprintf (stderr, "libguestfs: rename: parameter 'newpath' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_rename (g, oldpath, newpath);
 
   if (r == -1) {
     RETURN_FALSE;

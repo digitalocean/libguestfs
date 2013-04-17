@@ -3479,6 +3479,8 @@ class GuestFS:
     def mv (self, src, dest):
         """This moves a file from "src" to "dest" where "dest" is
         either a destination filename or destination directory.
+        
+        See also: "g.rename".
         """
         self._check_not_closed ()
         return libguestfsmod.mv (self._o, src, dest)
@@ -6043,8 +6045,8 @@ class GuestFS:
         return libguestfsmod.pwrite_device (self._o, device, content, offset)
 
     def pread_device (self, device, count, offset):
-        """This command lets you read part of a file. It reads
-        "count" bytes of "device", starting at "offset".
+        """This command lets you read part of a block device. It
+        reads "count" bytes of "device", starting at "offset".
         
         This may read fewer bytes than requested. For further
         details see the pread(2) system call.
@@ -7730,4 +7732,12 @@ class GuestFS:
         """
         self._check_not_closed ()
         return libguestfsmod.part_get_gpt_type (self._o, device, partnum)
+
+    def rename (self, oldpath, newpath):
+        """Rename a file to a new place on the same filesystem.
+        This is the same as the Linux rename(2) system call. In
+        most cases you are better to use "g.mv" instead.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.rename (self._o, oldpath, newpath)
 

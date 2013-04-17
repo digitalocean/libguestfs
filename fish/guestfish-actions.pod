@@ -4938,6 +4938,8 @@ See also: L</mountpoints>
 This moves a file from C<src> to C<dest> where C<dest> is
 either a destination filename or destination directory.
 
+See also: L</rename>.
+
 =head2 nr-devices
 
  nr-devices
@@ -5379,7 +5381,7 @@ of somewhere between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
  pread-device device count offset
 
-This command lets you read part of a file.  It reads C<count>
+This command lets you read part of a block device.  It reads C<count>
 bytes of C<device>, starting at C<offset>.
 
 This may read fewer bytes than requested.  For further details
@@ -5640,6 +5642,14 @@ This call removes the extended attribute named C<xattr>
 of the file C<path>.
 
 See also: L</lremovexattr>, L<attr(5)>.
+
+=head2 rename
+
+ rename oldpath newpath
+
+Rename a file to a new place on the same filesystem.  This is
+the same as the Linux L<rename(2)> system call.  In most cases
+you are better to use L</mv> instead.
 
 =head2 resize2fs
 

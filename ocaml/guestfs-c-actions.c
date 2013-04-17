@@ -14423,6 +14423,39 @@ ocaml_guestfs_removexattr (value gv, value xattrv, value pathv)
 }
 
 /* Automatically generated wrapper for function
+ * val rename : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_rename (value gv, value oldpathv, value newpathv);
+
+value
+ocaml_guestfs_rename (value gv, value oldpathv, value newpathv)
+{
+  CAMLparam3 (gv, oldpathv, newpathv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("rename");
+
+  char *oldpath = guestfs___safe_strdup (g, String_val (oldpathv));
+  char *newpath = guestfs___safe_strdup (g, String_val (newpathv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_rename (g, oldpath, newpath);
+  caml_leave_blocking_section ();
+  free (oldpath);
+  free (newpath);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "rename");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val resize2fs : t -> string -> unit
  */
 

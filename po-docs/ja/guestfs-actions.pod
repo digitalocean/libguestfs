@@ -7492,6 +7492,8 @@ strings and the array after use>.
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
+See also: C<guestfs_rename>.
+
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.18 において追加)
@@ -8195,7 +8197,8 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
                        int64_t offset,
                        size_t *size_r);
 
-このコマンドはファイルの一部を読み込みます。C<device> を C<offset> から開始して C<count> バイト読み込みます。
+This command lets you read part of a block device.  It reads C<count> bytes
+of C<device>, starting at C<offset>.
 
 This may read fewer bytes than requested.  For further details see the
 L<pread(2)> system call.
@@ -8586,6 +8589,19 @@ This call removes the extended attribute named C<xattr> of the file C<path>.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.59 において追加)
+
+=head2 guestfs_rename
+
+ int
+ guestfs_rename (guestfs_h *g,
+                 const char *oldpath,
+                 const char *newpath);
+
+Rename a file to a new place on the same filesystem.  This is the same as
+the Linux L<rename(2)> system call.  In most cases you are better to use
+C<guestfs_mv> instead.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 =head2 guestfs_resize2fs
 

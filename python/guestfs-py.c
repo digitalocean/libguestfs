@@ -20975,6 +20975,42 @@ py_guestfs_part_get_gpt_type (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_rename (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *oldpath;
+  const char *newpath;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_rename",
+                         &py_g, &oldpath, &newpath))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_rename (g, oldpath, newpath);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21500,6 +21536,7 @@ static PyMethodDef methods[] = {
   { (char *) "ldmtool_volume_partitions", py_guestfs_ldmtool_volume_partitions, METH_VARARGS, NULL },
   { (char *) "part_set_gpt_type", py_guestfs_part_set_gpt_type, METH_VARARGS, NULL },
   { (char *) "part_get_gpt_type", py_guestfs_part_get_gpt_type, METH_VARARGS, NULL },
+  { (char *) "rename", py_guestfs_rename, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

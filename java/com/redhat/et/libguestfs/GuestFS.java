@@ -7174,6 +7174,8 @@ public class GuestFS {
    * This moves a file from "src" to "dest" where "dest" is
    * either a destination filename or destination directory.
    * <p>
+   * See also: "g.rename".
+   * <p>
    * @throws LibGuestFSException
    */
   public void mv (String src, String dest)
@@ -12132,8 +12134,8 @@ public class GuestFS {
   /**
    * read part of a device
    * <p>
-   * This command lets you read part of a file. It reads
-   * "count" bytes of "device", starting at "offset".
+   * This command lets you read part of a block device. It
+   * reads "count" bytes of "device", starting at "offset".
    * <p>
    * This may read fewer bytes than requested. For further
    * details see the pread(2) system call.
@@ -16781,6 +16783,27 @@ public class GuestFS {
   }
 
   private native String _part_get_gpt_type (long g, String device, int partnum)
+    throws LibGuestFSException;
+
+  /**
+   * rename a file on the same filesystem
+   * <p>
+   * Rename a file to a new place on the same filesystem.
+   * This is the same as the Linux rename(2) system call. In
+   * most cases you are better to use "g.mv" instead.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void rename (String oldpath, String newpath)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("rename: handle is closed");
+
+    _rename (g, oldpath, newpath);
+  }
+
+  private native void _rename (long g, String oldpath, String newpath)
     throws LibGuestFSException;
 
 }

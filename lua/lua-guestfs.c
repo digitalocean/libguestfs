@@ -10249,6 +10249,29 @@ guestfs_lua_removexattr (lua_State *L)
 }
 
 static int
+guestfs_lua_rename (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *oldpath;
+  const char *newpath;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "rename");
+
+  oldpath = luaL_checkstring (L, 2);
+  newpath = luaL_checkstring (L, 3);
+
+  r = guestfs_rename (g, oldpath, newpath);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_resize2fs (lua_State *L)
 {
   int r;
@@ -14721,6 +14744,7 @@ static luaL_Reg methods[] = {
   { "realpath", guestfs_lua_realpath },
   { "remove_drive", guestfs_lua_remove_drive },
   { "removexattr", guestfs_lua_removexattr },
+  { "rename", guestfs_lua_rename },
   { "resize2fs", guestfs_lua_resize2fs },
   { "resize2fs_M", guestfs_lua_resize2fs_M },
   { "resize2fs_size", guestfs_lua_resize2fs_size },

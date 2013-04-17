@@ -643,6 +643,7 @@ gchar *guestfs_session_ldmtool_volume_hint(GuestfsSession *session, const gchar 
 gchar **guestfs_session_ldmtool_volume_partitions(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err);
 gboolean guestfs_session_part_set_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err);
 gchar *guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
+gboolean guestfs_session_rename(GuestfsSession *session, const gchar *oldpath, const gchar *newpath, GError **err);
 
 G_END_DECLS
 

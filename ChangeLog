@@ -1,4 +1,54 @@
+2013-01-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: Use guestfs_rename to implement rename(2) syscall (RHBZ#895910).
+
+	New API: rename: Rename file within the same filesystem (RHBZ#895910).
+
+2013-01-21  Matthew Booth  <mbooth@redhat.com>
+
+	docs: Fix cut/paste error in pread_device
+
+2013-01-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: If guestfs_last_errno returns 0, don't return no error to FUSE layer.
+	guestfs_last_errno (g) == 0 doesn't mean "no error".  It means the
+	errno was not captured.  In this case we have to substitute some sort
+	of errno, so choose EINVAL arbitrarily.
+
+2013-01-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Change ln, ln-f (hard-link) APIs to use link(2) instead of external ln (RHBZ#895905).
+	The reasons to do this are twofold:
+
+	(a) It's probably a tiny bit faster.
+
+	(b) It lets us capture the real errno if the link(2) syscall fails.
+
+	The errno is also passed through guestmount, fixing RHBZ#895905:
+
+	+ guestmount -a test1.img -m /dev/sda1:/ -m /dev/sda2:/boot /tmp/mnt
+	+ touch /tmp/mnt/foo
+	+ cd /tmp/mnt
+	+ ln foo boot/foo
+	ln: failed to create hard link ‘boot/foo’ => ‘foo’: Invalid cross-device link
+
+2013-01-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix checksums-out command (RHBZ#895904).
+	This was broken by the earlier
+	commit 0306c98d319d189281af3c15101c8d343e400f13.
+
+	This commit also adds a regression test.
+
+2013-01-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: virt-make-fs: Allow btrfs to be skipped.
+
 2013-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/qemu: Don't require LVM for these tests.
+
+	Version 1.21.4.
 
 	daemon: lvm: Fix various paths relative to new lvm_system_dir.
 	This fixes commit 9fd41abd40c3ffc10985e862dc34c868360a1b22.

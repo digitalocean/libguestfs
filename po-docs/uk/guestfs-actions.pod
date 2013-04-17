@@ -7641,6 +7641,8 @@ strings and the array after use>.
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
+See also: C<guestfs_rename>.
+
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 (Додано у 1.0.18)
@@ -8353,8 +8355,8 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
                        int64_t offset,
                        size_t *size_r);
 
-This command lets you read part of a file.  It reads C<count> bytes of
-C<device>, starting at C<offset>.
+This command lets you read part of a block device.  It reads C<count> bytes
+of C<device>, starting at C<offset>.
 
 This may read fewer bytes than requested.  For further details see the
 L<pread(2)> system call.
@@ -8749,6 +8751,19 @@ This call removes the extended attribute named C<xattr> of the file C<path>.
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 (Додано у 1.0.59)
+
+=head2 guestfs_rename
+
+ int
+ guestfs_rename (guestfs_h *g,
+                 const char *oldpath,
+                 const char *newpath);
+
+Rename a file to a new place on the same filesystem.  This is the same as
+the Linux L<rename(2)> system call.  In most cases you are better to use
+C<guestfs_mv> instead.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 =head2 guestfs_resize2fs
 

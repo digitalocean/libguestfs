@@ -407,6 +407,7 @@ extern struct command_entry readlinklist_cmd_entry;
 extern struct command_entry realpath_cmd_entry;
 extern struct command_entry remove_drive_cmd_entry;
 extern struct command_entry removexattr_cmd_entry;
+extern struct command_entry rename_cmd_entry;
 extern struct command_entry reopen_cmd_entry;
 extern struct command_entry resize2fs_cmd_entry;
 extern struct command_entry resize2fs_M_cmd_entry;
@@ -1202,6 +1203,7 @@ realpath, &realpath_cmd_entry
 remove_drive, &remove_drive_cmd_entry
 remove-drive, &remove_drive_cmd_entry
 removexattr, &removexattr_cmd_entry
+rename, &rename_cmd_entry
 reopen, &reopen_cmd_entry
 resize2fs, &resize2fs_cmd_entry
 resize2fs_M, &resize2fs_M_cmd_entry

@@ -4617,7 +4617,9 @@ recursively using the C<cp -a> command." };
     shortdesc = "move a file";
     longdesc = "\
 This moves a file from C<src> to C<dest> where C<dest> is
-either a destination filename or destination directory." };
+either a destination filename or destination directory.
+
+See also: C<guestfs_rename>." };
 
   { defaults with
     name = "drop_caches";
@@ -8240,7 +8242,7 @@ See also C<guestfs_pwrite>." };
     ];
     shortdesc = "read part of a device";
     longdesc = "\
-This command lets you read part of a file.  It reads C<count>
+This command lets you read part of a block device.  It reads C<count>
 bytes of C<device>, starting at C<offset>.
 
 This may read fewer bytes than requested.  For further details
@@ -10678,6 +10680,23 @@ for a useful list of type GUIDs." };
 Return the type GUID of numbered GPT partition C<partnum>. For MBR partitions,
 return an appropriate GUID corresponding to the MBR type. Behaviour is undefined
 for other partition types." };
+
+  { defaults with
+    name = "rename";
+    style = RErr, [Pathname "oldpath"; Pathname "newpath"], [];
+    proc_nr = Some 394;
+    tests = [
+      InitScratchFS, Always, TestOutputFalse (
+        [["mkdir"; "/rename"];
+         ["write"; "/rename/old"; "file content"];
+         ["rename"; "/rename/old"; "/rename/new"];
+         ["is_file"; "/rename/old"]])
+    ];
+    shortdesc = "rename a file on the same filesystem";
+    longdesc = "\
+Rename a file to a new place on the same filesystem.  This is
+the same as the Linux L<rename(2)> system call.  In most cases
+you are better to use C<guestfs_mv> instead." };
 
 ]
 

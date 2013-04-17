@@ -4203,6 +4203,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1gpt_1t
 JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt_1type
   (JNIEnv *, jobject, jlong, jstring, jint);
 
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _rename
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1rename
+  (JNIEnv *, jobject, jlong, jstring, jstring);
+
 #ifdef __cplusplus
 }
 #endif

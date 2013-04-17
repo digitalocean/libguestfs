@@ -536,6 +536,7 @@
         guestfs_realpath;
         guestfs_remove_drive;
         guestfs_removexattr;
+        guestfs_rename;
         guestfs_resize2fs;
         guestfs_resize2fs_M;
         guestfs_resize2fs_size;

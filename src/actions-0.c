@@ -6457,3 +6457,105 @@ guestfs_ldmtool_diskgroup_volumes (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_rename (guestfs_h *g,
+                const char *oldpath,
+                const char *newpath)
+{
+  struct guestfs_rename_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "rename", 6);
+  if (oldpath == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "rename", "oldpath");
+    return -1;
+  }
+  if (newpath == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "rename", "newpath");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s", "rename");
+    fprintf (trace_fp, " \"%s\"", oldpath);
+    fprintf (trace_fp, " \"%s\"", newpath);
+    guestfs___trace_send_line (g);
+  }
+
+  if (guestfs___check_appliance_up (g, "rename") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "rename", "-1");
+    return -1;
+  }
+
+  args.oldpath = (char *) oldpath;
+  args.newpath = (char *) newpath;
+  serial = guestfs___send (g, GUESTFS_PROC_RENAME,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_rename_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "rename", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "rename", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "rename", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_RENAME, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "rename", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "rename", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "rename", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "rename",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s = ", "rename");
+    fprintf (trace_fp, "%d", ret_v);
+    guestfs___trace_send_line (g);
+  }
+
+  return ret_v;
+}
+

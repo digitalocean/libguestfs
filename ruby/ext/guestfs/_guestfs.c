@@ -10070,6 +10070,8 @@ ruby_guestfs_cp_a (VALUE gv, VALUE srcv, VALUE destv)
  *
  * This moves a file from "src" to "dest" where "dest" is
  * either a destination filename or destination directory.
+ * 
+ * See also: "g.rename".
  *
  *
  * (For the C API documentation for this function, see
@@ -17763,8 +17765,8 @@ ruby_guestfs_pwrite_device (VALUE gv, VALUE devicev, VALUE contentv, VALUE offse
  *
  * read part of a device
  *
- * This command lets you read part of a file. It reads
- * "count" bytes of "device", starting at "offset".
+ * This command lets you read part of a block device. It
+ * reads "count" bytes of "device", starting at "offset".
  * 
  * This may read fewer bytes than requested. For further
  * details see the pread(2) system call.
@@ -23736,6 +23738,40 @@ ruby_guestfs_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.rename(oldpath, newpath) -> nil
+ *
+ * rename a file on the same filesystem
+ *
+ * Rename a file to a new place on the same filesystem.
+ * This is the same as the Linux rename(2) system call. In
+ * most cases you are better to use "g.mv" instead.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_rename+[http://libguestfs.org/guestfs.3.html#guestfs_rename]).
+ */
+static VALUE
+ruby_guestfs_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "rename");
+
+  const char *oldpath = StringValueCStr (oldpathv);
+  const char *newpath = StringValueCStr (newpathv);
+
+  int r;
+
+  r = guestfs_rename (g, oldpath, newpath);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -24830,4 +24866,6 @@ Init__guestfs (void)
         ruby_guestfs_part_set_gpt_type, 3);
   rb_define_method (c_guestfs, "part_get_gpt_type",
         ruby_guestfs_part_get_gpt_type, 2);
+  rb_define_method (c_guestfs, "rename",
+        ruby_guestfs_rename, 2);
 }

@@ -10427,6 +10427,8 @@ guestfs_session_cp_a(GuestfsSession *session, const gchar *src, const gchar *des
  * This moves a file from @src to @dest where @dest is either a destination
  * filename or destination directory.
  * 
+ * See also: guestfs_session_rename().
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -17713,8 +17715,8 @@ guestfs_session_pwrite_device(GuestfsSession *session, const gchar *device, cons
  *
  * read part of a device
  *
- * This command lets you read part of a file. It reads @count bytes of
- * @device, starting at @offset.
+ * This command lets you read part of a block device. It reads @count bytes
+ * of @device, starting at @offset.
  * 
  * This may read fewer bytes than requested. For further details see the
  * pread(2) system call.
@@ -23813,4 +23815,39 @@ guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *device, 
   }
 
   return ret;
+}
+
+/**
+ * guestfs_session_rename:
+ * @session: (transfer none): A GuestfsSession object
+ * @oldpath: (transfer none) (type filename):
+ * @newpath: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * rename a file on the same filesystem
+ *
+ * Rename a file to a new place on the same filesystem. This is the same as
+ * the Linux rename(2) system call. In most cases you are better to use
+ * guestfs_session_mv() instead.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_rename(GuestfsSession *session, const gchar *oldpath, const gchar *newpath, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "rename");
+    return FALSE;
+  }
+
+  int ret = guestfs_rename (g, oldpath, newpath);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
 }

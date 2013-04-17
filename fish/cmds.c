@@ -525,6 +525,7 @@ static int run_ldmtool_volume_hint (const char *cmd, size_t argc, char *argv[]);
 static int run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[]);
 static int run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
+static int run_rename (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -1776,7 +1777,7 @@ struct command_entry cp_a_cmd_entry = {
 
 struct command_entry mv_cmd_entry = {
   .name = "mv",
-  .help = "NAME\n    mv - move a file\n\nSYNOPSIS\n     mv src dest\n\nDESCRIPTION\n    This moves a file from \"src\" to \"dest\" where \"dest\" is either a\n    destination filename or destination directory.\n\n",
+  .help = "NAME\n    mv - move a file\n\nSYNOPSIS\n     mv src dest\n\nDESCRIPTION\n    This moves a file from \"src\" to \"dest\" where \"dest\" is either a\n    destination filename or destination directory.\n\n    See also: \"rename\".\n\n",
   .run = run_mv
 };
 
@@ -2856,7 +2857,7 @@ struct command_entry pwrite_device_cmd_entry = {
 
 struct command_entry pread_device_cmd_entry = {
   .name = "pread-device",
-  .help = "NAME\n    pread-device - read part of a device\n\nSYNOPSIS\n     pread-device device count offset\n\nDESCRIPTION\n    This command lets you read part of a file. It reads \"count\" bytes of\n    \"device\", starting at \"offset\".\n\n    This may read fewer bytes than requested. For further details see the\n    pread(2) system call.\n\n    See also \"pread\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
+  .help = "NAME\n    pread-device - read part of a device\n\nSYNOPSIS\n     pread-device device count offset\n\nDESCRIPTION\n    This command lets you read part of a block device. It reads \"count\"\n    bytes of \"device\", starting at \"offset\".\n\n    This may read fewer bytes than requested. For further details see the\n    pread(2) system call.\n\n    See also \"pread\".\n\n    Because of the message protocol, there is a transfer limit of somewhere\n    between 2MB and 4MB. See \"PROTOCOL LIMITS\" in guestfs(3).\n\n",
   .run = run_pread_device
 };
 
@@ -3532,6 +3533,12 @@ struct command_entry part_get_gpt_type_cmd_entry = {
   .run = run_part_get_gpt_type
 };
 
+struct command_entry rename_cmd_entry = {
+  .name = "rename",
+  .help = "NAME\n    rename - rename a file on the same filesystem\n\nSYNOPSIS\n     rename oldpath newpath\n\nDESCRIPTION\n    Rename a file to a new place on the same filesystem. This is the same as\n    the Linux rename(2) system call. In most cases you are better to use\n    \"mv\" instead.\n\n",
+  .run = run_rename
+};
+
 void
 list_commands (void)
 {
@@ -3909,6 +3916,7 @@ list_commands (void)
   printf ("%-20s %s\n", "realpath", _("canonicalized absolute pathname"));
   printf ("%-20s %s\n", "remove-drive", _("remove a disk image"));
   printf ("%-20s %s\n", "removexattr", _("remove extended attribute of a file or directory"));
+  printf ("%-20s %s\n", "rename", _("rename a file on the same filesystem"));
   printf ("%-20s %s\n", "reopen", _("close and reopen libguestfs handle"));
   printf ("%-20s %s\n", "resize2fs", _("resize an ext2, ext3 or ext4 filesystem"));
   printf ("%-20s %s\n", "resize2fs-M", _("resize an ext2, ext3 or ext4 filesystem to the minimum size"));
@@ -20875,6 +20883,36 @@ run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[])
   free (r);
  out:
  out_partnum:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_rename (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *oldpath;
+  char *newpath;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  oldpath = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (oldpath == NULL) goto out_oldpath;
+  newpath = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (newpath == NULL) goto out_newpath;
+  r = guestfs_rename (g, oldpath, newpath);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (newpath);
+ out_newpath:
+  free (oldpath);
+ out_oldpath:
  out_noargs:
   return ret;
 }

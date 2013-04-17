@@ -2733,6 +2733,11 @@ struct guestfs_part_get_gpt_type_ret {
   string guid<>;
 };
 
+struct guestfs_rename_args {
+  string oldpath<>;
+  string newpath<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3120,10 +3125,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_LDMTOOL_VOLUME_HINT = 390,
   GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391,
   GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
-  GUESTFS_PROC_PART_GET_GPT_TYPE = 393
+  GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
+  GUESTFS_PROC_RENAME = 394
 };
 
-const GUESTFS_MAX_PROC_NR = 393;
+const GUESTFS_MAX_PROC_NR = 394;
 
 /* The remote procedure call protocol. */
 

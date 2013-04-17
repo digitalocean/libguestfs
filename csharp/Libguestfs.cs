@@ -6140,6 +6140,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_rename (IntPtr h, [In] string oldpath, [In] string newpath);
+
+    /// <summary>
+    /// rename a file on the same filesystem
+    /// </summary>
+    public void rename (string oldpath, string newpath)
+    {
+      int r;
+      r = guestfs_rename (_handle, oldpath, newpath);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_resize2fs (IntPtr h, [In] string device);
 
     /// <summary>

@@ -7959,6 +7959,22 @@ run_removexattr (ETERM *message)
 }
 
 static ETERM *
+run_rename (ETERM *message)
+{
+  char *oldpath = erl_iolist_to_string (ARG (0));
+  char *newpath = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_rename (g, oldpath, newpath);
+  free (oldpath);
+  free (newpath);
+  if (r == -1)
+    return make_error ("rename");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_resize2fs (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
@@ -11061,6 +11077,8 @@ dispatch (ETERM *message)
     return run_remove_drive (message);
   else if (atom_equals (fun, "removexattr"))
     return run_removexattr (message);
+  else if (atom_equals (fun, "rename"))
+    return run_rename (message);
   else if (atom_equals (fun, "resize2fs"))
     return run_resize2fs (message);
   else if (atom_equals (fun, "resize2fs_M"))

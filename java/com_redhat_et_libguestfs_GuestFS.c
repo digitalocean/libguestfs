@@ -13656,3 +13656,25 @@ Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt_1type  (JNIEnv *env, jobj
   return jr;
 }
 
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1rename  (JNIEnv *env, jobject obj, jlong jg, jstring joldpath, jstring jnewpath)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *oldpath;
+  const char *newpath;
+
+  oldpath = (*env)->GetStringUTFChars (env, joldpath, NULL);
+  newpath = (*env)->GetStringUTFChars (env, jnewpath, NULL);
+
+  r = guestfs_rename (g, oldpath, newpath);
+
+  (*env)->ReleaseStringUTFChars (env, joldpath, oldpath);
+  (*env)->ReleaseStringUTFChars (env, jnewpath, newpath);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+

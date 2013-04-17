@@ -87,7 +87,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 TESTS = rhbz501893$(EXEEXT) rhbz503169c13.sh rhbz557655.sh \
 	rhbz576879.sh rhbz578407.sh rhbz580246.sh rhbz602997.sh \
 	rhbz690819.sh rhbz789960.sh rhbz790721$(EXEEXT) rhbz811649.sh \
-	test-noexec-stack.pl
+	rhbz895904.sh test-noexec-stack.pl
 check_PROGRAMS = rhbz501893$(EXEEXT) rhbz790721$(EXEEXT)
 subdir = tests/regressions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4

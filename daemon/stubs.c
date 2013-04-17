@@ -15344,6 +15344,43 @@ done_no_free:
   return;
 }
 
+static void
+rename_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_rename_args args;
+  char *oldpath;
+  char *newpath;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_rename_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  oldpath = args.oldpath;
+  ABS_PATH (oldpath, , goto done);
+  newpath = args.newpath;
+  ABS_PATH (newpath, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_rename (oldpath, newpath);
+  if (r == -1)
+    /* do_rename has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_rename_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16504,6 +16541,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_PART_GET_GPT_TYPE:
       part_get_gpt_type_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_RENAME:
+      rename_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);
