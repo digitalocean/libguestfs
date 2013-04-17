@@ -1,5 +1,33 @@
 2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
 
+	fish: options: Allow Unix domain sockets to be specified in --add URIs.
+	You can now use a URI such as:
+
+	 guestfish -a nbd://?socket=/tmp/sock
+
+	(a NBD connection to Unix domain socket /tmp/sock).
+
+2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: options: Format server name as "tcp:host[:port]".
+	This is safer, because otherwise a URI could contain some clever
+	"unix:..." string as the hostname, tricking qemu into opening a Unix
+	domain socket at an uncontrolled location.
+
+	This fixes commit 349300af08be9ae9f3d7259e688e2ee5318f2171.
+
+2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	df: Move variable decl to top of function.
+	Since this code is no longer conditional, we don't need to have the
+	extra { ... } inside the case statement.
+
+	This tidies up commit 2f0a4d7c18e622c48e33edc3f80dbd593c6398bc.
+
+2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.30.
+
 	Require libxml2.
 	libxml2 is very commonly available on Linux distros and has also been
 	ported (and is widely available) on Mac OS X and Windows.  Therefore
