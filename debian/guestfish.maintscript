@@ -1,2 +1,3 @@
 # Clean up after conffile rename in 1:1.18.10-1
 rm_conffile /etc/bash_completion.d/guestfish 1:1.20.6-2~
+rm_conffile /etc/bash_completion.d/guestfish-bash-completion.sh 1.21.31-1~
