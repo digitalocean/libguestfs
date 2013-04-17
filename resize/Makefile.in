@@ -288,6 +288,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASH_COMPLETIONS_DIR = @BASH_COMPLETIONS_DIR@
+BASH_COMPLETION_CFLAGS = @BASH_COMPLETION_CFLAGS@
+BASH_COMPLETION_LIBS = @BASH_COMPLETION_LIBS@
 BITSIZEOF_PTRDIFF_T = @BITSIZEOF_PTRDIFF_T@
 BITSIZEOF_SIG_ATOMIC_T = @BITSIZEOF_SIG_ATOMIC_T@
 BITSIZEOF_SIZE_T = @BITSIZEOF_SIZE_T@
@@ -1829,10 +1832,6 @@ appliance: force
 @HAVE_OCAML_TRUE@-include .depend
 
 .PHONY: depend docs
-
-# Parallel builds don't obey dependencies for some reason we
-# don't understand.
-.NOTPARALLEL:
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -253,8 +253,7 @@ librc_protocol_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(librc_protocol_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(bashcompletiondir)" \
-	"$(DESTDIR)$(toolsconfdir)"
+	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(toolsconfdir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = guestfish-cmds.$(OBJEXT) \
 	guestfish-completion.$(OBJEXT) guestfish-event-names.$(OBJEXT) \
@@ -359,7 +358,7 @@ am__can_run_installinfo = \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man_MANS)
-DATA = $(bashcompletion_DATA) $(noinst_DATA) $(toolsconf_DATA)
+DATA = $(noinst_DATA) $(toolsconf_DATA)
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors_dummy = \
@@ -383,6 +382,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASH_COMPLETIONS_DIR = @BASH_COMPLETIONS_DIR@
+BASH_COMPLETION_CFLAGS = @BASH_COMPLETION_CFLAGS@
+BASH_COMPLETION_LIBS = @BASH_COMPLETION_LIBS@
 BITSIZEOF_PTRDIFF_T = @BITSIZEOF_PTRDIFF_T@
 BITSIZEOF_SIG_ATOMIC_T = @BITSIZEOF_SIG_ATOMIC_T@
 BITSIZEOF_SIZE_T = @BITSIZEOF_SIZE_T@
@@ -1441,15 +1443,15 @@ BUILT_SOURCES = \
 	rc_protocol.c
 
 EXTRA_DIST = $(BUILT_SOURCES) rc_protocol.x guestfish.pod \
-	libguestfs-bash-completion.sh libguestfs-tools.conf \
-	virt-copy-in virt-copy-out virt-tar-in virt-tar-out \
-	virt-copy-in.pod virt-copy-out.pod virt-tar-in.pod \
-	virt-tar-out.pod test-a.sh test-add-domain.sh test-copy.sh \
-	test-d.sh test-edit.sh test-escapes.sh test-events.sh \
-	test-find0.sh test-glob.sh test-inspect.sh test-mount-local.sh \
-	test-prep.sh test-read-file.sh test-remote.sh \
-	test-remote-events.sh test-reopen.sh test-run.sh \
-	test-stringlist.sh test-tilde.sh test-upload-to-dir.sh
+	libguestfs-tools.conf virt-copy-in virt-copy-out virt-tar-in \
+	virt-tar-out virt-copy-in.pod virt-copy-out.pod \
+	virt-tar-in.pod virt-tar-out.pod test-a.sh test-add-domain.sh \
+	test-copy.sh test-d.sh test-edit.sh test-escapes.sh \
+	test-events.sh test-find0.sh test-glob.sh test-inspect.sh \
+	test-mount-local.sh test-prep.sh test-read-file.sh \
+	test-remote.sh test-remote-events.sh test-reopen.sh \
+	test-run.sh test-stringlist.sh test-tilde.sh \
+	test-upload-to-dir.sh
 
 # These source files (mostly related to option parsing) are shared
 # between guestfish, guestmount and some other virt tools.  Keep a
@@ -1551,10 +1553,6 @@ noinst_DATA = \
 # libguestfs tools config file.
 toolsconfdir = $(sysconfdir)
 toolsconf_DATA = libguestfs-tools.conf
-
-# Bash completion script.
-bashcompletiondir = $(sysconfdir)/bash_completion.d
-bashcompletion_DATA = libguestfs-bash-completion.sh
 
 # Tests.
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
@@ -2328,27 +2326,6 @@ uninstall-man1:
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
-install-bashcompletionDATA: $(bashcompletion_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(bashcompletion_DATA)'; test -n "$(bashcompletiondir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bashcompletiondir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bashcompletiondir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(bashcompletiondir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(bashcompletiondir)" || exit $$?; \
-	done
-
-uninstall-bashcompletionDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bashcompletion_DATA)'; test -n "$(bashcompletiondir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(bashcompletiondir)'; $(am__uninstall_files_from_dir)
 install-toolsconfDATA: $(toolsconf_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(toolsconf_DATA)'; test -n "$(toolsconfdir)" || list=; \
@@ -2579,7 +2556,7 @@ check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(bashcompletiondir)" "$(DESTDIR)$(toolsconfdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(toolsconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -2638,8 +2615,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-bashcompletionDATA install-man \
-	install-toolsconfDATA
+install-data-am: install-man install-toolsconfDATA
 
 install-dvi: install-dvi-am
 
@@ -2685,8 +2661,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-bashcompletionDATA uninstall-binPROGRAMS \
-	uninstall-binSCRIPTS uninstall-man uninstall-toolsconfDATA
+uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-man \
+	uninstall-toolsconfDATA
 
 uninstall-man: uninstall-man1
 
@@ -2697,17 +2673,16 @@ uninstall-man: uninstall-man1
 	clean-noinstLTLIBRARIES cscopelist ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-bashcompletionDATA \
-	install-binPROGRAMS install-binSCRIPTS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-man1 install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	install-toolsconfDATA installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-bashcompletionDATA uninstall-binPROGRAMS \
+	install install-am install-binPROGRAMS install-binSCRIPTS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip install-toolsconfDATA installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-binSCRIPTS uninstall-man uninstall-man1 \
 	uninstall-toolsconfDATA
 

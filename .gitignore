@@ -45,6 +45,15 @@ Makefile.in
 /appliance/stamp-supermin
 /appliance/supermin.d
 /autom4te.cache
+/bash/virt-cat
+/bash/virt-df
+/bash/virt-edit
+/bash/virt-filesystems
+/bash/virt-format
+/bash/virt-inspector
+/bash/virt-ls
+/bash/virt-sysprep
+/bash/virt-sparsify
 /build-aux
 /cat/stamp-virt-*.pod
 /cat/virt-cat
@@ -257,6 +266,7 @@ Makefile.in
 /ocaml/guestfs.mli
 /ocamlinit-stamp
 /ocaml/META
+/ocaml/stamp-mlguestfs
 /ocaml/t/guestfs_005_load.bc
 /ocaml/t/guestfs_005_load.opt
 /ocaml/t/guestfs_010_basic.bc

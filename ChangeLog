@@ -1,4 +1,52 @@
+2013-03-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.24.
+
+	java: Make bindtests depend on jar file so parallel builds work.
+	This fixes commit c36ced5e21348f5357fc70b402664c9a5d827b06.
+
+	virt-alignment-scan: Don't call exit(3) from this multi-threaded program.
+	For more information see:
+	https://bugzilla.redhat.com/show_bug.cgi?id=790837#c2
+
+	daemon: file: Remove extraneous space after output of 'file' command (RHBZ#928995).
+
+2013-03-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: parse_btrfsvol: Perform device name translation before trying to stat the device.
+	If using (eg) virtio-blk, the canonical name won't work unless device
+	name translation is done first.
+
+	This fixes commit 47b929b7893b3a76ff22760d245cb80720ae6345..
+
 2013-03-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: parse_btrfsvol: Move variable decls to top, whitespace fixes.
+	This fixes commit 47b929b7893b3a76ff22760d245cb80720ae6345.
+
+	daemon: Fix parse_btrfsvol to use STRPREFIX instead of bogus strncmp.
+	This fixes commit 47b929b7893b3a76ff22760d245cb80720ae6345.
+
+	java: Format CLEANFILES rule.
+
+	java: Enable parallel builds.
+	This reverts commit 89404ec0ba9781b55cb3a87689bcc519e7d73ea2.
+
+	ocaml tools: Enable parallel builds.
+	In particular, building virt-sysprep is slow because there are so many
+	modules.  Enable parallel builds.  If it breaks, we should fix it, not
+	work around it.
+
+	ocaml: Fix and enable parallel builds.
+	We only have to serialize the two calls to ocamlmklib, since both will
+	try to create a file called 'libmlguestfs.a'.  Apart from that,
+	parallel builds here should be fine.
+
+	ocaml: Break circular dependency of mlguestfs.cma{,x} <-> guestfs.cm{o,x}
+
+	Use new-style demand-loaded bash-completion scripts.
+
+	Version 1.21.23.
 
 	bash completion: Extend this script to work with other virt tools.
 

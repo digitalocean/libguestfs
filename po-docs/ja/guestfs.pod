@@ -3666,6 +3666,10 @@ L<virt-alignment-scan(1)> のコマンドおよびドキュメント。
 
 libguestfs アプライアンス、スクリプトなどを構築します。
 
+=item C<bash>
+
+Bash tab-completion scripts.
+
 =item C<build-aux>
 
 autotools により使用されるさまざまなビルドスクリプト。
