@@ -3778,11 +3778,12 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
   PyObject *py_label;
   PyObject *py_protocol;
   PyObject *py_server;
+  PyObject *py_username;
 
   optargs_s.bitmask = 0;
 
-  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOO:guestfs_add_drive",
-                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server))
+  if (!PyArg_ParseTuple (args, (char *) "OsOOOOOOOO:guestfs_add_drive",
+                         &py_g, &filename, &py_readonly, &py_format, &py_iface, &py_name, &py_label, &py_protocol, &py_server, &py_username))
     goto out;
   g = get_handle (py_g);
 
@@ -3845,6 +3846,16 @@ py_guestfs_add_drive (PyObject *self, PyObject *args)
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
     optargs_s.server = get_string_list (py_server);
     if (!optargs_s.server) goto out;
+  }
+  if (py_username != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.username = PyString_AsString (py_username);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_username);
+    optargs_s.username = PyBytes_AS_STRING (bytes);
+#endif
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);

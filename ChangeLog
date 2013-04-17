@@ -1,4 +1,36 @@
+2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	Require libxml2.
+	libxml2 is very commonly available on Linux distros and has also been
+	ported (and is widely available) on Mac OS X and Windows.  Therefore
+	simply require libxml2, and remove a lot of conditional code.
+
+2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Add -a URI (add remote storage) to options.
+	Add a remote drive by doing:
+
+	 guestfish -a ssh://example.com/path/to/disk.img
+
+	There are several different protocols supported, as explained in the
+	man page.
+
+	This affects all virt-* tools that use the common guestfish options
+	parsing code.
+
+2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: options: Whitespace change.
+
+	Add support for SSH (Secure Shell) block device.
+
+2013-04-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Add a quick summary to the debugging section of the FAQ.
+
 2013-04-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.29.
 
 	tests: Split C API tests into regular C file + generated tests file.
 

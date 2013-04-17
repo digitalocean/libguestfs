@@ -758,6 +758,11 @@ run_add_drive (ETERM *message)
       optargs_s.server = get_string_list (hd_value);
     }
     else
+    if (atom_equals (hd_name, "username")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+      optargs_s.username = erl_iolist_to_string (hd_value);
+    }
+    else
       return unknown_optarg ("add_drive", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -778,6 +783,8 @@ run_add_drive (ETERM *message)
     free ((char *) optargs_s.protocol);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK))
     guestfs___free_string_list ((char **) optargs_s.server);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK))
+    free ((char *) optargs_s.username);
   if (r == -1)
     return make_error ("add_drive");
 

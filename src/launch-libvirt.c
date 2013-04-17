@@ -36,14 +36,12 @@
 #include <libvirt/virterror.h>
 #endif
 
-#ifdef HAVE_LIBXML2
 #include <libxml/xmlIO.h>
 #include <libxml/xmlwriter.h>
 #include <libxml/xpath.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlsave.h>
-#endif
 
 #if HAVE_LIBSELINUX
 #include <selinux/selinux.h>
@@ -73,8 +71,7 @@
                              MIN_LIBVIRT_MICRO)
 
 #if defined(HAVE_LIBVIRT) && \
-  LIBVIR_VERSION_NUMBER >= MIN_LIBVIRT_VERSION && \
-  defined(HAVE_LIBXML2)
+  LIBVIR_VERSION_NUMBER >= MIN_LIBVIRT_VERSION
 
 #ifndef HAVE_XMLBUFFERDETACH
 /* Added in libxml2 2.8.0.  This is mostly a copy of the function from
@@ -1120,7 +1117,9 @@ construct_libvirt_xml_disk (guestfs_h *g,
   case drive_protocol_rbd:
     protocol_str = "rbd"; goto network_protocols;
   case drive_protocol_sheepdog:
-    protocol_str = "sheepdog";
+    protocol_str = "sheepdog"; goto network_protocols;
+  case drive_protocol_ssh:
+    protocol_str = "ssh";
     /*FALLTHROUGH*/
   network_protocols:
     XMLERROR (-1,
@@ -1140,6 +1139,13 @@ construct_libvirt_xml_disk (guestfs_h *g,
     if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
       return -1;
     XMLERROR (-1, xmlTextWriterEndElement (xo));
+    if (drv_priv->real_src.username != NULL) {
+      XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "auth"));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "username",
+                                             BAD_CAST drv_priv->real_src.username));
+      XMLERROR (-1, xmlTextWriterEndElement (xo));
+    }
   }
 
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "target"));
@@ -1592,6 +1598,7 @@ make_drive_priv (guestfs_h *g, struct drive *drv,
   case drive_protocol_nbd:
   case drive_protocol_rbd:
   case drive_protocol_sheepdog:
+  case drive_protocol_ssh:
     if (!drv->readonly) {
       guestfs___copy_drive_source (g, &drv->src, &drv_priv->real_src);
       drv_priv->format = drv->format ? safe_strdup (g, drv->format) : NULL;
@@ -1800,12 +1807,12 @@ struct backend_ops backend_ops_libvirt = {
   .hot_remove_drive = hot_remove_drive_libvirt,
 };
 
-#else /* no libvirt or libxml2 at compile time */
+#else /* no libvirt at compile time */
 
 #define NOT_IMPL(r)                                                     \
   error (g, _("libvirt backend is not available because "         \
               "this version of libguestfs was compiled "                \
-              "without libvirt or libvirt < %d.%d.%d or without libxml2"), \
+              "without libvirt or libvirt < %d.%d.%d"), \
          MIN_LIBVIRT_MAJOR, MIN_LIBVIRT_MINOR, MIN_LIBVIRT_MICRO);      \
   return r
 
@@ -1833,7 +1840,7 @@ struct backend_ops backend_ops_libvirt = {
   .max_disks = max_disks_libvirt,
 };
 
-#endif /* no libvirt or libxml2 at compile time */
+#endif /* no libvirt at compile time */
 
 int
 guestfs__internal_set_libvirt_selinux_label (guestfs_h *g, const char *label,

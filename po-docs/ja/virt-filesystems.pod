@@ -100,6 +100,12 @@ separate I<-a> options.
 
 ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
 
+=item B<-a URI>
+
+=item B<--add URI>
+
+Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+
 =item B<--all>
 
 すべてを表示します。これは現在これらのオプションを指定するのと同じです: I<--filesystems>, I<--extra>,

@@ -4227,6 +4227,14 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * See also: "SHEEPDOG" in guestfs(3).
  * 
+ * "protocol = "ssh""
+ * Connect to the Secure Shell (ssh) server.
+ * 
+ * The @server parameter must be supplied. The @username parameter
+ * may be supplied. See below.
+ * 
+ * See also: "SSH" in guestfs(3).
+ * 
  * @server
  * For protocols which require access to a remote server, this is a
  * list of server(s).
@@ -4245,6 +4253,8 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * <![CDATA[sheepdog       Zero or more]]>
  * 
+ * <![CDATA[ssh            Exactly one]]>
+ * 
  * Each list element is a string specifying a server. The string must
  * be in one of the following formats:
  * 
@@ -4260,6 +4270,15 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * If the port number is omitted, then the standard port number for the
  * protocol is used (see "/etc/services").
+ * 
+ * @username
+ * For the @ssh protocol only, this specifies the remote username.
+ * 
+ * If not given, then the local username is used. But note this
+ * sometimes may give unexpected results, for example if using the
+ * libvirt backend and if the libvirt backend is configured to start
+ * the qemu appliance as a special user such as "qemu.qemu". If in
+ * doubt, specify the remote username you want.
  * 
  * Returns: true on success, false on error
  */
@@ -4327,6 +4346,14 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, Guestf
     if (protocol != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
       argv.protocol = protocol;
+    }
+    GValue username_v = {0, };
+    g_value_init(&username_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "username", &username_v);
+    const gchar *username = g_value_get_string(&username_v);
+    if (username != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+      argv.username = username;
     }
     argvp = &argv;
   }

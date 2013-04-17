@@ -885,9 +885,11 @@ PHP_FUNCTION (guestfs_add_drive)
   char *optargs_t_protocol = NULL;
   int optargs_t_protocol_size = -1;
   zval *optargs_t_server;
+  char *optargs_t_username = NULL;
+  int optargs_t_username_size = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa",
-        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssas",
+        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -950,6 +952,10 @@ PHP_FUNCTION (guestfs_add_drive)
 
     optargs_s.server = r;
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+  }
+  if (optargs_t_username != NULL) {
+    optargs_s.username = optargs_t_username;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
   }
 
   int r;

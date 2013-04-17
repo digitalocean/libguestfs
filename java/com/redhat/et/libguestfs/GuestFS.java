@@ -2773,6 +2773,14 @@ public class GuestFS {
    * <p>
    * See also: "SHEEPDOG" in guestfs(3).
    * <p>
+   * "protocol = "ssh""
+   * Connect to the Secure Shell (ssh) server.
+   * <p>
+   * The "server" parameter must be supplied. The
+   * "username" parameter may be supplied. See below.
+   * <p>
+   * See also: "SSH" in guestfs(3).
+   * <p>
    * "server"
    * For protocols which require access to a remote
    * server, this is a list of server(s).
@@ -2784,6 +2792,7 @@ public class GuestFS {
    * nbd            Exactly one
    * rbd            One or more
    * sheepdog       Zero or more
+   * ssh            Exactly one
    * <p>
    * Each list element is a string specifying a server.
    * The string must be in one of the following formats:
@@ -2797,6 +2806,17 @@ public class GuestFS {
    * If the port number is omitted, then the standard
    * port number for the protocol is used (see
    * "/etc/services").
+   * <p>
+   * "username"
+   * For the "ssh" protocol only, this specifies the
+   * remote username.
+   * <p>
+   * If not given, then the local username is used. But
+   * note this sometimes may give unexpected results, for
+   * example if using the libvirt backend and if the
+   * libvirt backend is configured to start the qemu
+   * appliance as a special user such as "qemu.qemu". If
+   * in doubt, specify the remote username you want.
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
@@ -2870,8 +2890,16 @@ public class GuestFS {
       server = ((String[]) _optobj);
       _optargs_bitmask |= 64L;
     }
+    String username = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("username");
+    if (_optobj != null) {
+      username = ((String) _optobj);
+      _optargs_bitmask |= 128L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username);
   }
 
   public void add_drive (String filename)
@@ -2892,7 +2920,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username)
     throws LibGuestFSException;
 
   /**

@@ -87,8 +87,8 @@ host_triplet = @host@
 DIST_COMMON = $(dist_doc_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/test-xmllint.sh.in \
 	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/subdir-rules.mk
-@HAVE_LIBXML2_TRUE@bin_PROGRAMS = virt-inspector$(EXEEXT)
-@HAVE_LIBXML2_TRUE@@HAVE_XMLLINT_TRUE@am__append_1 = test-xmllint.sh
+bin_PROGRAMS = virt-inspector$(EXEEXT)
+@HAVE_XMLLINT_TRUE@am__append_1 = test-xmllint.sh
 subdir = inspector
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -222,24 +222,18 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
 	"$(DESTDIR)$(docdir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__virt_inspector_SOURCES_DIST = ../fish/config.c ../fish/domain.c \
-	../fish/inspect.c ../fish/keys.c ../fish/options.h \
-	../fish/options.c virt-inspector.c
-@HAVE_LIBXML2_TRUE@am__objects_1 = virt_inspector-config.$(OBJEXT) \
-@HAVE_LIBXML2_TRUE@	virt_inspector-domain.$(OBJEXT) \
-@HAVE_LIBXML2_TRUE@	virt_inspector-inspect.$(OBJEXT) \
-@HAVE_LIBXML2_TRUE@	virt_inspector-keys.$(OBJEXT) \
-@HAVE_LIBXML2_TRUE@	virt_inspector-options.$(OBJEXT)
-@HAVE_LIBXML2_TRUE@am_virt_inspector_OBJECTS = $(am__objects_1) \
-@HAVE_LIBXML2_TRUE@	virt_inspector-virt-inspector.$(OBJEXT)
+am__objects_1 = virt_inspector-config.$(OBJEXT) \
+	virt_inspector-domain.$(OBJEXT) \
+	virt_inspector-inspect.$(OBJEXT) virt_inspector-keys.$(OBJEXT) \
+	virt_inspector-options.$(OBJEXT)
+am_virt_inspector_OBJECTS = $(am__objects_1) \
+	virt_inspector-virt-inspector.$(OBJEXT)
 virt_inspector_OBJECTS = $(am_virt_inspector_OBJECTS)
 am__DEPENDENCIES_1 =
-@HAVE_LIBXML2_TRUE@virt_inspector_DEPENDENCIES =  \
-@HAVE_LIBXML2_TRUE@	$(am__DEPENDENCIES_1) \
-@HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_LIBXML2_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-@HAVE_LIBXML2_TRUE@	../gnulib/lib/libgnu.la
+virt_inspector_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) ../gnulib/lib/libgnu.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -283,7 +277,7 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(virt_inspector_SOURCES)
-DIST_SOURCES = $(am__virt_inspector_SOURCES_DIST)
+DIST_SOURCES = $(virt_inspector_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1392,45 +1386,45 @@ dist_doc_DATA = \
 	virt-inspector.rng \
 	$(EXAMPLE_XML)
 
-@HAVE_LIBXML2_TRUE@SHARED_SOURCE_FILES = \
-@HAVE_LIBXML2_TRUE@	../fish/config.c \
-@HAVE_LIBXML2_TRUE@	../fish/domain.c \
-@HAVE_LIBXML2_TRUE@	../fish/inspect.c \
-@HAVE_LIBXML2_TRUE@	../fish/keys.c \
-@HAVE_LIBXML2_TRUE@	../fish/options.h \
-@HAVE_LIBXML2_TRUE@	../fish/options.c
+SHARED_SOURCE_FILES = \
+	../fish/config.c \
+	../fish/domain.c \
+	../fish/inspect.c \
+	../fish/keys.c \
+	../fish/options.h \
+	../fish/options.c
 
-@HAVE_LIBXML2_TRUE@virt_inspector_SOURCES = \
-@HAVE_LIBXML2_TRUE@	$(SHARED_SOURCE_FILES) \
-@HAVE_LIBXML2_TRUE@	virt-inspector.c
+virt_inspector_SOURCES = \
+	$(SHARED_SOURCE_FILES) \
+	virt-inspector.c
 
-@HAVE_LIBXML2_TRUE@virt_inspector_CPPFLAGS = \
-@HAVE_LIBXML2_TRUE@	-DGUESTFS_WARN_DEPRECATED=1 \
-@HAVE_LIBXML2_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-@HAVE_LIBXML2_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
-@HAVE_LIBXML2_TRUE@	-I$(top_srcdir)/fish \
-@HAVE_LIBXML2_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+virt_inspector_CPPFLAGS = \
+	-DGUESTFS_WARN_DEPRECATED=1 \
+	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/fish \
+	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
 
-@HAVE_LIBXML2_TRUE@virt_inspector_CFLAGS = \
-@HAVE_LIBXML2_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-@HAVE_LIBXML2_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
-@HAVE_LIBXML2_TRUE@	$(LIBXML2_CFLAGS) \
-@HAVE_LIBXML2_TRUE@	$(LIBCONFIG_CFLAGS)
+virt_inspector_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
+	$(LIBXML2_CFLAGS) \
+	$(LIBCONFIG_CFLAGS)
 
-@HAVE_LIBXML2_TRUE@virt_inspector_LDADD = \
-@HAVE_LIBXML2_TRUE@	$(LIBCONFIG_LIBS) \
-@HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libutils.la \
-@HAVE_LIBXML2_TRUE@	$(top_builddir)/src/libguestfs.la \
-@HAVE_LIBXML2_TRUE@	$(LIBXML2_LIBS) \
-@HAVE_LIBXML2_TRUE@	$(LIBVIRT_LIBS) \
-@HAVE_LIBXML2_TRUE@	../gnulib/lib/libgnu.la
+virt_inspector_LDADD = \
+	$(LIBCONFIG_LIBS) \
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS) \
+	../gnulib/lib/libgnu.la
 
 
 # Manual pages and HTML files for the website.
-@HAVE_LIBXML2_TRUE@man_MANS = virt-inspector.1
-@HAVE_LIBXML2_TRUE@noinst_DATA = $(top_builddir)/html/virt-inspector.1.html
-@HAVE_LIBXML2_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
-@HAVE_LIBXML2_TRUE@TESTS = test-virt-inspector.sh $(am__append_1)
+man_MANS = virt-inspector.1
+noinst_DATA = $(top_builddir)/html/virt-inspector.1.html
+TESTS_ENVIRONMENT = $(top_builddir)/run --test
+TESTS = test-virt-inspector.sh $(am__append_1)
 all: all-am
 
 .SUFFIXES:
@@ -2071,23 +2065,23 @@ export EXAMPLE_XML = \
 	example-windows-2003-x86-cd.xml \
 	example-windows-xp-cd.xml
 
-@HAVE_LIBXML2_TRUE@virt-inspector.1 $(top_builddir)/html/virt-inspector.1.html: stamp-virt-inspector.pod
+virt-inspector.1 $(top_builddir)/html/virt-inspector.1.html: stamp-virt-inspector.pod
 
-@HAVE_LIBXML2_TRUE@stamp-virt-inspector.pod: virt-inspector.pod
-@HAVE_LIBXML2_TRUE@	$(PODWRAPPER) \
-@HAVE_LIBXML2_TRUE@	  --man virt-inspector.1 \
-@HAVE_LIBXML2_TRUE@	  --html $(top_builddir)/html/virt-inspector.1.html \
-@HAVE_LIBXML2_TRUE@	  --license GPLv2+ \
-@HAVE_LIBXML2_TRUE@	  $<
-@HAVE_LIBXML2_TRUE@	touch $@
+stamp-virt-inspector.pod: virt-inspector.pod
+	$(PODWRAPPER) \
+	  --man virt-inspector.1 \
+	  --html $(top_builddir)/html/virt-inspector.1.html \
+	  --license GPLv2+ \
+	  $<
+	touch $@
 
-@HAVE_LIBXML2_TRUE@check-valgrind:
-@HAVE_LIBXML2_TRUE@	$(MAKE) TESTS="test-virt-inspector.sh" VG="$(top_builddir)/run @VG@" check
+check-valgrind:
+	$(MAKE) TESTS="test-virt-inspector.sh" VG="$(top_builddir)/run @VG@" check
 
-@HAVE_LIBXML2_TRUE@check-valgrind-local-guests:
-@HAVE_LIBXML2_TRUE@	for g in $(GUESTS); do \
-@HAVE_LIBXML2_TRUE@	  $(top_builddir)/run --test @VG@ ./virt-inspector -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
-@HAVE_LIBXML2_TRUE@	done
+check-valgrind-local-guests:
+	for g in $(GUESTS); do \
+	  $(top_builddir)/run --test @VG@ ./virt-inspector -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
+	done
 
 # These rules require virt-inspector so there is no good time that we
 # can run them.  Instead you can run them by hand.

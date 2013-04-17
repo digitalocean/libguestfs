@@ -428,7 +428,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -539,6 +539,15 @@ The C<server> parameter may also be supplied - see below.
 
 See also: L<guestfs(3)/SHEEPDOG>.
 
+=item C<protocol = "ssh">
+
+Connect to the Secure Shell (ssh) server.
+
+The C<server> parameter must be supplied.
+The C<username> parameter may be supplied.  See below.
+
+See also: L<guestfs(3)/SSH>.
+
 =back
 
 =item C<server>
@@ -553,6 +562,7 @@ is a list of server(s).
  nbd            Exactly one
  rbd            One or more
  sheepdog       Zero or more
+ ssh            Exactly one
 
 Each list element is a string specifying a server.  The string must be
 in one of the following formats:
@@ -566,9 +576,19 @@ in one of the following formats:
 If the port number is omitted, then the standard port number
 for the protocol is used (see C</etc/services>).
 
+=item C<username>
+
+For the C<ssh> protocol only, this specifies the remote username.
+
+If not given, then the local username is used.  But note this sometimes
+may give unexpected results, for example if using the libvirt backend
+and if the libvirt backend is configured to start the qemu appliance
+as a special user such as C<qemu.qemu>.  If in doubt, specify the
+remote username you want.
+
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server]);
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username]);
 
 This is an alias of L</add_drive>.
 
@@ -6992,6 +7012,7 @@ use vars qw(%guestfs_introspection);
       label => [ 'label', 'string', 4 ],
       protocol => [ 'protocol', 'string', 5 ],
       server => [ 'server', 'string list', 6 ],
+      username => [ 'username', 'string', 7 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",

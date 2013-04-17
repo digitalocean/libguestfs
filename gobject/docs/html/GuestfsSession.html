@@ -2574,6 +2574,17 @@ be supplied - see below.
 See also: "SHEEPDOG" in guestfs(3).
 </p>
 <p>
+"protocol = "ssh""
+Connect to the Secure Shell (ssh) server.
+</p>
+<p>
+The <em class="parameter"><code>server</code></em> parameter must be supplied. The <em class="parameter"><code>username</code></em> parameter
+may be supplied. See below.
+</p>
+<p>
+See also: "SSH" in guestfs(3).
+</p>
+<p>
 <em class="parameter"><code>server</code></em>
 For protocols which require access to a remote server, this is a
 list of server(s).
@@ -2600,6 +2611,9 @@ rbd            One or more
 sheepdog       Zero or more
 </p>
 <p>
+ssh            Exactly one
+</p>
+<p>
 Each list element is a string specifying a server. The string must
 be in one of the following formats:
 </p>
@@ -2621,6 +2635,17 @@ unix:/path/to/socket
 <p>
 If the port number is omitted, then the standard port number for the
 protocol is used (see "/etc/services").
+</p>
+<p>
+<em class="parameter"><code>username</code></em>
+For the <em class="parameter"><code>ssh</code></em> protocol only, this specifies the remote username.
+</p>
+<p>
+If not given, then the local username is used. But note this
+sometimes may give unexpected results, for example if using the
+libvirt backend and if the libvirt backend is configured to start
+the qemu appliance as a special user such as "qemu.qemu". If in
+doubt, specify the remote username you want.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>

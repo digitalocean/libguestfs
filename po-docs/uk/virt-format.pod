@@ -74,6 +74,12 @@ I<--format=..>.
 
 B<Всі поточні дані на диску буде витерто.>
 
+=item B<-a URI>
+
+=item B<--add URI>
+
+Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+
 =item B<--filesystem=ext3|ntfs|vfat|...>
 
 Create an empty filesystem of the specified type.  Many filesystem types are

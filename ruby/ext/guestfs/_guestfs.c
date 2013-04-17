@@ -3623,6 +3623,14 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * 
  * See also: "SHEEPDOG" in guestfs(3).
  * 
+ * "protocol = "ssh""
+ * Connect to the Secure Shell (ssh) server.
+ * 
+ * The "server" parameter must be supplied. The
+ * "username" parameter may be supplied. See below.
+ * 
+ * See also: "SSH" in guestfs(3).
+ * 
  * "server"
  * For protocols which require access to a remote
  * server, this is a list of server(s).
@@ -3634,6 +3642,7 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * nbd            Exactly one
  * rbd            One or more
  * sheepdog       Zero or more
+ * ssh            Exactly one
  * 
  * Each list element is a string specifying a server.
  * The string must be in one of the following formats:
@@ -3647,6 +3656,17 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * If the port number is omitted, then the standard
  * port number for the protocol is used (see
  * "/etc/services").
+ * 
+ * "username"
+ * For the "ssh" protocol only, this specifies the
+ * remote username.
+ * 
+ * If not given, then the local username is used. But
+ * note this sometimes may give unexpected results, for
+ * example if using the libvirt backend and if the
+ * libvirt backend is configured to start the qemu
+ * appliance as a special user such as "qemu.qemu". If
+ * in doubt, specify the remote username you want.
  * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
@@ -3723,6 +3743,11 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
     optargs_s.server = r;
   }
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("username")));
+  if (v != Qnil) {
+    optargs_s.username = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
   }
 
   int r;

@@ -470,8 +470,14 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
            "add_drive_opts", "server");
     return -1;
   }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK) &&
+      optargs->username == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "username");
+    return -1;
+  }
 
-  if (optargs->bitmask & UINT64_C(0xffffffffffffff80)) {
+  if (optargs->bitmask & UINT64_C(0xffffffffffffff00)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "add_drive_opts", "add_drive_opts");
     return -1;
@@ -508,6 +514,9 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
         fputs (optargs->server[i], trace_buffer.fp);
       }
       fputc ('\"', trace_buffer.fp);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "username", optargs->username);
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }

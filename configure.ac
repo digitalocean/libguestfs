@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [29])
+m4_define([libguestfs_release], [30])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -850,18 +850,12 @@ AM_CONDITIONAL([HAVE_LIBVIRT],[test "x$LIBVIRT_LIBS" != "x"])
 libvirt_ro_uri='qemu+unix:///system?socket=/var/run/libvirt/libvirt-sock-ro'
 AC_SUBST([libvirt_ro_uri])
 
-dnl libxml2 (highly recommended)
-PKG_CHECK_MODULES([LIBXML2], [libxml-2.0],[
-    AC_SUBST([LIBXML2_CFLAGS])
-    AC_SUBST([LIBXML2_LIBS])
-    AC_DEFINE([HAVE_LIBXML2],[1],[libxml2 found at compile time.])
-    old_LIBS="$LIBS"
-    LIBS="$LIBS $LIBXML2_LIBS"
-    AC_CHECK_FUNCS([xmlBufferDetach])
-    LIBS="$old_LIBS"
-],
-    [AC_MSG_WARN([libxml2 not found, some core features will be disabled])])
-AM_CONDITIONAL([HAVE_LIBXML2],[test "x$LIBXML2_LIBS" != "x"])
+dnl libxml2 (required)
+PKG_CHECK_MODULES([LIBXML2], [libxml-2.0])
+old_LIBS="$LIBS"
+LIBS="$LIBS $LIBXML2_LIBS"
+AC_CHECK_FUNCS([xmlBufferDetach])
+LIBS="$old_LIBS"
 
 dnl libconfig (highly recommended)
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig],[

@@ -792,6 +792,7 @@
 <ANCHOR id="GuestfsAddDrive--name" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--name">
 <ANCHOR id="GuestfsAddDrive--protocol" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--protocol">
 <ANCHOR id="GuestfsAddDrive--readonly" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--readonly">
+<ANCHOR id="GuestfsAddDrive--username" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--username">
 <ANCHOR id="GuestfsAddDomain" href="guestfs/GuestfsAddDomain.html">
 <ANCHOR id="GuestfsAddDomain.synopsis" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.synopsis">
 <ANCHOR id="GuestfsAddDomain.object-hierarchy" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.object-hierarchy">

@@ -56,6 +56,11 @@ GuestfsAddDrive
 
 </para>
 
+<!-- ##### ARG GuestfsAddDrive:username ##### -->
+<para>
+
+</para>
+
 <!-- ##### STRUCT GuestfsAddDriveClass ##### -->
 <para>
 

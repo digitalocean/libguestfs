@@ -879,9 +879,6 @@
 /* libvirt found at compile time. */
 #undef HAVE_LIBVIRT
 
-/* libxml2 found at compile time. */
-#undef HAVE_LIBXML2
-
 /* Define to 1 if you have the `listxattr' function. */
 #undef HAVE_LISTXATTR
 

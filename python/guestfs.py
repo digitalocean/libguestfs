@@ -1235,7 +1235,7 @@ class GuestFS(object):
         r = self._maybe_convert_to_dict (r)
         return r
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -1339,6 +1339,14 @@ class GuestFS(object):
         
         See also: "SHEEPDOG" in guestfs(3).
         
+        "protocol = "ssh""
+        Connect to the Secure Shell (ssh) server.
+        
+        The "server" parameter must be supplied. The
+        "username" parameter may be supplied. See below.
+        
+        See also: "SSH" in guestfs(3).
+        
         "server"
         For protocols which require access to a remote
         server, this is a list of server(s).
@@ -1350,6 +1358,7 @@ class GuestFS(object):
         nbd            Exactly one
         rbd            One or more
         sheepdog       Zero or more
+        ssh            Exactly one
         
         Each list element is a string specifying a server.
         The string must be in one of the following formats:
@@ -1363,9 +1372,20 @@ class GuestFS(object):
         If the port number is omitted, then the standard
         port number for the protocol is used (see
         "/etc/services").
+        
+        "username"
+        For the "ssh" protocol only, this specifies the
+        remote username.
+        
+        If not given, then the local username is used. But
+        note this sometimes may give unexpected results, for
+        example if using the libvirt backend and if the
+        libvirt backend is configured to start the qemu
+        appliance as a special user such as "qemu.qemu". If
+        in doubt, specify the remote username you want.
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server)
+        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username)
         return r
 
     add_drive_opts = add_drive
