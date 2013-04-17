@@ -117,18 +117,44 @@ enum drive_protocol {
   drive_protocol_file,
   drive_protocol_nbd,
 };
-union drive_source {
-  char *path;                   /* protocol = "file" */
-  struct {                      /* protocol = "nbd" */
-    char *server;
-    int port;
-    char *exportname;
-  } nbd;
+
+enum drive_transport {
+  drive_transport_none = 0,     /* no transport specified */
+  drive_transport_tcp,          /* +tcp */
+  drive_transport_unix,         /* +unix */
+};
+
+struct drive_server {
+  enum drive_transport transport;
+
+  /* This field is always non-NULL. */
+  union {
+    char *hostname;             /* hostname or IP address as a string */
+    char *socket;               /* Unix domain socket */
+  } u;
+
+  int port;                     /* port number */
+};
+
+struct drive_source {
+  enum drive_protocol protocol;
+
+  /* This field is always non-NULL.  It may be an empty string. */
+  union {
+    char *path;                 /* path to file (file) */
+    char *exportname;           /* name of export (nbd) */
+  } u;
+
+  /* For network transports, zero or more servers can be specified here.
+   *
+   * - for protocol "nbd": exactly one server
+   */
+  size_t nr_servers;
+  struct drive_server *servers;
 };
 
 struct drive {
-  enum drive_protocol protocol;
-  union drive_source u;
+  struct drive_source src;
 
   bool readonly;
   char *format;
@@ -579,6 +605,9 @@ extern size_t guestfs___checkpoint_drives (guestfs_h *g);
 extern void guestfs___rollback_drives (guestfs_h *g, size_t);
 extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
 extern void guestfs___free_drives (guestfs_h *g);
+extern void guestfs___copy_drive_source (guestfs_h *g, const struct drive_source *src, struct drive_source *dest);
+extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
+extern void guestfs___free_drive_source (struct drive_source *src);
 
 /* appliance.c */
 extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd, char **appliance);

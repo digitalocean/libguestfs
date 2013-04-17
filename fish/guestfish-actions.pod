@@ -166,7 +166,7 @@ This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
 
 =head2 add-drive-opts
 
- add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [port:N]
+ add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..]
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -258,15 +258,17 @@ See: L<guestfs(3)/NETWORK BLOCK DEVICES>.
 =item C<server>
 
 For protocols which require access to a remote server, this
-is the name of the server.
+is a list of servers and port numbers.  Each element is a
+string in one of the following formats:
 
-=item C<port>
+ server
+ server:port
+ tcp:server
+ tcp:server:port
+ unix:/path/to/socket
 
-For protocols which require access to a remote server, this
-is the port number of the service.
-
-If not specified, this defaults to the standard port for
-the protocol, eg. 10809 when C<protocol> is C<"nbd">.
+If the port number is omitted, then the standard port number
+for the protocol is used (see C</etc/services>).
 
 =back
 

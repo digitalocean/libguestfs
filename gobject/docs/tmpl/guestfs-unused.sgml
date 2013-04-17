@@ -1,4 +1,16 @@
+<!-- ##### ARG GuestfsAddDrive:port ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### ARG GuestfsAddDrive:selinuxnorelabel ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsAddDrive:server ##### -->
 <para>
 
 </para>

@@ -34,12 +34,49 @@
 #include <arpa/inet.h>
 #include <assert.h>
 
+#include <pcre.h>
+
 #include "c-ctype.h"
+#include "ignore-value.h"
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
+
+/* Compile all the regular expressions once when the shared library is
+ * loaded.  PCRE is thread safe so we're supposedly OK here if
+ * multiple threads call into the libguestfs API functions below
+ * simultaneously.
+ */
+static pcre *re_hostname_port;
+
+static void compile_regexps (void) __attribute__((constructor));
+static void free_regexps (void) __attribute__((destructor));
+
+static void
+compile_regexps (void)
+{
+  const char *err;
+  int offset;
+
+#define COMPILE(re,pattern,options)                                     \
+  do {                                                                  \
+    re = pcre_compile ((pattern), (options), &err, &offset, NULL);      \
+    if (re == NULL) {                                                   \
+      ignore_value (write (2, err, strlen (err)));                      \
+      abort ();                                                         \
+    }                                                                   \
+  } while (0)
+
+  COMPILE (re_hostname_port, "(.*):(\\d+)$", 0);
+}
+
+static void
+free_regexps (void)
+{
+  pcre_free (re_hostname_port);
+}
 
 /* Create and free the 'drive' struct. */
 static struct drive *
@@ -49,10 +86,10 @@ create_drive_file (guestfs_h *g, const char *path,
                    const char *disk_label,
                    bool use_cache_none)
 {
-  struct drive *drv = safe_malloc (g, sizeof (struct drive));
+  struct drive *drv = safe_calloc (g, 1, sizeof *drv);
 
-  drv->protocol = drive_protocol_file;
-  drv->u.path = safe_strdup (g, path);
+  drv->src.protocol = drive_protocol_file;
+  drv->src.u.path = safe_strdup (g, path);
 
   drv->readonly = readonly;
   drv->format = format ? safe_strdup (g, format) : NULL;
@@ -68,18 +105,22 @@ create_drive_file (guestfs_h *g, const char *path,
 
 static struct drive *
 create_drive_nbd (guestfs_h *g,
-                  const char *server, int port, const char *exportname,
+                  struct drive_server *servers, size_t nr_servers,
+                  const char *exportname,
                   bool readonly, const char *format,
                   const char *iface, const char *name,
                   const char *disk_label,
                   bool use_cache_none)
 {
-  struct drive *drv = safe_malloc (g, sizeof (struct drive));
+  struct drive *drv = safe_calloc (g, 1, sizeof *drv);
 
-  drv->protocol = drive_protocol_nbd;
-  drv->u.nbd.server = safe_strdup (g, server);
-  drv->u.nbd.port = port;
-  drv->u.nbd.exportname = safe_strdup (g, exportname);
+  /* Should have been checked by the calling code. */
+  assert (nr_servers == 1);
+
+  drv->src.protocol = drive_protocol_nbd;
+  drv->src.servers = servers;
+  drv->src.nr_servers = nr_servers;
+  drv->src.u.exportname = safe_strdup (g, exportname);
 
   drv->readonly = readonly;
   drv->format = format ? safe_strdup (g, format) : NULL;
@@ -151,20 +192,21 @@ create_drive_dummy (guestfs_h *g)
 }
 
 static void
+free_drive_servers (struct drive_server *servers, size_t nr_servers)
+{
+  if (servers) {
+    size_t i;
+
+    for (i = 0; i < nr_servers; ++i)
+      free (servers[i].u.hostname);
+    free (servers);
+  }
+}
+
+static void
 free_drive_struct (struct drive *drv)
 {
-  switch (drv->protocol) {
-  case drive_protocol_file:
-    free (drv->u.path);
-    break;
-  case drive_protocol_nbd:
-    free (drv->u.nbd.server);
-    free (drv->u.nbd.exportname);
-    break;
-  default:
-    abort ();
-  }
-
+  guestfs___free_drive_source (&drv->src);
   free (drv->format);
   free (drv->iface);
   free (drv->name);
@@ -184,21 +226,7 @@ drive_to_string (guestfs_h *g, const struct drive *drv)
 {
   CLEANUP_FREE char *p = NULL;
 
-  switch (drv->protocol) {
-  case drive_protocol_file:
-    p = safe_asprintf (g, "path=%s", drv->u.path);
-    break;
-  case drive_protocol_nbd:
-    if (STREQ (drv->u.nbd.exportname, ""))
-      p = safe_asprintf (g, "nbd=%s:%d", drv->u.nbd.server, drv->u.nbd.port);
-    else
-      p = safe_asprintf (g, "nbd=%s:%d:exportname=%s",
-                         drv->u.nbd.server, drv->u.nbd.port,
-                         drv->u.nbd.exportname);
-    break;
-  default:
-    abort ();
-  }
+  p = guestfs___drive_source_qemu_param (g, &drv->src);
 
   return safe_asprintf
     (g, "%s%s%s%s%s%s%s%s%s%s%s",
@@ -347,9 +375,9 @@ valid_disk_label (const char *str)
   return 1;
 }
 
-/* Check the server (hostname) is reasonable. */
+/* Check the server hostname is reasonable. */
 static int
-valid_server (const char *str)
+valid_hostname (const char *str)
 {
   size_t len = strlen (str);
 
@@ -364,6 +392,93 @@ valid_server (const char *str)
       return 0;
   }
   return 1;
+}
+
+/* Check the port number is reasonable. */
+static int
+valid_port (int port)
+{
+  if (port <= 0 || port > 65535)
+    return 0;
+  return 1;
+}
+
+static int
+parse_one_server (guestfs_h *g, const char *server, struct drive_server *ret)
+{
+  char *hostname;
+  char *port_str;
+  int port;
+
+  ret->transport = drive_transport_none;
+
+  if (STRPREFIX (server, "tcp:")) {
+    /* Explicit tcp: prefix means to skip the unix test. */
+    server += 4;
+    ret->transport = drive_transport_tcp;
+    goto skip_unix;
+  }
+
+  if (STRPREFIX (server, "unix:")) {
+    if (strlen (server) == 5) {
+      error (g, _("missing Unix domain socket path"));
+      return -1;
+    }
+    ret->transport = drive_transport_unix;
+    ret->u.socket = safe_strdup (g, server+5);
+    ret->port = 0;
+    return 0;
+  }
+ skip_unix:
+
+  if (match2 (g, server, re_hostname_port, &hostname, &port_str)) {
+    if (sscanf (port_str, "%d", &port) != 1 || !valid_port (port)) {
+      error (g, _("invalid port number '%s'"), port_str);
+      free (hostname);
+      free (port_str);
+      return -1;
+    }
+    free (port_str);
+    if (!valid_hostname (hostname)) {
+      error (g, _("invalid hostname '%s'"), hostname);
+      free (hostname);
+      return -1;
+    }
+    ret->u.hostname = hostname;
+    ret->port = port;
+    return 0;
+  }
+
+  /* Doesn't match anything above, so assume it's a bare hostname. */
+  if (!valid_hostname (server)) {
+    error (g, _("invalid hostname or server string '%s'"), server);
+    return -1;
+  }
+
+  ret->u.hostname = safe_strdup (g, server);
+  ret->port = 0;
+  return 0;
+}
+
+static struct drive_server *
+parse_servers (guestfs_h *g, char * const *servers, size_t *nr_servers_rtn)
+{
+  size_t i;
+  size_t n = guestfs___count_strings (servers);
+  struct drive_server *ret;
+
+  ret = safe_calloc (g, n, sizeof (struct drive_server));
+
+  for (i = 0; i < n; ++i) {
+    if (parse_one_server (g, servers[i], &ret[i]) == -1) {
+      if (i > 0)
+        free_drive_servers (ret, i-1);
+      return NULL;
+    }
+  }
+
+  *nr_servers_rtn = n;
+  return ret;
 }
 
 static int
@@ -388,8 +503,8 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
   const char *name;
   const char *disk_label;
   const char *protocol;
-  const char *server;
-  int port;
+  size_t nr_servers = 0;
+  struct drive_server *servers = NULL;
   int use_cache_none;
   struct drive *drv;
   size_t i, drv_index;
@@ -412,37 +527,37 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
     ? optargs->label : NULL;
   protocol = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK
     ? optargs->protocol : "file";
-  server = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK
-    ? optargs->server : NULL;
-  if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK) {
-    port = optargs->port;
-    if (port <= 0 || port > 65535) {
-      error (g, _("invalid port number"));
+  if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) {
+    servers = parse_servers (g, optargs->server, &nr_servers);
+    if (!servers)
       return -1;
-    }
-  } else
-    port = 0;
+  }
 
   if (format && !valid_format_iface (format)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "format");
+    free_drive_servers (servers, nr_servers);
     return -1;
   }
   if (iface && !valid_format_iface (iface)) {
     error (g, _("%s parameter is empty or contains disallowed characters"),
            "iface");
+    free_drive_servers (servers, nr_servers);
     return -1;
   }
   if (disk_label && !valid_disk_label (disk_label)) {
     error (g, _("label parameter is empty, too long, or contains disallowed characters"));
-    return -1;
-  }
-  if (server && !valid_server (server)) {
-    error (g, _("server parameter is empty, too long, or contains disallowed characters"));
+    free_drive_servers (servers, nr_servers);
     return -1;
   }
 
   if (STREQ (protocol, "file")) {
+    if (servers != NULL) {
+      error (g, _("you cannot specify a server with file-backed disks"));
+      free_drive_servers (servers, nr_servers);
+      return -1;
+    }
+
     if (STREQ (filename, "/dev/null"))
       drv = create_drive_dev_null (g, readonly, format, iface, name,
                                    disk_label);
@@ -467,24 +582,29 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
     }
   }
   else if (STREQ (protocol, "nbd")) {
-    if (!server) {
-      error (g, _("protocol nbd: missing server name"));
+    if (nr_servers == 0 || nr_servers > 1) {
+      error (g, _("protocol nbd: you must specify exactly one server"));
+      free_drive_servers (servers, nr_servers);
       return -1;
     }
-    if (port == 0)
-      port = nbd_port ();
 
-    drv = create_drive_nbd (g, server, port, filename,
+    if (servers[0].port == 0)
+      servers[0].port = nbd_port ();
+
+    drv = create_drive_nbd (g, servers, nr_servers, filename,
                             readonly, format, iface, name,
                             disk_label, false);
   }
   else {
     error (g, _("unknown protocol '%s'"), protocol);
+    free_drive_servers (servers, nr_servers);
     return -1;
   }
 
-  if (drv == NULL)
+  if (drv == NULL) {
+    free_drive_servers (servers, nr_servers);
     return -1;
+  }
 
   /* Add the drive. */
   if (g->state == CONFIG) {
@@ -680,4 +800,75 @@ guestfs__debug_drives (guestfs_h *g)
   ret[count] = NULL;
 
   return ret;                   /* caller frees */
+}
+
+/* The drive_source struct is also used in the attach methods, so we
+ * also have these utility functions.
+ */
+void
+guestfs___copy_drive_source (guestfs_h *g,
+                             const struct drive_source *src,
+                             struct drive_source *dest)
+{
+  size_t i;
+
+  dest->protocol = src->protocol;
+  dest->u.path = safe_strdup (g, src->u.path);
+  dest->nr_servers = src->nr_servers;
+  dest->servers = safe_calloc (g, src->nr_servers,
+                               sizeof (struct drive_server));
+  for (i = 0; i < src->nr_servers; ++i) {
+    dest->servers[i].transport = src->servers[i].transport;
+    if (src->servers[i].u.hostname)
+      dest->servers[i].u.hostname = safe_strdup (g, src->servers[i].u.hostname);
+    dest->servers[i].port = src->servers[i].port;
+  }
+}
+
+char *
+guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
+{
+  /* Note that the qemu parameter is the bit after "file=".  It is not
+   * escaped here, but would usually be escaped if passed to qemu as
+   * part of a full -drive parameter (but not for qemu-img).
+   */
+  switch (src->protocol) {
+  case drive_protocol_file:
+    return safe_strdup (g, src->u.path);
+
+  case drive_protocol_nbd: {
+    CLEANUP_FREE char *p = NULL;
+    char *ret;
+
+    switch (src->servers[0].transport) {
+    case drive_transport_none:
+    case drive_transport_tcp:
+      p = safe_asprintf (g, "nbd:%s:%d",
+                         src->servers[0].u.hostname, src->servers[0].port);
+      break;
+    case drive_transport_unix:
+      p = safe_asprintf (g, "nbd:unix:%s", src->servers[0].u.socket);
+      break;
+    }
+    assert (p);
+
+    if (STREQ (src->u.exportname, ""))
+      ret = safe_strdup (g, p);
+    else
+      ret = safe_asprintf (g, "%s:exportname=%s", p, src->u.exportname);
+
+    return ret;
+  }
+  }
+
+  abort ();
+}
+
+void
+guestfs___free_drive_source (struct drive_source *src)
+{
+  if (src) {
+    free (src->u.path);
+    free_drive_servers (src->servers, src->nr_servers);
+  }
 }

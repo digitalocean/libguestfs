@@ -2527,17 +2527,28 @@ See: "NETWORK BLOCK DEVICES" in guestfs(3).
 </p>
 <p>
 <em class="parameter"><code>server</code></em>
-For protocols which require access to a remote server, this is the
-name of the server.
+For protocols which require access to a remote server, this is a
+list of servers and port numbers. Each element is a string in one of
+the following formats:
 </p>
 <p>
-<em class="parameter"><code>port</code></em>
-For protocols which require access to a remote server, this is the
-port number of the service.
+server
 </p>
 <p>
-If not specified, this defaults to the standard port for the
-protocol, eg. 10809 when <em class="parameter"><code>protocol</code></em> is "nbd".
+server:port
+</p>
+<p>
+tcp:server
+</p>
+<p>
+tcp:server:port
+</p>
+<p>
+unix:/path/to/socket
+</p>
+<p>
+If the port number is omitted, then the standard port number for the
+protocol is used (see "/etc/services").
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>

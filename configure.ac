@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [21])
+m4_define([libguestfs_release], [22])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -153,6 +153,7 @@ if test "$gl_gcc_warnings" = yes; then
     nw="$nw -Wsuggest-attribute=pure" # Don't suggest pure functions.
     nw="$nw -Wsuggest-attribute=const" # Don't suggest const functions.
     nw="$nw -Wunsuffixed-float-constants" # Don't care about these.
+    nw="$nw -Wswitch-default"        # This warning is actively dangerous.
 
     gl_MANYWARN_ALL_GCC([ws])
     gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])

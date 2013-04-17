@@ -1129,7 +1129,7 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.list_filesystems (self._o)
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, port=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -1213,18 +1213,22 @@ class GuestFS(object):
         
         "server"
         For protocols which require access to a remote
-        server, this is the name of the server.
+        server, this is a list of servers and port numbers.
+        Each element is a string in one of the following
+        formats:
         
-        "port"
-        For protocols which require access to a remote
-        server, this is the port number of the service.
+        server
+        server:port
+        tcp:server
+        tcp:server:port
+        unix:/path/to/socket
         
-        If not specified, this defaults to the standard port
-        for the protocol, eg. 10809 when "protocol" is
-        "nbd".
+        If the port number is omitted, then the standard
+        port number for the protocol is used (see
+        "/etc/services").
         """
         self._check_not_closed ()
-        return libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, port)
+        return libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server)
 
     add_drive_opts = add_drive
 

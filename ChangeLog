@@ -1,3 +1,54 @@
+2013-03-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	nbd: Allow 'unix' transport & socket to be specified.
+	This allows the server string to contain "unix:/path/to/socket",
+	thus using a Unix domain socket to connect to the NBD server.
+
+	tests: nbd: Ensure qemu-nbd subprocess is always killed.
+	Even if the test fails/dies for some other reason.
+
+	drives: Factor out common code for making a file= qemu parameter.
+
+2013-03-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Allow multiple servers to be passed to add_drives.
+	This changes the existing (non-published-in-stable) API for
+	add_drives{_opt} so that instead of having separate 'server' and
+	'port' parameters, now we have a single 'server' parameter which is a
+	list of strings.
+
+	This is so we will be able to cope with protocols such as Ceph which
+	allows multiple servers, or Sheepdog which can use an implicit local
+	server (ie. zero servers specified).
+
+	NBD still requires exactly one server.
+
+2013-03-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Remove unused #includes.
+
+	drives: Add a common guestfs___free_drive_source function.
+	This refactors the code to introduce a common function.
+
+	drives: Whitespace change.
+
+	drives: Change internal struct drive_source.
+	This is just code refactoring.
+
+	nbd: Note that readonly connections are not supported by the appliance attach-method.
+	This documents the problem and links to the upstream bug.
+
+2013-03-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Remove -Wswitch-default.
+	This warning is actively dangerous.  Because it forces you to use a
+	'default:' case in every switch statement, it means you can no longer
+	detect missing cases in enums.
+
+	lib: Add missing cases in switch statements.
+	These were being hidden by misguided use of the dangerous
+	-Wswitch-default flag.
+
 2013-03-15  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.21.21.

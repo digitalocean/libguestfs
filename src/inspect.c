@@ -32,10 +32,6 @@
 #include <endian.h>
 #endif
 
-#include <pcre.h>
-
-#include "xstrtol.h"
-
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
@@ -125,7 +121,7 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->type) {
   case OS_TYPE_DOS: ret = safe_strdup (g, "dos"); break;
   case OS_TYPE_FREEBSD: ret = safe_strdup (g, "freebsd"); break;
@@ -134,8 +130,11 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
   case OS_TYPE_NETBSD: ret = safe_strdup (g, "netbsd"); break;
   case OS_TYPE_OPENBSD: ret = safe_strdup (g, "openbsd"); break;
   case OS_TYPE_WINDOWS: ret = safe_strdup (g, "windows"); break;
-  case OS_TYPE_UNKNOWN: default: ret = safe_strdup (g, "unknown"); break;
+  case OS_TYPE_UNKNOWN: ret = safe_strdup (g, "unknown"); break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -157,7 +156,7 @@ guestfs__inspect_get_distro (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->distro) {
   case OS_DISTRO_ARCHLINUX: ret = safe_strdup (g, "archlinux"); break;
   case OS_DISTRO_BUILDROOT: ret = safe_strdup (g, "buildroot"); break;
@@ -183,8 +182,11 @@ guestfs__inspect_get_distro (guestfs_h *g, const char *root)
   case OS_DISTRO_TTYLINUX: ret = safe_strdup (g, "ttylinux"); break;
   case OS_DISTRO_WINDOWS: ret = safe_strdup (g, "windows"); break;
   case OS_DISTRO_UBUNTU: ret = safe_strdup (g, "ubuntu"); break;
-  case OS_DISTRO_UNKNOWN: default: ret = safe_strdup (g, "unknown"); break;
+  case OS_DISTRO_UNKNOWN: ret = safe_strdup (g, "unknown"); break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -267,12 +269,15 @@ guestfs__inspect_get_format (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->format) {
   case OS_FORMAT_INSTALLED: ret = safe_strdup (g, "installed"); break;
   case OS_FORMAT_INSTALLER: ret = safe_strdup (g, "installer"); break;
-  case OS_FORMAT_UNKNOWN: default: ret = safe_strdup (g, "unknown"); break;
+  case OS_FORMAT_UNKNOWN: ret = safe_strdup (g, "unknown"); break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -427,7 +432,7 @@ guestfs__inspect_get_package_format (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->package_format) {
   case OS_PACKAGE_FORMAT_RPM: ret = safe_strdup (g, "rpm"); break;
   case OS_PACKAGE_FORMAT_DEB: ret = safe_strdup (g, "deb"); break;
@@ -436,10 +441,12 @@ guestfs__inspect_get_package_format (guestfs_h *g, const char *root)
   case OS_PACKAGE_FORMAT_PISI: ret = safe_strdup (g, "pisi"); break;
   case OS_PACKAGE_FORMAT_PKGSRC: ret = safe_strdup (g, "pkgsrc"); break;
   case OS_PACKAGE_FORMAT_UNKNOWN:
-  default:
     ret = safe_strdup (g, "unknown");
     break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -451,7 +458,7 @@ guestfs__inspect_get_package_management (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->package_management) {
   case OS_PACKAGE_MANAGEMENT_YUM: ret = safe_strdup (g, "yum"); break;
   case OS_PACKAGE_MANAGEMENT_UP2DATE: ret = safe_strdup (g, "up2date"); break;
@@ -462,10 +469,12 @@ guestfs__inspect_get_package_management (guestfs_h *g, const char *root)
   case OS_PACKAGE_MANAGEMENT_URPMI: ret = safe_strdup (g, "urpmi"); break;
   case OS_PACKAGE_MANAGEMENT_ZYPPER: ret = safe_strdup (g, "zypper"); break;
   case OS_PACKAGE_MANAGEMENT_UNKNOWN:
-  default:
     ret = safe_strdup (g, "unknown");
     break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }

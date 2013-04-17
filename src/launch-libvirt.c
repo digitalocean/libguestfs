@@ -102,10 +102,10 @@ xmlBufferDetach (xmlBufferPtr buf)
 /* Pointed to by 'struct drive *' -> priv field. */
 struct drive_libvirt {
   /* The drive that we actually add.  If using an overlay, then this
-   * might be different from drive->protocol.
+   * might be different from drive->src.  Call it 'real_src' so we
+   * don't confuse accesses to this with accesses to 'drive->src'.
    */
-  enum drive_protocol protocol;
-  union drive_source u;
+  struct drive_source real_src;
 
   /* The format of the drive we add. */
   char *format;
@@ -698,6 +698,7 @@ static int construct_libvirt_xml_lifecycle (guestfs_h *g, const struct libvirt_x
 static int construct_libvirt_xml_devices (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_qemu_cmdline (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_disk (guestfs_h *g, xmlTextWriterPtr xo, struct drive *drv, size_t drv_index);
+static int construct_libvirt_xml_disk_source_hosts (guestfs_h *g, xmlTextWriterPtr xo, const struct drive_source *src);
 static int construct_libvirt_xml_disk_source_seclabel (guestfs_h *g, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_appliance (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 
@@ -1045,7 +1046,6 @@ construct_libvirt_xml_disk (guestfs_h *g,
 {
   char drive_name[64] = "sd";
   char scsi_target[64];
-  char port_str[64];
   struct drive_libvirt *drv_priv = (struct drive_libvirt *) drv->priv;
   CLEANUP_FREE char *format = NULL;
   int is_host_device;
@@ -1064,7 +1064,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
             xmlTextWriterWriteAttribute (xo, BAD_CAST "device",
                                          BAD_CAST "disk"));
 
-  switch (drv_priv->protocol) {
+  switch (drv_priv->real_src.protocol) {
   case drive_protocol_file:
     /* Change the libvirt XML according to whether the host path is
      * a device or a file.  For devices, use:
@@ -1074,7 +1074,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
      *   <disk type=file device=disk>
      *     <source file=[path]>
      */
-    is_host_device = is_blk (drv_priv->u.path);
+    is_host_device = is_blk (drv_priv->real_src.u.path);
 
     if (!is_host_device) {
       XMLERROR (-1,
@@ -1084,7 +1084,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
       XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "source"));
       XMLERROR (-1,
                 xmlTextWriterWriteAttribute (xo, BAD_CAST "file",
-                                             BAD_CAST drv_priv->u.path));
+                                             BAD_CAST drv_priv->real_src.u.path));
       if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
         return -1;
       XMLERROR (-1, xmlTextWriterEndElement (xo));
@@ -1097,7 +1097,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
       XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "source"));
       XMLERROR (-1,
                 xmlTextWriterWriteAttribute (xo, BAD_CAST "dev",
-                                             BAD_CAST drv_priv->u.path));
+                                             BAD_CAST drv_priv->real_src.u.path));
       if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
         return -1;
       XMLERROR (-1, xmlTextWriterEndElement (xo));
@@ -1109,6 +1109,10 @@ construct_libvirt_xml_disk (guestfs_h *g,
      *   <disk type=network device=disk>
      *     <source protocol=nbd>
      *       <host name='example.com' port='10809'/>
+     * or:
+     *   <disk type=network device=disk>
+     *     <source protocol=nbd>
+     *       <host transport='unix' socket='/path/to/socket'/>
      */
     XMLERROR (-1,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
@@ -1118,26 +1122,17 @@ construct_libvirt_xml_disk (guestfs_h *g,
     XMLERROR (-1,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "protocol",
                                            BAD_CAST "nbd"));
-    if (STRNEQ (drv_priv->u.nbd.exportname, ""))
+    if (STRNEQ (drv_priv->real_src.u.exportname, ""))
       XMLERROR (-1,
                 xmlTextWriterWriteAttribute (xo, BAD_CAST "name",
-                                             BAD_CAST drv_priv->u.nbd.exportname));
-    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "host"));
-    XMLERROR (-1,
-              xmlTextWriterWriteAttribute (xo, BAD_CAST "name",
-                                           BAD_CAST drv_priv->u.nbd.server));
-    snprintf (port_str, sizeof port_str, "%d", drv_priv->u.nbd.port);
-    XMLERROR (-1,
-              xmlTextWriterWriteAttribute (xo, BAD_CAST "port",
-                                           BAD_CAST port_str));
-    XMLERROR (-1, xmlTextWriterEndElement (xo));
+                                             BAD_CAST drv_priv->real_src.u.exportname));
+    if (construct_libvirt_xml_disk_source_hosts (g, xo,
+                                                 &drv_priv->real_src) == -1)
+      return -1;
     if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
       return -1;
     XMLERROR (-1, xmlTextWriterEndElement (xo));
     break;
-
-  default:
-    abort ();
   }
 
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "target"));
@@ -1158,7 +1153,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
                                            BAD_CAST drv_priv->format));
   }
-  else if (drv_priv->protocol == drive_protocol_file) {
+  else if (drv_priv->real_src.protocol == drive_protocol_file) {
     /* libvirt has disabled the feature of detecting the disk format,
      * unless the administrator sets allow_disk_format_probing=1 in
      * qemu.conf.  There is no way to detect if this option is set, so we
@@ -1169,7 +1164,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
      * the users pass the format to libguestfs which will faithfully pass
      * that to libvirt and this function won't be used.
      */
-    format = guestfs_disk_format (g, drv_priv->u.path);
+    format = guestfs_disk_format (g, drv_priv->real_src.u.path);
     if (!format)
       return -1;
 
@@ -1223,6 +1218,55 @@ construct_libvirt_xml_disk (guestfs_h *g,
   XMLERROR (-1, xmlTextWriterEndElement (xo));
 
   XMLERROR (-1, xmlTextWriterEndElement (xo));
+
+  return 0;
+}
+
+static int
+construct_libvirt_xml_disk_source_hosts (guestfs_h *g,
+                                         xmlTextWriterPtr xo,
+                                         const struct drive_source *src)
+{
+  size_t i;
+
+  for (i = 0; i < src->nr_servers; ++i) {
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "host"));
+
+    switch (src->servers[i].transport) {
+    case drive_transport_none:
+    case drive_transport_tcp: {
+      const char *hostname;
+      int port;
+      char port_str[64];
+
+      hostname = src->servers[i].u.hostname;
+      port = src->servers[i].port;
+      snprintf (port_str, sizeof port_str, "%d", port);
+
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "name",
+                                             BAD_CAST hostname));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "port",
+                                             BAD_CAST port_str));
+      break;
+    }
+
+    case drive_transport_unix: {
+      const char *socket = src->servers[i].u.socket;
+
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "transport",
+                                             BAD_CAST "unix"));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "socket",
+                                             BAD_CAST socket));
+      break;
+    }
+    }
+
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
 
   return 0;
 }
@@ -1516,28 +1560,28 @@ make_drive_priv (guestfs_h *g, struct drive *drv,
   drv->priv = drv_priv = safe_calloc (g, 1, sizeof (struct drive_libvirt));
   drv->free_priv = drive_free_priv;
 
-  switch (drv->protocol) {
+  switch (drv->src.protocol) {
   case drive_protocol_file:
 
     /* Even for non-readonly paths, we need to make the paths absolute here. */
-    path = realpath (drv->u.path, NULL);
+    path = realpath (drv->src.u.path, NULL);
     if (path == NULL) {
       perrorf (g, _("realpath: could not convert '%s' to absolute path"),
-               drv->u.path);
+               drv->src.u.path);
       return -1;
     }
 
-    drv_priv->protocol = drive_protocol_file;
+    drv_priv->real_src.protocol = drive_protocol_file;
 
     if (!drv->readonly) {
-      drv_priv->u.path = path;
+      drv_priv->real_src.u.path = path;
       drv_priv->format = drv->format ? safe_strdup (g, drv->format) : NULL;
     }
     else {
-      drv_priv->u.path = make_qcow2_overlay (g, path, drv->format,
-                                             selinux_imagelabel);
+      drv_priv->real_src.u.path = make_qcow2_overlay (g, path, drv->format,
+                                                      selinux_imagelabel);
       free (path);
-      if (!drv_priv->u.path)
+      if (!drv_priv->real_src.u.path)
         return -1;
       drv_priv->format = safe_strdup (g, "qcow2");
     }
@@ -1545,35 +1589,22 @@ make_drive_priv (guestfs_h *g, struct drive *drv,
 
   case drive_protocol_nbd:
     if (!drv->readonly) {
-      drv_priv->protocol = drive_protocol_nbd;
-      drv_priv->u.nbd.server = safe_strdup (g, drv->u.nbd.server);
-      drv_priv->u.nbd.port = drv->u.nbd.port;
-      drv_priv->u.nbd.exportname = safe_strdup (g, drv->u.nbd.exportname);
+      guestfs___copy_drive_source (g, &drv->src, &drv_priv->real_src);
       drv_priv->format = drv->format ? safe_strdup (g, drv->format) : NULL;
     }
     else {
       CLEANUP_FREE char *nbd_device;
 
-      if (STREQ (drv->u.nbd.exportname, ""))
-        nbd_device =
-          safe_asprintf (g, "nbd:%s:%d", drv->u.nbd.server, drv->u.nbd.port);
-      else
-        nbd_device =
-          safe_asprintf (g, "nbd:%s:%d:exportname=%s",
-                         drv->u.nbd.server, drv->u.nbd.port,
-                         drv->u.nbd.exportname);
-
-      drv_priv->protocol = drive_protocol_file;
-      drv_priv->u.path = make_qcow2_overlay (g, nbd_device, drv->format,
-                                             selinux_imagelabel);
-      if (!drv_priv->u.path)
+      drv_priv->real_src.protocol = drive_protocol_file;
+      nbd_device = guestfs___drive_source_qemu_param (g, &drv->src);
+      drv_priv->real_src.u.path = make_qcow2_overlay (g, nbd_device,
+                                                      drv->format,
+                                                      selinux_imagelabel);
+      if (!drv_priv->real_src.u.path)
         return -1;
       drv_priv->format = safe_strdup (g, "qcow2");
     }
     break;
-
-  default:
-    abort ();
   }
 
   return 0;
@@ -1584,18 +1615,7 @@ drive_free_priv (void *priv)
 {
   struct drive_libvirt *drv_priv = priv;
 
-  switch (drv_priv->protocol) {
-  case drive_protocol_file:
-    free (drv_priv->u.path);
-    break;
-  case drive_protocol_nbd:
-    free (drv_priv->u.nbd.server);
-    free (drv_priv->u.nbd.exportname);
-    break;
-  default:
-    abort ();
-  }
-
+  guestfs___free_drive_source (&drv_priv->real_src);
   free (drv_priv->format);
   free (drv_priv);
 }

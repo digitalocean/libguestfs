@@ -2753,15 +2753,19 @@ public class GuestFS {
    * <p>
    * "server"
    * For protocols which require access to a remote
-   * server, this is the name of the server.
+   * server, this is a list of servers and port numbers.
+   * Each element is a string in one of the following
+   * formats:
    * <p>
-   * "port"
-   * For protocols which require access to a remote
-   * server, this is the port number of the service.
+   * server
+   * server:port
+   * tcp:server
+   * tcp:server:port
+   * unix:/path/to/socket
    * <p>
-   * If not specified, this defaults to the standard port
-   * for the protocol, eg. 10809 when "protocol" is
-   * "nbd".
+   * If the port number is omitted, then the standard
+   * port number for the protocol is used (see
+   * "/etc/services").
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
@@ -2827,24 +2831,16 @@ public class GuestFS {
       protocol = ((String) _optobj);
       _optargs_bitmask |= 32L;
     }
-    String server = "";
+    String[] server = new String[]{};
     _optobj = null;
     if (optargs != null)
       _optobj = optargs.get ("server");
     if (_optobj != null) {
-      server = ((String) _optobj);
+      server = ((String[]) _optobj);
       _optargs_bitmask |= 64L;
     }
-    int port = 0;
-    _optobj = null;
-    if (optargs != null)
-      _optobj = optargs.get ("port");
-    if (_optobj != null) {
-      port = ((Integer) _optobj).intValue();
-      _optargs_bitmask |= 128L;
-    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, port);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server);
   }
 
   public void add_drive (String filename)
@@ -2865,7 +2861,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String server, int port)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server)
     throws LibGuestFSException;
 
   /**

@@ -1099,17 +1099,17 @@ ocaml_guestfs_add_domain_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 }
 
 /* Automatically generated wrapper for function
- * val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string -> ?port:int -> string -> unit
+ * val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> string -> unit
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value portv, value filenamev);
+value ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value filenamev);
 
 value
-ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value portv, value filenamev)
+ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev, value namev, value labelv, value protocolv, value serverv, value filenamev)
 {
   CAMLparam5 (gv, readonlyv, formatv, ifacev, namev);
-  CAMLxparam5 (labelv, protocolv, serverv, portv, filenamev);
+  CAMLxparam4 (labelv, protocolv, serverv, filenamev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -1145,11 +1145,8 @@ ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev,
   }
   if (serverv != Val_int (0)) {
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
-    optargs_s.server = guestfs___safe_strdup (g, String_val (Field (serverv, 0)));
-  }
-  if (portv != Val_int (0)) {
-    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
-    optargs_s.port = Int_val (Field (portv, 0));
+    optargs_s.server = ocaml_guestfs_strings_val (g, Field (serverv, 0))
+;
   }
   int r;
 
@@ -1166,7 +1163,7 @@ ocaml_guestfs_add_drive (value gv, value readonlyv, value formatv, value ifacev,
   if (protocolv != Val_int (0))
     free ((char *) optargs_s.protocol);
   if (serverv != Val_int (0))
-    free ((char *) optargs_s.server);
+    guestfs___free_string_list ((char **) optargs_s.server);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "add_drive");
 
@@ -1180,7 +1177,7 @@ value ocaml_guestfs_add_drive_byte (value *argv, int argn);
 value
 ocaml_guestfs_add_drive_byte (value *argv, int argn ATTRIBUTE_UNUSED)
 {
-  return ocaml_guestfs_add_drive (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9]);
+  return ocaml_guestfs_add_drive (argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
 }
 
 /* Automatically generated wrapper for function

@@ -1799,12 +1799,25 @@ PREINIT:
           this_mask = GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
         }
         else if (STREQ (this_arg, "server")) {
-          optargs_s.server = SvPV_nolen (ST (items_i+1));
+          size_t i, len;
+          char **r;
+          AV *av;
+          SV **svp;
+
+          /* XXX More checking required here. */
+          av = (AV *) SvRV (ST (items_i+1));
+
+          /* Note av_len returns index of final element. */
+          len = av_len (av) + 1;
+
+          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
+          for (i = 0; i < len; ++i) {
+            svp = av_fetch (av, i, 0);
+            r[i] = SvPV_nolen (*svp);
+          }
+          r[i] = NULL;
+          optargs_s.server = r;
           this_mask = GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
-        }
-        else if (STREQ (this_arg, "port")) {
-          optargs_s.port = SvIV (ST (items_i+1));
-          this_mask = GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)

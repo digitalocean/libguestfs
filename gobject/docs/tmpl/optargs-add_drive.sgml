@@ -46,22 +46,12 @@ GuestfsAddDrive
 
 </para>
 
-<!-- ##### ARG GuestfsAddDrive:port ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GuestfsAddDrive:protocol ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GuestfsAddDrive:readonly ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GuestfsAddDrive:server ##### -->
 <para>
 
 </para>

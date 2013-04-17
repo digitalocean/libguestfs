@@ -877,12 +877,10 @@ PHP_FUNCTION (guestfs_add_drive)
   int optargs_t_label_size = -1;
   char *optargs_t_protocol = NULL;
   int optargs_t_protocol_size = -1;
-  char *optargs_t_server = NULL;
-  int optargs_t_server_size = -1;
-  long optargs_t_port = -1;
+  zval *z_server;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bssssssl",
-        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_server_size, &optargs_t_port) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa",
+        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &z_server) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -921,13 +919,30 @@ PHP_FUNCTION (guestfs_add_drive)
     optargs_s.protocol = optargs_t_protocol;
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
   }
-  if (optargs_t_server != NULL) {
-    optargs_s.server = optargs_t_server;
+  if (z_server != NULL) {
+    char **r;
+    HashTable *a;
+    int n;
+    HashPosition p;
+    zval **d;
+    size_t c = 0;
+
+    a = Z_ARRVAL_P (z_server);
+    n = zend_hash_num_elements (a);
+    r = safe_emalloc (n + 1, sizeof (char *), 0);
+    for (zend_hash_internal_pointer_reset_ex (a, &p);
+         zend_hash_get_current_data_ex (a, (void **) &d, &p) == SUCCESS;
+         zend_hash_move_forward_ex (a, &p)) {
+      zval t = **d;
+      zval_copy_ctor (&t);
+      convert_to_string (&t);
+      r[c] = Z_STRVAL (t);
+      c++;
+    }
+    r[c] = NULL;
+    optargs_s.server = r;
+
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
-  }
-  if (optargs_t_port != -1) {
-    optargs_s.port = optargs_t_port;
-    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
   }
 
   int r;

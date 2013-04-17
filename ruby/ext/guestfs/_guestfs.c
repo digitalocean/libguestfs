@@ -3603,15 +3603,19 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * 
  * "server"
  * For protocols which require access to a remote
- * server, this is the name of the server.
+ * server, this is a list of servers and port numbers.
+ * Each element is a string in one of the following
+ * formats:
  * 
- * "port"
- * For protocols which require access to a remote
- * server, this is the port number of the service.
+ * server
+ * server:port
+ * tcp:server
+ * tcp:server:port
+ * unix:/path/to/socket
  * 
- * If not specified, this defaults to the standard port
- * for the protocol, eg. 10809 when "protocol" is
- * "nbd".
+ * If the port number is omitted, then the standard
+ * port number for the protocol is used (see
+ * "/etc/services").
  * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
@@ -3673,13 +3677,21 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   }
   v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("server")));
   if (v != Qnil) {
-    optargs_s.server = StringValueCStr (v);
-    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+  Check_Type (v, T_ARRAY);
+  {
+    size_t i, len;
+    char **r;
+
+    len = RARRAY_LEN (v);
+    r = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE sv = rb_ary_entry (v, i);
+      r[i] = StringValueCStr (sv);
+    }
+    r[len] = NULL;
+    optargs_s.server = r;
   }
-  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("port")));
-  if (v != Qnil) {
-    optargs_s.port = NUM2INT (v);
-    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
   }
 
   int r;

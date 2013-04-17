@@ -4206,15 +4206,22 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * See: "NETWORK BLOCK DEVICES" in guestfs(3).
  * 
  * @server
- * For protocols which require access to a remote server, this is the
- * name of the server.
+ * For protocols which require access to a remote server, this is a
+ * list of servers and port numbers. Each element is a string in one of
+ * the following formats:
  * 
- * @port
- * For protocols which require access to a remote server, this is the
- * port number of the service.
+ * <![CDATA[server]]>
  * 
- * If not specified, this defaults to the standard port for the
- * protocol, eg. 10809 when @protocol is "nbd".
+ * <![CDATA[server:port]]>
+ * 
+ * <![CDATA[tcp:server]]>
+ * 
+ * <![CDATA[tcp:server:port]]>
+ * 
+ * <![CDATA[unix:/path/to/socket]]>
+ * 
+ * If the port number is omitted, then the standard port number for the
+ * protocol is used (see "/etc/services").
  * 
  * Returns: true on success, false on error
  */
@@ -4282,22 +4289,6 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, Guestf
     if (protocol != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
       argv.protocol = protocol;
-    }
-    GValue server_v = {0, };
-    g_value_init(&server_v, G_TYPE_STRING);
-    g_object_get_property(G_OBJECT(optargs), "server", &server_v);
-    const gchar *server = g_value_get_string(&server_v);
-    if (server != NULL) {
-      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
-      argv.server = server;
-    }
-    GValue port_v = {0, };
-    g_value_init(&port_v, G_TYPE_INT);
-    g_object_get_property(G_OBJECT(optargs), "port", &port_v);
-    gint32 port = g_value_get_int(&port_v);
-    if (port != -1) {
-      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
-      argv.port = port;
     }
     argvp = &argv;
   }

@@ -2100,13 +2100,16 @@ Java_com_redhat_et_libguestfs_GuestFS__1list_1filesystems  (JNIEnv *env, jobject
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jstring jserver, jint jport)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jobjectArray jserver)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *filename;
   struct guestfs_add_drive_opts_argv optargs_s;
   const struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
+  size_t server_len;
+  char **server;
+  size_t i;
 
   filename = (*env)->GetStringUTFChars (env, jfilename, NULL);
 
@@ -2116,8 +2119,14 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   optargs_s.name = (*env)->GetStringUTFChars (env, jname, NULL);
   optargs_s.label = (*env)->GetStringUTFChars (env, jlabel, NULL);
   optargs_s.protocol = (*env)->GetStringUTFChars (env, jprotocol, NULL);
-  optargs_s.server = (*env)->GetStringUTFChars (env, jserver, NULL);
-  optargs_s.port = jport;
+  server_len = (*env)->GetArrayLength (env, jserver);
+  server = guestfs___safe_malloc (g, sizeof (char *) * (server_len+1));
+  for (i = 0; i < server_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jserver, i);
+    server[i] = (char *) (*env)->GetStringUTFChars (env, o, NULL);
+  }
+  server[server_len] = NULL;
+  optargs_s.server = server;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -2128,7 +2137,11 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   (*env)->ReleaseStringUTFChars (env, jname, optargs_s.name);
   (*env)->ReleaseStringUTFChars (env, jlabel, optargs_s.label);
   (*env)->ReleaseStringUTFChars (env, jprotocol, optargs_s.protocol);
-  (*env)->ReleaseStringUTFChars (env, jserver, optargs_s.server);
+  for (i = 0; i < server_len; ++i) {
+    jobject o = (*env)->GetObjectArrayElement (env, jserver, i);
+    (*env)->ReleaseStringUTFChars (env, o, optargs_s.server[i]);
+  }
+  free (server);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

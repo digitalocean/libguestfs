@@ -783,10 +783,8 @@
 <ANCHOR id="GuestfsAddDrive--iface" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--iface">
 <ANCHOR id="GuestfsAddDrive--label" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--label">
 <ANCHOR id="GuestfsAddDrive--name" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--name">
-<ANCHOR id="GuestfsAddDrive--port" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--port">
 <ANCHOR id="GuestfsAddDrive--protocol" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--protocol">
 <ANCHOR id="GuestfsAddDrive--readonly" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--readonly">
-<ANCHOR id="GuestfsAddDrive--server" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--server">
 <ANCHOR id="GuestfsAddDomain" href="guestfs/GuestfsAddDomain.html">
 <ANCHOR id="GuestfsAddDomain.synopsis" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.synopsis">
 <ANCHOR id="GuestfsAddDomain.object-hierarchy" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.object-hierarchy">
