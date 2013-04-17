@@ -1,0 +1,2 @@
+# Clean up after conffile move to different package in 1:1.14.8-3
+rm_conffile /etc/bash_completion.d/guestfish 1:1.20.6-2~
