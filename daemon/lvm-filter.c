@@ -37,7 +37,13 @@ GUESTFSD_EXT_CMD(str_rm, rm);
 
 /* This runs during daemon start up and creates a complete copy of
  * /etc/lvm so that we can modify it as we desire.  We set
- * LVM_SYSTEM_DIR to point to the copy.
+ * LVM_SYSTEM_DIR to point to the copy.  Note that the final directory
+ * layout is:
+ *   /tmp/lvmXXXXXX                 (lvm_system_dir set to this)
+ *   /tmp/lvmXXXXXX/lvm             ($LVM_SYSTEM_DIR set to this)
+ *   /tmp/lvmXXXXXX/lvm/lvm.conf    (configuration file)
+ *   /tmp/lvmXXXXXX/lvm/cache
+ *   etc.
  */
 static char lvm_system_dir[] = "/tmp/lvmXXXXXX";
 
@@ -47,7 +53,7 @@ void
 copy_lvm (void)
 {
   struct stat statbuf;
-  char cmd[64];
+  char cmd[64], env[64];
   int r;
 
   /* If /etc/lvm directory doesn't exist (or isn't a directory) assume
@@ -68,8 +74,8 @@ copy_lvm (void)
     exit (EXIT_FAILURE);
   }
 
-  /* Hopefully no dotfiles in there ... XXX */
-  snprintf (cmd, sizeof cmd, "%s -a /etc/lvm/* %s", str_cp, lvm_system_dir);
+  /* Copy the entire directory */
+  snprintf (cmd, sizeof cmd, "%s -a /etc/lvm/ %s", str_cp, lvm_system_dir);
   r = system (cmd);
   if (r == -1) {
     perror (cmd);
@@ -85,7 +91,8 @@ copy_lvm (void)
   }
 
   /* Set environment variable so we use the copy. */
-  setenv ("LVM_SYSTEM_DIR", lvm_system_dir, 1);
+  snprintf (env, sizeof env, "%s/lvm", lvm_system_dir);
+  setenv ("LVM_SYSTEM_DIR", env, 1);
 
   /* Set a handler to remove the temporary directory at exit. */
   atexit (rm_lvm_system_dir);
@@ -129,10 +136,11 @@ static int
 set_filter (const char *filter)
 {
   char lvm_conf[64];
-  snprintf (lvm_conf, sizeof lvm_conf, "%s/lvm.conf", lvm_system_dir);
+  snprintf (lvm_conf, sizeof lvm_conf, "%s/lvm/lvm.conf", lvm_system_dir);
 
   char lvm_conf_new[64];
-  snprintf (lvm_conf_new, sizeof lvm_conf, "%s/lvm.conf.new", lvm_system_dir);
+  snprintf (lvm_conf_new, sizeof lvm_conf, "%s/lvm/lvm.conf.new",
+            lvm_system_dir);
 
   FILE *ifp = fopen (lvm_conf, "r");
   if (ifp == NULL) {
@@ -223,7 +231,7 @@ static int
 rescan (void)
 {
   char lvm_cache[64];
-  snprintf (lvm_cache, sizeof lvm_cache, "%s/cache/.cache", lvm_system_dir);
+  snprintf (lvm_cache, sizeof lvm_cache, "%s/lvm/cache/.cache", lvm_system_dir);
 
   unlink (lvm_cache);
 

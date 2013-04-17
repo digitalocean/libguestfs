@@ -1,3 +1,50 @@
+2013-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: lvm: Fix various paths relative to new lvm_system_dir.
+	This fixes commit 9fd41abd40c3ffc10985e862dc34c868360a1b22.
+
+	tests: Don't construct the guests in parallel.
+	In automake 1.13, check_DATA is now built in parallel, resulting in it
+	trying to build 4 or 5 guests in parallel.
+
+2013-01-18  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix packagelist for current Debian-based systems
+
+	inspector: Fix tests for out-of-tree builds
+
+	erlang: fix bindtests for out-of-tree build
+
+2013-01-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Add libcap to the appliance (thanks Skippy VonDrake).
+
+2013-01-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	automake: Force serial-tests.
+	automake 1.13 started to use stupid parallel tests by default,
+	breaking everything.
+
+	FAQ: Document "Could not allocate dynamic translator buffer" and how to fix it.
+
+2013-01-17  Matthew Booth  <mbooth@redhat.com>
+
+	gobject: Add pkg-config for gobject bindings
+
+2013-01-17  Olaf Hering  <olaf@aepfle.de>
+
+	daemon: copy entire lvm directory
+	cp will fail if /etc/lvm is an empty directory. Copy the entire
+	directory and adjust environment variable.
+
+
+	RWMJ:
+	 - Fixed a couple of whitespace issues.
+
+2013-01-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.3.
+
 2013-01-16  Richard W.M. Jones  <rjones@redhat.com>
 
 	ruby: Use updated package names, but allow fallback to the old names (RHBZ#894545).

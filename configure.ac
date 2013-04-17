@@ -20,11 +20,11 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [3])
+m4_define([libguestfs_release], [4])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign serial-tests])
 
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
@@ -1440,6 +1440,7 @@ AC_CONFIG_FILES([Makefile
                  generator/Makefile
                  gnulib/lib/Makefile
                  gnulib/tests/Makefile
+                 gobject/libguestfs-gobject-1.0.pc
                  gobject/Makefile
                  gobject/docs/Makefile
                  gobject/docs/guestfs-docs.sgml

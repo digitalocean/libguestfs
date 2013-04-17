@@ -108,8 +108,8 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(libguestfs_gobject_1_0_la_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/Makefile.inc $(top_srcdir)/build-aux/depcomp \
-	$(top_srcdir)/subdir-rules.mk
+	$(srcdir)/Makefile.inc $(srcdir)/libguestfs-gobject-1.0.pc.in \
+	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/subdir-rules.mk
 @HAVE_INTROSPECTION_TRUE@am__append_1 = Guestfs-1.0.gir
 @ENABLE_APPLIANCE_TRUE@@HAVE_INTROSPECTION_TRUE@am__append_2 = run-live-tests
 @HAVE_INTROSPECTION_TRUE@am__append_3 = $(gir_DATA) $(typelib_DATA)
@@ -234,7 +234,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = libguestfs-gobject-1.0.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -264,7 +264,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(girdir)" \
-	"$(DESTDIR)$(typelibdir)" \
+	"$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(typelibdir)" \
 	"$(DESTDIR)$(libguestfs_gobject_1_0_ladir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libguestfs_gobject_1_0_la_DEPENDENCIES =
@@ -390,7 +390,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-DATA = $(gir_DATA) $(typelib_DATA)
+DATA = $(gir_DATA) $(pkgconfig_DATA) $(typelib_DATA)
 HEADERS = $(libguestfs_gobject_1_0_la_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
@@ -1640,6 +1640,8 @@ libguestfs_gobject_1_0_la_CFLAGS = -I$(top_srcdir)/src -I$(srcdir)/include \
 libguestfs_gobject_1_0_la_LIBS = $(GOBJECT_LIBS)
 libguestfs_gobject_1_0_la_LDFLAGS = $(LDFLAGS) -L$(top_builddir)/src
 libguestfs_gobject_1_0_la_LIBADD = -lguestfs
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libguestfs-gobject-1.0.pc
 INTROSPECTION_GIRS = $(am__append_1)
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
@@ -1693,6 +1695,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+libguestfs-gobject-1.0.pc: $(top_builddir)/config.status $(srcdir)/libguestfs-gobject-1.0.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
@@ -2288,6 +2292,27 @@ uninstall-girDATA:
 	@list='$(gir_DATA)'; test -n "$(girdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(girdir)'; $(am__uninstall_files_from_dir)
+install-pkgconfigDATA: $(pkgconfig_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(pkgconfig_DATA)'; test -n "$(pkgconfigdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgconfigdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgconfigdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgconfigdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgconfigdir)" || exit $$?; \
+	done
+
+uninstall-pkgconfigDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkgconfig_DATA)'; test -n "$(pkgconfigdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pkgconfigdir)'; $(am__uninstall_files_from_dir)
 install-typelibDATA: $(typelib_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(typelib_DATA)'; test -n "$(typelibdir)" || list=; \
@@ -2612,7 +2637,7 @@ check: $(BUILT_SOURCES)
 all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(girdir)" "$(DESTDIR)$(typelibdir)" "$(DESTDIR)$(libguestfs_gobject_1_0_ladir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(girdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(typelibdir)" "$(DESTDIR)$(libguestfs_gobject_1_0_ladir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -2672,7 +2697,8 @@ info: info-recursive
 info-am:
 
 install-data-am: install-girDATA \
-	install-libguestfs_gobject_1_0_laHEADERS install-typelibDATA
+	install-libguestfs_gobject_1_0_laHEADERS install-pkgconfigDATA \
+	install-typelibDATA
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 install-dvi: install-dvi-recursive
@@ -2721,7 +2747,7 @@ ps-am:
 
 uninstall-am: uninstall-girDATA uninstall-libLTLIBRARIES \
 	uninstall-libguestfs_gobject_1_0_laHEADERS \
-	uninstall-typelibDATA
+	uninstall-pkgconfigDATA uninstall-typelibDATA
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all check \
 	check-am cscopelist-recursive ctags-recursive install \
@@ -2738,15 +2764,15 @@ uninstall-am: uninstall-girDATA uninstall-libLTLIBRARIES \
 	install-exec-am install-girDATA install-html install-html-am \
 	install-info install-info-am install-libLTLIBRARIES \
 	install-libguestfs_gobject_1_0_laHEADERS install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip install-typelibDATA installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
+	install-pdf install-pdf-am install-pkgconfigDATA install-ps \
+	install-ps-am install-strip install-typelibDATA installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am uninstall-girDATA \
 	uninstall-libLTLIBRARIES \
 	uninstall-libguestfs_gobject_1_0_laHEADERS \
-	uninstall-typelibDATA
+	uninstall-pkgconfigDATA uninstall-typelibDATA
 
 
 # Define a force dependency which will always be rebuilt

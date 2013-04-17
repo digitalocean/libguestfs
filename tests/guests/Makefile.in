@@ -1562,6 +1562,11 @@ guest-aux/windows-system: guest-aux/windows-system.reg
 	hivexregedit --merge $@-t --prefix 'HKEY_LOCAL_MACHINE\SYSTEM' $<
 	mv $@-t $@
 
+# Don't construct the guests in parallel.  In automake 1.13, check_DATA
+# was changed so it can now run in parallel, but this causes everything
+# to fall over on machines with limited memory.
+.NOTPARALLEL:
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
