@@ -786,6 +786,55 @@ guestfs_set_cachedir (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC int
+guestfs_internal_set_libvirt_selinux_label (guestfs_h *g,
+                                            const char *label,
+                                            const char *imagelabel)
+{
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_set_libvirt_selinux_label", 34);
+  if (label == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_set_libvirt_selinux_label", "label");
+    return -1;
+  }
+  if (imagelabel == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_set_libvirt_selinux_label", "imagelabel");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s", "internal_set_libvirt_selinux_label");
+    fprintf (trace_fp, " \"%s\"", label);
+    fprintf (trace_fp, " \"%s\"", imagelabel);
+    guestfs___trace_send_line (g);
+  }
+
+  r = guestfs__internal_set_libvirt_selinux_label (g, label, imagelabel);
+
+  if (r != -1) {
+    if (trace_flag) {
+      trace_fp = guestfs___trace_open (g);
+      fprintf (trace_fp, "%s = ", "internal_set_libvirt_selinux_label");
+      fprintf (trace_fp, "%d", r);
+      guestfs___trace_send_line (g);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_set_libvirt_selinux_label", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
 guestfs_aug_init (guestfs_h *g,
                   const char *root,
                   int flags)

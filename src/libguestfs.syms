@@ -315,6 +315,8 @@
         guestfs_internal_parse_mountable;
         guestfs_internal_readlinklist;
         guestfs_internal_rhbz914931;
+        guestfs_internal_set_libvirt_selinux_label;
+        guestfs_internal_set_libvirt_selinux_norelabel_disks;
         guestfs_internal_test;
         guestfs_internal_test_63_optargs;
         guestfs_internal_test_63_optargs_argv;

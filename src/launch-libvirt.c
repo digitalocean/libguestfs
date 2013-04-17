@@ -133,11 +133,12 @@ static int is_custom_qemu (guestfs_h *g);
 static int is_blk (const char *path);
 static int random_chars (char *ret, size_t len);
 static void ignore_errors (void *ignore, virErrorPtr ignore2);
-static char *make_qcow2_overlay (guestfs_h *g, const char *path, const char *format);
-static int make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv);
+static char *make_qcow2_overlay (guestfs_h *g, const char *path, const char *format, const char *selinux_imagelabel);
+static int make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv, const char *selinux_imagelabel);
 static void drive_free_priv (void *);
 static void set_socket_create_context (guestfs_h *g);
 static void clear_socket_create_context (guestfs_h *g);
+static void selinux_warning (guestfs_h *g, const char *func, const char *selinux_op, const char *data);
 
 static int
 launch_libvirt (guestfs_h *g, const char *libvirt_uri)
@@ -234,13 +235,13 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
    * Note that appliance can be NULL if using the old-style appliance.
    */
   if (appliance) {
-    params.appliance_overlay = make_qcow2_overlay (g, appliance, "raw");
+    params.appliance_overlay = make_qcow2_overlay (g, appliance, "raw", NULL);
     if (!params.appliance_overlay)
       goto cleanup;
   }
 
   ITER_DRIVES (g, i, drv) {
-    if (make_qcow2_overlay_for_drive (g, drv) == -1)
+    if (make_qcow2_overlay_for_drive (g, drv, g->virt_selinux_imagelabel) == -1)
       goto cleanup;
   }
 
@@ -527,21 +528,24 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
 
   nodes = xpathObj->nodesetval;
   seen_qemu = seen_kvm = 0;
-  for (i = 0; i < (size_t) nodes->nodeNr; ++i) {
-    CLEANUP_FREE char *type = NULL;
 
-    if (seen_qemu && seen_kvm)
-      break;
+  if (nodes != NULL) {
+    for (i = 0; i < (size_t) nodes->nodeNr; ++i) {
+      CLEANUP_FREE char *type = NULL;
 
-    assert (nodes->nodeTab[i]);
-    assert (nodes->nodeTab[i]->type == XML_ATTRIBUTE_NODE);
-    attr = (xmlAttrPtr) nodes->nodeTab[i];
-    type = (char *) xmlNodeListGetString (doc, attr->children, 1);
+      if (seen_qemu && seen_kvm)
+        break;
 
-    if (STREQ (type, "qemu"))
-      seen_qemu++;
-    else if (STREQ (type, "kvm"))
-      seen_kvm++;
+      assert (nodes->nodeTab[i]);
+      assert (nodes->nodeTab[i]->type == XML_ATTRIBUTE_NODE);
+      attr = (xmlAttrPtr) nodes->nodeTab[i];
+      type = (char *) xmlNodeListGetString (doc, attr->children, 1);
+
+      if (STREQ (type, "qemu"))
+        seen_qemu++;
+      else if (STREQ (type, "kvm"))
+        seen_kvm++;
+    }
   }
 
   /* This was RHBZ#886915: in that case the default libvirt URI
@@ -588,30 +592,27 @@ set_socket_create_context (guestfs_h *g)
   context_t con;
 
   if (getcon (&scon) == -1) {
-    debug (g, "%s: getcon failed: %m", __func__);
+    selinux_warning (g, __func__, "getcon", NULL);
     return;
   }
 
   con = context_new (scon);
   if (!con) {
-    debug (g, "%s: context_new failed: %m", __func__);
+    selinux_warning (g, __func__, "context_new", scon);
     goto out1;
   }
 
   if (context_type_set (con, SOCKET_CONTEXT) == -1) {
-    debug (g, "%s: context_type_set failed: %m", __func__);
+    selinux_warning (g, __func__, "context_type_set", scon);
     goto out2;
   }
-
-#define SETSOCKCREATECON_WARNING_NOTICE "[you can ignore this UNLESS using SELinux + sVirt]"
 
   /* Note that setsockcreatecon sets the per-thread socket creation
    * context (/proc/self/task/<tid>/attr/sockcreate) so this is
    * thread-safe.
    */
   if (setsockcreatecon (context_str (con)) == -1) {
-    debug (g, "%s: setsockcreatecon (%s) failed: %m %s",
-           __func__, context_str (con), SETSOCKCREATECON_WARNING_NOTICE);
+    selinux_warning (g, __func__, "setsockcreatecon", context_str (con));
     goto out2;
   }
 
@@ -625,8 +626,7 @@ static void
 clear_socket_create_context (guestfs_h *g)
 {
   if (setsockcreatecon (NULL) == -1)
-    debug (g, "%s: setsockcreatecon (NULL) failed: %m %s", __func__,
-           SETSOCKCREATECON_WARNING_NOTICE);
+    selinux_warning (g, __func__, "setsockcreatecon", "NULL");
 }
 
 #else /* !HAVE_LIBSELINUX */
@@ -654,6 +654,7 @@ static int construct_libvirt_xml_lifecycle (guestfs_h *g, const struct libvirt_x
 static int construct_libvirt_xml_devices (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_qemu_cmdline (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_disk (guestfs_h *g, xmlTextWriterPtr xo, struct drive *drv, size_t drv_index);
+static int construct_libvirt_xml_disk_source_seclabel (guestfs_h *g, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_appliance (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 
 /* Note this macro is rather specialized: It assumes that any local
@@ -858,6 +859,31 @@ construct_libvirt_xml_seclabel (guestfs_h *g,
                                            BAD_CAST "none"));
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
+  else if (g->virt_selinux_label && g->virt_selinux_imagelabel) {
+    /* Enable sVirt and pass a custom <seclabel/> inherited from the
+     * original libvirt domain (when guestfs_add_domain was called).
+     * https://bugzilla.redhat.com/show_bug.cgi?id=912499#c7
+     */
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "seclabel"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
+                                           BAD_CAST "static"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "model",
+                                           BAD_CAST "selinux"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "relabel",
+                                           BAD_CAST "yes"));
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "label"));
+    XMLERROR (-1, xmlTextWriterWriteString (xo,
+                                            BAD_CAST g->virt_selinux_label));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "imagelabel"));
+    XMLERROR (-1, xmlTextWriterWriteString (xo,
+                                            BAD_CAST g->virt_selinux_imagelabel));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
 
   return 0;
 }
@@ -1013,6 +1039,8 @@ construct_libvirt_xml_disk (guestfs_h *g,
     XMLERROR (-1,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "file",
                                            BAD_CAST drv_priv->path));
+    if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
+      return -1;
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
   else {
@@ -1024,6 +1052,8 @@ construct_libvirt_xml_disk (guestfs_h *g,
     XMLERROR (-1,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "dev",
                                            BAD_CAST drv_priv->path));
+    if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
+      return -1;
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
 
@@ -1104,6 +1134,24 @@ construct_libvirt_xml_disk (guestfs_h *g,
   XMLERROR (-1, xmlTextWriterEndElement (xo));
 
   XMLERROR (-1, xmlTextWriterEndElement (xo));
+
+  return 0;
+}
+
+static int
+construct_libvirt_xml_disk_source_seclabel (guestfs_h *g,
+                                            xmlTextWriterPtr xo)
+{
+  if (g->virt_selinux_norelabel_disks) {
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "seclabel"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "model",
+                                           BAD_CAST "selinux"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "relabel",
+                                           BAD_CAST "no"));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
 
   return 0;
 }
@@ -1308,7 +1356,8 @@ ignore_errors (void *ignore, virErrorPtr ignore2)
 
 /* Create a temporary qcow2 overlay on top of 'path'. */
 static char *
-make_qcow2_overlay (guestfs_h *g, const char *path, const char *format)
+make_qcow2_overlay (guestfs_h *g, const char *path, const char *format,
+                    const char *selinux_imagelabel)
 {
   char *tmpfile = NULL;
   CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
@@ -1339,6 +1388,15 @@ make_qcow2_overlay (guestfs_h *g, const char *path, const char *format)
     goto error;
   }
 
+#if HAVE_LIBSELINUX
+  if (selinux_imagelabel) {
+    debug (g, "setting SELinux label on %s to %s",
+           tmpfile, selinux_imagelabel);
+    if (setfilecon (tmpfile, (security_context_t) selinux_imagelabel) == -1)
+      selinux_warning (g, __func__, "setfilecon", tmpfile);
+  }
+#endif
+
   return tmpfile;               /* caller frees */
 
  error:
@@ -1348,7 +1406,8 @@ make_qcow2_overlay (guestfs_h *g, const char *path, const char *format)
 }
 
 static int
-make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv)
+make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv,
+                              const char *selinux_imagelabel)
 {
   char *path;
   struct drive_libvirt *drv_priv;
@@ -1372,7 +1431,8 @@ make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv)
     drv_priv->format = drv->format ? safe_strdup (g, drv->format) : NULL;
   }
   else {
-    drv_priv->path = make_qcow2_overlay (g, path, drv->format);
+    drv_priv->path = make_qcow2_overlay (g, path, drv->format,
+                                         selinux_imagelabel);
     free (path);
     if (!drv_priv->path)
       return -1;
@@ -1454,6 +1514,15 @@ libvirt_error (guestfs_h *g, const char *fs, ...)
   free (msg);
 }
 
+static void
+selinux_warning (guestfs_h *g, const char *func,
+                 const char *selinux_op, const char *data)
+{
+  debug (g, "%s: %s failed: %s: %m"
+         " [you can ignore this UNLESS using SELinux + sVirt]",
+         func, selinux_op, data ? data : "(none)");
+}
+
 /* This backend assumes virtio-scsi is available. */
 static int
 max_disks_libvirt (guestfs_h *g)
@@ -1480,7 +1549,7 @@ hot_add_drive_libvirt (guestfs_h *g, struct drive *drv, size_t drv_index)
   /* Create overlay for read-only drive.  This works around lack of
    * support for <transient/> disks in libvirt.
    */
-  if (make_qcow2_overlay_for_drive (g, drv) == -1)
+  if (make_qcow2_overlay_for_drive (g, drv, g->virt_selinux_imagelabel) == -1)
     return -1;
 
   /* Create the XML for the new disk. */
@@ -1597,3 +1666,21 @@ struct attach_ops attach_ops_libvirt = {
 };
 
 #endif /* no libvirt or libxml2 at compile time */
+
+int
+guestfs__internal_set_libvirt_selinux_label (guestfs_h *g, const char *label,
+                                             const char *imagelabel)
+{
+  free (g->virt_selinux_label);
+  g->virt_selinux_label = safe_strdup (g, label);
+  free (g->virt_selinux_imagelabel);
+  g->virt_selinux_imagelabel = safe_strdup (g, imagelabel);
+  return 0;
+}
+
+int
+guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, int flag)
+{
+  g->virt_selinux_norelabel_disks = flag;
+  return 0;
+}

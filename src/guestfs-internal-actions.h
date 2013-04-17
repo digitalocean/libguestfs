@@ -155,5 +155,7 @@ extern int guestfs__set_tmpdir (guestfs_h *g, const char *tmpdir);
 extern char *guestfs__get_tmpdir (guestfs_h *g);
 extern int guestfs__set_cachedir (guestfs_h *g, const char *cachedir);
 extern char *guestfs__get_cachedir (guestfs_h *g);
+extern int guestfs__internal_set_libvirt_selinux_label (guestfs_h *g, const char *label, const char *imagelabel);
+extern int guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, int norelabeldisks);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

@@ -1237,6 +1237,42 @@ guestfs_get_cachedir (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g,
+                                                      int norelabeldisks)
+{
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_set_libvirt_selinux_norelabel_disks", 44);
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s", "internal_set_libvirt_selinux_norelabel_disks");
+    fputs (norelabeldisks ? " true" : " false", trace_fp);
+    guestfs___trace_send_line (g);
+  }
+
+  r = guestfs__internal_set_libvirt_selinux_norelabel_disks (g, norelabeldisks);
+
+  if (r != -1) {
+    if (trace_flag) {
+      trace_fp = guestfs___trace_open (g);
+      fprintf (trace_fp, "%s = ", "internal_set_libvirt_selinux_norelabel_disks");
+      fprintf (trace_fp, "%d", r);
+      guestfs___trace_send_line (g);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_set_libvirt_selinux_norelabel_disks", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char *
 guestfs_ll (guestfs_h *g,
             const char *directory)

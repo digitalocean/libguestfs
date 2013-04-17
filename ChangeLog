@@ -1,4 +1,117 @@
+2013-03-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Check calls to xmlXPathEvalExpression for nodesetval == NULL.
+	libxml2 xmlXPathEvalExpression can return an unusual nodeset:
+
+	  $1 = {type = XPATH_NODESET, nodesetval = 0x0, boolval = 0, floatval = 0,
+	    stringval = 0x0, user = 0x0, index = 0, user2 = 0x0, index2 = 0}
+
+	Note that the nodeset is non-NULL, but the nodesetval is NULL.
+
+	Check every call site and fix those that don't deal with this
+	correctly.
+
+2013-03-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	add-domain: Move 'connect_live' function.
+	This is just code motion.
+
+2013-03-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	add-domain: Pass SELinux label from guest to appliance (RHBZ#912499).
+	When adding a domain (ie. guestfs_add_domain), read the SELinux
+	<label/> and <imagelabel/> from the guest and use them for the
+	appliance.  The appliance is statically labelled the same as the
+	guest, so it is able to read its disks.
+
+	However tell libvirt not to try relabelling the disks, to prevent
+	libvirt from disturbing the existing labels on the disks (in
+	particular when the libvirt connection is closed, we don't want
+	libvirt to try to restore some other label on the disks).
+
+	Updated with feedback from Matthew Booth.
+
+2013-02-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Allow the SELinux label to be set on qcow2 overlay files.
+	When a disk is opened readonly, the libvirt attach-method privately
+	creates a qcow2 overlay on top.
+
+	This commit lets that overlay get an SELinux label, and sets it to the
+	imagelabel specified by guestfs_internal_set_libvirt_selinux_label.
+
+	The above only applies to the libvirt attach-method.
+
+2013-02-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	New internal API: internal_set_libvirt_selinux_norelabel_disks.
+	If set, this causes <seclabel model=selinux relabel=no> to be added to
+	the disk element in the libvirt XML.
+
+	It has no effect *except* on the libvirt attach method when SELinux
+	and sVirt is being used.
+
+2013-02-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	New internal API: internal_set_libvirt_selinux_label
+	This internal API sets two SELinux labels in the handle (the process
+	label and the image label -- they are closely related).
+
+	If using the libvirt attach-method with SELinux and sVirt, then this
+	will cause the following XML to be added to the appliance definition:
+
+	<seclabel type=static model=selinux relabel=yes>
+	  <label>[LABEL HERE]</label>
+	  <imagelabel>[IMAGELABEL HERE]</imagelabel>
+	</seclabel>
+
+	It is ignored by other attach-methods.
+
+2013-02-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	add-domain: Refactor domain XML parsing code.
+	This is just code motion.
+
+	test-tool: Give an error if there are extra arguments on the command line.
+
+	launch: libvirt: Refactor SELinux warning code.
+	This is just code motion.
+
+2013-02-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	parallel: Don't access the global handle from multiple threads.
+	libguestfs handles are not thread safe, and it's not safe even to read
+	settings from the handle from multiple threads (eg. guestfs_get_trace).
+	Stop doing this in the parallel library.  This caused fairly
+	reproducible segfaults when you enabled '-x' and/or '-v'.
+
+	This fixes commit 34e77af1bf42a132589901164f29bd992b37589e.
+
+2013-02-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	libutils: Don't include "guestfs-internal.h".
+	This mini-library shouldn't access library-internal stuff.  It should
+	only use the "guestfs-internal-frontend.h" header.
+
+2013-02-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Move 'for_each_disk' function back into libvirt-domain.c.
+	This function is no longer called from anywhere outside the library,
+	or even outside libvirt-domain.c.
+
+	This is just code motion, except for the size_t changes which are
+	required in order to avoid signed overflow optimization error:
+
+	  assuming signed overflow does not occur when simplifying conditional
+	  to constant [-Werror=strict-overflow]
+
 2013-02-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Line up GUESTFS_EVENT_ALL.
+
+	generator: Remove "deprecated macros for internal functions".
+	No need for these since these are internal functions that only code
+	under our control should have been calling.
 
 	Version 1.21.15.
 

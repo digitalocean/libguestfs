@@ -18,11 +18,11 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
     To use the test guests by name, specify the following libvirt URI:
-    test://$(abs_builddir)/tests/guests/guests.xml
+    test://$(abs_builddir)/guests.xml
 
     eg:
-    ./run ./df/virt-df -c test://@abs_builddir@/tests/guests/guests.xml
-    ./run ./align/virt-alignment-scan -c test://@abs_builddir@/tests/guests/guests.xml
+    ./run ./df/virt-df -c test://@abs_builddir@/guests.xml
+    ./run ./align/virt-alignment-scan -c test://@abs_builddir@/guests.xml
 -->
 <node>
 

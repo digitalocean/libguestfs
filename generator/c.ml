@@ -496,7 +496,7 @@ extern GUESTFS_DLL_PUBLIC guestfs_abort_cb guestfs_get_out_of_memory_handler (gu
       pr "#define GUESTFS_EVENT_%-16s 0x%04x\n"
         (String.uppercase name) bitmask
   ) events;
-  pr "#define GUESTFS_EVENT_%-16s 0x%x\n" "ALL" all_events_bitmask;
+  pr "#define GUESTFS_EVENT_%-16s 0x%04x\n" "ALL" all_events_bitmask;
   pr "\n";
 
   pr "\
@@ -725,16 +725,6 @@ extern GUESTFS_DLL_PUBLIC void *guestfs_next_private (guestfs_h *g, const char *
   generate_all_structs internal_structs;
 
 pr "\
-/* Deprecated macros for internal functions. */
-
-";
-
-  List.iter (
-    fun { name = shortname } ->
-      pr "#define LIBGUESTFS_HAVE_%s 1\n" (String.uppercase shortname);
-  ) private_functions_sorted;
-
-pr "\
 
 #endif /* End of GUESTFS_PRIVATE. */
 
@@ -901,7 +891,7 @@ and generate_client_cleanup_structs () =
 #include <stdlib.h>
 
 #include \"guestfs.h\"
-#include \"guestfs-internal.h\"
+#include \"guestfs-internal-frontend.h\"
 
 ";
 

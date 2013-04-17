@@ -322,6 +322,9 @@ struct guestfs_h
     virDomainPtr dom;           /* libvirt domain */
   } virt;
 #endif
+  char *virt_selinux_label;
+  char *virt_selinux_imagelabel;
+  bool virt_selinux_norelabel_disks;
 };
 
 /* Per-filesystem data stored for inspect_os. */
@@ -513,9 +516,6 @@ extern char *guestfs___appliance_command_line (guestfs_h *g, const char *applian
 
 /* launch-appliance.c */
 extern char *guestfs___drive_name (size_t index, char *ret);
-
-/* for-each-disk.c */
-extern int guestfs___for_each_disk (guestfs_h *g, virDomainPtr dom, int (*f) (guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
 
 /* inspect.c */
 extern void guestfs___free_inspect_info (guestfs_h *g);

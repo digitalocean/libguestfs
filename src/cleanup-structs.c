@@ -26,7 +26,7 @@
 #include <stdlib.h>
 
 #include "guestfs.h"
-#include "guestfs-internal.h"
+#include "guestfs-internal-frontend.h"
 
 /* Cleanup functions used by CLEANUP_* macros.  Do not call
  * these functions directly.
