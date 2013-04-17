@@ -1024,7 +1024,7 @@ xdr_guestfs_mount_args (XDR *xdrs, guestfs_mount_args *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
 		 return FALSE;
@@ -1992,7 +1992,7 @@ xdr_guestfs_mount_ro_args (XDR *xdrs, guestfs_mount_ro_args *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
 		 return FALSE;
@@ -2006,7 +2006,7 @@ xdr_guestfs_mount_options_args (XDR *xdrs, guestfs_mount_options_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->options, ~0))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
 		 return FALSE;
@@ -2022,7 +2022,7 @@ xdr_guestfs_mount_vfs_args (XDR *xdrs, guestfs_mount_vfs_args *objp)
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->vfstype, ~0))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
 		 return FALSE;
@@ -4090,7 +4090,7 @@ xdr_guestfs_vfs_type_args (XDR *xdrs, guestfs_vfs_type_args *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -4904,7 +4904,7 @@ xdr_guestfs_vfs_label_args (XDR *xdrs, guestfs_vfs_label_args *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -4924,7 +4924,7 @@ xdr_guestfs_vfs_uuid_args (XDR *xdrs, guestfs_vfs_uuid_args *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	return TRUE;
 }
@@ -5953,7 +5953,7 @@ xdr_guestfs_set_label_args (XDR *xdrs, guestfs_set_label_args *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->device, ~0))
+	 if (!xdr_string (xdrs, &objp->mountable, ~0))
 		 return FALSE;
 	 if (!xdr_string (xdrs, &objp->label, ~0))
 		 return FALSE;

@@ -325,7 +325,7 @@ typedef struct guestfs_int_hivex_value guestfs_int_hivex_value_list<>;
 /* Function arguments and return values. */
 
 struct guestfs_mount_args {
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
@@ -694,20 +694,20 @@ struct guestfs_tgz_out_args {
 };
 
 struct guestfs_mount_ro_args {
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
 struct guestfs_mount_options_args {
   string options<>;
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
 struct guestfs_mount_vfs_args {
   string options<>;
   string vfstype<>;
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
@@ -1455,7 +1455,7 @@ struct guestfs_case_sensitive_path_ret {
 };
 
 struct guestfs_vfs_type_args {
-  string device<>;
+  string mountable<>;
 };
 
 struct guestfs_vfs_type_ret {
@@ -1787,7 +1787,7 @@ struct guestfs_fallocate64_args {
 };
 
 struct guestfs_vfs_label_args {
-  string device<>;
+  string mountable<>;
 };
 
 struct guestfs_vfs_label_ret {
@@ -1795,7 +1795,7 @@ struct guestfs_vfs_label_ret {
 };
 
 struct guestfs_vfs_uuid_args {
-  string device<>;
+  string mountable<>;
 };
 
 struct guestfs_vfs_uuid_ret {
@@ -2173,7 +2173,7 @@ struct guestfs_ntfsclone_in_args {
 };
 
 struct guestfs_set_label_args {
-  string device<>;
+  string mountable<>;
   string label<>;
 };
 

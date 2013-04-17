@@ -2778,14 +2778,14 @@ PREINIT:
       RETVAL
 
 void
-mount (g, device, mountpoint)
+mount (g, mountable, mountpoint)
       guestfs_h *g;
-      char *device;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount (g, device, mountpoint);
+      r = guestfs_mount (g, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -3925,41 +3925,41 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-mount_ro (g, device, mountpoint)
+mount_ro (g, mountable, mountpoint)
       guestfs_h *g;
-      char *device;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount_ro (g, device, mountpoint);
+      r = guestfs_mount_ro (g, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
 void
-mount_options (g, options, device, mountpoint)
+mount_options (g, options, mountable, mountpoint)
       guestfs_h *g;
       char *options;
-      char *device;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount_options (g, options, device, mountpoint);
+      r = guestfs_mount_options (g, options, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
 void
-mount_vfs (g, options, vfstype, device, mountpoint)
+mount_vfs (g, options, vfstype, mountable, mountpoint)
       guestfs_h *g;
       char *options;
       char *vfstype;
-      char *device;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+      r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -5741,13 +5741,13 @@ PREINIT:
       RETVAL
 
 SV *
-vfs_type (g, device)
+vfs_type (g, mountable)
       guestfs_h *g;
-      char *device;
+      char *mountable;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_vfs_type (g, device);
+      r = guestfs_vfs_type (g, mountable);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -6425,13 +6425,13 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 SV *
-vfs_label (g, device)
+vfs_label (g, mountable)
       guestfs_h *g;
-      char *device;
+      char *mountable;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_vfs_label (g, device);
+      r = guestfs_vfs_label (g, mountable);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -6440,13 +6440,13 @@ PREINIT:
       RETVAL
 
 SV *
-vfs_uuid (g, device)
+vfs_uuid (g, mountable)
       guestfs_h *g;
-      char *device;
+      char *mountable;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_vfs_uuid (g, device);
+      r = guestfs_vfs_uuid (g, mountable);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -7615,14 +7615,14 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-set_label (g, device, label)
+set_label (g, mountable, label)
       guestfs_h *g;
-      char *device;
+      char *mountable;
       char *label;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_set_label (g, device, label);
+      r = guestfs_set_label (g, mountable, label);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

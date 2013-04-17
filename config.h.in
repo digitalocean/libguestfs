@@ -93,6 +93,10 @@
 #undef GETTIMEOFDAY_TIMEZONE
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
+   whether the gnulib module areadlinkat shall be considered present. */
+#undef GNULIB_AREADLINKAT
+
+/* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module close-stream shall be considered present. */
 #undef GNULIB_CLOSE_STREAM
 
@@ -326,8 +330,14 @@
 /* Define to 1 when the gnulib module readlink should be tested. */
 #undef GNULIB_TEST_READLINK
 
+/* Define to 1 when the gnulib module readlinkat should be tested. */
+#undef GNULIB_TEST_READLINKAT
+
 /* Define to 1 when the gnulib module realloc-posix should be tested. */
 #undef GNULIB_TEST_REALLOC_POSIX
+
+/* Define to 1 when the gnulib module rmdir should be tested. */
+#undef GNULIB_TEST_RMDIR
 
 /* Define to 1 when the gnulib module select should be tested. */
 #undef GNULIB_TEST_SELECT
@@ -382,6 +392,12 @@
 
 /* Define to 1 when the gnulib module symlinkat should be tested. */
 #undef GNULIB_TEST_SYMLINKAT
+
+/* Define to 1 when the gnulib module unlink should be tested. */
+#undef GNULIB_TEST_UNLINK
+
+/* Define to 1 when the gnulib module unlinkat should be tested. */
+#undef GNULIB_TEST_UNLINKAT
 
 /* Define to 1 when the gnulib module unsetenv should be tested. */
 #undef GNULIB_TEST_UNSETENV
@@ -744,6 +760,9 @@
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
+/* Define to 1 if you have the `getppriv' function. */
+#undef HAVE_GETPPRIV
+
 /* Define to 1 if you have the 'getpwnam_r' function. */
 #undef HAVE_GETPWNAM_R
 
@@ -959,6 +978,9 @@
 
 /* Define to 1 if you have the <printf.h> header file. */
 #undef HAVE_PRINTF_H
+
+/* Define to 1 if you have the <priv.h> header file. */
+#undef HAVE_PRIV_H
 
 /* Define to 1 if you have the `pthread_atfork' function. */
 #undef HAVE_PTHREAD_ATFORK
@@ -1639,6 +1661,9 @@
 /* Define to 1 if you have the 'readlink' function. */
 #undef HAVE_READLINK
 
+/* Define to 1 if you have the 'readlinkat' function. */
+#undef HAVE_READLINKAT
+
 /* Define if the 'realloc' function is POSIX compliant. */
 #undef HAVE_REALLOC_POSIX
 
@@ -1912,6 +1937,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the 'unlinkat' function. */
+#undef HAVE_UNLINKAT
 
 /* Define to 1 if you have the `unsetenv' function. */
 #undef HAVE_UNSETENV
@@ -2230,6 +2258,12 @@
 /* Define to 1 if the type of the st_atim member of a struct stat is struct
    timespec. */
 #undef TYPEOF_STRUCT_STAT_ST_ATIM_IS_STRUCT_TIMESPEC
+
+/* Define to 1 if unlink (dir) cannot possibly succeed. */
+#undef UNLINK_CANNOT_UNLINK_DIR
+
+/* Define to 1 if unlink() on a parent directory may succeed */
+#undef UNLINK_PARENT_BUG
 
 /* Define if the POSIX multithreading library can be used. */
 #undef USE_POSIX_THREADS

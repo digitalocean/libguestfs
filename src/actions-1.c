@@ -876,7 +876,7 @@ guestfs_get_libvirt_requested_credential_prompt (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC int
 guestfs_mount (guestfs_h *g,
-               const char *device,
+               const char *mountable,
                const char *mountpoint)
 {
   struct guestfs_mount_args args;
@@ -891,9 +891,9 @@ guestfs_mount (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "mount", 5);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mount", "device");
+           "mount", "mountable");
     return -1;
   }
   if (mountpoint == NULL) {
@@ -905,7 +905,7 @@ guestfs_mount (guestfs_h *g,
   if (trace_flag) {
     trace_fp = guestfs___trace_open (g);
     fprintf (trace_fp, "%s", "mount");
-    fprintf (trace_fp, " \"%s\"", device);
+    fprintf (trace_fp, " \"%s\"", mountable);
     fprintf (trace_fp, " \"%s\"", mountpoint);
     guestfs___trace_send_line (g);
   }
@@ -917,7 +917,7 @@ guestfs_mount (guestfs_h *g,
     return -1;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.mountpoint = (char *) mountpoint;
   serial = guestfs___send (g, GUESTFS_PROC_MOUNT,
                            progress_hint, 0,
@@ -1965,7 +1965,7 @@ guestfs_tune2fs_l (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC int
 guestfs_mount_ro (guestfs_h *g,
-                  const char *device,
+                  const char *mountable,
                   const char *mountpoint)
 {
   struct guestfs_mount_ro_args args;
@@ -1980,9 +1980,9 @@ guestfs_mount_ro (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "mount_ro", 8);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mount_ro", "device");
+           "mount_ro", "mountable");
     return -1;
   }
   if (mountpoint == NULL) {
@@ -1994,7 +1994,7 @@ guestfs_mount_ro (guestfs_h *g,
   if (trace_flag) {
     trace_fp = guestfs___trace_open (g);
     fprintf (trace_fp, "%s", "mount_ro");
-    fprintf (trace_fp, " \"%s\"", device);
+    fprintf (trace_fp, " \"%s\"", mountable);
     fprintf (trace_fp, " \"%s\"", mountpoint);
     guestfs___trace_send_line (g);
   }
@@ -2006,7 +2006,7 @@ guestfs_mount_ro (guestfs_h *g,
     return -1;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.mountpoint = (char *) mountpoint;
   serial = guestfs___send (g, GUESTFS_PROC_MOUNT_RO,
                            progress_hint, 0,

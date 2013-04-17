@@ -3575,7 +3575,7 @@ volumes.
 =item %fses = $g->list_filesystems ();
 
 This inspection command looks for filesystems on partitions,
-block devices and logical volumes, returning a list of devices
+block devices and logical volumes, returning a list of C<mountables>
 containing filesystems and their type.
 
 The return value is a hash, where the keys are the devices
@@ -3586,6 +3586,9 @@ For example:
  "/dev/sda2" => "ext2"
  "/dev/vg_guest/lv_root" => "ext4"
  "/dev/vg_guest/lv_swap" => "swap"
+
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to C<$g-E<gt>mount>.
 
 The value can have the special value "unknown", meaning the
 content of the device is undetermined or empty.
@@ -4441,13 +4444,14 @@ This loads a kernel module in the appliance.
 The kernel module must have been whitelisted when libguestfs
 was built (see C<appliance/kmod.whitelist.in> in the source).
 
-=item $g->mount ($device, $mountpoint);
+=item $g->mount ($mountable, $mountpoint);
 
 Mount a guest disk at a position in the filesystem.  Block devices
 are named C</dev/sda>, C</dev/sdb> and so on, as they were added to
 the guest.  If those block devices contain partitions, they will have
 the usual names (eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style
-names can be used.
+names can be used, or 'mountable' strings returned by
+C<$g-E<gt>list_filesystems> or C<$g-E<gt>inspect_get_mountpoints>.
 
 The rules are the same as for L<mount(2)>:  A filesystem must
 first be mounted on C</> before others can be mounted.  Other
@@ -4525,7 +4529,7 @@ This command lets you mount C<file> (a filesystem image
 in a file) on a mount point.  It is entirely equivalent to
 the command C<mount -o loop file mountpoint>.
 
-=item $g->mount_options ($options, $device, $mountpoint);
+=item $g->mount_options ($options, $mountable, $mountpoint);
 
 This is the same as the C<$g-E<gt>mount> command, but it
 allows you to set the mount options as for the
@@ -4535,12 +4539,12 @@ If the C<options> parameter is an empty string, then
 no options are passed (all options default to whatever
 the filesystem uses).
 
-=item $g->mount_ro ($device, $mountpoint);
+=item $g->mount_ro ($mountable, $mountpoint);
 
 This is the same as the C<$g-E<gt>mount> command, but it
 mounts the filesystem with the read-only (I<-o ro>) flag.
 
-=item $g->mount_vfs ($options, $vfstype, $device, $mountpoint);
+=item $g->mount_vfs ($options, $vfstype, $mountable, $mountpoint);
 
 This is the same as the C<$g-E<gt>mount> command, but it
 allows you to set both the mount options and the vfstype
@@ -5446,9 +5450,9 @@ L<tune2fs(8)> manpage.
 You can use either C<$g-E<gt>tune2fs_l> or C<$g-E<gt>get_e2uuid>
 to return the existing UUID of a filesystem.
 
-=item $g->set_label ($device, $label);
+=item $g->set_label ($mountable, $label);
 
-Set the filesystem label on C<device> to C<label>.
+Set the filesystem label on C<mountable> to C<label>.
 
 Only some filesystem types support labels, and libguestfs supports
 setting labels on only a subset of these.
@@ -5456,6 +5460,9 @@ setting labels on only a subset of these.
 On ext2/3/4 filesystems, labels are limited to 16 bytes.
 
 On NTFS filesystems, labels are limited to 128 unicode characters.
+
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 
 To read the label on a filesystem, call C<$g-E<gt>vfs_label>.
 
@@ -6297,29 +6304,27 @@ features from later versions into earlier versions,
 making this an unreliable way to test for features.
 Use C<$g-E<gt>available> instead.
 
-=item $label = $g->vfs_label ($device);
+=item $label = $g->vfs_label ($mountable);
 
-This returns the filesystem label of the filesystem on
-C<device>.
+This returns the label of the filesystem on C<mountable>.
 
 If the filesystem is unlabeled, this returns the empty string.
 
 To find a filesystem from the label, use C<$g-E<gt>findfs_label>.
 
-=item $fstype = $g->vfs_type ($device);
+=item $fstype = $g->vfs_type ($mountable);
 
 This command gets the filesystem type corresponding to
-the filesystem on C<device>.
+the filesystem on C<mountable>.
 
 For most filesystems, the result is the name of the Linux
 VFS module which would be used to mount this filesystem
 if you mounted it without specifying the filesystem type.
 For example a string such as C<ext3> or C<ntfs>.
 
-=item $uuid = $g->vfs_uuid ($device);
+=item $uuid = $g->vfs_uuid ($mountable);
 
-This returns the filesystem UUID of the filesystem on
-C<device>.
+This returns the filesystem UUID of the filesystem on C<mountable>.
 
 If the filesystem does not have a UUID, this returns the empty string.
 
@@ -8205,7 +8210,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_arch" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_arch",
     description => "get architecture of inspected operating system",
@@ -8213,7 +8218,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_distro" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_distro",
     description => "get distro of inspected operating system",
@@ -8221,7 +8226,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_drive_mappings" => {
     ret => 'hash',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_drive_mappings",
     description => "get drive letter mappings",
@@ -8229,7 +8234,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_filesystems" => {
     ret => 'string list',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_filesystems",
     description => "get filesystems associated with inspected operating system",
@@ -8237,7 +8242,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_format" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_format",
     description => "get format of inspected operating system",
@@ -8245,7 +8250,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_hostname" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_hostname",
     description => "get hostname of the operating system",
@@ -8253,7 +8258,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_icon" => {
     ret => 'buffer',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     optargs => {
       favicon => [ 'favicon', 'bool', 0 ],
@@ -8265,7 +8270,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_major_version" => {
     ret => 'int',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_major_version",
     description => "get major version of inspected operating system",
@@ -8273,7 +8278,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_minor_version" => {
     ret => 'int',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_minor_version",
     description => "get minor version of inspected operating system",
@@ -8281,7 +8286,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_mountpoints" => {
     ret => 'hash',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_mountpoints",
     description => "get mountpoints of inspected operating system",
@@ -8289,7 +8294,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_package_format" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_package_format",
     description => "get package format used by the operating system",
@@ -8297,7 +8302,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_package_management" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_package_management",
     description => "get package management tool used by the operating system",
@@ -8305,7 +8310,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_product_name" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_product_name",
     description => "get product name of inspected operating system",
@@ -8313,7 +8318,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_product_variant" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_product_variant",
     description => "get product variant of inspected operating system",
@@ -8328,7 +8333,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_type" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_type",
     description => "get type of inspected operating system",
@@ -8336,7 +8341,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_windows_current_control_set" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_windows_current_control_set",
     description => "get Windows CurrentControlSet of inspected operating system",
@@ -8344,7 +8349,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_windows_systemroot" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_windows_systemroot",
     description => "get Windows systemroot of inspected operating system",
@@ -8352,7 +8357,7 @@ use vars qw(%guestfs_introspection);
   "inspect_is_live" => {
     ret => 'bool',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_is_live",
     description => "get live flag for install disk",
@@ -8360,7 +8365,7 @@ use vars qw(%guestfs_introspection);
   "inspect_is_multipart" => {
     ret => 'bool',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_is_multipart",
     description => "get multipart flag for install disk",
@@ -8368,7 +8373,7 @@ use vars qw(%guestfs_introspection);
   "inspect_is_netinst" => {
     ret => 'bool',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_is_netinst",
     description => "get netinst (network installer) flag for install disk",
@@ -8376,7 +8381,7 @@ use vars qw(%guestfs_introspection);
   "inspect_list_applications" => {
     ret => 'struct application list',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_list_applications",
     description => "get list of applications installed in the operating system",
@@ -8384,7 +8389,7 @@ use vars qw(%guestfs_introspection);
   "inspect_list_applications2" => {
     ret => 'struct application2 list',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_list_applications2",
     description => "get list of applications installed in the operating system",
@@ -9640,7 +9645,7 @@ use vars qw(%guestfs_introspection);
   "mount" => {
     ret => 'void',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
       [ 'mountpoint', 'string', 1 ],
     ],
     name => "mount",
@@ -9692,7 +9697,7 @@ use vars qw(%guestfs_introspection);
     ret => 'void',
     args => [
       [ 'options', 'string', 0 ],
-      [ 'device', 'string(device)', 1 ],
+      [ 'mountable', 'string(mountable)', 1 ],
       [ 'mountpoint', 'string', 2 ],
     ],
     name => "mount_options",
@@ -9701,7 +9706,7 @@ use vars qw(%guestfs_introspection);
   "mount_ro" => {
     ret => 'void',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
       [ 'mountpoint', 'string', 1 ],
     ],
     name => "mount_ro",
@@ -9712,7 +9717,7 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'options', 'string', 0 ],
       [ 'vfstype', 'string', 1 ],
-      [ 'device', 'string(device)', 2 ],
+      [ 'mountable', 'string(mountable)', 2 ],
       [ 'mountpoint', 'string', 3 ],
     ],
     name => "mount_vfs",
@@ -10368,7 +10373,7 @@ use vars qw(%guestfs_introspection);
   "set_label" => {
     ret => 'void',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
       [ 'label', 'string', 1 ],
     ],
     name => "set_label",
@@ -10908,7 +10913,7 @@ use vars qw(%guestfs_introspection);
   "vfs_label" => {
     ret => 'string',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
     ],
     name => "vfs_label",
     description => "get the filesystem label",
@@ -10916,7 +10921,7 @@ use vars qw(%guestfs_introspection);
   "vfs_type" => {
     ret => 'string',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
     ],
     name => "vfs_type",
     description => "get the Linux VFS type corresponding to a mounted device",
@@ -10924,7 +10929,7 @@ use vars qw(%guestfs_introspection);
   "vfs_uuid" => {
     ret => 'string',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
     ],
     name => "vfs_uuid",
     description => "get the filesystem UUID",

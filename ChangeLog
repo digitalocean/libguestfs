@@ -1,4 +1,138 @@
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a regression test for stack overflow in events (RHBZ#909624).
+	Note this is a check-slow test since generating 1,000,000 progress
+	events take a few minutes.
+
+	proto: Fix stack overflow when there are many progress events (RHBZ#909624).
+	Thanks: Eric Blake.
+
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Allow rate to be specified in 'debug progress'.
+	There are now two forms of the 'debug progress' command:
+
+	(1) debug progress <n> (the original form) generates ordinary
+	rate-limited progress messages for <n> seconds.
+
+	(2) debug progress <n> <rate> generates progress messages every <rate>
+	microseconds for <n> seconds.
+
+	The second form omit the usual rate-limiting, and so wouldn't
+	be generated like this from an ordinary API call.  However this
+	is useful for testing events (see RHBZ#909624).
+
+2013-02-11  Matthew Booth  <mbooth@redhat.com>
+
+	mountable: Implement Mountable_or_Path
+	A Mountable_or_Path argument is passed as a mountable_t. A new type is
+	added to mountable_t to handle already mounted paths.
+
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Add format attribute for GCC 4.8 in two places.
+
+	daemon: Force disable -Wsuggest-attribute=format warning around asprintf_nowarn, for GCC 4.8.
+
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Define GUESTFS_GCC_VERSION in the internal header.
+	Note that you have to use this as follows:
+
+	#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= x0y0z /* gcc >= x.y.z */
+
+	since GUESTFS_GCC_VERSION is not defined unless it's GCC.
+
+2013-02-11  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Create Mountable_or_Path, initially identical to Dev_or_Path
+
+2013-02-11  Matthew Booth  <mbooth@redhat.com>
+
+	mountable: Implement Mountable support for all apis which take it
+	A Mountable is passed from the library to the daemon as a string. The daemon
+	stub parses it into a mountable_t, which it passes to the implementation.
+
+	Update all implementations which now take a mountable_t.
+
+2013-02-11  Matthew Booth  <mbooth@redhat.com>
+
+	generator: Convert relevant arguments from Device to Mountable
+	This change updates the api style of all apis which should take Mountable
+	descriptions rather than block devices. It also updates the documentation
+	accordingly, but doesn't implement any functional changes.
+
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	test-tool: Document how to change SELinux settings.
+
+	test-tool: Document how to run with alternate libvirt.
+
+	test-tool: exec qemu in the wrapper script.
+	This ensures that libvirt can control qemu directly, eg. being able to
+	send it signals.
+
+	test-tool: On i386, upstream qemu program is now called 'qemu-system-i386'.
+	For a while, the upstream qemu i386 emulator has been called
+	'qemu-system-i386' (instead of just 'qemu').  Fix test-tool so it
+	calls the right program.
+
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	test-tool: Don't call guestfs_set_qemu before guestfs handle is initialized (RHBZ#909836).
+	Because of evolution of the code, if the user used the --qemu or
+	--qemudir options, libguestfs-test-tool would segfault because
+	guestfs_set_qemu was being called before the guestfs handle was
+	opened.
+
+	Change the code so this doesn't happen, and also remove the global 'g'
+	variable to make the code a bit more robust.
+
+	Bug found by Amit Shah.
+
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: link: Remove use of PATH_MAX.
+	Replace readlink calls with gnulib areadlink function.
+
+	daemon: xattr: Remove use of PATH_MAX.
+
+	daemon: realpath: Remove use of both PATH_MAX and NAME_MAX.
+
+	daemon: initrd: Remove use of PATH_MAX and other cleanups.
+	- Move variables to the top.
+	- Rearrange comments to make more sense.
+
+	daemon: find0: Remove use of PATH_MAX.
+
+2013-02-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	getline: Rename &n parameter as &allocsize.
+	The second parameter passed into getline(3) is the size of the
+	allocated buffer, *NOT* the length of the returned line.  This can be
+	confusing, so rename this parameter as 'allocsize' consistently
+	throughout the code.
+
+	This is just code motion.
+
 2013-02-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Improve reasons for using libguestfs-make-fixed-appliance.
+	Thanks: Richard Harman.
+
+2013-02-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Make it clear that setsockcreatecon debug message is just a warning.
+	This was disturbing to some users, but other users saw the warning
+	when it was really something they should pay attention to.  Make it
+	clear that it's a warning, unless people are really using SELinux +
+	sVirt.
+
+	Thanks: Richard Harman.
+
+2013-02-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.9.
 
 	rescue: Count the mountable filesystems when displaying the 'suggest' message.
 

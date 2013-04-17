@@ -24,6 +24,7 @@
 #define GUESTFSD_ACTIONS_H
 
 #include "guestfs_protocol.h"
+#include "daemon.h"
 
 #define GUESTFS_UMOUNT_FORCE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_UMOUNT_LAZYUNMOUNT_BITMASK (UINT64_C(1)<<1)
@@ -169,7 +170,7 @@
 #define GUESTFS_MKE2FS_SPARSESUPER_BITMASK (UINT64_C(1)<<36)
 #define GUESTFS_MKE2FS_UNINITBG_BITMASK (UINT64_C(1)<<37)
 #define GUESTFS_MKTEMP_SUFFIX_BITMASK (UINT64_C(1)<<0)
-extern int do_mount (const char *device, const char *mountpoint);
+extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
 extern char *do_ll (const char *directory);
@@ -237,9 +238,9 @@ extern int do_tar_in (const char *directory, const char *compress);
 extern int do_tar_out (const char *directory, const char *compress, int numericowner, char *const *excludes);
 extern int do_tgz_in (const char *directory);
 extern int do_tgz_out (const char *directory);
-extern int do_mount_ro (const char *device, const char *mountpoint);
-extern int do_mount_options (const char *options, const char *device, const char *mountpoint);
-extern int do_mount_vfs (const char *options, const char *vfstype, const char *device, const char *mountpoint);
+extern int do_mount_ro (const mountable_t *mountable, const char *mountpoint);
+extern int do_mount_options (const char *options, const mountable_t *mountable, const char *mountpoint);
+extern int do_mount_vfs (const char *options, const char *vfstype, const mountable_t *mountable, const char *mountpoint);
 extern char *do_debug (const char *subcmd, char *const *extraargs);
 extern int do_lvremove (const char *device);
 extern int do_vgremove (const char *vgname);
@@ -360,7 +361,7 @@ extern int do_modprobe (const char *modulename);
 extern char *do_echo_daemon (char *const *words);
 extern int do_find0 (const char *directory);
 extern char *do_case_sensitive_path (const char *path);
-extern char *do_vfs_type (const char *device);
+extern char *do_vfs_type (const mountable_t *mountable);
 extern int do_truncate (const char *path);
 extern int do_truncate_size (const char *path, int64_t size);
 extern int do_utimens (const char *path, int64_t atsecs, int64_t atnsecs, int64_t mtsecs, int64_t mtnsecs);
@@ -414,8 +415,8 @@ extern int do_pvresize_size (const char *device, int64_t size);
 extern int do_ntfsresize_size (const char *device, int64_t size);
 extern char **do_available_all_groups (void);
 extern int do_fallocate64 (const char *path, int64_t len);
-extern char *do_vfs_label (const char *device);
-extern char *do_vfs_uuid (const char *device);
+extern char *do_vfs_label (const mountable_t *mountable);
+extern char *do_vfs_uuid (const mountable_t *mountable);
 extern int do_lvm_set_filter (char *const *devices);
 extern int do_lvm_clear_filter (void);
 extern int do_luks_open (const char *device, const char *key, const char *mapname);
@@ -471,7 +472,7 @@ extern int do_wipefs (const char *device);
 extern int do_ntfsfix (const char *device, int clearbadsectors);
 extern int do_ntfsclone_out (const char *device, int metadataonly, int rescue, int ignorefscheck, int preservetimestamps, int force);
 extern int do_ntfsclone_in (const char *device);
-extern int do_set_label (const char *device, const char *label);
+extern int do_set_label (const mountable_t *mountable, const char *label);
 extern int do_zero_free_space (const char *directory);
 extern int do_lvcreate_free (const char *logvol, const char *volgroup, int percent);
 extern guestfs_int_isoinfo *do_isoinfo_device (const char *device);

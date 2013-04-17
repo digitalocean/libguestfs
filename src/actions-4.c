@@ -1379,7 +1379,7 @@ guestfs_tgz_out (guestfs_h *g,
 GUESTFS_DLL_PUBLIC int
 guestfs_mount_options (guestfs_h *g,
                        const char *options,
-                       const char *device,
+                       const char *mountable,
                        const char *mountpoint)
 {
   struct guestfs_mount_options_args args;
@@ -1399,9 +1399,9 @@ guestfs_mount_options (guestfs_h *g,
            "mount_options", "options");
     return -1;
   }
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mount_options", "device");
+           "mount_options", "mountable");
     return -1;
   }
   if (mountpoint == NULL) {
@@ -1414,7 +1414,7 @@ guestfs_mount_options (guestfs_h *g,
     trace_fp = guestfs___trace_open (g);
     fprintf (trace_fp, "%s", "mount_options");
     fprintf (trace_fp, " \"%s\"", options);
-    fprintf (trace_fp, " \"%s\"", device);
+    fprintf (trace_fp, " \"%s\"", mountable);
     fprintf (trace_fp, " \"%s\"", mountpoint);
     guestfs___trace_send_line (g);
   }
@@ -1427,7 +1427,7 @@ guestfs_mount_options (guestfs_h *g,
   }
 
   args.options = (char *) options;
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.mountpoint = (char *) mountpoint;
   serial = guestfs___send (g, GUESTFS_PROC_MOUNT_OPTIONS,
                            progress_hint, 0,

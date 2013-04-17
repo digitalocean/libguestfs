@@ -3444,7 +3444,8 @@ ruby_guestfs_get_network (VALUE gv)
  *
  * This inspection command looks for filesystems on
  * partitions, block devices and logical volumes, returning
- * a list of devices containing filesystems and their type.
+ * a list of "mountables" containing filesystems and their
+ * type.
  * 
  * The return value is a hash, where the keys are the
  * devices containing filesystems, and the values are the
@@ -3454,6 +3455,10 @@ ruby_guestfs_get_network (VALUE gv)
  * "/dev/sda2" => "ext2"
  * "/dev/vg_guest/lv_root" => "ext4"
  * "/dev/vg_guest/lv_swap" => "swap"
+ * 
+ * The key is not necessarily a block device. It may also
+ * be an opaque 'mountable' string which can be passed to
+ * "g.mount".
  * 
  * The value can have the special value "unknown", meaning
  * the content of the device is undetermined or empty.
@@ -6526,7 +6531,7 @@ ruby_guestfs_get_cachedir (VALUE gv)
 
 /*
  * call-seq:
- *   g.mount(device, mountpoint) -> nil
+ *   g.mount(mountable, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
  *
@@ -6535,7 +6540,8 @@ ruby_guestfs_get_cachedir (VALUE gv)
  * on, as they were added to the guest. If those block
  * devices contain partitions, they will have the usual
  * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
- * names can be used.
+ * names can be used, or 'mountable' strings returned by
+ * "g.list_filesystems" or "g.inspect_get_mountpoints".
  * 
  * The rules are the same as for mount(2): A filesystem
  * must first be mounted on "/" before others can be
@@ -6558,19 +6564,19 @@ ruby_guestfs_get_cachedir (VALUE gv)
  * +guestfs_mount+[http://libguestfs.org/guestfs.3.html#guestfs_mount]).
  */
 static VALUE
-ruby_guestfs_mount (VALUE gv, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount (VALUE gv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -9454,7 +9460,7 @@ ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
 
 /*
  * call-seq:
- *   g.mount_ro(device, mountpoint) -> nil
+ *   g.mount_ro(mountable, mountpoint) -> nil
  *
  * mount a guest disk, read-only
  *
@@ -9466,19 +9472,19 @@ ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  * +guestfs_mount_ro+[http://libguestfs.org/guestfs.3.html#guestfs_mount_ro]).
  */
 static VALUE
-ruby_guestfs_mount_ro (VALUE gv, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount_ro (VALUE gv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_ro");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -9487,7 +9493,7 @@ ruby_guestfs_mount_ro (VALUE gv, VALUE devicev, VALUE mountpointv)
 
 /*
  * call-seq:
- *   g.mount_options(options, device, mountpoint) -> nil
+ *   g.mount_options(options, mountable, mountpoint) -> nil
  *
  * mount a guest disk with mount options
  *
@@ -9504,7 +9510,7 @@ ruby_guestfs_mount_ro (VALUE gv, VALUE devicev, VALUE mountpointv)
  * +guestfs_mount_options+[http://libguestfs.org/guestfs.3.html#guestfs_mount_options]).
  */
 static VALUE
-ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9512,12 +9518,12 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mount
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_options");
 
   const char *options = StringValueCStr (optionsv);
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -9526,7 +9532,7 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mount
 
 /*
  * call-seq:
- *   g.mount_vfs(options, vfstype, device, mountpoint) -> nil
+ *   g.mount_vfs(options, vfstype, mountable, mountpoint) -> nil
  *
  * mount a guest disk with mount options and vfstype
  *
@@ -9539,7 +9545,7 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mount
  * +guestfs_mount_vfs+[http://libguestfs.org/guestfs.3.html#guestfs_mount_vfs]).
  */
 static VALUE
-ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9548,12 +9554,12 @@ ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE devicev,
 
   const char *options = StringValueCStr (optionsv);
   const char *vfstype = StringValueCStr (vfstypev);
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -14667,12 +14673,12 @@ ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.vfs_type(device) -> string
+ *   g.vfs_type(mountable) -> string
  *
  * get the Linux VFS type corresponding to a mounted device
  *
  * This command gets the filesystem type corresponding to
- * the filesystem on "device".
+ * the filesystem on "mountable".
  * 
  * For most filesystems, the result is the name of the
  * Linux VFS module which would be used to mount this
@@ -14685,18 +14691,18 @@ ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
  * +guestfs_vfs_type+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_type]).
  */
 static VALUE
-ruby_guestfs_vfs_type (VALUE gv, VALUE devicev)
+ruby_guestfs_vfs_type (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "vfs_type");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
 
   char *r;
 
-  r = guestfs_vfs_type (g, device);
+  r = guestfs_vfs_type (g, mountable);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -16716,12 +16722,11 @@ ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
 
 /*
  * call-seq:
- *   g.vfs_label(device) -> string
+ *   g.vfs_label(mountable) -> string
  *
  * get the filesystem label
  *
- * This returns the filesystem label of the filesystem on
- * "device".
+ * This returns the label of the filesystem on "mountable".
  * 
  * If the filesystem is unlabeled, this returns the empty
  * string.
@@ -16734,18 +16739,18 @@ ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
  * +guestfs_vfs_label+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_label]).
  */
 static VALUE
-ruby_guestfs_vfs_label (VALUE gv, VALUE devicev)
+ruby_guestfs_vfs_label (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "vfs_label");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
 
   char *r;
 
-  r = guestfs_vfs_label (g, device);
+  r = guestfs_vfs_label (g, mountable);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -16756,12 +16761,12 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE devicev)
 
 /*
  * call-seq:
- *   g.vfs_uuid(device) -> string
+ *   g.vfs_uuid(mountable) -> string
  *
  * get the filesystem UUID
  *
  * This returns the filesystem UUID of the filesystem on
- * "device".
+ * "mountable".
  * 
  * If the filesystem does not have a UUID, this returns the
  * empty string.
@@ -16773,18 +16778,18 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE devicev)
  * +guestfs_vfs_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_uuid]).
  */
 static VALUE
-ruby_guestfs_vfs_uuid (VALUE gv, VALUE devicev)
+ruby_guestfs_vfs_uuid (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "vfs_uuid");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
 
   char *r;
 
-  r = guestfs_vfs_uuid (g, device);
+  r = guestfs_vfs_uuid (g, mountable);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -19553,11 +19558,11 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
 
 /*
  * call-seq:
- *   g.set_label(device, label) -> nil
+ *   g.set_label(mountable, label) -> nil
  *
  * set filesystem label
  *
- * Set the filesystem label on "device" to "label".
+ * Set the filesystem label on "mountable" to "label".
  * 
  * Only some filesystem types support labels, and
  * libguestfs supports setting labels on only a subset of
@@ -19568,6 +19573,9 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * On NTFS filesystems, labels are limited to 128 unicode
  * characters.
  * 
+ * Setting the label on a btrfs subvolume will set the
+ * label on its parent filesystem.
+ * 
  * To read the label on a filesystem, call "g.vfs_label".
  *
  *
@@ -19575,19 +19583,19 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * +guestfs_set_label+[http://libguestfs.org/guestfs.3.html#guestfs_set_label]).
  */
 static VALUE
-ruby_guestfs_set_label (VALUE gv, VALUE devicev, VALUE labelv)
+ruby_guestfs_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "set_label");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *label = StringValueCStr (labelv);
 
   int r;
 
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 

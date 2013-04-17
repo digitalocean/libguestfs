@@ -5878,18 +5878,18 @@ py_guestfs_mount (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_mount",
-                         &py_g, &device, &mountpoint))
+                         &py_g, &mountable, &mountpoint))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -8361,18 +8361,18 @@ py_guestfs_mount_ro (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_mount_ro",
-                         &py_g, &device, &mountpoint))
+                         &py_g, &mountable, &mountpoint))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -8398,18 +8398,18 @@ py_guestfs_mount_options (PyObject *self, PyObject *args)
   PyObject *py_r = NULL;
   int r;
   const char *options;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (!PyArg_ParseTuple (args, (char *) "Osss:guestfs_mount_options",
-                         &py_g, &options, &device, &mountpoint))
+                         &py_g, &options, &mountable, &mountpoint))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -8436,18 +8436,18 @@ py_guestfs_mount_vfs (PyObject *self, PyObject *args)
   int r;
   const char *options;
   const char *vfstype;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (!PyArg_ParseTuple (args, (char *) "Ossss:guestfs_mount_vfs",
-                         &py_g, &options, &vfstype, &device, &mountpoint))
+                         &py_g, &options, &vfstype, &mountable, &mountpoint))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -12876,17 +12876,17 @@ py_guestfs_vfs_type (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   char *r;
-  const char *device;
+  const char *mountable;
 
   if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_vfs_type",
-                         &py_g, &device))
+                         &py_g, &mountable))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_vfs_type (g, device);
+  r = guestfs_vfs_type (g, mountable);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -14707,17 +14707,17 @@ py_guestfs_vfs_label (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   char *r;
-  const char *device;
+  const char *mountable;
 
   if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_vfs_label",
-                         &py_g, &device))
+                         &py_g, &mountable))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_vfs_label (g, device);
+  r = guestfs_vfs_label (g, mountable);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -14746,17 +14746,17 @@ py_guestfs_vfs_uuid (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   char *r;
-  const char *device;
+  const char *mountable;
 
   if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_vfs_uuid",
-                         &py_g, &device))
+                         &py_g, &mountable))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_vfs_uuid (g, device);
+  r = guestfs_vfs_uuid (g, mountable);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -17078,18 +17078,18 @@ py_guestfs_set_label (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *device;
+  const char *mountable;
   const char *label;
 
   if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_set_label",
-                         &py_g, &device, &label))
+                         &py_g, &mountable, &label))
     goto out;
   g = get_handle (py_g);
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);

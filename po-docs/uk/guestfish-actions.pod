@@ -3587,8 +3587,8 @@ returned in this list.  Call L</lvs> if you want to list logical volumes.
  list-filesystems
 
 This inspection command looks for filesystems on partitions, block devices
-and logical volumes, returning a list of devices containing filesystems and
-their type.
+and logical volumes, returning a list of C<mountables> containing
+filesystems and their type.
 
 The return value is a hash, where the keys are the devices containing
 filesystems, and the values are the filesystem types.  For example:
@@ -3597,6 +3597,9 @@ filesystems, and the values are the filesystem types.  For example:
  "/dev/sda2" => "ext2"
  "/dev/vg_guest/lv_root" => "ext4"
  "/dev/vg_guest/lv_swap" => "swap"
+
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to L</mount>.
 
 The value can have the special value "unknown", meaning the content of the
 device is undetermined or empty.  "swap" means a Linux swap partition.
@@ -4563,12 +4566,14 @@ C<appliance/kmod.whitelist.in> in the source).
 
 =head2 mount
 
- mount пристрій точка_монтування
+ mount mountable mountpoint
 
 Mount a guest disk at a position in the filesystem.  Block devices are named
 C</dev/sda>, C</dev/sdb> and so on, as they were added to the guest.  If
 those block devices contain partitions, they will have the usual names
-(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used.
+(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used, or
+'mountable' strings returned by L</list-filesystems> or
+L</inspect-get-mountpoints>.
 
 The rules are the same as for L<mount(2)>: A filesystem must first be
 mounted on C</> before others can be mounted.  Other filesystems can only be
@@ -4654,7 +4659,7 @@ mountpoint>.
 
 =head2 mount-options
 
- mount-options options device mountpoint
+ mount-options options mountable mountpoint
 
 This is the same as the L</mount> command, but it allows you to set the
 mount options as for the L<mount(8)> I<-o> flag.
@@ -4664,14 +4669,14 @@ If the C<options> parameter is an empty string, then no options are passed
 
 =head2 mount-ro
 
- mount-ro пристрій точка_монтування
+ mount-ro mountable mountpoint
 
 This is the same as the L</mount> command, but it mounts the filesystem with
 the read-only (I<-o ro>) flag.
 
 =head2 mount-vfs
 
- mount-vfs options vfstype device mountpoint
+ mount-vfs options vfstype mountable mountpoint
 
 This is the same as the L</mount> command, but it allows you to set both the
 mount options and the vfstype as for the L<mount(8)> I<-o> and I<-t> flags.
@@ -5712,9 +5717,9 @@ UUID of a filesystem.
 
 =head2 set-label
 
- set-label device label
+ set-label mountable label
 
-Set the filesystem label on C<device> to C<label>.
+Set the filesystem label on C<mountable> to C<label>.
 
 Only some filesystem types support labels, and libguestfs supports setting
 labels on only a subset of these.
@@ -5722,6 +5727,9 @@ labels on only a subset of these.
 On ext2/3/4 filesystems, labels are limited to 16 bytes.
 
 On NTFS filesystems, labels are limited to 128 unicode characters.
+
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 
 To read the label on a filesystem, call L</vfs-label>.
 
@@ -6661,9 +6669,9 @@ L</available> instead.
 
 =head2 vfs-label
 
- vfs-label пристрій
+ vfs-label mountable
 
-This returns the filesystem label of the filesystem on C<device>.
+This returns the label of the filesystem on C<mountable>.
 
 If the filesystem is unlabeled, this returns the empty string.
 
@@ -6671,10 +6679,10 @@ To find a filesystem from the label, use L</findfs-label>.
 
 =head2 vfs-type
 
- vfs-type пристрій
+ vfs-type mountable
 
 This command gets the filesystem type corresponding to the filesystem on
-C<device>.
+C<mountable>.
 
 For most filesystems, the result is the name of the Linux VFS module which
 would be used to mount this filesystem if you mounted it without specifying
@@ -6682,9 +6690,9 @@ the filesystem type.  For example a string such as C<ext3> or C<ntfs>.
 
 =head2 vfs-uuid
 
- vfs-uuid пристрій
+ vfs-uuid mountable
 
-This returns the filesystem UUID of the filesystem on C<device>.
+This returns the filesystem UUID of the filesystem on C<mountable>.
 
 If the filesystem does not have a UUID, this returns the empty string.
 

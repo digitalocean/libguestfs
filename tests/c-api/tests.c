@@ -599,10 +599,10 @@ test_is_whole_device_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -665,10 +665,10 @@ test_rename_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -839,10 +839,10 @@ test_cap_set_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -957,10 +957,10 @@ test_acl_delete_def_file_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1039,10 +1039,10 @@ test_acl_set_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1137,10 +1137,10 @@ test_mklost_and_found_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1206,10 +1206,10 @@ test_mktemp_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1338,10 +1338,10 @@ test_mke2fs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda2";
+    const char *mountable = "/dev/sda2";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1466,10 +1466,10 @@ test_mke2fs_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda2";
+    const char *mountable = "/dev/sda2";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1570,7 +1570,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    optargs.uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     optargs.journaldev = 1;
     optargs.bitmask = UINT64_C(0x100100002);
     int r;
@@ -1582,7 +1582,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda2";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.journaldevice = "UUID=088516b5-80b8-0f09-93b8-736b3cb41301";
+    optargs.journaldevice = "UUID=d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     optargs.label = "JOURNAL";
     optargs.fstype = "ext2";
     optargs.forcecreate = 1;
@@ -1593,10 +1593,10 @@ test_mke2fs_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda2";
+    const char *mountable = "/dev/sda2";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1668,10 +1668,10 @@ test_rm_f_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1762,10 +1762,10 @@ test_rm_f_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -1952,10 +1952,10 @@ test_xfs_admin_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -2076,10 +2076,10 @@ test_xfs_growfs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -2546,10 +2546,10 @@ test_xfs_info_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -2921,10 +2921,10 @@ test_btrfs_filesystem_sync_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3022,10 +3022,10 @@ test_btrfs_subvolume_delete_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3116,10 +3116,10 @@ test_btrfs_subvolume_snapshot_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3206,10 +3206,10 @@ test_get_e2generation_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3286,10 +3286,10 @@ test_get_e2attrs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3361,10 +3361,10 @@ test_get_e2attrs_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3447,10 +3447,10 @@ test_get_e2attrs_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3544,10 +3544,10 @@ test_get_e2attrs_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3685,10 +3685,10 @@ test_get_e2attrs_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3760,10 +3760,10 @@ test_get_e2attrs_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3835,10 +3835,10 @@ test_get_e2attrs_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -3910,10 +3910,10 @@ test_get_e2attrs_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -4323,10 +4323,10 @@ test_zero_free_space_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -4403,27 +4403,27 @@ test_set_label_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
   /* TestOutput for set_label (0) */
   const char *expected = "testlabel";
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *label = "testlabel";
     int r;
-    r = guestfs_set_label (g, device, label);
+    r = guestfs_set_label (g, mountable, label);
     if (r == -1)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     char *r;
-    r = guestfs_vfs_label (g, device);
+    r = guestfs_vfs_label (g, mountable);
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
@@ -4504,17 +4504,17 @@ test_set_label_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *label = "testlabel2";
     int r;
-    r = guestfs_set_label (g, device, label);
+    r = guestfs_set_label (g, mountable, label);
     if (r == -1)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     char *r;
-    r = guestfs_vfs_label (g, device);
+    r = guestfs_vfs_label (g, mountable);
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
@@ -4586,11 +4586,11 @@ test_set_label_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *label = "testlabel2";
     int r;
     guestfs_push_error_handler (g, NULL, NULL);
-    r = guestfs_set_label (g, device, label);
+    r = guestfs_set_label (g, mountable, label);
     guestfs_pop_error_handler (g);
     if (r != -1)
       return -1;
@@ -4770,10 +4770,10 @@ test_wipefs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -4841,10 +4841,10 @@ test_blkid_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -4974,10 +4974,10 @@ test_tune2fs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5075,10 +5075,10 @@ test_tune2fs_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5176,10 +5176,10 @@ test_tune2fs_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5277,10 +5277,10 @@ test_tune2fs_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5378,10 +5378,10 @@ test_copy_file_to_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5599,10 +5599,10 @@ test_internal_write_append_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5721,10 +5721,10 @@ test_is_zero_device_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5823,10 +5823,10 @@ test_is_zero_device_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5889,10 +5889,10 @@ test_is_zero_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -5955,10 +5955,10 @@ test_is_zero_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6041,10 +6041,10 @@ test_mkfs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6166,10 +6166,10 @@ test_lvm_canonical_lv_name_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6284,10 +6284,10 @@ test_lvm_canonical_lv_name_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6516,10 +6516,10 @@ test_download_offset_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6613,10 +6613,10 @@ test_upload_offset_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6815,10 +6815,10 @@ test_is_socket_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6881,10 +6881,10 @@ test_is_symlink_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -6947,10 +6947,10 @@ test_is_symlink_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7013,10 +7013,10 @@ test_is_fifo_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7079,10 +7079,10 @@ test_is_fifo_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7152,10 +7152,10 @@ test_is_blockdev_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7218,10 +7218,10 @@ test_is_blockdev_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7291,10 +7291,10 @@ test_is_chardev_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7357,10 +7357,10 @@ test_is_chardev_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7479,10 +7479,10 @@ test_is_lv_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7594,10 +7594,10 @@ test_is_lv_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7678,27 +7678,27 @@ test_vfs_uuid_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "088516b5-80b8-0f09-93b8-736b3cb41301";
+  const char *expected = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     char *r;
-    r = guestfs_vfs_uuid (g, device);
+    r = guestfs_vfs_uuid (g, mountable);
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
@@ -7772,27 +7772,27 @@ test_vfs_label_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
   /* TestOutput for vfs_label (0) */
   const char *expected = "LTEST";
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *label = "LTEST";
     int r;
-    r = guestfs_set_label (g, device, label);
+    r = guestfs_set_label (g, mountable, label);
     if (r == -1)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     char *r;
-    r = guestfs_vfs_label (g, device);
+    r = guestfs_vfs_label (g, mountable);
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
@@ -7848,10 +7848,10 @@ test_fallocate64_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -7980,10 +7980,10 @@ test_pwrite_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8066,10 +8066,10 @@ test_pwrite_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8152,10 +8152,10 @@ test_pwrite_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8238,10 +8238,10 @@ test_internal_write_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8315,10 +8315,10 @@ test_internal_write_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8392,10 +8392,10 @@ test_internal_write_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8469,10 +8469,10 @@ test_internal_write_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8546,10 +8546,10 @@ test_internal_write_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8623,10 +8623,10 @@ test_internal_write_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8700,10 +8700,10 @@ test_fill_pattern_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -8781,10 +8781,10 @@ test_base64_in_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9006,10 +9006,10 @@ test_checksum_device_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9365,10 +9365,10 @@ test_txz_in_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9492,10 +9492,10 @@ test_zero_device_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9554,10 +9554,10 @@ test_copy_size_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9651,10 +9651,10 @@ test_initrd_cat_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9770,10 +9770,10 @@ test_vgrename_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9820,10 +9820,10 @@ test_vgrename_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG2/LV";
+    const char *mountable = "/dev/VG2/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -9946,10 +9946,10 @@ test_lvrename_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -10036,10 +10036,10 @@ test_filesize_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -10111,10 +10111,10 @@ test_dd_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -10262,10 +10262,10 @@ test_fill_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -10921,10 +10921,10 @@ test_pread_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -10994,10 +10994,10 @@ test_pread_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11067,10 +11067,10 @@ test_mkdir_mode_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11142,10 +11142,10 @@ test_utimens_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11224,10 +11224,10 @@ test_utimens_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11306,10 +11306,10 @@ test_utimens_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11388,10 +11388,10 @@ test_utimens_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11471,10 +11471,10 @@ test_utimens_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11553,10 +11553,10 @@ test_utimens_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11635,10 +11635,10 @@ test_truncate_size_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11717,10 +11717,10 @@ test_truncate_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11801,19 +11801,19 @@ test_vfs_type_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
   /* TestOutput for vfs_type (0) */
   const char *expected = "ext2";
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     char *r;
-    r = guestfs_vfs_type (g, device);
+    r = guestfs_vfs_type (g, mountable);
     if (r == NULL)
       return -1;
     if (STRNEQ (r, expected)) {
@@ -11869,10 +11869,10 @@ test_case_sensitive_path_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -11937,10 +11937,10 @@ test_case_sensitive_path_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12005,10 +12005,10 @@ test_case_sensitive_path_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12073,10 +12073,10 @@ test_case_sensitive_path_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12138,10 +12138,10 @@ test_case_sensitive_path_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12227,10 +12227,10 @@ test_case_sensitive_path_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12316,10 +12316,10 @@ test_case_sensitive_path_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12402,10 +12402,10 @@ test_case_sensitive_path_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12635,7 +12635,7 @@ test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mke2journal_U (g, 4096, uuid, device);
@@ -12645,17 +12645,17 @@ test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     int r;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *device = "/dev/sda2";
+    const char *mountable = "/dev/sda2";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12770,10 +12770,10 @@ test_mke2journal_L_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda2";
+    const char *mountable = "/dev/sda2";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12887,10 +12887,10 @@ test_mke2journal_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda2";
+    const char *mountable = "/dev/sda2";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -12980,10 +12980,10 @@ test_mkfs_b_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -13320,10 +13320,10 @@ test_inotify_add_watch_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -13452,10 +13452,10 @@ test_inotify_init_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -13513,10 +13513,10 @@ test_mkswap_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -13596,7 +13596,7 @@ test_swapon_uuid_0 (void)
   {
     const char *device = "/dev/sdc";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    optargs.uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -13604,14 +13604,14 @@ test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     int r;
     r = guestfs_swapon_uuid (g, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     int r;
     r = guestfs_swapoff_uuid (g, uuid);
     if (r == -1)
@@ -13757,10 +13757,10 @@ test_swapon_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -13925,10 +13925,10 @@ test_fallocate_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14000,10 +14000,10 @@ test_ln_sf_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14090,10 +14090,10 @@ test_ln_s_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14180,10 +14180,10 @@ test_ln_f_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14277,10 +14277,10 @@ test_ln_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14371,10 +14371,10 @@ test_realpath_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14439,10 +14439,10 @@ test_zfgrepi_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14547,10 +14547,10 @@ test_zegrepi_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14655,10 +14655,10 @@ test_zgrepi_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14763,10 +14763,10 @@ test_zfgrep_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14859,10 +14859,10 @@ test_zegrep_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -14955,10 +14955,10 @@ test_zgrep_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15051,10 +15051,10 @@ test_fgrepi_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15159,10 +15159,10 @@ test_egrepi_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15267,10 +15267,10 @@ test_grepi_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15375,10 +15375,10 @@ test_fgrep_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15471,10 +15471,10 @@ test_egrep_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15567,10 +15567,10 @@ test_grep_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15665,10 +15665,10 @@ test_grep_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15739,10 +15739,10 @@ test_grep_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15813,10 +15813,10 @@ test_grep_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -15912,10 +15912,10 @@ test_grep_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16011,10 +16011,10 @@ test_grep_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16122,10 +16122,10 @@ test_grep_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16234,10 +16234,10 @@ test_grep_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16346,10 +16346,10 @@ test_grep_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16445,10 +16445,10 @@ test_grep_9 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16545,10 +16545,10 @@ test_grep_10 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16645,10 +16645,10 @@ test_grep_11 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16757,10 +16757,10 @@ test_grep_12 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -16870,10 +16870,10 @@ test_grep_13 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -17044,10 +17044,10 @@ test_mknod_c_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -17123,10 +17123,10 @@ test_mknod_b_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -17202,10 +17202,10 @@ test_mkfifo_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -17281,10 +17281,10 @@ test_mknod_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -17360,10 +17360,10 @@ test_mknod_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -17448,7 +17448,7 @@ test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mkswap_U (g, uuid, device);
@@ -17710,7 +17710,7 @@ test_mkswap_2 (void)
   {
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    optargs.uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -17781,7 +17781,7 @@ test_mkswap_3 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
     optargs.label = "hello";
-    optargs.uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    optargs.uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     optargs.bitmask = UINT64_C(0x3);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -17835,10 +17835,10 @@ test_initrd_list_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -17978,10 +17978,10 @@ test_du_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18044,10 +18044,10 @@ test_tail_n_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18151,10 +18151,10 @@ test_tail_n_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18258,10 +18258,10 @@ test_tail_n_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18329,10 +18329,10 @@ test_tail_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18520,10 +18520,10 @@ test_head_n_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18627,10 +18627,10 @@ test_head_n_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18734,10 +18734,10 @@ test_head_n_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18805,10 +18805,10 @@ test_head_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -18996,10 +18996,10 @@ test_head_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19187,10 +19187,10 @@ test_wc_c_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19253,10 +19253,10 @@ test_wc_w_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19319,10 +19319,10 @@ test_wc_l_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19385,10 +19385,10 @@ test_wc_l_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19451,10 +19451,10 @@ test_mkdtemp_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19525,10 +19525,10 @@ test_scrub_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19654,10 +19654,10 @@ test_glob_expand_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19770,10 +19770,10 @@ test_glob_expand_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -19886,10 +19886,10 @@ test_glob_expand_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20242,10 +20242,10 @@ test_lvresize_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20313,10 +20313,10 @@ test_lvresize_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20496,10 +20496,10 @@ test_zerofree_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20531,10 +20531,10 @@ test_zerofree_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20597,10 +20597,10 @@ test_hexdump_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20665,10 +20665,10 @@ test_hexdump_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20728,10 +20728,10 @@ test_hexdump_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20791,10 +20791,10 @@ test_strings_e_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20863,10 +20863,10 @@ test_strings_e_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -20968,10 +20968,10 @@ test_strings_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21063,10 +21063,10 @@ test_strings_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21134,10 +21134,10 @@ test_strings_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21200,10 +21200,10 @@ test_equal_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21291,10 +21291,10 @@ test_equal_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21383,10 +21383,10 @@ test_equal_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21615,10 +21615,10 @@ test_mv_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21707,10 +21707,10 @@ test_mv_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21797,10 +21797,10 @@ test_cp_a_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21896,10 +21896,10 @@ test_cp_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -21988,10 +21988,10 @@ test_cp_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22078,10 +22078,10 @@ test_cp_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22199,10 +22199,10 @@ test_grub_install_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22307,10 +22307,10 @@ test_zero_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22398,10 +22398,10 @@ test_fsck_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22494,10 +22494,10 @@ test_fsck_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22579,7 +22579,7 @@ test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "088516b5-80b8-0f09-93b8-736b3cb41301";
+  const char *expected = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -22589,7 +22589,7 @@ test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -22672,18 +22672,18 @@ test_set_e2uuid_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "088516b5-80b8-0f09-93b8-736b3cb41301";
+  const char *expected = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "088516b5-80b8-0f09-93b8-736b3cb41301";
+    const char *uuid = "d7c0f806-86f7-d1c7-9a3c-362698d9386a";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -22766,10 +22766,10 @@ test_set_e2uuid_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22860,10 +22860,10 @@ test_set_e2uuid_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -22941,10 +22941,10 @@ test_set_e2uuid_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -23022,10 +23022,10 @@ test_set_e2label_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24089,10 +24089,10 @@ test_mount_ro_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24109,10 +24109,10 @@ test_mount_ro_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24190,10 +24190,10 @@ test_mount_ro_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24220,10 +24220,10 @@ test_mount_ro_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24286,10 +24286,10 @@ test_tgz_in_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24368,10 +24368,10 @@ test_tar_in_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24452,10 +24452,10 @@ test_tar_in_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24542,10 +24542,10 @@ test_tar_in_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24627,10 +24627,10 @@ test_checksum_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24696,10 +24696,10 @@ test_checksum_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24762,10 +24762,10 @@ test_checksum_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24831,10 +24831,10 @@ test_checksum_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24900,10 +24900,10 @@ test_checksum_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -24969,10 +24969,10 @@ test_checksum_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -25038,10 +25038,10 @@ test_checksum_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -25107,10 +25107,10 @@ test_checksum_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -25176,10 +25176,10 @@ test_checksum_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -25245,10 +25245,10 @@ test_download_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -25342,10 +25342,10 @@ test_upload_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -25902,10 +25902,10 @@ test_tune2fs_l_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -25991,10 +25991,10 @@ test_statvfs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26059,10 +26059,10 @@ test_lstat_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26127,10 +26127,10 @@ test_stat_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26195,10 +26195,10 @@ test_command_lines_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26305,10 +26305,10 @@ test_command_lines_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26415,10 +26415,10 @@ test_command_lines_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26537,10 +26537,10 @@ test_command_lines_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26659,10 +26659,10 @@ test_command_lines_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26793,10 +26793,10 @@ test_command_lines_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -26939,10 +26939,10 @@ test_command_lines_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27037,10 +27037,10 @@ test_command_lines_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27147,10 +27147,10 @@ test_command_lines_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27269,10 +27269,10 @@ test_command_lines_9 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27391,10 +27391,10 @@ test_command_lines_10 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27513,10 +27513,10 @@ test_command_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27608,10 +27608,10 @@ test_command_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27703,10 +27703,10 @@ test_command_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27798,10 +27798,10 @@ test_command_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27893,10 +27893,10 @@ test_command_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -27988,10 +27988,10 @@ test_command_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28083,10 +28083,10 @@ test_command_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28178,10 +28178,10 @@ test_command_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28273,10 +28273,10 @@ test_command_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28368,10 +28368,10 @@ test_command_9 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28463,10 +28463,10 @@ test_command_10 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28558,10 +28558,10 @@ test_command_11 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28648,10 +28648,10 @@ test_command_12 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28741,10 +28741,10 @@ test_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28809,10 +28809,10 @@ test_file_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28877,10 +28877,10 @@ test_file_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -28942,10 +28942,10 @@ test_file_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29010,10 +29010,10 @@ test_file_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29078,10 +29078,10 @@ test_umount_all_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29217,10 +29217,10 @@ test_umount_all_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29232,10 +29232,10 @@ test_umount_all_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda2";
+    const char *mountable = "/dev/sda2";
     const char *mountpoint = "/mp1";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29247,10 +29247,10 @@ test_umount_all_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda3";
+    const char *mountable = "/dev/sda3";
     const char *mountpoint = "/mp1/mp2";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29329,10 +29329,10 @@ test_mounts_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29431,10 +29431,10 @@ test_umount_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29532,10 +29532,10 @@ test_umount_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -29612,10 +29612,10 @@ test_write_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30249,10 +30249,10 @@ test_is_dir_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30315,10 +30315,10 @@ test_is_dir_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30381,10 +30381,10 @@ test_is_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30447,10 +30447,10 @@ test_is_file_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30513,10 +30513,10 @@ test_exists_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30579,10 +30579,10 @@ test_exists_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30645,10 +30645,10 @@ test_mkdir_p_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30718,10 +30718,10 @@ test_mkdir_p_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30791,10 +30791,10 @@ test_mkdir_p_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30864,10 +30864,10 @@ test_mkdir_p_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -30933,10 +30933,10 @@ test_mkdir_p_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31004,10 +31004,10 @@ test_mkdir_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31077,10 +31077,10 @@ test_mkdir_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31141,10 +31141,10 @@ test_rm_rf_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31235,10 +31235,10 @@ test_rmdir_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31304,10 +31304,10 @@ test_rmdir_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31368,10 +31368,10 @@ test_rmdir_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31446,10 +31446,10 @@ test_rm_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31522,10 +31522,10 @@ test_rm_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31586,10 +31586,10 @@ test_rm_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -31706,10 +31706,10 @@ test_lvs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -32042,10 +32042,10 @@ test_vgs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -32342,10 +32342,10 @@ test_pvs_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/VG/LV";
+    const char *mountable = "/dev/VG/LV";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -32601,10 +32601,10 @@ test_list_partitions_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -32957,10 +32957,10 @@ test_touch_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -33103,10 +33103,10 @@ test_mount_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -33706,10 +33706,10 @@ test_ls_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -33841,10 +33841,10 @@ test_write_append_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -33945,10 +33945,10 @@ test_write_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34022,10 +34022,10 @@ test_write_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34099,10 +34099,10 @@ test_write_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34176,10 +34176,10 @@ test_write_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34253,10 +34253,10 @@ test_write_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34330,10 +34330,10 @@ test_write_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34407,10 +34407,10 @@ test_read_lines_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34514,10 +34514,10 @@ test_read_lines_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34585,10 +34585,10 @@ test_read_lines_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34677,10 +34677,10 @@ test_read_lines_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34769,10 +34769,10 @@ test_read_lines_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34873,10 +34873,10 @@ test_read_lines_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -34965,10 +34965,10 @@ test_read_lines_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35069,10 +35069,10 @@ test_read_lines_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35173,10 +35173,10 @@ test_read_lines_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35277,10 +35277,10 @@ test_read_lines_9 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35393,10 +35393,10 @@ test_read_file_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35484,10 +35484,10 @@ test_find_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35585,10 +35585,10 @@ test_find_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sda1";
+    const char *mountable = "/dev/sda1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35725,10 +35725,10 @@ test_find_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdb1";
+    const char *mountable = "/dev/sdb1";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount (g, device, mountpoint);
+    r = guestfs_mount (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35834,10 +35834,10 @@ test_cat_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -35956,10 +35956,10 @@ test_file_architecture_0 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36024,10 +36024,10 @@ test_file_architecture_1 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36092,10 +36092,10 @@ test_file_architecture_2 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36160,10 +36160,10 @@ test_file_architecture_3 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36228,10 +36228,10 @@ test_file_architecture_4 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36296,10 +36296,10 @@ test_file_architecture_5 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36364,10 +36364,10 @@ test_file_architecture_6 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36432,10 +36432,10 @@ test_file_architecture_7 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36500,10 +36500,10 @@ test_file_architecture_8 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36568,10 +36568,10 @@ test_file_architecture_9 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36636,10 +36636,10 @@ test_file_architecture_10 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }
@@ -36704,10 +36704,10 @@ test_file_architecture_11 (void)
       return -1;
   }
   {
-    const char *device = "/dev/sdd";
+    const char *mountable = "/dev/sdd";
     const char *mountpoint = "/";
     int r;
-    r = guestfs_mount_ro (g, device, mountpoint);
+    r = guestfs_mount_ro (g, mountable, mountpoint);
     if (r == -1)
       return -1;
   }

@@ -898,7 +898,7 @@ struct command_entry get_network_cmd_entry = {
 
 struct command_entry list_filesystems_cmd_entry = {
   .name = "list-filesystems",
-  .help = "NAME\n    list-filesystems - list filesystems\n\nSYNOPSIS\n     list-filesystems\n\nDESCRIPTION\n    This inspection command looks for filesystems on partitions, block\n    devices and logical volumes, returning a list of devices containing\n    filesystems and their type.\n\n    The return value is a hash, where the keys are the devices containing\n    filesystems, and the values are the filesystem types. For example:\n\n     \"/dev/sda1\" => \"ntfs\"\n     \"/dev/sda2\" => \"ext2\"\n     \"/dev/vg_guest/lv_root\" => \"ext4\"\n     \"/dev/vg_guest/lv_swap\" => \"swap\"\n\n    The value can have the special value \"unknown\", meaning the content of\n    the device is undetermined or empty. \"swap\" means a Linux swap\n    partition.\n\n    This command runs other libguestfs commands, which might include \"mount\"\n    and \"umount\", and therefore you should use this soon after launch and\n    only when nothing is mounted.\n\n    Not all of the filesystems returned will be mountable. In particular,\n    swap partitions are returned in the list. Also this command does not\n    check that each filesystem found is valid and mountable, and some\n    filesystems might be mountable but require special options. Filesystems\n    may not all belong to a single logical operating system (use\n    \"inspect_os\" to look for OSes).\n\n",
+  .help = "NAME\n    list-filesystems - list filesystems\n\nSYNOPSIS\n     list-filesystems\n\nDESCRIPTION\n    This inspection command looks for filesystems on partitions, block\n    devices and logical volumes, returning a list of \"mountables\" containing\n    filesystems and their type.\n\n    The return value is a hash, where the keys are the devices containing\n    filesystems, and the values are the filesystem types. For example:\n\n     \"/dev/sda1\" => \"ntfs\"\n     \"/dev/sda2\" => \"ext2\"\n     \"/dev/vg_guest/lv_root\" => \"ext4\"\n     \"/dev/vg_guest/lv_swap\" => \"swap\"\n\n    The key is not necessarily a block device. It may also be an opaque\n    'mountable' string which can be passed to \"mount\".\n\n    The value can have the special value \"unknown\", meaning the content of\n    the device is undetermined or empty. \"swap\" means a Linux swap\n    partition.\n\n    This command runs other libguestfs commands, which might include \"mount\"\n    and \"umount\", and therefore you should use this soon after launch and\n    only when nothing is mounted.\n\n    Not all of the filesystems returned will be mountable. In particular,\n    swap partitions are returned in the list. Also this command does not\n    check that each filesystem found is valid and mountable, and some\n    filesystems might be mountable but require special options. Filesystems\n    may not all belong to a single logical operating system (use\n    \"inspect_os\" to look for OSes).\n\n",
   .run = run_list_filesystems
 };
 
@@ -1246,7 +1246,7 @@ struct command_entry get_cachedir_cmd_entry = {
 
 struct command_entry mount_cmd_entry = {
   .name = "mount",
-  .help = "NAME\n    mount - mount a guest disk at a position in the filesystem\n\nSYNOPSIS\n     mount device mountpoint\n\nDESCRIPTION\n    Mount a guest disk at a position in the filesystem. Block devices are\n    named \"/dev/sda\", \"/dev/sdb\" and so on, as they were added to the guest.\n    If those block devices contain partitions, they will have the usual\n    names (eg. \"/dev/sda1\"). Also LVM \"/dev/VG/LV\"-style names can be used.\n\n    The rules are the same as for mount(2): A filesystem must first be\n    mounted on \"/\" before others can be mounted. Other filesystems can only\n    be mounted on directories which already exist.\n\n    The mounted filesystem is writable, if we have sufficient permissions on\n    the underlying device.\n\n    Before libguestfs 1.13.16, this call implicitly added the options \"sync\"\n    and \"noatime\". The \"sync\" option greatly slowed writes and caused many\n    problems for users. If your program might need to work with older\n    versions of libguestfs, use \"mount_options\" instead (using an empty\n    string for the first parameter if you don't want any options).\n\n",
+  .help = "NAME\n    mount - mount a guest disk at a position in the filesystem\n\nSYNOPSIS\n     mount mountable mountpoint\n\nDESCRIPTION\n    Mount a guest disk at a position in the filesystem. Block devices are\n    named \"/dev/sda\", \"/dev/sdb\" and so on, as they were added to the guest.\n    If those block devices contain partitions, they will have the usual\n    names (eg. \"/dev/sda1\"). Also LVM \"/dev/VG/LV\"-style names can be used,\n    or 'mountable' strings returned by \"list_filesystems\" or\n    \"inspect_get_mountpoints\".\n\n    The rules are the same as for mount(2): A filesystem must first be\n    mounted on \"/\" before others can be mounted. Other filesystems can only\n    be mounted on directories which already exist.\n\n    The mounted filesystem is writable, if we have sufficient permissions on\n    the underlying device.\n\n    Before libguestfs 1.13.16, this call implicitly added the options \"sync\"\n    and \"noatime\". The \"sync\" option greatly slowed writes and caused many\n    problems for users. If your program might need to work with older\n    versions of libguestfs, use \"mount_options\" instead (using an empty\n    string for the first parameter if you don't want any options).\n\n",
   .run = run_mount
 };
 
@@ -1654,19 +1654,19 @@ struct command_entry tgz_out_cmd_entry = {
 
 struct command_entry mount_ro_cmd_entry = {
   .name = "mount-ro",
-  .help = "NAME\n    mount-ro - mount a guest disk, read-only\n\nSYNOPSIS\n     mount-ro device mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it mounts the filesystem\n    with the read-only (*-o ro*) flag.\n\n",
+  .help = "NAME\n    mount-ro - mount a guest disk, read-only\n\nSYNOPSIS\n     mount-ro mountable mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it mounts the filesystem\n    with the read-only (*-o ro*) flag.\n\n",
   .run = run_mount_ro
 };
 
 struct command_entry mount_options_cmd_entry = {
   .name = "mount-options",
-  .help = "NAME\n    mount-options - mount a guest disk with mount options\n\nSYNOPSIS\n     mount-options options device mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set the\n    mount options as for the mount(8) *-o* flag.\n\n    If the \"options\" parameter is an empty string, then no options are\n    passed (all options default to whatever the filesystem uses).\n\n",
+  .help = "NAME\n    mount-options - mount a guest disk with mount options\n\nSYNOPSIS\n     mount-options options mountable mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set the\n    mount options as for the mount(8) *-o* flag.\n\n    If the \"options\" parameter is an empty string, then no options are\n    passed (all options default to whatever the filesystem uses).\n\n",
   .run = run_mount_options
 };
 
 struct command_entry mount_vfs_cmd_entry = {
   .name = "mount-vfs",
-  .help = "NAME\n    mount-vfs - mount a guest disk with mount options and vfstype\n\nSYNOPSIS\n     mount-vfs options vfstype device mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set both\n    the mount options and the vfstype as for the mount(8) *-o* and *-t*\n    flags.\n\n",
+  .help = "NAME\n    mount-vfs - mount a guest disk with mount options and vfstype\n\nSYNOPSIS\n     mount-vfs options vfstype mountable mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set both\n    the mount options and the vfstype as for the mount(8) *-o* and *-t*\n    flags.\n\n",
   .run = run_mount_vfs
 };
 
@@ -2392,7 +2392,7 @@ struct command_entry case_sensitive_path_cmd_entry = {
 
 struct command_entry vfs_type_cmd_entry = {
   .name = "vfs-type",
-  .help = "NAME\n    vfs-type - get the Linux VFS type corresponding to a mounted device\n\nSYNOPSIS\n     vfs-type device\n\nDESCRIPTION\n    This command gets the filesystem type corresponding to the filesystem on\n    \"device\".\n\n    For most filesystems, the result is the name of the Linux VFS module\n    which would be used to mount this filesystem if you mounted it without\n    specifying the filesystem type. For example a string such as \"ext3\" or\n    \"ntfs\".\n\n",
+  .help = "NAME\n    vfs-type - get the Linux VFS type corresponding to a mounted device\n\nSYNOPSIS\n     vfs-type mountable\n\nDESCRIPTION\n    This command gets the filesystem type corresponding to the filesystem on\n    \"mountable\".\n\n    For most filesystems, the result is the name of the Linux VFS module\n    which would be used to mount this filesystem if you mounted it without\n    specifying the filesystem type. For example a string such as \"ext3\" or\n    \"ntfs\".\n\n",
   .run = run_vfs_type
 };
 
@@ -2692,13 +2692,13 @@ struct command_entry fallocate64_cmd_entry = {
 
 struct command_entry vfs_label_cmd_entry = {
   .name = "vfs-label",
-  .help = "NAME\n    vfs-label - get the filesystem label\n\nSYNOPSIS\n     vfs-label device\n\nDESCRIPTION\n    This returns the filesystem label of the filesystem on \"device\".\n\n    If the filesystem is unlabeled, this returns the empty string.\n\n    To find a filesystem from the label, use \"findfs_label\".\n\n",
+  .help = "NAME\n    vfs-label - get the filesystem label\n\nSYNOPSIS\n     vfs-label mountable\n\nDESCRIPTION\n    This returns the label of the filesystem on \"mountable\".\n\n    If the filesystem is unlabeled, this returns the empty string.\n\n    To find a filesystem from the label, use \"findfs_label\".\n\n",
   .run = run_vfs_label
 };
 
 struct command_entry vfs_uuid_cmd_entry = {
   .name = "vfs-uuid",
-  .help = "NAME\n    vfs-uuid - get the filesystem UUID\n\nSYNOPSIS\n     vfs-uuid device\n\nDESCRIPTION\n    This returns the filesystem UUID of the filesystem on \"device\".\n\n    If the filesystem does not have a UUID, this returns the empty string.\n\n    To find a filesystem from the UUID, use \"findfs_uuid\".\n\n",
+  .help = "NAME\n    vfs-uuid - get the filesystem UUID\n\nSYNOPSIS\n     vfs-uuid mountable\n\nDESCRIPTION\n    This returns the filesystem UUID of the filesystem on \"mountable\".\n\n    If the filesystem does not have a UUID, this returns the empty string.\n\n    To find a filesystem from the UUID, use \"findfs_uuid\".\n\n",
   .run = run_vfs_uuid
 };
 
@@ -3022,7 +3022,7 @@ struct command_entry ntfsclone_in_cmd_entry = {
 
 struct command_entry set_label_cmd_entry = {
   .name = "set-label",
-  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label device label\n\nDESCRIPTION\n    Set the filesystem label on \"device\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    On ext2/3/4 filesystems, labels are limited to 16 bytes.\n\n    On NTFS filesystems, labels are limited to 128 unicode characters.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    On ext2/3/4 filesystems, labels are limited to 16 bytes.\n\n    On NTFS filesystems, labels are limited to 128 unicode characters.\n\n    Setting the label on a btrfs subvolume will set the label on its parent\n    filesystem.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
   .run = run_set_label
 };
 
@@ -7277,7 +7277,7 @@ run_mount (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -7286,9 +7286,9 @@ run_mount (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -9250,7 +9250,7 @@ run_mount_ro (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -9259,9 +9259,9 @@ run_mount_ro (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -9275,7 +9275,7 @@ run_mount_options (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   const char *options;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -9285,9 +9285,9 @@ run_mount_options (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   options = argv[i++];
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -9302,7 +9302,7 @@ run_mount_vfs (const char *cmd, size_t argc, char *argv[])
   int r;
   const char *options;
   const char *vfstype;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -9313,9 +9313,9 @@ run_mount_vfs (const char *cmd, size_t argc, char *argv[])
   }
   options = argv[i++];
   vfstype = argv[i++];
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -13133,7 +13133,7 @@ run_vfs_type (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   char *r;
-  const char *device;
+  const char *mountable;
   size_t i = 0;
 
   if (argc != 1) {
@@ -13141,8 +13141,8 @@ run_vfs_type (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
-  r = guestfs_vfs_type (g, device);
+  mountable = argv[i++];
+  r = guestfs_vfs_type (g, mountable);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -14941,7 +14941,7 @@ run_vfs_label (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   char *r;
-  const char *device;
+  const char *mountable;
   size_t i = 0;
 
   if (argc != 1) {
@@ -14949,8 +14949,8 @@ run_vfs_label (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
-  r = guestfs_vfs_label (g, device);
+  mountable = argv[i++];
+  r = guestfs_vfs_label (g, mountable);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -14965,7 +14965,7 @@ run_vfs_uuid (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   char *r;
-  const char *device;
+  const char *mountable;
   size_t i = 0;
 
   if (argc != 1) {
@@ -14973,8 +14973,8 @@ run_vfs_uuid (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
-  r = guestfs_vfs_uuid (g, device);
+  mountable = argv[i++];
+  r = guestfs_vfs_uuid (g, mountable);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -17549,7 +17549,7 @@ run_set_label (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *device;
+  const char *mountable;
   const char *label;
   size_t i = 0;
 
@@ -17558,9 +17558,9 @@ run_set_label (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
+  mountable = argv[i++];
   label = argv[i++];
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
   if (r == -1) goto out;
   ret = 0;
  out:

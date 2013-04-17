@@ -6812,12 +6812,12 @@ run_modprobe (ETERM *message)
 static ETERM *
 run_mount (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *mountpoint = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_mount (g, device, mountpoint);
-  free (device);
+  r = guestfs_mount (g, mountable, mountpoint);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount");
@@ -6942,13 +6942,13 @@ static ETERM *
 run_mount_options (ETERM *message)
 {
   char *options = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  char *mountable = erl_iolist_to_string (ARG (1));
   char *mountpoint = erl_iolist_to_string (ARG (2));
   int r;
 
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   free (options);
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount_options");
@@ -6959,12 +6959,12 @@ run_mount_options (ETERM *message)
 static ETERM *
 run_mount_ro (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *mountpoint = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_mount_ro (g, device, mountpoint);
-  free (device);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount_ro");
@@ -6977,14 +6977,14 @@ run_mount_vfs (ETERM *message)
 {
   char *options = erl_iolist_to_string (ARG (0));
   char *vfstype = erl_iolist_to_string (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
+  char *mountable = erl_iolist_to_string (ARG (2));
   char *mountpoint = erl_iolist_to_string (ARG (3));
   int r;
 
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   free (options);
   free (vfstype);
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount_vfs");
@@ -8277,12 +8277,12 @@ run_set_e2uuid (ETERM *message)
 static ETERM *
 run_set_label (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *label = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_set_label (g, device, label);
-  free (device);
+  r = guestfs_set_label (g, mountable, label);
+  free (mountable);
   free (label);
   if (r == -1)
     return make_error ("set_label");
@@ -9361,11 +9361,11 @@ run_version (ETERM *message)
 static ETERM *
 run_vfs_label (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
-  r = guestfs_vfs_label (g, device);
-  free (device);
+  r = guestfs_vfs_label (g, mountable);
+  free (mountable);
   if (r == NULL)
     return make_error ("vfs_label");
 
@@ -9377,11 +9377,11 @@ run_vfs_label (ETERM *message)
 static ETERM *
 run_vfs_type (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
-  r = guestfs_vfs_type (g, device);
-  free (device);
+  r = guestfs_vfs_type (g, mountable);
+  free (mountable);
   if (r == NULL)
     return make_error ("vfs_type");
 
@@ -9393,11 +9393,11 @@ run_vfs_type (ETERM *message)
 static ETERM *
 run_vfs_uuid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
-  r = guestfs_vfs_uuid (g, device);
-  free (device);
+  r = guestfs_vfs_uuid (g, mountable);
+  free (mountable);
   if (r == NULL)
     return make_error ("vfs_uuid");
 

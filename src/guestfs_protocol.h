@@ -380,7 +380,7 @@ typedef struct {
 } guestfs_int_hivex_value_list;
 
 struct guestfs_mount_args {
-	char *device;
+	char *mountable;
 	char *mountpoint;
 };
 typedef struct guestfs_mount_args guestfs_mount_args;
@@ -879,14 +879,14 @@ struct guestfs_tgz_out_args {
 typedef struct guestfs_tgz_out_args guestfs_tgz_out_args;
 
 struct guestfs_mount_ro_args {
-	char *device;
+	char *mountable;
 	char *mountpoint;
 };
 typedef struct guestfs_mount_ro_args guestfs_mount_ro_args;
 
 struct guestfs_mount_options_args {
 	char *options;
-	char *device;
+	char *mountable;
 	char *mountpoint;
 };
 typedef struct guestfs_mount_options_args guestfs_mount_options_args;
@@ -894,7 +894,7 @@ typedef struct guestfs_mount_options_args guestfs_mount_options_args;
 struct guestfs_mount_vfs_args {
 	char *options;
 	char *vfstype;
-	char *device;
+	char *mountable;
 	char *mountpoint;
 };
 typedef struct guestfs_mount_vfs_args guestfs_mount_vfs_args;
@@ -1889,7 +1889,7 @@ struct guestfs_case_sensitive_path_ret {
 typedef struct guestfs_case_sensitive_path_ret guestfs_case_sensitive_path_ret;
 
 struct guestfs_vfs_type_args {
-	char *device;
+	char *mountable;
 };
 typedef struct guestfs_vfs_type_args guestfs_vfs_type_args;
 
@@ -2328,7 +2328,7 @@ struct guestfs_fallocate64_args {
 typedef struct guestfs_fallocate64_args guestfs_fallocate64_args;
 
 struct guestfs_vfs_label_args {
-	char *device;
+	char *mountable;
 };
 typedef struct guestfs_vfs_label_args guestfs_vfs_label_args;
 
@@ -2338,7 +2338,7 @@ struct guestfs_vfs_label_ret {
 typedef struct guestfs_vfs_label_ret guestfs_vfs_label_ret;
 
 struct guestfs_vfs_uuid_args {
-	char *device;
+	char *mountable;
 };
 typedef struct guestfs_vfs_uuid_args guestfs_vfs_uuid_args;
 
@@ -2827,7 +2827,7 @@ struct guestfs_ntfsclone_in_args {
 typedef struct guestfs_ntfsclone_in_args guestfs_ntfsclone_in_args;
 
 struct guestfs_set_label_args {
-	char *device;
+	char *mountable;
 	char *label;
 };
 typedef struct guestfs_set_label_args guestfs_set_label_args;

@@ -3602,19 +3602,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1cachedir  (JNIEnv *env, jobject obj
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
 
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
 
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
 
   if (r == -1) {
@@ -5456,19 +5456,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1tgz_1out  (JNIEnv *env, jobject obj, jlo
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount_1ro  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount_1ro  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
 
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
 
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
 
   if (r == -1) {
@@ -5478,22 +5478,22 @@ Java_com_redhat_et_libguestfs_GuestFS__1mount_1ro  (JNIEnv *env, jobject obj, jl
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount_1options  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount_1options  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jmountable, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *options;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   options = (*env)->GetStringUTFChars (env, joptions, NULL);
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
 
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
 
   (*env)->ReleaseStringUTFChars (env, joptions, options);
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
 
   if (r == -1) {
@@ -5503,25 +5503,25 @@ Java_com_redhat_et_libguestfs_GuestFS__1mount_1options  (JNIEnv *env, jobject ob
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1mount_1vfs  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jvfstype, jstring jdevice, jstring jmountpoint)
+Java_com_redhat_et_libguestfs_GuestFS__1mount_1vfs  (JNIEnv *env, jobject obj, jlong jg, jstring joptions, jstring jvfstype, jstring jmountable, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *options;
   const char *vfstype;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   options = (*env)->GetStringUTFChars (env, joptions, NULL);
   vfstype = (*env)->GetStringUTFChars (env, jvfstype, NULL);
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
   mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
 
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
 
   (*env)->ReleaseStringUTFChars (env, joptions, options);
   (*env)->ReleaseStringUTFChars (env, jvfstype, vfstype);
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
 
   if (r == -1) {
@@ -8581,18 +8581,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1case_1sensitive_1path  (JNIEnv *env, job
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vfs_1type  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1vfs_1type  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
-  const char *device;
+  const char *mountable;
 
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
 
-  r = guestfs_vfs_type (g, device);
+  r = guestfs_vfs_type (g, mountable);
 
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -9763,18 +9763,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1fallocate64  (JNIEnv *env, jobject obj, 
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
-  const char *device;
+  const char *mountable;
 
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
 
-  r = guestfs_vfs_label (g, device);
+  r = guestfs_vfs_label (g, mountable);
 
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -9786,18 +9786,18 @@ Java_com_redhat_et_libguestfs_GuestFS__1vfs_1label  (JNIEnv *env, jobject obj, j
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1vfs_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice)
+Java_com_redhat_et_libguestfs_GuestFS__1vfs_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   jstring jr;
   char *r;
-  const char *device;
+  const char *mountable;
 
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
 
-  r = guestfs_vfs_uuid (g, device);
+  r = guestfs_vfs_uuid (g, mountable);
 
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
 
   if (r == NULL) {
     throw_exception (env, guestfs_last_error (g));
@@ -11169,19 +11169,19 @@ Java_com_redhat_et_libguestfs_GuestFS__1ntfsclone_1in  (JNIEnv *env, jobject obj
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1set_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring jlabel)
+Java_com_redhat_et_libguestfs_GuestFS__1set_1label  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable, jstring jlabel)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
-  const char *device;
+  const char *mountable;
   const char *label;
 
-  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  mountable = (*env)->GetStringUTFChars (env, jmountable, NULL);
   label = (*env)->GetStringUTFChars (env, jlabel, NULL);
 
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
 
-  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, jmountable, mountable);
   (*env)->ReleaseStringUTFChars (env, jlabel, label);
 
   if (r == -1) {

@@ -45,7 +45,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdarg.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(GUESTFS_GCC_VERSION)
 # define GUESTFS_GCC_VERSION \
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
@@ -1953,7 +1953,7 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_mktemp_argv (guestfs_h *g, const char *t
 extern GUESTFS_DLL_PUBLIC int guestfs_modprobe (guestfs_h *g, const char *modulename);
 
 #define GUESTFS_HAVE_MOUNT 1
-extern GUESTFS_DLL_PUBLIC int guestfs_mount (guestfs_h *g, const char *device, const char *mountpoint);
+extern GUESTFS_DLL_PUBLIC int guestfs_mount (guestfs_h *g, const char *mountable, const char *mountpoint);
 
 #define GUESTFS_HAVE_MOUNT_9P 1
 #define GUESTFS_MOUNT_9P_OPTIONS 0
@@ -1997,13 +1997,13 @@ extern GUESTFS_DLL_PUBLIC int guestfs_mount_local_run (guestfs_h *g);
 extern GUESTFS_DLL_PUBLIC int guestfs_mount_loop (guestfs_h *g, const char *file, const char *mountpoint);
 
 #define GUESTFS_HAVE_MOUNT_OPTIONS 1
-extern GUESTFS_DLL_PUBLIC int guestfs_mount_options (guestfs_h *g, const char *options, const char *device, const char *mountpoint);
+extern GUESTFS_DLL_PUBLIC int guestfs_mount_options (guestfs_h *g, const char *options, const char *mountable, const char *mountpoint);
 
 #define GUESTFS_HAVE_MOUNT_RO 1
-extern GUESTFS_DLL_PUBLIC int guestfs_mount_ro (guestfs_h *g, const char *device, const char *mountpoint);
+extern GUESTFS_DLL_PUBLIC int guestfs_mount_ro (guestfs_h *g, const char *mountable, const char *mountpoint);
 
 #define GUESTFS_HAVE_MOUNT_VFS 1
-extern GUESTFS_DLL_PUBLIC int guestfs_mount_vfs (guestfs_h *g, const char *options, const char *vfstype, const char *device, const char *mountpoint);
+extern GUESTFS_DLL_PUBLIC int guestfs_mount_vfs (guestfs_h *g, const char *options, const char *vfstype, const char *mountable, const char *mountpoint);
 
 #define GUESTFS_HAVE_MOUNTPOINTS 1
 extern GUESTFS_DLL_PUBLIC char **guestfs_mountpoints (guestfs_h *g);
@@ -2322,7 +2322,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_e2label (guestfs_h *g, const char *dev
 extern GUESTFS_DLL_PUBLIC int guestfs_set_e2uuid (guestfs_h *g, const char *device, const char *uuid);
 
 #define GUESTFS_HAVE_SET_LABEL 1
-extern GUESTFS_DLL_PUBLIC int guestfs_set_label (guestfs_h *g, const char *device, const char *label);
+extern GUESTFS_DLL_PUBLIC int guestfs_set_label (guestfs_h *g, const char *mountable, const char *label);
 
 #define GUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_libvirt_requested_credential (guestfs_h *g, int index, const char *cred, size_t cred_size);
@@ -2600,13 +2600,13 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_utsname *guestfs_utsname (guestfs_h *g)
 extern GUESTFS_DLL_PUBLIC struct guestfs_version *guestfs_version (guestfs_h *g);
 
 #define GUESTFS_HAVE_VFS_LABEL 1
-extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_label (guestfs_h *g, const char *device);
+extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_label (guestfs_h *g, const char *mountable);
 
 #define GUESTFS_HAVE_VFS_TYPE 1
-extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_type (guestfs_h *g, const char *device);
+extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_type (guestfs_h *g, const char *mountable);
 
 #define GUESTFS_HAVE_VFS_UUID 1
-extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_uuid (guestfs_h *g, const char *device);
+extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_uuid (guestfs_h *g, const char *mountable);
 
 #define GUESTFS_HAVE_VG_ACTIVATE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_vg_activate (guestfs_h *g, int activate, char *const *volgroups);

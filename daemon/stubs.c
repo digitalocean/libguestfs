@@ -41,7 +41,7 @@ mount_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_args args;
-  char *device;
+  mountable_t mountable;
   char *mountpoint;
 
   if (optargs_bitmask != 0) {
@@ -55,11 +55,10 @@ mount_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
   mountpoint = args.mountpoint;
 
-  r = do_mount (device, mountpoint);
+  r = do_mount (&mountable, mountpoint);
   if (r == -1)
     /* do_mount has already called reply_with_error */
     goto done;
@@ -2552,7 +2551,7 @@ mount_ro_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_mount_ro_args args;
-  char *device;
+  mountable_t mountable;
   char *mountpoint;
 
   if (optargs_bitmask != 0) {
@@ -2566,11 +2565,10 @@ mount_ro_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
   mountpoint = args.mountpoint;
 
-  r = do_mount_ro (device, mountpoint);
+  r = do_mount_ro (&mountable, mountpoint);
   if (r == -1)
     /* do_mount_ro has already called reply_with_error */
     goto done;
@@ -2588,7 +2586,7 @@ mount_options_stub (XDR *xdr_in)
   int r;
   struct guestfs_mount_options_args args;
   char *options;
-  char *device;
+  mountable_t mountable;
   char *mountpoint;
 
   if (optargs_bitmask != 0) {
@@ -2603,11 +2601,10 @@ mount_options_stub (XDR *xdr_in)
     goto done;
   }
   options = args.options;
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
   mountpoint = args.mountpoint;
 
-  r = do_mount_options (options, device, mountpoint);
+  r = do_mount_options (options, &mountable, mountpoint);
   if (r == -1)
     /* do_mount_options has already called reply_with_error */
     goto done;
@@ -2626,7 +2623,7 @@ mount_vfs_stub (XDR *xdr_in)
   struct guestfs_mount_vfs_args args;
   char *options;
   char *vfstype;
-  char *device;
+  mountable_t mountable;
   char *mountpoint;
 
   if (optargs_bitmask != 0) {
@@ -2642,11 +2639,10 @@ mount_vfs_stub (XDR *xdr_in)
   }
   options = args.options;
   vfstype = args.vfstype;
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
   mountpoint = args.mountpoint;
 
-  r = do_mount_vfs (options, vfstype, device, mountpoint);
+  r = do_mount_vfs (options, vfstype, &mountable, mountpoint);
   if (r == -1)
     /* do_mount_vfs has already called reply_with_error */
     goto done;
@@ -7315,7 +7311,7 @@ vfs_type_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_type_args args;
-  char *device;
+  mountable_t mountable;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -7328,10 +7324,9 @@ vfs_type_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
 
-  r = do_vfs_type (device);
+  r = do_vfs_type (&mountable);
   if (r == NULL)
     /* do_vfs_type has already called reply_with_error */
     goto done;
@@ -9353,7 +9348,7 @@ vfs_label_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_label_args args;
-  char *device;
+  mountable_t mountable;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9366,10 +9361,9 @@ vfs_label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
 
-  r = do_vfs_label (device);
+  r = do_vfs_label (&mountable);
   if (r == NULL)
     /* do_vfs_label has already called reply_with_error */
     goto done;
@@ -9389,7 +9383,7 @@ vfs_uuid_stub (XDR *xdr_in)
 {
   char *r;
   struct guestfs_vfs_uuid_args args;
-  char *device;
+  mountable_t mountable;
 
   if (optargs_bitmask != 0) {
     reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
@@ -9402,10 +9396,9 @@ vfs_uuid_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
 
-  r = do_vfs_uuid (device);
+  r = do_vfs_uuid (&mountable);
   if (r == NULL)
     /* do_vfs_uuid has already called reply_with_error */
     goto done;
@@ -11668,7 +11661,7 @@ set_label_stub (XDR *xdr_in)
 {
   int r;
   struct guestfs_set_label_args args;
-  char *device;
+  mountable_t mountable;
   char *label;
 
   if (optargs_bitmask != 0) {
@@ -11682,11 +11675,10 @@ set_label_stub (XDR *xdr_in)
     reply_with_error ("daemon failed to decode procedure arguments");
     goto done;
   }
-  device = args.device;
-  RESOLVE_DEVICE (device, , goto done);
+  RESOLVE_MOUNTABLE(args.mountable, mountable, , goto done);
   label = args.label;
 
-  r = do_set_label (device, label);
+  r = do_set_label (&mountable, label);
   if (r == -1)
     /* do_set_label has already called reply_with_error */
     goto done;

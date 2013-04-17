@@ -32,6 +32,20 @@
 
 #include "guestfs-internal-all.h"
 
+/* Mountables */
+
+typedef enum {
+  MOUNTABLE_DEVICE,     /* A bare device */
+  MOUNTABLE_BTRFSVOL,   /* A btrfs subvolume: device + volume */
+  MOUNTABLE_PATH        /* An already mounted path: device = path */
+} mountable_type_t;
+
+typedef struct {
+  mountable_type_t type;
+  const char *device;
+  const char *volume;
+} mountable_t;
+
 /*-- in guestfsd.c --*/
 extern int verbose;
 
@@ -48,6 +62,8 @@ extern int xwrite (int sock, const void *buf, size_t len)
   __attribute__((__warn_unused_result__));
 extern int xread (int sock, void *buf, size_t len)
   __attribute__((__warn_unused_result__));
+
+extern char *mountable_to_string (const mountable_t *mountable);
 
 /* Growable strings buffer. */
 struct stringsbuf {
@@ -116,6 +132,8 @@ extern void trim (char *str);
 
 extern int device_name_translation (char *device);
 
+extern int parse_btrfsvol (char *desc, mountable_t *mountable);
+
 extern int prog_exists (const char *prog);
 
 extern void udev_settle (void);
@@ -124,8 +142,13 @@ extern int random_name (char *template);
 
 /* This just stops gcc from giving a warning about our custom printf
  * formatters %Q and %R.  See guestfs(3)/EXTENDING LIBGUESTFS for more
- * info about these.
+ * info about these.  In GCC 4.8.0 the warning is even harder to
+ * 'trick', hence the need for the #pragma directives.
  */
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+#endif
 static inline int
 asprintf_nowarn (char **strp, const char *fmt, ...)
 {
@@ -137,6 +160,9 @@ asprintf_nowarn (char **strp, const char *fmt, ...)
   va_end (args);
   return r;
 }
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40800 /* gcc >= 4.8.0 */
+#pragma GCC diagnostic pop
+#endif
 
 /* Use by the CLEANUP_* macros. */
 extern void cleanup_free (void *ptr);
@@ -247,6 +273,11 @@ extern void pulse_mode_start (void);
 extern void pulse_mode_end (void);
 extern void pulse_mode_cancel (void);
 
+/* Send a progress message without rate-limiting.  This is just
+ * for debugging - DON'T use it in regular code!
+ */
+extern void notify_progress_no_ratelimit (uint64_t position, uint64_t total, const struct timeval *now);
+
 /* Return true iff the buffer is all zero bytes.
  *
  * Note that gcc is smart enough to optimize this properly:
@@ -330,6 +361,32 @@ is_zero (const char *buffer, size_t size)
     }                                                                   \
   } while (0)
 
+/* All functions that take a mountable argument must call this macro.
+ * It parses the mountable into a mountable_t, ensures any
+ * underlying device exists, and does device name translation
+ * (described in the guestfs(3) manpage).
+ *
+ * Note that the "string" argument may be modified.
+ */
+#define RESOLVE_MOUNTABLE(string,mountable,cancel_stmt,fail_stmt)       \
+  do {                                                                  \
+    if (STRPREFIX ((string), "btrfsvol:")) {   \
+      if (parse_btrfsvol ((string) + strlen ("btrfsvol:"), &(mountable)) == -1)\
+      {                                                                 \
+        cancel_stmt;                                                    \
+        reply_with_error ("%s: %s: expecting a btrfs volume",           \
+                          __func__, (string));                          \
+        fail_stmt;                                                      \
+      }                                                                 \
+    }                                                                   \
+                                                                        \
+    else {                                                              \
+      (mountable).type = MOUNTABLE_DEVICE;                              \
+      (mountable).device = (string);                                    \
+      RESOLVE_DEVICE((string), cancel_stmt, fail_stmt);                 \
+    }                                                                   \
+  } while (0)
+
 /* Helper for functions which need either an absolute path in the
  * mounted filesystem, OR a /dev/ device which exists.
  *
@@ -349,6 +406,24 @@ is_zero (const char *buffer, size_t size)
       ABS_PATH ((path), cancel_stmt, fail_stmt);                        \
     }									\
   } while (0)
+
+/* Helper for functions which need either an absolute path in the
+ * mounted filesystem, OR a valid mountable description.
+ */
+#define REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE(string, mountable,            \
+                                          cancel_stmt, fail_stmt)       \
+  do {                                                                  \
+    if (STREQLEN ((string), "/dev/", strlen ("/dev/")) || (string)[0] != '/') {\
+      RESOLVE_MOUNTABLE (string, mountable, cancel_stmt, fail_stmt);    \
+    }                                                                   \
+                                                                        \
+    else {                                                              \
+      NEED_ROOT (cancel_stmt, fail_stmt);                               \
+      (mountable).type = MOUNTABLE_PATH;                                \
+      (mountable).device = (string);                                    \
+    }                                                                   \
+  } while (0)                                                           \
+
 
 /* NB:
  * (1) You must match CHROOT_IN and CHROOT_OUT even along error paths.

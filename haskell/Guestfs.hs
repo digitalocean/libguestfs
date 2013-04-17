@@ -1832,8 +1832,8 @@ foreign import ccall unsafe "guestfs.h guestfs_mount" c_mount
   :: GuestfsP -> CString -> CString -> IO CInt
 
 mount :: GuestfsH -> String -> String -> IO ()
-mount h device mountpoint = do
-  r <- withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount p device mountpoint)
+mount h mountable mountpoint = do
+  r <- withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount p mountable mountpoint)
   if (r == -1)
     then do
       err <- last_error h
@@ -2531,8 +2531,8 @@ foreign import ccall unsafe "guestfs.h guestfs_mount_ro" c_mount_ro
   :: GuestfsP -> CString -> CString -> IO CInt
 
 mount_ro :: GuestfsH -> String -> String -> IO ()
-mount_ro h device mountpoint = do
-  r <- withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_ro p device mountpoint)
+mount_ro h mountable mountpoint = do
+  r <- withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_ro p mountable mountpoint)
   if (r == -1)
     then do
       err <- last_error h
@@ -2543,8 +2543,8 @@ foreign import ccall unsafe "guestfs.h guestfs_mount_options" c_mount_options
   :: GuestfsP -> CString -> CString -> CString -> IO CInt
 
 mount_options :: GuestfsH -> String -> String -> String -> IO ()
-mount_options h options device mountpoint = do
-  r <- withCString options $ \options -> withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_options p options device mountpoint)
+mount_options h options mountable mountpoint = do
+  r <- withCString options $ \options -> withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_options p options mountable mountpoint)
   if (r == -1)
     then do
       err <- last_error h
@@ -2555,8 +2555,8 @@ foreign import ccall unsafe "guestfs.h guestfs_mount_vfs" c_mount_vfs
   :: GuestfsP -> CString -> CString -> CString -> CString -> IO CInt
 
 mount_vfs :: GuestfsH -> String -> String -> String -> String -> IO ()
-mount_vfs h options vfstype device mountpoint = do
-  r <- withCString options $ \options -> withCString vfstype $ \vfstype -> withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_vfs p options vfstype device mountpoint)
+mount_vfs h options vfstype mountable mountpoint = do
+  r <- withCString options $ \options -> withCString vfstype $ \vfstype -> withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_vfs p options vfstype mountable mountpoint)
   if (r == -1)
     then do
       err <- last_error h
@@ -3938,8 +3938,8 @@ foreign import ccall unsafe "guestfs.h guestfs_vfs_type" c_vfs_type
   :: GuestfsP -> CString -> IO CString
 
 vfs_type :: GuestfsH -> String -> IO String
-vfs_type h device = do
-  r <- withCString device $ \device -> withForeignPtr h (\p -> c_vfs_type p device)
+vfs_type h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_vfs_type p mountable)
   if (r == nullPtr)
     then do
       err <- last_error h
@@ -4502,8 +4502,8 @@ foreign import ccall unsafe "guestfs.h guestfs_vfs_label" c_vfs_label
   :: GuestfsP -> CString -> IO CString
 
 vfs_label :: GuestfsH -> String -> IO String
-vfs_label h device = do
-  r <- withCString device $ \device -> withForeignPtr h (\p -> c_vfs_label p device)
+vfs_label h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_vfs_label p mountable)
   if (r == nullPtr)
     then do
       err <- last_error h
@@ -4514,8 +4514,8 @@ foreign import ccall unsafe "guestfs.h guestfs_vfs_uuid" c_vfs_uuid
   :: GuestfsP -> CString -> IO CString
 
 vfs_uuid :: GuestfsH -> String -> IO String
-vfs_uuid h device = do
-  r <- withCString device $ \device -> withForeignPtr h (\p -> c_vfs_uuid p device)
+vfs_uuid h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_vfs_uuid p mountable)
   if (r == nullPtr)
     then do
       err <- last_error h
@@ -4952,8 +4952,8 @@ foreign import ccall unsafe "guestfs.h guestfs_set_label" c_set_label
   :: GuestfsP -> CString -> CString -> IO CInt
 
 set_label :: GuestfsH -> String -> String -> IO ()
-set_label h device label = do
-  r <- withCString device $ \device -> withCString label $ \label -> withForeignPtr h (\p -> c_set_label p device label)
+set_label h mountable label = do
+  r <- withCString mountable $ \mountable -> withCString label $ \label -> withForeignPtr h (\p -> c_set_label p mountable label)
   if (r == -1)
     then do
       err <- last_error h

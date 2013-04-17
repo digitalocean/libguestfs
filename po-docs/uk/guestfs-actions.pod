@@ -5680,8 +5680,8 @@ strings and the array after use>.
  guestfs_list_filesystems (guestfs_h *g);
 
 This inspection command looks for filesystems on partitions, block devices
-and logical volumes, returning a list of devices containing filesystems and
-their type.
+and logical volumes, returning a list of C<mountables> containing
+filesystems and their type.
 
 The return value is a hash, where the keys are the devices containing
 filesystems, and the values are the filesystem types.  For example:
@@ -5690,6 +5690,9 @@ filesystems, and the values are the filesystem types.  For example:
  "/dev/sda2" => "ext2"
  "/dev/vg_guest/lv_root" => "ext4"
  "/dev/vg_guest/lv_swap" => "swap"
+
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to C<guestfs_mount>.
 
 The value can have the special value "unknown", meaning the content of the
 device is undetermined or empty.  "swap" means a Linux swap partition.
@@ -7397,13 +7400,15 @@ C<appliance/kmod.whitelist.in> in the source).
 
  int
  guestfs_mount (guestfs_h *g,
-                const char *device,
+                const char *mountable,
                 const char *mountpoint);
 
 Mount a guest disk at a position in the filesystem.  Block devices are named
 C</dev/sda>, C</dev/sdb> and so on, as they were added to the guest.  If
 those block devices contain partitions, they will have the usual names
-(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used.
+(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used, or
+'mountable' strings returned by C<guestfs_list_filesystems> or
+C<guestfs_inspect_get_mountpoints>.
 
 The rules are the same as for L<mount(2)>: A filesystem must first be
 mounted on C</> before others can be mounted.  Other filesystems can only be
@@ -7578,7 +7583,7 @@ mountpoint>.
  int
  guestfs_mount_options (guestfs_h *g,
                         const char *options,
-                        const char *device,
+                        const char *mountable,
                         const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it allows you to set
@@ -7595,7 +7600,7 @@ If the C<options> parameter is an empty string, then no options are passed
 
  int
  guestfs_mount_ro (guestfs_h *g,
-                   const char *device,
+                   const char *mountable,
                    const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it mounts the
@@ -7611,7 +7616,7 @@ filesystem with the read-only (I<-o ro>) flag.
  guestfs_mount_vfs (guestfs_h *g,
                     const char *options,
                     const char *vfstype,
-                    const char *device,
+                    const char *mountable,
                     const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it allows you to set
@@ -9360,10 +9365,10 @@ the existing UUID of a filesystem.
 
  int
  guestfs_set_label (guestfs_h *g,
-                    const char *device,
+                    const char *mountable,
                     const char *label);
 
-Set the filesystem label on C<device> to C<label>.
+Set the filesystem label on C<mountable> to C<label>.
 
 Only some filesystem types support labels, and libguestfs supports setting
 labels on only a subset of these.
@@ -9371,6 +9376,9 @@ labels on only a subset of these.
 On ext2/3/4 filesystems, labels are limited to 16 bytes.
 
 On NTFS filesystems, labels are limited to 128 unicode characters.
+
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 
 To read the label on a filesystem, call C<guestfs_vfs_label>.
 
@@ -10879,9 +10887,9 @@ error.  I<The caller must call C<guestfs_free_version> after use>.
 
  char *
  guestfs_vfs_label (guestfs_h *g,
-                    const char *device);
+                    const char *mountable);
 
-This returns the filesystem label of the filesystem on C<device>.
+This returns the label of the filesystem on C<mountable>.
 
 If the filesystem is unlabeled, this returns the empty string.
 
@@ -10897,10 +10905,10 @@ the returned string after use>.
 
  char *
  guestfs_vfs_type (guestfs_h *g,
-                   const char *device);
+                   const char *mountable);
 
 This command gets the filesystem type corresponding to the filesystem on
-C<device>.
+C<mountable>.
 
 For most filesystems, the result is the name of the Linux VFS module which
 would be used to mount this filesystem if you mounted it without specifying
@@ -10915,9 +10923,9 @@ the returned string after use>.
 
  char *
  guestfs_vfs_uuid (guestfs_h *g,
-                   const char *device);
+                   const char *mountable);
 
-This returns the filesystem UUID of the filesystem on C<device>.
+This returns the filesystem UUID of the filesystem on C<mountable>.
 
 If the filesystem does not have a UUID, this returns the empty string.
 

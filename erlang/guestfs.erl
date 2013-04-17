@@ -1632,8 +1632,8 @@ mktemp(G, Tmpl) ->
 modprobe(G, Modulename) ->
   call_port(G, {modprobe, Modulename}).
 
-mount(G, Device, Mountpoint) ->
-  call_port(G, {mount, Device, Mountpoint}).
+mount(G, Mountable, Mountpoint) ->
+  call_port(G, {mount, Mountable, Mountpoint}).
 
 mount_9p(G, Mounttag, Mountpoint, Optargs) ->
   call_port(G, {mount_9p, Mounttag, Mountpoint, Optargs}).
@@ -1651,14 +1651,14 @@ mount_local_run(G) ->
 mount_loop(G, File, Mountpoint) ->
   call_port(G, {mount_loop, File, Mountpoint}).
 
-mount_options(G, Options, Device, Mountpoint) ->
-  call_port(G, {mount_options, Options, Device, Mountpoint}).
+mount_options(G, Options, Mountable, Mountpoint) ->
+  call_port(G, {mount_options, Options, Mountable, Mountpoint}).
 
-mount_ro(G, Device, Mountpoint) ->
-  call_port(G, {mount_ro, Device, Mountpoint}).
+mount_ro(G, Mountable, Mountpoint) ->
+  call_port(G, {mount_ro, Mountable, Mountpoint}).
 
-mount_vfs(G, Options, Vfstype, Device, Mountpoint) ->
-  call_port(G, {mount_vfs, Options, Vfstype, Device, Mountpoint}).
+mount_vfs(G, Options, Vfstype, Mountable, Mountpoint) ->
+  call_port(G, {mount_vfs, Options, Vfstype, Mountable, Mountpoint}).
 
 mountpoints(G) ->
   call_port(G, {mountpoints}).
@@ -1897,8 +1897,8 @@ set_e2label(G, Device, Label) ->
 set_e2uuid(G, Device, Uuid) ->
   call_port(G, {set_e2uuid, Device, Uuid}).
 
-set_label(G, Device, Label) ->
-  call_port(G, {set_label, Device, Label}).
+set_label(G, Mountable, Label) ->
+  call_port(G, {set_label, Mountable, Label}).
 
 set_libvirt_requested_credential(G, Index, Cred) ->
   call_port(G, {set_libvirt_requested_credential, Index, Cred}).
@@ -2102,14 +2102,14 @@ utsname(G) ->
 version(G) ->
   call_port(G, {version}).
 
-vfs_label(G, Device) ->
-  call_port(G, {vfs_label, Device}).
+vfs_label(G, Mountable) ->
+  call_port(G, {vfs_label, Mountable}).
 
-vfs_type(G, Device) ->
-  call_port(G, {vfs_type, Device}).
+vfs_type(G, Mountable) ->
+  call_port(G, {vfs_type, Mountable}).
 
-vfs_uuid(G, Device) ->
-  call_port(G, {vfs_uuid, Device}).
+vfs_uuid(G, Mountable) ->
+  call_port(G, {vfs_uuid, Mountable}).
 
 vg_activate(G, Activate, Volgroups) ->
   call_port(G, {vg_activate, Activate, Volgroups}).

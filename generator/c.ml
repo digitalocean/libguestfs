@@ -121,12 +121,18 @@ let rec generate_prototype ?(extern = true) ?(static = false)
     List.iter (
       function
       | Pathname n
-      | Device n | Mountable n | Dev_or_Path n
+      | Device n | Dev_or_Path n
       | String n
       | OptString n
       | Key n ->
           next ();
           pr "const char *%s" n
+      | Mountable n | Mountable_or_Path n ->
+          next();
+          if in_daemon then
+            pr "const mountable_t *%s" n
+          else
+            pr "const char *%s" n
       | StringList n | DeviceList n ->
           next ();
           pr "char *const *%s" n
@@ -160,6 +166,7 @@ let rec generate_prototype ?(extern = true) ?(static = false)
 
 (* Generate C call arguments, eg "(handle, foo, bar)" *)
 and generate_c_call_args ?handle ?(implicit_size_ptr = "&size")
+    ?(in_daemon = false)
     (ret, args, optargs) =
   pr "(";
   let comma = ref false in
@@ -176,6 +183,9 @@ and generate_c_call_args ?handle ?(implicit_size_ptr = "&size")
     | BufferIn n ->
         next ();
         pr "%s, %s_size" n n
+    | Mountable n | Mountable_or_Path n ->
+        next ();
+        pr (if in_daemon then "&%s" else "%s") n
     | arg ->
         next ();
         pr "%s" (name_of_argt arg)
@@ -413,7 +423,7 @@ extern \"C\" {
 #include <stdint.h>
 #include <stdarg.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(GUESTFS_GCC_VERSION)
 # define GUESTFS_GCC_VERSION \\
     (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
@@ -943,7 +953,7 @@ and generate_client_actions hash () =
       | Device n
       | Mountable n
       | Pathname n
-      | Dev_or_Path n
+      | Dev_or_Path n | Mountable_or_Path n
       | FileIn n
       | FileOut n
       | BufferIn n
@@ -1061,7 +1071,7 @@ and generate_client_actions hash () =
       | Device n
       | Mountable n
       | Pathname n
-      | Dev_or_Path n
+      | Dev_or_Path n | Mountable_or_Path n
       | FileIn n
       | FileOut n ->
           (* guestfish doesn't support string escaping, so neither do we *)
@@ -1375,7 +1385,8 @@ and generate_client_actions hash () =
     ) else (
       List.iter (
         function
-        | Pathname n | Device n | Mountable n | Dev_or_Path n | String n
+        | Pathname n | Device n | Mountable n | Dev_or_Path n 
+        | Mountable_or_Path n | String n
         | Key n ->
           pr "  args.%s = (char *) %s;\n" n n
         | OptString n ->

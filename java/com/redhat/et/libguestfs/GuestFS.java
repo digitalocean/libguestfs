@@ -2660,7 +2660,8 @@ public class GuestFS {
    * <p>
    * This inspection command looks for filesystems on
    * partitions, block devices and logical volumes, returning
-   * a list of devices containing filesystems and their type.
+   * a list of "mountables" containing filesystems and their
+   * type.
    * <p>
    * The return value is a hash, where the keys are the
    * devices containing filesystems, and the values are the
@@ -2670,6 +2671,10 @@ public class GuestFS {
    * "/dev/sda2" => "ext2"
    * "/dev/vg_guest/lv_root" => "ext4"
    * "/dev/vg_guest/lv_swap" => "swap"
+   * <p>
+   * The key is not necessarily a block device. It may also
+   * be an opaque 'mountable' string which can be passed to
+   * "g.mount".
    * <p>
    * The value can have the special value "unknown", meaning
    * the content of the device is undetermined or empty.
@@ -4886,7 +4891,8 @@ public class GuestFS {
    * on, as they were added to the guest. If those block
    * devices contain partitions, they will have the usual
    * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
-   * names can be used.
+   * names can be used, or 'mountable' strings returned by
+   * "g.list_filesystems" or "g.inspect_get_mountpoints".
    * <p>
    * The rules are the same as for mount(2): A filesystem
    * must first be mounted on "/" before others can be
@@ -4906,16 +4912,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount (String device, String mountpoint)
+  public void mount (String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount: handle is closed");
 
-    _mount (g, device, mountpoint);
+    _mount (g, mountable, mountpoint);
   }
 
-  private native void _mount (long g, String device, String mountpoint)
+  private native void _mount (long g, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   /**
@@ -6773,16 +6779,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount_ro (String device, String mountpoint)
+  public void mount_ro (String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_ro: handle is closed");
 
-    _mount_ro (g, device, mountpoint);
+    _mount_ro (g, mountable, mountpoint);
   }
 
-  private native void _mount_ro (long g, String device, String mountpoint)
+  private native void _mount_ro (long g, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   /**
@@ -6798,16 +6804,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount_options (String options, String device, String mountpoint)
+  public void mount_options (String options, String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_options: handle is closed");
 
-    _mount_options (g, options, device, mountpoint);
+    _mount_options (g, options, mountable, mountpoint);
   }
 
-  private native void _mount_options (long g, String options, String device, String mountpoint)
+  private native void _mount_options (long g, String options, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   /**
@@ -6819,16 +6825,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount_vfs (String options, String vfstype, String device, String mountpoint)
+  public void mount_vfs (String options, String vfstype, String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_vfs: handle is closed");
 
-    _mount_vfs (g, options, vfstype, device, mountpoint);
+    _mount_vfs (g, options, vfstype, mountable, mountpoint);
   }
 
-  private native void _mount_vfs (long g, String options, String vfstype, String device, String mountpoint)
+  private native void _mount_vfs (long g, String options, String vfstype, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   public String debug (String subcmd, String[] extraargs)
@@ -10175,7 +10181,7 @@ public class GuestFS {
    * get the Linux VFS type corresponding to a mounted device
    * <p>
    * This command gets the filesystem type corresponding to
-   * the filesystem on "device".
+   * the filesystem on "mountable".
    * <p>
    * For most filesystems, the result is the name of the
    * Linux VFS module which would be used to mount this
@@ -10185,16 +10191,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public String vfs_type (String device)
+  public String vfs_type (String mountable)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_type: handle is closed");
 
-    return _vfs_type (g, device);
+    return _vfs_type (g, mountable);
   }
 
-  private native String _vfs_type (long g, String device)
+  private native String _vfs_type (long g, String mountable)
     throws LibGuestFSException;
 
   /**
@@ -11511,8 +11517,7 @@ public class GuestFS {
   /**
    * get the filesystem label
    * <p>
-   * This returns the filesystem label of the filesystem on
-   * "device".
+   * This returns the label of the filesystem on "mountable".
    * <p>
    * If the filesystem is unlabeled, this returns the empty
    * string.
@@ -11522,23 +11527,23 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public String vfs_label (String device)
+  public String vfs_label (String mountable)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_label: handle is closed");
 
-    return _vfs_label (g, device);
+    return _vfs_label (g, mountable);
   }
 
-  private native String _vfs_label (long g, String device)
+  private native String _vfs_label (long g, String mountable)
     throws LibGuestFSException;
 
   /**
    * get the filesystem UUID
    * <p>
    * This returns the filesystem UUID of the filesystem on
-   * "device".
+   * "mountable".
    * <p>
    * If the filesystem does not have a UUID, this returns the
    * empty string.
@@ -11547,16 +11552,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public String vfs_uuid (String device)
+  public String vfs_uuid (String mountable)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_uuid: handle is closed");
 
-    return _vfs_uuid (g, device);
+    return _vfs_uuid (g, mountable);
   }
 
-  private native String _vfs_uuid (long g, String device)
+  private native String _vfs_uuid (long g, String mountable)
     throws LibGuestFSException;
 
   /**
@@ -13719,7 +13724,7 @@ public class GuestFS {
   /**
    * set filesystem label
    * <p>
-   * Set the filesystem label on "device" to "label".
+   * Set the filesystem label on "mountable" to "label".
    * <p>
    * Only some filesystem types support labels, and
    * libguestfs supports setting labels on only a subset of
@@ -13730,20 +13735,23 @@ public class GuestFS {
    * On NTFS filesystems, labels are limited to 128 unicode
    * characters.
    * <p>
+   * Setting the label on a btrfs subvolume will set the
+   * label on its parent filesystem.
+   * <p>
    * To read the label on a filesystem, call "g.vfs_label".
    * <p>
    * @throws LibGuestFSException
    */
-  public void set_label (String device, String label)
+  public void set_label (String mountable, String label)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("set_label: handle is closed");
 
-    _set_label (g, device, label);
+    _set_label (g, mountable, label);
   }
 
-  private native void _set_label (long g, String device, String label)
+  private native void _set_label (long g, String mountable, String label)
     throws LibGuestFSException;
 
   /**

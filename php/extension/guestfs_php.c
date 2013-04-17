@@ -13632,13 +13632,13 @@ PHP_FUNCTION (guestfs_mount)
 {
   zval *z_g;
   guestfs_h *g;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
   char *mountpoint;
   int mountpoint_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
-        &z_g, &device, &device_size, &mountpoint, &mountpoint_size) == FAILURE) {
+        &z_g, &mountable, &mountable_size, &mountpoint, &mountpoint_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -13648,8 +13648,8 @@ PHP_FUNCTION (guestfs_mount)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: mount: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: mount: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
@@ -13659,7 +13659,7 @@ PHP_FUNCTION (guestfs_mount)
   }
 
   int r;
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -13846,13 +13846,13 @@ PHP_FUNCTION (guestfs_mount_options)
   guestfs_h *g;
   char *options;
   int options_size;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
   char *mountpoint;
   int mountpoint_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rsss",
-        &z_g, &options, &options_size, &device, &device_size, &mountpoint, &mountpoint_size) == FAILURE) {
+        &z_g, &options, &options_size, &mountable, &mountable_size, &mountpoint, &mountpoint_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -13867,8 +13867,8 @@ PHP_FUNCTION (guestfs_mount_options)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: mount_options: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: mount_options: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
@@ -13878,7 +13878,7 @@ PHP_FUNCTION (guestfs_mount_options)
   }
 
   int r;
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -13891,13 +13891,13 @@ PHP_FUNCTION (guestfs_mount_ro)
 {
   zval *z_g;
   guestfs_h *g;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
   char *mountpoint;
   int mountpoint_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
-        &z_g, &device, &device_size, &mountpoint, &mountpoint_size) == FAILURE) {
+        &z_g, &mountable, &mountable_size, &mountpoint, &mountpoint_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -13907,8 +13907,8 @@ PHP_FUNCTION (guestfs_mount_ro)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: mount_ro: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: mount_ro: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
@@ -13918,7 +13918,7 @@ PHP_FUNCTION (guestfs_mount_ro)
   }
 
   int r;
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -13935,13 +13935,13 @@ PHP_FUNCTION (guestfs_mount_vfs)
   int options_size;
   char *vfstype;
   int vfstype_size;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
   char *mountpoint;
   int mountpoint_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rssss",
-        &z_g, &options, &options_size, &vfstype, &vfstype_size, &device, &device_size, &mountpoint, &mountpoint_size) == FAILURE) {
+        &z_g, &options, &options_size, &vfstype, &vfstype_size, &mountable, &mountable_size, &mountpoint, &mountpoint_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -13961,8 +13961,8 @@ PHP_FUNCTION (guestfs_mount_vfs)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: mount_vfs: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: mount_vfs: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
@@ -13972,7 +13972,7 @@ PHP_FUNCTION (guestfs_mount_vfs)
   }
 
   int r;
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -16715,13 +16715,13 @@ PHP_FUNCTION (guestfs_set_label)
 {
   zval *z_g;
   guestfs_h *g;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
   char *label;
   int label_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
-        &z_g, &device, &device_size, &label, &label_size) == FAILURE) {
+        &z_g, &mountable, &mountable_size, &label, &label_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -16731,8 +16731,8 @@ PHP_FUNCTION (guestfs_set_label)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: set_label: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: set_label: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
@@ -16742,7 +16742,7 @@ PHP_FUNCTION (guestfs_set_label)
   }
 
   int r;
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -19023,11 +19023,11 @@ PHP_FUNCTION (guestfs_vfs_label)
 {
   zval *z_g;
   guestfs_h *g;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &device, &device_size) == FAILURE) {
+        &z_g, &mountable, &mountable_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -19037,13 +19037,13 @@ PHP_FUNCTION (guestfs_vfs_label)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: vfs_label: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: vfs_label: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
   char *r;
-  r = guestfs_vfs_label (g, device);
+  r = guestfs_vfs_label (g, mountable);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -19058,11 +19058,11 @@ PHP_FUNCTION (guestfs_vfs_type)
 {
   zval *z_g;
   guestfs_h *g;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &device, &device_size) == FAILURE) {
+        &z_g, &mountable, &mountable_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -19072,13 +19072,13 @@ PHP_FUNCTION (guestfs_vfs_type)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: vfs_type: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: vfs_type: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
   char *r;
-  r = guestfs_vfs_type (g, device);
+  r = guestfs_vfs_type (g, mountable);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -19093,11 +19093,11 @@ PHP_FUNCTION (guestfs_vfs_uuid)
 {
   zval *z_g;
   guestfs_h *g;
-  char *device;
-  int device_size;
+  char *mountable;
+  int mountable_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &device, &device_size) == FAILURE) {
+        &z_g, &mountable, &mountable_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -19107,13 +19107,13 @@ PHP_FUNCTION (guestfs_vfs_uuid)
     RETURN_FALSE;
   }
 
-  if (strlen (device) != device_size) {
-    fprintf (stderr, "libguestfs: vfs_uuid: parameter 'device' contains embedded ASCII NUL.\n");
+  if (strlen (mountable) != mountable_size) {
+    fprintf (stderr, "libguestfs: vfs_uuid: parameter 'mountable' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
   char *r;
-  r = guestfs_vfs_uuid (g, device);
+  r = guestfs_vfs_uuid (g, mountable);
 
   if (r == NULL) {
     RETURN_FALSE;

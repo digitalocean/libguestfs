@@ -1086,7 +1086,8 @@ class GuestFS(object):
     def list_filesystems (self):
         """This inspection command looks for filesystems on
         partitions, block devices and logical volumes, returning
-        a list of devices containing filesystems and their type.
+        a list of "mountables" containing filesystems and their
+        type.
         
         The return value is a hash, where the keys are the
         devices containing filesystems, and the values are the
@@ -1096,6 +1097,10 @@ class GuestFS(object):
         "/dev/sda2" => "ext2"
         "/dev/vg_guest/lv_root" => "ext4"
         "/dev/vg_guest/lv_swap" => "swap"
+        
+        The key is not necessarily a block device. It may also
+        be an opaque 'mountable' string which can be passed to
+        "g.mount".
         
         The value can have the special value "unknown", meaning
         the content of the device is undetermined or empty.
@@ -2351,13 +2356,14 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.get_cachedir (self._o)
 
-    def mount (self, device, mountpoint):
+    def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
         on, as they were added to the guest. If those block
         devices contain partitions, they will have the usual
         names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
-        names can be used.
+        names can be used, or 'mountable' strings returned by
+        "g.list_filesystems" or "g.inspect_get_mountpoints".
         
         The rules are the same as for mount(2): A filesystem
         must first be mounted on "/" before others can be
@@ -2376,7 +2382,7 @@ class GuestFS(object):
         don't want any options).
         """
         self._check_not_closed ()
-        return libguestfsmod.mount (self._o, device, mountpoint)
+        return libguestfsmod.mount (self._o, mountable, mountpoint)
 
     def sync (self):
         """This syncs the disk, so that any writes are flushed
@@ -3271,14 +3277,14 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.tgz_out (self._o, directory, tarball)
 
-    def mount_ro (self, device, mountpoint):
+    def mount_ro (self, mountable, mountpoint):
         """This is the same as the "g.mount" command, but it mounts
         the filesystem with the read-only (*-o ro*) flag.
         """
         self._check_not_closed ()
-        return libguestfsmod.mount_ro (self._o, device, mountpoint)
+        return libguestfsmod.mount_ro (self._o, mountable, mountpoint)
 
-    def mount_options (self, options, device, mountpoint):
+    def mount_options (self, options, mountable, mountpoint):
         """This is the same as the "g.mount" command, but it allows
         you to set the mount options as for the mount(8) *-o*
         flag.
@@ -3288,15 +3294,15 @@ class GuestFS(object):
         filesystem uses).
         """
         self._check_not_closed ()
-        return libguestfsmod.mount_options (self._o, options, device, mountpoint)
+        return libguestfsmod.mount_options (self._o, options, mountable, mountpoint)
 
-    def mount_vfs (self, options, vfstype, device, mountpoint):
+    def mount_vfs (self, options, vfstype, mountable, mountpoint):
         """This is the same as the "g.mount" command, but it allows
         you to set both the mount options and the vfstype as for
         the mount(8) *-o* and *-t* flags.
         """
         self._check_not_closed ()
-        return libguestfsmod.mount_vfs (self._o, options, vfstype, device, mountpoint)
+        return libguestfsmod.mount_vfs (self._o, options, vfstype, mountable, mountpoint)
 
     def debug (self, subcmd, extraargs):
         extraargs = list (extraargs)
@@ -5042,9 +5048,9 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.case_sensitive_path (self._o, path)
 
-    def vfs_type (self, device):
+    def vfs_type (self, mountable):
         """This command gets the filesystem type corresponding to
-        the filesystem on "device".
+        the filesystem on "mountable".
         
         For most filesystems, the result is the name of the
         Linux VFS module which would be used to mount this
@@ -5053,7 +5059,7 @@ class GuestFS(object):
         "ntfs".
         """
         self._check_not_closed ()
-        return libguestfsmod.vfs_type (self._o, device)
+        return libguestfsmod.vfs_type (self._o, mountable)
 
     def truncate (self, path):
         """This command truncates "path" to a zero-length file. The
@@ -5744,9 +5750,8 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.fallocate64 (self._o, path, len)
 
-    def vfs_label (self, device):
-        """This returns the filesystem label of the filesystem on
-        "device".
+    def vfs_label (self, mountable):
+        """This returns the label of the filesystem on "mountable".
         
         If the filesystem is unlabeled, this returns the empty
         string.
@@ -5755,11 +5760,11 @@ class GuestFS(object):
         "g.findfs_label".
         """
         self._check_not_closed ()
-        return libguestfsmod.vfs_label (self._o, device)
+        return libguestfsmod.vfs_label (self._o, mountable)
 
-    def vfs_uuid (self, device):
+    def vfs_uuid (self, mountable):
         """This returns the filesystem UUID of the filesystem on
-        "device".
+        "mountable".
         
         If the filesystem does not have a UUID, this returns the
         empty string.
@@ -5767,7 +5772,7 @@ class GuestFS(object):
         To find a filesystem from the UUID, use "g.findfs_uuid".
         """
         self._check_not_closed ()
-        return libguestfsmod.vfs_uuid (self._o, device)
+        return libguestfsmod.vfs_uuid (self._o, mountable)
 
     def lvm_set_filter (self, devices):
         """This sets the LVM device filter so that LVM will only be
@@ -6634,8 +6639,8 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.ntfsclone_in (self._o, backupfile, device)
 
-    def set_label (self, device, label):
-        """Set the filesystem label on "device" to "label".
+    def set_label (self, mountable, label):
+        """Set the filesystem label on "mountable" to "label".
         
         Only some filesystem types support labels, and
         libguestfs supports setting labels on only a subset of
@@ -6646,10 +6651,13 @@ class GuestFS(object):
         On NTFS filesystems, labels are limited to 128 unicode
         characters.
         
+        Setting the label on a btrfs subvolume will set the
+        label on its parent filesystem.
+        
         To read the label on a filesystem, call "g.vfs_label".
         """
         self._check_not_closed ()
-        return libguestfsmod.set_label (self._o, device, label)
+        return libguestfsmod.set_label (self._o, mountable, label)
 
     def zero_free_space (self, directory):
         """Zero the free space in the filesystem mounted on

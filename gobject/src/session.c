@@ -4062,7 +4062,7 @@ guestfs_session_get_network(GuestfsSession *session, GError **err)
  * list filesystems
  *
  * This inspection command looks for filesystems on partitions, block
- * devices and logical volumes, returning a list of devices containing
+ * devices and logical volumes, returning a list of @mountables containing
  * filesystems and their type.
  * 
  * The return value is a hash, where the keys are the devices containing
@@ -4075,6 +4075,9 @@ guestfs_session_get_network(GuestfsSession *session, GError **err)
  * <![CDATA["/dev/vg_guest/lv_root" => "ext4"]]>
  * 
  * <![CDATA["/dev/vg_guest/lv_swap" => "swap"]]>
+ * 
+ * The key is not necessarily a block device. It may also be an opaque
+ * 'mountable' string which can be passed to guestfs_session_mount().
  * 
  * The value can have the special value "unknown", meaning the content of
  * the device is undetermined or empty. "swap" means a Linux swap
@@ -6984,7 +6987,7 @@ guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
 /**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -6993,7 +6996,9 @@ guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
  * Mount a guest disk at a position in the filesystem. Block devices are
  * named "/dev/sda", "/dev/sdb" and so on, as they were added to the guest.
  * If those block devices contain partitions, they will have the usual
- * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style names can be used.
+ * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style names can be used,
+ * or 'mountable' strings returned by guestfs_session_list_filesystems() or
+ * guestfs_session_inspect_get_mountpoints().
  * 
  * The rules are the same as for mount(2): A filesystem must first be
  * mounted on "/" before others can be mounted. Other filesystems can only
@@ -7012,7 +7017,7 @@ guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -7022,7 +7027,7 @@ guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar 
     return FALSE;
   }
 
-  int ret = guestfs_mount (g, device, mountpoint);
+  int ret = guestfs_mount (g, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9808,7 +9813,7 @@ guestfs_session_tgz_out(GuestfsSession *session, const gchar *directory, const g
 /**
  * guestfs_session_mount_ro:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -9820,7 +9825,7 @@ guestfs_session_tgz_out(GuestfsSession *session, const gchar *directory, const g
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount_ro(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -9830,7 +9835,7 @@ guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gch
     return FALSE;
   }
 
-  int ret = guestfs_mount_ro (g, device, mountpoint);
+  int ret = guestfs_mount_ro (g, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9843,7 +9848,7 @@ guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gch
  * guestfs_session_mount_options:
  * @session: (transfer none): A GuestfsSession object
  * @options: (transfer none) (type utf8):
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -9858,7 +9863,7 @@ guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gch
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount_options(GuestfsSession *session, const gchar *options, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount_options(GuestfsSession *session, const gchar *options, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -9868,7 +9873,7 @@ guestfs_session_mount_options(GuestfsSession *session, const gchar *options, con
     return FALSE;
   }
 
-  int ret = guestfs_mount_options (g, options, device, mountpoint);
+  int ret = guestfs_mount_options (g, options, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9882,7 +9887,7 @@ guestfs_session_mount_options(GuestfsSession *session, const gchar *options, con
  * @session: (transfer none): A GuestfsSession object
  * @options: (transfer none) (type utf8):
  * @vfstype: (transfer none) (type utf8):
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -9895,7 +9900,7 @@ guestfs_session_mount_options(GuestfsSession *session, const gchar *options, con
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -9905,7 +9910,7 @@ guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const g
     return FALSE;
   }
 
-  int ret = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  int ret = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14549,13 +14554,13 @@ guestfs_session_case_sensitive_path(GuestfsSession *session, const gchar *path, 
 /**
  * guestfs_session_vfs_type:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
  * get the Linux VFS type corresponding to a mounted device
  *
  * This command gets the filesystem type corresponding to the filesystem on
- * @device.
+ * @mountable.
  * 
  * For most filesystems, the result is the name of the Linux VFS module
  * which would be used to mount this filesystem if you mounted it without
@@ -14565,7 +14570,7 @@ guestfs_session_case_sensitive_path(GuestfsSession *session, const gchar *path, 
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_vfs_type(GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_vfs_type(GuestfsSession *session, const gchar *mountable, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -14575,7 +14580,7 @@ guestfs_session_vfs_type(GuestfsSession *session, const gchar *device, GError **
     return NULL;
   }
 
-  char *ret = guestfs_vfs_type (g, device);
+  char *ret = guestfs_vfs_type (g, mountable);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -16591,12 +16596,12 @@ guestfs_session_fallocate64(GuestfsSession *session, const gchar *path, gint64 l
 /**
  * guestfs_session_vfs_label:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
  * get the filesystem label
  *
- * This returns the filesystem label of the filesystem on @device.
+ * This returns the label of the filesystem on @mountable.
  * 
  * If the filesystem is unlabeled, this returns the empty string.
  * 
@@ -16605,7 +16610,7 @@ guestfs_session_fallocate64(GuestfsSession *session, const gchar *path, gint64 l
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_vfs_label(GuestfsSession *session, const gchar *mountable, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -16615,7 +16620,7 @@ guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError *
     return NULL;
   }
 
-  char *ret = guestfs_vfs_label (g, device);
+  char *ret = guestfs_vfs_label (g, mountable);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -16627,12 +16632,12 @@ guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError *
 /**
  * guestfs_session_vfs_uuid:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
  * get the filesystem UUID
  *
- * This returns the filesystem UUID of the filesystem on @device.
+ * This returns the filesystem UUID of the filesystem on @mountable.
  * 
  * If the filesystem does not have a UUID, this returns the empty string.
  * 
@@ -16641,7 +16646,7 @@ guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError *
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *mountable, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -16651,7 +16656,7 @@ guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *device, GError **
     return NULL;
   }
 
-  char *ret = guestfs_vfs_uuid (g, device);
+  char *ret = guestfs_vfs_uuid (g, mountable);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -19454,13 +19459,13 @@ guestfs_session_ntfsclone_in(GuestfsSession *session, const gchar *backupfile, c
 /**
  * guestfs_session_set_label:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @label: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
  * set filesystem label
  *
- * Set the filesystem label on @device to @label.
+ * Set the filesystem label on @mountable to @label.
  * 
  * Only some filesystem types support labels, and libguestfs supports
  * setting labels on only a subset of these.
@@ -19469,12 +19474,15 @@ guestfs_session_ntfsclone_in(GuestfsSession *session, const gchar *backupfile, c
  * 
  * On NTFS filesystems, labels are limited to 128 unicode characters.
  * 
+ * Setting the label on a btrfs subvolume will set the label on its parent
+ * filesystem.
+ * 
  * To read the label on a filesystem, call guestfs_session_vfs_label().
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_set_label(GuestfsSession *session, const gchar *device, const gchar *label, GError **err)
+guestfs_session_set_label(GuestfsSession *session, const gchar *mountable, const gchar *label, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -19484,7 +19492,7 @@ guestfs_session_set_label(GuestfsSession *session, const gchar *device, const gc
     return FALSE;
   }
 
-  int ret = guestfs_set_label (g, device, label);
+  int ret = guestfs_set_label (g, mountable, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;

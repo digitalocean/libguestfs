@@ -8675,17 +8675,17 @@ guestfs_lua_mount (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "mount");
 
-  device = luaL_checkstring (L, 2);
+  mountable = luaL_checkstring (L, 2);
   mountpoint = luaL_checkstring (L, 3);
 
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
   if (r == -1)
     return last_error (L, g);
 
@@ -8817,7 +8817,7 @@ guestfs_lua_mount_options (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *options;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (g == NULL)
@@ -8825,10 +8825,10 @@ guestfs_lua_mount_options (lua_State *L)
                 "mount_options");
 
   options = luaL_checkstring (L, 2);
-  device = luaL_checkstring (L, 3);
+  mountable = luaL_checkstring (L, 3);
   mountpoint = luaL_checkstring (L, 4);
 
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   if (r == -1)
     return last_error (L, g);
 
@@ -8841,17 +8841,17 @@ guestfs_lua_mount_ro (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "mount_ro");
 
-  device = luaL_checkstring (L, 2);
+  mountable = luaL_checkstring (L, 2);
   mountpoint = luaL_checkstring (L, 3);
 
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
   if (r == -1)
     return last_error (L, g);
 
@@ -8866,7 +8866,7 @@ guestfs_lua_mount_vfs (lua_State *L)
   guestfs_h *g = u->g;
   const char *options;
   const char *vfstype;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
 
   if (g == NULL)
@@ -8875,10 +8875,10 @@ guestfs_lua_mount_vfs (lua_State *L)
 
   options = luaL_checkstring (L, 2);
   vfstype = luaL_checkstring (L, 3);
-  device = luaL_checkstring (L, 4);
+  mountable = luaL_checkstring (L, 4);
   mountpoint = luaL_checkstring (L, 5);
 
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   if (r == -1)
     return last_error (L, g);
 
@@ -10642,17 +10642,17 @@ guestfs_lua_set_label (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *device;
+  const char *mountable;
   const char *label;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "set_label");
 
-  device = luaL_checkstring (L, 2);
+  mountable = luaL_checkstring (L, 2);
   label = luaL_checkstring (L, 3);
 
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
   if (r == -1)
     return last_error (L, g);
 
@@ -12105,15 +12105,15 @@ guestfs_lua_vfs_label (lua_State *L)
   char *r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *device;
+  const char *mountable;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "vfs_label");
 
-  device = luaL_checkstring (L, 2);
+  mountable = luaL_checkstring (L, 2);
 
-  r = guestfs_vfs_label (g, device);
+  r = guestfs_vfs_label (g, mountable);
   if (r == NULL)
     return last_error (L, g);
 
@@ -12128,15 +12128,15 @@ guestfs_lua_vfs_type (lua_State *L)
   char *r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *device;
+  const char *mountable;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "vfs_type");
 
-  device = luaL_checkstring (L, 2);
+  mountable = luaL_checkstring (L, 2);
 
-  r = guestfs_vfs_type (g, device);
+  r = guestfs_vfs_type (g, mountable);
   if (r == NULL)
     return last_error (L, g);
 
@@ -12151,15 +12151,15 @@ guestfs_lua_vfs_uuid (lua_State *L)
   char *r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *device;
+  const char *mountable;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "vfs_uuid");
 
-  device = luaL_checkstring (L, 2);
+  mountable = luaL_checkstring (L, 2);
 
-  r = guestfs_vfs_uuid (g, device);
+  r = guestfs_vfs_uuid (g, mountable);
   if (r == NULL)
     return last_error (L, g);
 

@@ -12237,26 +12237,26 @@ ocaml_guestfs_modprobe (value gv, value modulenamev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_mount (value gv, value devicev, value mountpointv);
+value ocaml_guestfs_mount (value gv, value mountablev, value mountpointv);
 
 value
-ocaml_guestfs_mount (value gv, value devicev, value mountpointv)
+ocaml_guestfs_mount (value gv, value mountablev, value mountpointv)
 {
-  CAMLparam3 (gv, devicev, mountpointv);
+  CAMLparam3 (gv, mountablev, mountpointv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("mount");
 
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *mountpoint = guestfs___safe_strdup (g, String_val (mountpointv));
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
   caml_leave_blocking_section ();
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "mount");
@@ -12434,12 +12434,12 @@ ocaml_guestfs_mount_loop (value gv, value filev, value mountpointv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv);
+value ocaml_guestfs_mount_options (value gv, value optionsv, value mountablev, value mountpointv);
 
 value
-ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value mountpointv)
+ocaml_guestfs_mount_options (value gv, value optionsv, value mountablev, value mountpointv)
 {
-  CAMLparam4 (gv, optionsv, devicev, mountpointv);
+  CAMLparam4 (gv, optionsv, mountablev, mountpointv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -12447,15 +12447,15 @@ ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value moun
     ocaml_guestfs_raise_closed ("mount_options");
 
   char *options = guestfs___safe_strdup (g, String_val (optionsv));
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *mountpoint = guestfs___safe_strdup (g, String_val (mountpointv));
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   caml_leave_blocking_section ();
   free (options);
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "mount_options");
@@ -12469,26 +12469,26 @@ ocaml_guestfs_mount_options (value gv, value optionsv, value devicev, value moun
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv);
+value ocaml_guestfs_mount_ro (value gv, value mountablev, value mountpointv);
 
 value
-ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv)
+ocaml_guestfs_mount_ro (value gv, value mountablev, value mountpointv)
 {
-  CAMLparam3 (gv, devicev, mountpointv);
+  CAMLparam3 (gv, mountablev, mountpointv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("mount_ro");
 
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *mountpoint = guestfs___safe_strdup (g, String_val (mountpointv));
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
   caml_leave_blocking_section ();
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "mount_ro");
@@ -12502,12 +12502,12 @@ ocaml_guestfs_mount_ro (value gv, value devicev, value mountpointv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv);
+value ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value mountablev, value mountpointv);
 
 value
-ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev, value mountpointv)
+ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value mountablev, value mountpointv)
 {
-  CAMLparam5 (gv, optionsv, vfstypev, devicev, mountpointv);
+  CAMLparam5 (gv, optionsv, vfstypev, mountablev, mountpointv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -12516,16 +12516,16 @@ ocaml_guestfs_mount_vfs (value gv, value optionsv, value vfstypev, value devicev
 
   char *options = guestfs___safe_strdup (g, String_val (optionsv));
   char *vfstype = guestfs___safe_strdup (g, String_val (vfstypev));
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *mountpoint = guestfs___safe_strdup (g, String_val (mountpointv));
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   caml_leave_blocking_section ();
   free (options);
   free (vfstype);
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "mount_vfs");
@@ -14952,26 +14952,26 @@ ocaml_guestfs_set_e2uuid (value gv, value devicev, value uuidv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_set_label (value gv, value devicev, value labelv);
+value ocaml_guestfs_set_label (value gv, value mountablev, value labelv);
 
 value
-ocaml_guestfs_set_label (value gv, value devicev, value labelv)
+ocaml_guestfs_set_label (value gv, value mountablev, value labelv)
 {
-  CAMLparam3 (gv, devicev, labelv);
+  CAMLparam3 (gv, mountablev, labelv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("set_label");
 
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *label = guestfs___safe_strdup (g, String_val (labelv));
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
   caml_leave_blocking_section ();
-  free (device);
+  free (mountable);
   free (label);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_label");
@@ -17012,25 +17012,25 @@ ocaml_guestfs_version (value gv)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_vfs_label (value gv, value devicev);
+value ocaml_guestfs_vfs_label (value gv, value mountablev);
 
 value
-ocaml_guestfs_vfs_label (value gv, value devicev)
+ocaml_guestfs_vfs_label (value gv, value mountablev)
 {
-  CAMLparam2 (gv, devicev);
+  CAMLparam2 (gv, mountablev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("vfs_label");
 
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_vfs_label (g, device);
+  r = guestfs_vfs_label (g, mountable);
   caml_leave_blocking_section ();
-  free (device);
+  free (mountable);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "vfs_label");
 
@@ -17044,25 +17044,25 @@ ocaml_guestfs_vfs_label (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_vfs_type (value gv, value devicev);
+value ocaml_guestfs_vfs_type (value gv, value mountablev);
 
 value
-ocaml_guestfs_vfs_type (value gv, value devicev)
+ocaml_guestfs_vfs_type (value gv, value mountablev)
 {
-  CAMLparam2 (gv, devicev);
+  CAMLparam2 (gv, mountablev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("vfs_type");
 
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_vfs_type (g, device);
+  r = guestfs_vfs_type (g, mountable);
   caml_leave_blocking_section ();
-  free (device);
+  free (mountable);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "vfs_type");
 
@@ -17076,25 +17076,25 @@ ocaml_guestfs_vfs_type (value gv, value devicev)
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_vfs_uuid (value gv, value devicev);
+value ocaml_guestfs_vfs_uuid (value gv, value mountablev);
 
 value
-ocaml_guestfs_vfs_uuid (value gv, value devicev)
+ocaml_guestfs_vfs_uuid (value gv, value mountablev)
 {
-  CAMLparam2 (gv, devicev);
+  CAMLparam2 (gv, mountablev);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
   if (g == NULL)
     ocaml_guestfs_raise_closed ("vfs_uuid");
 
-  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *mountable = guestfs___safe_strdup (g, String_val (mountablev));
   char *r;
 
   caml_enter_blocking_section ();
-  r = guestfs_vfs_uuid (g, device);
+  r = guestfs_vfs_uuid (g, mountable);
   caml_leave_blocking_section ();
-  free (device);
+  free (mountable);
   if (r == NULL)
     ocaml_guestfs_raise_error (g, "vfs_uuid");
 

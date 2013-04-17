@@ -46,6 +46,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module alloca:
   # Code from module alloca-opt:
   # Code from module alloca-opt-tests:
+  # Code from module allocator:
+  # Code from module areadlink:
+  # Code from module areadlink-tests:
+  # Code from module areadlinkat:
+  # Code from module areadlinkat-tests:
   # Code from module argmatch:
   # Code from module argmatch-tests:
   # Code from module arpa_inet:
@@ -66,6 +71,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module c-strcase:
   # Code from module c-strcase-tests:
   # Code from module c-strcaseeq:
+  # Code from module careadlinkat:
   # Code from module chdir:
   # Code from module chdir-long:
   # Code from module chdir-tests:
@@ -268,6 +274,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module pipe2-tests:
   # Code from module pread:
   # Code from module pread-tests:
+  # Code from module priv-set:
+  # Code from module priv-set-tests:
   # Code from module progname:
   # Code from module putenv:
   # Code from module quote:
@@ -285,7 +293,12 @@ AC_DEFUN([gl_EARLY],
   # Code from module readdir:
   # Code from module readlink:
   # Code from module readlink-tests:
+  # Code from module readlinkat:
+  # Code from module readlinkat-tests:
   # Code from module realloc-posix:
+  # Code from module rmdir:
+  # Code from module rmdir-tests:
+  # Code from module root-uid:
   # Code from module safe-read:
   # Code from module safe-write:
   # Code from module same-inode:
@@ -393,6 +406,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module unistd-safer:
   # Code from module unistd-safer-tests:
   # Code from module unistd-tests:
+  # Code from module unlink:
+  # Code from module unlink-tests:
+  # Code from module unlinkat:
+  # Code from module unlinkat-tests:
+  # Code from module unlinkdir:
   # Code from module unsetenv:
   # Code from module unsetenv-tests:
   # Code from module useless-if-before-free:
@@ -462,10 +480,12 @@ LTALLOCA=`echo "$ALLOCA" | sed -e 's/\.[^.]* /.lo /g;s/\.[^.]*$/.lo/'`
 changequote([, ])dnl
 AC_SUBST([LTALLOCA])
   gl_FUNC_ALLOCA
+  gl_MODULE_INDICATOR([areadlinkat])
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
   AC_LIBOBJ([openat-proc])
   gl_BYTESWAP
+  AC_CHECK_FUNCS_ONCE([readlinkat])
   gl_UNISTD_MODULE_INDICATOR([chdir])
   gl_FUNC_CHDIR_LONG
   if test $gl_cv_have_arbitrary_file_name_length_limit = yes; then
@@ -857,6 +877,11 @@ AC_SUBST([LTALLOCA])
     gl_PREREQ_READLINK
   fi
   gl_UNISTD_MODULE_INDICATOR([readlink])
+  gl_FUNC_READLINKAT
+  if test $HAVE_READLINKAT = 0; then
+    AC_LIBOBJ([readlinkat])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([readlinkat])
   gl_FUNC_REALLOC_POSIX
   if test $REPLACE_REALLOC = 1; then
     AC_LIBOBJ([realloc])
@@ -1171,6 +1196,7 @@ changequote([, ])dnl
     AC_LIBOBJ([pipe])
   fi
   gl_UNISTD_MODULE_INDICATOR([pipe])
+  gl_PRIV_SET
   gl_FUNC_PUTENV
   if test $REPLACE_PUTENV = 1; then
     AC_LIBOBJ([putenv])
@@ -1180,6 +1206,11 @@ changequote([, ])dnl
   gl_FUNC_MMAP_ANON
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
   AC_CHECK_FUNCS_ONCE([mprotect])
+  gl_FUNC_RMDIR
+  if test $REPLACE_RMDIR = 1; then
+    AC_LIBOBJ([rmdir])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([rmdir])
   AC_CHECK_HEADERS_ONCE([sys/wait.h])
   gl_FUNC_SETLOCALE
   if test $REPLACE_SETLOCALE = 1; then
@@ -1207,6 +1238,17 @@ changequote([, ])dnl
   AC_PROG_MKDIR_P
   AC_CHECK_FUNCS_ONCE([shutdown])
   gl_THREAD
+  gl_FUNC_UNLINK
+  if test $REPLACE_UNLINK = 1; then
+    AC_LIBOBJ([unlink])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([unlink])
+  gl_FUNC_UNLINKAT
+  if test $HAVE_UNLINKAT = 0 || test $REPLACE_UNLINKAT = 1; then
+    AC_LIBOBJ([unlinkat])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([unlinkat])
+  gl_UNLINKDIR
   gl_FUNC_UNSETENV
   if test $HAVE_UNSETENV = 0 || test $REPLACE_UNSETENV = 1; then
     AC_LIBOBJ([unsetenv])
@@ -1348,6 +1390,11 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/accept4.c
   lib/alloca.c
   lib/alloca.in.h
+  lib/allocator.c
+  lib/allocator.h
+  lib/areadlink.c
+  lib/areadlink.h
+  lib/areadlinkat.c
   lib/argmatch.c
   lib/argmatch.h
   lib/arpa_inet.in.h
@@ -1366,6 +1413,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/c-strcasecmp.c
   lib/c-strcaseeq.h
   lib/c-strncasecmp.c
+  lib/careadlinkat.c
+  lib/careadlinkat.h
   lib/chdir-long.c
   lib/chdir-long.h
   lib/cloexec.c
@@ -1527,6 +1576,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/read.c
   lib/readdir.c
   lib/readlink.c
+  lib/readlinkat.c
   lib/realloc.c
   lib/ref-add.sin
   lib/ref-del.sin
@@ -1756,6 +1806,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/pipe2.m4
   m4/pread.m4
   m4/printf.m4
+  m4/priv-set.m4
   m4/putenv.m4
   m4/quote.m4
   m4/quotearg.m4
@@ -1765,7 +1816,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/read.m4
   m4/readdir.m4
   m4/readlink.m4
+  m4/readlinkat.m4
   m4/realloc.m4
+  m4/rmdir.m4
   m4/safe-read.m4
   m4/safe-write.m4
   m4/save-cwd.m4
@@ -1820,6 +1873,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/ungetc.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4
+  m4/unlink.m4
+  m4/unlinkat.m4
+  m4/unlinkdir.m4
   m4/usleep.m4
   m4/utimbuf.m4
   m4/utimecmp.m4
@@ -1849,6 +1905,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-accept.c
   tests/test-accept4.c
   tests/test-alloca-opt.c
+  tests/test-areadlink.c
+  tests/test-areadlink.h
+  tests/test-areadlinkat.c
   tests/test-argmatch.c
   tests/test-arpa_inet.c
   tests/test-binary-io.c
@@ -1972,6 +2031,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-pipe2.c
   tests/test-pread.c
   tests/test-pread.sh
+  tests/test-priv-set.c
   tests/test-quotearg-simple.c
   tests/test-quotearg.h
   tests/test-raise.c
@@ -1980,6 +2040,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-read.c
   tests/test-readlink.c
   tests/test-readlink.h
+  tests/test-readlinkat.c
+  tests/test-rmdir.c
+  tests/test-rmdir.h
   tests/test-select-fd.c
   tests/test-select-in.sh
   tests/test-select-out.sh
@@ -2029,6 +2092,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-thread_self.c
   tests/test-time.c
   tests/test-unistd.c
+  tests/test-unlink.c
+  tests/test-unlink.h
+  tests/test-unlinkat.c
   tests/test-unsetenv.c
   tests/test-usleep.c
   tests/test-utimens-common.h
@@ -2064,6 +2130,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-xvasprintf.c
   tests/zerosize-ptr.h
   tests=lib/anytostr.c
+  tests=lib/at-func.c
   tests=lib/bind.c
   tests=lib/btowc.c
   tests=lib/dup-safer-flag.c
@@ -2087,12 +2154,20 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/mbtowc.c
   tests=lib/offtostr.c
   tests=lib/pipe.c
+  tests=lib/priv-set.c
+  tests=lib/priv-set.h
   tests=lib/putenv.c
+  tests=lib/rmdir.c
+  tests=lib/root-uid.h
   tests=lib/setlocale.c
   tests=lib/setsockopt.c
   tests=lib/sys_ioctl.in.h
   tests=lib/uinttostr.c
   tests=lib/umaxtostr.c
+  tests=lib/unlink.c
+  tests=lib/unlinkat.c
+  tests=lib/unlinkdir.c
+  tests=lib/unlinkdir.h
   tests=lib/unsetenv.c
   tests=lib/usleep.c
   tests=lib/utimecmp.c

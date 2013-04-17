@@ -1569,7 +1569,7 @@ GUESTFS_DLL_PUBLIC int
 guestfs_mount_vfs (guestfs_h *g,
                    const char *options,
                    const char *vfstype,
-                   const char *device,
+                   const char *mountable,
                    const char *mountpoint)
 {
   struct guestfs_mount_vfs_args args;
@@ -1594,9 +1594,9 @@ guestfs_mount_vfs (guestfs_h *g,
            "mount_vfs", "vfstype");
     return -1;
   }
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mount_vfs", "device");
+           "mount_vfs", "mountable");
     return -1;
   }
   if (mountpoint == NULL) {
@@ -1610,7 +1610,7 @@ guestfs_mount_vfs (guestfs_h *g,
     fprintf (trace_fp, "%s", "mount_vfs");
     fprintf (trace_fp, " \"%s\"", options);
     fprintf (trace_fp, " \"%s\"", vfstype);
-    fprintf (trace_fp, " \"%s\"", device);
+    fprintf (trace_fp, " \"%s\"", mountable);
     fprintf (trace_fp, " \"%s\"", mountpoint);
     guestfs___trace_send_line (g);
   }
@@ -1624,7 +1624,7 @@ guestfs_mount_vfs (guestfs_h *g,
 
   args.options = (char *) options;
   args.vfstype = (char *) vfstype;
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.mountpoint = (char *) mountpoint;
   serial = guestfs___send (g, GUESTFS_PROC_MOUNT_VFS,
                            progress_hint, 0,
@@ -3576,7 +3576,7 @@ guestfs_mke2journal_L (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC char *
 guestfs_vfs_type (guestfs_h *g,
-                  const char *device)
+                  const char *mountable)
 {
   struct guestfs_vfs_type_args args;
   guestfs_message_header hdr;
@@ -3591,16 +3591,16 @@ guestfs_vfs_type (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "vfs_type", 8);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "vfs_type", "device");
+           "vfs_type", "mountable");
     return NULL;
   }
 
   if (trace_flag) {
     trace_fp = guestfs___trace_open (g);
     fprintf (trace_fp, "%s", "vfs_type");
-    fprintf (trace_fp, " \"%s\"", device);
+    fprintf (trace_fp, " \"%s\"", mountable);
     guestfs___trace_send_line (g);
   }
 
@@ -3611,7 +3611,7 @@ guestfs_vfs_type (guestfs_h *g,
     return NULL;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   serial = guestfs___send (g, GUESTFS_PROC_VFS_TYPE,
                            progress_hint, 0,
                            (xdrproc_t) xdr_guestfs_vfs_type_args, (char *) &args);
@@ -5323,7 +5323,7 @@ guestfs_md_detail (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC int
 guestfs_set_label (guestfs_h *g,
-                   const char *device,
+                   const char *mountable,
                    const char *label)
 {
   struct guestfs_set_label_args args;
@@ -5338,9 +5338,9 @@ guestfs_set_label (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "set_label", 9);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "set_label", "device");
+           "set_label", "mountable");
     return -1;
   }
   if (label == NULL) {
@@ -5352,7 +5352,7 @@ guestfs_set_label (guestfs_h *g,
   if (trace_flag) {
     trace_fp = guestfs___trace_open (g);
     fprintf (trace_fp, "%s", "set_label");
-    fprintf (trace_fp, " \"%s\"", device);
+    fprintf (trace_fp, " \"%s\"", mountable);
     fprintf (trace_fp, " \"%s\"", label);
     guestfs___trace_send_line (g);
   }
@@ -5364,7 +5364,7 @@ guestfs_set_label (guestfs_h *g,
     return -1;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.label = (char *) label;
   serial = guestfs___send (g, GUESTFS_PROC_SET_LABEL,
                            progress_hint, 0,

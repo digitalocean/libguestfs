@@ -5196,15 +5196,15 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mount (IntPtr h, [In] string device, [In] string mountpoint);
+    static extern int guestfs_mount (IntPtr h, [In] string mountable, [In] string mountpoint);
 
     /// <summary>
     /// mount a guest disk at a position in the filesystem
     /// </summary>
-    public void mount (string device, string mountpoint)
+    public void mount (string mountable, string mountpoint)
     {
       int r;
-      r = guestfs_mount (_handle, device, mountpoint);
+      r = guestfs_mount (_handle, mountable, mountpoint);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -5266,43 +5266,43 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mount_options (IntPtr h, [In] string options, [In] string device, [In] string mountpoint);
+    static extern int guestfs_mount_options (IntPtr h, [In] string options, [In] string mountable, [In] string mountpoint);
 
     /// <summary>
     /// mount a guest disk with mount options
     /// </summary>
-    public void mount_options (string options, string device, string mountpoint)
+    public void mount_options (string options, string mountable, string mountpoint)
     {
       int r;
-      r = guestfs_mount_options (_handle, options, device, mountpoint);
+      r = guestfs_mount_options (_handle, options, mountable, mountpoint);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mount_ro (IntPtr h, [In] string device, [In] string mountpoint);
+    static extern int guestfs_mount_ro (IntPtr h, [In] string mountable, [In] string mountpoint);
 
     /// <summary>
     /// mount a guest disk, read-only
     /// </summary>
-    public void mount_ro (string device, string mountpoint)
+    public void mount_ro (string mountable, string mountpoint)
     {
       int r;
-      r = guestfs_mount_ro (_handle, device, mountpoint);
+      r = guestfs_mount_ro (_handle, mountable, mountpoint);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_mount_vfs (IntPtr h, [In] string options, [In] string vfstype, [In] string device, [In] string mountpoint);
+    static extern int guestfs_mount_vfs (IntPtr h, [In] string options, [In] string vfstype, [In] string mountable, [In] string mountpoint);
 
     /// <summary>
     /// mount a guest disk with mount options and vfstype
     /// </summary>
-    public void mount_vfs (string options, string vfstype, string device, string mountpoint)
+    public void mount_vfs (string options, string vfstype, string mountable, string mountpoint)
     {
       int r;
-      r = guestfs_mount_vfs (_handle, options, vfstype, device, mountpoint);
+      r = guestfs_mount_vfs (_handle, options, vfstype, mountable, mountpoint);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -6362,15 +6362,15 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_set_label (IntPtr h, [In] string device, [In] string label);
+    static extern int guestfs_set_label (IntPtr h, [In] string mountable, [In] string label);
 
     /// <summary>
     /// set filesystem label
     /// </summary>
-    public void set_label (string device, string label)
+    public void set_label (string mountable, string label)
     {
       int r;
-      r = guestfs_set_label (_handle, device, label);
+      r = guestfs_set_label (_handle, mountable, label);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }
@@ -7249,45 +7249,45 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_vfs_label (IntPtr h, [In] string device);
+    static extern string guestfs_vfs_label (IntPtr h, [In] string mountable);
 
     /// <summary>
     /// get the filesystem label
     /// </summary>
-    public string vfs_label (string device)
+    public string vfs_label (string mountable)
     {
       string r;
-      r = guestfs_vfs_label (_handle, device);
+      r = guestfs_vfs_label (_handle, mountable);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_vfs_type (IntPtr h, [In] string device);
+    static extern string guestfs_vfs_type (IntPtr h, [In] string mountable);
 
     /// <summary>
     /// get the Linux VFS type corresponding to a mounted device
     /// </summary>
-    public string vfs_type (string device)
+    public string vfs_type (string mountable)
     {
       string r;
-      r = guestfs_vfs_type (_handle, device);
+      r = guestfs_vfs_type (_handle, mountable);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern string guestfs_vfs_uuid (IntPtr h, [In] string device);
+    static extern string guestfs_vfs_uuid (IntPtr h, [In] string mountable);
 
     /// <summary>
     /// get the filesystem UUID
     /// </summary>
-    public string vfs_uuid (string device)
+    public string vfs_uuid (string mountable)
     {
       string r;
-      r = guestfs_vfs_uuid (_handle, device);
+      r = guestfs_vfs_uuid (_handle, mountable);
       if (r == null)
         throw new Error (guestfs_last_error (_handle));
       return r;
