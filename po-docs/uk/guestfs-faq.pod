@@ -41,8 +41,9 @@ created from scratch.
 
 S<Red Hat> sponsors (ie. pays for) development of libguestfs and a huge
 number of other open source projects.  But you can run libguestfs and the
-virt tools on many different Linux distros and Mac OS X.  Some virt tools
-have been ported to Windows.
+virt tools on many different Linux distros and Mac OS X.  We try our best to
+support all Linux distros as first-class citizens.  Some virt tools have
+been ported to Windows.
 
 =head2 Що дає використання libguestfs порівняно з іншими інструментами?
 
@@ -252,19 +253,20 @@ L<http://koji.fedoraproject.org/koji/packageinfo?packageID=8391>
 
 =item RHEL 5
 
-Скористайтеся пакунком з EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
+The version shipped in official RHEL 5 is very old and should not be used
+except in conjunction with virt-v2v.  Use the up-to-date libguestfs 1.20
+package in EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
 
-=item RHEL 6.2-6.4
+=item RHEL 6
 
-Є частиною типового набору для встановлення. У RHEL 6 (і лише тут) вам слід
-встановити C<libguestfs-winsupport>, щоб мати змогу працювати з гостьовими
-системами Windows.
+It is part of the default install.  On RHEL 6 and 7 (only) you have to
+install C<libguestfs-winsupport> to get Windows guest support.
 
 =item RHEL 7
 
 It will be part of the default install, and based on libguestfs 1.20 or
-1.22.  As with RHEL 6 you will need to install C<libguestfs-winsupport>
-separately to get Windows guest support.
+1.22.  You will need to install C<libguestfs-winsupport> separately to get
+Windows guest support.
 
 =back
 
@@ -279,9 +281,9 @@ L<http://people.debian.org/~bengen/libguestfs/>
 
 =item Debian Wheezy та пізніші версії (7+)
 
-Ви можете скористатися офіційними пакунками Debian:
-L<http://packages.debian.org/search?keywords=libguestfs> (завдяки Hilko
-Bengen).
+Hilko Bengen generously supports libguestfs on Debian.  Official Debian
+packages are available:
+L<http://packages.debian.org/search?keywords=libguestfs>
 
 =item Ubuntu
 
@@ -323,9 +325,18 @@ L<http://packages.ubuntu.com/quantal/seabios>
 
 =item Gentoo
 
-Libguestfs was added to Gentoo in 2012-07.  Do:
+Libguestfs was added to Gentoo in 2012-07 by Andreis Vinogradovs
+(libguestfs) and Maxim Koltsov (mainly hivex).  Do:
 
  emerge libguestfs
+
+=item SuSE
+
+Libguestfs was added to SuSE in 2012 by Olaf Hering.
+
+=item ArchLinux
+
+Libguestfs was added to the AUR in 2010.
 
 =item Інші дистрибутиви Linux
 

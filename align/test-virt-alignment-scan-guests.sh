@@ -18,8 +18,13 @@
 
 export LANG=C
 
+if [ -n "$SKIP_TEST_VIRT_ALIGNMENT_SCAN_GUESTS_SH" ]; then
+    echo "$0: skipping test because SKIP_TEST_VIRT_ALIGNMENT_SCAN_GUESTS_SH is set."
+    exit 77
+fi
+
 guestsdir="$(cd ../tests/guests && pwd)"
-libvirt_uri="test://$guestsdir/guests.xml"
+libvirt_uri="test://$guestsdir/guests-all-good.xml"
 
 $VG ./virt-alignment-scan -c "$libvirt_uri"
 r=$?

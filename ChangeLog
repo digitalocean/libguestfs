@@ -1,3 +1,34 @@
+2013-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Remove obsolete sections from libguestfs gotchas.
+	These refer to old behaviour in long-unsupported versions
+	of libguestfs.
+
+	docs: Refresh API overview section.
+
+	docs: Alternate ways to list filesystems through the API.
+
+	FAQ: Update distro support section.
+
+	debian: Allow test-virt-alignment-scan-guests.sh test to be skipped.
+
+	tests/guests: Add 'guests-all-good.xml{.in}' libvirt test guest set.
+	This differs from 'guests.xml' in that there are no guests with
+	missing disks, etc., so we can use this to test virt-alignment-scan
+	accurately.
+
+2013-03-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	parallel: Propagate errors from worker threads and exit with error code.
+	In virt-df and virt-alignment-scan, ensure that errors that happen in
+	worker threads are propagated all the way up and result in
+	exit(EXIT_FAILURE).
+
+	Note that this makes the align/test-virt-alignment-scan-guests.sh test
+	fail (for a genuine reason).  This is fixed in the following commit.
+
+	This updates commit 8b90f55dc733e358a0892d8e6e5c67fe2cc4e891.
+
 2013-03-29  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.21.24.
