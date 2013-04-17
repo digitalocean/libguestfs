@@ -344,6 +344,7 @@ Makefile.in
 /ruby/examples/guestfs-ruby.3
 /ruby/examples/stamp-guestfs-ruby.pod
 /ruby/ext/guestfs/extconf.h
+/ruby/ext/guestfs/extconf.rb
 /ruby/ext/guestfs/_guestfs.bundle
 /ruby/ext/guestfs/_guestfs.c
 /ruby/ext/guestfs/_guestfs.so
@@ -404,6 +405,7 @@ Makefile.in
 /tests/c-api/test-last-errno
 /tests/c-api/test.log
 /tests/c-api/test-private-data
+/tests/c-api/test-pwd
 /tests/c-api/tests
 /tests/c-api/tests.c
 /tests/c-api/test*.tmp

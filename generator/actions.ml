@@ -3687,7 +3687,12 @@ C<guestfs_is_file>, C<guestfs_is_blockdev> (etc), C<guestfs_is_zero>." };
         [["mkdir"; "/command12"];
          ["upload"; "test-command"; "/command12/test-command"];
          ["chmod"; "0o755"; "/command12/test-command"];
-         ["command"; "/command12/test-command"]])
+         ["command"; "/command12/test-command"]]);
+      InitScratchFS, Always, TestOutput (
+        [["mkdir"; "/pwd"];
+         ["upload"; "test-pwd"; "/pwd/test-pwd"];
+         ["chmod"; "0o755"; "/pwd/test-pwd"];
+         ["command"; "/pwd/test-pwd"]], "/");
     ];
     shortdesc = "run a command from the guest filesystem";
     longdesc = "\
@@ -10686,6 +10691,37 @@ not always, the name of a Windows drive, eg. C<E:>." };
     longdesc = "\
 Return the list of partitions in the volume named C<volume> in the disk
 group with GUID <diskgroup>." };
+
+  { defaults with
+    name = "part_set_gpt_type";
+    style = RErr, [Device "device"; Int "partnum"; String "guid"], [];
+    proc_nr = Some 392;
+    tests = [];
+    shortdesc = "set the type GUID of a GPT partition";
+    longdesc = "\
+Set the type GUID of numbered GPT partition C<partnum> to C<guid>. Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
+
+See L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
+for a useful list of type GUIDs." };
+
+  { defaults with
+    name = "part_get_gpt_type";
+    style = RString "guid", [Device "device"; Int "partnum"], [];
+    proc_nr = Some 393;
+    tests = [
+      InitGPT, Always, TestOutput (
+        [["part_set_gpt_type"; "/dev/sda"; "1";
+          "01234567-89AB-CDEF-0123-456789ABCDEF"];
+         ["part_get_gpt_type"; "/dev/sda"; "1"]],
+         "01234567-89AB-CDEF-0123-456789ABCDEF");
+    ];
+    shortdesc = "get the type GUID of a GPT partition";
+    longdesc = "\
+Return the type GUID of numbered GPT partition C<partnum>. For MBR partitions,
+return an appropriate GUID corresponding to the MBR type. Behaviour is undefined
+for other partition types." };
 
 ]
 

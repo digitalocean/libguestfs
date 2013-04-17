@@ -641,6 +641,8 @@ gchar **guestfs_session_ldmtool_diskgroup_disks(GuestfsSession *session, const g
 gchar *guestfs_session_ldmtool_volume_type(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err);
 gchar *guestfs_session_ldmtool_volume_hint(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err);
 gchar **guestfs_session_ldmtool_volume_partitions(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err);
+gboolean guestfs_session_part_set_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err);
+gchar *guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 
 G_END_DECLS
 

@@ -16569,4 +16569,51 @@ public class GuestFS {
   private native String[] _ldmtool_volume_partitions (long g, String diskgroup, String volume)
     throws LibGuestFSException;
 
+  /**
+   * set the type GUID of a GPT partition
+   * <p>
+   * Set the type GUID of numbered GPT partition "partnum" to
+   * "guid". Return an error if the partition table of
+   * "device" isn't GPT, or if "guid" is not a valid GUID.
+   * <p>
+   * See
+   * <http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
+   * tion_type_GUIDs> for a useful list of type GUIDs.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_set_gpt_type (String device, int partnum, String guid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_gpt_type: handle is closed");
+
+    _part_set_gpt_type (g, device, partnum, guid);
+  }
+
+  private native void _part_set_gpt_type (long g, String device, int partnum, String guid)
+    throws LibGuestFSException;
+
+  /**
+   * get the type GUID of a GPT partition
+   * <p>
+   * Return the type GUID of numbered GPT partition
+   * "partnum". For MBR partitions, return an appropriate
+   * GUID corresponding to the MBR type. Behaviour is
+   * undefined for other partition types.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String part_get_gpt_type (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_gpt_type: handle is closed");
+
+    return _part_get_gpt_type (g, device, partnum);
+  }
+
+  private native String _part_get_gpt_type (long g, String device, int partnum)
+    throws LibGuestFSException;
+
 }

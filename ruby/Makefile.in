@@ -1301,10 +1301,10 @@ CLEANFILES = \
 	ext/guestfs/mkmf.log \
 	ext/guestfs/Makefile
 
-@HAVE_RUBY_TRUE@TESTS = run-bindtests run-ruby-tests
-@HAVE_RUBY_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 @HAVE_RUBY_TRUE@RUBY_SITELIB := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']")
 @HAVE_RUBY_TRUE@RUBY_SITEARCH := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['sitearchdir']")
+@HAVE_RUBY_TRUE@TESTS = run-bindtests run-ruby-tests
+@HAVE_RUBY_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 all: all-am
 
 .SUFFIXES:

@@ -192,7 +192,7 @@ ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
 
   event_bitmask = NUM2ULL (event_bitmaskv);
 
-  root = guestfs_safe_malloc (g, sizeof *root);
+  root = guestfs___safe_malloc (g, sizeof *root);
   *root = cbv;
 
   eh = guestfs_set_event_callback (g, ruby_event_callback_wrapper,
@@ -337,7 +337,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
 
   i = 0;
   root = guestfs_first_private (g, &key);
@@ -3546,7 +3546,7 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * short string using *only* ASCII characters
  * "[a-zA-Z]". As well as its usual name in the API
  * (such as "/dev/sda"), the drive will also be named
- * "/dev/disk/guestfs/*label*".
+ * "/dev/disk/guestfs/ *label*".
  * 
  * See "DISK LABELS" in guestfs(3).
  * 
@@ -7569,7 +7569,7 @@ ruby_guestfs_aug_load (VALUE gv)
  * list Augeas nodes under augpath
  *
  * This is just a shortcut for listing "g.aug_match"
- * "path/*" and sorting the resulting nodes into
+ * "path/ *" and sorting the resulting nodes into
  * alphabetical order.
  *
  *
@@ -18313,7 +18313,7 @@ ruby_guestfs_mount_9p (int argc, VALUE *argv, VALUE gv)
  *
  * List all device mapper devices.
  * 
- * The returned list contains "/dev/mapper/*" devices, eg.
+ * The returned list contains "/dev/mapper/ *" devices, eg.
  * ones created by a previous call to "g.luks_open".
  * 
  * Device mapper devices which correspond to logical
@@ -23694,15 +23694,94 @@ ruby_guestfs_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volume
   return rv;
 }
 
+/*
+ * call-seq:
+ *   g.part_set_gpt_type(device, partnum, guid) -> nil
+ *
+ * set the type GUID of a GPT partition
+ *
+ * Set the type GUID of numbered GPT partition "partnum" to
+ * "guid". Return an error if the partition table of
+ * "device" isn't GPT, or if "guid" is not a valid GUID.
+ * 
+ * See
+ * <http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
+ * tion_type_GUIDs> for a useful list of type GUIDs.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_set_gpt_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_type]).
+ */
+static VALUE
+ruby_guestfs_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_set_gpt_type");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+  const char *guid = StringValueCStr (guidv);
+
+  int r;
+
+  r = guestfs_part_set_gpt_type (g, device, partnum, guid);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_get_gpt_type(device, partnum) -> string
+ *
+ * get the type GUID of a GPT partition
+ *
+ * Return the type GUID of numbered GPT partition
+ * "partnum". For MBR partitions, return an appropriate
+ * GUID corresponding to the MBR type. Behaviour is
+ * undefined for other partition types.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_get_gpt_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_type]).
+ */
+static VALUE
+ruby_guestfs_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_gpt_type");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+
+  char *r;
+
+  r = guestfs_part_get_gpt_type (g, device, partnum);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+extern void Init__guestfs (void); /* keep GCC warnings happy */
+
 /* Initialize the module. */
-void Init__guestfs ()
+void
+Init__guestfs (void)
 {
   m_guestfs = rb_define_module ("Guestfs");
   c_guestfs = rb_define_class_under (m_guestfs, "Guestfs", rb_cObject);
   e_Error = rb_define_class_under (m_guestfs, "Error", rb_eStandardError);
 
 #ifdef HAVE_RB_DEFINE_ALLOC_FUNC
-  rb_define_alloc_func (c_guestfs, ruby_guestfs_create);
+  rb_define_alloc_func (c_guestfs, (rb_alloc_func_t) ruby_guestfs_create);
 #endif
 
   rb_define_module_function (m_guestfs, "create", ruby_guestfs_create, -1);
@@ -24781,4 +24860,8 @@ void Init__guestfs ()
         ruby_guestfs_ldmtool_volume_hint, 2);
   rb_define_method (c_guestfs, "ldmtool_volume_partitions",
         ruby_guestfs_ldmtool_volume_partitions, 2);
+  rb_define_method (c_guestfs, "part_set_gpt_type",
+        ruby_guestfs_part_set_gpt_type, 3);
+  rb_define_method (c_guestfs, "part_get_gpt_type",
+        ruby_guestfs_part_get_gpt_type, 2);
 }

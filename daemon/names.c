@@ -410,4 +410,6 @@ const char *function_names[] = {
   [389] = "ldmtool_volume_type",
   [390] = "ldmtool_volume_hint",
   [391] = "ldmtool_volume_partitions",
+  [392] = "part_set_gpt_type",
+  [393] = "part_get_gpt_type",
 };

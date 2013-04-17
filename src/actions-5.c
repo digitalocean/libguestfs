@@ -7486,3 +7486,108 @@ guestfs_ldmtool_volume_partitions (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_part_set_gpt_type (guestfs_h *g,
+                           const char *device,
+                           int partnum,
+                           const char *guid)
+{
+  struct guestfs_part_set_gpt_type_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  FILE *trace_fp;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "part_set_gpt_type", 17);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "part_set_gpt_type", "device");
+    return -1;
+  }
+  if (guid == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "part_set_gpt_type", "guid");
+    return -1;
+  }
+
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s", "part_set_gpt_type");
+    fprintf (trace_fp, " \"%s\"", device);
+    fprintf (trace_fp, " %d", partnum);
+    fprintf (trace_fp, " \"%s\"", guid);
+    guestfs___trace_send_line (g);
+  }
+
+  if (guestfs___check_appliance_up (g, "part_set_gpt_type") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_type", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  args.partnum = partnum;
+  args.guid = (char *) guid;
+  serial = guestfs___send (g, GUESTFS_PROC_PART_SET_GPT_TYPE,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_part_set_gpt_type_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_type", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "part_set_gpt_type", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_type", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_PART_SET_GPT_TYPE, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_type", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_set_gpt_type", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "part_set_gpt_type", err.error_message);
+    else
+      guestfs_error_errno (g, errnum, "%s: %s", "part_set_gpt_type",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    trace_fp = guestfs___trace_open (g);
+    fprintf (trace_fp, "%s = ", "part_set_gpt_type");
+    fprintf (trace_fp, "%d", ret_v);
+    guestfs___trace_send_line (g);
+  }
+
+  return ret_v;
+}
+

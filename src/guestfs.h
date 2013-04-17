@@ -59,6 +59,14 @@ extern "C" {
 
 #if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 40000 /* gcc >= 4.0 */
 # define GUESTFS_DLL_PUBLIC __attribute__((visibility ("default")))
+#else
+# define GUESTFS_DLL_PUBLIC
+#endif
+
+#if defined(__GNUC__) && GUESTFS_GCC_VERSION >= 30100 /* gcc >= 3.1 */
+# define GUESTFS_NORETURN __attribute__((noreturn))
+#else
+# define GUESTFS_NORETURN
 #endif
 
 /* The handle. */
@@ -87,7 +95,7 @@ typedef void (*guestfs_error_handler_cb) (guestfs_h *g, void *opaque, const char
 
 #ifndef GUESTFS_TYPEDEF_ABORT_CB
 #define GUESTFS_TYPEDEF_ABORT_CB 1
-typedef void (*guestfs_abort_cb) (void) __attribute__((__noreturn__));
+typedef void (*guestfs_abort_cb) (void) GUESTFS_NORETURN;
 #endif
 
 extern GUESTFS_DLL_PUBLIC void guestfs_set_error_handler (guestfs_h *g, guestfs_error_handler_cb cb, void *opaque);
@@ -2397,6 +2405,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_part_disk (guestfs_h *g, const char *devic
 #define LIBGUESTFS_HAVE_PART_GET_BOOTABLE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_part_get_bootable (guestfs_h *g, const char *device, int partnum);
 
+#define LIBGUESTFS_HAVE_PART_GET_GPT_TYPE 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_part_get_gpt_type (guestfs_h *g, const char *device, int partnum);
+
 #define LIBGUESTFS_HAVE_PART_GET_MBR_ID 1
 extern GUESTFS_DLL_PUBLIC int guestfs_part_get_mbr_id (guestfs_h *g, const char *device, int partnum);
 
@@ -2411,6 +2422,9 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_partition_list *guestfs_part_list (gues
 
 #define LIBGUESTFS_HAVE_PART_SET_BOOTABLE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_part_set_bootable (guestfs_h *g, const char *device, int partnum, int bootable);
+
+#define LIBGUESTFS_HAVE_PART_SET_GPT_TYPE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_part_set_gpt_type (guestfs_h *g, const char *device, int partnum, const char *guid);
 
 #define LIBGUESTFS_HAVE_PART_SET_MBR_ID 1
 extern GUESTFS_DLL_PUBLIC int guestfs_part_set_mbr_id (guestfs_h *g, const char *device, int partnum, int idbyte);
@@ -3103,20 +3117,23 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_zgrepi (guestfs_h *g, const char *regex
   GUESTFS_DEPRECATED_BY ("grep");
 
 
+#if GUESTFS_PRIVATE_FUNCTIONS
+
 /* Private functions.
  *
  * These are NOT part of the public, stable API, and can change at any
  * time!  We export them because they are used by some of the language
  * bindings.
  */
-extern GUESTFS_DLL_PUBLIC void *guestfs_safe_malloc (guestfs_h *g, size_t nbytes);
-extern GUESTFS_DLL_PUBLIC void *guestfs_safe_calloc (guestfs_h *g, size_t n, size_t s);
-extern GUESTFS_DLL_PUBLIC char *guestfs_safe_strdup (guestfs_h *g, const char *str);
-extern GUESTFS_DLL_PUBLIC void *guestfs_safe_memdup (guestfs_h *g, const void *ptr, size_t size);
-#ifdef GUESTFS_PRIVATE_FOR_EACH_DISK
-extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, virDomainPtr dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
-#endif
-/* End of private functions. */
+
+extern GUESTFS_DLL_PUBLIC void *guestfs___safe_malloc (guestfs_h *g, size_t nbytes);
+extern GUESTFS_DLL_PUBLIC void *guestfs___safe_calloc (guestfs_h *g, size_t n, size_t s);
+extern GUESTFS_DLL_PUBLIC char *guestfs___safe_strdup (guestfs_h *g, const char *str);
+extern GUESTFS_DLL_PUBLIC void *guestfs___safe_memdup (guestfs_h *g, const void *ptr, size_t size);
+
+extern GUESTFS_DLL_PUBLIC int guestfs___for_each_disk (guestfs_h *g, /* virDomainPtr */ void *dom, int (*)(guestfs_h *g, const char *filename, const char *format, int readonly, void *data), void *data);
+
+#endif /* End of private functions. */
 
 #ifdef __cplusplus
 }

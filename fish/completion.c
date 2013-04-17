@@ -546,6 +546,8 @@ static const char *const commands[] = {
   "ldmtool-volume-type",
   "ldmtool-volume-hint",
   "ldmtool-volume-partitions",
+  "part-set-gpt-type",
+  "part-get-gpt-type",
   "alloc",
   "allocate",
   "copy-in",

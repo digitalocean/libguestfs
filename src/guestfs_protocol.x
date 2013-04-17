@@ -2718,6 +2718,21 @@ struct guestfs_ldmtool_volume_partitions_ret {
   guestfs_str partitions<>;
 };
 
+struct guestfs_part_set_gpt_type_args {
+  string device<>;
+  int partnum;
+  string guid<>;
+};
+
+struct guestfs_part_get_gpt_type_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_gpt_type_ret {
+  string guid<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3103,10 +3118,12 @@ enum guestfs_procedure {
   GUESTFS_PROC_LDMTOOL_DISKGROUP_DISKS = 388,
   GUESTFS_PROC_LDMTOOL_VOLUME_TYPE = 389,
   GUESTFS_PROC_LDMTOOL_VOLUME_HINT = 390,
-  GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391
+  GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391,
+  GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
+  GUESTFS_PROC_PART_GET_GPT_TYPE = 393
 };
 
-const GUESTFS_MAX_PROC_NR = 391;
+const GUESTFS_MAX_PROC_NR = 393;
 
 /* The remote procedure call protocol. */
 

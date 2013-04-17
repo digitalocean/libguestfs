@@ -523,6 +523,8 @@ static int run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv
 static int run_ldmtool_volume_type (const char *cmd, size_t argc, char *argv[]);
 static int run_ldmtool_volume_hint (const char *cmd, size_t argc, char *argv[]);
 static int run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[]);
+static int run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[]);
+static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -3518,6 +3520,18 @@ struct command_entry ldmtool_volume_partitions_cmd_entry = {
   .run = run_ldmtool_volume_partitions
 };
 
+struct command_entry part_set_gpt_type_cmd_entry = {
+  .name = "part-set-gpt-type",
+  .help = "NAME\n    part-set-gpt-type - set the type GUID of a GPT partition\n\nSYNOPSIS\n     part-set-gpt-type device partnum guid\n\nDESCRIPTION\n    Set the type GUID of numbered GPT partition \"partnum\" to \"guid\". Return\n    an error if the partition table of \"device\" isn't GPT, or if \"guid\" is\n    not a valid GUID.\n\n    See\n    <http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>\n    for a useful list of type GUIDs.\n\n",
+  .run = run_part_set_gpt_type
+};
+
+struct command_entry part_get_gpt_type_cmd_entry = {
+  .name = "part-get-gpt-type",
+  .help = "NAME\n    part-get-gpt-type - get the type GUID of a GPT partition\n\nSYNOPSIS\n     part-get-gpt-type device partnum\n\nDESCRIPTION\n    Return the type GUID of numbered GPT partition \"partnum\". For MBR\n    partitions, return an appropriate GUID corresponding to the MBR type.\n    Behaviour is undefined for other partition types.\n\n",
+  .run = run_part_get_gpt_type
+};
+
 void
 list_commands (void)
 {
@@ -3862,11 +3876,13 @@ list_commands (void)
   printf ("%-20s %s\n", "part-del", _("delete a partition"));
   printf ("%-20s %s\n", "part-disk", _("partition whole disk with a single primary partition"));
   printf ("%-20s %s\n", "part-get-bootable", _("return true if a partition is bootable"));
+  printf ("%-20s %s\n", "part-get-gpt-type", _("get the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-mbr-id", _("get the MBR type byte (ID byte) from a partition"));
   printf ("%-20s %s\n", "part-get-parttype", _("get the partition table type"));
   printf ("%-20s %s\n", "part-init", _("create an empty partition table"));
   printf ("%-20s %s\n", "part-list", _("list partitions on a device"));
   printf ("%-20s %s\n", "part-set-bootable", _("make a partition bootable"));
+  printf ("%-20s %s\n", "part-set-gpt-type", _("set the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-set-mbr-id", _("set the MBR type byte (ID byte) of a partition"));
   printf ("%-20s %s\n", "part-set-name", _("set partition name"));
   printf ("%-20s %s\n", "part-to-dev", _("convert partition name to device name"));
@@ -20769,6 +20785,96 @@ run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[])
   print_strings (r);
   free_strings (r);
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  int partnum;
+  const char *guid;
+  size_t i = 0;
+
+  if (argc != 3) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  guid = argv[i++];
+  r = guestfs_part_set_gpt_type (g, device, partnum, guid);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *device;
+  int partnum;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  r = guestfs_part_get_gpt_type (g, device, partnum);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_partnum:
  out_noargs:
   return ret;
 }

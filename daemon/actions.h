@@ -553,5 +553,7 @@ extern char **do_ldmtool_diskgroup_disks (const char *diskgroup);
 extern char *do_ldmtool_volume_type (const char *diskgroup, const char *volume);
 extern char *do_ldmtool_volume_hint (const char *diskgroup, const char *volume);
 extern char **do_ldmtool_volume_partitions (const char *diskgroup, const char *volume);
+extern int do_part_set_gpt_type (const char *device, int partnum, const char *guid);
+extern char *do_part_get_gpt_type (const char *device, int partnum);
 
 #endif /* GUESTFSD_ACTIONS_H */

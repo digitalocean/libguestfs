@@ -155,7 +155,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (SV *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (SV *) * (*len_rtn));
 
   i = 0;
   cb = guestfs_first_private (g, &key);
@@ -346,7 +346,7 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs_safe_malloc (g, (len+1) * sizeof (char *));
+          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);
@@ -3876,7 +3876,7 @@ PREINIT:
           /* Note av_len returns index of final element. */
           len = av_len (av) + 1;
 
-          r = guestfs_safe_malloc (g, (len+1) * sizeof (char *));
+          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
           for (i = 0; i < len; ++i) {
             svp = av_fetch (av, i, 0);
             r[i] = SvPV_nolen (*svp);
@@ -9532,4 +9532,33 @@ PREINIT:
         free (r[i]);
       }
       free (r);
+
+void
+part_set_gpt_type (g, device, partnum, guid)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+      char *guid;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_set_gpt_type (g, device, partnum, guid);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+part_get_gpt_type (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_part_get_gpt_type (g, device, partnum);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
 

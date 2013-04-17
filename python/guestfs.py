@@ -7747,3 +7747,24 @@ class GuestFS:
         self._check_not_closed ()
         return libguestfsmod.ldmtool_volume_partitions (self._o, diskgroup, volume)
 
+    def part_set_gpt_type (self, device, partnum, guid):
+        """Set the type GUID of numbered GPT partition "partnum" to
+        "guid". Return an error if the partition table of
+        "device" isn't GPT, or if "guid" is not a valid GUID.
+        
+        See
+        <http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
+        tion_type_GUIDs> for a useful list of type GUIDs.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.part_set_gpt_type (self._o, device, partnum, guid)
+
+    def part_get_gpt_type (self, device, partnum):
+        """Return the type GUID of numbered GPT partition
+        "partnum". For MBR partitions, return an appropriate
+        GUID corresponding to the MBR type. Behaviour is
+        undefined for other partition types.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.part_get_gpt_type (self._o, device, partnum)
+

@@ -23771,3 +23771,80 @@ guestfs_session_ldmtool_volume_partitions(GuestfsSession *session, const gchar *
 
   return ret;
 }
+
+/**
+ * guestfs_session_part_set_gpt_type:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @guid: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the type GUID of a GPT partition
+ *
+ * Set the type GUID of numbered GPT partition @partnum to @guid. Return an
+ * error if the partition table of @device isn't GPT, or if @guid is not a
+ * valid GUID.
+ * 
+ * See <ulink
+ * url='http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GU
+ * IDs'>
+ * http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
+ * </ulink> for a useful list of type GUIDs.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_part_set_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_gpt_type");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_set_gpt_type (g, device, partnum, guid);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_part_get_gpt_type:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the type GUID of a GPT partition
+ *
+ * Return the type GUID of numbered GPT partition @partnum. For MBR
+ * partitions, return an appropriate GUID corresponding to the MBR type.
+ * Behaviour is undefined for other partition types.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_gpt_type");
+    return NULL;
+  }
+
+  char *ret = guestfs_part_get_gpt_type (g, device, partnum);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}

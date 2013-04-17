@@ -86,7 +86,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.391';
+$VERSION = '0.393';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -4722,6 +4722,12 @@ C<device> has the bootable flag set.
 
 See also C<$g-E<gt>part_set_bootable>.
 
+=item $guid = $g->part_get_gpt_type ($device, $partnum);
+
+Return the type GUID of numbered GPT partition C<partnum>. For MBR partitions,
+return an appropriate GUID corresponding to the MBR type. Behaviour is undefined
+for other partition types.
+
 =item $idbyte = $g->part_get_mbr_id ($device, $partnum);
 
 Returns the MBR type byte (also known as the ID byte) from
@@ -4852,6 +4858,15 @@ device C<device>.  Note that partitions are numbered from 1.
 The bootable flag is used by some operating systems (notably
 Windows) to determine which partition to boot from.  It is by
 no means universally recognized.
+
+=item $g->part_set_gpt_type ($device, $partnum, $guid);
+
+Set the type GUID of numbered GPT partition C<partnum> to C<guid>. Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
+
+See L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
+for a useful list of type GUIDs.
 
 =item $g->part_set_mbr_id ($device, $partnum, $idbyte);
 
@@ -9938,6 +9953,15 @@ use vars qw(%guestfs_introspection);
     name => "part_get_bootable",
     description => "return true if a partition is bootable",
   },
+  "part_get_gpt_type" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_get_gpt_type",
+    description => "get the type GUID of a GPT partition",
+  },
   "part_get_mbr_id" => {
     ret => 'int',
     args => [
@@ -9981,6 +10005,16 @@ use vars qw(%guestfs_introspection);
     ],
     name => "part_set_bootable",
     description => "make a partition bootable",
+  },
+  "part_set_gpt_type" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+      [ 'guid', 'string', 2 ],
+    ],
+    name => "part_set_gpt_type",
+    description => "set the type GUID of a GPT partition",
   },
   "part_set_mbr_id" => {
     ret => 'void',

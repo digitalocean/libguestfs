@@ -207,7 +207,7 @@ ruby_set_event_callback (VALUE gv, VALUE cbv, VALUE event_bitmaskv)
 
   event_bitmask = NUM2ULL (event_bitmaskv);
 
-  root = guestfs_safe_malloc (g, sizeof *root);
+  root = guestfs___safe_malloc (g, sizeof *root);
   *root = cbv;
 
   eh = guestfs_set_event_callback (g, ruby_event_callback_wrapper,
@@ -352,7 +352,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (VALUE *) * (*len_rtn));
 
   i = 0;
   root = guestfs_first_private (g, &key);
@@ -412,6 +412,11 @@ ruby_user_cancel (VALUE gv)
         let doc = pod2text ~width:60 name doc in
         let doc = String.concat "\n * " doc in
         let doc = trim doc in
+
+        (* Because Ruby documentation appears as C comments, we must
+         * replace any instance of "/*".
+         *)
+        let doc = replace_str doc "/*" "/ *" in
 
         let args = List.map name_of_argt args in
         let args = if optargs <> [] then args @ ["{optargs...}"] else args in
@@ -667,15 +672,18 @@ ruby_user_cancel (VALUE gv)
   ) all_functions;
 
   pr "\
+extern void Init__guestfs (void); /* keep GCC warnings happy */
+
 /* Initialize the module. */
-void Init__guestfs ()
+void
+Init__guestfs (void)
 {
   m_guestfs = rb_define_module (\"Guestfs\");
   c_guestfs = rb_define_class_under (m_guestfs, \"Guestfs\", rb_cObject);
   e_Error = rb_define_class_under (m_guestfs, \"Error\", rb_eStandardError);
 
 #ifdef HAVE_RB_DEFINE_ALLOC_FUNC
-  rb_define_alloc_func (c_guestfs, ruby_guestfs_create);
+  rb_define_alloc_func (c_guestfs, (rb_alloc_func_t) ruby_guestfs_create);
 #endif
 
   rb_define_module_function (m_guestfs, \"create\", ruby_guestfs_create, -1);

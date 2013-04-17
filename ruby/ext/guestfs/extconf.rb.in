@@ -1,4 +1,5 @@
-# libguestfs Perl bindings
+# libguestfs Ruby bindings -*- ruby -*-
+# @configure_input@
 # Copyright (C) 2009-2012 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,17 +16,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use Config;
-use ExtUtils::MakeMaker;
+require 'mkmf'
 
-WriteMakefile (
-    FIRST_MAKEFILE => 'Makefile-pl',
+extension_name = '_guestfs'
 
-    NAME => 'Sys::Guestfs',
-    VERSION => '0.@MAX_PROC_NR@',
+dir_config(extension_name)
 
-    LIBS => '-L@top_builddir@/src/.libs -lguestfs',
-    INC => '-I@top_builddir@/src -I@top_srcdir@/src',
-    TYPEMAPS => [ '@srcdir@/typemap' ],
-    CCFLAGS => $Config{ccflags} . ' -DGUESTFS_PRIVATE_FUNCTIONS=1 @CFLAGS@',
-    );
+unless have_header("guestfs.h")
+  raise "<guestfs.h> not found"
+end
+unless have_library("guestfs", "guestfs_create", "guestfs.h")
+  raise "libguestfs not found"
+end
+
+$CFLAGS =
+  "#{$CFLAGS} @CFLAGS@ -DGUESTFS_PRIVATE_FUNCTIONS=1 " <<
+  "@WARN_CFLAGS@ @WERROR_CFLAGS@"
+
+create_header
+create_makefile(extension_name)

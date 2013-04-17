@@ -5659,6 +5659,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_part_get_gpt_type (IntPtr h, [In] string device, int partnum);
+
+    /// <summary>
+    /// get the type GUID of a GPT partition
+    /// </summary>
+    public string part_get_gpt_type (string device, int partnum)
+    {
+      string r;
+      r = guestfs_part_get_gpt_type (_handle, device, partnum);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_part_get_mbr_id (IntPtr h, [In] string device, int partnum);
 
     /// <summary>
@@ -5727,6 +5742,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_part_set_bootable (_handle, device, partnum, bootable);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_part_set_gpt_type (IntPtr h, [In] string device, int partnum, [In] string guid);
+
+    /// <summary>
+    /// set the type GUID of a GPT partition
+    /// </summary>
+    public void part_set_gpt_type (string device, int partnum, string guid)
+    {
+      int r;
+      r = guestfs_part_set_gpt_type (_handle, device, partnum, guid);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

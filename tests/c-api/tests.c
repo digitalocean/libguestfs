@@ -396,6 +396,82 @@ no_test_warnings (void)
 }
 
 static int
+test_part_get_gpt_type_0_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "part_get_gpt_type") == NULL;
+  str = getenv ("SKIP_TEST_PART_GET_GPT_TYPE_0");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_PART_GET_GPT_TYPE");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_part_get_gpt_type_0 (void)
+{
+  if (test_part_get_gpt_type_0_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_part_get_gpt_type_0");
+    return 0;
+  }
+
+  /* InitGPT for test_part_get_gpt_type_0: create /dev/sda1 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    const char *parttype = "gpt";
+    int r;
+    r = guestfs_part_disk (g, device, parttype);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for part_get_gpt_type (0) */
+  const char *expected = "01234567-89AB-CDEF-0123-456789ABCDEF";
+  {
+    const char *device = "/dev/sda";
+    const char *guid = "01234567-89AB-CDEF-0123-456789ABCDEF";
+    int r;
+    r = guestfs_part_set_gpt_type (g, device, 1, guid);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sda";
+    char *r;
+    r = guestfs_part_get_gpt_type (g, device, 1);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_part_get_gpt_type_0", expected, r);
+      return -1;
+    }
+    free (r);
+  }
+  return 0;
+}
+
+static int
 test_cap_set_file_0_skip (void)
 {
   const char *str;
@@ -1174,7 +1250,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    optargs.uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     optargs.journaldev = 1;
     optargs.bitmask = UINT64_C(0x100100002);
     int r;
@@ -1186,7 +1262,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda2";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.journaldevice = "UUID=a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    optargs.journaldevice = "UUID=df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     optargs.label = "JOURNAL";
     optargs.fstype = "ext2";
     optargs.forcecreate = 1;
@@ -7290,10 +7366,10 @@ test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+  const char *expected = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -12239,7 +12315,7 @@ test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mke2journal_U (g, 4096, uuid, device);
@@ -12249,7 +12325,7 @@ test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     int r;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
     if (r == -1)
@@ -13200,7 +13276,7 @@ test_swapon_uuid_0 (void)
   {
     const char *device = "/dev/sdc";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    optargs.uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -13208,14 +13284,14 @@ test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     int r;
     r = guestfs_swapon_uuid (g, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     int r;
     r = guestfs_swapoff_uuid (g, uuid);
     if (r == -1)
@@ -17052,7 +17128,7 @@ test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mkswap_U (g, uuid, device);
@@ -17314,7 +17390,7 @@ test_mkswap_2 (void)
   {
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    optargs.uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -17385,7 +17461,7 @@ test_mkswap_3 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
     optargs.label = "hello";
-    optargs.uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    optargs.uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     optargs.bitmask = UINT64_C(0x3);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -22183,7 +22259,7 @@ test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+  const char *expected = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -22193,7 +22269,7 @@ test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -22284,10 +22360,10 @@ test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+  const char *expected = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "a1627e80-62b4-efa1-46c9-fb2b6be32627";
+    const char *uuid = "df02e0dc-bbe0-972e-5c50-e57b4ce84c6d";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -28203,6 +28279,99 @@ test_command_11 (void)
     guestfs_pop_error_handler (g);
     if (r != NULL)
       return -1;
+    free (r);
+  }
+  return 0;
+}
+
+static int
+test_command_12_skip (void)
+{
+  const char *str;
+
+  str = getenv ("TEST_ONLY");
+  if (str)
+    return strstr (str, "command") == NULL;
+  str = getenv ("SKIP_TEST_COMMAND_12");
+  if (str && STREQ (str, "1")) return 1;
+  str = getenv ("SKIP_TEST_COMMAND");
+  if (str && STREQ (str, "1")) return 1;
+  return 0;
+}
+
+static int
+test_command_12 (void)
+{
+  if (test_command_12_skip ()) {
+    printf ("        %s skipped (reason: environment variable set)\n", "test_command_12");
+    return 0;
+  }
+
+  /* InitScratchFS for test_command_12 */
+  {
+    const char *device = "/dev/sda";
+    int r;
+    r = guestfs_blockdev_setrw (g, device);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_umount_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    int r;
+    r = guestfs_lvm_remove_all (g);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *device = "/dev/sdb1";
+    const char *mountpoint = "/";
+    int r;
+    r = guestfs_mount (g, device, mountpoint);
+    if (r == -1)
+      return -1;
+  }
+  /* TestOutput for command (12) */
+  const char *expected = "/";
+  {
+    const char *path = "/pwd";
+    int r;
+    r = guestfs_mkdir (g, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *remotefilename = "/pwd/test-pwd";
+    int r;
+    r = guestfs_upload (g, "test-pwd", remotefilename);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *path = "/pwd/test-pwd";
+    int r;
+    r = guestfs_chmod (g, 493, path);
+    if (r == -1)
+      return -1;
+  }
+  {
+    const char *arguments_0 = "/pwd/test-pwd";
+    const char *const arguments[] = {
+      arguments_0,
+      NULL
+    };
+    char *r;
+    r = guestfs_command (g, (char **) arguments);
+    if (r == NULL)
+      return -1;
+    if (STRNEQ (r, expected)) {
+      fprintf (stderr, "%s: expected \"%s\" but got \"%s\"\n", "test_command_12", expected, r);
+      return -1;
+    }
     free (r);
   }
   return 0;
@@ -36814,7 +36983,7 @@ main (int argc, char *argv[])
 {
   const char *filename;
   int fd;
-  const size_t nr_tests = 417;
+  const size_t nr_tests = 419;
   size_t test_num = 0;
   size_t nr_failed = 0;
 
@@ -36920,6 +37089,12 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
+  test_num++;
+  next_test (g, test_num, nr_tests, "test_part_get_gpt_type_0");
+  if (test_part_get_gpt_type_0 () == -1) {
+    printf ("%s FAILED\n", "test_part_get_gpt_type_0");
+    nr_failed++;
+  }
   test_num++;
   next_test (g, test_num, nr_tests, "test_cap_set_file_0");
   if (test_cap_set_file_0 () == -1) {
@@ -38814,6 +38989,12 @@ main (int argc, char *argv[])
   next_test (g, test_num, nr_tests, "test_command_11");
   if (test_command_11 () == -1) {
     printf ("%s FAILED\n", "test_command_11");
+    nr_failed++;
+  }
+  test_num++;
+  next_test (g, test_num, nr_tests, "test_command_12");
+  if (test_command_12 () == -1) {
+    printf ("%s FAILED\n", "test_command_12");
     nr_failed++;
   }
   test_num++;

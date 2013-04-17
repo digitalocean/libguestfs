@@ -7661,6 +7661,42 @@ xdr_guestfs_ldmtool_volume_partitions_ret (XDR *xdrs, guestfs_ldmtool_volume_par
 }
 
 bool_t
+xdr_guestfs_part_set_gpt_type_args (XDR *xdrs, guestfs_part_set_gpt_type_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->guid, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_get_gpt_type_args (XDR *xdrs, guestfs_part_get_gpt_type_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->partnum))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_part_get_gpt_type_ret (XDR *xdrs, guestfs_part_get_gpt_type_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->guid, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

@@ -9476,6 +9476,31 @@ guestfs_lua_part_get_bootable (lua_State *L)
 }
 
 static int
+guestfs_lua_part_get_gpt_type (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int partnum;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "part_get_gpt_type");
+
+  device = luaL_checkstring (L, 2);
+  partnum = luaL_checkint (L, 3);
+
+  r = guestfs_part_get_gpt_type (g, device, partnum);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
 guestfs_lua_part_get_mbr_id (lua_State *L)
 {
   int r;
@@ -9587,6 +9612,31 @@ guestfs_lua_part_set_bootable (lua_State *L)
   bootable = lua_toboolean (L, 4);
 
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_part_set_gpt_type (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  int partnum;
+  const char *guid;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "part_set_gpt_type");
+
+  device = luaL_checkstring (L, 2);
+  partnum = luaL_checkint (L, 3);
+  guid = luaL_checkstring (L, 4);
+
+  r = guestfs_part_set_gpt_type (g, device, partnum, guid);
   if (r == -1)
     return last_error (L, g);
 
@@ -14634,11 +14684,13 @@ static luaL_Reg methods[] = {
   { "part_del", guestfs_lua_part_del },
   { "part_disk", guestfs_lua_part_disk },
   { "part_get_bootable", guestfs_lua_part_get_bootable },
+  { "part_get_gpt_type", guestfs_lua_part_get_gpt_type },
   { "part_get_mbr_id", guestfs_lua_part_get_mbr_id },
   { "part_get_parttype", guestfs_lua_part_get_parttype },
   { "part_init", guestfs_lua_part_init },
   { "part_list", guestfs_lua_part_list },
   { "part_set_bootable", guestfs_lua_part_set_bootable },
+  { "part_set_gpt_type", guestfs_lua_part_set_gpt_type },
   { "part_set_mbr_id", guestfs_lua_part_set_mbr_id },
   { "part_set_name", guestfs_lua_part_set_name },
   { "part_to_dev", guestfs_lua_part_to_dev },

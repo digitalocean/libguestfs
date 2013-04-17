@@ -285,7 +285,8 @@ module Guestfs (
   acl_delete_def_file,
   cap_set_file,
   ldmtool_create_all,
-  ldmtool_remove_all
+  ldmtool_remove_all,
+  part_set_gpt_type
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -3468,6 +3469,18 @@ foreign import ccall unsafe "guestfs_ldmtool_remove_all" c_ldmtool_remove_all
 ldmtool_remove_all :: GuestfsH -> IO ()
 ldmtool_remove_all h = do
   r <- withForeignPtr h (\p -> c_ldmtool_remove_all p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs_part_set_gpt_type" c_part_set_gpt_type
+  :: GuestfsP -> CString -> CInt -> CString -> IO (CInt)
+
+part_set_gpt_type :: GuestfsH -> String -> Int -> String -> IO ()
+part_set_gpt_type h device partnum guid = do
+  r <- withCString device $ \device -> withCString guid $ \guid -> withForeignPtr h (\p -> c_part_set_gpt_type p device (fromIntegral partnum) guid)
   if (r == -1)
     then do
       err <- last_error h

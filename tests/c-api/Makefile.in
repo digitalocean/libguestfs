@@ -89,7 +89,7 @@ check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 	test-config$(EXEEXT) test-add-drive-opts$(EXEEXT) \
 	test-last-errno$(EXEEXT) test-private-data$(EXEEXT) \
 	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
-	test-environment$(EXEEXT) $(am__EXEEXT_1)
+	test-environment$(EXEEXT) test-pwd$(EXEEXT) $(am__EXEEXT_1)
 TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
 	test-create-handle$(EXEEXT) test-config$(EXEEXT) \
 	test-add-drive-opts$(EXEEXT) test-last-errno$(EXEEXT) \
@@ -305,6 +305,12 @@ test_private_data_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_private_data_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am_test_pwd_OBJECTS = test-pwd.$(OBJEXT)
+test_pwd_OBJECTS = $(am_test_pwd_OBJECTS)
+test_pwd_LDADD = $(LDADD)
+test_pwd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(test_pwd_LDFLAGS) $(LDFLAGS) -o $@
 am_test_user_cancel_OBJECTS =  \
 	test_user_cancel-test-user-cancel.$(OBJEXT)
 test_user_cancel_OBJECTS = $(am_test_user_cancel_OBJECTS)
@@ -376,14 +382,16 @@ SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
 	$(test_just_header_SOURCES) $(test_just_header_cxx_SOURCES) \
 	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
-	$(test_user_cancel_SOURCES) $(tests_SOURCES)
+	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
+	$(tests_SOURCES)
 DIST_SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
 	$(test_just_header_SOURCES) \
 	$(am__test_just_header_cxx_SOURCES_DIST) \
 	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
-	$(test_user_cancel_SOURCES) $(tests_SOURCES)
+	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
+	$(tests_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1453,6 +1461,7 @@ EXTRA_DIST = $(BUILT_SOURCES) test-add-libvirt-dom.c
 TESTS_ENVIRONMENT = \
 	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
 	SKIP_TEST_COMMAND_LINES=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
+	SKIP_TEST_COMMAND=$(shell ldd test-pwd | grep -sq 'not a dynamic executable' || echo 1) \
 	$(top_builddir)/run --test $(VG)
 
 
@@ -1469,6 +1478,8 @@ tests_LDADD = $(top_builddir)/src/libguestfs.la
 # the "guestfs_command" and "guestfs_command_lines" functions.
 test_command_SOURCES = test-command.c
 test_command_LDFLAGS = -all-static
+test_pwd_SOURCES = test-pwd.c
+test_pwd_LDFLAGS = -all-static
 
 # Hand-written C API tests.
 test_just_header_SOURCES = test-just-header.c
@@ -1643,6 +1654,9 @@ test-last-errno$(EXEEXT): $(test_last_errno_OBJECTS) $(test_last_errno_DEPENDENC
 test-private-data$(EXEEXT): $(test_private_data_OBJECTS) $(test_private_data_DEPENDENCIES) $(EXTRA_test_private_data_DEPENDENCIES) 
 	@rm -f test-private-data$(EXEEXT)
 	$(AM_V_CCLD)$(test_private_data_LINK) $(test_private_data_OBJECTS) $(test_private_data_LDADD) $(LIBS)
+test-pwd$(EXEEXT): $(test_pwd_OBJECTS) $(test_pwd_DEPENDENCIES) $(EXTRA_test_pwd_DEPENDENCIES) 
+	@rm -f test-pwd$(EXEEXT)
+	$(AM_V_CCLD)$(test_pwd_LINK) $(test_pwd_OBJECTS) $(test_pwd_LDADD) $(LIBS)
 test-user-cancel$(EXEEXT): $(test_user_cancel_OBJECTS) $(test_user_cancel_DEPENDENCIES) $(EXTRA_test_user_cancel_DEPENDENCIES) 
 	@rm -f test-user-cancel$(EXEEXT)
 	$(AM_V_CCLD)$(test_user_cancel_LINK) $(test_user_cancel_OBJECTS) $(test_user_cancel_LDADD) $(LIBS)
@@ -1657,6 +1671,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-command.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-pwd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_config-test-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_create_handle-test-create-handle.Po@am__quote@

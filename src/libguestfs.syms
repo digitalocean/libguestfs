@@ -22,6 +22,10 @@
 {
     global:
         guestfs___for_each_disk;
+        guestfs___safe_calloc;
+        guestfs___safe_malloc;
+        guestfs___safe_memdup;
+        guestfs___safe_strdup;
         guestfs_acl_delete_def_file;
         guestfs_acl_get_file;
         guestfs_acl_set_file;
@@ -497,11 +501,13 @@
         guestfs_part_del;
         guestfs_part_disk;
         guestfs_part_get_bootable;
+        guestfs_part_get_gpt_type;
         guestfs_part_get_mbr_id;
         guestfs_part_get_parttype;
         guestfs_part_init;
         guestfs_part_list;
         guestfs_part_set_bootable;
+        guestfs_part_set_gpt_type;
         guestfs_part_set_mbr_id;
         guestfs_part_set_name;
         guestfs_part_to_dev;
@@ -547,10 +553,6 @@
         guestfs_rsync_out_argv;
         guestfs_rsync_out_va;
         guestfs_rsync_va;
-        guestfs_safe_calloc;
-        guestfs_safe_malloc;
-        guestfs_safe_memdup;
-        guestfs_safe_strdup;
         guestfs_scrub_device;
         guestfs_scrub_file;
         guestfs_scrub_freespace;

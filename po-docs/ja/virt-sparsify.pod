@@ -21,8 +21,9 @@ Virt-sparsify はさまざまなディスクフォーマットを変換するこ
 qcow2 イメージに変換することができます。
 
 Virt-sparsify can operate on any disk image, not just ones from virtual
-machines.  If a virtual machine has more than one attached disk, you must
-sparsify each one separately.
+machines.  However if a virtual machine has multiple disks and uses volume
+management, then virt-sparsify will work but not be very effective
+(L<http://bugzilla.redhat.com/887826>).
 
 =head2 IMPORTANT NOTE ABOUT SPARSE OUTPUT IMAGES
 

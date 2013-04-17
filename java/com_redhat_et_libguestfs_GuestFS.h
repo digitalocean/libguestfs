@@ -4151,6 +4151,22 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1volum
 JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1ldmtool_1volume_1partitions
   (JNIEnv *, jobject, jlong, jstring, jstring);
 
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _part_set_gpt_type
+ * Signature: (JLjava/lang/String;ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1set_1gpt_1type
+  (JNIEnv *, jobject, jlong, jstring, jint, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _part_get_gpt_type
+ * Signature: (JLjava/lang/String;I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1part_1get_1gpt_1type
+  (JNIEnv *, jobject, jlong, jstring, jint);
+
 #ifdef __cplusplus
 }
 #endif

@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [20])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_minor],   [21])
+m4_define([libguestfs_release], [1])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1464,6 +1464,7 @@ AC_CONFIG_FILES([Makefile
                  ruby/Makefile
                  ruby/Rakefile
                  ruby/examples/Makefile
+                 ruby/ext/guestfs/extconf.rb
                  sparsify/Makefile
                  src/Makefile
                  src/libguestfs.pc

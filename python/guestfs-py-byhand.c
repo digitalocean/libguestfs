@@ -21,6 +21,12 @@
  * guestfs-py.c).
  */
 
+/* This has to be included first, else definitions conflict with
+ * glibc header files.  Python is broken.
+ */
+#define PY_SSIZE_T_CLEAN 1
+#include <Python.h>
+
 #include <config.h>
 
 #include <stdio.h>
@@ -219,7 +225,7 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   /* Copy them into the return array. */
-  r = guestfs_safe_malloc (g, sizeof (PyObject *) * (*len_rtn));
+  r = guestfs___safe_malloc (g, sizeof (PyObject *) * (*len_rtn));
 
   i = 0;
   cb = guestfs_first_private (g, &key);
