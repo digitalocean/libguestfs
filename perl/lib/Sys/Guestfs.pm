@@ -282,11 +282,6 @@ errnos:
    # mkdir failed because the directory exists already.
  }
 
-=item $g->user_cancel ();
-
-Cancel current transfer.  This is safe to call from Perl signal
-handlers and threads.
-
 =cut
 
 =item $g->acl_delete_def_file ($dir);
@@ -4520,8 +4515,7 @@ returns successfully.  The call will not return until the
 filesystem is unmounted.
 
 B<Note> you must I<not> make concurrent libguestfs calls
-on the same handle from another thread,
-with the exception of C<$g-E<gt>umount_local>.
+on the same handle from another thread.
 
 You may call this from a different thread than the one which
 called C<$g-E<gt>mount_local>, subject to the usual rules
@@ -6252,6 +6246,35 @@ and this call always writes the full amount unless an
 error occurs.
 
 See also C<$g-E<gt>upload>, C<$g-E<gt>pwrite>.
+
+=item $g->user_cancel ();
+
+This function cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and
+thread safe.  You can call it from a signal handler or from another
+thread, without needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this
+to find out if the operation was cancelled or failed because of
+another error.
+
+No cleanup is performed: for example, if a file was being uploaded
+then after cancellation there may be a partially uploaded file.  It is
+the caller's responsibility to clean up if necessary.
+
+There are two common places that you might call C<$g-E<gt>user_cancel>:
+
+In an interactive text-based program, you might call it from a
+C<SIGINT> signal handler so that pressing C<^C> cancels the current
+operation.  (You also need to call L</guestfs_set_pgroup> so that
+child processes don't receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress
+bar with a cancel button, wire up the cancel button to call this
+function.
 
 =item $g->utimens ($path, $atsecs, $atnsecs, $mtsecs, $mtnsecs);
 
@@ -10890,6 +10913,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "upload_offset",
     description => "upload a file from the local machine with offset",
+  },
+  "user_cancel" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "user_cancel",
+    description => "cancel the current upload or download operation",
   },
   "utimens" => {
     ret => 'void',

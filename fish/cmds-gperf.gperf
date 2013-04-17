@@ -492,6 +492,7 @@ extern struct command_entry umount_local_cmd_entry;
 extern struct command_entry unsetenv_cmd_entry;
 extern struct command_entry upload_cmd_entry;
 extern struct command_entry upload_offset_cmd_entry;
+extern struct command_entry user_cancel_cmd_entry;
 extern struct command_entry utimens_cmd_entry;
 extern struct command_entry utsname_cmd_entry;
 extern struct command_entry version_cmd_entry;
@@ -1361,6 +1362,8 @@ unsetenv, &unsetenv_cmd_entry
 upload, &upload_cmd_entry
 upload_offset, &upload_offset_cmd_entry
 upload-offset, &upload_offset_cmd_entry
+user_cancel, &user_cancel_cmd_entry
+user-cancel, &user_cancel_cmd_entry
 utimens, &utimens_cmd_entry
 utsname, &utsname_cmd_entry
 version, &version_cmd_entry

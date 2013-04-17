@@ -9313,6 +9313,18 @@ run_upload_offset (ETERM *message)
 }
 
 static ETERM *
+run_user_cancel (ETERM *message)
+{
+  int r;
+
+  r = guestfs_user_cancel (g);
+  if (r == -1)
+    return make_error ("user_cancel");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_utimens (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
@@ -11096,6 +11108,8 @@ dispatch (ETERM *message)
     return run_upload (message);
   else if (atom_equals (fun, "upload_offset"))
     return run_upload_offset (message);
+  else if (atom_equals (fun, "user_cancel"))
+    return run_user_cancel (message);
   else if (atom_equals (fun, "utimens"))
     return run_utimens (message);
   else if (atom_equals (fun, "utsname"))

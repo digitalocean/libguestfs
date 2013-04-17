@@ -546,6 +546,7 @@
     <keyword type="function" name="guestfs_session_umount_local ()" link="GuestfsSession.html#guestfs-session-umount-local"/>
     <keyword type="function" name="guestfs_session_upload ()" link="GuestfsSession.html#guestfs-session-upload"/>
     <keyword type="function" name="guestfs_session_upload_offset ()" link="GuestfsSession.html#guestfs-session-upload-offset"/>
+    <keyword type="function" name="guestfs_session_user_cancel ()" link="GuestfsSession.html#guestfs-session-user-cancel"/>
     <keyword type="function" name="guestfs_session_utimens ()" link="GuestfsSession.html#guestfs-session-utimens"/>
     <keyword type="function" name="guestfs_session_utsname ()" link="GuestfsSession.html#guestfs-session-utsname"/>
     <keyword type="function" name="guestfs_session_version ()" link="GuestfsSession.html#guestfs-session-version"/>

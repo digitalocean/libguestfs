@@ -1125,6 +1125,14 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1cachedir
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _user_cancel
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1user_1cancel
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _mount
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */

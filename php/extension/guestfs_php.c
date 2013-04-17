@@ -530,6 +530,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_umount_local, NULL)
   PHP_FE (guestfs_upload, NULL)
   PHP_FE (guestfs_upload_offset, NULL)
+  PHP_FE (guestfs_user_cancel, NULL)
   PHP_FE (guestfs_utimens, NULL)
   PHP_FE (guestfs_utsname, NULL)
   PHP_FE (guestfs_version, NULL)
@@ -18912,6 +18913,32 @@ PHP_FUNCTION (guestfs_upload_offset)
 
   int r;
   r = guestfs_upload_offset (g, filename, remotefilename, offset);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_user_cancel)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_user_cancel (g);
 
   if (r == -1) {
     RETURN_FALSE;

@@ -133,6 +133,7 @@ module Guestfs (
   get_tmpdir,
   set_cachedir,
   get_cachedir,
+  user_cancel,
   mount,
   sync,
   touch,
@@ -1827,6 +1828,18 @@ get_cachedir h = do
       err <- last_error h
       fail err
     else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_user_cancel" c_user_cancel
+  :: GuestfsP -> IO CInt
+
+user_cancel :: GuestfsH -> IO ()
+user_cancel h = do
+  r <- withForeignPtr h (\p -> c_user_cancel p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
 
 foreign import ccall unsafe "guestfs.h guestfs_mount" c_mount
   :: GuestfsP -> CString -> CString -> IO CInt

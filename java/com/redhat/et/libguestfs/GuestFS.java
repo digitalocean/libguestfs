@@ -3931,8 +3931,7 @@ public class GuestFS {
    * filesystem is unmounted.
    * <p>
    * Note you must *not* make concurrent libguestfs calls on
-   * the same handle from another thread, with the exception
-   * of "g.umount_local".
+   * the same handle from another thread.
    * <p>
    * You may call this from a different thread than the one
    * which called "g.mount_local", subject to the usual rules
@@ -4836,6 +4835,55 @@ public class GuestFS {
   }
 
   private native String _get_cachedir (long g)
+    throws LibGuestFSException;
+
+  /**
+   * cancel the current upload or download operation
+   * <p>
+   * This function cancels the current upload or download
+   * operation.
+   * <p>
+   * Unlike most other libguestfs calls, this function is
+   * signal safe and thread safe. You can call it from a
+   * signal handler or from another thread, without needing
+   * to do any locking.
+   * <p>
+   * The transfer that was in progress (if there is one) will
+   * stop shortly afterwards, and will return an error. The
+   * errno (see "guestfs_last_errno") is set to "EINTR", so
+   * you can test for this to find out if the operation was
+   * cancelled or failed because of another error.
+   * <p>
+   * No cleanup is performed: for example, if a file was
+   * being uploaded then after cancellation there may be a
+   * partially uploaded file. It is the caller's
+   * responsibility to clean up if necessary.
+   * <p>
+   * There are two common places that you might call
+   * "g.user_cancel":
+   * <p>
+   * In an interactive text-based program, you might call it
+   * from a "SIGINT" signal handler so that pressing "^C"
+   * cancels the current operation. (You also need to call
+   * "guestfs_set_pgroup" so that child processes don't
+   * receive the "^C" signal).
+   * <p>
+   * In a graphical program, when the main thread is
+   * displaying a progress bar with a cancel button, wire up
+   * the cancel button to call this function.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void user_cancel ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("user_cancel: handle is closed");
+
+    _user_cancel (g);
+  }
+
+  private native void _user_cancel (long g)
     throws LibGuestFSException;
 
   /**

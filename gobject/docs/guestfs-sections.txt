@@ -1176,6 +1176,7 @@ guestfs_session_umount_all
 guestfs_session_umount_local
 guestfs_session_upload
 guestfs_session_upload_offset
+guestfs_session_user_cancel
 guestfs_session_utimens
 guestfs_session_utsname
 guestfs_session_version

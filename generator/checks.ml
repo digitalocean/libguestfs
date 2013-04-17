@@ -234,13 +234,22 @@ let () =
       )
   ) (all_functions @ fish_commands);
 
-  (* Checking blocking flag is set on all daemon functions. *)
+  (* Check blocking flag is set on all daemon functions. *)
   List.iter (
     function
     | { name = name; blocking = false } ->
       failwithf "%s: blocking flag should be 'true' on this daemon function"
         name
     | { blocking = true } -> ()
+  ) daemon_functions;
+
+  (* Check wrapper flag is set on all daemon functions. *)
+  List.iter (
+    function
+    | { name = name; wrapper = false } ->
+      failwithf "%s: wrapper flag should be 'true' on this daemon function"
+        name
+    | { wrapper = true } -> ()
   ) daemon_functions;
 
   (* Non-fish functions must have correct camel_name. *)

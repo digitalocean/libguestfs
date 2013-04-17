@@ -5861,6 +5861,33 @@ py_guestfs_get_cachedir (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_user_cancel (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_user_cancel",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_user_cancel (g);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_mount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -20843,6 +20870,7 @@ static PyMethodDef methods[] = {
   { (char *) "get_tmpdir", py_guestfs_get_tmpdir, METH_VARARGS, NULL },
   { (char *) "set_cachedir", py_guestfs_set_cachedir, METH_VARARGS, NULL },
   { (char *) "get_cachedir", py_guestfs_get_cachedir, METH_VARARGS, NULL },
+  { (char *) "user_cancel", py_guestfs_user_cancel, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },

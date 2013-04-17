@@ -66,8 +66,6 @@ external event_to_string : event list -> string
 
 external last_errno : t -> int = "ocaml_guestfs_last_errno"
 
-external user_cancel : t -> unit = "ocaml_guestfs_user_cancel" "noalloc"
-
 (* Give the exceptions names, so they can be raised from the C code. *)
 let () =
   Callback.register_exception "ocaml_guestfs_error" (Error "");
@@ -784,6 +782,7 @@ external umount_all : t -> unit = "ocaml_guestfs_umount_all"
 external umount_local : t -> ?retry:bool -> unit = "ocaml_guestfs_umount_local"
 external upload : t -> string -> string -> unit = "ocaml_guestfs_upload"
 external upload_offset : t -> string -> string -> int64 -> unit = "ocaml_guestfs_upload_offset"
+external user_cancel : t -> unit = "ocaml_guestfs_user_cancel"
 external utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit = "ocaml_guestfs_utimens_byte" "ocaml_guestfs_utimens"
 external utsname : t -> utsname = "ocaml_guestfs_utsname"
 external version : t -> version = "ocaml_guestfs_version"
@@ -835,7 +834,6 @@ class guestfs ?environment ?close_on_exit () =
     method set_event_callback = set_event_callback g
     method delete_event_callback = delete_event_callback g
     method last_errno () = last_errno g
-    method user_cancel () = user_cancel g
     method ocaml_handle = g
     method acl_delete_def_file = acl_delete_def_file g
     method acl_get_file = acl_get_file g
@@ -1313,6 +1311,7 @@ class guestfs ?environment ?close_on_exit () =
     method umount_local ?retry () = umount_local g ?retry
     method upload = upload g
     method upload_offset = upload_offset g
+    method user_cancel () = user_cancel g
     method utimens = utimens g
     method utsname () = utsname g
     method version () = version g

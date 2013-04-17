@@ -499,6 +499,7 @@
 -export([umount_local/1, umount_local/2]).
 -export([upload/3]).
 -export([upload_offset/4]).
+-export([user_cancel/1]).
 -export([utimens/6]).
 -export([utsname/1]).
 -export([version/1]).
@@ -2092,6 +2093,9 @@ upload(G, Filename, Remotefilename) ->
 
 upload_offset(G, Filename, Remotefilename, Offset) ->
   call_port(G, {upload_offset, Filename, Remotefilename, Offset}).
+
+user_cancel(G) ->
+  call_port(G, {user_cancel}).
 
 utimens(G, Path, Atsecs, Atnsecs, Mtsecs, Mtnsecs) ->
   call_port(G, {utimens, Path, Atsecs, Atnsecs, Mtsecs, Mtnsecs}).

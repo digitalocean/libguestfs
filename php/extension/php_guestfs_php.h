@@ -504,6 +504,7 @@ PHP_FUNCTION (guestfs_umount_all);
 PHP_FUNCTION (guestfs_umount_local);
 PHP_FUNCTION (guestfs_upload);
 PHP_FUNCTION (guestfs_upload_offset);
+PHP_FUNCTION (guestfs_user_cancel);
 PHP_FUNCTION (guestfs_utimens);
 PHP_FUNCTION (guestfs_utsname);
 PHP_FUNCTION (guestfs_version);

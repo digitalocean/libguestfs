@@ -529,6 +529,7 @@ static const char *const commands[] = {
   "unsetenv",
   "upload",
   "upload-offset",
+  "user-cancel",
   "utimens",
   "utsname",
   "version",

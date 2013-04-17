@@ -112,10 +112,6 @@ val last_errno : t -> int
     so if you want to capture the errno correctly, you must call this
     in the {!Error} exception handler, before any other operation on [g]. *)
 
-val user_cancel : t -> unit
-(** Cancel current transfer.  This is safe to call from OCaml signal
-    handlers and threads. *)
-
 type int_bool = {
   i : int32;
   b : int32;
@@ -1846,6 +1842,9 @@ val upload : t -> string -> string -> unit
 val upload_offset : t -> string -> string -> int64 -> unit
 (** upload a file from the local machine with offset *)
 
+val user_cancel : t -> unit
+(** cancel the current upload or download operation *)
+
 val utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit
 (** set timestamp of a file with nanosecond precision *)
 
@@ -2029,7 +2028,6 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_event_callback : event_callback -> event list -> event_handle
   method delete_event_callback : event_handle -> unit
   method last_errno : unit -> int
-  method user_cancel : unit -> unit
   method ocaml_handle : t
   method acl_delete_def_file : string -> unit
   method acl_get_file : string -> string -> string
@@ -2507,6 +2505,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method umount_local : ?retry:bool -> unit -> unit
   method upload : string -> string -> unit
   method upload_offset : string -> string -> int64 -> unit
+  method user_cancel : unit -> unit
   method utimens : string -> int64 -> int64 -> int64 -> int64 -> unit
   method utsname : unit -> utsname
   method version : unit -> version

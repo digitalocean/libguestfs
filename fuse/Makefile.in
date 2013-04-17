@@ -86,7 +86,16 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/subdir-rules.mk
-@HAVE_FUSE_TRUE@bin_PROGRAMS = guestmount$(EXEEXT)
+@HAVE_FUSE_TRUE@bin_PROGRAMS = guestmount$(EXEEXT) \
+@HAVE_FUSE_TRUE@	guestunmount$(EXEEXT)
+@HAVE_FUSE_TRUE@TESTS = test-guestunmount-fd$(EXEEXT) \
+@HAVE_FUSE_TRUE@	test-guestunmount-not-mounted.sh \
+@HAVE_FUSE_TRUE@	$(am__append_1)
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@am__append_1 = \
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-fuse.sh \
+@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@	test-fuse-umount-race.sh
+
+@HAVE_FUSE_TRUE@check_PROGRAMS = test-guestunmount-fd$(EXEEXT)
 subdir = fuse
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -241,6 +250,30 @@ am__v_lt_1 =
 guestmount_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(guestmount_CFLAGS) \
 	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__guestunmount_SOURCES_DIST = guestunmount.c
+@HAVE_FUSE_TRUE@am_guestunmount_OBJECTS =  \
+@HAVE_FUSE_TRUE@	guestunmount-guestunmount.$(OBJEXT)
+guestunmount_OBJECTS = $(am_guestunmount_OBJECTS)
+@HAVE_FUSE_TRUE@guestunmount_DEPENDENCIES =  \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_FUSE_TRUE@	../gnulib/lib/libgnu.la
+guestunmount_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(guestunmount_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__test_guestunmount_fd_SOURCES_DIST = test-guestunmount-fd.c
+@HAVE_FUSE_TRUE@am_test_guestunmount_fd_OBJECTS = test_guestunmount_fd-test-guestunmount-fd.$(OBJEXT)
+test_guestunmount_fd_OBJECTS = $(am_test_guestunmount_fd_OBJECTS)
+@HAVE_FUSE_TRUE@test_guestunmount_fd_DEPENDENCIES =  \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+@HAVE_FUSE_TRUE@	../gnulib/lib/libgnu.la
+test_guestunmount_fd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_guestunmount_fd_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -275,8 +308,11 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(guestmount_SOURCES)
-DIST_SOURCES = $(am__guestmount_SOURCES_DIST)
+SOURCES = $(guestmount_SOURCES) $(guestunmount_SOURCES) \
+	$(test_guestunmount_fd_SOURCES)
+DIST_SOURCES = $(am__guestmount_SOURCES_DIST) \
+	$(am__guestunmount_SOURCES_DIST) \
+	$(am__test_guestunmount_fd_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1368,8 +1404,17 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-EXTRA_DIST = guestmount.pod test-fuse.sh test-fuse-umount-race.sh
-CLEANFILES = stamp-guestmount.pod
+EXTRA_DIST = \
+	guestmount.pod \
+	guestunmount.pod \
+	test-fuse.sh \
+	test-fuse-umount-race.sh \
+	test-guestunmount-not-mounted.sh
+
+CLEANFILES = \
+	stamp-guestmount.pod \
+	stamp-guestunmount.pod
+
 
 # These source files (all related to option parsing) are shared
 # between guestfish and guestmount.
@@ -1381,6 +1426,8 @@ CLEANFILES = stamp-guestmount.pod
 @HAVE_FUSE_TRUE@	../fish/options.h \
 @HAVE_FUSE_TRUE@	../fish/options.c
 
+
+# guestmount
 @HAVE_FUSE_TRUE@guestmount_SOURCES = \
 @HAVE_FUSE_TRUE@	$(SHARED_SOURCE_FILES) \
 @HAVE_FUSE_TRUE@	guestmount.c
@@ -1408,15 +1455,57 @@ CLEANFILES = stamp-guestmount.pod
 @HAVE_FUSE_TRUE@	../gnulib/lib/libgnu.la
 
 
-# Documentation.
-@HAVE_FUSE_TRUE@man_MANS = guestmount.1
-@HAVE_FUSE_TRUE@noinst_DATA = $(top_builddir)/html/guestmount.1.html
+# guestunmount
+@HAVE_FUSE_TRUE@guestunmount_SOURCES = \
+@HAVE_FUSE_TRUE@	guestunmount.c
 
-# Tests.
-@ENABLE_APPLIANCE_TRUE@@HAVE_FUSE_TRUE@TESTS = test-fuse.sh test-fuse-umount-race.sh
+@HAVE_FUSE_TRUE@guestunmount_CPPFLAGS = \
+@HAVE_FUSE_TRUE@	-DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+@HAVE_FUSE_TRUE@guestunmount_CFLAGS = \
+@HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_FUSE_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+
+@HAVE_FUSE_TRUE@guestunmount_LDADD = \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
+@HAVE_FUSE_TRUE@	../gnulib/lib/libgnu.la
+
+
+# Documentation.
+@HAVE_FUSE_TRUE@man_MANS = \
+@HAVE_FUSE_TRUE@	guestmount.1 \
+@HAVE_FUSE_TRUE@	guestunmount.1
+
+@HAVE_FUSE_TRUE@noinst_DATA = \
+@HAVE_FUSE_TRUE@	$(top_builddir)/html/guestmount.1.html \
+@HAVE_FUSE_TRUE@	$(top_builddir)/html/guestunmount.1.html
+
 @HAVE_FUSE_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_FUSE_TRUE@	top_builddir=.. \
 @HAVE_FUSE_TRUE@	$(top_builddir)/run --test
+
+@HAVE_FUSE_TRUE@test_guestunmount_fd_SOURCES = \
+@HAVE_FUSE_TRUE@	test-guestunmount-fd.c
+
+@HAVE_FUSE_TRUE@test_guestunmount_fd_CPPFLAGS = \
+@HAVE_FUSE_TRUE@	-I$(top_srcdir)/src -I$(top_builddir)/src \
+@HAVE_FUSE_TRUE@	-I$(srcdir)/../gnulib/lib -I../gnulib/lib
+
+@HAVE_FUSE_TRUE@test_guestunmount_fd_CFLAGS = \
+@HAVE_FUSE_TRUE@	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+@HAVE_FUSE_TRUE@	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+
+@HAVE_FUSE_TRUE@test_guestunmount_fd_LDADD = \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libutils.la \
+@HAVE_FUSE_TRUE@	$(top_builddir)/src/libguestfs.la \
+@HAVE_FUSE_TRUE@	$(LIBXML2_LIBS) \
+@HAVE_FUSE_TRUE@	$(LIBVIRT_LIBS) \
+@HAVE_FUSE_TRUE@	../gnulib/lib/libgnu.la
 
 all: all-am
 
@@ -1499,9 +1588,24 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 guestmount$(EXEEXT): $(guestmount_OBJECTS) $(guestmount_DEPENDENCIES) $(EXTRA_guestmount_DEPENDENCIES) 
 	@rm -f guestmount$(EXEEXT)
 	$(AM_V_CCLD)$(guestmount_LINK) $(guestmount_OBJECTS) $(guestmount_LDADD) $(LIBS)
+guestunmount$(EXEEXT): $(guestunmount_OBJECTS) $(guestunmount_DEPENDENCIES) $(EXTRA_guestunmount_DEPENDENCIES) 
+	@rm -f guestunmount$(EXEEXT)
+	$(AM_V_CCLD)$(guestunmount_LINK) $(guestunmount_OBJECTS) $(guestunmount_LDADD) $(LIBS)
+test-guestunmount-fd$(EXEEXT): $(test_guestunmount_fd_OBJECTS) $(test_guestunmount_fd_DEPENDENCIES) $(EXTRA_test_guestunmount_fd_DEPENDENCIES) 
+	@rm -f test-guestunmount-fd$(EXEEXT)
+	$(AM_V_CCLD)$(test_guestunmount_fd_LINK) $(test_guestunmount_fd_OBJECTS) $(test_guestunmount_fd_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1515,6 +1619,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-keys.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestmount-options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestunmount-guestunmount.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1620,6 +1726,34 @@ guestmount-guestmount.obj: guestmount.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestmount.c' object='guestmount-guestmount.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestmount_CPPFLAGS) $(CPPFLAGS) $(guestmount_CFLAGS) $(CFLAGS) -c -o guestmount-guestmount.obj `if test -f 'guestmount.c'; then $(CYGPATH_W) 'guestmount.c'; else $(CYGPATH_W) '$(srcdir)/guestmount.c'; fi`
+
+guestunmount-guestunmount.o: guestunmount.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -MT guestunmount-guestunmount.o -MD -MP -MF $(DEPDIR)/guestunmount-guestunmount.Tpo -c -o guestunmount-guestunmount.o `test -f 'guestunmount.c' || echo '$(srcdir)/'`guestunmount.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestunmount-guestunmount.Tpo $(DEPDIR)/guestunmount-guestunmount.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestunmount.c' object='guestunmount-guestunmount.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -c -o guestunmount-guestunmount.o `test -f 'guestunmount.c' || echo '$(srcdir)/'`guestunmount.c
+
+guestunmount-guestunmount.obj: guestunmount.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -MT guestunmount-guestunmount.obj -MD -MP -MF $(DEPDIR)/guestunmount-guestunmount.Tpo -c -o guestunmount-guestunmount.obj `if test -f 'guestunmount.c'; then $(CYGPATH_W) 'guestunmount.c'; else $(CYGPATH_W) '$(srcdir)/guestunmount.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestunmount-guestunmount.Tpo $(DEPDIR)/guestunmount-guestunmount.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='guestunmount.c' object='guestunmount-guestunmount.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestunmount_CPPFLAGS) $(CPPFLAGS) $(guestunmount_CFLAGS) $(CFLAGS) -c -o guestunmount-guestunmount.obj `if test -f 'guestunmount.c'; then $(CYGPATH_W) 'guestunmount.c'; else $(CYGPATH_W) '$(srcdir)/guestunmount.c'; fi`
+
+test_guestunmount_fd-test-guestunmount-fd.o: test-guestunmount-fd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_guestunmount_fd_CPPFLAGS) $(CPPFLAGS) $(test_guestunmount_fd_CFLAGS) $(CFLAGS) -MT test_guestunmount_fd-test-guestunmount-fd.o -MD -MP -MF $(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Tpo -c -o test_guestunmount_fd-test-guestunmount-fd.o `test -f 'test-guestunmount-fd.c' || echo '$(srcdir)/'`test-guestunmount-fd.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Tpo $(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-guestunmount-fd.c' object='test_guestunmount_fd-test-guestunmount-fd.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_guestunmount_fd_CPPFLAGS) $(CPPFLAGS) $(test_guestunmount_fd_CFLAGS) $(CFLAGS) -c -o test_guestunmount_fd-test-guestunmount-fd.o `test -f 'test-guestunmount-fd.c' || echo '$(srcdir)/'`test-guestunmount-fd.c
+
+test_guestunmount_fd-test-guestunmount-fd.obj: test-guestunmount-fd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_guestunmount_fd_CPPFLAGS) $(CPPFLAGS) $(test_guestunmount_fd_CFLAGS) $(CFLAGS) -MT test_guestunmount_fd-test-guestunmount-fd.obj -MD -MP -MF $(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Tpo -c -o test_guestunmount_fd-test-guestunmount-fd.obj `if test -f 'test-guestunmount-fd.c'; then $(CYGPATH_W) 'test-guestunmount-fd.c'; else $(CYGPATH_W) '$(srcdir)/test-guestunmount-fd.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Tpo $(DEPDIR)/test_guestunmount_fd-test-guestunmount-fd.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-guestunmount-fd.c' object='test_guestunmount_fd-test-guestunmount-fd.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_guestunmount_fd_CPPFLAGS) $(CPPFLAGS) $(test_guestunmount_fd_CFLAGS) $(CFLAGS) -c -o test_guestunmount_fd-test-guestunmount-fd.obj `if test -f 'test-guestunmount-fd.c'; then $(CYGPATH_W) 'test-guestunmount-fd.c'; else $(CYGPATH_W) '$(srcdir)/test-guestunmount-fd.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1873,6 +2007,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
@@ -1913,7 +2048,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1986,19 +2122,20 @@ uninstall-man: uninstall-man1
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-binPROGRAMS clean-generic clean-libtool cscopelist ctags \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man1 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-man uninstall-man1
+	clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
+	clean-libtool cscopelist ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man1 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-man \
+	uninstall-man1
 
 
 # Define a force dependency which will always be rebuilt
@@ -2021,6 +2158,16 @@ appliance: force
 @HAVE_FUSE_TRUE@	$(PODWRAPPER) \
 @HAVE_FUSE_TRUE@	  --man guestmount.1 \
 @HAVE_FUSE_TRUE@	  --html $(top_builddir)/html/guestmount.1.html \
+@HAVE_FUSE_TRUE@	  --license GPLv2+ \
+@HAVE_FUSE_TRUE@	  $<
+@HAVE_FUSE_TRUE@	touch $@
+
+@HAVE_FUSE_TRUE@guestunmount.1 $(top_builddir)/html/guestunmount.1.html: stamp-guestunmount.pod
+
+@HAVE_FUSE_TRUE@stamp-guestunmount.pod: guestunmount.pod
+@HAVE_FUSE_TRUE@	$(PODWRAPPER) \
+@HAVE_FUSE_TRUE@	  --man guestunmount.1 \
+@HAVE_FUSE_TRUE@	  --html $(top_builddir)/html/guestunmount.1.html \
 @HAVE_FUSE_TRUE@	  --license GPLv2+ \
 @HAVE_FUSE_TRUE@	  $<
 @HAVE_FUSE_TRUE@	touch $@

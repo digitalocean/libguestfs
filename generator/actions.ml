@@ -31,7 +31,7 @@ let defaults = { name = ""; style = RErr, [], []; proc_nr = None;
                  deprecated_by = None; optional = None;
                  progress = false; camel_name = "";
                  cancellable = false; config_only = false;
-                 once_had_no_optargs = false; blocking = true;
+                 once_had_no_optargs = false; blocking = true; wrapper = true;
                  c_name = ""; c_function = ""; c_optarg_prefix = "";
                  non_c_aliases = [] }
 
@@ -2072,8 +2072,7 @@ returns successfully.  The call will not return until the
 filesystem is unmounted.
 
 B<Note> you must I<not> make concurrent libguestfs calls
-on the same handle from another thread,
-with the exception of C<guestfs_umount_local>.
+on the same handle from another thread.
 
 You may call this from a different thread than the one which
 called C<guestfs_mount_local>, subject to the usual rules
@@ -2716,6 +2715,39 @@ used by the appliance when the libvirt attach method is selected
 This internal function adds E<lt>seclabel model=selinux relabel=noE<gt>
 to all application disks.  It is only used by the libvirt attach method
 and is ignored by other attach methods." };
+
+  { defaults with
+    name = "user_cancel";
+    style = RErr, [], [];
+    blocking = false; wrapper = false;
+    shortdesc = "cancel the current upload or download operation";
+    longdesc = "\
+This function cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and
+thread safe.  You can call it from a signal handler or from another
+thread, without needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this
+to find out if the operation was cancelled or failed because of
+another error.
+
+No cleanup is performed: for example, if a file was being uploaded
+then after cancellation there may be a partially uploaded file.  It is
+the caller's responsibility to clean up if necessary.
+
+There are two common places that you might call C<guestfs_user_cancel>:
+
+In an interactive text-based program, you might call it from a
+C<SIGINT> signal handler so that pressing C<^C> cancels the current
+operation.  (You also need to call L</guestfs_set_pgroup> so that
+child processes don't receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress
+bar with a cancel button, wire up the cancel button to call this
+function." };
 
 ]
 

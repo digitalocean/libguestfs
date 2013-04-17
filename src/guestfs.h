@@ -180,10 +180,6 @@ extern GUESTFS_DLL_PUBLIC void guestfs_set_close_callback (guestfs_h *g, guestfs
 extern GUESTFS_DLL_PUBLIC void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque)
   GUESTFS_DEPRECATED_BY("set_event_callback");
 
-/* User cancellation. */
-#define GUESTFS_HAVE_USER_CANCEL 1
-extern GUESTFS_DLL_PUBLIC void guestfs_user_cancel (guestfs_h *g);
-
 /* Private data area. */
 #define GUESTFS_HAVE_SET_PRIVATE 1
 extern GUESTFS_DLL_PUBLIC void guestfs_set_private (guestfs_h *g, const char *key, void *data);
@@ -2592,6 +2588,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_upload (guestfs_h *g, const char *filename
 #define GUESTFS_HAVE_UPLOAD_OFFSET 1
 extern GUESTFS_DLL_PUBLIC int guestfs_upload_offset (guestfs_h *g, const char *filename, const char *remotefilename, int64_t offset);
 
+#define GUESTFS_HAVE_USER_CANCEL 1
+extern GUESTFS_DLL_PUBLIC int guestfs_user_cancel (guestfs_h *g);
+
 #define GUESTFS_HAVE_UTIMENS 1
 extern GUESTFS_DLL_PUBLIC int guestfs_utimens (guestfs_h *g, const char *path, int64_t atsecs, int64_t atnsecs, int64_t mtsecs, int64_t mtnsecs);
 
@@ -3175,7 +3174,6 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
 #define LIBGUESTFS_HAVE_SET_CLOSE_CALLBACK 1
 #define LIBGUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
-#define LIBGUESTFS_HAVE_USER_CANCEL 1
 #define LIBGUESTFS_HAVE_SET_PRIVATE 1
 #define LIBGUESTFS_HAVE_GET_PRIVATE 1
 #define LIBGUESTFS_HAVE_FIRST_PRIVATE 1
@@ -3622,6 +3620,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_UMOUNT_LOCAL 1
 #define LIBGUESTFS_HAVE_UPLOAD 1
 #define LIBGUESTFS_HAVE_UPLOAD_OFFSET 1
+#define LIBGUESTFS_HAVE_USER_CANCEL 1
 #define LIBGUESTFS_HAVE_UTIMENS 1
 #define LIBGUESTFS_HAVE_UTSNAME 1
 #define LIBGUESTFS_HAVE_VERSION 1

@@ -388,26 +388,6 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   return r;
 }
 
-/*
- * call-seq:
- *   g.user_cancel() -> nil
- *
- * Call
- * +guestfs_user_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel]
- * to cancel the current transfer.  This is safe to call from Ruby
- * signal handlers and threads.
- */
-static VALUE
-ruby_user_cancel (VALUE gv)
-{
-  guestfs_h *g;
-
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (g)
-    guestfs_user_cancel (g);
-  return Qnil;
-}
-
 static VALUE
 ruby_guestfs_internal_test (int argc, VALUE *argv, VALUE gv)
 {
@@ -5109,8 +5089,7 @@ ruby_guestfs_mount_local (int argc, VALUE *argv, VALUE gv)
  * filesystem is unmounted.
  * 
  * Note you must *not* make concurrent libguestfs calls on
- * the same handle from another thread, with the exception
- * of "g.umount_local".
+ * the same handle from another thread.
  * 
  * You may call this from a different thread than the one
  * which called "g.mount_local", subject to the usual rules
@@ -6554,6 +6533,66 @@ ruby_guestfs_get_cachedir (VALUE gv)
   volatile VALUE rv = rb_str_new2 (r);
   free (r);
   return rv;
+}
+
+/*
+ * call-seq:
+ *   g.user_cancel() -> nil
+ *
+ * cancel the current upload or download operation
+ *
+ * This function cancels the current upload or download
+ * operation.
+ * 
+ * Unlike most other libguestfs calls, this function is
+ * signal safe and thread safe. You can call it from a
+ * signal handler or from another thread, without needing
+ * to do any locking.
+ * 
+ * The transfer that was in progress (if there is one) will
+ * stop shortly afterwards, and will return an error. The
+ * errno (see "guestfs_last_errno") is set to "EINTR", so
+ * you can test for this to find out if the operation was
+ * cancelled or failed because of another error.
+ * 
+ * No cleanup is performed: for example, if a file was
+ * being uploaded then after cancellation there may be a
+ * partially uploaded file. It is the caller's
+ * responsibility to clean up if necessary.
+ * 
+ * There are two common places that you might call
+ * "g.user_cancel":
+ * 
+ * In an interactive text-based program, you might call it
+ * from a "SIGINT" signal handler so that pressing "^C"
+ * cancels the current operation. (You also need to call
+ * "guestfs_set_pgroup" so that child processes don't
+ * receive the "^C" signal).
+ * 
+ * In a graphical program, when the main thread is
+ * displaying a progress bar with a cancel button, wire up
+ * the cancel button to call this function.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_user_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel]).
+ */
+static VALUE
+ruby_guestfs_user_cancel (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "user_cancel");
+
+
+  int r;
+
+  r = guestfs_user_cancel (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
 }
 
 /*
@@ -23625,8 +23664,6 @@ Init__guestfs (void)
                     ruby_delete_event_callback, 1);
   rb_define_module_function (m_guestfs, "event_to_string",
                     ruby_event_to_string, 1);
-  rb_define_method (c_guestfs, "user_cancel",
-                    ruby_user_cancel, 0);
 
   rb_define_const (m_guestfs, "EVENT_CLOSE",
                    ULL2NUM (UINT64_C (0x1)));
@@ -23915,6 +23952,8 @@ Init__guestfs (void)
         ruby_guestfs_set_cachedir, 1);
   rb_define_method (c_guestfs, "get_cachedir",
         ruby_guestfs_get_cachedir, 0);
+  rb_define_method (c_guestfs, "user_cancel",
+        ruby_guestfs_user_cancel, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",

@@ -307,12 +307,6 @@ PREINIT:
       RETVAL
 
 void
-user_cancel (g)
-      guestfs_h *g;
- PPCODE:
-      guestfs_user_cancel (g);
-
-void
 internal_test (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, ...)
       guestfs_h *g;
       char *str;
@@ -2792,6 +2786,16 @@ PREINIT:
       free (r);
  OUTPUT:
       RETVAL
+
+void
+user_cancel (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_user_cancel (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
 
 void
 mount (g, mountable, mountpoint)

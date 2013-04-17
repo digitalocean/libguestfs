@@ -374,6 +374,7 @@ no_test_warnings (void)
     "tgz_out",
     "txz_out",
     "umount_local",
+    "user_cancel",
     "vg_activate_all",
     "vglvuuids",
     "vgmeta",
@@ -1574,7 +1575,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     optargs.journaldev = 1;
     optargs.bitmask = UINT64_C(0x100100002);
     int r;
@@ -1586,7 +1587,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda2";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.journaldevice = "UUID=599e119f-7bf8-730e-7bed-94126473ac38";
+    optargs.journaldevice = "UUID=4d23979b-1e13-6089-188c-f6747b86e048";
     optargs.label = "JOURNAL";
     optargs.fstype = "ext2";
     optargs.forcecreate = 1;
@@ -7690,10 +7691,10 @@ test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "599e119f-7bf8-730e-7bed-94126473ac38";
+  const char *expected = "4d23979b-1e13-6089-188c-f6747b86e048";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -12639,7 +12640,7 @@ test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mke2journal_U (g, 4096, uuid, device);
@@ -12649,7 +12650,7 @@ test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     int r;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
     if (r == -1)
@@ -13600,7 +13601,7 @@ test_swapon_uuid_0 (void)
   {
     const char *device = "/dev/sdc";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -13608,14 +13609,14 @@ test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     int r;
     r = guestfs_swapon_uuid (g, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     int r;
     r = guestfs_swapoff_uuid (g, uuid);
     if (r == -1)
@@ -17452,7 +17453,7 @@ test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mkswap_U (g, uuid, device);
@@ -17714,7 +17715,7 @@ test_mkswap_2 (void)
   {
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -17785,7 +17786,7 @@ test_mkswap_3 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
     optargs.label = "hello";
-    optargs.uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     optargs.bitmask = UINT64_C(0x3);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -22583,7 +22584,7 @@ test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "599e119f-7bf8-730e-7bed-94126473ac38";
+  const char *expected = "4d23979b-1e13-6089-188c-f6747b86e048";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -22593,7 +22594,7 @@ test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -22684,10 +22685,10 @@ test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "599e119f-7bf8-730e-7bed-94126473ac38";
+  const char *expected = "4d23979b-1e13-6089-188c-f6747b86e048";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "599e119f-7bf8-730e-7bed-94126473ac38";
+    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)

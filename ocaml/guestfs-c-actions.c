@@ -16907,6 +16907,33 @@ ocaml_guestfs_upload_offset (value gv, value filenamev, value remotefilenamev, v
 }
 
 /* Automatically generated wrapper for function
+ * val user_cancel : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_user_cancel (value gv);
+
+value
+ocaml_guestfs_user_cancel (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("user_cancel");
+
+  int r;
+
+  r = guestfs_user_cancel (g);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "user_cancel");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit
  */
 

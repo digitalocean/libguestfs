@@ -1,3 +1,69 @@
+2013-03-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.17.
+
+	guestmount: Add --no-fork flag.
+	This prevent guestmount from daemonizing.
+
+	Add guestunmount.1.html to the website.
+	This fixes commit 3e9e40aee322789e7f81422f4cfd42915b36eb4c.
+
+	fuse: Add guestunmount program to handle unmounting (RHBZ#916780).
+
+2013-03-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	fuse: guestfs_umount_local is not thread-safe.
+	Despite what the documentation may have said, it certainly was not
+	safe to call guestfs_umount_local from another thread.
+
+	guestfs_umount_local could generate events, call the error handler, or
+	access other fields in the handle, with no locking at all.
+
+	We should aim to make guestfs_umount_local thread-safe in future.
+
+	See also:
+	https://bugzilla.redhat.com/show_bug.cgi?id=917706
+
+2013-03-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Generate guestfs_user_cancel.
+	This function is now generated, so bindings in various languages
+	are made automatically.
+
+	Note that the function previously returned void, but now it returns
+	int (although always 0).  We don't believe that this is an ABI break
+	since existing programs will continue to work.
+
+2013-03-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Add 'wrapper' flag to control when wrapper is generated.
+	Non-daemon functions normally have a wrapper function called
+	eg. guestfs_name.  The "real" (ie. hand-written) function is called
+	eg. guestfs__name.  The wrapper deals with checking parameters and
+	doing trace messages.
+
+	This commit allows the wrapper function to be omitted.  The reason is
+	so that we can handle a few functions that have to be thread-safe
+	(currently just: guestfs_user_cancel).  The wrapper is not thread safe
+	because it can call events and/or the error handler.
+
+2013-03-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Typo in comment: "Checking" -> "Check".
+
+	threads: Note that even innocent-looking functions need a mutex.
+	RWMJ was caught out by this one ...
+
+	trace: Put trace buffer on the stack instead of in the handle.
+	This makes more sense, and makes the code slightly closer to being
+	thread safe (although it's still NOT thread safe).
+
+2013-03-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Add question about running fsck on live filesystems.
+
+	Version 1.21.16.
+
 2013-03-01  Richard W.M. Jones  <rjones@redhat.com>
 
 	lib: Check calls to xmlXPathEvalExpression for nodesetval == NULL.

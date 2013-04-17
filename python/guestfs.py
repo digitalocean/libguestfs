@@ -1870,8 +1870,7 @@ class GuestFS(object):
         filesystem is unmounted.
         
         Note you must *not* make concurrent libguestfs calls on
-        the same handle from another thread, with the exception
-        of "g.umount_local".
+        the same handle from another thread.
         
         You may call this from a different thread than the one
         which called "g.mount_local", subject to the usual rules
@@ -2360,6 +2359,42 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         return libguestfsmod.get_cachedir (self._o)
+
+    def user_cancel (self):
+        """This function cancels the current upload or download
+        operation.
+        
+        Unlike most other libguestfs calls, this function is
+        signal safe and thread safe. You can call it from a
+        signal handler or from another thread, without needing
+        to do any locking.
+        
+        The transfer that was in progress (if there is one) will
+        stop shortly afterwards, and will return an error. The
+        errno (see "guestfs_last_errno") is set to "EINTR", so
+        you can test for this to find out if the operation was
+        cancelled or failed because of another error.
+        
+        No cleanup is performed: for example, if a file was
+        being uploaded then after cancellation there may be a
+        partially uploaded file. It is the caller's
+        responsibility to clean up if necessary.
+        
+        There are two common places that you might call
+        "g.user_cancel":
+        
+        In an interactive text-based program, you might call it
+        from a "SIGINT" signal handler so that pressing "^C"
+        cancels the current operation. (You also need to call
+        "guestfs_set_pgroup" so that child processes don't
+        receive the "^C" signal).
+        
+        In a graphical program, when the main thread is
+        displaying a progress bar with a cancel button, wire up
+        the cancel button to call this function.
+        """
+        self._check_not_closed ()
+        return libguestfsmod.user_cancel (self._o)
 
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.

@@ -5650,8 +5650,7 @@ guestfs_session_mount_local(GuestfsSession *session, const gchar *localmountpoin
  * unmounted.
  * 
  * Note you must *not* make concurrent libguestfs calls on the same handle
- * from another thread, with the exception of
- * guestfs_session_umount_local().
+ * from another thread.
  * 
  * You may call this from a different thread than the one which called
  * guestfs_session_mount_local(), subject to the usual rules for threads
@@ -6974,6 +6973,62 @@ guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
   }
 
   return ret;
+}
+
+/**
+ * guestfs_session_user_cancel:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * cancel the current upload or download operation
+ *
+ * This function cancels the current upload or download operation.
+ * 
+ * Unlike most other libguestfs calls, this function is signal safe and
+ * thread safe. You can call it from a signal handler or from another
+ * thread, without needing to do any locking.
+ * 
+ * The transfer that was in progress (if there is one) will stop shortly
+ * afterwards, and will return an error. The errno (see
+ * "guestfs_last_errno") is set to @EINTR, so you can test for this to find
+ * out if the operation was cancelled or failed because of another error.
+ * 
+ * No cleanup is performed: for example, if a file was being uploaded then
+ * after cancellation there may be a partially uploaded file. It is the
+ * caller's responsibility to clean up if necessary.
+ * 
+ * There are two common places that you might call
+ * guestfs_session_user_cancel():
+ * 
+ * In an interactive text-based program, you might call it from a @SIGINT
+ * signal handler so that pressing "^C" cancels the current operation. (You
+ * also need to call "guestfs_set_pgroup" so that child processes don't
+ * receive the "^C" signal).
+ * 
+ * In a graphical program, when the main thread is displaying a progress
+ * bar with a cancel button, wire up the cancel button to call this
+ * function.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_user_cancel(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "user_cancel");
+    return FALSE;
+  }
+
+  int ret = guestfs_user_cancel (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**

@@ -300,18 +300,6 @@ free_per_handle_table (lua_State *L, guestfs_h *g)
   lua_settable (L, LUA_REGISTRYINDEX);
 }
 
-/* User cancel. */
-static int
-guestfs_lua_user_cancel (lua_State *L)
-{
-  struct userdata *u = get_handle (L, 1);
-
-  if (u->g)
-    guestfs_user_cancel (u->g);
-
-  return 0;
-}
-
 /* Set an event callback. */
 static int
 guestfs_lua_set_event_callback (lua_State *L)
@@ -12028,6 +12016,25 @@ guestfs_lua_upload_offset (lua_State *L)
 }
 
 static int
+guestfs_lua_user_cancel (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "user_cancel");
+
+
+  r = guestfs_user_cancel (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_utimens (lua_State *L)
 {
   int r;
@@ -14149,7 +14156,6 @@ static luaL_Reg functions[] = {
 /* Methods. */
 static luaL_Reg methods[] = {
   { "close", guestfs_lua_close },
-  { "user_cancel", guestfs_lua_user_cancel },
   { "set_event_callback", guestfs_lua_set_event_callback },
   { "delete_event_callback", guestfs_lua_delete_event_callback },
 
@@ -14621,6 +14627,7 @@ static luaL_Reg methods[] = {
   { "umount_local", guestfs_lua_umount_local },
   { "upload", guestfs_lua_upload },
   { "upload_offset", guestfs_lua_upload_offset },
+  { "user_cancel", guestfs_lua_user_cancel },
   { "utimens", guestfs_lua_utimens },
   { "utsname", guestfs_lua_utsname },
   { "version", guestfs_lua_version },

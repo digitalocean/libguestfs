@@ -7205,6 +7205,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_user_cancel (IntPtr h);
+
+    /// <summary>
+    /// cancel the current upload or download operation
+    /// </summary>
+    public void user_cancel ()
+    {
+      int r;
+      r = guestfs_user_cancel (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_utimens (IntPtr h, [In] string path, long atsecs, long atnsecs, long mtsecs, long mtnsecs);
 
     /// <summary>

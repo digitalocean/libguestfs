@@ -1409,6 +1409,7 @@ SOURCES = \
 @HAVE_OCAML_TRUE@TESTS_ENVIRONMENT = \
 @HAVE_OCAML_TRUE@	abs_builddir=$(abs_builddir) \
 @HAVE_OCAML_TRUE@	abs_srcdir=$(abs_srcdir) \
+@HAVE_OCAML_TRUE@	PATH=$(abs_top_builddir)/fuse:$(PATH) \
 @HAVE_OCAML_TRUE@	$(top_builddir)/run --test
 
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@TESTS = \
