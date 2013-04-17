@@ -78,11 +78,12 @@ EVENT_LIBRARY = 0x20
 EVENT_TRACE = 0x40
 EVENT_ENTER = 0x80
 EVENT_LIBVIRT_AUTH = 0x100
+EVENT_ALL = 0x1ff
 
 class ClosedHandle(ValueError):
     pass
 
-class GuestFS:
+class GuestFS(object):
     """Instances of this class are libguestfs API handles."""
 
     def __init__ (self, environment=True, close_on_exit=True):

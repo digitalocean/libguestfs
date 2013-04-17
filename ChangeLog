@@ -1,4 +1,146 @@
+2013-01-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Use the new CLEANUP_* macros to simplify code.
+
+	daemon: Add CLEANUP_* macros which automatically free memory when leaving scope.
+	cf commit 98b64650c852ccc9a8eef8b9691052faeb4873c8
+
+	daemon: Allow free_strings (NULL) and free_stringslen (NULL, ..).
+	Equivalent to free (NULL).
+
+	lib: Further use of CLEANUP_* macros.
+
+	launch: libvirt: Use CLEANUP_* macros.
+	Also implement macros for cleaning up libxml2 objects.
+
+	inspect: Use CLEANUP_* macros in inspection code.
+
+2013-01-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Add CLEANUP_* macros which automatically free things when leaving scope.
+	Use the macro like this to create temporary variables which are
+	automatically cleaned up when the scope is exited:
+
+	  {
+	    CLEANUP_FREE char *foo = safe_strdup (bar);
+	    ...
+	    // no need to call free (foo)!
+	  }
+
+	The following code is also valid.  The initialization of foo as 'NULL'
+	prevents any chance of free being called on an uninitialized pointer.
+	It may not be required in all cases.
+
+	  {
+	    CLEANUP_FREE char *foo = NULL;
+	    ...
+	    foo = safe_malloc (100);
+	    ...
+	    // no need to call free (foo)!
+	  }
+
+	This is also valid:
+
+	  {
+	    CLEANUP_FREE char *foo = ..., *bar = ...;
+	    ...
+	    // no need to call free (foo) or free (bar)!
+	  }
+
+	The CLEANUP_FREE_STRING_LIST macro calls guestfs___free_string_list
+	on its argument.  The argument may be NULL.
+
+	The CLEANUP_HASH_FREE macro calls hash_free on its argument.  The
+	argument may be NULL.
+
+	Important implementation note:
+	------------------------------
+
+	On GCC and LLVM, this is implemented using __attribute__((cleanup(...))).
+
+	There is no known way to implement this macro on other C compilers, so
+	this construct will cause a resource leak.
+
+	Important note about close/fclose:
+	----------------------------------
+
+	We did NOT implement 'CLEANUP_CLOSE' or 'CLEANUP_FCLOSE' macros.  The
+	reason is that I am not convinced that these can be used safely.  It
+	would be OK to use these to collect file handles along failure paths,
+	but you would still want a regular call to 'close'/'fclose' since you
+	must test for errors, and so you end up having to do:
+
+	  if (close (fd) == -1) {
+	    // failure case
+	    // avoid double-close in cleanup handler:
+	    fd = -1;
+	    ...
+	  }
+	  // avoid double-close in cleanup handler:
+	  fd = -1;
+	  ...
+
+2013-01-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Allow guestfs___free_string_list (NULL).
+	Equivalent to free (NULL).
+
+	perl, python, ruby: Add definition of EVENT_ALL in these languages.
+
+2013-01-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Define all_events_bitmask.
+	In the C bindings, use this more accurate mask instead of 'all bits
+	set'.
+
+	In the Java bindings, use this instead of open coding.
+
+2013-01-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	header: Minor whitespace fix.
+
+	header: Deprecate LIBGUESTFS_HAVE_* in favour of GUESTFS_HAVE_*.
+
+	header: Link to guestfs-examples(3) man page from header file.
+
+2013-01-24  Matthew Booth  <mbooth@redhat.com>
+
+	Update vim line length to 70
+	Apparently this makes it the same as emacs or something.
+
+2013-01-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	python: Inherit from 'object' base class.
+	This fixes the following Debian bug:
+	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=698771
+
+	For an overview, see this question and the links from there:
+	http://stackoverflow.com/questions/4015417/python-class-inherits-object
+
+2013-01-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Add 'is_root' flag to the params struct.
+	This is just code motion, but it allows us to read this flag inside
+	the 'construct_libvirt_xml_seclabel' function in future (as a possible
+	way to fix RHBZ#890291).
+
+2013-01-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	libvirt: Add debugging when opening libvirt handle.
+	When debugging is enabled, this produces output like below.  This is
+	useful when diagnosing what URI libguestfs is using.
+
+	libguestfs: opening libvirt handle: URI = NULL, auth = virConnectAuthPtrDefault, flags = 0
+	libguestfs: successfully opened libvirt handle: conn = 0xb05580
+
+2013-01-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Refactor seclabel code.
+	This is just code motion.
+
 2013-01-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.5.
 
 	fuse: Use guestfs_rename to implement rename(2) syscall (RHBZ#895910).
 

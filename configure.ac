@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [5])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -190,6 +190,48 @@ AC_SYS_LARGEFILE
 
 dnl Check sizeof long.
 AC_CHECK_SIZEOF([long])
+
+dnl Check if __attribute__((cleanup(...))) works.
+dnl XXX It would be nice to use AC_COMPILE_IFELSE here, but gcc just
+dnl emits a warning for attributes that it doesn't understand.
+AC_MSG_CHECKING([if __attribute__((cleanup(...))) works with this compiler])
+AC_RUN_IFELSE([
+AC_LANG_SOURCE([[
+#include <stdio.h>
+#include <stdlib.h>
+
+void
+freep (void *ptr)
+{
+  exit (0);
+}
+
+void
+test (void)
+{
+  __attribute__((cleanup(freep))) char *ptr = malloc (100);
+}
+
+int
+main (int argc, char *argv[])
+{
+  test ();
+  exit (1);
+}
+]])
+    ],[
+    AC_MSG_RESULT([yes])
+    AC_DEFINE([HAVE_ATTRIBUTE_CLEANUP],[1],[Define to 1 if '__attribute__((cleanup(...)))' works with this compiler.])
+    ],[
+    AC_MSG_WARN(
+['__attribute__((cleanup(...)))' does not work.
+
+You may not be using a sufficiently recent version of GCC or CLANG, or
+you may be using a C compiler which does not support this attribute,
+or the configure test may be wrong.
+
+The code will still compile, but is likely to leak memory and other
+resources when it runs.])])
 
 dnl Check if dirent (readdir) supports d_type member.
 AC_STRUCT_DIRENT_D_TYPE

@@ -1986,7 +1986,7 @@ of libguestfs.  Note however that you have to do C<run> first.
 バージョン 1.5.8 から C<E<lt>guestfs.hE<gt>> に定義されたシンボルの C API
 関数があります。次のようなものがあります:
 
- #define LIBGUESTFS_HAVE_DD 1
+ #define GUESTFS_HAVE_DD 1
 
 L</guestfs_dd> が利用可能な場合。
 
@@ -2014,7 +2014,7 @@ I<この関数は推奨されません。> 新しいコードでは、代わり�
  
  main ()
  {
- #ifdef LIBGUESTFS_HAVE_DD
+ #ifdef GUESTFS_HAVE_DD
    void *dl;
    int has_function;
  

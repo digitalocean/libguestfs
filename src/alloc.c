@@ -26,6 +26,8 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 
+#include "hash.h"
+
 void *
 guestfs___safe_malloc (guestfs_h *g, size_t nbytes)
 {
@@ -122,3 +124,93 @@ guestfs___safe_asprintf (guestfs_h *g, const char *fs, ...)
 
   return msg;
 }
+
+/* These functions are used internally by the CLEANUP_* macros.
+ * Don't call them directly.
+ */
+
+void
+guestfs___cleanup_free (void *ptr)
+{
+  free (* (void **) ptr);
+}
+
+void
+guestfs___cleanup_free_string_list (void *ptr)
+{
+  guestfs___free_string_list (* (char ***) ptr);
+}
+
+void
+guestfs___cleanup_hash_free (void *ptr)
+{
+  Hash_table *h = * (Hash_table **) ptr;
+
+  if (h)
+    hash_free (h);
+}
+
+void
+guestfs___cleanup_unlink_free (void *ptr)
+{
+  char *filename = * (char **) ptr;
+
+  if (filename) {
+    unlink (filename);
+    free (filename);
+  }
+}
+
+#ifdef HAVE_LIBXML2
+
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlwriter.h>
+
+void
+guestfs___cleanup_xmlBufferFree (void *ptr)
+{
+  xmlBufferPtr xb = * (xmlBufferPtr *) ptr;
+
+  if (xb)
+    xmlBufferFree (xb);
+
+}
+
+void
+guestfs___cleanup_xmlFreeDoc (void *ptr)
+{
+  xmlDocPtr doc = * (xmlDocPtr *) ptr;
+
+  if (doc)
+    xmlFreeDoc (doc);
+}
+
+void
+guestfs___cleanup_xmlFreeTextWriter (void *ptr)
+{
+  xmlTextWriterPtr xo = * (xmlTextWriterPtr *) ptr;
+
+  if (xo)
+    xmlFreeTextWriter (xo);
+}
+
+void
+guestfs___cleanup_xmlXPathFreeContext (void *ptr)
+{
+  xmlXPathContextPtr ctx = * (xmlXPathContextPtr *) ptr;
+
+  if (ctx)
+    xmlXPathFreeContext (ctx);
+}
+
+void
+guestfs___cleanup_xmlXPathFreeObject (void *ptr)
+{
+  xmlXPathObjectPtr obj = * (xmlXPathObjectPtr *) ptr;
+
+  if (obj)
+    xmlXPathFreeObject (obj);
+}
+
+#endif /* HAVE_LIBXML2 */

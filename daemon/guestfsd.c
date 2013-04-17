@@ -517,6 +517,9 @@ free_strings (char **argv)
 {
   size_t argc;
 
+  if (!argv)
+    return;
+
   for (argc = 0; argv[argc] != NULL; ++argc)
     free (argv[argc]);
   free (argv);
@@ -526,6 +529,9 @@ void
 free_stringslen (char **argv, size_t len)
 {
   size_t i;
+
+  if (!argv)
+    return;
 
   for (i = 0; i < len; ++i)
     free (argv[i]);
@@ -651,7 +657,8 @@ int
 commandf (char **stdoutput, char **stderror, int flags, const char *name, ...)
 {
   va_list args;
-  const char **argv;
+  /* NB: Mustn't free the strings which are on the stack. */
+  CLEANUP_FREE const char **argv;
   char *s;
   size_t i;
   int r;
@@ -672,7 +679,6 @@ commandf (char **stdoutput, char **stderror, int flags, const char *name, ...)
     const char **p = realloc (argv, sizeof (char *) * (++i));
     if (p == NULL) {
       perror ("realloc");
-      free (argv);
       va_end (args);
       return -1;
     }
@@ -685,9 +691,6 @@ commandf (char **stdoutput, char **stderror, int flags, const char *name, ...)
 
   r = commandvf (stdoutput, stderror, flags, (const char * const*) argv);
 
-  /* NB: Mustn't free the strings which are on the stack. */
-  free (argv);
-
   return r;
 }
 
@@ -699,7 +702,7 @@ int
 commandrf (char **stdoutput, char **stderror, int flags, const char *name, ...)
 {
   va_list args;
-  const char **argv;
+  CLEANUP_FREE const char **argv;
   char *s;
   int i, r;
 
@@ -719,7 +722,6 @@ commandrf (char **stdoutput, char **stderror, int flags, const char *name, ...)
     const char **p = realloc (argv, sizeof (char *) * (++i));
     if (p == NULL) {
       perror ("realloc");
-      free (argv);
       va_end (args);
       return -1;
     }
@@ -731,9 +733,6 @@ commandrf (char **stdoutput, char **stderror, int flags, const char *name, ...)
   va_end (args);
 
   r = commandrvf (stdoutput, stderror, flags, argv);
-
-  /* NB: Mustn't free the strings which are on the stack. */
-  free (argv);
 
   return r;
 }
@@ -1242,4 +1241,28 @@ void
 udev_settle (void)
 {
   (void) command (NULL, NULL, str_udevadm, "settle", NULL);
+}
+
+/* Use by the CLEANUP_* macros.  Do not call these directly. */
+void
+cleanup_free (void *ptr)
+{
+  free (* (void **) ptr);
+}
+
+void
+cleanup_free_string_list (void *ptr)
+{
+  free_strings (* (char ***) ptr);
+}
+
+void
+cleanup_unlink_free (void *ptr)
+{
+  char *filename = * (char **) ptr;
+
+  if (filename) {
+    unlink (filename);
+    free (filename);
+  }
 }

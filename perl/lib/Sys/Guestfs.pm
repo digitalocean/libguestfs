@@ -204,6 +204,14 @@ See L<guestfs(3)/GUESTFS_EVENT_LIBVIRT_AUTH>.
 
 our $EVENT_LIBVIRT_AUTH = 0x100;
 
+=item $Sys::Guestfs::EVENT_ALL
+
+See L<guestfs(3)/GUESTFS_EVENT_ALL>.
+
+=cut
+
+our $EVENT_ALL = 0x1ff;
+
 =item $event_handle = $g->set_event_callback (\&cb, $event_bitmask);
 
 Register C<cb> as a callback function for all of the events

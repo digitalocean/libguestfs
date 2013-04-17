@@ -424,6 +424,9 @@
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
+/* Define to 1 if '__attribute__((cleanup(...)))' works with this compiler. */
+#undef HAVE_ATTRIBUTE_CLEANUP
+
 /* Define to 1 if you have the <attr/xattr.h> header file. */
 #undef HAVE_ATTR_XATTR_H
 

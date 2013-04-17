@@ -23813,6 +23813,8 @@ Init__guestfs (void)
                    ULL2NUM (UINT64_C (0x80)));
   rb_define_const (m_guestfs, "EVENT_LIBVIRT_AUTH",
                    ULL2NUM (UINT64_C (0x100)));
+  rb_define_const (m_guestfs, "EVENT_ALL",
+                   ULL2NUM (UINT64_C (0x1ff)));
 
   rb_define_method (c_guestfs, "internal_test",
         ruby_guestfs_internal_test, -1);
