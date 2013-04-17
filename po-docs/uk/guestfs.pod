@@ -1216,6 +1216,7 @@ E<ge> 1.19.24, libguestfs can be built with a different default by doing:
 To find out if libguestfs was compiled with a different default attach
 method, do:
 
+ unset LIBGUESTFS_ATTACH_METHOD
  guestfish get-attach-method
 
 =head2 ДОЛУЧЕННЯ ДО ЗАПУЩЕНИХ ФОНОВИХ СЛУЖБ

@@ -261,13 +261,6 @@ launch_appliance (guestfs_h *g, const char *arg)
      */
     alloc_cmdline (g);
 
-    /* Add any qemu parameters. */
-    for (qp = g->qemu_params; qp; qp = qp->next) {
-      add_cmdline (g, qp->qemu_param);
-      if (qp->qemu_value)
-        add_cmdline (g, qp->qemu_value);
-    }
-
     /* CVE-2011-4127 mitigation: Disable SCSI ioctls on virtio-blk
      * devices.  The -global option must exist, but you can pass any
      * strings to it so we don't need to check for the specific virtio
@@ -345,13 +338,6 @@ launch_appliance (guestfs_h *g, const char *arg)
 
       appliance_dev[5] = virtio_scsi ? 's' : 'v';
       guestfs___drive_name (g->nr_drives, &appliance_dev[7]);
-    }
-
-    if (STRNEQ (QEMU_OPTIONS, "")) {
-      /* Add the extra options for the qemu command line specified
-       * at configure time.
-       */
-      add_cmdline_shell_unquoted (g, QEMU_OPTIONS);
     }
 
     /* The qemu -machine option (added 2010-12) is a bit more sane
@@ -470,6 +456,23 @@ launch_appliance (guestfs_h *g, const char *arg)
     CLEANUP_FREE char *cmdline =
       guestfs___appliance_command_line (g, appliance_dev, 0);
     add_cmdline (g, cmdline);
+
+    /* Note: custom command line parameters must come last so that
+     * qemu -set parameters can modify previously added options.
+     */
+
+    /* Add the extra options for the qemu command line specified
+     * at configure time.
+     */
+    if (STRNEQ (QEMU_OPTIONS, ""))
+      add_cmdline_shell_unquoted (g, QEMU_OPTIONS);
+
+    /* Add any qemu parameters. */
+    for (qp = g->qemu_params; qp; qp = qp->next) {
+      add_cmdline (g, qp->qemu_param);
+      if (qp->qemu_value)
+        add_cmdline (g, qp->qemu_value);
+    }
 
     /* Finish off the command line. */
     incr_cmdline_size (g);
@@ -782,7 +785,10 @@ test_qemu (guestfs_h *g)
   return 0;
 
  error:
-  error (g, _("qemu command failed\nIf qemu is located on a non-standard path, try setting the LIBGUESTFS_QEMU\nenvironment variable.  There may also be errors printed above."));
+  if (r == -1)
+    return -1;
+
+  guestfs___external_command_failed (g, r, g->qemu, NULL);
   return -1;
 }
 
@@ -992,7 +998,7 @@ static int
 shutdown_appliance (guestfs_h *g, int check_for_errors)
 {
   int ret = 0;
-  int status, sig;
+  int status;
 
   /* Signal qemu to shutdown cleanly, and kill the recovery process. */
   if (g->app.pid > 0) {
@@ -1007,18 +1013,8 @@ shutdown_appliance (guestfs_h *g, int check_for_errors)
       perrorf (g, "waitpid (qemu)");
       ret = -1;
     }
-    else if (WIFEXITED (status) && WEXITSTATUS (status) != 0) {
-      error (g, "qemu failed (status %d)", WEXITSTATUS (status));
-      ret = -1;
-    }
-    else if (WIFSIGNALED (status)) {
-      sig = WTERMSIG (status);
-      error (g, "qemu terminated by signal %d (%s)", sig, strsignal (sig));
-      ret = -1;
-    }
-    else if (WIFSTOPPED (status)) {
-      sig = WSTOPSIG (status);
-      error (g, "qemu stopped by signal %d (%s)", sig, strsignal (sig));
+    else if (!WIFEXITED (status) || WEXITSTATUS (status) != 0) {
+      guestfs___external_command_failed (g, status, g->qemu, NULL);
       ret = -1;
     }
   }

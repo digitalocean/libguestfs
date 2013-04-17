@@ -1,4 +1,58 @@
+2013-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	utils: Fix error messages for external commands that fail (RHBZ#921040).
+	This adds a common utility function (guestfs___exit_status_to_string)
+	and a common error function (guestfs___external_command_failed), and
+	uses them all over the library and tools when converting exit status
+	in error messages etc.
+
+	lib: Move common errors to src/errors.c.
+	This is just code motion.
+
+	rescue: Remove dead code.
+	This pty code was defended by #if 0 ... #endif and was dead code.
+
+	Ignore case when generating AUTHORS file.
+
+2013-03-12  infernix  <infernix@infernix.net>
+
+	launch: appliance: Add custom parameters last.
+	This allows custom parameters to modify parameters added by
+	libguestfs, eg. by doing:
+
+	  -set drive.hd0.file=rbd:foo/bar
+
+	[infernix adds the comment below:]
+
+	This works for recent versions of QEMU. The way to use this is:
+
+	guestfish
+	><fs> add-drive /dev/null
+	><fs> config -set drive.hd0.file=rbd:pool/volume
+	><fs> run
+
+	This will probably work for more types (sheepdog, iscsi et al), but
+	with the caveat that the libguestfs layers are bypassed so you'll
+	*always* end up directly accessing the disk in rw mode.
+
+2013-03-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Update documentation on attach-methods.
+	Add better instructions for getting the default attach-method.
+
+	Update libguestfs-test-tool(1) to show how to enable and disable
+	libvirt.
+
+2013-03-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: Pass all libvirt environment variables down to PHP test scripts.
+	Including LIBVIRTD_* and VIRTLOCKD_*.
+
+	This updates commit cd40cf713991569e51b42742177e57f3dca148bc.
+
 2013-03-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.19.
 
 	qemu-img info: Use --output json and YAJL (JSON parser) to safely parse output (RHBZ#920225).
 	The old parser is still used if either YAJL is not available or

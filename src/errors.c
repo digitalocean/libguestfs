@@ -269,3 +269,71 @@ guestfs___print_BufferOut (FILE *out, const char *buf, size_t buf_size)
 {
   guestfs___print_BufferIn (out, buf, buf_size);
 }
+
+/* Some standard error messages for common failures. */
+
+/* Launch failed.  Since this is the most common error seen by people
+ * who have installation problems, buggy qemu, etc, and since no one
+ * reads the FAQ, describe in this error message what resources are
+ * available to debug launch problems.
+ */
+void
+guestfs___launch_failed_error (guestfs_h *g)
+{
+  if (g->verbose)
+    error (g, _("guestfs_launch failed, see earlier error messages"));
+  else
+    error (g, _(
+"guestfs_launch failed.\n"
+"This usually means the libguestfs appliance failed to start or crashed.\n"
+"See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs\n"
+"or run 'libguestfs-test-tool' and post the *complete* output into a\n"
+"bug report or message to the libguestfs mailing list."));
+}
+
+/* As above, but for crashes that occur after launch. */
+void
+guestfs___unexpected_close_error (guestfs_h *g)
+{
+  if (g->verbose)
+    error (g, _("appliance closed the connection unexpectedly, see earlier error messages"));
+  else
+    error (g, _(
+"appliance closed the connection unexpectedly.\n"
+"This usually means the libguestfs appliance crashed.\n"
+"See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs\n"
+"for information about how to debug libguestfs and report bugs."));
+}
+
+/* External command failed. */
+void
+guestfs___external_command_failed (guestfs_h *g, int status,
+                                   const char *cmd_name, const char *extra)
+{
+  size_t len = 80 + strlen (cmd_name);
+  char status_string[len];
+
+  guestfs___exit_status_to_string (status, cmd_name, status_string, len);
+
+  if (g->verbose) {
+    if (!extra)
+      error (g, _("%s, see debug messages above"), status_string);
+    else
+      error (g, _("%s: %s: %s, see debug messages above"),
+             cmd_name, extra, status_string);
+  }
+  else {
+    if (!extra)
+      error (g, _(
+"%s.\n"
+"To see full error messages you may need to enable debugging.\n"
+"See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs"),
+             status_string);
+    else
+      error (g, _(
+"%s: %s: %s.\n"
+"To see full error messages you may need to enable debugging.\n"
+"See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs"),
+             cmd_name, extra, status_string);
+  }
+}
