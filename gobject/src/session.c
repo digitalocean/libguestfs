@@ -4192,6 +4192,30 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * See "DISK LABELS" in guestfs(3).
  * 
+ * @protocol
+ * The optional protocol argument can be used to select an alternate
+ * source protocol:
+ * 
+ * "protocol = "file""
+ * @filename is interpreted as a local file or device. This is the
+ * default if the optional protocol parameter is omitted.
+ * 
+ * "protocol = "nbd""
+ * Connect to the Network Block Device server at "server:port".
+ * 
+ * See: "NETWORK BLOCK DEVICES" in guestfs(3).
+ * 
+ * @server
+ * For protocols which require access to a remote server, this is the
+ * name of the server.
+ * 
+ * @port
+ * For protocols which require access to a remote server, this is the
+ * port number of the service.
+ * 
+ * If not specified, this defaults to the standard port for the
+ * protocol, eg. 10809 when @protocol is "nbd".
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -4250,6 +4274,30 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, Guestf
     if (label != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
       argv.label = label;
+    }
+    GValue protocol_v = {0, };
+    g_value_init(&protocol_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "protocol", &protocol_v);
+    const gchar *protocol = g_value_get_string(&protocol_v);
+    if (protocol != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+      argv.protocol = protocol;
+    }
+    GValue server_v = {0, };
+    g_value_init(&server_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "server", &server_v);
+    const gchar *server = g_value_get_string(&server_v);
+    if (server != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+      argv.server = server;
+    }
+    GValue port_v = {0, };
+    g_value_init(&port_v, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(optargs), "port", &port_v);
+    gint32 port = g_value_get_int(&port_v);
+    if (port != -1) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
+      argv.port = port;
     }
     argvp = &argv;
   }

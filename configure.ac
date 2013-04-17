@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [20])
+m4_define([libguestfs_release], [21])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -488,6 +488,14 @@ if test -f /etc/arch-release; then
 fi
 AC_MSG_RESULT([$DISTRO])
 AC_SUBST([DISTRO])
+
+dnl Add extra packages to the appliance.
+AC_ARG_WITH([extra-packages],
+    [AS_HELP_STRING([--with-extra-packages],
+                    [add extra packages to the appliance])],
+    [EXTRA_PACKAGES="$withval"],
+    [EXTRA_PACKAGES=])
+AC_SUBST([EXTRA_PACKAGES])
 
 dnl Check for rpcgen and XDR library.  rpcgen is optional.
 AC_CHECK_PROG([RPCGEN],[rpcgen],[rpcgen],[no])
@@ -1566,6 +1574,7 @@ AC_CONFIG_FILES([Makefile
                  tests/md/Makefile
                  tests/mount-local/Makefile
                  tests/mountable/Makefile
+                 tests/nbd/Makefile
                  tests/ntfsclone/Makefile
                  tests/parallel/Makefile
                  tests/protocol/Makefile

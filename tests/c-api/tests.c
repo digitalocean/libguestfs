@@ -1575,7 +1575,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    optargs.uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     optargs.journaldev = 1;
     optargs.bitmask = UINT64_C(0x100100002);
     int r;
@@ -1587,7 +1587,7 @@ test_mke2fs_2 (void)
     const char *device = "/dev/sda2";
     struct guestfs_mke2fs_argv optargs;
     optargs.blocksize = 4096;
-    optargs.journaldevice = "UUID=4d23979b-1e13-6089-188c-f6747b86e048";
+    optargs.journaldevice = "UUID=d344724e-e929-3b2c-8d49-c2cb4ba46159";
     optargs.label = "JOURNAL";
     optargs.fstype = "ext2";
     optargs.forcecreate = 1;
@@ -7691,10 +7691,10 @@ test_vfs_uuid_0 (void)
       return -1;
   }
   /* TestOutput for vfs_uuid (0) */
-  const char *expected = "4d23979b-1e13-6089-188c-f6747b86e048";
+  const char *expected = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -12640,7 +12640,7 @@ test_mke2journal_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mke2journal_U (g, 4096, uuid, device);
@@ -12650,7 +12650,7 @@ test_mke2journal_U_0 (void)
   {
     const char *fstype = "ext2";
     const char *device = "/dev/sda2";
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     int r;
     r = guestfs_mke2fs_JU (g, fstype, 4096, device, uuid);
     if (r == -1)
@@ -13601,7 +13601,7 @@ test_swapon_uuid_0 (void)
   {
     const char *device = "/dev/sdc";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    optargs.uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -13609,14 +13609,14 @@ test_swapon_uuid_0 (void)
       return -1;
   }
   {
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     int r;
     r = guestfs_swapon_uuid (g, uuid);
     if (r == -1)
       return -1;
   }
   {
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     int r;
     r = guestfs_swapoff_uuid (g, uuid);
     if (r == -1)
@@ -17453,7 +17453,7 @@ test_mkswap_U_0 (void)
       return -1;
   }
   {
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     const char *device = "/dev/sda1";
     int r;
     r = guestfs_mkswap_U (g, uuid, device);
@@ -17715,7 +17715,7 @@ test_mkswap_2 (void)
   {
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
-    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    optargs.uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     optargs.bitmask = UINT64_C(0x2);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -17786,7 +17786,7 @@ test_mkswap_3 (void)
     const char *device = "/dev/sda1";
     struct guestfs_mkswap_opts_argv optargs;
     optargs.label = "hello";
-    optargs.uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    optargs.uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     optargs.bitmask = UINT64_C(0x3);
     int r;
     r = guestfs_mkswap_opts_argv (g, device, &optargs);
@@ -22584,7 +22584,7 @@ test_get_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for get_e2uuid (0) */
-  const char *expected = "4d23979b-1e13-6089-188c-f6747b86e048";
+  const char *expected = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
   {
     const char *device = "/dev/sdc";
     int r;
@@ -22594,7 +22594,7 @@ test_get_e2uuid_0 (void)
   }
   {
     const char *device = "/dev/sdc";
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -22685,10 +22685,10 @@ test_set_e2uuid_0 (void)
       return -1;
   }
   /* TestOutput for set_e2uuid (0) */
-  const char *expected = "4d23979b-1e13-6089-188c-f6747b86e048";
+  const char *expected = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
   {
     const char *device = "/dev/sda1";
-    const char *uuid = "4d23979b-1e13-6089-188c-f6747b86e048";
+    const char *uuid = "d344724e-e929-3b2c-8d49-c2cb4ba46159";
     int r;
     r = guestfs_set_e2uuid (g, device, uuid);
     if (r == -1)
@@ -37318,7 +37318,7 @@ main (int argc, char *argv[])
 
   g = guestfs_create ();
   if (g == NULL) {
-    printf ("guestfs_create FAILED\n");
+    printf ("FAIL: guestfs_create\n");
     exit (EXIT_FAILURE);
   }
 
@@ -37340,7 +37340,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
   if (guestfs_add_drive (g, filename) == -1) {
-    printf ("guestfs_add_drive %s FAILED\n", filename);
+    printf ("FAIL: guestfs_add_drive %s\n", filename);
     exit (EXIT_FAILURE);
   }
 
@@ -37362,7 +37362,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
   if (guestfs_add_drive (g, filename) == -1) {
-    printf ("guestfs_add_drive %s FAILED\n", filename);
+    printf ("FAIL: guestfs_add_drive %s\n", filename);
     exit (EXIT_FAILURE);
   }
 
@@ -37384,12 +37384,12 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
   if (guestfs_add_drive (g, filename) == -1) {
-    printf ("guestfs_add_drive %s FAILED\n", filename);
+    printf ("FAIL: guestfs_add_drive %s\n", filename);
     exit (EXIT_FAILURE);
   }
 
   if (guestfs_add_drive_ro (g, "../data/test.iso") == -1) {
-    printf ("guestfs_add_drive_ro ../data/test.iso FAILED\n");
+    printf ("FAIL: guestfs_add_drive_ro ../data/test.iso\n");
     exit (EXIT_FAILURE);
   }
 
@@ -37397,7 +37397,7 @@ main (int argc, char *argv[])
   alarm (600);
 
   if (guestfs_launch (g) == -1) {
-    printf ("guestfs_launch FAILED\n");
+    printf ("FAIL: guestfs_launch\n");
     exit (EXIT_FAILURE);
   }
 
@@ -37406,2550 +37406,2550 @@ main (int argc, char *argv[])
 
   /* Create ext2 filesystem on /dev/sdb1 partition. */
   if (guestfs_part_disk (g, "/dev/sdb", "mbr") == -1) {
-    printf ("guestfs_part_disk FAILED\n");
+    printf ("FAIL: guestfs_part_disk\n");
     exit (EXIT_FAILURE);
   }
   if (guestfs_mkfs (g, "ext2", "/dev/sdb1") == -1) {
-    printf ("guestfs_mkfs (/dev/sdb1) FAILED\n");
+    printf ("FAIL: guestfs_mkfs (/dev/sdb1)\n");
     exit (EXIT_FAILURE);
   }
 
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_whole_device_0");
   if (test_is_whole_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_whole_device_0");
+    printf ("FAIL: %s\n", "test_is_whole_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_whole_device_1");
   if (test_is_whole_device_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_whole_device_1");
+    printf ("FAIL: %s\n", "test_is_whole_device_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_whole_device_2");
   if (test_is_whole_device_2 () == -1) {
-    printf ("%s FAILED\n", "test_is_whole_device_2");
+    printf ("FAIL: %s\n", "test_is_whole_device_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rename_0");
   if (test_rename_0 () == -1) {
-    printf ("%s FAILED\n", "test_rename_0");
+    printf ("FAIL: %s\n", "test_rename_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_get_gpt_type_0");
   if (test_part_get_gpt_type_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_get_gpt_type_0");
+    printf ("FAIL: %s\n", "test_part_get_gpt_type_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_cap_set_file_0");
   if (test_cap_set_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_cap_set_file_0");
+    printf ("FAIL: %s\n", "test_cap_set_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_acl_delete_def_file_0");
   if (test_acl_delete_def_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_acl_delete_def_file_0");
+    printf ("FAIL: %s\n", "test_acl_delete_def_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_acl_delete_def_file_1");
   if (test_acl_delete_def_file_1 () == -1) {
-    printf ("%s FAILED\n", "test_acl_delete_def_file_1");
+    printf ("FAIL: %s\n", "test_acl_delete_def_file_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_acl_set_file_0");
   if (test_acl_set_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_acl_set_file_0");
+    printf ("FAIL: %s\n", "test_acl_set_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mklost_and_found_0");
   if (test_mklost_and_found_0 () == -1) {
-    printf ("%s FAILED\n", "test_mklost_and_found_0");
+    printf ("FAIL: %s\n", "test_mklost_and_found_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mktemp_0");
   if (test_mktemp_0 () == -1) {
-    printf ("%s FAILED\n", "test_mktemp_0");
+    printf ("FAIL: %s\n", "test_mktemp_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mke2fs_0");
   if (test_mke2fs_0 () == -1) {
-    printf ("%s FAILED\n", "test_mke2fs_0");
+    printf ("FAIL: %s\n", "test_mke2fs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mke2fs_1");
   if (test_mke2fs_1 () == -1) {
-    printf ("%s FAILED\n", "test_mke2fs_1");
+    printf ("FAIL: %s\n", "test_mke2fs_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mke2fs_2");
   if (test_mke2fs_2 () == -1) {
-    printf ("%s FAILED\n", "test_mke2fs_2");
+    printf ("FAIL: %s\n", "test_mke2fs_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rm_f_0");
   if (test_rm_f_0 () == -1) {
-    printf ("%s FAILED\n", "test_rm_f_0");
+    printf ("FAIL: %s\n", "test_rm_f_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rm_f_1");
   if (test_rm_f_1 () == -1) {
-    printf ("%s FAILED\n", "test_rm_f_1");
+    printf ("FAIL: %s\n", "test_rm_f_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_xfs_repair_0");
   if (test_xfs_repair_0 () == -1) {
-    printf ("%s FAILED\n", "test_xfs_repair_0");
+    printf ("FAIL: %s\n", "test_xfs_repair_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_xfs_admin_0");
   if (test_xfs_admin_0 () == -1) {
-    printf ("%s FAILED\n", "test_xfs_admin_0");
+    printf ("FAIL: %s\n", "test_xfs_admin_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_xfs_growfs_0");
   if (test_xfs_growfs_0 () == -1) {
-    printf ("%s FAILED\n", "test_xfs_growfs_0");
+    printf ("FAIL: %s\n", "test_xfs_growfs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_utsname_0");
   if (test_utsname_0 () == -1) {
-    printf ("%s FAILED\n", "test_utsname_0");
+    printf ("FAIL: %s\n", "test_utsname_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgchange_uuid_all_0");
   if (test_vgchange_uuid_all_0 () == -1) {
-    printf ("%s FAILED\n", "test_vgchange_uuid_all_0");
+    printf ("FAIL: %s\n", "test_vgchange_uuid_all_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgchange_uuid_0");
   if (test_vgchange_uuid_0 () == -1) {
-    printf ("%s FAILED\n", "test_vgchange_uuid_0");
+    printf ("FAIL: %s\n", "test_vgchange_uuid_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvchange_uuid_all_0");
   if (test_pvchange_uuid_all_0 () == -1) {
-    printf ("%s FAILED\n", "test_pvchange_uuid_all_0");
+    printf ("FAIL: %s\n", "test_pvchange_uuid_all_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvchange_uuid_0");
   if (test_pvchange_uuid_0 () == -1) {
-    printf ("%s FAILED\n", "test_pvchange_uuid_0");
+    printf ("FAIL: %s\n", "test_pvchange_uuid_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_xfs_info_0");
   if (test_xfs_info_0 () == -1) {
-    printf ("%s FAILED\n", "test_xfs_info_0");
+    printf ("FAIL: %s\n", "test_xfs_info_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_nr_devices_0");
   if (test_nr_devices_0 () == -1) {
-    printf ("%s FAILED\n", "test_nr_devices_0");
+    printf ("FAIL: %s\n", "test_nr_devices_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_device_index_0");
   if (test_device_index_0 () == -1) {
-    printf ("%s FAILED\n", "test_device_index_0");
+    printf ("FAIL: %s\n", "test_device_index_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_btrfs_fsck_0");
   if (test_btrfs_fsck_0 () == -1) {
-    printf ("%s FAILED\n", "test_btrfs_fsck_0");
+    printf ("FAIL: %s\n", "test_btrfs_fsck_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_btrfs_set_seeding_0");
   if (test_btrfs_set_seeding_0 () == -1) {
-    printf ("%s FAILED\n", "test_btrfs_set_seeding_0");
+    printf ("FAIL: %s\n", "test_btrfs_set_seeding_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_btrfs_filesystem_sync_0");
   if (test_btrfs_filesystem_sync_0 () == -1) {
-    printf ("%s FAILED\n", "test_btrfs_filesystem_sync_0");
+    printf ("FAIL: %s\n", "test_btrfs_filesystem_sync_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_btrfs_subvolume_delete_0");
   if (test_btrfs_subvolume_delete_0 () == -1) {
-    printf ("%s FAILED\n", "test_btrfs_subvolume_delete_0");
+    printf ("FAIL: %s\n", "test_btrfs_subvolume_delete_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_btrfs_subvolume_snapshot_0");
   if (test_btrfs_subvolume_snapshot_0 () == -1) {
-    printf ("%s FAILED\n", "test_btrfs_subvolume_snapshot_0");
+    printf ("FAIL: %s\n", "test_btrfs_subvolume_snapshot_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2generation_0");
   if (test_get_e2generation_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2generation_0");
+    printf ("FAIL: %s\n", "test_get_e2generation_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_0");
   if (test_get_e2attrs_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_0");
+    printf ("FAIL: %s\n", "test_get_e2attrs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_1");
   if (test_get_e2attrs_1 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_1");
+    printf ("FAIL: %s\n", "test_get_e2attrs_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_2");
   if (test_get_e2attrs_2 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_2");
+    printf ("FAIL: %s\n", "test_get_e2attrs_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_3");
   if (test_get_e2attrs_3 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_3");
+    printf ("FAIL: %s\n", "test_get_e2attrs_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_4");
   if (test_get_e2attrs_4 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_4");
+    printf ("FAIL: %s\n", "test_get_e2attrs_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_5");
   if (test_get_e2attrs_5 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_5");
+    printf ("FAIL: %s\n", "test_get_e2attrs_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_6");
   if (test_get_e2attrs_6 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_6");
+    printf ("FAIL: %s\n", "test_get_e2attrs_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2attrs_7");
   if (test_get_e2attrs_7 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2attrs_7");
+    printf ("FAIL: %s\n", "test_get_e2attrs_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfs_btrfs_0");
   if (test_mkfs_btrfs_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkfs_btrfs_0");
+    printf ("FAIL: %s\n", "test_mkfs_btrfs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_isoinfo_device_0");
   if (test_isoinfo_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_isoinfo_device_0");
+    printf ("FAIL: %s\n", "test_isoinfo_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvcreate_free_0");
   if (test_lvcreate_free_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvcreate_free_0");
+    printf ("FAIL: %s\n", "test_lvcreate_free_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zero_free_space_0");
   if (test_zero_free_space_0 () == -1) {
-    printf ("%s FAILED\n", "test_zero_free_space_0");
+    printf ("FAIL: %s\n", "test_zero_free_space_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_label_0");
   if (test_set_label_0 () == -1) {
-    printf ("%s FAILED\n", "test_set_label_0");
+    printf ("FAIL: %s\n", "test_set_label_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_label_1");
   if (test_set_label_1 () == -1) {
-    printf ("%s FAILED\n", "test_set_label_1");
+    printf ("FAIL: %s\n", "test_set_label_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_label_2");
   if (test_set_label_2 () == -1) {
-    printf ("%s FAILED\n", "test_set_label_2");
+    printf ("FAIL: %s\n", "test_set_label_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ntfsfix_0");
   if (test_ntfsfix_0 () == -1) {
-    printf ("%s FAILED\n", "test_ntfsfix_0");
+    printf ("FAIL: %s\n", "test_ntfsfix_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_wipefs_0");
   if (test_wipefs_0 () == -1) {
-    printf ("%s FAILED\n", "test_wipefs_0");
+    printf ("FAIL: %s\n", "test_wipefs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blkid_0");
   if (test_blkid_0 () == -1) {
-    printf ("%s FAILED\n", "test_blkid_0");
+    printf ("FAIL: %s\n", "test_blkid_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tune2fs_0");
   if (test_tune2fs_0 () == -1) {
-    printf ("%s FAILED\n", "test_tune2fs_0");
+    printf ("FAIL: %s\n", "test_tune2fs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tune2fs_1");
   if (test_tune2fs_1 () == -1) {
-    printf ("%s FAILED\n", "test_tune2fs_1");
+    printf ("FAIL: %s\n", "test_tune2fs_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tune2fs_2");
   if (test_tune2fs_2 () == -1) {
-    printf ("%s FAILED\n", "test_tune2fs_2");
+    printf ("FAIL: %s\n", "test_tune2fs_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tune2fs_3");
   if (test_tune2fs_3 () == -1) {
-    printf ("%s FAILED\n", "test_tune2fs_3");
+    printf ("FAIL: %s\n", "test_tune2fs_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_copy_file_to_file_0");
   if (test_copy_file_to_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_copy_file_to_file_0");
+    printf ("FAIL: %s\n", "test_copy_file_to_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_to_partnum_0");
   if (test_part_to_partnum_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_to_partnum_0");
+    printf ("FAIL: %s\n", "test_part_to_partnum_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_to_partnum_1");
   if (test_part_to_partnum_1 () == -1) {
-    printf ("%s FAILED\n", "test_part_to_partnum_1");
+    printf ("FAIL: %s\n", "test_part_to_partnum_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_internal_write_append_0");
   if (test_internal_write_append_0 () == -1) {
-    printf ("%s FAILED\n", "test_internal_write_append_0");
+    printf ("FAIL: %s\n", "test_internal_write_append_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_zero_device_0");
   if (test_is_zero_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_zero_device_0");
+    printf ("FAIL: %s\n", "test_is_zero_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_zero_device_1");
   if (test_is_zero_device_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_zero_device_1");
+    printf ("FAIL: %s\n", "test_is_zero_device_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_zero_0");
   if (test_is_zero_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_zero_0");
+    printf ("FAIL: %s\n", "test_is_zero_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_zero_1");
   if (test_is_zero_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_zero_1");
+    printf ("FAIL: %s\n", "test_is_zero_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfs_0");
   if (test_mkfs_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkfs_0");
+    printf ("FAIL: %s\n", "test_mkfs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvm_canonical_lv_name_0");
   if (test_lvm_canonical_lv_name_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvm_canonical_lv_name_0");
+    printf ("FAIL: %s\n", "test_lvm_canonical_lv_name_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvm_canonical_lv_name_1");
   if (test_lvm_canonical_lv_name_1 () == -1) {
-    printf ("%s FAILED\n", "test_lvm_canonical_lv_name_1");
+    printf ("FAIL: %s\n", "test_lvm_canonical_lv_name_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pread_device_0");
   if (test_pread_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_pread_device_0");
+    printf ("FAIL: %s\n", "test_pread_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pwrite_device_0");
   if (test_pwrite_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_pwrite_device_0");
+    printf ("FAIL: %s\n", "test_pwrite_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_download_offset_0");
   if (test_download_offset_0 () == -1) {
-    printf ("%s FAILED\n", "test_download_offset_0");
+    printf ("FAIL: %s\n", "test_download_offset_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_upload_offset_0");
   if (test_upload_offset_0 () == -1) {
-    printf ("%s FAILED\n", "test_upload_offset_0");
+    printf ("FAIL: %s\n", "test_upload_offset_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_to_dev_0");
   if (test_part_to_dev_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_to_dev_0");
+    printf ("FAIL: %s\n", "test_part_to_dev_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_to_dev_1");
   if (test_part_to_dev_1 () == -1) {
-    printf ("%s FAILED\n", "test_part_to_dev_1");
+    printf ("FAIL: %s\n", "test_part_to_dev_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_socket_0");
   if (test_is_socket_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_socket_0");
+    printf ("FAIL: %s\n", "test_is_socket_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_symlink_0");
   if (test_is_symlink_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_symlink_0");
+    printf ("FAIL: %s\n", "test_is_symlink_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_symlink_1");
   if (test_is_symlink_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_symlink_1");
+    printf ("FAIL: %s\n", "test_is_symlink_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_fifo_0");
   if (test_is_fifo_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_fifo_0");
+    printf ("FAIL: %s\n", "test_is_fifo_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_fifo_1");
   if (test_is_fifo_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_fifo_1");
+    printf ("FAIL: %s\n", "test_is_fifo_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_blockdev_0");
   if (test_is_blockdev_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_blockdev_0");
+    printf ("FAIL: %s\n", "test_is_blockdev_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_blockdev_1");
   if (test_is_blockdev_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_blockdev_1");
+    printf ("FAIL: %s\n", "test_is_blockdev_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_chardev_0");
   if (test_is_chardev_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_chardev_0");
+    printf ("FAIL: %s\n", "test_is_chardev_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_chardev_1");
   if (test_is_chardev_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_chardev_1");
+    printf ("FAIL: %s\n", "test_is_chardev_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_lv_0");
   if (test_is_lv_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_lv_0");
+    printf ("FAIL: %s\n", "test_is_lv_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_lv_1");
   if (test_is_lv_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_lv_1");
+    printf ("FAIL: %s\n", "test_is_lv_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vfs_uuid_0");
   if (test_vfs_uuid_0 () == -1) {
-    printf ("%s FAILED\n", "test_vfs_uuid_0");
+    printf ("FAIL: %s\n", "test_vfs_uuid_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vfs_label_0");
   if (test_vfs_label_0 () == -1) {
-    printf ("%s FAILED\n", "test_vfs_label_0");
+    printf ("FAIL: %s\n", "test_vfs_label_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fallocate64_0");
   if (test_fallocate64_0 () == -1) {
-    printf ("%s FAILED\n", "test_fallocate64_0");
+    printf ("FAIL: %s\n", "test_fallocate64_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_available_all_groups_0");
   if (test_available_all_groups_0 () == -1) {
-    printf ("%s FAILED\n", "test_available_all_groups_0");
+    printf ("FAIL: %s\n", "test_available_all_groups_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pwrite_0");
   if (test_pwrite_0 () == -1) {
-    printf ("%s FAILED\n", "test_pwrite_0");
+    printf ("FAIL: %s\n", "test_pwrite_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pwrite_1");
   if (test_pwrite_1 () == -1) {
-    printf ("%s FAILED\n", "test_pwrite_1");
+    printf ("FAIL: %s\n", "test_pwrite_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pwrite_2");
   if (test_pwrite_2 () == -1) {
-    printf ("%s FAILED\n", "test_pwrite_2");
+    printf ("FAIL: %s\n", "test_pwrite_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_internal_write_0");
   if (test_internal_write_0 () == -1) {
-    printf ("%s FAILED\n", "test_internal_write_0");
+    printf ("FAIL: %s\n", "test_internal_write_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_internal_write_1");
   if (test_internal_write_1 () == -1) {
-    printf ("%s FAILED\n", "test_internal_write_1");
+    printf ("FAIL: %s\n", "test_internal_write_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_internal_write_2");
   if (test_internal_write_2 () == -1) {
-    printf ("%s FAILED\n", "test_internal_write_2");
+    printf ("FAIL: %s\n", "test_internal_write_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_internal_write_3");
   if (test_internal_write_3 () == -1) {
-    printf ("%s FAILED\n", "test_internal_write_3");
+    printf ("FAIL: %s\n", "test_internal_write_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_internal_write_4");
   if (test_internal_write_4 () == -1) {
-    printf ("%s FAILED\n", "test_internal_write_4");
+    printf ("FAIL: %s\n", "test_internal_write_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_internal_write_5");
   if (test_internal_write_5 () == -1) {
-    printf ("%s FAILED\n", "test_internal_write_5");
+    printf ("FAIL: %s\n", "test_internal_write_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fill_pattern_0");
   if (test_fill_pattern_0 () == -1) {
-    printf ("%s FAILED\n", "test_fill_pattern_0");
+    printf ("FAIL: %s\n", "test_fill_pattern_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_base64_in_0");
   if (test_base64_in_0 () == -1) {
-    printf ("%s FAILED\n", "test_base64_in_0");
+    printf ("FAIL: %s\n", "test_base64_in_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_umask_0");
   if (test_get_umask_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_umask_0");
+    printf ("FAIL: %s\n", "test_get_umask_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvresize_free_0");
   if (test_lvresize_free_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvresize_free_0");
+    printf ("FAIL: %s\n", "test_lvresize_free_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_device_0");
   if (test_checksum_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_device_0");
+    printf ("FAIL: %s\n", "test_checksum_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_get_mbr_id_0");
   if (test_part_get_mbr_id_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_get_mbr_id_0");
+    printf ("FAIL: %s\n", "test_part_get_mbr_id_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_get_bootable_0");
   if (test_part_get_bootable_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_get_bootable_0");
+    printf ("FAIL: %s\n", "test_part_get_bootable_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_del_0");
   if (test_part_del_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_del_0");
+    printf ("FAIL: %s\n", "test_part_del_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgscan_0");
   if (test_vgscan_0 () == -1) {
-    printf ("%s FAILED\n", "test_vgscan_0");
+    printf ("FAIL: %s\n", "test_vgscan_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_txz_in_0");
   if (test_txz_in_0 () == -1) {
-    printf ("%s FAILED\n", "test_txz_in_0");
+    printf ("FAIL: %s\n", "test_txz_in_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zero_device_0");
   if (test_zero_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_zero_device_0");
+    printf ("FAIL: %s\n", "test_zero_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_copy_size_0");
   if (test_copy_size_0 () == -1) {
-    printf ("%s FAILED\n", "test_copy_size_0");
+    printf ("FAIL: %s\n", "test_copy_size_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_initrd_cat_0");
   if (test_initrd_cat_0 () == -1) {
-    printf ("%s FAILED\n", "test_initrd_cat_0");
+    printf ("FAIL: %s\n", "test_initrd_cat_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgrename_0");
   if (test_vgrename_0 () == -1) {
-    printf ("%s FAILED\n", "test_vgrename_0");
+    printf ("FAIL: %s\n", "test_vgrename_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvrename_0");
   if (test_lvrename_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvrename_0");
+    printf ("FAIL: %s\n", "test_lvrename_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_filesize_0");
   if (test_filesize_0 () == -1) {
-    printf ("%s FAILED\n", "test_filesize_0");
+    printf ("FAIL: %s\n", "test_filesize_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_dd_0");
   if (test_dd_0 () == -1) {
-    printf ("%s FAILED\n", "test_dd_0");
+    printf ("FAIL: %s\n", "test_dd_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_available_0");
   if (test_available_0 () == -1) {
-    printf ("%s FAILED\n", "test_available_0");
+    printf ("FAIL: %s\n", "test_available_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fill_0");
   if (test_fill_0 () == -1) {
-    printf ("%s FAILED\n", "test_fill_0");
+    printf ("FAIL: %s\n", "test_fill_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_get_parttype_0");
   if (test_part_get_parttype_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_get_parttype_0");
+    printf ("FAIL: %s\n", "test_part_get_parttype_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_set_name_0");
   if (test_part_set_name_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_set_name_0");
+    printf ("FAIL: %s\n", "test_part_set_name_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_set_bootable_0");
   if (test_part_set_bootable_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_set_bootable_0");
+    printf ("FAIL: %s\n", "test_part_set_bootable_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_disk_0");
   if (test_part_disk_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_disk_0");
+    printf ("FAIL: %s\n", "test_part_disk_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_disk_1");
   if (test_part_disk_1 () == -1) {
-    printf ("%s FAILED\n", "test_part_disk_1");
+    printf ("FAIL: %s\n", "test_part_disk_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_add_0");
   if (test_part_add_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_add_0");
+    printf ("FAIL: %s\n", "test_part_add_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_add_1");
   if (test_part_add_1 () == -1) {
-    printf ("%s FAILED\n", "test_part_add_1");
+    printf ("FAIL: %s\n", "test_part_add_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_add_2");
   if (test_part_add_2 () == -1) {
-    printf ("%s FAILED\n", "test_part_add_2");
+    printf ("FAIL: %s\n", "test_part_add_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_part_init_0");
   if (test_part_init_0 () == -1) {
-    printf ("%s FAILED\n", "test_part_init_0");
+    printf ("FAIL: %s\n", "test_part_init_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pread_0");
   if (test_pread_0 () == -1) {
-    printf ("%s FAILED\n", "test_pread_0");
+    printf ("FAIL: %s\n", "test_pread_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pread_1");
   if (test_pread_1 () == -1) {
-    printf ("%s FAILED\n", "test_pread_1");
+    printf ("FAIL: %s\n", "test_pread_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_mode_0");
   if (test_mkdir_mode_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_mode_0");
+    printf ("FAIL: %s\n", "test_mkdir_mode_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_utimens_0");
   if (test_utimens_0 () == -1) {
-    printf ("%s FAILED\n", "test_utimens_0");
+    printf ("FAIL: %s\n", "test_utimens_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_utimens_1");
   if (test_utimens_1 () == -1) {
-    printf ("%s FAILED\n", "test_utimens_1");
+    printf ("FAIL: %s\n", "test_utimens_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_utimens_2");
   if (test_utimens_2 () == -1) {
-    printf ("%s FAILED\n", "test_utimens_2");
+    printf ("FAIL: %s\n", "test_utimens_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_utimens_3");
   if (test_utimens_3 () == -1) {
-    printf ("%s FAILED\n", "test_utimens_3");
+    printf ("FAIL: %s\n", "test_utimens_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_utimens_4");
   if (test_utimens_4 () == -1) {
-    printf ("%s FAILED\n", "test_utimens_4");
+    printf ("FAIL: %s\n", "test_utimens_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_utimens_5");
   if (test_utimens_5 () == -1) {
-    printf ("%s FAILED\n", "test_utimens_5");
+    printf ("FAIL: %s\n", "test_utimens_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_truncate_size_0");
   if (test_truncate_size_0 () == -1) {
-    printf ("%s FAILED\n", "test_truncate_size_0");
+    printf ("FAIL: %s\n", "test_truncate_size_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_truncate_0");
   if (test_truncate_0 () == -1) {
-    printf ("%s FAILED\n", "test_truncate_0");
+    printf ("FAIL: %s\n", "test_truncate_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vfs_type_0");
   if (test_vfs_type_0 () == -1) {
-    printf ("%s FAILED\n", "test_vfs_type_0");
+    printf ("FAIL: %s\n", "test_vfs_type_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_0");
   if (test_case_sensitive_path_0 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_0");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_1");
   if (test_case_sensitive_path_1 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_1");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_2");
   if (test_case_sensitive_path_2 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_2");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_3");
   if (test_case_sensitive_path_3 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_3");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_4");
   if (test_case_sensitive_path_4 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_4");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_5");
   if (test_case_sensitive_path_5 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_5");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_6");
   if (test_case_sensitive_path_6 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_6");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_case_sensitive_path_7");
   if (test_case_sensitive_path_7 () == -1) {
-    printf ("%s FAILED\n", "test_case_sensitive_path_7");
+    printf ("FAIL: %s\n", "test_case_sensitive_path_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_echo_daemon_0");
   if (test_echo_daemon_0 () == -1) {
-    printf ("%s FAILED\n", "test_echo_daemon_0");
+    printf ("FAIL: %s\n", "test_echo_daemon_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_modprobe_0");
   if (test_modprobe_0 () == -1) {
-    printf ("%s FAILED\n", "test_modprobe_0");
+    printf ("FAIL: %s\n", "test_modprobe_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mke2journal_U_0");
   if (test_mke2journal_U_0 () == -1) {
-    printf ("%s FAILED\n", "test_mke2journal_U_0");
+    printf ("FAIL: %s\n", "test_mke2journal_U_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mke2journal_L_0");
   if (test_mke2journal_L_0 () == -1) {
-    printf ("%s FAILED\n", "test_mke2journal_L_0");
+    printf ("FAIL: %s\n", "test_mke2journal_L_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mke2journal_0");
   if (test_mke2journal_0 () == -1) {
-    printf ("%s FAILED\n", "test_mke2journal_0");
+    printf ("FAIL: %s\n", "test_mke2journal_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfs_b_0");
   if (test_mkfs_b_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkfs_b_0");
+    printf ("FAIL: %s\n", "test_mkfs_b_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfs_b_1");
   if (test_mkfs_b_1 () == -1) {
-    printf ("%s FAILED\n", "test_mkfs_b_1");
+    printf ("FAIL: %s\n", "test_mkfs_b_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfs_b_2");
   if (test_mkfs_b_2 () == -1) {
-    printf ("%s FAILED\n", "test_mkfs_b_2");
+    printf ("FAIL: %s\n", "test_mkfs_b_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfs_b_3");
   if (test_mkfs_b_3 () == -1) {
-    printf ("%s FAILED\n", "test_mkfs_b_3");
+    printf ("FAIL: %s\n", "test_mkfs_b_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfs_b_4");
   if (test_mkfs_b_4 () == -1) {
-    printf ("%s FAILED\n", "test_mkfs_b_4");
+    printf ("FAIL: %s\n", "test_mkfs_b_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_inotify_add_watch_0");
   if (test_inotify_add_watch_0 () == -1) {
-    printf ("%s FAILED\n", "test_inotify_add_watch_0");
+    printf ("FAIL: %s\n", "test_inotify_add_watch_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_inotify_init_0");
   if (test_inotify_init_0 () == -1) {
-    printf ("%s FAILED\n", "test_inotify_init_0");
+    printf ("FAIL: %s\n", "test_inotify_init_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkswap_file_0");
   if (test_mkswap_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkswap_file_0");
+    printf ("FAIL: %s\n", "test_mkswap_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_swapon_uuid_0");
   if (test_swapon_uuid_0 () == -1) {
-    printf ("%s FAILED\n", "test_swapon_uuid_0");
+    printf ("FAIL: %s\n", "test_swapon_uuid_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_swapon_label_0");
   if (test_swapon_label_0 () == -1) {
-    printf ("%s FAILED\n", "test_swapon_label_0");
+    printf ("FAIL: %s\n", "test_swapon_label_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_swapon_file_0");
   if (test_swapon_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_swapon_file_0");
+    printf ("FAIL: %s\n", "test_swapon_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_swapon_device_0");
   if (test_swapon_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_swapon_device_0");
+    printf ("FAIL: %s\n", "test_swapon_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fallocate_0");
   if (test_fallocate_0 () == -1) {
-    printf ("%s FAILED\n", "test_fallocate_0");
+    printf ("FAIL: %s\n", "test_fallocate_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ln_sf_0");
   if (test_ln_sf_0 () == -1) {
-    printf ("%s FAILED\n", "test_ln_sf_0");
+    printf ("FAIL: %s\n", "test_ln_sf_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ln_s_0");
   if (test_ln_s_0 () == -1) {
-    printf ("%s FAILED\n", "test_ln_s_0");
+    printf ("FAIL: %s\n", "test_ln_s_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ln_f_0");
   if (test_ln_f_0 () == -1) {
-    printf ("%s FAILED\n", "test_ln_f_0");
+    printf ("FAIL: %s\n", "test_ln_f_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ln_0");
   if (test_ln_0 () == -1) {
-    printf ("%s FAILED\n", "test_ln_0");
+    printf ("FAIL: %s\n", "test_ln_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_realpath_0");
   if (test_realpath_0 () == -1) {
-    printf ("%s FAILED\n", "test_realpath_0");
+    printf ("FAIL: %s\n", "test_realpath_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zfgrepi_0");
   if (test_zfgrepi_0 () == -1) {
-    printf ("%s FAILED\n", "test_zfgrepi_0");
+    printf ("FAIL: %s\n", "test_zfgrepi_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zegrepi_0");
   if (test_zegrepi_0 () == -1) {
-    printf ("%s FAILED\n", "test_zegrepi_0");
+    printf ("FAIL: %s\n", "test_zegrepi_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zgrepi_0");
   if (test_zgrepi_0 () == -1) {
-    printf ("%s FAILED\n", "test_zgrepi_0");
+    printf ("FAIL: %s\n", "test_zgrepi_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zfgrep_0");
   if (test_zfgrep_0 () == -1) {
-    printf ("%s FAILED\n", "test_zfgrep_0");
+    printf ("FAIL: %s\n", "test_zfgrep_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zegrep_0");
   if (test_zegrep_0 () == -1) {
-    printf ("%s FAILED\n", "test_zegrep_0");
+    printf ("FAIL: %s\n", "test_zegrep_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zgrep_0");
   if (test_zgrep_0 () == -1) {
-    printf ("%s FAILED\n", "test_zgrep_0");
+    printf ("FAIL: %s\n", "test_zgrep_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fgrepi_0");
   if (test_fgrepi_0 () == -1) {
-    printf ("%s FAILED\n", "test_fgrepi_0");
+    printf ("FAIL: %s\n", "test_fgrepi_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_egrepi_0");
   if (test_egrepi_0 () == -1) {
-    printf ("%s FAILED\n", "test_egrepi_0");
+    printf ("FAIL: %s\n", "test_egrepi_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grepi_0");
   if (test_grepi_0 () == -1) {
-    printf ("%s FAILED\n", "test_grepi_0");
+    printf ("FAIL: %s\n", "test_grepi_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fgrep_0");
   if (test_fgrep_0 () == -1) {
-    printf ("%s FAILED\n", "test_fgrep_0");
+    printf ("FAIL: %s\n", "test_fgrep_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_egrep_0");
   if (test_egrep_0 () == -1) {
-    printf ("%s FAILED\n", "test_egrep_0");
+    printf ("FAIL: %s\n", "test_egrep_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_0");
   if (test_grep_0 () == -1) {
-    printf ("%s FAILED\n", "test_grep_0");
+    printf ("FAIL: %s\n", "test_grep_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_1");
   if (test_grep_1 () == -1) {
-    printf ("%s FAILED\n", "test_grep_1");
+    printf ("FAIL: %s\n", "test_grep_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_2");
   if (test_grep_2 () == -1) {
-    printf ("%s FAILED\n", "test_grep_2");
+    printf ("FAIL: %s\n", "test_grep_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_3");
   if (test_grep_3 () == -1) {
-    printf ("%s FAILED\n", "test_grep_3");
+    printf ("FAIL: %s\n", "test_grep_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_4");
   if (test_grep_4 () == -1) {
-    printf ("%s FAILED\n", "test_grep_4");
+    printf ("FAIL: %s\n", "test_grep_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_5");
   if (test_grep_5 () == -1) {
-    printf ("%s FAILED\n", "test_grep_5");
+    printf ("FAIL: %s\n", "test_grep_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_6");
   if (test_grep_6 () == -1) {
-    printf ("%s FAILED\n", "test_grep_6");
+    printf ("FAIL: %s\n", "test_grep_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_7");
   if (test_grep_7 () == -1) {
-    printf ("%s FAILED\n", "test_grep_7");
+    printf ("FAIL: %s\n", "test_grep_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_8");
   if (test_grep_8 () == -1) {
-    printf ("%s FAILED\n", "test_grep_8");
+    printf ("FAIL: %s\n", "test_grep_8");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_9");
   if (test_grep_9 () == -1) {
-    printf ("%s FAILED\n", "test_grep_9");
+    printf ("FAIL: %s\n", "test_grep_9");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_10");
   if (test_grep_10 () == -1) {
-    printf ("%s FAILED\n", "test_grep_10");
+    printf ("FAIL: %s\n", "test_grep_10");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_11");
   if (test_grep_11 () == -1) {
-    printf ("%s FAILED\n", "test_grep_11");
+    printf ("FAIL: %s\n", "test_grep_11");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_12");
   if (test_grep_12 () == -1) {
-    printf ("%s FAILED\n", "test_grep_12");
+    printf ("FAIL: %s\n", "test_grep_12");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grep_13");
   if (test_grep_13 () == -1) {
-    printf ("%s FAILED\n", "test_grep_13");
+    printf ("FAIL: %s\n", "test_grep_13");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_umask_0");
   if (test_umask_0 () == -1) {
-    printf ("%s FAILED\n", "test_umask_0");
+    printf ("FAIL: %s\n", "test_umask_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mknod_c_0");
   if (test_mknod_c_0 () == -1) {
-    printf ("%s FAILED\n", "test_mknod_c_0");
+    printf ("FAIL: %s\n", "test_mknod_c_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mknod_b_0");
   if (test_mknod_b_0 () == -1) {
-    printf ("%s FAILED\n", "test_mknod_b_0");
+    printf ("FAIL: %s\n", "test_mknod_b_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkfifo_0");
   if (test_mkfifo_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkfifo_0");
+    printf ("FAIL: %s\n", "test_mkfifo_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mknod_0");
   if (test_mknod_0 () == -1) {
-    printf ("%s FAILED\n", "test_mknod_0");
+    printf ("FAIL: %s\n", "test_mknod_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mknod_1");
   if (test_mknod_1 () == -1) {
-    printf ("%s FAILED\n", "test_mknod_1");
+    printf ("FAIL: %s\n", "test_mknod_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkswap_U_0");
   if (test_mkswap_U_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkswap_U_0");
+    printf ("FAIL: %s\n", "test_mkswap_U_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkswap_L_0");
   if (test_mkswap_L_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkswap_L_0");
+    printf ("FAIL: %s\n", "test_mkswap_L_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkswap_0");
   if (test_mkswap_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkswap_0");
+    printf ("FAIL: %s\n", "test_mkswap_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkswap_1");
   if (test_mkswap_1 () == -1) {
-    printf ("%s FAILED\n", "test_mkswap_1");
+    printf ("FAIL: %s\n", "test_mkswap_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkswap_2");
   if (test_mkswap_2 () == -1) {
-    printf ("%s FAILED\n", "test_mkswap_2");
+    printf ("FAIL: %s\n", "test_mkswap_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkswap_3");
   if (test_mkswap_3 () == -1) {
-    printf ("%s FAILED\n", "test_mkswap_3");
+    printf ("FAIL: %s\n", "test_mkswap_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_initrd_list_0");
   if (test_initrd_list_0 () == -1) {
-    printf ("%s FAILED\n", "test_initrd_list_0");
+    printf ("FAIL: %s\n", "test_initrd_list_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_du_0");
   if (test_du_0 () == -1) {
-    printf ("%s FAILED\n", "test_du_0");
+    printf ("FAIL: %s\n", "test_du_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tail_n_0");
   if (test_tail_n_0 () == -1) {
-    printf ("%s FAILED\n", "test_tail_n_0");
+    printf ("FAIL: %s\n", "test_tail_n_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tail_n_1");
   if (test_tail_n_1 () == -1) {
-    printf ("%s FAILED\n", "test_tail_n_1");
+    printf ("FAIL: %s\n", "test_tail_n_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tail_n_2");
   if (test_tail_n_2 () == -1) {
-    printf ("%s FAILED\n", "test_tail_n_2");
+    printf ("FAIL: %s\n", "test_tail_n_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tail_0");
   if (test_tail_0 () == -1) {
-    printf ("%s FAILED\n", "test_tail_0");
+    printf ("FAIL: %s\n", "test_tail_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_head_n_0");
   if (test_head_n_0 () == -1) {
-    printf ("%s FAILED\n", "test_head_n_0");
+    printf ("FAIL: %s\n", "test_head_n_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_head_n_1");
   if (test_head_n_1 () == -1) {
-    printf ("%s FAILED\n", "test_head_n_1");
+    printf ("FAIL: %s\n", "test_head_n_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_head_n_2");
   if (test_head_n_2 () == -1) {
-    printf ("%s FAILED\n", "test_head_n_2");
+    printf ("FAIL: %s\n", "test_head_n_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_head_0");
   if (test_head_0 () == -1) {
-    printf ("%s FAILED\n", "test_head_0");
+    printf ("FAIL: %s\n", "test_head_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_head_1");
   if (test_head_1 () == -1) {
-    printf ("%s FAILED\n", "test_head_1");
+    printf ("FAIL: %s\n", "test_head_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_wc_c_0");
   if (test_wc_c_0 () == -1) {
-    printf ("%s FAILED\n", "test_wc_c_0");
+    printf ("FAIL: %s\n", "test_wc_c_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_wc_w_0");
   if (test_wc_w_0 () == -1) {
-    printf ("%s FAILED\n", "test_wc_w_0");
+    printf ("FAIL: %s\n", "test_wc_w_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_wc_l_0");
   if (test_wc_l_0 () == -1) {
-    printf ("%s FAILED\n", "test_wc_l_0");
+    printf ("FAIL: %s\n", "test_wc_l_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_wc_l_1");
   if (test_wc_l_1 () == -1) {
-    printf ("%s FAILED\n", "test_wc_l_1");
+    printf ("FAIL: %s\n", "test_wc_l_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdtemp_0");
   if (test_mkdtemp_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkdtemp_0");
+    printf ("FAIL: %s\n", "test_mkdtemp_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_scrub_file_0");
   if (test_scrub_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_scrub_file_0");
+    printf ("FAIL: %s\n", "test_scrub_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_scrub_device_0");
   if (test_scrub_device_0 () == -1) {
-    printf ("%s FAILED\n", "test_scrub_device_0");
+    printf ("FAIL: %s\n", "test_scrub_device_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_glob_expand_0");
   if (test_glob_expand_0 () == -1) {
-    printf ("%s FAILED\n", "test_glob_expand_0");
+    printf ("FAIL: %s\n", "test_glob_expand_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_glob_expand_1");
   if (test_glob_expand_1 () == -1) {
-    printf ("%s FAILED\n", "test_glob_expand_1");
+    printf ("FAIL: %s\n", "test_glob_expand_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_glob_expand_2");
   if (test_glob_expand_2 () == -1) {
-    printf ("%s FAILED\n", "test_glob_expand_2");
+    printf ("FAIL: %s\n", "test_glob_expand_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ntfs_3g_probe_0");
   if (test_ntfs_3g_probe_0 () == -1) {
-    printf ("%s FAILED\n", "test_ntfs_3g_probe_0");
+    printf ("FAIL: %s\n", "test_ntfs_3g_probe_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ntfs_3g_probe_1");
   if (test_ntfs_3g_probe_1 () == -1) {
-    printf ("%s FAILED\n", "test_ntfs_3g_probe_1");
+    printf ("FAIL: %s\n", "test_ntfs_3g_probe_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_sleep_0");
   if (test_sleep_0 () == -1) {
-    printf ("%s FAILED\n", "test_sleep_0");
+    printf ("FAIL: %s\n", "test_sleep_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvresize_0");
   if (test_lvresize_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvresize_0");
+    printf ("FAIL: %s\n", "test_lvresize_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvresize_1");
   if (test_lvresize_1 () == -1) {
-    printf ("%s FAILED\n", "test_lvresize_1");
+    printf ("FAIL: %s\n", "test_lvresize_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zerofree_0");
   if (test_zerofree_0 () == -1) {
-    printf ("%s FAILED\n", "test_zerofree_0");
+    printf ("FAIL: %s\n", "test_zerofree_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_hexdump_0");
   if (test_hexdump_0 () == -1) {
-    printf ("%s FAILED\n", "test_hexdump_0");
+    printf ("FAIL: %s\n", "test_hexdump_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_hexdump_1");
   if (test_hexdump_1 () == -1) {
-    printf ("%s FAILED\n", "test_hexdump_1");
+    printf ("FAIL: %s\n", "test_hexdump_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_hexdump_2");
   if (test_hexdump_2 () == -1) {
-    printf ("%s FAILED\n", "test_hexdump_2");
+    printf ("FAIL: %s\n", "test_hexdump_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_strings_e_0");
   if (test_strings_e_0 () == -1) {
-    printf ("%s FAILED\n", "test_strings_e_0");
+    printf ("FAIL: %s\n", "test_strings_e_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_strings_e_1");
   if (test_strings_e_1 () == -1) {
-    printf ("%s FAILED\n", "test_strings_e_1");
+    printf ("FAIL: %s\n", "test_strings_e_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_strings_0");
   if (test_strings_0 () == -1) {
-    printf ("%s FAILED\n", "test_strings_0");
+    printf ("FAIL: %s\n", "test_strings_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_strings_1");
   if (test_strings_1 () == -1) {
-    printf ("%s FAILED\n", "test_strings_1");
+    printf ("FAIL: %s\n", "test_strings_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_strings_2");
   if (test_strings_2 () == -1) {
-    printf ("%s FAILED\n", "test_strings_2");
+    printf ("FAIL: %s\n", "test_strings_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_equal_0");
   if (test_equal_0 () == -1) {
-    printf ("%s FAILED\n", "test_equal_0");
+    printf ("FAIL: %s\n", "test_equal_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_equal_1");
   if (test_equal_1 () == -1) {
-    printf ("%s FAILED\n", "test_equal_1");
+    printf ("FAIL: %s\n", "test_equal_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_equal_2");
   if (test_equal_2 () == -1) {
-    printf ("%s FAILED\n", "test_equal_2");
+    printf ("FAIL: %s\n", "test_equal_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ping_daemon_0");
   if (test_ping_daemon_0 () == -1) {
-    printf ("%s FAILED\n", "test_ping_daemon_0");
+    printf ("FAIL: %s\n", "test_ping_daemon_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_dmesg_0");
   if (test_dmesg_0 () == -1) {
-    printf ("%s FAILED\n", "test_dmesg_0");
+    printf ("FAIL: %s\n", "test_dmesg_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_drop_caches_0");
   if (test_drop_caches_0 () == -1) {
-    printf ("%s FAILED\n", "test_drop_caches_0");
+    printf ("FAIL: %s\n", "test_drop_caches_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mv_0");
   if (test_mv_0 () == -1) {
-    printf ("%s FAILED\n", "test_mv_0");
+    printf ("FAIL: %s\n", "test_mv_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mv_1");
   if (test_mv_1 () == -1) {
-    printf ("%s FAILED\n", "test_mv_1");
+    printf ("FAIL: %s\n", "test_mv_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_cp_a_0");
   if (test_cp_a_0 () == -1) {
-    printf ("%s FAILED\n", "test_cp_a_0");
+    printf ("FAIL: %s\n", "test_cp_a_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_cp_0");
   if (test_cp_0 () == -1) {
-    printf ("%s FAILED\n", "test_cp_0");
+    printf ("FAIL: %s\n", "test_cp_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_cp_1");
   if (test_cp_1 () == -1) {
-    printf ("%s FAILED\n", "test_cp_1");
+    printf ("FAIL: %s\n", "test_cp_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_cp_2");
   if (test_cp_2 () == -1) {
-    printf ("%s FAILED\n", "test_cp_2");
+    printf ("FAIL: %s\n", "test_cp_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_grub_install_0");
   if (test_grub_install_0 () == -1) {
-    printf ("%s FAILED\n", "test_grub_install_0");
+    printf ("FAIL: %s\n", "test_grub_install_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_zero_0");
   if (test_zero_0 () == -1) {
-    printf ("%s FAILED\n", "test_zero_0");
+    printf ("FAIL: %s\n", "test_zero_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fsck_0");
   if (test_fsck_0 () == -1) {
-    printf ("%s FAILED\n", "test_fsck_0");
+    printf ("FAIL: %s\n", "test_fsck_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_fsck_1");
   if (test_fsck_1 () == -1) {
-    printf ("%s FAILED\n", "test_fsck_1");
+    printf ("FAIL: %s\n", "test_fsck_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_e2uuid_0");
   if (test_get_e2uuid_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_e2uuid_0");
+    printf ("FAIL: %s\n", "test_get_e2uuid_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_e2uuid_0");
   if (test_set_e2uuid_0 () == -1) {
-    printf ("%s FAILED\n", "test_set_e2uuid_0");
+    printf ("FAIL: %s\n", "test_set_e2uuid_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_e2uuid_1");
   if (test_set_e2uuid_1 () == -1) {
-    printf ("%s FAILED\n", "test_set_e2uuid_1");
+    printf ("FAIL: %s\n", "test_set_e2uuid_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_e2uuid_2");
   if (test_set_e2uuid_2 () == -1) {
-    printf ("%s FAILED\n", "test_set_e2uuid_2");
+    printf ("FAIL: %s\n", "test_set_e2uuid_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_e2uuid_3");
   if (test_set_e2uuid_3 () == -1) {
-    printf ("%s FAILED\n", "test_set_e2uuid_3");
+    printf ("FAIL: %s\n", "test_set_e2uuid_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_e2label_0");
   if (test_set_e2label_0 () == -1) {
-    printf ("%s FAILED\n", "test_set_e2label_0");
+    printf ("FAIL: %s\n", "test_set_e2label_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvremove_0");
   if (test_pvremove_0 () == -1) {
-    printf ("%s FAILED\n", "test_pvremove_0");
+    printf ("FAIL: %s\n", "test_pvremove_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvremove_1");
   if (test_pvremove_1 () == -1) {
-    printf ("%s FAILED\n", "test_pvremove_1");
+    printf ("FAIL: %s\n", "test_pvremove_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvremove_2");
   if (test_pvremove_2 () == -1) {
-    printf ("%s FAILED\n", "test_pvremove_2");
+    printf ("FAIL: %s\n", "test_pvremove_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgremove_0");
   if (test_vgremove_0 () == -1) {
-    printf ("%s FAILED\n", "test_vgremove_0");
+    printf ("FAIL: %s\n", "test_vgremove_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgremove_1");
   if (test_vgremove_1 () == -1) {
-    printf ("%s FAILED\n", "test_vgremove_1");
+    printf ("FAIL: %s\n", "test_vgremove_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvremove_0");
   if (test_lvremove_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvremove_0");
+    printf ("FAIL: %s\n", "test_lvremove_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvremove_1");
   if (test_lvremove_1 () == -1) {
-    printf ("%s FAILED\n", "test_lvremove_1");
+    printf ("FAIL: %s\n", "test_lvremove_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvremove_2");
   if (test_lvremove_2 () == -1) {
-    printf ("%s FAILED\n", "test_lvremove_2");
+    printf ("FAIL: %s\n", "test_lvremove_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mount_ro_0");
   if (test_mount_ro_0 () == -1) {
-    printf ("%s FAILED\n", "test_mount_ro_0");
+    printf ("FAIL: %s\n", "test_mount_ro_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mount_ro_1");
   if (test_mount_ro_1 () == -1) {
-    printf ("%s FAILED\n", "test_mount_ro_1");
+    printf ("FAIL: %s\n", "test_mount_ro_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tgz_in_0");
   if (test_tgz_in_0 () == -1) {
-    printf ("%s FAILED\n", "test_tgz_in_0");
+    printf ("FAIL: %s\n", "test_tgz_in_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tar_in_0");
   if (test_tar_in_0 () == -1) {
-    printf ("%s FAILED\n", "test_tar_in_0");
+    printf ("FAIL: %s\n", "test_tar_in_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tar_in_1");
   if (test_tar_in_1 () == -1) {
-    printf ("%s FAILED\n", "test_tar_in_1");
+    printf ("FAIL: %s\n", "test_tar_in_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tar_in_2");
   if (test_tar_in_2 () == -1) {
-    printf ("%s FAILED\n", "test_tar_in_2");
+    printf ("FAIL: %s\n", "test_tar_in_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_0");
   if (test_checksum_0 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_0");
+    printf ("FAIL: %s\n", "test_checksum_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_1");
   if (test_checksum_1 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_1");
+    printf ("FAIL: %s\n", "test_checksum_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_2");
   if (test_checksum_2 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_2");
+    printf ("FAIL: %s\n", "test_checksum_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_3");
   if (test_checksum_3 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_3");
+    printf ("FAIL: %s\n", "test_checksum_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_4");
   if (test_checksum_4 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_4");
+    printf ("FAIL: %s\n", "test_checksum_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_5");
   if (test_checksum_5 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_5");
+    printf ("FAIL: %s\n", "test_checksum_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_6");
   if (test_checksum_6 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_6");
+    printf ("FAIL: %s\n", "test_checksum_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_7");
   if (test_checksum_7 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_7");
+    printf ("FAIL: %s\n", "test_checksum_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_checksum_8");
   if (test_checksum_8 () == -1) {
-    printf ("%s FAILED\n", "test_checksum_8");
+    printf ("FAIL: %s\n", "test_checksum_8");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_download_0");
   if (test_download_0 () == -1) {
-    printf ("%s FAILED\n", "test_download_0");
+    printf ("FAIL: %s\n", "test_download_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_upload_0");
   if (test_upload_0 () == -1) {
-    printf ("%s FAILED\n", "test_upload_0");
+    printf ("FAIL: %s\n", "test_upload_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_rereadpt_0");
   if (test_blockdev_rereadpt_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_rereadpt_0");
+    printf ("FAIL: %s\n", "test_blockdev_rereadpt_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_flushbufs_0");
   if (test_blockdev_flushbufs_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_flushbufs_0");
+    printf ("FAIL: %s\n", "test_blockdev_flushbufs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_getsize64_0");
   if (test_blockdev_getsize64_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_getsize64_0");
+    printf ("FAIL: %s\n", "test_blockdev_getsize64_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_getsz_0");
   if (test_blockdev_getsz_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_getsz_0");
+    printf ("FAIL: %s\n", "test_blockdev_getsz_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_getss_0");
   if (test_blockdev_getss_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_getss_0");
+    printf ("FAIL: %s\n", "test_blockdev_getss_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_getro_0");
   if (test_blockdev_getro_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_getro_0");
+    printf ("FAIL: %s\n", "test_blockdev_getro_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_setrw_0");
   if (test_blockdev_setrw_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_setrw_0");
+    printf ("FAIL: %s\n", "test_blockdev_setrw_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_blockdev_setro_0");
   if (test_blockdev_setro_0 () == -1) {
-    printf ("%s FAILED\n", "test_blockdev_setro_0");
+    printf ("FAIL: %s\n", "test_blockdev_setro_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_tune2fs_l_0");
   if (test_tune2fs_l_0 () == -1) {
-    printf ("%s FAILED\n", "test_tune2fs_l_0");
+    printf ("FAIL: %s\n", "test_tune2fs_l_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_statvfs_0");
   if (test_statvfs_0 () == -1) {
-    printf ("%s FAILED\n", "test_statvfs_0");
+    printf ("FAIL: %s\n", "test_statvfs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lstat_0");
   if (test_lstat_0 () == -1) {
-    printf ("%s FAILED\n", "test_lstat_0");
+    printf ("FAIL: %s\n", "test_lstat_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_stat_0");
   if (test_stat_0 () == -1) {
-    printf ("%s FAILED\n", "test_stat_0");
+    printf ("FAIL: %s\n", "test_stat_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_0");
   if (test_command_lines_0 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_0");
+    printf ("FAIL: %s\n", "test_command_lines_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_1");
   if (test_command_lines_1 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_1");
+    printf ("FAIL: %s\n", "test_command_lines_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_2");
   if (test_command_lines_2 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_2");
+    printf ("FAIL: %s\n", "test_command_lines_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_3");
   if (test_command_lines_3 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_3");
+    printf ("FAIL: %s\n", "test_command_lines_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_4");
   if (test_command_lines_4 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_4");
+    printf ("FAIL: %s\n", "test_command_lines_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_5");
   if (test_command_lines_5 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_5");
+    printf ("FAIL: %s\n", "test_command_lines_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_6");
   if (test_command_lines_6 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_6");
+    printf ("FAIL: %s\n", "test_command_lines_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_7");
   if (test_command_lines_7 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_7");
+    printf ("FAIL: %s\n", "test_command_lines_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_8");
   if (test_command_lines_8 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_8");
+    printf ("FAIL: %s\n", "test_command_lines_8");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_9");
   if (test_command_lines_9 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_9");
+    printf ("FAIL: %s\n", "test_command_lines_9");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_lines_10");
   if (test_command_lines_10 () == -1) {
-    printf ("%s FAILED\n", "test_command_lines_10");
+    printf ("FAIL: %s\n", "test_command_lines_10");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_0");
   if (test_command_0 () == -1) {
-    printf ("%s FAILED\n", "test_command_0");
+    printf ("FAIL: %s\n", "test_command_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_1");
   if (test_command_1 () == -1) {
-    printf ("%s FAILED\n", "test_command_1");
+    printf ("FAIL: %s\n", "test_command_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_2");
   if (test_command_2 () == -1) {
-    printf ("%s FAILED\n", "test_command_2");
+    printf ("FAIL: %s\n", "test_command_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_3");
   if (test_command_3 () == -1) {
-    printf ("%s FAILED\n", "test_command_3");
+    printf ("FAIL: %s\n", "test_command_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_4");
   if (test_command_4 () == -1) {
-    printf ("%s FAILED\n", "test_command_4");
+    printf ("FAIL: %s\n", "test_command_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_5");
   if (test_command_5 () == -1) {
-    printf ("%s FAILED\n", "test_command_5");
+    printf ("FAIL: %s\n", "test_command_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_6");
   if (test_command_6 () == -1) {
-    printf ("%s FAILED\n", "test_command_6");
+    printf ("FAIL: %s\n", "test_command_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_7");
   if (test_command_7 () == -1) {
-    printf ("%s FAILED\n", "test_command_7");
+    printf ("FAIL: %s\n", "test_command_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_8");
   if (test_command_8 () == -1) {
-    printf ("%s FAILED\n", "test_command_8");
+    printf ("FAIL: %s\n", "test_command_8");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_9");
   if (test_command_9 () == -1) {
-    printf ("%s FAILED\n", "test_command_9");
+    printf ("FAIL: %s\n", "test_command_9");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_10");
   if (test_command_10 () == -1) {
-    printf ("%s FAILED\n", "test_command_10");
+    printf ("FAIL: %s\n", "test_command_10");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_11");
   if (test_command_11 () == -1) {
-    printf ("%s FAILED\n", "test_command_11");
+    printf ("FAIL: %s\n", "test_command_11");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_command_12");
   if (test_command_12 () == -1) {
-    printf ("%s FAILED\n", "test_command_12");
+    printf ("FAIL: %s\n", "test_command_12");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_0");
   if (test_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_file_0");
+    printf ("FAIL: %s\n", "test_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_1");
   if (test_file_1 () == -1) {
-    printf ("%s FAILED\n", "test_file_1");
+    printf ("FAIL: %s\n", "test_file_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_2");
   if (test_file_2 () == -1) {
-    printf ("%s FAILED\n", "test_file_2");
+    printf ("FAIL: %s\n", "test_file_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_3");
   if (test_file_3 () == -1) {
-    printf ("%s FAILED\n", "test_file_3");
+    printf ("FAIL: %s\n", "test_file_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_4");
   if (test_file_4 () == -1) {
-    printf ("%s FAILED\n", "test_file_4");
+    printf ("FAIL: %s\n", "test_file_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_umount_all_0");
   if (test_umount_all_0 () == -1) {
-    printf ("%s FAILED\n", "test_umount_all_0");
+    printf ("FAIL: %s\n", "test_umount_all_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_umount_all_1");
   if (test_umount_all_1 () == -1) {
-    printf ("%s FAILED\n", "test_umount_all_1");
+    printf ("FAIL: %s\n", "test_umount_all_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mounts_0");
   if (test_mounts_0 () == -1) {
-    printf ("%s FAILED\n", "test_mounts_0");
+    printf ("FAIL: %s\n", "test_mounts_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_umount_0");
   if (test_umount_0 () == -1) {
-    printf ("%s FAILED\n", "test_umount_0");
+    printf ("FAIL: %s\n", "test_umount_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_umount_1");
   if (test_umount_1 () == -1) {
-    printf ("%s FAILED\n", "test_umount_1");
+    printf ("FAIL: %s\n", "test_umount_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_file_0");
   if (test_write_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_write_file_0");
+    printf ("FAIL: %s\n", "test_write_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvcreate_0");
   if (test_lvcreate_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvcreate_0");
+    printf ("FAIL: %s\n", "test_lvcreate_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgcreate_0");
   if (test_vgcreate_0 () == -1) {
-    printf ("%s FAILED\n", "test_vgcreate_0");
+    printf ("FAIL: %s\n", "test_vgcreate_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvcreate_0");
   if (test_pvcreate_0 () == -1) {
-    printf ("%s FAILED\n", "test_pvcreate_0");
+    printf ("FAIL: %s\n", "test_pvcreate_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_dir_0");
   if (test_is_dir_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_dir_0");
+    printf ("FAIL: %s\n", "test_is_dir_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_dir_1");
   if (test_is_dir_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_dir_1");
+    printf ("FAIL: %s\n", "test_is_dir_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_file_0");
   if (test_is_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_file_0");
+    printf ("FAIL: %s\n", "test_is_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_file_1");
   if (test_is_file_1 () == -1) {
-    printf ("%s FAILED\n", "test_is_file_1");
+    printf ("FAIL: %s\n", "test_is_file_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_exists_0");
   if (test_exists_0 () == -1) {
-    printf ("%s FAILED\n", "test_exists_0");
+    printf ("FAIL: %s\n", "test_exists_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_exists_1");
   if (test_exists_1 () == -1) {
-    printf ("%s FAILED\n", "test_exists_1");
+    printf ("FAIL: %s\n", "test_exists_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_p_0");
   if (test_mkdir_p_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_p_0");
+    printf ("FAIL: %s\n", "test_mkdir_p_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_p_1");
   if (test_mkdir_p_1 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_p_1");
+    printf ("FAIL: %s\n", "test_mkdir_p_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_p_2");
   if (test_mkdir_p_2 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_p_2");
+    printf ("FAIL: %s\n", "test_mkdir_p_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_p_3");
   if (test_mkdir_p_3 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_p_3");
+    printf ("FAIL: %s\n", "test_mkdir_p_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_p_4");
   if (test_mkdir_p_4 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_p_4");
+    printf ("FAIL: %s\n", "test_mkdir_p_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_0");
   if (test_mkdir_0 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_0");
+    printf ("FAIL: %s\n", "test_mkdir_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mkdir_1");
   if (test_mkdir_1 () == -1) {
-    printf ("%s FAILED\n", "test_mkdir_1");
+    printf ("FAIL: %s\n", "test_mkdir_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rm_rf_0");
   if (test_rm_rf_0 () == -1) {
-    printf ("%s FAILED\n", "test_rm_rf_0");
+    printf ("FAIL: %s\n", "test_rm_rf_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rmdir_0");
   if (test_rmdir_0 () == -1) {
-    printf ("%s FAILED\n", "test_rmdir_0");
+    printf ("FAIL: %s\n", "test_rmdir_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rmdir_1");
   if (test_rmdir_1 () == -1) {
-    printf ("%s FAILED\n", "test_rmdir_1");
+    printf ("FAIL: %s\n", "test_rmdir_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rmdir_2");
   if (test_rmdir_2 () == -1) {
-    printf ("%s FAILED\n", "test_rmdir_2");
+    printf ("FAIL: %s\n", "test_rmdir_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rm_0");
   if (test_rm_0 () == -1) {
-    printf ("%s FAILED\n", "test_rm_0");
+    printf ("FAIL: %s\n", "test_rm_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rm_1");
   if (test_rm_1 () == -1) {
-    printf ("%s FAILED\n", "test_rm_1");
+    printf ("FAIL: %s\n", "test_rm_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_rm_2");
   if (test_rm_2 () == -1) {
-    printf ("%s FAILED\n", "test_rm_2");
+    printf ("FAIL: %s\n", "test_rm_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvs_0");
   if (test_lvs_0 () == -1) {
-    printf ("%s FAILED\n", "test_lvs_0");
+    printf ("FAIL: %s\n", "test_lvs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_lvs_1");
   if (test_lvs_1 () == -1) {
-    printf ("%s FAILED\n", "test_lvs_1");
+    printf ("FAIL: %s\n", "test_lvs_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgs_0");
   if (test_vgs_0 () == -1) {
-    printf ("%s FAILED\n", "test_vgs_0");
+    printf ("FAIL: %s\n", "test_vgs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_vgs_1");
   if (test_vgs_1 () == -1) {
-    printf ("%s FAILED\n", "test_vgs_1");
+    printf ("FAIL: %s\n", "test_vgs_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvs_0");
   if (test_pvs_0 () == -1) {
-    printf ("%s FAILED\n", "test_pvs_0");
+    printf ("FAIL: %s\n", "test_pvs_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_pvs_1");
   if (test_pvs_1 () == -1) {
-    printf ("%s FAILED\n", "test_pvs_1");
+    printf ("FAIL: %s\n", "test_pvs_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_list_partitions_0");
   if (test_list_partitions_0 () == -1) {
-    printf ("%s FAILED\n", "test_list_partitions_0");
+    printf ("FAIL: %s\n", "test_list_partitions_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_list_partitions_1");
   if (test_list_partitions_1 () == -1) {
-    printf ("%s FAILED\n", "test_list_partitions_1");
+    printf ("FAIL: %s\n", "test_list_partitions_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_list_devices_0");
   if (test_list_devices_0 () == -1) {
-    printf ("%s FAILED\n", "test_list_devices_0");
+    printf ("FAIL: %s\n", "test_list_devices_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_touch_0");
   if (test_touch_0 () == -1) {
-    printf ("%s FAILED\n", "test_touch_0");
+    printf ("FAIL: %s\n", "test_touch_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_sync_0");
   if (test_sync_0 () == -1) {
-    printf ("%s FAILED\n", "test_sync_0");
+    printf ("FAIL: %s\n", "test_sync_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_mount_0");
   if (test_mount_0 () == -1) {
-    printf ("%s FAILED\n", "test_mount_0");
+    printf ("FAIL: %s\n", "test_mount_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_has_backing_file_0");
   if (test_disk_has_backing_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_disk_has_backing_file_0");
+    printf ("FAIL: %s\n", "test_disk_has_backing_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_has_backing_file_1");
   if (test_disk_has_backing_file_1 () == -1) {
-    printf ("%s FAILED\n", "test_disk_has_backing_file_1");
+    printf ("FAIL: %s\n", "test_disk_has_backing_file_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_has_backing_file_2");
   if (test_disk_has_backing_file_2 () == -1) {
-    printf ("%s FAILED\n", "test_disk_has_backing_file_2");
+    printf ("FAIL: %s\n", "test_disk_has_backing_file_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_virtual_size_0");
   if (test_disk_virtual_size_0 () == -1) {
-    printf ("%s FAILED\n", "test_disk_virtual_size_0");
+    printf ("FAIL: %s\n", "test_disk_virtual_size_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_virtual_size_1");
   if (test_disk_virtual_size_1 () == -1) {
-    printf ("%s FAILED\n", "test_disk_virtual_size_1");
+    printf ("FAIL: %s\n", "test_disk_virtual_size_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_virtual_size_2");
   if (test_disk_virtual_size_2 () == -1) {
-    printf ("%s FAILED\n", "test_disk_virtual_size_2");
+    printf ("FAIL: %s\n", "test_disk_virtual_size_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_format_0");
   if (test_disk_format_0 () == -1) {
-    printf ("%s FAILED\n", "test_disk_format_0");
+    printf ("FAIL: %s\n", "test_disk_format_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_format_1");
   if (test_disk_format_1 () == -1) {
-    printf ("%s FAILED\n", "test_disk_format_1");
+    printf ("FAIL: %s\n", "test_disk_format_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_disk_format_2");
   if (test_disk_format_2 () == -1) {
-    printf ("%s FAILED\n", "test_disk_format_2");
+    printf ("FAIL: %s\n", "test_disk_format_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_ls_0");
   if (test_ls_0 () == -1) {
-    printf ("%s FAILED\n", "test_ls_0");
+    printf ("FAIL: %s\n", "test_ls_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_append_0");
   if (test_write_append_0 () == -1) {
-    printf ("%s FAILED\n", "test_write_append_0");
+    printf ("FAIL: %s\n", "test_write_append_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_0");
   if (test_write_0 () == -1) {
-    printf ("%s FAILED\n", "test_write_0");
+    printf ("FAIL: %s\n", "test_write_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_1");
   if (test_write_1 () == -1) {
-    printf ("%s FAILED\n", "test_write_1");
+    printf ("FAIL: %s\n", "test_write_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_2");
   if (test_write_2 () == -1) {
-    printf ("%s FAILED\n", "test_write_2");
+    printf ("FAIL: %s\n", "test_write_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_3");
   if (test_write_3 () == -1) {
-    printf ("%s FAILED\n", "test_write_3");
+    printf ("FAIL: %s\n", "test_write_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_4");
   if (test_write_4 () == -1) {
-    printf ("%s FAILED\n", "test_write_4");
+    printf ("FAIL: %s\n", "test_write_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_write_5");
   if (test_write_5 () == -1) {
-    printf ("%s FAILED\n", "test_write_5");
+    printf ("FAIL: %s\n", "test_write_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_0");
   if (test_read_lines_0 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_0");
+    printf ("FAIL: %s\n", "test_read_lines_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_1");
   if (test_read_lines_1 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_1");
+    printf ("FAIL: %s\n", "test_read_lines_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_2");
   if (test_read_lines_2 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_2");
+    printf ("FAIL: %s\n", "test_read_lines_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_3");
   if (test_read_lines_3 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_3");
+    printf ("FAIL: %s\n", "test_read_lines_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_4");
   if (test_read_lines_4 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_4");
+    printf ("FAIL: %s\n", "test_read_lines_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_5");
   if (test_read_lines_5 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_5");
+    printf ("FAIL: %s\n", "test_read_lines_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_6");
   if (test_read_lines_6 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_6");
+    printf ("FAIL: %s\n", "test_read_lines_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_7");
   if (test_read_lines_7 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_7");
+    printf ("FAIL: %s\n", "test_read_lines_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_8");
   if (test_read_lines_8 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_8");
+    printf ("FAIL: %s\n", "test_read_lines_8");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_lines_9");
   if (test_read_lines_9 () == -1) {
-    printf ("%s FAILED\n", "test_read_lines_9");
+    printf ("FAIL: %s\n", "test_read_lines_9");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_read_file_0");
   if (test_read_file_0 () == -1) {
-    printf ("%s FAILED\n", "test_read_file_0");
+    printf ("FAIL: %s\n", "test_read_file_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_find_0");
   if (test_find_0 () == -1) {
-    printf ("%s FAILED\n", "test_find_0");
+    printf ("FAIL: %s\n", "test_find_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_find_1");
   if (test_find_1 () == -1) {
-    printf ("%s FAILED\n", "test_find_1");
+    printf ("FAIL: %s\n", "test_find_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_find_2");
   if (test_find_2 () == -1) {
-    printf ("%s FAILED\n", "test_find_2");
+    printf ("FAIL: %s\n", "test_find_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_cat_0");
   if (test_cat_0 () == -1) {
-    printf ("%s FAILED\n", "test_cat_0");
+    printf ("FAIL: %s\n", "test_cat_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_attach_method_0");
   if (test_get_attach_method_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_attach_method_0");
+    printf ("FAIL: %s\n", "test_get_attach_method_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_0");
   if (test_file_architecture_0 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_0");
+    printf ("FAIL: %s\n", "test_file_architecture_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_1");
   if (test_file_architecture_1 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_1");
+    printf ("FAIL: %s\n", "test_file_architecture_1");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_2");
   if (test_file_architecture_2 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_2");
+    printf ("FAIL: %s\n", "test_file_architecture_2");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_3");
   if (test_file_architecture_3 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_3");
+    printf ("FAIL: %s\n", "test_file_architecture_3");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_4");
   if (test_file_architecture_4 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_4");
+    printf ("FAIL: %s\n", "test_file_architecture_4");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_5");
   if (test_file_architecture_5 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_5");
+    printf ("FAIL: %s\n", "test_file_architecture_5");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_6");
   if (test_file_architecture_6 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_6");
+    printf ("FAIL: %s\n", "test_file_architecture_6");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_7");
   if (test_file_architecture_7 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_7");
+    printf ("FAIL: %s\n", "test_file_architecture_7");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_8");
   if (test_file_architecture_8 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_8");
+    printf ("FAIL: %s\n", "test_file_architecture_8");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_9");
   if (test_file_architecture_9 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_9");
+    printf ("FAIL: %s\n", "test_file_architecture_9");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_10");
   if (test_file_architecture_10 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_10");
+    printf ("FAIL: %s\n", "test_file_architecture_10");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_file_architecture_11");
   if (test_file_architecture_11 () == -1) {
-    printf ("%s FAILED\n", "test_file_architecture_11");
+    printf ("FAIL: %s\n", "test_file_architecture_11");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_set_trace_0");
   if (test_set_trace_0 () == -1) {
-    printf ("%s FAILED\n", "test_set_trace_0");
+    printf ("FAIL: %s\n", "test_set_trace_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_version_0");
   if (test_version_0 () == -1) {
-    printf ("%s FAILED\n", "test_version_0");
+    printf ("FAIL: %s\n", "test_version_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_memsize_0");
   if (test_get_memsize_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_memsize_0");
+    printf ("FAIL: %s\n", "test_get_memsize_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_busy_0");
   if (test_is_busy_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_busy_0");
+    printf ("FAIL: %s\n", "test_is_busy_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_launching_0");
   if (test_is_launching_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_launching_0");
+    printf ("FAIL: %s\n", "test_is_launching_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_config_0");
   if (test_is_config_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_config_0");
+    printf ("FAIL: %s\n", "test_is_config_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_is_ready_0");
   if (test_is_ready_0 () == -1) {
-    printf ("%s FAILED\n", "test_is_ready_0");
+    printf ("FAIL: %s\n", "test_is_ready_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_autosync_0");
   if (test_get_autosync_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_autosync_0");
+    printf ("FAIL: %s\n", "test_get_autosync_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_path_0");
   if (test_get_path_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_path_0");
+    printf ("FAIL: %s\n", "test_get_path_0");
     nr_failed++;
   }
   test_num++;
   next_test (g, test_num, nr_tests, "test_get_qemu_0");
   if (test_get_qemu_0 () == -1) {
-    printf ("%s FAILED\n", "test_get_qemu_0");
+    printf ("FAIL: %s\n", "test_get_qemu_0");
     nr_failed++;
   }
 
@@ -39960,7 +39960,7 @@ main (int argc, char *argv[])
   guestfs_close (g);
 
   if (close_sentinel != 2) {
-    fprintf (stderr, "close callback was not called\n");
+    fprintf (stderr, "FAIL: close callback was not called\n");
     exit (EXIT_FAILURE);
   }
 

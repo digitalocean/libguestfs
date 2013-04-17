@@ -905,7 +905,7 @@ struct command_entry list_filesystems_cmd_entry = {
 
 struct command_entry add_drive_cmd_entry = {
   .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [port:N]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol:\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server at \"server:port\".\n\n            See: \"NETWORK BLOCK DEVICES\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is the\n        name of the server.\n\n    \"port\"\n        For protocols which require access to a remote server, this is the\n        port number of the service.\n\n        If not specified, this defaults to the standard port for the\n        protocol, eg. 10809 when \"protocol\" is \"nbd\".\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
   .run = run_add_drive
 };
 
@@ -5563,8 +5563,8 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 6) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 6);
+  if (argc < 1 || argc > 9) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 9);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5602,6 +5602,39 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
       optargs_s.label = &argv[i][6];
       this_mask = GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
       this_arg = "label";
+    }
+    else if (STRPREFIX (argv[i], "protocol:")) {
+      optargs_s.protocol = &argv[i][9];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+      this_arg = "protocol";
+    }
+    else if (STRPREFIX (argv[i], "server:")) {
+      optargs_s.server = &argv[i][7];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+      this_arg = "server";
+    }
+    else if (STRPREFIX (argv[i], "port:")) {
+      {
+        strtol_error xerr;
+        long long r;
+
+        xerr = xstrtoll (&argv[i][5], NULL, 0, &r, xstrtol_suffixes);
+        if (xerr != LONGINT_OK) {
+          fprintf (stderr,
+                   _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+                   cmd, "optargs_s.port", "xstrtoll", xerr);
+          goto out;
+        }
+        /* The Int type in the generator is a signed 31 bit int. */
+        if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+          fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "optargs_s.port");
+          goto out;
+        }
+        /* The check above should ensure this assignment does not overflow. */
+        optargs_s.port = r;
+      }
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
+      this_arg = "port";
     }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),

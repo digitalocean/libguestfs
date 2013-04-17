@@ -110,7 +110,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
 @ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
-@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/regressions
+@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd \
+@ENABLE_APPLIANCE_TRUE@	tests/regressions
 
 # Language bindings.
 @HAVE_PERL_TRUE@am__append_3 = perl perl/examples
@@ -337,8 +338,8 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	tests/disks tests/mountable tests/lvm tests/luks tests/md \
 	tests/selinux tests/ntfsclone tests/btrfs tests/charsets \
 	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
-	tests/disk-labels tests/hotplug tests/regressions test-tool \
-	fish align cat df edit format inspector rescue perl \
+	tests/disk-labels tests/hotplug tests/nbd tests/regressions \
+	test-tool fish align cat df edit format inspector rescue perl \
 	perl/examples ocaml ocaml/examples python python/examples ruby \
 	ruby/examples java java/examples haskell php erlang \
 	erlang/examples lua lua/examples gobject csharp resize \
@@ -449,6 +450,7 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
+EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@

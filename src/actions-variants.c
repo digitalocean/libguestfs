@@ -136,6 +136,15 @@ guestfs_add_drive_opts_va (guestfs_h *g,
     case GUESTFS_ADD_DRIVE_OPTS_LABEL:
       optargs_s.label = va_arg (args, const char *);
       break;
+    case GUESTFS_ADD_DRIVE_OPTS_PROTOCOL:
+      optargs_s.protocol = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_SERVER:
+      optargs_s.server = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_PORT:
+      optargs_s.port = va_arg (args, int);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "add_drive", i);

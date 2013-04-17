@@ -299,6 +299,7 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
+EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1307,8 +1308,12 @@ CLEANFILES = \
 	ext/guestfs/mkmf.log \
 	ext/guestfs/Makefile
 
-@HAVE_RUBY_TRUE@RUBY_SITELIB := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['sitelibdir']")
-@HAVE_RUBY_TRUE@RUBY_SITEARCH := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['sitearchdir']")
+
+# Packagers can override this by doing: make INSTALLDIRS=vendor install
+# INSTALLDIRS also affects where Perl bindings are installed.
+@HAVE_RUBY_TRUE@INSTALLDIRS = site
+@HAVE_RUBY_TRUE@RUBY_LIBDIR := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['$(INSTALLDIRS)libdir']")
+@HAVE_RUBY_TRUE@RUBY_ARCHDIR := $(shell $(RUBY) -rrbconfig -e "puts RbConfig::CONFIG['$(INSTALLDIRS)archdir']")
 @HAVE_RUBY_TRUE@TESTS = run-bindtests run-ruby-tests
 @HAVE_RUBY_TRUE@TESTS_ENVIRONMENT = $(top_builddir)/run --test
 all: all-am
@@ -1624,10 +1629,10 @@ appliance: force
 @HAVE_RUBY_TRUE@	$(RAKE) rdoc
 
 @HAVE_RUBY_TRUE@install:
-@HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_SITELIB)
-@HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_SITEARCH)
-@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0644 $(srcdir)/lib/guestfs.rb $(DESTDIR)$(RUBY_SITELIB)
-@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0755 $(builddir)/ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_SITEARCH)
+@HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_LIBDIR)
+@HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_ARCHDIR)
+@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0644 $(srcdir)/lib/guestfs.rb $(DESTDIR)$(RUBY_LIBDIR)
+@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0755 $(builddir)/ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_ARCHDIR)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -458,8 +458,20 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
            "add_drive_opts", "label");
     return -1;
   }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK) &&
+      optargs->protocol == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "protocol");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) &&
+      optargs->server == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "server");
+    return -1;
+  }
 
-  if (optargs->bitmask & UINT64_C(0xffffffffffffffe0)) {
+  if (optargs->bitmask & UINT64_C(0xffffffffffffff00)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "add_drive_opts", "add_drive_opts");
     return -1;
@@ -483,6 +495,15 @@ guestfs_add_drive_opts_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%s\"", "label", optargs->label);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "protocol", optargs->protocol);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "server", optargs->server);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%d\"", "port", optargs->port);
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }

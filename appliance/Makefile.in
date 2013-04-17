@@ -341,6 +341,7 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
+EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -1340,7 +1341,8 @@ superminfsdir = $(libdir)/guestfs/supermin.d
 fs_DATA = 
 superminfs_DATA = supermin.d/init.img supermin.d/udev-rules.img \
 	$(am__append_1) $(am__append_2)
-PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 $(am__append_3)
+PACKAGELIST_CPP_FLAGS = -D$(DISTRO)=1 \
+	-DEXTRA_PACKAGES="$(EXTRA_PACKAGES)" $(am__append_3)
 
 # If installing the daemon, install the udev rules too.
 @INSTALL_DAEMON_TRUE@udevrulesdir = /lib/udev/rules.d
@@ -1734,9 +1736,9 @@ $(top_builddir)/generator/stamp-generator: force
 appliance: force
 	$(MAKE) -C $(top_builddir)/appliance
 
-# This used to be a configure-generated file (as is update.sh still).
-# However config.status always touches the destination file, which
-# means the appliance got rebuilt too often.
+# This used to be a configure-generated file.  However config.status
+# always touches the destination file, which means the appliance got
+# rebuilt too often.
 make.sh: make.sh.in $(top_builddir)/config.log $(top_builddir)/config.status
 	cd $(top_builddir) && \
 	  ./config.status --file=appliance/$@-t:appliance/$<

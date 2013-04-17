@@ -1,4 +1,122 @@
+2013-03-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.21.
+
+	appliance: Make sure cachedir has mode 0755 (RHBZ#921292).
+	See https://bugzilla.redhat.com/show_bug.cgi?id=921292#c4
+
+	appliance: Use ignore_value() macro instead of casting return to (void).
+
+	drives: add_drive was only called from one place, so inline it.
+	This is just code motion.
+
+2013-03-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Add direct support for the NBD (Network Block Device) protocol.
+	You can now add remote NBD drives using:
+
+	 ><fs> add-drive "" format:raw protocol:nbd server:localhost
+
+	(Note that you also need to add port:NNNN if the server is running on
+	a non-standard port).
+
+	The corresponding qemu-nbd service can be started by doing:
+
+	 qemu-nbd disk.img -t
+
+	This commit also adds a test.
+
+2013-03-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Make drv->readonly flag into a bool.
+
+	drives: Refactor code to separate 'struct drive' creation from adding drives.
+
+	launch: Move code concerned with adding drives to 'src/drives.c'.
+	Apart from adding a few comments, this is entirely code motion.
+
+	Add ./configure --with-extra-packages="..." option.
+	This adds extra packages to the appliance.  It's useful for adding
+	debugging packages.
+
+2013-03-14  Hilko Bengen  <bengen@debian.org>
+
+	Mount /run as tmpfs inside appliance (workaround for febootstrap's /init)
+
+2013-03-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	erlang: Use $(ERLANG_LIB_DIR) to get Erlang libdir.
+	Instead of previous custom hack which didn't work properly on Debian.
+
+	Thanks: Hilko Bengen.
+
+2013-03-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	README: Discourage general users from doing 'make install'.
+	It causes plenty of problems with people have multiple parallel
+	versions of libguestfs installed, and there's no benefit because you
+	can easily run libguestfs and tools from the build directory.
+
+2013-03-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Support 'make INSTALLDIRS=vendor install' for Ruby as well as Perl.
+	As with Perl, you can now set INSTALLDIRS to control where Ruby places
+	its files (ie. in the site dir, which is the default, or in the vendor
+	dir).
+
+	The difference in file layout between 'make install' and
+	'make INSTALLDIRS=vendor install' is shown below (for Fedora 18).
+
+	--- /tmp/site	2013-03-14 12:14:35.740015694 +0000
+	+++ /tmp/vendor	2013-03-14 12:14:13.668093944 +0000
+	@@ -119,21 +119,20 @@
+	 ./usr/lib64/ocaml/guestfs/mlguestfs.cmxa
+	 ./usr/lib64/ocaml/stublibs/dllmlguestfs.so
+	 ./usr/lib64/ocaml/stublibs/dllmlguestfs.so.owner
+	-./usr/lib64/perl5/auto/Sys/Guestfs/Guestfs.bs
+	-./usr/lib64/perl5/auto/Sys/Guestfs/Guestfs.so
+	-./usr/lib64/perl5/auto/Sys/Guestfs/.packlist
+	 ./usr/lib64/perl5/perllocal.pod
+	-./usr/lib64/perl5/Sys/bindtests.pl
+	-./usr/lib64/perl5/Sys/Guestfs/Lib.pm
+	-./usr/lib64/perl5/Sys/Guestfs.pm
+	+./usr/lib64/perl5/vendor_perl/auto/Sys/Guestfs/Guestfs.bs
+	+./usr/lib64/perl5/vendor_perl/auto/Sys/Guestfs/Guestfs.so
+	+./usr/lib64/perl5/vendor_perl/auto/Sys/Guestfs/.packlist
+	+./usr/lib64/perl5/vendor_perl/Sys/bindtests.pl
+	+./usr/lib64/perl5/vendor_perl/Sys/Guestfs/Lib.pm
+	+./usr/lib64/perl5/vendor_perl/Sys/Guestfs.pm
+	 ./usr/lib64/php/modules/guestfs_php.so
+	 ./usr/lib64/pkgconfig/libguestfs-gobject-1.0.pc
+	 ./usr/lib64/pkgconfig/libguestfs.pc
+	 ./usr/lib64/python2.7/site-packages/guestfs.py
+	 ./usr/lib64/python2.7/site-packages/libguestfsmod.la
+	 ./usr/lib64/python2.7/site-packages/libguestfsmod.so
+	-./usr/local/lib64/ruby/site_ruby/_guestfs.so
+	-./usr/local/share/ruby/site_ruby/guestfs.rb
+	+./usr/lib64/ruby/vendor_ruby/_guestfs.so
+	 ./usr/sbin/libguestfs-make-fixed-appliance
+	 ./usr/share/doc/libguestfs/example-debian-netinst-cd.xml
+	 ./usr/share/doc/libguestfs/example-debian.xml
+	@@ -406,3 +405,4 @@
+	 ./usr/share/man/uk/man3/guestfs-perl.3
+	 ./usr/share/man/uk/man3/guestfs-python.3
+	 ./usr/share/man/uk/man3/guestfs-ruby.3
+	+./usr/share/ruby/vendor_ruby/guestfs.rb
+
+	For prompting me to fix this, thanks: Hilko Bengen.
+
+2013-03-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: Print attach-method, tmpdir, umask, euid when launching.
+	These are only printed when debugging is enabled, but should help
+	debugging hard-to-pin-down permissions problems.
+
+	tests: Make it easier to grep failures out of the log file.
+
 2013-03-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.20.
 
 	utils: Fix error messages for external commands that fail (RHBZ#921040).
 	This adds a common utility function (guestfs___exit_status_to_string)

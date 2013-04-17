@@ -704,7 +704,10 @@
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--iface"/>
     <keyword type="property" name="The &quot;label&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--label"/>
     <keyword type="property" name="The &quot;name&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--name"/>
+    <keyword type="property" name="The &quot;port&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--port"/>
+    <keyword type="property" name="The &quot;protocol&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--protocol"/>
     <keyword type="property" name="The &quot;readonly&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--readonly"/>
+    <keyword type="property" name="The &quot;server&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--server"/>
     <keyword type="struct" name="struct GuestfsAddDomain" link="GuestfsAddDomain.html#GuestfsAddDomain-struct"/>
     <keyword type="struct" name="struct GuestfsAddDomainClass" link="GuestfsAddDomain.html#GuestfsAddDomainClass"/>
     <keyword type="function" name="guestfs_add_domain_new ()" link="GuestfsAddDomain.html#guestfs-add-domain-new"/>

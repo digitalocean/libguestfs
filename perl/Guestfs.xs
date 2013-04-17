@@ -1794,6 +1794,18 @@ PREINIT:
           optargs_s.label = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
         }
+        else if (STREQ (this_arg, "protocol")) {
+          optargs_s.protocol = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+        }
+        else if (STREQ (this_arg, "server")) {
+          optargs_s.server = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+        }
+        else if (STREQ (this_arg, "port")) {
+          optargs_s.port = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",

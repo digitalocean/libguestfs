@@ -2736,6 +2736,33 @@ public class GuestFS {
    * <p>
    * See "DISK LABELS" in guestfs(3).
    * <p>
+   * "protocol"
+   * The optional protocol argument can be used to select
+   * an alternate source protocol:
+   * <p>
+   * "protocol = "file""
+   * "filename" is interpreted as a local file or
+   * device. This is the default if the optional
+   * protocol parameter is omitted.
+   * <p>
+   * "protocol = "nbd""
+   * Connect to the Network Block Device server at
+   * "server:port".
+   * <p>
+   * See: "NETWORK BLOCK DEVICES" in guestfs(3).
+   * <p>
+   * "server"
+   * For protocols which require access to a remote
+   * server, this is the name of the server.
+   * <p>
+   * "port"
+   * For protocols which require access to a remote
+   * server, this is the port number of the service.
+   * <p>
+   * If not specified, this defaults to the standard port
+   * for the protocol, eg. 10809 when "protocol" is
+   * "nbd".
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -2792,8 +2819,32 @@ public class GuestFS {
       label = ((String) _optobj);
       _optargs_bitmask |= 16L;
     }
+    String protocol = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("protocol");
+    if (_optobj != null) {
+      protocol = ((String) _optobj);
+      _optargs_bitmask |= 32L;
+    }
+    String server = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("server");
+    if (_optobj != null) {
+      server = ((String) _optobj);
+      _optargs_bitmask |= 64L;
+    }
+    int port = 0;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("port");
+    if (_optobj != null) {
+      port = ((Integer) _optobj).intValue();
+      _optargs_bitmask |= 128L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, port);
   }
 
   public void add_drive (String filename)
@@ -2814,7 +2865,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String server, int port)
     throws LibGuestFSException;
 
   /**

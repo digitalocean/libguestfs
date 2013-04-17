@@ -432,7 +432,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, port => $port]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -500,9 +500,43 @@ the drive will also be named C</dev/disk/guestfs/I<label>>.
 
 See L<guestfs(3)/DISK LABELS>.
 
+=item C<protocol>
+
+The optional protocol argument can be used to select an alternate
+source protocol:
+
+=over 4
+
+=item C<protocol = "file">
+
+C<filename> is interpreted as a local file or device.
+This is the default if the optional protocol parameter
+is omitted.
+
+=item C<protocol = "nbd">
+
+Connect to the Network Block Device server at C<server:port>.
+
+See: L<guestfs(3)/NETWORK BLOCK DEVICES>.
+
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label]);
+=item C<server>
+
+For protocols which require access to a remote server, this
+is the name of the server.
+
+=item C<port>
+
+For protocols which require access to a remote server, this
+is the port number of the service.
+
+If not specified, this defaults to the standard port for
+the protocol, eg. 10809 when C<protocol> is C<"nbd">.
+
+=back
+
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, port => $port]);
 
 This is an alias of L</add_drive>.
 
@@ -6804,6 +6838,9 @@ use vars qw(%guestfs_introspection);
       iface => [ 'iface', 'string', 2 ],
       name => [ 'name', 'string', 3 ],
       label => [ 'label', 'string', 4 ],
+      protocol => [ 'protocol', 'string', 5 ],
+      server => [ 'server', 'string', 6 ],
+      port => [ 'port', 'int', 7 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",

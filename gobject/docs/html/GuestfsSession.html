@@ -2508,6 +2508,37 @@ in the API (such as "/dev/sda"), the drive will also be named
 <p>
 See "DISK LABELS" in guestfs(3).
 </p>
+<p>
+<em class="parameter"><code>protocol</code></em>
+The optional protocol argument can be used to select an alternate
+source protocol:
+</p>
+<p>
+"protocol = "file""
+<em class="parameter"><code>filename</code></em> is interpreted as a local file or device. This is the
+default if the optional protocol parameter is omitted.
+</p>
+<p>
+"protocol = "nbd""
+Connect to the Network Block Device server at "server:port".
+</p>
+<p>
+See: "NETWORK BLOCK DEVICES" in guestfs(3).
+</p>
+<p>
+<em class="parameter"><code>server</code></em>
+For protocols which require access to a remote server, this is the
+name of the server.
+</p>
+<p>
+<em class="parameter"><code>port</code></em>
+For protocols which require access to a remote server, this is the
+port number of the service.
+</p>
+<p>
+If not specified, this defaults to the standard port for the
+protocol, eg. 10809 when <em class="parameter"><code>protocol</code></em> is "nbd".
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">

@@ -875,9 +875,14 @@ PHP_FUNCTION (guestfs_add_drive)
   int optargs_t_name_size = -1;
   char *optargs_t_label = NULL;
   int optargs_t_label_size = -1;
+  char *optargs_t_protocol = NULL;
+  int optargs_t_protocol_size = -1;
+  char *optargs_t_server = NULL;
+  int optargs_t_server_size = -1;
+  long optargs_t_port = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bssss",
-        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bssssssl",
+        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_server_size, &optargs_t_port) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -911,6 +916,18 @@ PHP_FUNCTION (guestfs_add_drive)
   if (optargs_t_label != NULL) {
     optargs_s.label = optargs_t_label;
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
+  }
+  if (optargs_t_protocol != NULL) {
+    optargs_s.protocol = optargs_t_protocol;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+  }
+  if (optargs_t_server != NULL) {
+    optargs_s.server = optargs_t_server;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+  }
+  if (optargs_t_port != -1) {
+    optargs_s.port = optargs_t_port;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
   }
 
   int r;

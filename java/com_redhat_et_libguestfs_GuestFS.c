@@ -2100,7 +2100,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1list_1filesystems  (JNIEnv *env, jobject
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jstring jserver, jint jport)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2115,6 +2115,9 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   optargs_s.iface = (*env)->GetStringUTFChars (env, jiface, NULL);
   optargs_s.name = (*env)->GetStringUTFChars (env, jname, NULL);
   optargs_s.label = (*env)->GetStringUTFChars (env, jlabel, NULL);
+  optargs_s.protocol = (*env)->GetStringUTFChars (env, jprotocol, NULL);
+  optargs_s.server = (*env)->GetStringUTFChars (env, jserver, NULL);
+  optargs_s.port = jport;
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -2124,6 +2127,8 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   (*env)->ReleaseStringUTFChars (env, jiface, optargs_s.iface);
   (*env)->ReleaseStringUTFChars (env, jname, optargs_s.name);
   (*env)->ReleaseStringUTFChars (env, jlabel, optargs_s.label);
+  (*env)->ReleaseStringUTFChars (env, jprotocol, optargs_s.protocol);
+  (*env)->ReleaseStringUTFChars (env, jserver, optargs_s.server);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

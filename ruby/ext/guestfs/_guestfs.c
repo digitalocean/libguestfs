@@ -3586,6 +3586,33 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * 
  * See "DISK LABELS" in guestfs(3).
  * 
+ * "protocol"
+ * The optional protocol argument can be used to select
+ * an alternate source protocol:
+ * 
+ * "protocol = "file""
+ * "filename" is interpreted as a local file or
+ * device. This is the default if the optional
+ * protocol parameter is omitted.
+ * 
+ * "protocol = "nbd""
+ * Connect to the Network Block Device server at
+ * "server:port".
+ * 
+ * See: "NETWORK BLOCK DEVICES" in guestfs(3).
+ * 
+ * "server"
+ * For protocols which require access to a remote
+ * server, this is the name of the server.
+ * 
+ * "port"
+ * For protocols which require access to a remote
+ * server, this is the port number of the service.
+ * 
+ * If not specified, this defaults to the standard port
+ * for the protocol, eg. 10809 when "protocol" is
+ * "nbd".
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -3638,6 +3665,21 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.label = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("protocol")));
+  if (v != Qnil) {
+    optargs_s.protocol = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("server")));
+  if (v != Qnil) {
+    optargs_s.server = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("port")));
+  if (v != Qnil) {
+    optargs_s.port = NUM2INT (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
   }
 
   int r;

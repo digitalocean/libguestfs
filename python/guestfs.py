@@ -1129,7 +1129,7 @@ class GuestFS(object):
         self._check_not_closed ()
         return libguestfsmod.list_filesystems (self._o)
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, port=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -1195,9 +1195,36 @@ class GuestFS(object):
         "/dev/disk/guestfs/*label*".
         
         See "DISK LABELS" in guestfs(3).
+        
+        "protocol"
+        The optional protocol argument can be used to select
+        an alternate source protocol:
+        
+        "protocol = "file""
+        "filename" is interpreted as a local file or
+        device. This is the default if the optional
+        protocol parameter is omitted.
+        
+        "protocol = "nbd""
+        Connect to the Network Block Device server at
+        "server:port".
+        
+        See: "NETWORK BLOCK DEVICES" in guestfs(3).
+        
+        "server"
+        For protocols which require access to a remote
+        server, this is the name of the server.
+        
+        "port"
+        For protocols which require access to a remote
+        server, this is the port number of the service.
+        
+        If not specified, this defaults to the standard port
+        for the protocol, eg. 10809 when "protocol" is
+        "nbd".
         """
         self._check_not_closed ()
-        return libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label)
+        return libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, port)
 
     add_drive_opts = add_drive
 

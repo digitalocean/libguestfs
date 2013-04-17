@@ -748,6 +748,21 @@ run_add_drive (ETERM *message)
       optargs_s.label = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "protocol")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+      optargs_s.protocol = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "server")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+      optargs_s.server = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "port")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
+      optargs_s.port = get_int (hd_value);
+    }
+    else
       return unknown_optarg ("add_drive", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -764,6 +779,10 @@ run_add_drive (ETERM *message)
     free ((char *) optargs_s.name);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK))
     free ((char *) optargs_s.label);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK))
+    free ((char *) optargs_s.protocol);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK))
+    free ((char *) optargs_s.server);
   if (r == -1)
     return make_error ("add_drive");
 

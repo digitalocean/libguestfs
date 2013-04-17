@@ -606,6 +606,18 @@ guestfs_lua_add_drive (lua_State *L)
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
       optargs_s.label = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (3, "protocol",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+      optargs_s.protocol = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "server",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+      optargs_s.server = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "port",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PORT_BITMASK;
+      optargs_s.port = luaL_checkint (L, -1);
+    );
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);

@@ -63,7 +63,10 @@ struct              <a class="link" href="GuestfsAddDrive.html#GuestfsAddDriveCl
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--iface" title='The "iface" property'>iface</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--label" title='The "label" property'>label</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--name" title='The "name" property'>name</a>"                     <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--port" title='The "port" property'>port</a>"                     <span class="type">gint</span>                  : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--protocol" title='The "protocol" property'>protocol</a>"                 <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--readonly" title='The "readonly" property'>readonly</a>"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--server" title='The "server" property'>server</a>"                   <span class="type">gchar</span>*                : Read / Write / Construct
 </pre>
 </div>
 <div class="refsect1">
@@ -161,12 +164,39 @@ A string.
 </div>
 <hr>
 <div class="refsect2">
+<a name="GuestfsAddDrive--port"></a><h3>The <code class="literal">"port"</code> property</h3>
+<pre class="programlisting">  "port"                     <span class="type">gint</span>                  : Read / Write / Construct</pre>
+<p>
+A 32-bit integer.
+</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDrive--protocol"></a><h3>The <code class="literal">"protocol"</code> property</h3>
+<pre class="programlisting">  "protocol"                 <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="GuestfsAddDrive--readonly"></a><h3>The <code class="literal">"readonly"</code> property</h3>
 <pre class="programlisting">  "readonly"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
 <p>
 A boolean.
 </p>
 <p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDrive--server"></a><h3>The <code class="literal">"server"</code> property</h3>
+<pre class="programlisting">  "server"                   <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
 </div>
 </div>
 </div>
