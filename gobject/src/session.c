@@ -23872,7 +23872,7 @@ guestfs_session_syslinux(GuestfsSession *session, const gchar *device, GuestfsSy
  * The @directory parameter can be either a mountpoint, or a directory
  * within the mountpoint.
  * 
- * You also have to marked the partition as "active"
+ * You also have to mark the partition as "active"
  * (guestfs_session_part_set_bootable()) and a Master Boot Record must be
  * installed (eg. using guestfs_session_pwrite_device()) on the first
  * sector of the whole disk. The SYSLINUX package comes with some suitable

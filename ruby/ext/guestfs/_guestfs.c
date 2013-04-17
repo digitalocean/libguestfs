@@ -23985,7 +23985,7 @@ ruby_guestfs_syslinux (int argc, VALUE *argv, VALUE gv)
  * The "directory" parameter can be either a mountpoint, or
  * a directory within the mountpoint.
  * 
- * You also have to marked the partition as "active"
+ * You also have to mark the partition as "active"
  * ("g.part_set_bootable") and a Master Boot Record must be
  * installed (eg. using "g.pwrite_device") on the first
  * sector of the whole disk. The SYSLINUX package comes

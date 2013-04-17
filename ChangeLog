@@ -1,4 +1,24 @@
+2013-04-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	examples: Update debug-logging.c example.
+	This updates commit e3546ad2ce2c0d953e3be2b072bacd48972450af.
+
+2013-04-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	examples: Add example program showing enabling debugging and capturing log messages.
+
+2013-04-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update release notes for future 1.22 release.
+
+	pod: Fix "wide character in print" warnings by declaring encoding correctly.
+
 2013-04-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix typo in extlinux documentation.
+	This fixes commit dee1dd64c3cd5e67393dec679040eb02e81c84b0.
+
+	Version 1.21.27.
 
 	New APIs: Add support for syslinux and extlinux (bootloaders).
 	This also adds tests of SYSLINUX and EXTLINUX which create bootable
