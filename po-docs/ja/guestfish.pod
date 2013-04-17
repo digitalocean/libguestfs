@@ -2,7 +2,7 @@
 
 =head1 名前
 
-guestfish - libguestfs ファイルシステム対話式シェル
+guestfish - the guest filesystem shell
 
 =head1 書式
 
@@ -40,9 +40,8 @@ guestfish はシェルスクリプトまたはコマンドラインから対話�
 
  $ guestfish
  
- guestfish へようこそ。
- 仮想マシンのファイルシステムを編集するための
- libguestfs ファイルシステム対話式シェルです。
+ Welcome to guestfish, the guest filesystem shell for
+ editing virtual machine filesystems.
  
  入力: コマンド一覧は 'help'
        マニュアルを読むには 'man'
@@ -1015,10 +1014,6 @@ sparsely-allocated disk, containing a single partition, with the partition
 formatted as ext2.  I<-N fs:ext4:1G> is the same, but for an ext4 filesystem
 on a 1GB disk instead.
 
-To list the available types and any extra parameters they take, run:
-
- guestfish -N help | less
-
 Note that the prepared filesystem is not mounted.  You would usually have to
 use the C<mount /dev/sda1 /> command or add the I<-m /dev/sda1> option.
 
@@ -1037,6 +1032,8 @@ VFAT フォーマットのパーティションを持つ 32MB ディスクを作
 200MB の空ディスクを作成します:
 
  guestfish -N disk:200M
+
+__PREPOPTS__
 
 =head1 進行状況バー
 
@@ -1091,27 +1088,27 @@ redisplay, editing etc works.
 
 =item \a
 
-A bell character.
+ベル文字。
 
 =item \e
 
-An ASCII ESC (escape) character.
+ASCII ESC (エスケープ) 文字。
 
 =item \n
 
-A newline.
+改行。
 
 =item \r
 
-A carriage return.
+復帰。
 
 =item \NNN
 
-The ASCII character whose code is the octal value NNN.
+コードの8 進値が NNN の ASCII 文字。
 
 =item \xNN
 
-The ASCII character whose code is the hex value NN.
+コードの 16 進値が NN の ASCII 文字。
 
 =back
 

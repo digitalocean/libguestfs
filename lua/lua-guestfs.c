@@ -3630,6 +3630,26 @@ guestfs_lua_get_pid (lua_State *L)
 }
 
 static int
+guestfs_lua_get_program (lua_State *L)
+{
+  const char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "get_program");
+
+
+  r = guestfs_get_program (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  return 1;
+}
+
+static int
 guestfs_lua_get_qemu (lua_State *L)
 {
   const char *r;
@@ -10888,6 +10908,27 @@ guestfs_lua_set_pgroup (lua_State *L)
 }
 
 static int
+guestfs_lua_set_program (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *program;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_program");
+
+  program = luaL_checkstring (L, 2);
+
+  r = guestfs_set_program (g, program);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_qemu (lua_State *L)
 {
   int r;
@@ -14433,6 +14474,7 @@ static luaL_Reg methods[] = {
   { "get_path", guestfs_lua_get_path },
   { "get_pgroup", guestfs_lua_get_pgroup },
   { "get_pid", guestfs_lua_get_pid },
+  { "get_program", guestfs_lua_get_program },
   { "get_qemu", guestfs_lua_get_qemu },
   { "get_recovery_proc", guestfs_lua_get_recovery_proc },
   { "get_selinux", guestfs_lua_get_selinux },
@@ -14722,6 +14764,7 @@ static luaL_Reg methods[] = {
   { "set_network", guestfs_lua_set_network },
   { "set_path", guestfs_lua_set_path },
   { "set_pgroup", guestfs_lua_set_pgroup },
+  { "set_program", guestfs_lua_set_program },
   { "set_qemu", guestfs_lua_set_qemu },
   { "set_recovery_proc", guestfs_lua_set_recovery_proc },
   { "set_selinux", guestfs_lua_set_selinux },

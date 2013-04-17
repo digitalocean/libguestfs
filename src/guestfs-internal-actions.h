@@ -160,5 +160,7 @@ extern char *guestfs__get_cachedir (guestfs_h *g);
 extern int guestfs__internal_set_libvirt_selinux_label (guestfs_h *g, const char *label, const char *imagelabel);
 extern int guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, int norelabeldisks);
 extern int guestfs__user_cancel (guestfs_h *g);
+extern int guestfs__set_program (guestfs_h *g, const char *program);
+extern const char *guestfs__get_program (guestfs_h *g);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

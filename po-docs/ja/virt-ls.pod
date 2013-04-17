@@ -359,7 +359,7 @@ parsed.  See L</RECURSIVE LONG LISTING>.
 
 =item B<--times>
 
-Display time fields.
+時間の項目を表示します。
 
 このオプションは I<-lR> 出力モードにおいてのみ効果があります。  上の L</RECURSIVE LONG LISTING> 参照。
 

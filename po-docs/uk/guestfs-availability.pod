@@ -97,16 +97,15 @@ L</guestfs_luks_kill_slot> L</guestfs_luks_open> L</guestfs_luks_open_ro>
 
 =item B<lvm2>
 
-Такі функції: L</guestfs_is_lv> L</guestfs_lvcreate>
-L</guestfs_lvcreate_free> L</guestfs_lvm_remove_all>
-L</guestfs_lvm_set_filter> L</guestfs_lvremove> L</guestfs_lvresize>
-L</guestfs_lvresize_free> L</guestfs_lvs> L</guestfs_lvs_full>
-L</guestfs_pvchange_uuid> L</guestfs_pvchange_uuid_all> L</guestfs_pvcreate>
-L</guestfs_pvremove> L</guestfs_pvresize> L</guestfs_pvresize_size>
-L</guestfs_pvs> L</guestfs_pvs_full> L</guestfs_vg_activate>
-L</guestfs_vg_activate_all> L</guestfs_vgchange_uuid>
-L</guestfs_vgchange_uuid_all> L</guestfs_vgcreate> L</guestfs_vgmeta>
-L</guestfs_vgremove> L</guestfs_vgs> L</guestfs_vgs_full>
+The following functions: L</guestfs_lvcreate> L</guestfs_lvcreate_free>
+L</guestfs_lvm_remove_all> L</guestfs_lvm_set_filter> L</guestfs_lvremove>
+L</guestfs_lvresize> L</guestfs_lvresize_free> L</guestfs_lvs>
+L</guestfs_lvs_full> L</guestfs_pvchange_uuid> L</guestfs_pvchange_uuid_all>
+L</guestfs_pvcreate> L</guestfs_pvremove> L</guestfs_pvresize>
+L</guestfs_pvresize_size> L</guestfs_pvs> L</guestfs_pvs_full>
+L</guestfs_vg_activate> L</guestfs_vg_activate_all>
+L</guestfs_vgchange_uuid> L</guestfs_vgchange_uuid_all> L</guestfs_vgcreate>
+L</guestfs_vgmeta> L</guestfs_vgremove> L</guestfs_vgs> L</guestfs_vgs_full>
 
 =item B<mdadm>
 

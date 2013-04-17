@@ -825,7 +825,8 @@ strings and the array after use>.
                     const char *base64file,
                     const char *filename);
 
-This command uploads base64-encoded data from C<base64file> to C<filename>.
+Ця команда вивантажує дані у кодуванні base64 з C<файл_base64> до файла з
+назвою C<назва_файла>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -859,7 +860,7 @@ present.
 
 =item C<UUID>
 
-The uuid of this device.
+Код UUID цього пристрою.
 
 =item C<МІТКА>
 
@@ -875,7 +876,7 @@ The uuid of this device.
 
 =item C<ВИКОРИСТАННЯ>
 
-The usage of this device, for example C<filesystem> or C<raid>.
+Призначення цього пристрою, наприклад C<filesystem> або C<raid>.
 
 =back
 
@@ -894,7 +895,7 @@ caller must free the strings and the array after use>.
 
 This tells the kernel to flush internal buffers associated with C<device>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -911,7 +912,7 @@ This uses the L<blockdev(8)> command.
 (Note this is different from both I<size in blocks> and I<filesystem block
 size>).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -926,7 +927,7 @@ This uses the L<blockdev(8)> command.
 Returns a boolean indicating if the block device is read-only (true if
 read-only, false if not).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 This function returns a C truth value on success or -1 on error.
 
@@ -942,7 +943,7 @@ This function returns a C truth value on success or -1 on error.
 
 Див. також C<guestfs_blockdev_getsz>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -960,7 +961,7 @@ larger for modern devices.
 (Note, this is not the size in sectors, use C<guestfs_blockdev_getsz> for
 that).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -978,7 +979,7 @@ the sectorsize isn't 512 bytes ... weird).
 See also C<guestfs_blockdev_getss> for the real sector size of the device,
 and C<guestfs_blockdev_getsize64> for the more useful I<size in bytes>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -992,7 +993,7 @@ This uses the L<blockdev(8)> command.
 
 Повторно прочитати таблицю розділів з пристрою C<пристрій>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1010,7 +1011,7 @@ This uses the L<blockdev(8)> command.
 (Note this is different from both I<size in blocks> and I<filesystem block
 size>).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1022,9 +1023,9 @@ This uses the L<blockdev(8)> command.
  guestfs_blockdev_setro (guestfs_h *g,
                          const char *device);
 
-Sets the block device named C<device> to read-only.
+Переводити блоковий пристрій з назвою C<пристрій> у режим лише читання.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -1038,7 +1039,7 @@ This uses the L<blockdev(8)> command.
 
 Sets the block device named C<device> to read-write.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -3407,6 +3408,16 @@ This is an internal call used for debugging and testing.
 У разі помилки цією функцією буде повернуто -1.
 
 (Додано у 1.0.56)
+
+=head2 guestfs_get_program
+
+ const char *
+ guestfs_get_program (guestfs_h *g);
+
+Get the program name.  See C<guestfs_set_program>.
+
+This function returns a string, or NULL on error.  The string is owned by
+the guest handle and must I<not> be freed.
 
 =head2 guestfs_get_qemu
 
@@ -9723,6 +9734,21 @@ C<guestfs_user_cancel>).
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 (Додано у 1.11.18)
+
+=head2 guestfs_set_program
+
+ int
+ guestfs_set_program (guestfs_h *g,
+                      const char *program);
+
+Set the program name.  This is an informative string which the main program
+may optionally set in the handle.
+
+When the handle is created, the program name in the handle is set to the
+basename from C<argv[0]>.  If that was not possible, it is set to the empty
+string (but never C<NULL>).
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 =head2 guestfs_set_qemu
 

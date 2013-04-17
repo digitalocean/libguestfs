@@ -194,6 +194,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_get_path, NULL)
   PHP_FE (guestfs_get_pgroup, NULL)
   PHP_FE (guestfs_get_pid, NULL)
+  PHP_FE (guestfs_get_program, NULL)
   PHP_FE (guestfs_get_qemu, NULL)
   PHP_FE (guestfs_get_recovery_proc, NULL)
   PHP_FE (guestfs_get_selinux, NULL)
@@ -483,6 +484,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_set_network, NULL)
   PHP_FE (guestfs_set_path, NULL)
   PHP_FE (guestfs_set_pgroup, NULL)
+  PHP_FE (guestfs_set_program, NULL)
   PHP_FE (guestfs_set_qemu, NULL)
   PHP_FE (guestfs_set_recovery_proc, NULL)
   PHP_FE (guestfs_set_selinux, NULL)
@@ -5770,6 +5772,32 @@ PHP_FUNCTION (guestfs_get_pid)
   }
 
   RETURN_LONG (r);
+}
+
+PHP_FUNCTION (guestfs_get_program)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  const char *r;
+  r = guestfs_get_program (g);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  RETURN_STRING (r, 1);
 }
 
 PHP_FUNCTION (guestfs_get_qemu)
@@ -17154,6 +17182,39 @@ PHP_FUNCTION (guestfs_set_pgroup)
 
   int r;
   r = guestfs_set_pgroup (g, pgroup);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_set_program)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *program;
+  int program_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &program, &program_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (program) != program_size) {
+    fprintf (stderr, "libguestfs: set_program: parameter 'program' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_set_program (g, program);
 
   if (r == -1) {
     RETURN_FALSE;

@@ -156,6 +156,7 @@
 -export([get_path/1]).
 -export([get_pgroup/1]).
 -export([get_pid/1]).
+-export([get_program/1]).
 -export([get_qemu/1]).
 -export([get_recovery_proc/1]).
 -export([get_selinux/1]).
@@ -449,6 +450,7 @@
 -export([set_network/2]).
 -export([set_path/2]).
 -export([set_pgroup/2]).
+-export([set_program/2]).
 -export([set_qemu/2]).
 -export([set_recovery_proc/2]).
 -export([set_selinux/2]).
@@ -1010,6 +1012,9 @@ get_pgroup(G) ->
 
 get_pid(G) ->
   call_port(G, {get_pid}).
+
+get_program(G) ->
+  call_port(G, {get_program}).
 
 get_qemu(G) ->
   call_port(G, {get_qemu}).
@@ -1935,6 +1940,9 @@ set_path(G, Searchpath) ->
 
 set_pgroup(G, Pgroup) ->
   call_port(G, {set_pgroup, Pgroup}).
+
+set_program(G, Program) ->
+  call_port(G, {set_program, Program}).
 
 set_qemu(G, Qemu) ->
   call_port(G, {set_qemu, Qemu}).

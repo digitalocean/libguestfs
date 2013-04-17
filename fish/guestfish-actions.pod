@@ -2224,6 +2224,12 @@ qemu subprocess, then this will return an error.
 
 This is an internal call used for debugging and testing.
 
+=head2 get-program
+
+ get-program
+
+Get the program name.  See L</set-program>.
+
 =head2 get-qemu
 
  get-qemu
@@ -6239,6 +6245,19 @@ The default for this flag is false, because usually you want
 C<^C> to kill the subprocess.  Guestfish sets this flag to
 true when used interactively, so that C<^C> can cancel
 long-running commands gracefully (see L</user-cancel>).
+
+=head2 set-program
+
+=head2 program
+
+ set-program program
+
+Set the program name.  This is an informative string which the
+main program may optionally set in the handle.
+
+When the handle is created, the program name in the handle is
+set to the basename from C<argv[0]>.  If that was not possible,
+it is set to the empty string (but never C<NULL>).
 
 =head2 set-qemu
 

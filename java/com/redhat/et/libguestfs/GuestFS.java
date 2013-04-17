@@ -5027,6 +5027,50 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * set the program name
+   * <p>
+   * Set the program name. This is an informative string
+   * which the main program may optionally set in the handle.
+   * <p>
+   * When the handle is created, the program name in the
+   * handle is set to the basename from "argv[0]". If that
+   * was not possible, it is set to the empty string (but
+   * never "NULL").
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_program (String program)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_program: handle is closed");
+
+    _set_program (g, program);
+  }
+
+  private native void _set_program (long g, String program)
+    throws LibGuestFSException;
+
+  /**
+   * get the program name
+   * <p>
+   * Get the program name. See "g.set_program".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_program ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_program: handle is closed");
+
+    return _get_program (g);
+  }
+
+  private native String _get_program (long g)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.

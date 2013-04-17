@@ -856,16 +856,16 @@ like this:
  restarting), or mount the volume read-only with the
  'ro' mount option.
 
-In Windows 8, the shutdown button does not shut down the guest at all.
-Instead it usually hibernates the guest.  This is known as "fast startup".
+Windows 8 では、シャットダウンボタンを押しても仮想マシンがシャットダウンしません。代わりに、仮想マシンが休止状態になります。これは
+"高速スタートアップ" として知られています。
 
-Some suggested workarounds are:
+いくつかの推奨される回避策があります:
 
 =over 4
 
 =item *
 
-Mount read-only (eg. L</guestfs_mount_ro>).
+読み込み専用でマウントします (例: L</guestfs_mount_ro>)。
 
 =item *
 
@@ -993,7 +993,7 @@ libguestfs.  For examples, see L<guestfs-java(3)>.
 
 =item B<Lua>
 
-See L<guestfs-lua(3)>.
+L<guestfs-lua(3)> 参照。
 
 =item B<OCaml>
 
@@ -1820,7 +1820,7 @@ handler.
 
 =back
 
-=head3 USING C<GUESTFS_CREATE_NO_ENVIRONMENT>
+=head3 C<GUESTFS_CREATE_NO_ENVIRONMENT> の使用法
 
 You might use C<GUESTFS_CREATE_NO_ENVIRONMENT> and an explicit call to
 L</guestfs_parse_environment> like this:
@@ -1914,8 +1914,7 @@ errors into exceptions using code similar to this:
  guestfs_set_error_handler (g, NULL, NULL);
  
  if (guestfs_launch (g) == -1) {
-   /* Examine the error message and print it, throw it,
-      etc. */
+   /* エラーメッセージを検査する、表示する、例外を投げるなど */
    msg = guestfs_last_error (g);
    errnum = guestfs_last_errno (g);
  
@@ -2253,7 +2252,7 @@ documentation for more details on that.
 
 guestfish は L<guestfish(1)/OPTIONAL ARGUMENTS> を参照してください。
 
-=head1 EVENTS
+=head1 イベント
 
 =head2 SETTING CALLBACKS TO HANDLE EVENTS
 
@@ -2429,7 +2428,7 @@ for command-line programs only).
 
 =back
 
-=head2 EVENT API
+=head2 イベント API
 
 =head3 guestfs_set_event_callback
 
@@ -2565,7 +2564,7 @@ example, messages are directed to syslog:
      syslog (priority, "event 0x%lx: %s", event, buf);
  }
 
-=head2 LIBVIRT AUTHENTICATION
+=head2 libvirt 認証
 
 Some libguestfs API calls can open libvirt connections.  Currently the only
 ones are L</guestfs_add_domain>; and L</guestfs_launch> if the libvirt
@@ -2611,12 +2610,12 @@ libguestfs sources, called C<libvirt-auth.c>.
    g = guestfs_create ();
    if (!g) exit (EXIT_FAILURE);
  
-   /* Tell libvirt what credentials the program supports. */
+   /* プログラムがサポートするクレデンシャルを libvirt に伝える。 */
    r = guestfs_set_libvirt_supported_credentials (g, creds);
    if (r == -1)
      exit (EXIT_FAILURE);
  
-   /* Set up the event handler. */
+   /* イベントハンドラーをセットアップする。 */
    eh = guestfs_set_event_callback (
        g, do_auth,
        GUESTFS_EVENT_LIBVIRT_AUTH, 0, NULL);
@@ -2952,22 +2951,21 @@ libguestfs は子プロセスをモデル化するために状態マシンを使
                          |
                      ____V_____
                     /          \
-                    |  CONFIG  |
+                    |   設定   |
                     \__________/
                        ^   ^  \
                        |    \  \ guestfs_launch
                        |    _\__V______
                        |   /           \
-                       |   | LAUNCHING |
+                       |   |  起動中   |
                        |   \___________/
                        |       /
                        |  guestfs_launch
                        |     /
-                     __|____V
-                    /        \
-                    | READY  |
-                    \________/
-
+                  _____|____V
+                 /        \
+                 | 準備完了  |
+                 \___________/
 The normal transitions are (1) CONFIG (when the handle is created, but there
 is no child process), (2) LAUNCHING (when the child process is booting up),
 (3) READY meaning the appliance is up, actions can be issued to, and carried
@@ -3216,7 +3214,7 @@ parameters, but with the roles of daemon and library reversed.
  sequence of chunks for FileOut param #0
  sequence of chunks for FileOut param #1 etc.
 
-=head3 INITIAL MESSAGE
+=head3 初期メッセージ
 
 When the daemon launches it sends an initial word (C<GUESTFS_LAUNCH_FLAG>)
 which indicates that the guest and daemon is alive.  This is what
@@ -3326,7 +3324,7 @@ marshalling) they appear as C functions in files under C<daemon>.
 
 To build from source, first read the C<README> file.
 
-=head2 C<local*> FILES
+=head2 C<local*> ファイル
 
 Files in the top source directory that begin with the prefix C<local*> are
 ignored by git.  These files can contain local configuration or scripts that
@@ -3352,9 +3350,9 @@ If there is a file in the top build directory called C<localenv>, then it
 will be sourced by C<make>.  This file can contain any local environment
 variables needed, eg. for skipping tests:
 
- # Use an alternate python binary.
+ # 代替の python バイナリを使用します。
  export PYTHON=python3
- # Skip this test, it is broken.
+ # このテストを飛ばします。これは壊れています。
  export SKIP_TEST_BTRFS_FSCK=1
 
 Note that C<localenv> is included by the top Makefile (so it's a Makefile
@@ -3525,7 +3523,7 @@ If you use Emacs, add the following to one of one of your start-up files
                                (buffer-file-name))
                            (libguestfs-c-mode))))
 
-=head2 TESTING YOUR CHANGES
+=head2 変更のテスト方法
 
 コンパイル時に警告を有効にします（そして、これは見つけた問題をすべて修正します）:
 
@@ -3537,20 +3535,19 @@ If you use Emacs, add the following to one of one of your start-up files
 
 =item C<make check>
 
-Runs the regular test suite.
+一般的なテスト群を実行します。
 
 =item C<make syntax-check -j1 -k>
 
-Checks for various syntax and style problems in the code.
+さまざまなコードにおける構文および形式の問題を確認します。
 
 =item C<make check-valgrind>
 
-Runs a subset of the test suite under valgrind.
+valgrind にあるテスト群のサブセットを実行します。
 
 =item C<make check-valgrind-local-guests>
 
-Runs a subset of the test suite under valgrind using locally installed
-libvirt guests (read-only).
+ローカルにインストールされた libvirt 仮想マシン (読み込み専用) を使用して、valgrind にあるテスト群のサブセットを実行します。
 
 =item C<make check-with-appliance>
 
@@ -3760,10 +3757,9 @@ L<virt-sysprep(1)> コマンドおよびドキュメント。
 
 =item C<tmp>
 
-Used for temporary files when running the tests (instead of C</tmp> etc).
-The reason is so that you can run multiple parallel tests of libguestfs
-without having one set of tests overwriting the appliance created by
-another.
+テストを実行するときに一時ファイルのために使用されます (C</tmp>
+などの代わり)。この理由は、一連のテストが他者により作成されたアプライアンスを上書きすることなく、複数の libguestfs
+並行テストを実行できるようにするためです。
 
 =item C<tools>
 
@@ -3809,7 +3805,7 @@ Check C<make && make check> works on at least Fedora, Debian and Ubuntu.
 
 =item *
 
-Finalize C<guestfs-release-notes.pod>
+C<guestfs-release-notes.pod> をファイナライズします。
 
 =item *
 

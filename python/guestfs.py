@@ -2665,6 +2665,26 @@ class GuestFS(object):
         r = libguestfsmod.user_cancel (self._o)
         return r
 
+    def set_program (self, program):
+        """Set the program name. This is an informative string
+        which the main program may optionally set in the handle.
+        
+        When the handle is created, the program name in the
+        handle is set to the basename from "argv[0]". If that
+        was not possible, it is set to the empty string (but
+        never "NULL").
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_program (self._o, program)
+        return r
+
+    def get_program (self):
+        """Get the program name. See "g.set_program".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_program (self._o)
+        return r
+
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so

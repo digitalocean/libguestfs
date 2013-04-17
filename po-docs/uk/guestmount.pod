@@ -398,5 +398,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2012
+Copyright (C) 2009-2013 Red Hat Inc.
 

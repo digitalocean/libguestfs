@@ -147,6 +147,8 @@ static int run_get_tmpdir (const char *cmd, size_t argc, char *argv[]);
 static int run_set_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_get_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_user_cancel (const char *cmd, size_t argc, char *argv[]);
+static int run_set_program (const char *cmd, size_t argc, char *argv[]);
+static int run_get_program (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -1266,6 +1268,18 @@ struct command_entry user_cancel_cmd_entry = {
   .name = "user-cancel",
   .help = "NAME\n    user-cancel - cancel the current upload or download operation\n\nSYNOPSIS\n     user-cancel\n\nDESCRIPTION\n    This function cancels the current upload or download operation.\n\n    Unlike most other libguestfs calls, this function is signal safe and\n    thread safe. You can call it from a signal handler or from another\n    thread, without needing to do any locking.\n\n    The transfer that was in progress (if there is one) will stop shortly\n    afterwards, and will return an error. The errno (see\n    \"guestfs_last_errno\") is set to \"EINTR\", so you can test for this to\n    find out if the operation was cancelled or failed because of another\n    error.\n\n    No cleanup is performed: for example, if a file was being uploaded then\n    after cancellation there may be a partially uploaded file. It is the\n    caller's responsibility to clean up if necessary.\n\n    There are two common places that you might call \"user_cancel\":\n\n    In an interactive text-based program, you might call it from a \"SIGINT\"\n    signal handler so that pressing \"^C\" cancels the current operation. (You\n    also need to call \"guestfs_set_pgroup\" so that child processes don't\n    receive the \"^C\" signal).\n\n    In a graphical program, when the main thread is displaying a progress\n    bar with a cancel button, wire up the cancel button to call this\n    function.\n\n",
   .run = run_user_cancel
+};
+
+struct command_entry set_program_cmd_entry = {
+  .name = "set-program",
+  .help = "NAME\n    set-program - set the program name\n\nSYNOPSIS\n     set-program program\n\nDESCRIPTION\n    Set the program name. This is an informative string which the main\n    program may optionally set in the handle.\n\n    When the handle is created, the program name in the handle is set to the\n    basename from \"argv[0]\". If that was not possible, it is set to the\n    empty string (but never \"NULL\").\n\n    You can use 'program' as an alias for this command.\n\n",
+  .run = run_set_program
+};
+
+struct command_entry get_program_cmd_entry = {
+  .name = "get-program",
+  .help = "NAME\n    get-program - get the program name\n\nSYNOPSIS\n     get-program\n\nDESCRIPTION\n    Get the program name. See \"set_program\".\n\n",
+  .run = run_get_program
 };
 
 struct command_entry mount_cmd_entry = {
@@ -3705,6 +3719,7 @@ list_commands (void)
   printf ("%-20s %s\n", "get-path", _("get the search path"));
   printf ("%-20s %s\n", "get-pgroup", _("get process group flag"));
   printf ("%-20s %s\n", "get-pid", _("get PID of qemu subprocess"));
+  printf ("%-20s %s\n", "get-program", _("get the program name"));
   printf ("%-20s %s\n", "get-qemu", _("get the qemu binary"));
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
@@ -3970,6 +3985,7 @@ list_commands (void)
   printf ("%-20s %s\n", "set-network", _("set enable network flag"));
   printf ("%-20s %s\n", "set-path", _("set the search path"));
   printf ("%-20s %s\n", "set-pgroup", _("set process group flag"));
+  printf ("%-20s %s\n", "set-program", _("set the program name"));
   printf ("%-20s %s\n", "set-qemu", _("set the qemu binary"));
   printf ("%-20s %s\n", "set-recovery-proc", _("enable or disable the recovery process"));
   printf ("%-20s %s\n", "set-selinux", _("set SELinux enabled or disabled at appliance boot"));
@@ -7391,6 +7407,48 @@ run_user_cancel (const char *cmd, size_t argc, char *argv[])
   r = guestfs_user_cancel (g);
   if (r == -1) goto out;
   ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_program (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *program;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  program = argv[i++];
+  r = guestfs_set_program (g, program);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_program (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  const char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_program (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
  out:
  out_noargs:
   return ret;

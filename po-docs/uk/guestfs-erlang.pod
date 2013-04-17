@@ -2,7 +2,7 @@
 
 =head1 НАЗВА
 
-guestfs-erlang - How to use libguestfs from Erlang
+guestfs-erlang — як користуватися libguestfs з програми мовою Erlang
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -28,15 +28,15 @@ should specify the full path to the program:
 
  {ok, G} = guestfs:create().
 
- {ok, G} = guestfs:create("/path/to/erl-guestfs").
+ {ok, G} = guestfs:create("/шлях/до/erl-guestfs").
 
 C<G> is the libguestfs handle which you should pass to other functions.
 
-To close the handle:
+Закриття обробника:
 
  ok = guestfs:close(G).
 
-=head2 FUNCTIONS WITH OPTIONAL ARGUMENTS
+=head2 ФУНКЦІЇ І ДОДАТКОВІ ПАРАМЕТРИ
 
 For functions that take optional arguments, the first arguments are the
 non-optional ones.  The last argument is a list of tuples supplying the
@@ -49,7 +49,7 @@ If the last argument would be an empty list, you can also omit it:
 
  ok = guestfs:add_drive_opts(G, Disk).
 
-=head2 RETURN VALUES AND ERRORS
+=head2 ЗНАЧЕННЯ, ЩО ПОВЕРТАЮТЬСЯ, І ПОМИЛКИ
 
 On success, most functions return a C<Result> term (which could be a list,
 string, tuple etc.).  If there is nothing for the function to return, then
@@ -66,7 +66,7 @@ On error, you would see one of the following tuples:
 C<Msg> is the error message (string) and C<Errno> is the Unix error
 (integer).
 
-C<Errno> can be zero.  See L<guestfs(3)/guestfs_last_errno>.
+C<Errno> може бути нульовим. Див. L<guestfs(3)/guestfs_last_errno>.
 
 =item C<{unknown, Функція}>
 
@@ -106,5 +106,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2012 Red Hat Inc.
+© Red Hat Inc., 2011–2012
 

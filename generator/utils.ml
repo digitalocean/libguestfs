@@ -259,15 +259,12 @@ let name_of_optargt = function
   | OBool n | OInt n | OInt64 n | OString n | OStringList n -> n
 
 let seq_of_test = function
-  | TestRun s | TestOutput (s, _) | TestOutputList (s, _)
-  | TestOutputListOfDevices (s, _)
-  | TestOutputInt (s, _) | TestOutputIntOp (s, _, _)
-  | TestOutputTrue s | TestOutputFalse s
-  | TestOutputLength (s, _) | TestOutputBuffer (s, _)
-  | TestOutputStruct (s, _)
-  | TestOutputFileMD5 (s, _)
-  | TestOutputDevice (s, _)
-  | TestOutputHashtable (s, _)
+  | TestRun s
+  | TestResult (s, _)
+  | TestResultString (s, _)
+  | TestResultDevice (s, _)
+  | TestResultTrue s
+  | TestResultFalse s
   | TestLastFail s -> s
 
 let c_quote str =

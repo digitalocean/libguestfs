@@ -211,6 +211,7 @@
     <keyword type="function" name="guestfs_session_get_path ()" link="GuestfsSession.html#guestfs-session-get-path"/>
     <keyword type="function" name="guestfs_session_get_pgroup ()" link="GuestfsSession.html#guestfs-session-get-pgroup"/>
     <keyword type="function" name="guestfs_session_get_pid ()" link="GuestfsSession.html#guestfs-session-get-pid"/>
+    <keyword type="function" name="guestfs_session_get_program ()" link="GuestfsSession.html#guestfs-session-get-program"/>
     <keyword type="function" name="guestfs_session_get_qemu ()" link="GuestfsSession.html#guestfs-session-get-qemu"/>
     <keyword type="function" name="guestfs_session_get_recovery_proc ()" link="GuestfsSession.html#guestfs-session-get-recovery-proc"/>
     <keyword type="function" name="guestfs_session_get_selinux ()" link="GuestfsSession.html#guestfs-session-get-selinux"/>
@@ -500,6 +501,7 @@
     <keyword type="function" name="guestfs_session_set_network ()" link="GuestfsSession.html#guestfs-session-set-network"/>
     <keyword type="function" name="guestfs_session_set_path ()" link="GuestfsSession.html#guestfs-session-set-path"/>
     <keyword type="function" name="guestfs_session_set_pgroup ()" link="GuestfsSession.html#guestfs-session-set-pgroup"/>
+    <keyword type="function" name="guestfs_session_set_program ()" link="GuestfsSession.html#guestfs-session-set-program"/>
     <keyword type="function" name="guestfs_session_set_qemu ()" link="GuestfsSession.html#guestfs-session-set-qemu"/>
     <keyword type="function" name="guestfs_session_set_recovery_proc ()" link="GuestfsSession.html#guestfs-session-set-recovery-proc"/>
     <keyword type="function" name="guestfs_session_set_selinux ()" link="GuestfsSession.html#guestfs-session-set-selinux"/>

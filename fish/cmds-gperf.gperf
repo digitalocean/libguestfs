@@ -175,6 +175,7 @@ extern struct command_entry get_network_cmd_entry;
 extern struct command_entry get_path_cmd_entry;
 extern struct command_entry get_pgroup_cmd_entry;
 extern struct command_entry get_pid_cmd_entry;
+extern struct command_entry get_program_cmd_entry;
 extern struct command_entry get_qemu_cmd_entry;
 extern struct command_entry get_recovery_proc_cmd_entry;
 extern struct command_entry get_selinux_cmd_entry;
@@ -440,6 +441,7 @@ extern struct command_entry set_memsize_cmd_entry;
 extern struct command_entry set_network_cmd_entry;
 extern struct command_entry set_path_cmd_entry;
 extern struct command_entry set_pgroup_cmd_entry;
+extern struct command_entry set_program_cmd_entry;
 extern struct command_entry set_qemu_cmd_entry;
 extern struct command_entry set_recovery_proc_cmd_entry;
 extern struct command_entry set_selinux_cmd_entry;
@@ -796,6 +798,8 @@ get-pgroup, &get_pgroup_cmd_entry
 get_pid, &get_pid_cmd_entry
 get-pid, &get_pid_cmd_entry
 pid, &get_pid_cmd_entry
+get_program, &get_program_cmd_entry
+get-program, &get_program_cmd_entry
 get_qemu, &get_qemu_cmd_entry
 get-qemu, &get_qemu_cmd_entry
 get_recovery_proc, &get_recovery_proc_cmd_entry
@@ -1274,6 +1278,9 @@ path, &set_path_cmd_entry
 set_pgroup, &set_pgroup_cmd_entry
 set-pgroup, &set_pgroup_cmd_entry
 pgroup, &set_pgroup_cmd_entry
+set_program, &set_program_cmd_entry
+set-program, &set_program_cmd_entry
+program, &set_program_cmd_entry
 set_qemu, &set_qemu_cmd_entry
 set-qemu, &set_qemu_cmd_entry
 qemu, &set_qemu_cmd_entry

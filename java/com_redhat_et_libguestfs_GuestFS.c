@@ -3700,6 +3700,42 @@ Java_com_redhat_et_libguestfs_GuestFS__1user_1cancel  (JNIEnv *env, jobject obj,
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1set_1program  (JNIEnv *env, jobject obj, jlong jg, jstring jprogram)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *program;
+
+  program = (*env)->GetStringUTFChars (env, jprogram, NULL);
+
+  r = guestfs_set_program (g, program);
+
+  (*env)->ReleaseStringUTFChars (env, jprogram, program);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1get_1program  (JNIEnv *env, jobject obj, jlong jg)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  const char *r;
+
+
+  r = guestfs_get_program (g);
+
+
+  if (r == NULL) {
+    throw_exception (env, guestfs_last_error (g));
+    return NULL;
+  }
+  return (*env)->NewStringUTF (env, r);
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1mount  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;

@@ -66,5 +66,4 @@ extern void prep_postlaunch_bootroot (const char *filename, prep_data *data, con
 extern void prep_prelaunch_bootrootlv (const char *filename, prep_data *data);
 extern void prep_postlaunch_bootrootlv (const char *filename, prep_data *data, const char *device);
 
-
 #endif /* PREPOPTS_H */

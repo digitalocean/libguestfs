@@ -260,6 +260,8 @@ gchar *guestfs_session_get_tmpdir(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_cachedir(GuestfsSession *session, const gchar *cachedir, GError **err);
 gchar *guestfs_session_get_cachedir(GuestfsSession *session, GError **err);
 gboolean guestfs_session_user_cancel(GuestfsSession *session, GError **err);
+gboolean guestfs_session_set_program(GuestfsSession *session, const gchar *program, GError **err);
+const gchar *guestfs_session_get_program(GuestfsSession *session, GError **err);
 gboolean guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err);
 gboolean guestfs_session_sync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err);

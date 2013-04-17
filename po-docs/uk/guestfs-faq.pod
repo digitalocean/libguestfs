@@ -2,11 +2,11 @@
 
 =head1 НАЗВА
 
-guestfs-faq - libguestfs Frequently Asked Questions (FAQ)
+guestfs-faq — поширені питання щодо libguestfs на відповіді на них (FAQ)
 
-=head1 ABOUT LIBGUESTFS
+=head1 ПРО LIBGUESTFS
 
-=head2 What is libguestfs?
+=head2 Для чого призначено libguestfs?
 
 libguestfs is a way to create, access and modify disk images.  You can look
 inside disk images, modify the files they contain, create them from scratch,
@@ -188,7 +188,7 @@ you mount the filesystem.  The two methods are the C<iocharset> parameter
 So to use a VFAT filesystem you must add the C<utf8> flag when mounting.
 From guestfish, use:
 
- ><fs> mount-options utf8 /dev/sda1 /
+ ><fs> параметри_монтування utf8 /dev/sda1 /
 
 or on the guestfish command line:
 
@@ -383,7 +383,7 @@ network.  Put the following line into a file called C<$HOME/.rpmmacros>:
 
 If you are using mock, do:
 
- mock -D '%libguestfs_buildnet 1' [etc]
+ mock -D '%libguestfs_buildnet 1' [тощо]
 
 =head2 How can I add support for sVirt?
 

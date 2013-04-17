@@ -6769,6 +6769,73 @@ ruby_guestfs_user_cancel (VALUE gv)
 
 /*
  * call-seq:
+ *   g.set_program(program) -> nil
+ *
+ * set the program name
+ *
+ * Set the program name. This is an informative string
+ * which the main program may optionally set in the handle.
+ * 
+ * When the handle is created, the program name in the
+ * handle is set to the basename from "argv[0]". If that
+ * was not possible, it is set to the empty string (but
+ * never "NULL").
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_program+[http://libguestfs.org/guestfs.3.html#guestfs_set_program]).
+ */
+static VALUE
+ruby_guestfs_set_program (VALUE gv, VALUE programv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_program");
+
+  const char *program = StringValueCStr (programv);
+
+  int r;
+
+  r = guestfs_set_program (g, program);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_program() -> string
+ *
+ * get the program name
+ *
+ * Get the program name. See "g.set_program".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_program+[http://libguestfs.org/guestfs.3.html#guestfs_get_program]).
+ */
+static VALUE
+ruby_guestfs_get_program (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_program");
+
+
+  const char *r;
+
+  r = guestfs_get_program (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return rb_str_new2 (r);
+}
+
+/*
+ * call-seq:
  *   g.mount(mountable, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
@@ -24341,6 +24408,10 @@ Init__guestfs (void)
         ruby_guestfs_get_cachedir, 0);
   rb_define_method (c_guestfs, "user_cancel",
         ruby_guestfs_user_cancel, 0);
+  rb_define_method (c_guestfs, "set_program",
+        ruby_guestfs_set_program, 1);
+  rb_define_method (c_guestfs, "get_program",
+        ruby_guestfs_get_program, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",

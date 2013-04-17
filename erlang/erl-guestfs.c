@@ -2973,6 +2973,18 @@ run_get_pid (ETERM *message)
 }
 
 static ETERM *
+run_get_program (ETERM *message)
+{
+  const char *r;
+
+  r = guestfs_get_program (g);
+  if (r == NULL)
+    return make_error ("get_program");
+
+  return erl_mk_string (r);
+}
+
+static ETERM *
 run_get_qemu (ETERM *message)
 {
   const char *r;
@@ -8468,6 +8480,20 @@ run_set_pgroup (ETERM *message)
 }
 
 static ETERM *
+run_set_program (ETERM *message)
+{
+  char *program = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_program (g, program);
+  free (program);
+  if (r == -1)
+    return make_error ("set_program");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_qemu (ETERM *message)
 {
   char *qemu;
@@ -10560,6 +10586,8 @@ dispatch (ETERM *message)
     return run_get_pgroup (message);
   else if (atom_equals (fun, "get_pid"))
     return run_get_pid (message);
+  else if (atom_equals (fun, "get_program"))
+    return run_get_program (message);
   else if (atom_equals (fun, "get_qemu"))
     return run_get_qemu (message);
   else if (atom_equals (fun, "get_recovery_proc"))
@@ -11138,6 +11166,8 @@ dispatch (ETERM *message)
     return run_set_path (message);
   else if (atom_equals (fun, "set_pgroup"))
     return run_set_pgroup (message);
+  else if (atom_equals (fun, "set_program"))
+    return run_set_program (message);
   else if (atom_equals (fun, "set_qemu"))
     return run_set_qemu (message);
   else if (atom_equals (fun, "set_recovery_proc"))

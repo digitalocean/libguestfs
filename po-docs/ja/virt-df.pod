@@ -6,11 +6,11 @@ virt-df - 仮想ファイルシステムの使用状況の表示
 
 =head1 書式
 
-All guests:
+すべての仮想マシン:
 
  virt-df [--options]
 
-Single guest:
+単一の仮想マシン:
 
  virt-df [--options] -d domname
 

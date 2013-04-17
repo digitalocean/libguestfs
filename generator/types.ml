@@ -207,88 +207,32 @@ and test =
     (* Run the command sequence and just expect nothing to fail. *)
   | TestRun of seq
 
-    (* Run the command sequence and expect the output of the final
-     * command to be the string.
+    (* Run the command sequence.  No command should fail, and the
+     * output of the command(s) is tested using the C expression which
+     * should return true.
+     *
+     * In the C expression, 'ret' is the result of the final command,
+     * 'ret1' is the result of the last but one command, and so on
+     * backwards.
      *)
-  | TestOutput of seq * string
+  | TestResult of seq * string
 
-    (* Run the command sequence and expect the output of the final
-     * command to be the list of strings.
+    (* Run the command sequence.  No command should fail, and the
+     * last command must return the given string or device name.
      *)
-  | TestOutputList of seq * string list
+  | TestResultString of seq * string
+  | TestResultDevice of seq * string
 
-    (* Run the command sequence and expect the output of the final
-     * command to be the list of block devices (could be either
-     * "/dev/sd.." or "/dev/hd.." form - we don't check the 5th
-     * character of each string).
+    (* Run the command sequence.  No command should fail, and the
+     * last command must return true or false.
      *)
-  | TestOutputListOfDevices of seq * string list
-
-    (* Run the command sequence and expect the output of the final
-     * command to be the integer.
-     *)
-  | TestOutputInt of seq * int
-
-    (* Run the command sequence and expect the output of the final
-     * command to be <op> <int>, eg. ">=", "1".
-     *)
-  | TestOutputIntOp of seq * string * int
-
-    (* Run the command sequence and expect the output of the final
-     * command to be a true value (!= 0 or != NULL).
-     *)
-  | TestOutputTrue of seq
-
-    (* Run the command sequence and expect the output of the final
-     * command to be a false value (== 0 or == NULL, but not an error).
-     *)
-  | TestOutputFalse of seq
-
-    (* Run the command sequence and expect the output of the final
-     * command to be a list of the given length (but don't care about
-     * content).
-     *)
-  | TestOutputLength of seq * int
-
-    (* Run the command sequence and expect the output of the final
-     * command to be a buffer (RBufferOut), ie. string + size.
-     *)
-  | TestOutputBuffer of seq * string
-
-    (* Run the command sequence and expect the output of the final
-     * command to be a structure.
-     *)
-  | TestOutputStruct of seq * test_field_compare list
-
-    (* Run the command sequence and expect the output of the final
-     * command to be a string which is the hex MD5 of the content of
-     * the named file.
-     *)
-  | TestOutputFileMD5 of seq * string
-
-    (* Run the command sequence and expect the output of the final
-     * command to be a string which is a block device name (we don't
-     * check the 5th character of the string, so "/dev/sda" == "/dev/vda").
-     *)
-  | TestOutputDevice of seq * string
-
-    (* Run the command sequence and expect a hashtable.  Check
-     * one of more fields in the hashtable against known good
-     * strings.
-     *)
-  | TestOutputHashtable of seq * (string * string) list
+  | TestResultTrue of seq
+  | TestResultFalse of seq
 
   (* Run the command sequence and expect the final command (only)
    * to fail.
    *)
   | TestLastFail of seq
-
-and test_field_compare =
-  | CompareWithInt of string * int
-  | CompareWithIntOp of string * string * int
-  | CompareWithString of string * string
-  | CompareFieldsIntEq of string * string
-  | CompareFieldsStrEq of string * string
 
 (* Test prerequisites. *)
 and test_prereq =
@@ -299,14 +243,6 @@ and test_prereq =
      * unimplemented feature.
      *)
   | Disabled
-
-    (* 'string' is some C code (a function body) that should return
-     * true or false.  The test will run if the code returns true.
-     *)
-  | If of string
-
-    (* As for 'If' but the test runs _unless_ the code returns true. *)
-  | Unless of string
 
     (* Run the test only if 'string' is available in the daemon. *)
   | IfAvailable of string

@@ -5966,6 +5966,64 @@ py_guestfs_user_cancel (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_set_program (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *program;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_program",
+                         &py_g, &program))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_set_program (g, program);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_program (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  const char *r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_get_program",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_program (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_mount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -21099,6 +21157,8 @@ static PyMethodDef methods[] = {
   { (char *) "set_cachedir", py_guestfs_set_cachedir, METH_VARARGS, NULL },
   { (char *) "get_cachedir", py_guestfs_get_cachedir, METH_VARARGS, NULL },
   { (char *) "user_cancel", py_guestfs_user_cancel, METH_VARARGS, NULL },
+  { (char *) "set_program", py_guestfs_set_program, METH_VARARGS, NULL },
+  { (char *) "get_program", py_guestfs_get_program, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },

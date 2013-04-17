@@ -1185,6 +1185,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_get_pgroup (guestfs_h *g);
 #define GUESTFS_HAVE_GET_PID 1
 extern GUESTFS_DLL_PUBLIC int guestfs_get_pid (guestfs_h *g);
 
+#define GUESTFS_HAVE_GET_PROGRAM 1
+extern GUESTFS_DLL_PUBLIC const char *guestfs_get_program (guestfs_h *g);
+
 #define GUESTFS_HAVE_GET_QEMU 1
 extern GUESTFS_DLL_PUBLIC const char *guestfs_get_qemu (guestfs_h *g);
 
@@ -2370,6 +2373,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_path (guestfs_h *g, const char *search
 #define GUESTFS_HAVE_SET_PGROUP 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_pgroup (guestfs_h *g, int pgroup);
 
+#define GUESTFS_HAVE_SET_PROGRAM 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_program (guestfs_h *g, const char *program);
+
 #define GUESTFS_HAVE_SET_QEMU 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_qemu (guestfs_h *g, const char *qemu);
 
@@ -3354,6 +3360,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_GET_PATH 1
 #define LIBGUESTFS_HAVE_GET_PGROUP 1
 #define LIBGUESTFS_HAVE_GET_PID 1
+#define LIBGUESTFS_HAVE_GET_PROGRAM 1
 #define LIBGUESTFS_HAVE_GET_QEMU 1
 #define LIBGUESTFS_HAVE_GET_RECOVERY_PROC 1
 #define LIBGUESTFS_HAVE_GET_SELINUX 1
@@ -3616,6 +3623,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_NETWORK 1
 #define LIBGUESTFS_HAVE_SET_PATH 1
 #define LIBGUESTFS_HAVE_SET_PGROUP 1
+#define LIBGUESTFS_HAVE_SET_PROGRAM 1
 #define LIBGUESTFS_HAVE_SET_QEMU 1
 #define LIBGUESTFS_HAVE_SET_RECOVERY_PROC 1
 #define LIBGUESTFS_HAVE_SET_SELINUX 1

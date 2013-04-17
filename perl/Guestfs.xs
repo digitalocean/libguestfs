@@ -2848,6 +2848,30 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+set_program (g, program)
+      guestfs_h *g;
+      char *program;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_program (g, program);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_program (g)
+      guestfs_h *g;
+PREINIT:
+      const char *r;
+   CODE:
+      r = guestfs_get_program (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+ OUTPUT:
+      RETVAL
+
+void
 mount (g, mountable, mountpoint)
       guestfs_h *g;
       char *mountable;

@@ -1322,6 +1322,48 @@ guestfs_internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g,
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_set_program (guestfs_h *g,
+                     const char *program)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_program", 11);
+  if (program == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_program", "program");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_program");
+    fprintf (trace_buffer.fp, " \"%s\"", program);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__set_program (g, program);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_program");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_program", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char *
 guestfs_ll (guestfs_h *g,
             const char *directory)

@@ -14,6 +14,7 @@ fish/event-names.c
 fish/fish-cmds.h
 fish/guestfish-actions.pod
 fish/guestfish-commands.pod
+fish/guestfish-prepopts.pod
 fish/prepopts.c
 fish/prepopts.h
 gobject/Makefile.inc

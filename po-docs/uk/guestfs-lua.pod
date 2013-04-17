@@ -55,7 +55,7 @@ example:
 
  g:set_verbose (true)
 
-=head2 FUNCTIONS WITH OPTIONAL ARGUMENTS
+=head2 ФУНКЦІЇ І ДОДАТКОВІ ПАРАМЕТРИ
 
 For functions that take optional arguments, the first arguments are the
 non-optional ones.  The optional final argument is a table supplying the

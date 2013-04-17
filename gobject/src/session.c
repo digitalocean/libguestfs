@@ -7180,6 +7180,74 @@ guestfs_session_user_cancel(GuestfsSession *session, GError **err)
 }
 
 /**
+ * guestfs_session_set_program:
+ * @session: (transfer none): A GuestfsSession object
+ * @program: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the program name
+ *
+ * Set the program name. This is an informative string which the main
+ * program may optionally set in the handle.
+ * 
+ * When the handle is created, the program name in the handle is set to the
+ * basename from "argv[0]". If that was not possible, it is set to the
+ * empty string (but never @NULL).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_program(GuestfsSession *session, const gchar *program, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_program");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_program (g, program);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_program:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the program name
+ *
+ * Get the program name. See guestfs_session_set_program().
+ * 
+ * Returns: (transfer none): the returned string, or NULL on error
+ */
+const gchar *
+guestfs_session_get_program(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_program");
+    return NULL;
+  }
+
+  const char *ret = guestfs_get_program (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
  * @mountable: (transfer none) (type filename):

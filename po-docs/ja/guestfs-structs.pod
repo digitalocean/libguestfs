@@ -290,8 +290,8 @@
  };
  
  struct guestfs_application2_list {
-   uint32_t len; /* Number of elements in list. */
-   struct guestfs_application2 *val; /* Elements. */
+   uint32_t len; /* 一覧にある要素の数 */
+   struct guestfs_application2 *val; /* 要素 */
  };
  
  void guestfs_free_application2 (struct guestfs_free_application2 *);

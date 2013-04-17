@@ -401,7 +401,7 @@ disabled by default)." };
     style = RBool "autosync", [], [];
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputTrue (
+      InitNone, Always, TestResultTrue (
         [["get_autosync"]])
     ];
     shortdesc = "get autosync mode";
@@ -438,7 +438,7 @@ This returns the verbose messages flag." };
     visibility = VStateTest;
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputTrue (
+      InitNone, Always, TestResultTrue (
       [["is_ready"]])
     ];
     shortdesc = "is ready to accept commands";
@@ -453,7 +453,7 @@ For more information on states, see L<guestfs(3)>." };
     style = RBool "config", [], [];
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputFalse (
+      InitNone, Always, TestResultFalse (
       [["is_config"]])
     ];
     shortdesc = "is in configuration state";
@@ -469,7 +469,7 @@ For more information on states, see L<guestfs(3)>." };
     visibility = VStateTest;
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputFalse (
+      InitNone, Always, TestResultFalse (
         [["is_launching"]])
     ];
     shortdesc = "is launching subprocess";
@@ -485,7 +485,7 @@ For more information on states, see L<guestfs(3)>." };
     visibility = VStateTest;
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputFalse (
+      InitNone, Always, TestResultFalse (
         [["is_busy"]])
     ];
     shortdesc = "is busy processing a command";
@@ -530,8 +530,8 @@ see L<guestfs(3)>." };
     style = RInt "memsize", [], [];
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputIntOp (
-      [["get_memsize"]], ">=", 256)
+      InitNone, Always, TestResult (
+      [["get_memsize"]], "ret >= 256")
     ];
     shortdesc = "get memory allocated to the qemu subprocess";
     longdesc = "\
@@ -563,8 +563,8 @@ This is an internal call used for debugging and testing." };
     style = RStruct ("version", "version"), [], [];
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputStruct (
-        [["version"]], [CompareWithInt ("major", 1)])
+      InitNone, Always, TestResult (
+        [["version"]], "ret->major == 1")
     ];
     shortdesc = "get the library version number";
     longdesc = "\
@@ -633,7 +633,7 @@ see L<guestfs(3)>." };
     fish_alias = ["trace"];
     blocking = false;
     tests = [
-      InitNone, Always, TestOutputFalse (
+      InitNone, Always, TestResultFalse (
         [["set_trace"; "false"];
          ["get_trace"]])
     ];
@@ -742,29 +742,29 @@ to specify the QEMU interface emulation to use at run time." };
     name = "file_architecture";
     style = RString "arch", [Pathname "filename"], [];
     tests = [
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/bin-i586-dynamic"]], "i386");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/bin-sparc-dynamic"]], "sparc");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/bin-win32.exe"]], "i386");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/bin-win64.exe"]], "x86_64");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/bin-x86_64-dynamic"]], "x86_64");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/lib-i586.so"]], "i386");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/lib-sparc.so"]], "sparc");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/lib-win32.dll"]], "i386");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/lib-win64.dll"]], "x86_64");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/lib-x86_64.so"]], "x86_64");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/initrd-x86_64.img"]], "x86_64");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file_architecture"; "/initrd-x86_64.img.gz"]], "x86_64");
     ];
     shortdesc = "detect the architecture of a binary file";
@@ -2263,7 +2263,7 @@ but note that any errors are ignored in that case." };
     name = "cat";
     style = RString "content", [Pathname "path"], [];
     tests = [
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["cat"; "/known-2"]], "abcdef\n")
     ];
     shortdesc = "list the contents of a file";
@@ -2279,17 +2279,20 @@ or C<guestfs_download> functions." };
     name = "find";
     style = RStringList "names", [Pathname "directory"], [];
     tests = [
-      InitBasicFS, Always, TestOutputList (
-        [["find"; "/"]], ["lost+found"]);
-      InitBasicFS, Always, TestOutputList (
+      InitBasicFS, Always, TestResult (
+        [["find"; "/"]],
+        "is_string_list (ret, 1, \"lost+found\")");
+      InitBasicFS, Always, TestResult (
         [["touch"; "/a"];
          ["mkdir"; "/b"];
          ["touch"; "/b/c"];
-         ["find"; "/"]], ["a"; "b"; "b/c"; "lost+found"]);
-      InitScratchFS, Always, TestOutputList (
+         ["find"; "/"]],
+        "is_string_list (ret, 4, \"a\", \"b\", \"b/c\", \"lost+found\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir_p"; "/find/b/c"];
          ["touch"; "/find/b/c/d"];
-         ["find"; "/find/b/"]], ["c"; "c/d"])
+         ["find"; "/find/b/"]],
+        "is_string_list (ret, 2, \"c\", \"c/d\")")
     ];
     shortdesc = "find all files and directories";
     longdesc = "\
@@ -2322,8 +2325,9 @@ The returned list is sorted." };
     name = "read_file";
     style = RBufferOut "content", [Pathname "path"], [];
     tests = [
-      InitISOFS, Always, TestOutputBuffer (
-        [["read_file"; "/known-4"]], "abc\ndef\nghi")
+      InitISOFS, Always, TestResult (
+        [["read_file"; "/known-4"]],
+        "compare_buffers (ret, size, \"abc\\ndef\\nghi\", 11) == 0")
     ];
     shortdesc = "read a file";
     longdesc = "\
@@ -2337,34 +2341,44 @@ handle files that contain embedded ASCII NUL characters." };
     name = "read_lines";
     style = RStringList "lines", [Pathname "path"], [];
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["read_lines"; "/known-4"]], ["abc"; "def"; "ghi"]);
-      InitISOFS, Always, TestOutputList (
-        [["read_lines"; "/empty"]], []);
-      InitScratchFS, Always, TestOutputList (
+      InitISOFS, Always, TestResult (
+        [["read_lines"; "/known-4"]],
+        "is_string_list (ret, 3, \"abc\", \"def\", \"ghi\")");
+      InitISOFS, Always, TestResult (
+        [["read_lines"; "/empty"]],
+        "is_string_list (ret, 0)");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines1"; "\n"];
-         ["read_lines"; "/read_lines1"]], [""]);
-      InitScratchFS, Always, TestOutputList (
+         ["read_lines"; "/read_lines1"]],
+        "is_string_list (ret, 1, \"\")");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines2"; "\r\n"];
-         ["read_lines"; "/read_lines2"]], [""]);
-      InitScratchFS, Always, TestOutputList (
+         ["read_lines"; "/read_lines2"]],
+        "is_string_list (ret, 1, \"\")");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines3"; "\n\r\n"];
-         ["read_lines"; "/read_lines3"]], [""; ""]);
-      InitScratchFS, Always, TestOutputList (
+         ["read_lines"; "/read_lines3"]],
+        "is_string_list (ret, 2, \"\", \"\")");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines4"; "a"];
-         ["read_lines"; "/read_lines4"]], ["a"]);
-      InitScratchFS, Always, TestOutputList (
+         ["read_lines"; "/read_lines4"]],
+        "is_string_list (ret, 1, \"a\")");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines5"; "a\nb"];
-         ["read_lines"; "/read_lines5"]], ["a"; "b"]);
-      InitScratchFS, Always, TestOutputList (
+         ["read_lines"; "/read_lines5"]],
+        "is_string_list (ret, 2, \"a\", \"b\")");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines6"; "a\nb\n"];
-         ["read_lines"; "/read_lines6"]], ["a"; "b"]);
-      InitScratchFS, Always, TestOutputList (
+         ["read_lines"; "/read_lines6"]],
+        "is_string_list (ret, 2, \"a\", \"b\")");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines7"; "a\nb\r\n"];
-         ["read_lines"; "/read_lines7"]], ["a"; "b"]);
-      InitScratchFS, Always, TestOutputList (
+         ["read_lines"; "/read_lines7"]],
+        "is_string_list (ret, 2, \"a\", \"b\")");
+      InitScratchFS, Always, TestResult (
         [["write"; "/read_lines8"; "a\nb\r\n\n"];
-         ["read_lines"; "/read_lines8"]], ["a"; "b"; ""]);
+         ["read_lines"; "/read_lines8"]],
+        "is_string_list (ret, 3, \"a\", \"b\", \"\")");
     ];
     shortdesc = "read file as lines";
     longdesc = "\
@@ -2382,22 +2396,22 @@ function and split the buffer into lines yourself." };
     name = "write";
     style = RErr, [Pathname "path"; BufferIn "content"], [];
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/write"; "new file contents"];
          ["cat"; "/write"]], "new file contents");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/write2"; "\nnew file contents\n"];
          ["cat"; "/write2"]], "\nnew file contents\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/write3"; "\n\n"];
          ["cat"; "/write3"]], "\n\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/write4"; ""];
          ["cat"; "/write4"]], "");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/write5"; "\n\n\n"];
          ["cat"; "/write5"]], "\n\n\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/write6"; "\n"];
          ["cat"; "/write6"]], "\n")
     ];
@@ -2412,7 +2426,7 @@ See also C<guestfs_write_append>." };
     name = "write_append";
     style = RErr, [Pathname "path"; BufferIn "content"], [];
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/write_append"; "line1\n"];
          ["write_append"; "/write_append"; "line2\n"];
          ["write_append"; "/write_append"; "line3a"];
@@ -2497,12 +2511,13 @@ list a directory contents without making many round-trips." };
     name = "ls";
     style = RStringList "listing", [Pathname "directory"], [];
     tests = [
-      InitScratchFS, Always, TestOutputList (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/ls"];
          ["touch"; "/ls/new"];
          ["touch"; "/ls/newer"];
          ["touch"; "/ls/newest"];
-         ["ls"; "/ls"]], ["new"; "newer"; "newest"])
+         ["ls"; "/ls"]],
+        "is_string_list (ret, 3, \"new\", \"newer\", \"newest\")")
     ];
     shortdesc = "list the files in a directory";
     longdesc = "\
@@ -2530,11 +2545,11 @@ data." };
     name = "disk_format";
     style = RString "format", [String "filename"], [];
     tests = [
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["disk_format"; "test1.img"]], "raw");
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["disk_format"; "test2.img"]], "raw");
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["disk_format"; "test3.img"]], "raw");
     ];
     shortdesc = "detect the disk format of a disk image";
@@ -2552,12 +2567,12 @@ See also: L<guestfs(3)/DISK IMAGE FORMATS>" };
     name = "disk_virtual_size";
     style = RInt64 "size", [String "filename"], [];
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["disk_virtual_size"; "test1.img"]], 524288000);
-      InitEmpty, Always, TestOutputInt (
-        [["disk_virtual_size"; "test2.img"]], 52428800);
-      InitEmpty, Always, TestOutputInt (
-        [["disk_virtual_size"; "test3.img"]], 10485760);
+      InitEmpty, Always, TestResult (
+        [["disk_virtual_size"; "test1.img"]], "ret == UINT64_C (524288000)");
+      InitEmpty, Always, TestResult (
+        [["disk_virtual_size"; "test2.img"]], "ret == UINT64_C (52428800)");
+      InitEmpty, Always, TestResult (
+        [["disk_virtual_size"; "test3.img"]], "ret == UINT64_C (10485760)");
     ];
     shortdesc = "return virtual size of a disk";
     longdesc = "\
@@ -2571,11 +2586,11 @@ circumstances.  See L<guestfs(3)/CVE-2010-3851>." };
     name = "disk_has_backing_file";
     style = RBool "backingfile", [String "filename"], [];
     tests = [
-      InitEmpty, Always, TestOutputFalse (
+      InitEmpty, Always, TestResultFalse (
         [["disk_has_backing_file"; "test1.img"]]);
-      InitEmpty, Always, TestOutputFalse (
+      InitEmpty, Always, TestResultFalse (
         [["disk_has_backing_file"; "test2.img"]]);
-      InitEmpty, Always, TestOutputFalse (
+      InitEmpty, Always, TestResultFalse (
         [["disk_has_backing_file"; "test3.img"]]);
     ];
     shortdesc = "return whether disk has a backing file";
@@ -2851,6 +2866,32 @@ In a graphical program, when the main thread is displaying a progress
 bar with a cancel button, wire up the cancel button to call this
 function." };
 
+  { defaults with
+    name = "set_program";
+    style = RErr, [String "program"], [];
+    fish_alias = ["program"];
+    blocking = false;
+    shortdesc = "set the program name";
+    longdesc = "\
+Set the program name.  This is an informative string which the
+main program may optionally set in the handle.
+
+When the handle is created, the program name in the handle is
+set to the basename from C<argv[0]>.  If that was not possible,
+it is set to the empty string (but never C<NULL>)." };
+
+  { defaults with
+    name = "get_program";
+    style = RConstString "program", [], [];
+    blocking = false;
+    tests = [
+      InitNone, Always, TestRun (
+        [["get_program"]])
+    ];
+    shortdesc = "get the program name";
+    longdesc = "\
+Get the program name.  See C<guestfs_set_program>." };
+
 ]
 
 (* daemon_functions are any functions which cause some action
@@ -2863,7 +2904,7 @@ let daemon_functions = [
     style = RErr, [Mountable "mountable"; String "mountpoint"], [];
     proc_nr = Some 1;
     tests = [
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
@@ -2914,7 +2955,7 @@ closing the handle." };
     style = RErr, [Pathname "path"], [];
     proc_nr = Some 3;
     tests = [
-      InitScratchFS, Always, TestOutputTrue (
+      InitScratchFS, Always, TestResultTrue (
         [["touch"; "/touch"];
          ["exists"; "/touch"]])
     ];
@@ -2947,8 +2988,9 @@ is I<not> intended that you try to parse the output string." };
     style = RStringList "devices", [], [];
     proc_nr = Some 7;
     tests = [
-      InitEmpty, Always, TestOutputListOfDevices (
-        [["list_devices"]], ["/dev/sda"; "/dev/sdb"; "/dev/sdc"; "/dev/sdd"])
+      InitEmpty, Always, TestResult (
+        [["list_devices"]],
+        "is_device_list (ret, 4, \"/dev/sda\", \"/dev/sdb\", \"/dev/sdc\", \"/dev/sdd\")")
     ];
     shortdesc = "list the block devices";
     longdesc = "\
@@ -2963,14 +3005,16 @@ See also C<guestfs_list_filesystems>." };
     style = RStringList "partitions", [], [];
     proc_nr = Some 8;
     tests = [
-      InitBasicFS, Always, TestOutputListOfDevices (
-        [["list_partitions"]], ["/dev/sda1"; "/dev/sdb1"]);
-      InitEmpty, Always, TestOutputListOfDevices (
+      InitBasicFS, Always, TestResult (
+        [["list_partitions"]],
+        "is_device_list (ret, 2, \"/dev/sda1\", \"/dev/sdb1\")");
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
          ["part_add"; "/dev/sda"; "p"; "409600"; "-64"];
-         ["list_partitions"]], ["/dev/sda1"; "/dev/sda2"; "/dev/sda3"; "/dev/sdb1"])
+         ["list_partitions"]],
+        "is_device_list (ret, 4, \"/dev/sda1\", \"/dev/sda2\", \"/dev/sda3\", \"/dev/sdb1\")")
     ];
     shortdesc = "list the partitions";
     longdesc = "\
@@ -2989,9 +3033,9 @@ See also C<guestfs_list_filesystems>." };
     proc_nr = Some 9;
     optional = Some "lvm2";
     tests = [
-      InitBasicFSonLVM, Always, TestOutputListOfDevices (
-        [["pvs"]], ["/dev/sda1"]);
-      InitEmpty, Always, TestOutputListOfDevices (
+      InitBasicFSonLVM, Always, TestResult (
+        [["pvs"]], "is_device_list (ret, 1, \"/dev/sda1\")");
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -2999,7 +3043,8 @@ See also C<guestfs_list_filesystems>." };
          ["pvcreate"; "/dev/sda1"];
          ["pvcreate"; "/dev/sda2"];
          ["pvcreate"; "/dev/sda3"];
-         ["pvs"]], ["/dev/sda1"; "/dev/sda2"; "/dev/sda3"])
+         ["pvs"]],
+        "is_device_list (ret, 3, \"/dev/sda1\", \"/dev/sda2\", \"/dev/sda3\")")
     ];
     shortdesc = "list the LVM physical volumes (PVs)";
     longdesc = "\
@@ -3017,9 +3062,9 @@ See also C<guestfs_pvs_full>." };
     proc_nr = Some 10;
     optional = Some "lvm2";
     tests = [
-      InitBasicFSonLVM, Always, TestOutputList (
-        [["vgs"]], ["VG"]);
-      InitEmpty, Always, TestOutputList (
+      InitBasicFSonLVM, Always, TestResult (
+        [["vgs"]], "is_string_list (ret, 1, \"VG\")");
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -3029,7 +3074,8 @@ See also C<guestfs_pvs_full>." };
          ["pvcreate"; "/dev/sda3"];
          ["vgcreate"; "VG1"; "/dev/sda1 /dev/sda2"];
          ["vgcreate"; "VG2"; "/dev/sda3"];
-         ["vgs"]], ["VG1"; "VG2"])
+         ["vgs"]],
+        "is_string_list (ret, 2, \"VG1\", \"VG2\")")
     ];
     shortdesc = "list the LVM volume groups (VGs)";
     longdesc = "\
@@ -3047,9 +3093,10 @@ See also C<guestfs_vgs_full>." };
     proc_nr = Some 11;
     optional = Some "lvm2";
     tests = [
-      InitBasicFSonLVM, Always, TestOutputList (
-        [["lvs"]], ["/dev/VG/LV"]);
-      InitEmpty, Always, TestOutputList (
+      InitBasicFSonLVM, Always, TestResult (
+        [["lvs"]],
+        "is_string_list (ret, 1, \"/dev/VG/LV\")");
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -3062,7 +3109,8 @@ See also C<guestfs_vgs_full>." };
          ["lvcreate"; "LV1"; "VG1"; "50"];
          ["lvcreate"; "LV2"; "VG1"; "50"];
          ["lvcreate"; "LV3"; "VG2"; "50"];
-         ["lvs"]], ["/dev/VG1/LV1"; "/dev/VG1/LV2"; "/dev/VG2/LV3"])
+         ["lvs"]],
+        "is_string_list (ret, 3, \"/dev/VG1/LV1\", \"/dev/VG1/LV2\", \"/dev/VG2/LV3\")")
     ];
     shortdesc = "list the LVM logical volumes (LVs)";
     longdesc = "\
@@ -3355,7 +3403,7 @@ Remove the single directory C<path>." };
     style = RErr, [Pathname "path"], [];
     proc_nr = Some 31;
     tests = [
-      InitScratchFS, Always, TestOutputFalse
+      InitScratchFS, Always, TestResultFalse
         [["mkdir"; "/rm_rf"];
          ["mkdir"; "/rm_rf/foo"];
          ["touch"; "/rm_rf/foo/bar"];
@@ -3373,7 +3421,7 @@ command." };
     style = RErr, [Pathname "path"], [];
     proc_nr = Some 32;
     tests = [
-      InitScratchFS, Always, TestOutputTrue
+      InitScratchFS, Always, TestResultTrue
         [["mkdir"; "/mkdir"];
          ["is_dir"; "/mkdir"]];
       InitScratchFS, Always, TestLastFail
@@ -3388,13 +3436,13 @@ Create a directory named C<path>." };
     style = RErr, [Pathname "path"], [];
     proc_nr = Some 33;
     tests = [
-      InitScratchFS, Always, TestOutputTrue
+      InitScratchFS, Always, TestResultTrue
         [["mkdir_p"; "/mkdir_p/foo/bar"];
          ["is_dir"; "/mkdir_p/foo/bar"]];
-      InitScratchFS, Always, TestOutputTrue
+      InitScratchFS, Always, TestResultTrue
         [["mkdir_p"; "/mkdir_p2/foo/bar"];
          ["is_dir"; "/mkdir_p2/foo"]];
-      InitScratchFS, Always, TestOutputTrue
+      InitScratchFS, Always, TestResultTrue
         [["mkdir_p"; "/mkdir_p3/foo/bar"];
          ["is_dir"; "/mkdir_p3"]];
       (* Regression tests for RHBZ#503133: *)
@@ -3444,9 +3492,9 @@ yourself (Augeas support makes this relatively easy)." };
     style = RBool "existsflag", [Pathname "path"], [];
     proc_nr = Some 36;
     tests = [
-      InitISOFS, Always, TestOutputTrue (
+      InitISOFS, Always, TestResultTrue (
         [["exists"; "/empty"]]);
-      InitISOFS, Always, TestOutputTrue (
+      InitISOFS, Always, TestResultTrue (
         [["exists"; "/directory"]])
     ];
     shortdesc = "test if file or directory exists";
@@ -3461,9 +3509,9 @@ See also C<guestfs_is_file>, C<guestfs_is_dir>, C<guestfs_stat>." };
     style = RBool "fileflag", [Pathname "path"], [];
     proc_nr = Some 37;
     tests = [
-      InitISOFS, Always, TestOutputTrue (
+      InitISOFS, Always, TestResultTrue (
         [["is_file"; "/known-1"]]);
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_file"; "/directory"]])
     ];
     shortdesc = "test if a regular file";
@@ -3479,9 +3527,9 @@ See also C<guestfs_stat>." };
     style = RBool "dirflag", [Pathname "path"], [];
     proc_nr = Some 38;
     tests = [
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_dir"; "/known-3"]]);
-      InitISOFS, Always, TestOutputTrue (
+      InitISOFS, Always, TestResultTrue (
         [["is_dir"; "/directory"]])
     ];
     shortdesc = "test if a directory";
@@ -3498,7 +3546,7 @@ See also C<guestfs_stat>." };
     proc_nr = Some 39;
     optional = Some "lvm2";
     tests = [
-      InitEmpty, Always, TestOutputListOfDevices (
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -3506,7 +3554,8 @@ See also C<guestfs_stat>." };
          ["pvcreate"; "/dev/sda1"];
          ["pvcreate"; "/dev/sda2"];
          ["pvcreate"; "/dev/sda3"];
-         ["pvs"]], ["/dev/sda1"; "/dev/sda2"; "/dev/sda3"])
+         ["pvs"]],
+        "is_device_list (ret, 3, \"/dev/sda1\", \"/dev/sda2\", \"/dev/sda3\")")
     ];
     shortdesc = "create an LVM physical volume";
     longdesc = "\
@@ -3520,7 +3569,7 @@ as C</dev/sda1>." };
     proc_nr = Some 40;
     optional = Some "lvm2";
     tests = [
-      InitEmpty, Always, TestOutputList (
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -3530,7 +3579,8 @@ as C</dev/sda1>." };
          ["pvcreate"; "/dev/sda3"];
          ["vgcreate"; "VG1"; "/dev/sda1 /dev/sda2"];
          ["vgcreate"; "VG2"; "/dev/sda3"];
-         ["vgs"]], ["VG1"; "VG2"])
+         ["vgs"]],
+        "is_string_list (ret, 2, \"VG1\", \"VG2\")")
     ];
     shortdesc = "create an LVM volume group";
     longdesc = "\
@@ -3543,7 +3593,7 @@ from the non-empty list of physical volumes C<physvols>." };
     proc_nr = Some 41;
     optional = Some "lvm2";
     tests = [
-      InitEmpty, Always, TestOutputList (
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -3559,8 +3609,7 @@ from the non-empty list of physical volumes C<physvols>." };
          ["lvcreate"; "LV4"; "VG2"; "50"];
          ["lvcreate"; "LV5"; "VG2"; "50"];
          ["lvs"]],
-        ["/dev/VG1/LV1"; "/dev/VG1/LV2";
-         "/dev/VG2/LV3"; "/dev/VG2/LV4"; "/dev/VG2/LV5"])
+        "is_string_list (ret, 5, \"/dev/VG1/LV1\", \"/dev/VG1/LV2\", \"/dev/VG2/LV3\", \"/dev/VG2/LV4\", \"/dev/VG2/LV5\")")
     ];
     shortdesc = "create an LVM logical volume";
     longdesc = "\
@@ -3629,17 +3678,17 @@ characters does I<not> work, even if the length is specified." };
     fish_alias = ["unmount"];
     once_had_no_optargs = true;
     tests = [
-      InitEmpty, Always, TestOutputListOfDevices (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
-         ["mounts"]], ["/dev/sda1"]);
-      InitEmpty, Always, TestOutputList (
+         ["mounts"]], "is_device_list (ret, 1, \"/dev/sda1\")");
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
          ["umount"; "/"; "false"; "false"];
-         ["mounts"]], [])
+         ["mounts"]], "is_string_list (ret, 0)")
     ];
     shortdesc = "unmount a filesystem";
     longdesc = "\
@@ -3652,8 +3701,8 @@ contains the filesystem." };
     style = RStringList "devices", [], [];
     proc_nr = Some 46;
     tests = [
-      InitScratchFS, Always, TestOutputListOfDevices (
-        [["mounts"]], ["/dev/sdb1"])
+      InitScratchFS, Always, TestResult (
+        [["mounts"]], "is_device_list (ret, 1, \"/dev/sdb1\")")
     ];
     shortdesc = "show mounted filesystems";
     longdesc = "\
@@ -3670,11 +3719,11 @@ See also: C<guestfs_mountpoints>" };
     proc_nr = Some 47;
     fish_alias = ["unmount-all"];
     tests = [
-      InitScratchFS, Always, TestOutputList (
+      InitScratchFS, Always, TestResult (
         [["umount_all"];
-         ["mounts"]], []);
+         ["mounts"]], "is_string_list (ret, 0)");
       (* check that umount_all can unmount nested mounts correctly: *)
-      InitEmpty, Always, TestOutputList (
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "409599"];
@@ -3689,7 +3738,7 @@ See also: C<guestfs_mountpoints>" };
          ["mount"; "/dev/sda3"; "/mp1/mp2"];
          ["mkdir"; "/mp1/mp2/mp3"];
          ["umount_all"];
-         ["mounts"]], [])
+         ["mounts"]], "is_string_list (ret, 0)")
     ];
     shortdesc = "unmount all filesystems";
     longdesc = "\
@@ -3712,15 +3761,15 @@ and physical volumes." };
     style = RString "description", [Dev_or_Path "path"], [];
     proc_nr = Some 49;
     tests = [
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file"; "/empty"]], "empty");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file"; "/known-1"]], "ASCII text");
       InitISOFS, Always, TestLastFail (
         [["file"; "/notexists"]]);
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file"; "/abssymlink"]], "symbolic link");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["file"; "/directory"]], "directory")
     ];
     shortdesc = "determine file type";
@@ -3748,57 +3797,57 @@ C<guestfs_is_file>, C<guestfs_is_blockdev> (etc), C<guestfs_is_zero>." };
     proc_nr = Some 50;
     protocol_limit_warning = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command"];
          ["upload"; "test-command"; "/command/test-command"];
          ["chmod"; "0o755"; "/command/test-command"];
          ["command"; "/command/test-command 1"]], "Result1");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command2"];
          ["upload"; "test-command"; "/command2/test-command"];
          ["chmod"; "0o755"; "/command2/test-command"];
          ["command"; "/command2/test-command 2"]], "Result2\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command3"];
          ["upload"; "test-command"; "/command3/test-command"];
          ["chmod"; "0o755"; "/command3/test-command"];
          ["command"; "/command3/test-command 3"]], "\nResult3");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command4"];
          ["upload"; "test-command"; "/command4/test-command"];
          ["chmod"; "0o755"; "/command4/test-command"];
          ["command"; "/command4/test-command 4"]], "\nResult4\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command5"];
          ["upload"; "test-command"; "/command5/test-command"];
          ["chmod"; "0o755"; "/command5/test-command"];
          ["command"; "/command5/test-command 5"]], "\nResult5\n\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command6"];
          ["upload"; "test-command"; "/command6/test-command"];
          ["chmod"; "0o755"; "/command6/test-command"];
          ["command"; "/command6/test-command 6"]], "\n\nResult6\n\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command7"];
          ["upload"; "test-command"; "/command7/test-command"];
          ["chmod"; "0o755"; "/command7/test-command"];
          ["command"; "/command7/test-command 7"]], "");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command8"];
          ["upload"; "test-command"; "/command8/test-command"];
          ["chmod"; "0o755"; "/command8/test-command"];
          ["command"; "/command8/test-command 8"]], "\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command9"];
          ["upload"; "test-command"; "/command9/test-command"];
          ["chmod"; "0o755"; "/command9/test-command"];
          ["command"; "/command9/test-command 9"]], "\n\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command10"];
          ["upload"; "test-command"; "/command10/test-command"];
          ["chmod"; "0o755"; "/command10/test-command"];
          ["command"; "/command10/test-command 10"]], "Result10-1\nResult10-2\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/command11"];
          ["upload"; "test-command"; "/command11/test-command"];
          ["chmod"; "0o755"; "/command11/test-command"];
@@ -3808,7 +3857,7 @@ C<guestfs_is_file>, C<guestfs_is_blockdev> (etc), C<guestfs_is_zero>." };
          ["upload"; "test-command"; "/command12/test-command"];
          ["chmod"; "0o755"; "/command12/test-command"];
          ["command"; "/command12/test-command"]]);
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/pwd"];
          ["upload"; "test-pwd"; "/pwd/test-pwd"];
          ["chmod"; "0o755"; "/pwd/test-pwd"];
@@ -3852,61 +3901,72 @@ locations." };
     proc_nr = Some 51;
     protocol_limit_warning = true;
     tests = [
-      InitScratchFS, Always, TestOutputList (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines"];
          ["upload"; "test-command"; "/command_lines/test-command"];
          ["chmod"; "0o755"; "/command_lines/test-command"];
-         ["command_lines"; "/command_lines/test-command 1"]], ["Result1"]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines/test-command 1"]],
+        "is_string_list (ret, 1, \"Result1\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines2"];
          ["upload"; "test-command"; "/command_lines2/test-command"];
          ["chmod"; "0o755"; "/command_lines2/test-command"];
-         ["command_lines"; "/command_lines2/test-command 2"]], ["Result2"]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines2/test-command 2"]],
+        "is_string_list (ret, 1, \"Result2\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines3"];
          ["upload"; "test-command"; "/command_lines3/test-command"];
          ["chmod"; "0o755"; "/command_lines3/test-command"];
-         ["command_lines"; "/command_lines3/test-command 3"]], ["";"Result3"]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines3/test-command 3"]],
+        "is_string_list (ret, 2, \"\", \"Result3\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines4"];
          ["upload"; "test-command"; "/command_lines4/test-command"];
          ["chmod"; "0o755"; "/command_lines4/test-command"];
-         ["command_lines"; "/command_lines4/test-command 4"]], ["";"Result4"]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines4/test-command 4"]],
+        "is_string_list (ret, 2, \"\", \"Result4\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines5"];
          ["upload"; "test-command"; "/command_lines5/test-command"];
          ["chmod"; "0o755"; "/command_lines5/test-command"];
-         ["command_lines"; "/command_lines5/test-command 5"]], ["";"Result5";""]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines5/test-command 5"]],
+        "is_string_list (ret, 3, \"\", \"Result5\", \"\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines6"];
          ["upload"; "test-command"; "/command_lines6/test-command"];
          ["chmod"; "0o755"; "/command_lines6/test-command"];
-         ["command_lines"; "/command_lines6/test-command 6"]], ["";"";"Result6";""]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines6/test-command 6"]],
+        "is_string_list (ret, 4, \"\", \"\", \"Result6\", \"\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines7"];
          ["upload"; "test-command"; "/command_lines7/test-command"];
          ["chmod"; "0o755"; "/command_lines7/test-command"];
-         ["command_lines"; "/command_lines7/test-command 7"]], []);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines7/test-command 7"]],
+        "is_string_list (ret, 0)");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines8"];
          ["upload"; "test-command"; "/command_lines8/test-command"];
          ["chmod"; "0o755"; "/command_lines8/test-command"];
-         ["command_lines"; "/command_lines8/test-command 8"]], [""]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines8/test-command 8"]],
+        "is_string_list (ret, 1, \"\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines9"];
          ["upload"; "test-command"; "/command_lines9/test-command"];
          ["chmod"; "0o755"; "/command_lines9/test-command"];
-         ["command_lines"; "/command_lines9/test-command 9"]], ["";""]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines9/test-command 9"]],
+        "is_string_list (ret, 2, \"\", \"\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines10"];
          ["upload"; "test-command"; "/command_lines10/test-command"];
          ["chmod"; "0o755"; "/command_lines10/test-command"];
-         ["command_lines"; "/command_lines10/test-command 10"]], ["Result10-1";"Result10-2"]);
-      InitScratchFS, Always, TestOutputList (
+         ["command_lines"; "/command_lines10/test-command 10"]],
+        "is_string_list (ret, 2, \"Result10-1\", \"Result10-2\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/command_lines11"];
          ["upload"; "test-command"; "/command_lines11/test-command"];
          ["chmod"; "0o755"; "/command_lines11/test-command"];
-         ["command_lines"; "/command_lines11/test-command 11"]], ["Result11-1";"Result11-2"])
+         ["command_lines"; "/command_lines11/test-command 11"]],
+        "is_string_list (ret, 2, \"Result11-1\", \"Result11-2\")")
     ];
     shortdesc = "run a command, returning lines";
     longdesc = "\
@@ -3920,8 +3980,8 @@ See also: C<guestfs_sh_lines>" };
     style = RStruct ("statbuf", "stat"), [Pathname "path"], [];
     proc_nr = Some 52;
     tests = [
-      InitISOFS, Always, TestOutputStruct (
-        [["stat"; "/empty"]], [CompareWithInt ("size", 0)])
+      InitISOFS, Always, TestResult (
+        [["stat"; "/empty"]], "ret->size == 0")
     ];
     shortdesc = "get file information";
     longdesc = "\
@@ -3934,8 +3994,8 @@ This is the same as the C<stat(2)> system call." };
     style = RStruct ("statbuf", "stat"), [Pathname "path"], [];
     proc_nr = Some 53;
     tests = [
-      InitISOFS, Always, TestOutputStruct (
-        [["lstat"; "/empty"]], [CompareWithInt ("size", 0)])
+      InitISOFS, Always, TestResult (
+        [["lstat"; "/empty"]], "ret->size == 0")
     ];
     shortdesc = "get file information for a symbolic link";
     longdesc = "\
@@ -3952,8 +4012,8 @@ This is the same as the C<lstat(2)> system call." };
     style = RStruct ("statbuf", "statvfs"), [Pathname "path"], [];
     proc_nr = Some 54;
     tests = [
-      InitISOFS, Always, TestOutputStruct (
-        [["statvfs"; "/"]], [CompareWithInt ("namemax", 255)])
+      InitISOFS, Always, TestResult (
+        [["statvfs"; "/"]], "ret->namemax == 255")
     ];
     shortdesc = "get file system statistics";
     longdesc = "\
@@ -3968,10 +4028,10 @@ This is the same as the C<statvfs(2)> system call." };
     style = RHashtable "superblock", [Device "device"], [];
     proc_nr = Some 55;
     tests = [
-      InitScratchFS, Always, TestOutputHashtable (
+      InitScratchFS, Always, TestResult (
         [["tune2fs_l"; "/dev/sdb1"]],
-        ["Filesystem magic number", "0xEF53";
-         "Filesystem OS type", "Linux"])
+        "check_hash (ret, \"Filesystem magic number\", \"0xEF53\") == 0 && "^
+          "check_hash (ret, \"Filesystem OS type\", \"Linux\") == 0");
     ];
     shortdesc = "get ext2/ext3/ext4 superblock details";
     longdesc = "\
@@ -3988,7 +4048,7 @@ that libguestfs was built against, and the filesystem itself." };
     style = RErr, [Device "device"], [];
     proc_nr = Some 56;
     tests = [
-      InitEmpty, Always, TestOutputTrue (
+      InitEmpty, Always, TestResultTrue (
         [["blockdev_setro"; "/dev/sda"];
          ["blockdev_getro"; "/dev/sda"]])
     ];
@@ -4003,7 +4063,7 @@ This uses the L<blockdev(8)> command." };
     style = RErr, [Device "device"], [];
     proc_nr = Some 57;
     tests = [
-      InitEmpty, Always, TestOutputFalse (
+      InitEmpty, Always, TestResultFalse (
         [["blockdev_setrw"; "/dev/sda"];
          ["blockdev_getro"; "/dev/sda"]])
     ];
@@ -4018,7 +4078,7 @@ This uses the L<blockdev(8)> command." };
     style = RBool "ro", [Device "device"], [];
     proc_nr = Some 58;
     tests = [
-      InitEmpty, Always, TestOutputTrue (
+      InitEmpty, Always, TestResultTrue (
         [["blockdev_setro"; "/dev/sda"];
          ["blockdev_getro"; "/dev/sda"]])
     ];
@@ -4034,8 +4094,8 @@ This uses the L<blockdev(8)> command." };
     style = RInt "sectorsize", [Device "device"], [];
     proc_nr = Some 59;
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["blockdev_getss"; "/dev/sda"]], 512)
+      InitEmpty, Always, TestResult (
+        [["blockdev_getss"; "/dev/sda"]], "ret == 512")
     ];
     shortdesc = "get sectorsize of block device";
     longdesc = "\
@@ -4080,8 +4140,8 @@ This uses the L<blockdev(8)> command." };
     style = RInt64 "sizeinsectors", [Device "device"], [];
     proc_nr = Some 62;
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["blockdev_getsz"; "/dev/sda"]], 1024000)
+      InitEmpty, Always, TestResult (
+        [["blockdev_getsz"; "/dev/sda"]], "ret == 1024000")
     ];
     shortdesc = "get total size of device in 512-byte sectors";
     longdesc = "\
@@ -4099,8 +4159,8 @@ This uses the L<blockdev(8)> command." };
     style = RInt64 "sizeinbytes", [Device "device"], [];
     proc_nr = Some 63;
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["blockdev_getsize64"; "/dev/sda"]], 524288000)
+      InitEmpty, Always, TestResult (
+        [["blockdev_getsize64"; "/dev/sda"]], "ret == UINT64_C (524288000)")
     ];
     shortdesc = "get total size of device in bytes";
     longdesc = "\
@@ -4145,7 +4205,7 @@ This uses the L<blockdev(8)> command." };
     proc_nr = Some 66;
     progress = true; cancellable = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         (* Pick a file from cwd which isn't likely to change. *)
         [["mkdir"; "/upload"];
          ["upload"; "../../COPYING.LIB"; "/upload/COPYING.LIB"];
@@ -4167,7 +4227,7 @@ See also C<guestfs_download>." };
     proc_nr = Some 67;
     progress = true; cancellable = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         (* Pick a file from cwd which isn't likely to change. *)
         [["mkdir"; "/download"];
          ["upload"; "../../COPYING.LIB"; "/download/COPYING.LIB"];
@@ -4190,24 +4250,24 @@ See also C<guestfs_upload>, C<guestfs_cat>." };
     style = RString "checksum", [String "csumtype"; Pathname "path"], [];
     proc_nr = Some 68;
     tests = [
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "crc"; "/known-3"]], "2891671662");
       InitISOFS, Always, TestLastFail (
         [["checksum"; "crc"; "/notexists"]]);
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "md5"; "/known-3"]], "46d6ca27ee07cdc6fa99c2e138cc522c");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "sha1"; "/known-3"]], "b7ebccc3ee418311091c3eda0a45b83c0a770f15");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "sha224"; "/known-3"]], "d2cd1774b28f3659c14116be0a6dc2bb5c4b350ce9cd5defac707741");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "sha256"; "/known-3"]], "75bb71b90cd20cb13f86d2bea8dad63ac7194e7517c3b52b8d06ff52d3487d30");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "sha384"; "/known-3"]], "5fa7883430f357b5d7b7271d3a1d2872b51d73cba72731de6863d3dea55f30646af2799bef44d5ea776a5ec7941ac640");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "sha512"; "/known-3"]], "2794062c328c6b216dca90443b7f7134c5f40e56bd0ed7853123275a09982a6f992e6ca682f9d2fba34a4c5e870d8fe077694ff831e3032a004ee077e00603f6");
       (* Test for RHBZ#579608, absolute symbolic links. *)
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["checksum"; "sha512"; "/abssymlink"]], "5f57d0639bc95081c53afc63a449403883818edc64da48930ad6b1a4fb49be90404686877743fbcd7c99811f3def7df7bc22635c885c6a8cf79c806b43451c1a")
     ];
     shortdesc = "compute MD5, SHAx or CRC checksum of file";
@@ -4264,15 +4324,15 @@ To get the checksums for many files, use C<guestfs_checksums_out>." };
     once_had_no_optargs = true;
     cancellable = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/tar_in"];
          ["tar_in"; "../data/helloworld.tar"; "/tar_in"; "NOARG"];
          ["cat"; "/tar_in/hello"]], "hello\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/tar_in_gz"];
          ["tar_in"; "../data/helloworld.tar.gz"; "/tar_in_gz"; "gzip"];
          ["cat"; "/tar_in_gz/hello"]], "hello\n");
-      InitScratchFS, IfAvailable "xz", TestOutput (
+      InitScratchFS, IfAvailable "xz", TestResultString (
         [["mkdir"; "/tar_in_xz"];
          ["tar_in"; "../data/helloworld.tar.xz"; "/tar_in_xz"; "xz"];
          ["cat"; "/tar_in_xz/hello"]], "hello\n")
@@ -4329,7 +4389,7 @@ instead of user/group names.
     deprecated_by = Some "tar_in";
     cancellable = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/tgz_in"];
          ["tgz_in"; "../data/helloworld.tar.gz"; "/tgz_in"];
          ["cat"; "/tgz_in/hello"]], "hello\n")
@@ -4359,7 +4419,7 @@ it to local file C<tarball>." };
         [["umount"; "/"; "false"; "false"];
          ["mount_ro"; "/dev/sda1"; "/"];
          ["touch"; "/new"]]);
-      InitBasicFS, Always, TestOutput (
+      InitBasicFS, Always, TestResultString (
         [["write"; "/new"; "data"];
          ["umount"; "/"; "false"; "false"];
          ["mount_ro"; "/dev/sda1"; "/"];
@@ -4415,30 +4475,33 @@ to find out what you can do." };
     proc_nr = Some 77;
     optional = Some "lvm2";
     tests = [
-      InitEmpty, Always, TestOutputList (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
          ["lvcreate"; "LV1"; "VG"; "50"];
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["lvremove"; "/dev/VG/LV1"];
-         ["lvs"]], ["/dev/VG/LV2"]);
-      InitEmpty, Always, TestOutputList (
+         ["lvs"]],
+        "is_string_list (ret, 1, \"/dev/VG/LV2\")");
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
          ["lvcreate"; "LV1"; "VG"; "50"];
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["lvremove"; "/dev/VG"];
-         ["lvs"]], []);
-      InitEmpty, Always, TestOutputList (
+         ["lvs"]],
+        "is_string_list (ret, 0)");
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
          ["lvcreate"; "LV1"; "VG"; "50"];
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["lvremove"; "/dev/VG"];
-         ["vgs"]], ["VG"])
+         ["vgs"]],
+        "is_string_list (ret, 1, \"VG\")")
     ];
     shortdesc = "remove an LVM logical volume";
     longdesc = "\
@@ -4454,22 +4517,24 @@ the VG name, C</dev/VG>." };
     proc_nr = Some 78;
     optional = Some "lvm2";
     tests = [
-      InitEmpty, Always, TestOutputList (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
          ["lvcreate"; "LV1"; "VG"; "50"];
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["vgremove"; "VG"];
-         ["lvs"]], []);
-      InitEmpty, Always, TestOutputList (
+         ["lvs"]],
+        "is_string_list (ret, 0)");
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
          ["lvcreate"; "LV1"; "VG"; "50"];
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["vgremove"; "VG"];
-         ["vgs"]], [])
+         ["vgs"]],
+        "is_string_list (ret, 0)")
     ];
     shortdesc = "remove an LVM volume group";
     longdesc = "\
@@ -4484,7 +4549,7 @@ group (if any)." };
     proc_nr = Some 79;
     optional = Some "lvm2";
     tests = [
-      InitEmpty, Always, TestOutputListOfDevices (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
@@ -4492,8 +4557,9 @@ group (if any)." };
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["vgremove"; "VG"];
          ["pvremove"; "/dev/sda1"];
-         ["lvs"]], []);
-      InitEmpty, Always, TestOutputListOfDevices (
+         ["lvs"]],
+        "is_string_list (ret, 0)");
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
@@ -4501,8 +4567,9 @@ group (if any)." };
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["vgremove"; "VG"];
          ["pvremove"; "/dev/sda1"];
-         ["vgs"]], []);
-      InitEmpty, Always, TestOutputListOfDevices (
+         ["vgs"]],
+        "is_string_list (ret, 0)");
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
@@ -4510,7 +4577,8 @@ group (if any)." };
          ["lvcreate"; "LV2"; "VG"; "50"];
          ["vgremove"; "VG"];
          ["pvremove"; "/dev/sda1"];
-         ["pvs"]], [])
+         ["pvs"]],
+        "is_string_list (ret, 0)")
     ];
     shortdesc = "remove an LVM physical volume";
     longdesc = "\
@@ -4527,7 +4595,7 @@ to remove those first." };
     proc_nr = Some 80;
     deprecated_by = Some "set_label";
     tests = [
-      InitBasicFS, Always, TestOutput (
+      InitBasicFS, Always, TestResultString (
         [["set_e2label"; "/dev/sda1"; "testlabel"];
          ["get_e2label"; "/dev/sda1"]], "testlabel")
     ];
@@ -4556,10 +4624,10 @@ C<device>." };
     proc_nr = Some 82;
     tests =
       (let uuid = uuidgen () in [
-        InitBasicFS, Always, TestOutput (
+        InitBasicFS, Always, TestResultString (
           [["set_e2uuid"; "/dev/sda1"; uuid];
            ["get_e2uuid"; "/dev/sda1"]], uuid);
-        InitBasicFS, Always, TestOutput (
+        InitBasicFS, Always, TestResultString (
           [["set_e2uuid"; "/dev/sda1"; "clear"];
            ["get_e2uuid"; "/dev/sda1"]], "");
         (* We can't predict what UUIDs will be, so just check
@@ -4587,7 +4655,7 @@ to return the existing UUID of a filesystem." };
     tests =
       (* Regression test for RHBZ#597112. *)
       (let uuid = uuidgen () in [
-        InitNone, Always, TestOutput (
+        InitNone, Always, TestResultString (
           [["mke2journal"; "1024"; "/dev/sdc"];
            ["set_e2uuid"; "/dev/sdc"; uuid];
            ["get_e2uuid"; "/dev/sdc"]], uuid)
@@ -4603,13 +4671,13 @@ C<device>." };
     proc_nr = Some 84;
     fish_output = Some FishOutputHexadecimal;
     tests = [
-      InitBasicFS, Always, TestOutputInt (
+      InitBasicFS, Always, TestResult (
         [["umount"; "/dev/sda1"; "false"; "false"];
-         ["fsck"; "ext2"; "/dev/sda1"]], 0);
-      InitBasicFS, Always, TestOutputInt (
+         ["fsck"; "ext2"; "/dev/sda1"]], "ret == 0");
+      InitBasicFS, Always, TestResult (
         [["umount"; "/dev/sda1"; "false"; "false"];
          ["zero"; "/dev/sda1"];
-         ["fsck"; "ext2"; "/dev/sda1"]], 8)
+         ["fsck"; "ext2"; "/dev/sda1"]], "ret == 8")
     ];
     shortdesc = "run the filesystem checker";
     longdesc = "\
@@ -4676,7 +4744,7 @@ C<guestfs_is_zero_device>" };
      * https://bugzilla.redhat.com/show_bug.cgi?id=479760
      *)
     tests = [
-      InitBasicFS, Always, TestOutputTrue (
+      InitBasicFS, Always, TestResultTrue (
         [["mkdir_p"; "/boot/grub"];
          ["write"; "/boot/grub/device.map"; "(hd0) /dev/vda"];
          ["grub_install"; "/"; "/dev/vda"];
@@ -4725,17 +4793,17 @@ replacing C</dev/vda> with the name of the installation device.
     style = RErr, [Pathname "src"; Pathname "dest"], [];
     proc_nr = Some 87;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/cp"];
          ["write"; "/cp/old"; "file content"];
          ["cp"; "/cp/old"; "/cp/new"];
          ["cat"; "/cp/new"]], "file content");
-      InitScratchFS, Always, TestOutputTrue (
+      InitScratchFS, Always, TestResultTrue (
         [["mkdir"; "/cp2"];
          ["write"; "/cp2/old"; "file content"];
          ["cp"; "/cp2/old"; "/cp2/new"];
          ["is_file"; "/cp2/old"]]);
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/cp3"];
          ["write"; "/cp3/old"; "file content"];
          ["mkdir"; "/cp3/dir"];
@@ -4752,7 +4820,7 @@ either a destination filename or destination directory." };
     style = RErr, [Pathname "src"; Pathname "dest"], [];
     proc_nr = Some 88;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/cp_a1"];
          ["mkdir"; "/cp_a2"];
          ["write"; "/cp_a1/file"; "file content"];
@@ -4769,12 +4837,12 @@ recursively using the C<cp -a> command." };
     style = RErr, [Pathname "src"; Pathname "dest"], [];
     proc_nr = Some 89;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/mv"];
          ["write"; "/mv/old"; "file content"];
          ["mv"; "/mv/old"; "/mv/new"];
          ["cat"; "/mv/new"]], "file content");
-      InitScratchFS, Always, TestOutputFalse (
+      InitScratchFS, Always, TestResultFalse (
         [["mkdir"; "/mv2"];
          ["write"; "/mv2/old"; "file content"];
          ["mv"; "/mv2/old"; "/mv2/new"];
@@ -4846,12 +4914,12 @@ or attached block device(s) in any other way." };
     style = RBool "equality", [Pathname "file1"; Pathname "file2"], [];
     proc_nr = Some 93;
     tests = [
-      InitScratchFS, Always, TestOutputTrue (
+      InitScratchFS, Always, TestResultTrue (
         [["mkdir"; "/equal"];
          ["write"; "/equal/file1"; "contents of a file"];
          ["cp"; "/equal/file1"; "/equal/file2"];
          ["equal"; "/equal/file1"; "/equal/file2"]]);
-      InitScratchFS, Always, TestOutputFalse (
+      InitScratchFS, Always, TestResultFalse (
         [["mkdir"; "/equal2"];
          ["write"; "/equal2/file1"; "contents of a file"];
          ["write"; "/equal2/file2"; "contents of another file"];
@@ -4873,10 +4941,12 @@ The external L<cmp(1)> program is used for the comparison." };
     proc_nr = Some 94;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["strings"; "/known-5"]], ["abcdefghi"; "jklmnopqr"]);
-      InitISOFS, Always, TestOutputList (
-        [["strings"; "/empty"]], []);
+      InitISOFS, Always, TestResult (
+        [["strings"; "/known-5"]],
+        "is_string_list (ret, 2, \"abcdefghi\", \"jklmnopqr\")");
+      InitISOFS, Always, TestResult (
+        [["strings"; "/empty"]],
+        "is_string_list (ret, 0)");
       (* Test for RHBZ#579608, absolute symbolic links. *)
       InitISOFS, Always, TestRun (
         [["strings"; "/abssymlink"]])
@@ -4892,11 +4962,13 @@ the list of printable strings found." };
     proc_nr = Some 95;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["strings_e"; "b"; "/known-5"]], []);
-      InitScratchFS, Always, TestOutputList (
+      InitISOFS, Always, TestResult (
+        [["strings_e"; "b"; "/known-5"]],
+        "is_string_list (ret, 0)");
+      InitScratchFS, Always, TestResult (
         [["write"; "/strings_e"; "\000h\000e\000l\000l\000o\000\n\000w\000o\000r\000l\000d\000\n"];
-         ["strings_e"; "b"; "/strings_e"]], ["hello"; "world"])
+         ["strings_e"; "b"; "/strings_e"]],
+        "is_string_list (ret, 2, \"hello\", \"world\")")
     ];
     shortdesc = "print the printable strings in a file";
     longdesc = "\
@@ -4945,7 +5017,7 @@ The returned strings are transcoded to UTF-8." };
     proc_nr = Some 96;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["hexdump"; "/known-4"]], "00000000  61 62 63 0a 64 65 66 0a  67 68 69                 |abc.def.ghi|\n0000000b\n");
       (* Test for RHBZ#501888c2 regression which caused large hexdump
        * commands to segfault.
@@ -4967,7 +5039,7 @@ the human-readable, canonical hex dump of the file." };
     proc_nr = Some 97;
     optional = Some "zerofree";
     tests = [
-      InitNone, Always, TestOutput (
+      InitNone, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ext3"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
@@ -5088,7 +5160,7 @@ are activated or deactivated." };
     proc_nr = Some 105;
     optional = Some "lvm2";
     tests = [
-      InitNone, Always, TestOutput (
+      InitNone, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
@@ -5158,14 +5230,14 @@ Sleep for C<secs> seconds." };
     proc_nr = Some 110;
     optional = Some "ntfs3g";
     tests = [
-      InitNone, Always, TestOutputInt (
+      InitNone, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
-         ["ntfs_3g_probe"; "true"; "/dev/sda1"]], 0);
-      InitNone, Always, TestOutputInt (
+         ["ntfs_3g_probe"; "true"; "/dev/sda1"]], "ret == 0");
+      InitNone, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
-         ["ntfs_3g_probe"; "true"; "/dev/sda1"]], 12)
+         ["ntfs_3g_probe"; "true"; "/dev/sda1"]], "ret == 12")
     ];
     shortdesc = "probe NTFS volume";
     longdesc = "\
@@ -5223,21 +5295,24 @@ See also: C<guestfs_command_lines>" };
     style = RStringList "paths", [Pathname "pattern"], [];
     proc_nr = Some 113;
     tests = [
-      InitScratchFS, Always, TestOutputList (
+      InitScratchFS, Always, TestResult (
         [["mkdir_p"; "/glob_expand/b/c"];
          ["touch"; "/glob_expand/b/c/d"];
          ["touch"; "/glob_expand/b/c/e"];
-         ["glob_expand"; "/glob_expand/b/c/*"]], ["/glob_expand/b/c/d"; "/glob_expand/b/c/e"]);
-      InitScratchFS, Always, TestOutputList (
+         ["glob_expand"; "/glob_expand/b/c/*"]],
+        "is_string_list (ret, 2, \"/glob_expand/b/c/d\", \"/glob_expand/b/c/e\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir_p"; "/glob_expand2/b/c"];
          ["touch"; "/glob_expand2/b/c/d"];
          ["touch"; "/glob_expand2/b/c/e"];
-         ["glob_expand"; "/glob_expand2/*/c/*"]], ["/glob_expand2/b/c/d"; "/glob_expand2/b/c/e"]);
-      InitScratchFS, Always, TestOutputList (
+         ["glob_expand"; "/glob_expand2/*/c/*"]],
+        "is_string_list (ret, 2, \"/glob_expand2/b/c/d\", \"/glob_expand2/b/c/e\")");
+      InitScratchFS, Always, TestResult (
         [["mkdir_p"; "/glob_expand3/b/c"];
          ["touch"; "/glob_expand3/b/c/d"];
          ["touch"; "/glob_expand3/b/c/e"];
-         ["glob_expand"; "/glob_expand3/*/x/*"]], [])
+         ["glob_expand"; "/glob_expand3/*/x/*"]],
+        "is_string_list (ret, 0)")
     ];
     shortdesc = "expand a wildcard path";
     longdesc = "\
@@ -5345,11 +5420,11 @@ See also: L<mkdtemp(3)>" };
     style = RInt "lines", [Pathname "path"], [];
     proc_nr = Some 118;
     tests = [
-      InitISOFS, Always, TestOutputInt (
-        [["wc_l"; "/10klines"]], 10000);
+      InitISOFS, Always, TestResult (
+        [["wc_l"; "/10klines"]], "ret == 10000");
       (* Test for RHBZ#579608, absolute symbolic links. *)
-      InitISOFS, Always, TestOutputInt (
-        [["wc_l"; "/abssymlink"]], 10000)
+      InitISOFS, Always, TestResult (
+        [["wc_l"; "/abssymlink"]], "ret == 10000")
     ];
     shortdesc = "count lines in a file";
     longdesc = "\
@@ -5361,8 +5436,8 @@ C<wc -l> external command." };
     style = RInt "words", [Pathname "path"], [];
     proc_nr = Some 119;
     tests = [
-      InitISOFS, Always, TestOutputInt (
-        [["wc_w"; "/10klines"]], 10000)
+      InitISOFS, Always, TestResult (
+        [["wc_w"; "/10klines"]], "ret == 10000")
     ];
     shortdesc = "count words in a file";
     longdesc = "\
@@ -5374,8 +5449,8 @@ C<wc -w> external command." };
     style = RInt "chars", [Pathname "path"], [];
     proc_nr = Some 120;
     tests = [
-      InitISOFS, Always, TestOutputInt (
-        [["wc_c"; "/100kallspaces"]], 102400)
+      InitISOFS, Always, TestResult (
+        [["wc_c"; "/100kallspaces"]], "ret == 102400")
     ];
     shortdesc = "count characters in a file";
     longdesc = "\
@@ -5388,11 +5463,13 @@ C<wc -c> external command." };
     proc_nr = Some 121;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["head"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz";"3abcdefghijklmnopqrstuvwxyz";"4abcdefghijklmnopqrstuvwxyz";"5abcdefghijklmnopqrstuvwxyz";"6abcdefghijklmnopqrstuvwxyz";"7abcdefghijklmnopqrstuvwxyz";"8abcdefghijklmnopqrstuvwxyz";"9abcdefghijklmnopqrstuvwxyz"]);
+      InitISOFS, Always, TestResult (
+        [["head"; "/10klines"]],
+        "is_string_list (ret, 10, \"0abcdefghijklmnopqrstuvwxyz\", \"1abcdefghijklmnopqrstuvwxyz\", \"2abcdefghijklmnopqrstuvwxyz\", \"3abcdefghijklmnopqrstuvwxyz\", \"4abcdefghijklmnopqrstuvwxyz\", \"5abcdefghijklmnopqrstuvwxyz\", \"6abcdefghijklmnopqrstuvwxyz\", \"7abcdefghijklmnopqrstuvwxyz\", \"8abcdefghijklmnopqrstuvwxyz\", \"9abcdefghijklmnopqrstuvwxyz\")");
       (* Test for RHBZ#579608, absolute symbolic links. *)
-      InitISOFS, Always, TestOutputList (
-        [["head"; "/abssymlink"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz";"3abcdefghijklmnopqrstuvwxyz";"4abcdefghijklmnopqrstuvwxyz";"5abcdefghijklmnopqrstuvwxyz";"6abcdefghijklmnopqrstuvwxyz";"7abcdefghijklmnopqrstuvwxyz";"8abcdefghijklmnopqrstuvwxyz";"9abcdefghijklmnopqrstuvwxyz"])
+      InitISOFS, Always, TestResult (
+        [["head"; "/abssymlink"]],
+        "is_string_list (ret, 10, \"0abcdefghijklmnopqrstuvwxyz\", \"1abcdefghijklmnopqrstuvwxyz\", \"2abcdefghijklmnopqrstuvwxyz\", \"3abcdefghijklmnopqrstuvwxyz\", \"4abcdefghijklmnopqrstuvwxyz\", \"5abcdefghijklmnopqrstuvwxyz\", \"6abcdefghijklmnopqrstuvwxyz\", \"7abcdefghijklmnopqrstuvwxyz\", \"8abcdefghijklmnopqrstuvwxyz\", \"9abcdefghijklmnopqrstuvwxyz\")")
     ];
     shortdesc = "return first 10 lines of a file";
     longdesc = "\
@@ -5405,12 +5482,15 @@ a list of strings." };
     proc_nr = Some 122;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["head_n"; "3"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz"]);
-      InitISOFS, Always, TestOutputList (
-        [["head_n"; "-9997"; "/10klines"]], ["0abcdefghijklmnopqrstuvwxyz";"1abcdefghijklmnopqrstuvwxyz";"2abcdefghijklmnopqrstuvwxyz"]);
-      InitISOFS, Always, TestOutputList (
-        [["head_n"; "0"; "/10klines"]], [])
+      InitISOFS, Always, TestResult (
+        [["head_n"; "3"; "/10klines"]],
+        "is_string_list (ret, 3, \"0abcdefghijklmnopqrstuvwxyz\", \"1abcdefghijklmnopqrstuvwxyz\", \"2abcdefghijklmnopqrstuvwxyz\")");
+      InitISOFS, Always, TestResult (
+        [["head_n"; "-9997"; "/10klines"]],
+        "is_string_list (ret, 3, \"0abcdefghijklmnopqrstuvwxyz\", \"1abcdefghijklmnopqrstuvwxyz\", \"2abcdefghijklmnopqrstuvwxyz\")");
+      InitISOFS, Always, TestResult (
+        [["head_n"; "0"; "/10klines"]],
+        "is_string_list (ret, 0)")
     ];
     shortdesc = "return first N lines of a file";
     longdesc = "\
@@ -5428,8 +5508,9 @@ If the parameter C<nrlines> is zero, this returns an empty list." };
     proc_nr = Some 123;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["tail"; "/10klines"]], ["9990abcdefghijklmnopqrstuvwxyz";"9991abcdefghijklmnopqrstuvwxyz";"9992abcdefghijklmnopqrstuvwxyz";"9993abcdefghijklmnopqrstuvwxyz";"9994abcdefghijklmnopqrstuvwxyz";"9995abcdefghijklmnopqrstuvwxyz";"9996abcdefghijklmnopqrstuvwxyz";"9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"])
+      InitISOFS, Always, TestResult (
+        [["tail"; "/10klines"]],
+        "is_string_list (ret, 10, \"9990abcdefghijklmnopqrstuvwxyz\", \"9991abcdefghijklmnopqrstuvwxyz\", \"9992abcdefghijklmnopqrstuvwxyz\", \"9993abcdefghijklmnopqrstuvwxyz\", \"9994abcdefghijklmnopqrstuvwxyz\", \"9995abcdefghijklmnopqrstuvwxyz\", \"9996abcdefghijklmnopqrstuvwxyz\", \"9997abcdefghijklmnopqrstuvwxyz\", \"9998abcdefghijklmnopqrstuvwxyz\", \"9999abcdefghijklmnopqrstuvwxyz\")")
     ];
     shortdesc = "return last 10 lines of a file";
     longdesc = "\
@@ -5442,12 +5523,15 @@ a list of strings." };
     proc_nr = Some 124;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["tail_n"; "3"; "/10klines"]], ["9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"]);
-      InitISOFS, Always, TestOutputList (
-        [["tail_n"; "-9998"; "/10klines"]], ["9997abcdefghijklmnopqrstuvwxyz";"9998abcdefghijklmnopqrstuvwxyz";"9999abcdefghijklmnopqrstuvwxyz"]);
-      InitISOFS, Always, TestOutputList (
-        [["tail_n"; "0"; "/10klines"]], [])
+      InitISOFS, Always, TestResult (
+        [["tail_n"; "3"; "/10klines"]],
+        "is_string_list (ret, 3, \"9997abcdefghijklmnopqrstuvwxyz\", \"9998abcdefghijklmnopqrstuvwxyz\", \"9999abcdefghijklmnopqrstuvwxyz\")");
+      InitISOFS, Always, TestResult (
+        [["tail_n"; "-9998"; "/10klines"]],
+        "is_string_list (ret, 3, \"9997abcdefghijklmnopqrstuvwxyz\", \"9998abcdefghijklmnopqrstuvwxyz\", \"9999abcdefghijklmnopqrstuvwxyz\")");
+      InitISOFS, Always, TestResult (
+        [["tail_n"; "0"; "/10klines"]],
+        "is_string_list (ret, 0)")
     ];
     shortdesc = "return last N lines of a file";
     longdesc = "\
@@ -5496,8 +5580,8 @@ Use C<guestfs_statvfs> from programs." };
     proc_nr = Some 127;
     progress = true;
     tests = [
-      InitISOFS, Always, TestOutputInt (
-        [["du"; "/directory"]], 2 (* ISO fs blocksize is 2K *))
+      InitISOFS, Always, TestResult (
+        [["du"; "/directory"]], "ret == 2" (* ISO fs blocksize is 2K *))
     ];
     shortdesc = "estimate file space usage";
     longdesc = "\
@@ -5516,8 +5600,9 @@ The result is the estimated size in I<kilobytes>
     style = RStringList "filenames", [Pathname "path"], [];
     proc_nr = Some 128;
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["initrd_list"; "/initrd"]], ["empty";"known-1";"known-2";"known-3";"known-4"; "known-5"])
+      InitISOFS, Always, TestResult (
+        [["initrd_list"; "/initrd"]],
+        "is_string_list (ret, 6, \"empty\", \"known-1\", \"known-2\", \"known-3\", \"known-4\", \"known-5\")")
     ];
     shortdesc = "list files in an initrd";
     longdesc = "\
@@ -5607,13 +5692,15 @@ Create a swap partition on C<device> with UUID C<uuid>." };
     proc_nr = Some 133;
     optional = Some "mknod";
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mknod"; "0o10777"; "0"; "0"; "/mknod"];
          (* NB: default umask 022 means 0777 -> 0755 in these tests *)
-         ["stat"; "/mknod"]], [CompareWithInt ("mode", 0o10755)]);
-      InitScratchFS, Always, TestOutputStruct (
+         ["stat"; "/mknod"]],
+        "S_ISFIFO (ret->mode) && (ret->mode & 0777) == 0755");
+      InitScratchFS, Always, TestResult (
         [["mknod"; "0o60777"; "66"; "99"; "/mknod2"];
-         ["stat"; "/mknod2"]], [CompareWithInt ("mode", 0o60755)])
+         ["stat"; "/mknod2"]],
+        "S_ISBLK (ret->mode) && (ret->mode & 0777) == 0755")
     ];
     shortdesc = "make block, character or FIFO devices";
     longdesc = "\
@@ -5641,9 +5728,10 @@ The mode actually set is affected by the umask." };
     proc_nr = Some 134;
     optional = Some "mknod";
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mkfifo"; "0o777"; "/mkfifo"];
-         ["stat"; "/mkfifo"]], [CompareWithInt ("mode", 0o10755)])
+         ["stat"; "/mkfifo"]],
+        "S_ISFIFO (ret->mode) && (ret->mode & 0777) == 0755")
     ];
     shortdesc = "make FIFO (named pipe)";
     longdesc = "\
@@ -5659,9 +5747,10 @@ The mode actually set is affected by the umask." };
     proc_nr = Some 135;
     optional = Some "mknod";
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mknod_b"; "0o777"; "99"; "66"; "/mknod_b"];
-         ["stat"; "/mknod_b"]], [CompareWithInt ("mode", 0o60755)])
+         ["stat"; "/mknod_b"]],
+        "S_ISBLK (ret->mode) && (ret->mode & 0777) == 0755")
     ];
     shortdesc = "make block device node";
     longdesc = "\
@@ -5677,9 +5766,10 @@ The mode actually set is affected by the umask." };
     proc_nr = Some 136;
     optional = Some "mknod";
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mknod_c"; "0o777"; "99"; "66"; "/mknod_c"];
-         ["stat"; "/mknod_c"]], [CompareWithInt ("mode", 0o20755)])
+         ["stat"; "/mknod_c"]],
+        "S_ISCHR (ret->mode) && (ret->mode & 0777) == 0755")
     ];
     shortdesc = "make char device node";
     longdesc = "\
@@ -5695,8 +5785,8 @@ The mode actually set is affected by the umask." };
     proc_nr = Some 137;
     fish_output = Some FishOutputOctal;
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["umask"; "0o22"]], 0o22)
+      InitEmpty, Always, TestResult (
+        [["umask"; "0o22"]], "ret == 022")
     ];
     shortdesc = "set file mode creation mask (umask)";
     longdesc = "\
@@ -5962,47 +6052,49 @@ for full details." };
     proc_nr = Some 151;
     protocol_limit_warning = true; once_had_no_optargs = true;
     tests = [
-      InitISOFS, Always, TestOutputList (
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt"; ""; ""; ""; ""]],
-        ["abc"; "abc123"]);
-      InitISOFS, Always, TestOutputList (
-        [["grep"; "nomatch"; "/test-grep.txt"; ""; ""; ""; ""]], []);
+        "is_string_list (ret, 2, \"abc\", \"abc123\")");
+      InitISOFS, Always, TestResult (
+        [["grep"; "nomatch"; "/test-grep.txt"; ""; ""; ""; ""]],
+        "is_string_list (ret, 0)");
       (* Test for RHBZ#579608, absolute symbolic links. *)
-      InitISOFS, Always, TestOutputList (
-        [["grep"; "nomatch"; "/abssymlink"; ""; ""; ""; ""]], []);
-      InitISOFS, Always, TestOutputList (
+      InitISOFS, Always, TestResult (
+        [["grep"; "nomatch"; "/abssymlink"; ""; ""; ""; ""]],
+        "is_string_list (ret, 0)");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt"; "true"; ""; ""; ""]],
-        ["abc"; "abc123"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 2, \"abc\", \"abc123\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt"; ""; "true"; ""; ""]],
-        ["abc"; "abc123"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 2, \"abc\", \"abc123\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt"; ""; ""; "true"; ""]],
-        ["abc"; "abc123"; "ABC"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt"; "true"; ""; "true"; ""]],
-        ["abc"; "abc123"; "ABC"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt"; ""; "true"; "true"; ""]],
-        ["abc"; "abc123"; "ABC"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt.gz"; ""; ""; ""; "true"]],
-        ["abc"; "abc123"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 2, \"abc\", \"abc123\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt.gz"; "true"; ""; ""; "true"]],
-        ["abc"; "abc123"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 2, \"abc\", \"abc123\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt.gz"; ""; "true"; ""; "true"]],
-        ["abc"; "abc123"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 2, \"abc\", \"abc123\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt.gz"; ""; ""; "true"; "true"]],
-        ["abc"; "abc123"; "ABC"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt.gz"; "true"; ""; "true"; "true"]],
-        ["abc"; "abc123"; "ABC"]);
-      InitISOFS, Always, TestOutputList (
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")");
+      InitISOFS, Always, TestResult (
         [["grep"; "abc"; "/test-grep.txt.gz"; ""; "true"; "true"; "true"]],
-        ["abc"; "abc123"; "ABC"])
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6041,8 +6133,9 @@ compress- or gzip-compressed.
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["egrep"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"])
+      InitISOFS, Always, TestResult (
+        [["egrep"; "abc"; "/test-grep.txt"]],
+        "is_string_list (ret, 2, \"abc\", \"abc123\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6056,8 +6149,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["fgrep"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"])
+      InitISOFS, Always, TestResult (
+        [["fgrep"; "abc"; "/test-grep.txt"]],
+        "is_string_list (ret, 2, \"abc\", \"abc123\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6071,8 +6165,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["grepi"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"; "ABC"])
+      InitISOFS, Always, TestResult (
+        [["grepi"; "abc"; "/test-grep.txt"]],
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6086,8 +6181,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["egrepi"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"; "ABC"])
+      InitISOFS, Always, TestResult (
+        [["egrepi"; "abc"; "/test-grep.txt"]],
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6101,8 +6197,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["fgrepi"; "abc"; "/test-grep.txt"]], ["abc"; "abc123"; "ABC"])
+      InitISOFS, Always, TestResult (
+        [["fgrepi"; "abc"; "/test-grep.txt"]],
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6116,8 +6213,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["zgrep"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"])
+      InitISOFS, Always, TestResult (
+        [["zgrep"; "abc"; "/test-grep.txt.gz"]],
+        "is_string_list (ret, 2, \"abc\", \"abc123\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6131,8 +6229,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["zegrep"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"])
+      InitISOFS, Always, TestResult (
+        [["zegrep"; "abc"; "/test-grep.txt.gz"]],
+        "is_string_list (ret, 2, \"abc\", \"abc123\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6146,8 +6245,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["zfgrep"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"])
+      InitISOFS, Always, TestResult (
+        [["zfgrep"; "abc"; "/test-grep.txt.gz"]],
+        "is_string_list (ret, 2, \"abc\", \"abc123\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6161,8 +6261,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["zgrepi"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"; "ABC"])
+      InitISOFS, Always, TestResult (
+        [["zgrepi"; "abc"; "/test-grep.txt.gz"]],
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6176,8 +6277,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["zegrepi"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"; "ABC"])
+      InitISOFS, Always, TestResult (
+        [["zegrepi"; "abc"; "/test-grep.txt.gz"]],
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6191,8 +6293,9 @@ matching lines." };
     protocol_limit_warning = true;
     deprecated_by = Some "grep";
     tests = [
-      InitISOFS, Always, TestOutputList (
-        [["zfgrepi"; "abc"; "/test-grep.txt.gz"]], ["abc"; "abc123"; "ABC"])
+      InitISOFS, Always, TestResult (
+        [["zfgrepi"; "abc"; "/test-grep.txt.gz"]],
+        "is_string_list (ret, 3, \"abc\", \"abc123\", \"ABC\")")
     ];
     shortdesc = "return lines matching a pattern";
     longdesc = "\
@@ -6205,7 +6308,7 @@ matching lines." };
     proc_nr = Some 163;
     optional = Some "realpath";
     tests = [
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["realpath"; "/../directory"]], "/directory")
     ];
     shortdesc = "canonicalized absolute pathname";
@@ -6218,11 +6321,11 @@ returned path has no C<.>, C<..> or symbolic link path elements." };
     style = RErr, [String "target"; Pathname "linkname"], [];
     proc_nr = Some 164;
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/ln"];
          ["touch"; "/ln/a"];
          ["ln"; "/ln/a"; "/ln/b"];
-         ["stat"; "/ln/b"]], [CompareWithInt ("nlink", 2)])
+         ["stat"; "/ln/b"]], "ret->nlink == 2")
     ];
     shortdesc = "create a hard link";
     longdesc = "\
@@ -6233,12 +6336,12 @@ This command creates a hard link using the C<ln> command." };
     style = RErr, [String "target"; Pathname "linkname"], [];
     proc_nr = Some 165;
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/ln_f"];
          ["touch"; "/ln_f/a"];
          ["touch"; "/ln_f/b"];
          ["ln_f"; "/ln_f/a"; "/ln_f/b"];
-         ["stat"; "/ln_f/b"]], [CompareWithInt ("nlink", 2)])
+         ["stat"; "/ln_f/b"]], "ret->nlink == 2")
     ];
     shortdesc = "create a hard link";
     longdesc = "\
@@ -6250,11 +6353,12 @@ The I<-f> option removes the link (C<linkname>) if it exists already." };
     style = RErr, [String "target"; Pathname "linkname"], [];
     proc_nr = Some 166;
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/ln_s"];
          ["touch"; "/ln_s/a"];
          ["ln_s"; "a"; "/ln_s/b"];
-         ["lstat"; "/ln_s/b"]], [CompareWithInt ("mode", 0o120777)])
+         ["lstat"; "/ln_s/b"]],
+        "S_ISLNK (ret->mode) && (ret->mode & 0777) == 0777")
     ];
     shortdesc = "create a symbolic link";
     longdesc = "\
@@ -6265,7 +6369,7 @@ This command creates a symbolic link using the C<ln -s> command." };
     style = RErr, [String "target"; Pathname "linkname"], [];
     proc_nr = Some 167;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir_p"; "/ln_sf/b"];
          ["touch"; "/ln_sf/b/c"];
          ["ln_sf"; "../d"; "/ln_sf/b/c"];
@@ -6290,9 +6394,9 @@ This command reads the target of a symbolic link." };
     proc_nr = Some 169;
     deprecated_by = Some "fallocate64";
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["fallocate"; "/fallocate"; "1000000"];
-         ["stat"; "/fallocate"]], [CompareWithInt ("size", 1_000_000)])
+         ["stat"; "/fallocate"]], "ret->size == 1000000")
     ];
     shortdesc = "preallocate a file in the guest filesystem";
     longdesc = "\
@@ -6485,13 +6589,14 @@ per libguestfs instance." };
     proc_nr = Some 180;
     optional = Some "inotify";
     tests = [
-      InitScratchFS, Always, TestOutputList (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/inotify_add_watch"];
          ["inotify_init"; "0"];
          ["inotify_add_watch"; "/inotify_add_watch"; "1073741823"];
          ["touch"; "/inotify_add_watch/a"];
          ["touch"; "/inotify_add_watch/b"];
-         ["inotify_files"]], ["a"; "b"])
+         ["inotify_files"]],
+        "is_string_list (ret, 2, \"a\", \"b\")")
     ];
     shortdesc = "add an inotify watch";
     longdesc = "\
@@ -6585,7 +6690,7 @@ and C<guestfs_setcon>" };
     proc_nr = Some 187;
     deprecated_by = Some "mkfs";
     tests = [
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs_b"; "ext2"; "4096"; "/dev/sda1"];
          ["mount"; "/dev/sda1"; "/"];
@@ -6620,7 +6725,7 @@ the requested cluster size." };
     proc_nr = Some 188;
     deprecated_by = Some "mke2fs";
     tests = [
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "-64"];
@@ -6643,7 +6748,7 @@ to the command:
     proc_nr = Some 189;
     deprecated_by = Some "mke2fs";
     tests = [
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
          ["part_add"; "/dev/sda"; "p"; "204800"; "-64"];
@@ -6665,7 +6770,7 @@ This creates an ext2 external journal on C<device> with label C<label>." };
     optional = Some "linuxfsuuid";
     tests =
       (let uuid = uuidgen () in [
-        InitEmpty, Always, TestOutput (
+        InitEmpty, Always, TestResultString (
           [["part_init"; "/dev/sda"; "mbr"];
            ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
            ["part_add"; "/dev/sda"; "p"; "204800"; "-64"];
@@ -6739,7 +6844,7 @@ was built (see C<appliance/kmod.whitelist.in> in the source)." };
     style = RString "output", [StringList "words"], [];
     proc_nr = Some 195;
     tests = [
-      InitNone, Always, TestOutput (
+      InitNone, Always, TestResultString (
         [["echo_daemon"; "This is a test"]], "This is a test"
       )
     ];
@@ -6789,20 +6894,20 @@ The result list is not sorted.
     style = RString "rpath", [Pathname "path"], [];
     proc_nr = Some 197;
     tests = [
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["case_sensitive_path"; "/DIRECTORY"]], "/directory");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["case_sensitive_path"; "/DIRECTORY/"]], "/directory");
-      InitISOFS, Always, TestOutput (
+      InitISOFS, Always, TestResultString (
         [["case_sensitive_path"; "/Known-1"]], "/known-1");
       InitISOFS, Always, TestLastFail (
         [["case_sensitive_path"; "/Known-1/"]]);
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/case_sensitive_path"];
          ["mkdir"; "/case_sensitive_path/bbb"];
          ["touch"; "/case_sensitive_path/bbb/c"];
          ["case_sensitive_path"; "/CASE_SENSITIVE_path/bbB/C"]], "/case_sensitive_path/bbb/c");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/case_sensitive_path2"];
          ["mkdir"; "/case_sensitive_path2/bbb"];
          ["touch"; "/case_sensitive_path2/bbb/c"];
@@ -6812,7 +6917,7 @@ The result list is not sorted.
          ["mkdir"; "/case_sensitive_path3/bbb"];
          ["touch"; "/case_sensitive_path3/bbb/c"];
          ["case_sensitive_path"; "/case_SENSITIVE_path3/bbb/../bbb/C"]]);
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/case_sensitive_path4"];
          ["case_sensitive_path"; "/case_SENSITIVE_path4/new_file"]], "/case_sensitive_path4/new_file")
     ];
@@ -6855,7 +6960,7 @@ See also C<guestfs_realpath>." };
     style = RString "fstype", [Mountable "mountable"], [];
     proc_nr = Some 198;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["vfs_type"; "/dev/sdb1"]], "ext2")
     ];
     shortdesc = "get the Linux VFS type corresponding to a mounted device";
@@ -6873,10 +6978,10 @@ For example a string such as C<ext3> or C<ntfs>." };
     style = RErr, [Pathname "path"], [];
     proc_nr = Some 199;
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["write"; "/truncate"; "some stuff so size is not zero"];
          ["truncate"; "/truncate"];
-         ["stat"; "/truncate"]], [CompareWithInt ("size", 0)])
+         ["stat"; "/truncate"]], "ret->size == 0")
     ];
     shortdesc = "truncate a file to zero size";
     longdesc = "\
@@ -6888,10 +6993,10 @@ file must exist already." };
     style = RErr, [Pathname "path"; Int64 "size"], [];
     proc_nr = Some 200;
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["touch"; "/truncate_size"];
          ["truncate_size"; "/truncate_size"; "1000"];
-         ["stat"; "/truncate_size"]], [CompareWithInt ("size", 1000)])
+         ["stat"; "/truncate_size"]], "ret->size == 1000")
     ];
     shortdesc = "truncate a file to a particular size";
     longdesc = "\
@@ -6910,30 +7015,30 @@ file of zeroes, use C<guestfs_fallocate64> instead." };
     proc_nr = Some 201;
     (* Test directories, named pipes etc (RHBZ#761451, RHBZ#761460) *)
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["touch"; "/utimens-file"];
          ["utimens"; "/utimens-file"; "12345"; "67890"; "9876"; "5432"];
-         ["stat"; "/utimens-file"]], [CompareWithInt ("mtime", 9876)]);
-      InitScratchFS, Always, TestOutputStruct (
+         ["stat"; "/utimens-file"]], "ret->mtime == 9876");
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/utimens-dir"];
          ["utimens"; "/utimens-dir"; "12345"; "67890"; "9876"; "5432"];
-         ["stat"; "/utimens-dir"]], [CompareWithInt ("mtime", 9876)]);
-      InitScratchFS, Always, TestOutputStruct (
+         ["stat"; "/utimens-dir"]], "ret->mtime == 9876");
+      InitScratchFS, Always, TestResult (
         [["mkfifo"; "0o644"; "/utimens-fifo"];
          ["utimens"; "/utimens-fifo"; "12345"; "67890"; "9876"; "5432"];
-         ["stat"; "/utimens-fifo"]], [CompareWithInt ("mtime", 9876)]);
-      InitScratchFS, Always, TestOutputStruct (
+         ["stat"; "/utimens-fifo"]], "ret->mtime == 9876");
+      InitScratchFS, Always, TestResult (
         [["ln_sf"; "/utimens-file"; "/utimens-link"];
          ["utimens"; "/utimens-link"; "12345"; "67890"; "9876"; "5432"];
-         ["stat"; "/utimens-link"]], [CompareWithInt ("mtime", 9876)]);
-      InitScratchFS, Always, TestOutputStruct (
+         ["stat"; "/utimens-link"]], "ret->mtime == 9876");
+      InitScratchFS, Always, TestResult (
         [["mknod_b"; "0o644"; "8"; "0"; "/utimens-block"];
          ["utimens"; "/utimens-block"; "12345"; "67890"; "9876"; "5432"];
-         ["stat"; "/utimens-block"]], [CompareWithInt ("mtime", 9876)]);
-      InitScratchFS, Always, TestOutputStruct (
+         ["stat"; "/utimens-block"]], "ret->mtime == 9876");
+      InitScratchFS, Always, TestResult (
         [["mknod_c"; "0o644"; "1"; "3"; "/utimens-char"];
          ["utimens"; "/utimens-char"; "12345"; "67890"; "9876"; "5432"];
-         ["stat"; "/utimens-char"]], [CompareWithInt ("mtime", 9876)])
+         ["stat"; "/utimens-char"]], "ret->mtime == 9876")
     ];
     shortdesc = "set timestamp of a file with nanosecond precision";
     longdesc = "\
@@ -6959,9 +7064,10 @@ C<*secs> field is ignored in this case)." };
     style = RErr, [Pathname "path"; Int "mode"], [];
     proc_nr = Some 202;
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["mkdir_mode"; "/mkdir_mode"; "0o111"];
-         ["stat"; "/mkdir_mode"]], [CompareWithInt ("mode", 0o40111)])
+         ["stat"; "/mkdir_mode"]],
+        "S_ISDIR (ret->mode) && (ret->mode & 0777) == 0111")
     ];
     shortdesc = "create a directory with a particular mode";
     longdesc = "\
@@ -7077,10 +7183,12 @@ into smaller groups of names." };
     proc_nr = Some 207;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputBuffer (
-        [["pread"; "/known-4"; "1"; "3"]], "\n");
-      InitISOFS, Always, TestOutputBuffer (
-        [["pread"; "/empty"; "0"; "100"]], "")
+      InitISOFS, Always, TestResult (
+        [["pread"; "/known-4"; "1"; "3"]],
+        "compare_buffers (ret, size, \"\\n\", 1) == 0");
+      InitISOFS, Always, TestResult (
+        [["pread"; "/empty"; "0"; "100"]],
+        "compare_buffers (ret, size, NULL, 0) == 0")
     ];
     shortdesc = "read part of a file";
     longdesc = "\
@@ -7303,7 +7411,7 @@ Size of the partition in bytes.
     style = RString "parttype", [Device "device"], [];
     proc_nr = Some 214;
     tests = [
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "gpt"];
          ["part_get_parttype"; "/dev/sda"]], "gpt")
     ];
@@ -7323,9 +7431,10 @@ for a full list." };
     proc_nr = Some 215;
     progress = true;
     tests = [
-      InitScratchFS, Always, TestOutputBuffer (
+      InitScratchFS, Always, TestResult (
         [["fill"; "0x63"; "10"; "/fill"];
-         ["read_file"; "/fill"]], "cccccccccc")
+         ["read_file"; "/fill"]],
+        "compare_buffers (ret, size, \"cccccccccc\", 10) == 0")
     ];
     shortdesc = "fill a file with octets";
     longdesc = "\
@@ -7418,11 +7527,12 @@ See also C<guestfs_filesystem_available>." };
     proc_nr = Some 217;
     deprecated_by = Some "copy_device_to_device";
     tests = [
-      InitScratchFS, Always, TestOutputBuffer (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/dd"];
          ["write"; "/dd/src"; "hello, world"];
          ["dd"; "/dd/src"; "/dd/dest"];
-         ["read_file"; "/dd/dest"]], "hello, world")
+         ["read_file"; "/dd/dest"]],
+        "compare_buffers (ret, size, \"hello, world\", 12) == 0")
     ];
     shortdesc = "copy from source to destination using dd";
     longdesc = "\
@@ -7441,9 +7551,9 @@ This command cannot do partial copies
     style = RInt64 "size", [Pathname "file"], [];
     proc_nr = Some 218;
     tests = [
-      InitScratchFS, Always, TestOutputInt (
+      InitScratchFS, Always, TestResult (
         [["write"; "/filesize"; "hello, world"];
-         ["filesize"; "/filesize"]], 12)
+         ["filesize"; "/filesize"]], "ret == 12")
     ];
     shortdesc = "return the size of the file in bytes";
     longdesc = "\
@@ -7458,9 +7568,10 @@ To get the size of block devices, use C<guestfs_blockdev_getsize64>." };
     style = RErr, [String "logvol"; String "newlogvol"], [];
     proc_nr = Some 219;
     tests = [
-      InitBasicFSonLVM, Always, TestOutputList (
+      InitBasicFSonLVM, Always, TestResult (
         [["lvrename"; "/dev/VG/LV"; "/dev/VG/LV2"];
-         ["lvs"]], ["/dev/VG/LV2"])
+         ["lvs"]],
+        "is_string_list (ret, 1, \"/dev/VG/LV2\")")
     ];
     shortdesc = "rename an LVM logical volume";
     longdesc = "\
@@ -7471,13 +7582,14 @@ Rename a logical volume C<logvol> with the new name C<newlogvol>." };
     style = RErr, [String "volgroup"; String "newvolgroup"], [];
     proc_nr = Some 220;
     tests = [
-      InitBasicFSonLVM, Always, TestOutputList (
+      InitBasicFSonLVM, Always, TestResult (
         [["umount"; "/"; "false"; "false"];
          ["vg_activate"; "false"; "VG"];
          ["vgrename"; "VG"; "VG2"];
          ["vg_activate"; "true"; "VG2"];
          ["mount"; "/dev/VG2/LV"; "/"];
-         ["vgs"]], ["VG2"])
+         ["vgs"]],
+        "is_string_list (ret, 1, \"VG2\")")
     ];
     shortdesc = "rename an LVM volume group";
     longdesc = "\
@@ -7489,8 +7601,9 @@ Rename a volume group C<volgroup> with the new name C<newvolgroup>." };
     proc_nr = Some 221;
     protocol_limit_warning = true;
     tests = [
-      InitISOFS, Always, TestOutputBuffer (
-        [["initrd_cat"; "/initrd"; "known-4"]], "abc\ndef\nghi")
+      InitISOFS, Always, TestResult (
+        [["initrd_cat"; "/initrd"; "known-4"]],
+        "compare_buffers (ret, size, \"abc\\ndef\\nghi\", 11) == 0")
     ];
     shortdesc = "list the contents of a single file in an initrd";
     longdesc = "\
@@ -7564,11 +7677,12 @@ See also C<guestfs_vgpvuuids>." };
     proc_nr = Some 227;
     progress = true; deprecated_by = Some "copy_device_to_device";
     tests = [
-      InitScratchFS, Always, TestOutputBuffer (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/copy_size"];
          ["write"; "/copy_size/src"; "hello, world"];
          ["copy_size"; "/copy_size/src"; "/copy_size/dest"; "5"];
-         ["read_file"; "/copy_size/dest"]], "hello")
+         ["read_file"; "/copy_size/dest"]],
+        "compare_buffers (ret, size, \"hello\", 5) == 0")
     ];
     shortdesc = "copy size bytes from source to destination using dd";
     longdesc = "\
@@ -7604,7 +7718,7 @@ or growing unnecessarily." };
     deprecated_by = Some "tar_in";
     optional = Some "xz"; cancellable = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["mkdir"; "/txz_in"];
          ["txz_in"; "../data/helloworld.tar.xz"; "/txz_in"];
          ["cat"; "/txz_in/hello"]], "hello\n")
@@ -7661,7 +7775,7 @@ it contains." };
     style = RBool "bootable", [Device "device"; Int "partnum"], [];
     proc_nr = Some 234;
     tests = [
-      InitEmpty, Always, TestOutputTrue (
+      InitEmpty, Always, TestResultTrue (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "primary"; "1"; "-1"];
          ["part_set_bootable"; "/dev/sda"; "1"; "true"];
@@ -7680,11 +7794,11 @@ See also C<guestfs_part_set_bootable>." };
     proc_nr = Some 235;
     fish_output = Some FishOutputHexadecimal;
     tests = [
-      InitEmpty, Always, TestOutputInt (
+      InitEmpty, Always, TestResult (
         [["part_init"; "/dev/sda"; "mbr"];
          ["part_add"; "/dev/sda"; "primary"; "1"; "-1"];
          ["part_set_mbr_id"; "/dev/sda"; "1"; "0x7f"];
-         ["part_get_mbr_id"; "/dev/sda"; "1"]], 0x7f)
+         ["part_get_mbr_id"; "/dev/sda"; "1"]], "ret == 0x7f")
     ];
     shortdesc = "get the MBR type byte (ID byte) from a partition";
     longdesc = "\
@@ -7716,9 +7830,9 @@ types (see C<guestfs_part_get_parttype>)." };
     style = RString "checksum", [String "csumtype"; Device "device"], [];
     proc_nr = Some 237;
     tests = [
-      InitISOFS, Always, TestOutputFileMD5 (
+      InitISOFS, Always, TestResult (
         [["checksum_device"; "md5"; "/dev/sdd"]],
-        "../data/test.iso")
+        "check_file_md5 (ret, \"../data/test.iso\") == 0")
     ];
     shortdesc = "compute MD5, SHAx or CRC checksum of the contents of a device";
     longdesc = "\
@@ -7763,8 +7877,8 @@ is the same as the L<augtool(1)> C<clear> command." };
     proc_nr = Some 240;
     fish_output = Some FishOutputOctal;
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["get_umask"]], 0o22)
+      InitEmpty, Always, TestResult (
+        [["get_umask"]], "ret == 022")
     ];
     shortdesc = "get the current umask";
     longdesc = "\
@@ -7792,7 +7906,7 @@ to find out what it is for." };
     proc_nr = Some 242;
     cancellable = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["base64_in"; "../data/hello.b64"; "/base64_in"];
          ["cat"; "/base64_in"]], "hello\n")
     ];
@@ -7836,9 +7950,10 @@ coreutils info file." };
     proc_nr = Some 245;
     progress = true;
     tests = [
-      InitScratchFS, Always, TestOutputBuffer (
+      InitScratchFS, Always, TestResult (
         [["fill_pattern"; "abcdefghijklmnopqrstuvwxyz"; "28"; "/fill_pattern"];
-         ["read_file"; "/fill_pattern"]], "abcdefghijklmnopqrstuvwxyzab")
+         ["read_file"; "/fill_pattern"]],
+        "compare_buffers (ret, size, \"abcdefghijklmnopqrstuvwxyzab\", 28) == 0")
     ];
     shortdesc = "fill a file with a repeating pattern of bytes";
     longdesc = "\
@@ -7854,22 +7969,22 @@ to ensure the length of the file is exactly C<len> bytes." };
     visibility = VInternal;
     protocol_limit_warning = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["internal_write"; "/internal_write"; "new file contents"];
          ["cat"; "/internal_write"]], "new file contents");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["internal_write"; "/internal_write2"; "\nnew file contents\n"];
          ["cat"; "/internal_write2"]], "\nnew file contents\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["internal_write"; "/internal_write3"; "\n\n"];
          ["cat"; "/internal_write3"]], "\n\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["internal_write"; "/internal_write4"; ""];
          ["cat"; "/internal_write4"]], "");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["internal_write"; "/internal_write5"; "\n\n\n"];
          ["cat"; "/internal_write5"]], "\n\n\n");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["internal_write"; "/internal_write6"; "\n"];
          ["cat"; "/internal_write6"]], "\n")
     ];
@@ -7886,15 +8001,15 @@ See also C<guestfs_write_append>." };
     proc_nr = Some 247;
     protocol_limit_warning = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/pwrite"; "new file contents"];
          ["pwrite"; "/pwrite"; "data"; "4"];
          ["cat"; "/pwrite"]], "new data contents");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/pwrite2"; "new file contents"];
          ["pwrite"; "/pwrite2"; "is extended"; "9"];
          ["cat"; "/pwrite2"]], "new file is extended");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/pwrite3"; "new file contents"];
          ["pwrite"; "/pwrite3"; ""; "4"];
          ["cat"; "/pwrite3"]], "new file contents")
@@ -7966,9 +8081,9 @@ and L<guestfs(3)/AVAILABILITY>." };
     style = RErr, [Pathname "path"; Int64 "len"], [];
     proc_nr = Some 252;
     tests = [
-      InitScratchFS, Always, TestOutputStruct (
+      InitScratchFS, Always, TestResult (
         [["fallocate64"; "/fallocate64"; "1000000"];
-         ["stat"; "/fallocate64"]], [CompareWithInt ("size", 1_000_000)])
+         ["stat"; "/fallocate64"]], "ret->size == 1000000")
     ];
     shortdesc = "preallocate a file in the guest filesystem";
     longdesc = "\
@@ -7993,7 +8108,7 @@ a file in the host and attach it as a device." };
     style = RString "label", [Mountable "mountable"], [];
     proc_nr = Some 253;
     tests = [
-      InitBasicFS, Always, TestOutput (
+      InitBasicFS, Always, TestResultString (
         [["set_label"; "/dev/sda1"; "LTEST"];
          ["vfs_label"; "/dev/sda1"]], "LTEST")
     ];
@@ -8011,7 +8126,7 @@ To find a filesystem from the label, use C<guestfs_findfs_label>." };
     proc_nr = Some 254;
     tests =
       (let uuid = uuidgen () in [
-        InitBasicFS, Always, TestOutput (
+        InitBasicFS, Always, TestResultString (
           [["set_e2uuid"; "/dev/sda1"; uuid];
            ["vfs_uuid"; "/dev/sda1"]], uuid)
       ]);
@@ -8173,11 +8288,10 @@ I<other> keys." };
     name = "is_lv";
     style = RBool "lvflag", [Device "device"], [];
     proc_nr = Some 264;
-    optional = Some "lvm2";
     tests = [
-      InitBasicFSonLVM, Always, TestOutputTrue (
+      InitBasicFSonLVM, Always, TestResultTrue (
         [["is_lv"; "/dev/VG/LV"]]);
-      InitBasicFSonLVM, Always, TestOutputFalse (
+      InitBasicFSonLVM, Always, TestResultFalse (
         [["is_lv"; "/dev/sda1"]])
     ];
     shortdesc = "test if device is a logical volume";
@@ -8214,9 +8328,9 @@ To find the label of a filesystem, use C<guestfs_vfs_label>." };
     style = RBool "flag", [Pathname "path"], [];
     proc_nr = Some 267;
     tests = [
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_chardev"; "/directory"]]);
-      InitScratchFS, Always, TestOutputTrue (
+      InitScratchFS, Always, TestResultTrue (
         [["mknod_c"; "0o777"; "99"; "66"; "/is_chardev"];
          ["is_chardev"; "/is_chardev"]])
     ];
@@ -8232,9 +8346,9 @@ See also C<guestfs_stat>." };
     style = RBool "flag", [Pathname "path"], [];
     proc_nr = Some 268;
     tests = [
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_blockdev"; "/directory"]]);
-      InitScratchFS, Always, TestOutputTrue (
+      InitScratchFS, Always, TestResultTrue (
         [["mknod_b"; "0o777"; "99"; "66"; "/is_blockdev"];
          ["is_blockdev"; "/is_blockdev"]])
     ];
@@ -8250,9 +8364,9 @@ See also C<guestfs_stat>." };
     style = RBool "flag", [Pathname "path"], [];
     proc_nr = Some 269;
     tests = [
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_fifo"; "/directory"]]);
-      InitScratchFS, Always, TestOutputTrue (
+      InitScratchFS, Always, TestResultTrue (
         [["mkfifo"; "0o777"; "/is_fifo"];
          ["is_fifo"; "/is_fifo"]])
     ];
@@ -8268,9 +8382,9 @@ See also C<guestfs_stat>." };
     style = RBool "flag", [Pathname "path"], [];
     proc_nr = Some 270;
     tests = [
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_symlink"; "/directory"]]);
-      InitISOFS, Always, TestOutputTrue (
+      InitISOFS, Always, TestResultTrue (
         [["is_symlink"; "/abssymlink"]])
     ];
     shortdesc = "test if symbolic link";
@@ -8286,7 +8400,7 @@ See also C<guestfs_stat>." };
     proc_nr = Some 271;
     (* XXX Need a positive test for sockets. *)
     tests = [
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_socket"; "/directory"]])
     ];
     shortdesc = "test if socket";
@@ -8301,7 +8415,7 @@ See also C<guestfs_stat>." };
     style = RString "device", [Device "partition"], [];
     proc_nr = Some 272;
     tests = [
-      InitPartition, Always, TestOutputDevice (
+      InitPartition, Always, TestResultDevice (
         [["part_to_dev"; "/dev/sda1"]], "/dev/sda");
       InitEmpty, Always, TestLastFail (
         [["part_to_dev"; "/dev/sda"]])
@@ -8324,7 +8438,7 @@ See also C<guestfs_part_to_partnum>, C<guestfs_device_index>." };
     progress = true; cancellable = true;
     tests =
       (let md5 = Digest.to_hex (Digest.file "COPYING.LIB") in [
-        InitScratchFS, Always, TestOutput (
+        InitScratchFS, Always, TestResultString (
           [["upload_offset"; "../../COPYING.LIB"; "/upload_offset"; "0"];
            ["checksum"; "md5"; "/upload_offset"]], md5)
       ]);
@@ -8357,7 +8471,7 @@ See also C<guestfs_upload>, C<guestfs_pwrite>." };
        let offset = string_of_int 100 in
        let size = string_of_int ((Unix.stat "COPYING.LIB").Unix.st_size - 100) in
        [
-         InitScratchFS, Always, TestOutput (
+         InitScratchFS, Always, TestResultString (
            (* Pick a file from cwd which isn't likely to change. *)
            [["mkdir"; "/download_offset"];
             ["upload"; "../../COPYING.LIB"; "/download_offset/COPYING.LIB"];
@@ -8386,10 +8500,11 @@ See also C<guestfs_download>, C<guestfs_pread>." };
     proc_nr = Some 275;
     protocol_limit_warning = true;
     tests = [
-      InitPartition, Always, TestOutputListOfDevices (
+      InitPartition, Always, TestResult (
         [["pwrite_device"; "/dev/sda"; "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"; "446"];
          ["blockdev_rereadpt"; "/dev/sda"];
-         ["list_partitions"]], ["/dev/sdb1"])
+         ["list_partitions"]],
+        "is_device_list (ret, 1, \"/dev/sdb1\")")
     ];
     shortdesc = "write to part of a device";
     longdesc = "\
@@ -8409,8 +8524,9 @@ See also C<guestfs_pwrite>." };
     proc_nr = Some 276;
     protocol_limit_warning = true;
     tests = [
-      InitEmpty, Always, TestOutputBuffer (
-        [["pread_device"; "/dev/sdd"; "8"; "32768"]], "\001CD001\001\000")
+      InitEmpty, Always, TestResult (
+        [["pread_device"; "/dev/sdd"; "8"; "32768"]],
+        "compare_buffers (ret, size, \"\\1CD001\\1\\0\", 8) == 0")
     ];
     shortdesc = "read part of a device";
     longdesc = "\
@@ -8427,9 +8543,9 @@ See also C<guestfs_pread>." };
     style = RString "lv", [Device "lvname"], [];
     proc_nr = Some 277;
     tests = [
-      InitBasicFSonLVM, IfAvailable "lvm2", TestOutput (
+      InitBasicFSonLVM, IfAvailable "lvm2", TestResultString (
         [["lvm_canonical_lv_name"; "/dev/mapper/VG-LV"]], "/dev/VG/LV");
-      InitBasicFSonLVM, IfAvailable "lvm2", TestOutput (
+      InitBasicFSonLVM, IfAvailable "lvm2", TestResultString (
         [["lvm_canonical_lv_name"; "/dev/VG/LV"]], "/dev/VG/LV")
     ];
     shortdesc = "get canonical name of an LV";
@@ -8449,7 +8565,7 @@ See also C<guestfs_is_lv>, C<guestfs_canonical_device_name>." };
     proc_nr = Some 278;
     once_had_no_optargs = true;
     tests = [
-      InitEmpty, Always, TestOutput (
+      InitEmpty, Always, TestResultString (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
@@ -8580,9 +8696,9 @@ handle is closed." };
     style = RBool "zeroflag", [Pathname "path"], [];
     proc_nr = Some 283;
     tests = [
-      InitISOFS, Always, TestOutputTrue (
+      InitISOFS, Always, TestResultTrue (
         [["is_zero"; "/100kallzeroes"]]);
-      InitISOFS, Always, TestOutputFalse (
+      InitISOFS, Always, TestResultFalse (
         [["is_zero"; "/100kallspaces"]])
     ];
     shortdesc = "test if a file contains all zero bytes";
@@ -8595,11 +8711,11 @@ it contains all zero bytes." };
     style = RBool "zeroflag", [Device "device"], [];
     proc_nr = Some 284;
     tests = [
-      InitBasicFS, Always, TestOutputTrue (
+      InitBasicFS, Always, TestResultTrue (
         [["umount"; "/dev/sda1"; "false"; "false"];
          ["zero_device"; "/dev/sda1"];
          ["is_zero_device"; "/dev/sda1"]]);
-      InitBasicFS, Always, TestOutputFalse (
+      InitBasicFS, Always, TestResultFalse (
         [["is_zero_device"; "/dev/sda1"]])
     ];
     shortdesc = "test if a device contains all zero bytes";
@@ -8715,7 +8831,7 @@ See also L<btrfs(8)>." };
     visibility = VInternal;
     protocol_limit_warning = true;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["write"; "/internal_write_append"; "line1\n"];
          ["internal_write_append"; "/internal_write_append"; "line2\n"];
          ["internal_write_append"; "/internal_write_append"; "line3a"];
@@ -8767,8 +8883,8 @@ as in C<guestfs_compress_out>." };
     style = RInt "partnum", [Device "partition"], [];
     proc_nr = Some 293;
     tests = [
-      InitPartition, Always, TestOutputInt (
-        [["part_to_partnum"; "/dev/sda1"]], 1);
+      InitPartition, Always, TestResult (
+        [["part_to_partnum"; "/dev/sda1"]], "ret == 1");
       InitEmpty, Always, TestLastFail (
         [["part_to_partnum"; "/dev/sda"]])
     ];
@@ -8840,13 +8956,14 @@ of this call." };
     proc_nr = Some 297;
     progress = true;
     tests = [
-      InitScratchFS, Always, TestOutputBuffer (
+      InitScratchFS, Always, TestResult (
         [["mkdir"; "/copyff"];
          ["write"; "/copyff/src"; "hello, world"];
          ["copy_file_to_file"; "/copyff/src"; "/copyff/dest"; ""; ""; ""; ""];
-         ["read_file"; "/copyff/dest"]], "hello, world");
+         ["read_file"; "/copyff/dest"]],
+        "compare_buffers (ret, size, \"hello, world\", 12) == 0");
       let size = 1024 * 1024 in
-      InitScratchFS, Always, TestOutputTrue (
+      InitScratchFS, Always, TestResultTrue (
         [["mkdir"; "/copyff2"];
          ["fill"; "0"; string_of_int size; "/copyff2/src"];
          ["touch"; "/copyff2/dest"];
@@ -8870,26 +8987,26 @@ moving functions." };
     proc_nr = Some 298;
     camel_name = "Tune2FS";
     tests = [
-      InitScratchFS, Always, TestOutputHashtable (
+      InitScratchFS, Always, TestResult (
         [["tune2fs"; "/dev/sdb1"; "false"; "0"; ""; "NOARG"; ""; "0"; ""; "NOARG"; ""; ""];
          ["tune2fs_l"; "/dev/sdb1"]],
-        ["Check interval", "0 (<none>)";
-         "Maximum mount count", "-1"]);
-      InitScratchFS, Always, TestOutputHashtable (
+        "check_hash (ret, \"Check interval\", \"0 (<none>)\") == 0 && "^
+          "check_hash (ret, \"Maximum mount count\", \"-1\") == 0");
+      InitScratchFS, Always, TestResult (
         [["tune2fs"; "/dev/sdb1"; "false"; "0"; ""; "NOARG"; ""; "86400"; ""; "NOARG"; ""; ""];
          ["tune2fs_l"; "/dev/sdb1"]],
-        ["Check interval", "86400 (1 day)";
-         "Maximum mount count", "-1"]);
-      InitScratchFS, Always, TestOutputHashtable (
+        "check_hash (ret, \"Check interval\", \"86400 (1 day)\") == 0 && "^
+          "check_hash (ret, \"Maximum mount count\", \"-1\") == 0");
+      InitScratchFS, Always, TestResult (
         [["tune2fs"; "/dev/sdb1"; "false"; ""; ""; "NOARG"; "1"; ""; ""; "NOARG"; ""; "1"];
          ["tune2fs_l"; "/dev/sdb1"]],
-        ["Reserved blocks uid", "1 (user bin)";
-         "Reserved blocks gid", "1 (group bin)"]);
-      InitScratchFS, Always, TestOutputHashtable (
+        "match_re (get_key (ret, \"Reserved blocks uid\"), \"\\\\d+ \\\\(user \\\\S+\\\\)\") && "^
+          "match_re (get_key (ret, \"Reserved blocks gid\"), \"\\\\d+ \\\\(group \\\\S+\\\\)\")");
+      InitScratchFS, Always, TestResult (
         [["tune2fs"; "/dev/sdb1"; "false"; ""; ""; "NOARG"; "0"; ""; ""; "NOARG"; ""; "0"];
          ["tune2fs_l"; "/dev/sdb1"]],
-        ["Reserved blocks uid", "0 (user root)";
-         "Reserved blocks gid", "0 (group root)"])
+        "match_re (get_key (ret, \"Reserved blocks uid\"), \"\\\\d+ \\\\(user \\\\S+\\\\)\") && "^
+          "match_re (get_key (ret, \"Reserved blocks gid\"), \"\\\\d+ \\\\(group \\\\S+\\\\)\")");
     ];
     shortdesc = "adjust ext2/ext3/ext4 filesystem parameters";
     longdesc = "\
@@ -9085,14 +9202,14 @@ device is stopped, but it is not destroyed or zeroed." };
     style = RHashtable "info", [Device "device"], [];
     proc_nr = Some 303;
     tests = [
-      InitScratchFS, Always, TestOutputHashtable (
+      InitScratchFS, Always, TestResult (
         [["blkid"; "/dev/sdb1"]],
-        ["TYPE", "ext2";
-         "USAGE", "filesystem";
-         "PART_ENTRY_NUMBER", "1";
-         "PART_ENTRY_TYPE", "0x83";
-         "PART_ENTRY_OFFSET", "128";
-         "PART_ENTRY_SIZE", "102145"])
+        "check_hash (ret, \"TYPE\", \"ext2\") == 0 && "^
+          "check_hash (ret, \"USAGE\", \"filesystem\") == 0 && "^
+          "check_hash (ret, \"PART_ENTRY_NUMBER\", \"1\") == 0 && "^
+          "check_hash (ret, \"PART_ENTRY_TYPE\", \"0x83\") == 0 && "^
+          "check_hash (ret, \"PART_ENTRY_OFFSET\", \"128\") == 0 && "^
+          "check_hash (ret, \"PART_ENTRY_SIZE\", \"102145\") == 0");
     ];
     shortdesc = "print block device attributes";
     longdesc = "\
@@ -9245,10 +9362,10 @@ any existing contents of this device." };
     style = RErr, [Mountable "mountable"; String "label"], [];
     proc_nr = Some 310;
     tests = [
-      InitBasicFS, Always, TestOutput (
+      InitBasicFS, Always, TestResultString (
         [["set_label"; "/dev/sda1"; "testlabel"];
          ["vfs_label"; "/dev/sda1"]], "testlabel");
-      InitPartition, IfAvailable "ntfs3g", TestOutput (
+      InitPartition, IfAvailable "ntfs3g", TestResultString (
         [["mkfs"; "ntfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["set_label"; "/dev/sda1"; "testlabel2"];
          ["vfs_label"; "/dev/sda1"]], "testlabel2");
@@ -9299,7 +9416,7 @@ or after calling this, depending on your requirements." };
     proc_nr = Some 312;
     optional = Some "lvm2";
     tests = [
-      InitEmpty, Always, TestOutputList (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
@@ -9308,7 +9425,7 @@ or after calling this, depending on your requirements." };
          ["lvcreate_free"; "LV3"; "VG"; "50"];
          ["lvcreate_free"; "LV4"; "VG"; "100"];
          ["lvs"]],
-        ["/dev/VG/LV1"; "/dev/VG/LV2"; "/dev/VG/LV3"; "/dev/VG/LV4"])
+        "is_string_list (ret, 4, \"/dev/VG/LV1\", \"/dev/VG/LV2\", \"/dev/VG/LV3\", \"/dev/VG/LV4\")")
     ];
     shortdesc = "create an LVM logical volume in % remaining free space";
     longdesc = "\
@@ -9322,14 +9439,14 @@ this will create the largest possible LV." };
     style = RStruct ("isodata", "isoinfo"), [Device "device"], [];
     proc_nr = Some 313;
     tests = [
-      InitNone, Always, TestOutputStruct (
+      InitNone, Always, TestResult (
         [["isoinfo_device"; "/dev/sdd"]],
-        [CompareWithString ("iso_system_id", "LINUX");
-         CompareWithString ("iso_volume_id", "CDROM");
-         CompareWithString ("iso_volume_set_id", "");
-         CompareWithInt ("iso_volume_set_size", 1);
-         CompareWithInt ("iso_volume_sequence_number", 1);
-         CompareWithInt ("iso_logical_block_size", 2048)])
+        "STREQ (ret->iso_system_id, \"LINUX\") && "^
+          "STREQ (ret->iso_volume_id, \"CDROM\") && "^
+          "STREQ (ret->iso_volume_set_id, \"\") && "^
+          "ret->iso_volume_set_size == 1 && "^
+          "ret->iso_volume_sequence_number == 1 && "^
+          "ret->iso_logical_block_size == 2048")
     ];
     shortdesc = "get ISO information from primary volume descriptor of device";
     longdesc = "\
@@ -9446,19 +9563,19 @@ To create general filesystems, use C<guestfs_mkfs>." };
     style = RString "attrs", [Pathname "file"], [];
     proc_nr = Some 318;
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["touch"; "/e2attrs1"];
          ["get_e2attrs"; "/e2attrs1"]], "");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["touch"; "/e2attrs2"];
          ["set_e2attrs"; "/e2attrs2"; "is"; "false"];
          ["get_e2attrs"; "/e2attrs2"]], "is");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["touch"; "/e2attrs3"];
          ["set_e2attrs"; "/e2attrs3"; "is"; "false"];
          ["set_e2attrs"; "/e2attrs3"; "i"; "true"];
          ["get_e2attrs"; "/e2attrs3"]], "s");
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["touch"; "/e2attrs4"];
          ["set_e2attrs"; "/e2attrs4"; "adst"; "false"];
          ["set_e2attrs"; "/e2attrs4"; "iS"; "false"];
@@ -9621,10 +9738,10 @@ types will result in an error." };
     style = RInt64 "generation", [Pathname "file"], [];
     proc_nr = Some 320;
     tests = [
-      InitScratchFS, Always, TestOutputInt (
+      InitScratchFS, Always, TestResult (
         [["touch"; "/e2generation"];
          ["set_e2generation"; "/e2generation"; "123456"];
-         ["get_e2generation"; "/e2generation"]], 123456)
+         ["get_e2generation"; "/e2generation"]], "ret == 123456")
     ];
     shortdesc = "get ext2 file generation of a file";
     longdesc = "\
@@ -9852,8 +9969,8 @@ instead of, or after calling C<guestfs_zero_free_space>." };
     style = RInt "index", [Device "device"], [];
     proc_nr = Some 335;
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["device_index"; "/dev/sda"]], 0)
+      InitEmpty, Always, TestResult (
+        [["device_index"; "/dev/sda"]], "ret == 0")
     ];
     shortdesc = "convert device to index";
     longdesc = "\
@@ -9870,8 +9987,8 @@ See also C<guestfs_list_devices>, C<guestfs_part_to_dev>." };
     style = RInt "nrdisks", [], [];
     proc_nr = Some 336;
     tests = [
-      InitEmpty, Always, TestOutputInt (
-        [["nr_devices"]], 4)
+      InitEmpty, Always, TestResult (
+        [["nr_devices"]], "ret == 4")
     ];
     shortdesc = "return number of whole block devices (disks) added";
     longdesc = "\
@@ -9888,13 +10005,11 @@ call C<guestfs_max_disks>." };
     proc_nr = Some 337;
     optional = Some "xfs";
     tests = [
-      InitEmpty, Always, TestOutputStruct (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["mount"; "/dev/sda1"; "/"];
-         ["xfs_info"; "/"]],
-        [CompareWithInt ("xfs_blocksize", 4096);
-        ])
+         ["xfs_info"; "/"]], "ret->xfs_blocksize == 4096")
     ];
     shortdesc = "get geometry of XFS filesystem";
     longdesc = "\
@@ -9987,7 +10102,7 @@ in the returned structure is defined by the API." };
     proc_nr = Some 343;
     optional = Some "xfs";
     tests = [
-      InitEmpty, Always, TestOutputStruct (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["pvcreate"; "/dev/sda1"];
          ["vgcreate"; "VG"; "/dev/sda1"];
@@ -9996,9 +10111,7 @@ in the returned structure is defined by the API." };
          ["lvresize"; "/dev/VG/LV"; "80"];
          ["mount"; "/dev/VG/LV"; "/"];
          ["xfs_growfs"; "/"; "true"; "false"; "false"; ""; ""; ""; ""; ""];
-         ["xfs_info"; "/"]],
-        [CompareWithInt ("xfs_blocksize", 4096);
-        ])
+         ["xfs_info"; "/"]], "ret->xfs_blocksize == 4096");
     ];
     shortdesc = "expand an existing XFS filesystem";
     longdesc = "\
@@ -10122,14 +10235,12 @@ with zeroes)." };
     proc_nr = Some 349;
     optional = Some "xfs";
     tests = [
-      InitEmpty, Always, TestOutputStruct (
+      InitEmpty, Always, TestResult (
         [["part_disk"; "/dev/sda"; "mbr"];
          ["mkfs"; "xfs"; "/dev/sda1"; ""; "NOARG"; ""; ""];
          ["xfs_admin"; "/dev/sda1"; ""; ""; ""; ""; "false"; "NOARG"; "NOARG"];
          ["mount"; "/dev/sda1"; "/"];
-         ["xfs_info"; "/"]],
-        [CompareWithInt ("xfs_lazycount", 0);
-        ])
+         ["xfs_info"; "/"]], "ret->xfs_lazycount == 0");
     ];
     shortdesc = "change parameters of an XFS filesystem";
     longdesc = "\
@@ -10365,7 +10476,7 @@ detected (returns C<1>) or was not detected (returns C<0>)." };
     style = RErr, [Pathname "path"], [];
     proc_nr = Some 367;
     tests = [
-      InitScratchFS, Always, TestOutputFalse
+      InitScratchFS, Always, TestResultFalse
         [["mkdir"; "/rm_f"];
          ["touch"; "/rm_f/foo"];
          ["rm_f"; "/rm_f/foo"];
@@ -10394,7 +10505,7 @@ or C<guestfs_rm_rf> to remove directories recursively." };
     tests =
       (let uuid = uuidgen () in
        let uuid_s = "UUID=" ^ uuid in [
-         InitEmpty, Always, TestOutput (
+         InitEmpty, Always, TestResultString (
            [["part_init"; "/dev/sda"; "mbr"];
             ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
             ["part_add"; "/dev/sda"; "p"; "204800"; "-64"];
@@ -10417,7 +10528,7 @@ or C<guestfs_rm_rf> to remove directories recursively." };
             ["mount"; "/dev/sda2"; "/"];
             ["write"; "/new"; "new file contents"];
             ["cat"; "/new"]], "new file contents");
-         InitEmpty, Always, TestOutput (
+         InitEmpty, Always, TestResultString (
            [["part_init"; "/dev/sda"; "mbr"];
             ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
             ["part_add"; "/dev/sda"; "p"; "204800"; "-64"];
@@ -10440,7 +10551,7 @@ or C<guestfs_rm_rf> to remove directories recursively." };
             ["mount"; "/dev/sda2"; "/"];
             ["write"; "/new"; "new file contents"];
             ["cat"; "/new"]], "new file contents");
-         InitEmpty, Always, TestOutput (
+         InitEmpty, Always, TestResultString (
            [["part_init"; "/dev/sda"; "mbr"];
             ["part_add"; "/dev/sda"; "p"; "64"; "204799"];
             ["part_add"; "/dev/sda"; "p"; "204800"; "-64"];
@@ -10666,7 +10777,7 @@ The capabilities set is returned in text form (see L<cap_to_text(3)>)." };
     proc_nr = Some 379;
     optional = Some "linuxcaps";
     tests = [
-      InitScratchFS, Always, TestOutput (
+      InitScratchFS, Always, TestResultString (
         [["touch"; "/cap_set_file_0"];
          ["cap_set_file"; "/cap_set_file_0"; "cap_chown=p cap_chown+e"];
          ["cap_get_file"; "/cap_set_file_0"]], "= cap_chown+ep");
@@ -10859,7 +10970,7 @@ for a useful list of type GUIDs." };
     proc_nr = Some 393;
     optional = Some "gdisk";
     tests = [
-      InitGPT, Always, TestOutput (
+      InitGPT, Always, TestResultString (
         [["part_set_gpt_type"; "/dev/sda"; "1";
           "01234567-89AB-CDEF-0123-456789ABCDEF"];
          ["part_get_gpt_type"; "/dev/sda"; "1"]],
@@ -10876,7 +10987,7 @@ for other partition types." };
     style = RErr, [Pathname "oldpath"; Pathname "newpath"], [];
     proc_nr = Some 394;
     tests = [
-      InitScratchFS, Always, TestOutputFalse (
+      InitScratchFS, Always, TestResultFalse (
         [["mkdir"; "/rename"];
          ["write"; "/rename/old"; "file content"];
          ["rename"; "/rename/old"; "/rename/new"];
@@ -10893,11 +11004,11 @@ you are better to use C<guestfs_mv> instead." };
     style = RBool "flag", [Device "device"], [];
     proc_nr = Some 395;
     tests = [
-      InitEmpty, Always, TestOutputTrue (
+      InitEmpty, Always, TestResultTrue (
         [["is_whole_device"; "/dev/sda"]]);
-      InitPartition, Always, TestOutputFalse (
+      InitPartition, Always, TestResultFalse (
         [["is_whole_device"; "/dev/sda1"]]);
-      InitBasicFSonLVM, Always, TestOutputFalse (
+      InitBasicFSonLVM, Always, TestResultFalse (
         [["is_whole_device"; "/dev/VG/LV"]]);
     ];
     shortdesc = "test if a device is a whole device";
@@ -10930,7 +11041,7 @@ deliberately crashes guestfsd." };
     style = RBool "isavailable", [StringList "groups"], [];
     proc_nr = Some 398;
     tests = [
-      InitNone, Always, TestOutputTrue [["feature_available"; ""]]
+      InitNone, Always, TestResultTrue [["feature_available"; ""]]
     ];
     shortdesc = "test availability of some parts of the API";
     longdesc = "\

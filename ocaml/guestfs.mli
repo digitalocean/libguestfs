@@ -784,6 +784,9 @@ val get_pgroup : t -> bool
 val get_pid : t -> int
 (** get PID of qemu subprocess *)
 
+val get_program : t -> string
+(** get the program name *)
+
 val get_qemu : t -> string
 (** get the qemu binary *)
 
@@ -1677,6 +1680,9 @@ val set_path : t -> string option -> unit
 val set_pgroup : t -> bool -> unit
 (** set process group flag *)
 
+val set_program : t -> string -> unit
+(** set the program name *)
+
 val set_qemu : t -> string option -> unit
 (** set the qemu binary *)
 
@@ -2183,6 +2189,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_path : unit -> string
   method get_pgroup : unit -> bool
   method get_pid : unit -> int
+  method get_program : unit -> string
   method get_qemu : unit -> string
   method get_recovery_proc : unit -> bool
   method get_selinux : unit -> bool
@@ -2476,6 +2483,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_network : bool -> unit
   method set_path : string option -> unit
   method set_pgroup : bool -> unit
+  method set_program : string -> unit
   method set_qemu : string option -> unit
   method set_recovery_proc : bool -> unit
   method set_selinux : bool -> unit

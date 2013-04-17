@@ -156,7 +156,6 @@ L</guestfs_luks_open_ro>
 =item B<lvm2>
 
 The following functions:
-L</guestfs_is_lv>
 L</guestfs_lvcreate>
 L</guestfs_lvcreate_free>
 L</guestfs_lvm_remove_all>

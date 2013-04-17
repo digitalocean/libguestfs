@@ -986,6 +986,40 @@ guestfs_set_tmpdir (guestfs_h *g,
   return r;
 }
 
+GUESTFS_DLL_PUBLIC const char *
+guestfs_get_program (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  const char *r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "get_program", 11);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_program");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__get_program (g);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_program");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "get_program", "NULL");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC struct guestfs_lvm_lv_list *
 guestfs_lvs_full (guestfs_h *g)
 {

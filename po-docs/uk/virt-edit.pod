@@ -8,15 +8,15 @@ virt-edit — програма для редагування файлів у в�
 
  virt-edit [--параметри] -d назва_домену файл [файл ...]
 
- virt-edit [--options] -a disk.img [-a disk.img ...] file [file ...]
+ virt-edit [--options] -a диск.img [-a диск.img ...] файл [файл ...]
 
- virt-edit [-d domname|-a disk.img] file -e 'expr'
+ virt-edit [-d назва_домену|-a диск.img] файл -e 'вираз'
 
 Застарілий стиль:
 
  virt-edit назва_домену файл
 
- virt-edit disk.img [disk.img ...] file
+ virt-edit диск.img [диск.img ...] файл
 
 =head1 ПОПЕРЕДЖЕННЯ
 
@@ -33,7 +33,7 @@ exists in the named virtual machine (or disk image).
 послідовно. Назви файлів слід вказувати повністю (разом зі шляхом),
 починаючи з кореневого каталогу (тобто назва має починатися з «/»).
 
-If you want to just view a file, use L<virt-cat(1)>.
+Якщо ви просто хочете переглянути файл, скористайтеся L<virt-cat(1)>.
 
 For more complex cases you should look at the L<guestfish(1)> tool (see
 L</USING GUESTFISH> below).
@@ -43,7 +43,7 @@ that and much more.
 
 =head1 ПРИКЛАДИ
 
-Edit the named files interactively:
+Інтерактивне редагування іменованих файлів:
 
  virt-edit -d mydomain /boot/grub/grub.conf
 
@@ -88,9 +88,9 @@ has the original filename with C<extension> added.
 Usually the first character of C<extension> would be a dot C<.> so you would
 write:
 
- virt-edit -b .orig [etc]
+ virt-edit -b .orig [тощо]
 
-By default, no backup file is made.
+Типово створюється файл резервної копії.
 
 =item B<-c адреса>
 
@@ -140,7 +140,7 @@ auto-detection for subsequent I<-a> options.
 
 Приклад:
 
- virt-edit --format=raw -a disk.img file
+ virt-edit --format=raw -a диск.img файл
 
 примусове встановлення формату без обробки (без автоматичного визначення)
 для C<disk.img>.
@@ -181,11 +181,11 @@ passphrases from the user by opening C</dev/tty>.
 
 Previous versions of virt-edit allowed you to write either:
 
- virt-edit disk.img [disk.img ...] file
+ virt-edit диск.img [диск.img ...] файл
 
 або
 
- virt-edit guestname file
+ virt-edit назва_гостьової_системи файл
 
 whereas in this version you should use I<-a> or I<-d> respectively to avoid
 the confusing case where a disk image might have the same name as a guest.
@@ -332,10 +332,10 @@ new file to match the old one.  The result of this was that if you edited a
 security sensitive file such as C</etc/shadow> then it would be left
 world-readable after the edit.
 
-This issue was assigned CVE-2012-2690, and is fixed in libguestfs E<ge>
-1.16.
+Цій ваді було надано код CVE-2012-2690. Її було виправлено у libguestfs
+E<ge> 1.16.
 
-For further information, see
+Докладніші дані можна знайти на сторінці
 L<https://bugzilla.redhat.com/show_bug.cgi?id=788642>
 
 =head1 ЗМІННІ СЕРЕДОВИЩА
@@ -347,7 +347,7 @@ L<https://bugzilla.redhat.com/show_bug.cgi?id=788642>
 If set, this string is used as the editor.  It may contain arguments,
 eg. C<"emacs -nw">
 
-If not set, C<vi> is used.
+Якщо не встановлено, використовуватиметься C<vi>.
 
 =back
 
@@ -374,5 +374,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2012
+Copyright (C) 2009-2013 Red Hat Inc.
 

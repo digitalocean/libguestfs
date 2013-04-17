@@ -5343,6 +5343,33 @@ ocaml_guestfs_get_pid (value gv)
 }
 
 /* Automatically generated wrapper for function
+ * val get_program : t -> string
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_get_program (value gv);
+
+value
+ocaml_guestfs_get_program (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("get_program");
+
+  const char *r;
+
+  r = guestfs_get_program (g);
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "get_program");
+
+  rv = caml_copy_string (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val get_qemu : t -> string
  */
 
@@ -15300,6 +15327,35 @@ ocaml_guestfs_set_pgroup (value gv, value pgroupv)
   r = guestfs_set_pgroup (g, pgroup);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_pgroup");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_program : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_program (value gv, value programv);
+
+value
+ocaml_guestfs_set_program (value gv, value programv)
+{
+  CAMLparam2 (gv, programv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_program");
+
+  char *program = guestfs___safe_strdup (g, String_val (programv));
+  int r;
+
+  r = guestfs_set_program (g, program);
+  free (program);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_program");
 
   rv = Val_unit;
   CAMLreturn (rv);

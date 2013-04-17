@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [28])
+m4_define([libguestfs_release], [29])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -272,6 +272,9 @@ AC_CHECK_MEMBER([struct stat.st_blksize],[
 dnl Define a C symbol for the host CPU architecture.
 AC_DEFINE_UNQUOTED([host_cpu],["$host_cpu"],[Host architecture.])
 
+dnl Check if libc has program_invocation_short_name.
+AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
+
 dnl Headers.
 AC_CHECK_HEADERS([\
     attr/xattr.h \
@@ -469,6 +472,19 @@ AC_ARG_WITH([febootstrap-packager-config],
     [AC_MSG_RESULT([not set])])
 
 AC_SUBST([SUPERMIN_PACKAGER_CONFIG])
+
+dnl Pass additional supermin options.
+dnl
+SUPERMIN_EXTRA_OPTIONS=no
+AC_MSG_CHECKING([for --with-supermin-extra-options option])
+AC_ARG_WITH([supermin-extra-options],
+    [AS_HELP_STRING([--with-supermin-extra-options=STRING],
+        [Pass additional supermin options. @<:@default=no@:>@])],
+    [SUPERMIN_EXTRA_OPTIONS="$withval"
+     AC_MSG_RESULT([$SUPERMIN_EXTRA_OPTIONS"])],
+    [AC_MSG_RESULT([not set])])
+
+AC_SUBST([SUPERMIN_EXTRA_OPTIONS])
 
 if test "x$enable_appliance" = "xyes"; then
     test "x$SUPERMIN" = "xno" &&

@@ -299,11 +299,11 @@ You may want to run virt-sysprep twice, once to reset the guest (to make a
 template) and a second time to customize the guest for a specific user:
 
                     virt-sysprep        virt-sysprep
-                      (reset)      (add user, keys, logos)
+                     (リセット)   (ユーザー、キー、ロゴの追加)
                          |                   |
                  dd      v          dd       v
- original guest ----> template ---------> copied ------> custom
-                                          template       guest
+ 元の仮想マシン ----> テンプレート ----> コピー済み ------> カスタム
+                                        テンプレート       仮想マシン
 
 =over 4
 

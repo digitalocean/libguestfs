@@ -2,14 +2,14 @@
 
 =head2 acl-delete-def-file
 
- acl-delete-def-file dir
+ acl-delete-def-file каталог
 
 This function deletes the default POSIX Access Control List (ACL)  attached
 to directory C<dir>.
 
 =head2 acl-get-file
 
- acl-get-file path acltype
+ acl-get-file шлях тип-acl
 
 This function returns the POSIX Access Control List (ACL) attached to
 C<path>.  The ACL is returned in "long text form" (see L<acl(5)>).
@@ -32,7 +32,7 @@ directory.
 
 =head2 acl-set-file
 
- acl-set-file path acltype acl
+ acl-set-file шлях тип-acl acl
 
 This function sets the POSIX Access Control List (ACL) attached to C<path>.
 The C<acl> parameter is the new ACL in either "long text form" or "short
@@ -56,7 +56,7 @@ directory.
 
 =head2 add-cdrom
 
- add-cdrom filename
+ add-cdrom назва_файла
 
 This function adds a virtual CD-ROM disk image to the guest.
 
@@ -313,7 +313,7 @@ is added read-only, with the format being detected automatically.
 
 =head2 add-drive-ro-with-if
 
- add-drive-ro-with-if filename iface
+ add-drive-ro-with-if назва_файла інтерфейс
 
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
@@ -327,7 +327,7 @@ these functions.
 
 =head2 add-drive-with-if
 
- add-drive-with-if filename iface
+ add-drive-with-if назва_файла інтерфейс
 
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
@@ -369,7 +369,7 @@ nodeset, and a boolean flag if a node was created.
 
 =head2 aug-defvar
 
- aug-defvar name expr
+ aug-defvar назва вираз
 
 Defines an Augeas variable C<name> whose value is the result of evaluating
 C<expr>.  If C<expr> is NULL, then C<name> is undefined.
@@ -580,15 +580,16 @@ L<guestfs(3)/AVAILABILITY>.
 
 =head2 base64-in
 
- base64-in (base64file|-) filename
+ base64-in (файл_base64|-) назва_файла
 
-This command uploads base64-encoded data from C<base64file> to C<filename>.
+Ця команда вивантажує дані у кодуванні base64 з C<файл_base64> до файла з
+назвою C<назва_файла>.
 
 Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 base64-out
 
- base64-out filename (base64file|-)
+ base64-out назва_файла (файл_base64|-)
 
 This command downloads the contents of C<filename>, writing it out to local
 file C<base64file> encoded as base64.
@@ -597,7 +598,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 
 =head2 blkid
 
- blkid device
+ blkid пристрій
 
 This command returns block device attributes for C<device>. The following
 fields are usually present in the returned hash. Other fields may also be
@@ -607,7 +608,7 @@ present.
 
 =item C<UUID>
 
-The uuid of this device.
+Код UUID цього пристрою.
 
 =item C<МІТКА>
 
@@ -623,7 +624,7 @@ The uuid of this device.
 
 =item C<ВИКОРИСТАННЯ>
 
-The usage of this device, for example C<filesystem> or C<raid>.
+Призначення цього пристрою, наприклад C<filesystem> або C<raid>.
 
 =back
 
@@ -633,7 +634,7 @@ The usage of this device, for example C<filesystem> or C<raid>.
 
 This tells the kernel to flush internal buffers associated with C<device>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-getbsz
 
@@ -644,7 +645,7 @@ This uses the L<blockdev(8)> command.
 (Note this is different from both I<size in blocks> and I<filesystem block
 size>).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-getro
 
@@ -653,7 +654,7 @@ This uses the L<blockdev(8)> command.
 Returns a boolean indicating if the block device is read-only (true if
 read-only, false if not).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-getsize64
 
@@ -663,7 +664,7 @@ This uses the L<blockdev(8)> command.
 
 Див. також L</blockdev-getsz>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-getss
 
@@ -674,7 +675,7 @@ larger for modern devices.
 
 (Note, this is not the size in sectors, use L</blockdev-getsz> for that).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-getsz
 
@@ -686,7 +687,7 @@ the sectorsize isn't 512 bytes ... weird).
 See also L</blockdev-getss> for the real sector size of the device, and
 L</blockdev-getsize64> for the more useful I<size in bytes>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-rereadpt
 
@@ -694,7 +695,7 @@ This uses the L<blockdev(8)> command.
 
 Повторно прочитати таблицю розділів з пристрою C<пристрій>.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-setbsz
 
@@ -705,15 +706,15 @@ This uses the L<blockdev(8)> command.
 (Note this is different from both I<size in blocks> and I<filesystem block
 size>).
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-setro
 
  blockdev-setro пристрій
 
-Sets the block device named C<device> to read-only.
+Переводити блоковий пристрій з назвою C<пристрій> у режим лише читання.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 blockdev-setrw
 
@@ -721,7 +722,7 @@ This uses the L<blockdev(8)> command.
 
 Sets the block device named C<device> to read-write.
 
-This uses the L<blockdev(8)> command.
+Використовується програма L<blockdev(8)>.
 
 =head2 btrfs-device-add
 
@@ -739,7 +740,7 @@ C<devices> is an empty list, this does nothing.
 
 =head2 btrfs-filesystem-balance
 
- btrfs-filesystem-balance fs
+ btrfs-filesystem-balance файлова_система
 
 Balance the chunks in the btrfs filesystem mounted at C<fs> across the
 underlying devices.
@@ -772,7 +773,7 @@ ARGUMENTS>.
 
 =head2 btrfs-filesystem-sync
 
- btrfs-filesystem-sync fs
+ btrfs-filesystem-sync файлова_система
 
 Force sync on the btrfs filesystem mounted at C<fs>.
 
@@ -795,7 +796,7 @@ filesystem.
 
 =head2 btrfs-subvolume-create
 
- btrfs-subvolume-create dest
+ btrfs-subvolume-create призначення
 
 Create a btrfs subvolume.  The C<dest> argument is the destination directory
 and the name of the snapshot, in the form C</path/to/dest/name>.
@@ -2131,6 +2132,12 @@ Return the process ID of the qemu subprocess.  If there is no qemu
 subprocess, then this will return an error.
 
 This is an internal call used for debugging and testing.
+
+=head2 get-program
+
+ get-program
+
+Get the program name.  See L</set-program>.
 
 =head2 get-qemu
 
@@ -5985,6 +5992,19 @@ The default for this flag is false, because usually you want C<^C> to kill
 the subprocess.  Guestfish sets this flag to true when used interactively,
 so that C<^C> can cancel long-running commands gracefully (see
 L</user-cancel>).
+
+=head2 set-program
+
+=head2 program
+
+ set-program program
+
+Set the program name.  This is an informative string which the main program
+may optionally set in the handle.
+
+When the handle is created, the program name in the handle is set to the
+basename from C<argv[0]>.  If that was not possible, it is set to the empty
+string (but never C<NULL>).
 
 =head2 set-qemu
 

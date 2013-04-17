@@ -2272,6 +2272,21 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern string guestfs_get_program (IntPtr h);
+
+    /// <summary>
+    /// get the program name
+    /// </summary>
+    public string get_program ()
+    {
+      string r;
+      r = guestfs_get_program (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern string guestfs_get_qemu (IntPtr h);
 
     /// <summary>
@@ -6513,6 +6528,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_pgroup (_handle, pgroup);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_program (IntPtr h, [In] string program);
+
+    /// <summary>
+    /// set the program name
+    /// </summary>
+    public void set_program (string program)
+    {
+      int r;
+      r = guestfs_set_program (_handle, program);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

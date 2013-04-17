@@ -248,12 +248,12 @@ some NetApp hardware.
 Partitions which are not aligned correctly to the underlying storage cause
 extra I/O.  For example:
 
-                       sect#63
+                       розділ№63
                        +--------------------------+------
-                       |         guest            |
-                       |    filesystem block      |
+                       |   блок файлової системи  |
+                       |    гостьової системи     |
  ---+------------------+------+-------------------+-----+---
-    |  host block             |  host block             |
+    |  блок основної системи  |  блок основної системи  |
     |                         |                         |
  ---+-------------------------+-------------------------+---
 

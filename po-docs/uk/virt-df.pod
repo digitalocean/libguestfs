@@ -2,15 +2,16 @@
 
 =head1 НАЗВА
 
-virt-df - Display free space on virtual filesystems
+virt-df — програма для показу даних щодо вільного місця на віртуальних
+файлових системах
 
 =head1 КОРОТКИЙ ОПИС
 
-All guests:
+Всі гостьові системи:
 
  virt-df [--параметри]
 
-Single guest:
+Окрема гостьова система:
 
  virt-df [--параметри] -d назва_домену
 
@@ -53,7 +54,8 @@ output human-readable:
  F14x64:/dev/sda1                 484M      66M       393M   14%
  F14x64:/dev/vg_f13x64/lv_root    7.4G     3.4G       4.0G   46%
 
-Show disk usage for a disk image file called C<test.img>:
+Показати дані щодо використання диска у файлі образу диска з назвою
+C<test.img>:
 
  $ virt-df -a test1.img
  Filesystem                  1K-blocks     Used  Available  Use%
@@ -141,15 +143,15 @@ with malicious guests (CVE-2010-3851).
 
 =item B<--human-readable>
 
-Print sizes in human-readable format.
+Вивести дані щодо розмірів у зручному для читання форматі.
 
-You are not allowed to use I<-h> and I<--csv> at the same time.
+Параметри I<-h> і I<--csv> не можна використовувати одночасно.
 
 =item B<-i>
 
 =item B<--inodes>
 
-Print inodes instead of blocks.
+Вивести дані щодо inode замість даних щодо блоків.
 
 =item B<--one-per-guest>
 
@@ -267,5 +269,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2012
+Copyright (C) 2009-2013 Red Hat Inc.
 

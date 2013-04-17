@@ -39,7 +39,7 @@ C<String>).
 
 Calling any method on a closed handle raises the same exception.
 
-=head2 EVENTS
+=head2 イベント
 
 The L<libguestfs event API|guestfs(3)/EVENTS> is fully supported from Java.
 Create a class which implements the C<EventCallback> interface, create an

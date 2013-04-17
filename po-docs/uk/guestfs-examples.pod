@@ -2,7 +2,7 @@
 
 =head1 НАЗВА
 
-guestfs-examples - Examples of using libguestfs from C
+guestfs-examples — приклади використання libguestfs з коду мовою C
 
 =head1 КОРОТКИЙ ОПИС
 

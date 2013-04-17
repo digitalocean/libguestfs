@@ -2210,6 +2210,10 @@ qemu subprocess, then this will return an error.
 
 This is an internal call used for debugging and testing.
 
+=item $program = $g->get_program ();
+
+Get the program name.  See C<$g-E<gt>set_program>.
+
 =item $qemu = $g->get_qemu ();
 
 Return the current qemu binary.
@@ -5696,6 +5700,15 @@ C<^C> to kill the subprocess.  Guestfish sets this flag to
 true when used interactively, so that C<^C> can cancel
 long-running commands gracefully (see C<$g-E<gt>user_cancel>).
 
+=item $g->set_program ($program);
+
+Set the program name.  This is an informative string which the
+main program may optionally set in the handle.
+
+When the handle is created, the program name in the handle is
+set to the basename from C<argv[0]>.  If that was not possible,
+it is set to the empty string (but never C<NULL>).
+
 =item $g->set_qemu ($qemu);
 
 Set the qemu binary that we will use.
@@ -8077,6 +8090,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_pid",
     description => "get PID of qemu subprocess",
+  },
+  "get_program" => {
+    ret => 'const string',
+    args => [
+    ],
+    name => "get_program",
+    description => "get the program name",
   },
   "get_qemu" => {
     ret => 'const string',
@@ -10667,6 +10687,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_pgroup",
     description => "set process group flag",
+  },
+  "set_program" => {
+    ret => 'void',
+    args => [
+      [ 'program', 'string', 0 ],
+    ],
+    name => "set_program",
+    description => "set the program name",
   },
   "set_qemu" => {
     ret => 'void',

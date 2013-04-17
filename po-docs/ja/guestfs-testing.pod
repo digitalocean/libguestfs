@@ -2,7 +2,7 @@
 
 =head1 名前
 
-guestfs-testing - manual testing of libguestfs, you can help!
+guestfs-testing - libguestfs の手動テスト、手助けになります!
 
 =head1 説明
 

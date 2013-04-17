@@ -857,6 +857,7 @@ guestfs_session_get_network
 guestfs_session_get_path
 guestfs_session_get_pgroup
 guestfs_session_get_pid
+guestfs_session_get_program
 guestfs_session_get_qemu
 guestfs_session_get_recovery_proc
 guestfs_session_get_selinux
@@ -1146,6 +1147,7 @@ guestfs_session_set_memsize
 guestfs_session_set_network
 guestfs_session_set_path
 guestfs_session_set_pgroup
+guestfs_session_set_program
 guestfs_session_set_qemu
 guestfs_session_set_recovery_proc
 guestfs_session_set_selinux

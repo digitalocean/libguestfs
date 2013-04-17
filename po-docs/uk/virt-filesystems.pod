@@ -157,14 +157,15 @@ This causes filesystems that are not ordinary, mountable filesystems to be
 displayed.  This category includes swapspace, and filesystems that are empty
 or contain unknown data.
 
-This option implies I<--filesystems>.
+Цей параметр автоматично встановлює параметр I<--filesystems>.
 
 =item B<--filesystems>
 
-Display mountable filesystems.  If no display option was selected then this
-option is implied.
+Показати список придатних до монтування систем. Якщо параметр показу не було
+визначено, цей параметр буде додано до команди.
 
-With I<--extra>, non-mountable filesystems are shown too.
+Якщо було використано параметр I<--extra>, буде показано і непридатні до
+монтування файлові системи.
 
 =item B<--format=raw|qcow2|..>
 

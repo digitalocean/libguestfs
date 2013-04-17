@@ -200,7 +200,6 @@ extern int optgroup_zerofree_available (void);
   int optgroup_luks_available (void) { return 0; }
 
 #define OPTGROUP_LVM2_NOT_AVAILABLE \
-  int __attribute__((noreturn)) do_is_lv (const char *device) { abort (); } \
   int __attribute__((noreturn)) do_lvcreate (const char *logvol, const char *volgroup, int mbytes) { abort (); } \
   int __attribute__((noreturn)) do_lvcreate_free (const char *logvol, const char *volgroup, int percent) { abort (); } \
   int __attribute__((noreturn)) do_lvm_remove_all (void) { abort (); } \

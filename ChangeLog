@@ -1,4 +1,104 @@
+2013-04-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Split C API tests into regular C file + generated tests file.
+
+	tests: Replace TestOutputHashtable with TestResult and C test.
+
+	tests: Replace TestOutputBuffer with TestResult and C test.
+
+	tests: Replace TestOutputFileMD5 with TestResult and C test.
+
+	tests: Remove TestOutputLength (not used by any tests).
+
+	tests: Replace TestOutput/TestOutputDevice with TestResult{String,Device}.
+
+	tests: Replace TestOutputList{,OfDevices} with TestResult.
+	This adds helper C functions 'is_string_list' and 'is_device_list'
+	allowing these tests to be carried out in generic C code instead of as
+	specialized tests.
+
+2013-04-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Replace TestOutputStruct with TestResult.
+
+	tests: Replace TestOutputInt{,Op} with TestResult.
+
+	tests: Replace TestOutputTrue/False with TestResultTrue/False.
+
+2013-04-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: More flexible re-implementation of C API tests.
+	Instead of using the various 'TestOutput', 'TestOutputList' etc
+	macros, it makes better sense to let the tests contain fragments of C
+	code to perform the checks.
+
+	Several new macros are added:
+
+	- 'TestResult': This macro takes a C expression which is evaluated to
+	test the result of commands.  For example to compare if a string
+	result has some value:
+
+	   TestResult (* command sequence *), "STREQ (ret, \"abcd\")"
+
+	The variable "ret" contains the result from the last command in the
+	sequence.  But also, variables "ret1", "ret2", etc contain the results
+	from the last but one command, the command before that, and so forth,
+	allowing much more flexible tests to be written.
+
+	- 'TestResultTrue', 'TestResultFalse': Wrappers that test the last
+	command for true/false.
+
+2013-04-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: 'If' and 'Unless' conditions never used, so remove them.
+
+	is_lv: Does not need to depend on lvm2.
+	It only uses 'stat', not any lvm binaries.
+
+	valgrind suppressions: Suppress libmagic leaks.
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	debian: packagelist: Add mtools.
+
+2013-04-11  Olaf Hering  <olaf@aepfle.de>
+
+	add --with-supermin-extra-options configure option
+	Useful to pass --use-installed and other options to supermin.
+
+2013-04-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update translations from Transifex.
+
+	Update gnulib to latest.
+
+	Remove use of gnulib progname module.
+	It's simpler to use the glibc 'program_invocation_short_name(3)'
+	feature, and fall back to a generic solution.  Also remove risky
+	assignments to argv[0].
+
+	New APIs: set-program, get-program.
+	These set or get the program name in the handle.  Most programs
+	will never need to call this, since we set this, if possible,
+	using the glibc 'program_invocation_short_name(3)' feature.
+
+2013-04-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Add help for prepared disk images to the man page.
+	Also the long description for each prepared disk image can now contain
+	Perl POD markup.
+
+	inspection: Don't fail if libosinfo database is not found (RHBZ#948324).
+
 2013-04-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: welcome message: guestfish can edit disk images.
+
+	"guestfish" now means the "guest filesystem shell".
+	Remove the word "interactive" which implies that guestfish can only
+	(or often) be used interactively.
+
+	Version 1.21.28.
 
 	examples: Update debug-logging.c example.
 	This updates commit e3546ad2ce2c0d953e3be2b072bacd48972450af.

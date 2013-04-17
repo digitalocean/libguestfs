@@ -152,6 +152,7 @@
 <ANCHOR id="guestfs-session-get-path" href="guestfs/GuestfsSession.html#guestfs-session-get-path">
 <ANCHOR id="guestfs-session-get-pgroup" href="guestfs/GuestfsSession.html#guestfs-session-get-pgroup">
 <ANCHOR id="guestfs-session-get-pid" href="guestfs/GuestfsSession.html#guestfs-session-get-pid">
+<ANCHOR id="guestfs-session-get-program" href="guestfs/GuestfsSession.html#guestfs-session-get-program">
 <ANCHOR id="guestfs-session-get-qemu" href="guestfs/GuestfsSession.html#guestfs-session-get-qemu">
 <ANCHOR id="guestfs-session-get-recovery-proc" href="guestfs/GuestfsSession.html#guestfs-session-get-recovery-proc">
 <ANCHOR id="guestfs-session-get-selinux" href="guestfs/GuestfsSession.html#guestfs-session-get-selinux">
@@ -441,6 +442,7 @@
 <ANCHOR id="guestfs-session-set-network" href="guestfs/GuestfsSession.html#guestfs-session-set-network">
 <ANCHOR id="guestfs-session-set-path" href="guestfs/GuestfsSession.html#guestfs-session-set-path">
 <ANCHOR id="guestfs-session-set-pgroup" href="guestfs/GuestfsSession.html#guestfs-session-set-pgroup">
+<ANCHOR id="guestfs-session-set-program" href="guestfs/GuestfsSession.html#guestfs-session-set-program">
 <ANCHOR id="guestfs-session-set-qemu" href="guestfs/GuestfsSession.html#guestfs-session-set-qemu">
 <ANCHOR id="guestfs-session-set-recovery-proc" href="guestfs/GuestfsSession.html#guestfs-session-set-recovery-proc">
 <ANCHOR id="guestfs-session-set-selinux" href="guestfs/GuestfsSession.html#guestfs-session-set-selinux">

@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2012 Free Software Foundation, Inc.
+# Copyright (C) 2002-2013 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -176,6 +176,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module getopt-posix:
   # Code from module getopt-posix-tests:
   # Code from module getpagesize:
+  # Code from module gettext:
   # Code from module gettext-h:
   # Code from module gettime:
   # Code from module gettimeofday:
@@ -247,6 +248,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module memrchr:
   # Code from module memrchr-tests:
   # Code from module mkdtemp:
+  # Code from module mkstemps:
   # Code from module msvc-inval:
   # Code from module msvc-nothrow:
   # Code from module multiarch:
@@ -303,6 +305,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module safe-write:
   # Code from module same-inode:
   # Code from module save-cwd:
+  # Code from module secure_getenv:
   # Code from module select:
   # Code from module select-tests:
   # Code from module servent:
@@ -597,7 +600,6 @@ AC_SUBST([LTALLOCA])
   if test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1; then
     AC_LIBOBJ([fstatat])
   fi
-  gl_MODULE_INDICATOR([fstatat]) dnl for lib/openat.h
   gl_SYS_STAT_MODULE_INDICATOR([fstatat])
   gl_FSUSAGE
   if test $gl_cv_fs_space = yes; then
@@ -798,6 +800,12 @@ AC_SUBST([LTALLOCA])
     gl_PREREQ_MKDTEMP
   fi
   gl_STDLIB_MODULE_INDICATOR([mkdtemp])
+  gl_FUNC_MKSTEMPS
+  if test $HAVE_MKSTEMPS = 0; then
+    AC_LIBOBJ([mkstemps])
+  fi
+  gl_MODULE_INDICATOR([mkstemps])
+  gl_STDLIB_MODULE_INDICATOR([mkstemps])
   gl_MSVC_INVAL
   if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
     AC_LIBOBJ([msvc-inval])
@@ -843,8 +851,6 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([pread])
   fi
   gl_UNISTD_MODULE_INDICATOR([pread])
-  AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
-  AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
   gl_QUOTE
   gl_QUOTEARG
   gl_FUNC_RAISE
@@ -890,6 +896,12 @@ AC_SUBST([LTALLOCA])
   gl_PREREQ_SAFE_READ
   gl_PREREQ_SAFE_WRITE
   gl_SAVE_CWD
+  gl_FUNC_SECURE_GETENV
+  if test $HAVE_SECURE_GETENV = 0; then
+    AC_LIBOBJ([secure_getenv])
+    gl_PREREQ_SECURE_GETENV
+  fi
+  gl_STDLIB_MODULE_INDICATOR([secure_getenv])
   gl_FUNC_SELECT
   if test $REPLACE_SELECT = 1; then
     AC_LIBOBJ([select])
@@ -1142,6 +1154,8 @@ changequote([, ])dnl
     AC_LIBOBJ([getpagesize])
   fi
   gl_UNISTD_MODULE_INDICATOR([getpagesize])
+  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
+  AM_GNU_GETTEXT_VERSION([0.18.1])
   AC_C_BIGENDIAN
   gl_FUNC_INET_PTON
   if test $HAVE_INET_PTON = 0 || test $REPLACE_INET_NTOP = 1; then
@@ -1197,9 +1211,12 @@ changequote([, ])dnl
   fi
   gl_UNISTD_MODULE_INDICATOR([pipe])
   gl_PRIV_SET
+  AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
+  AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
   gl_FUNC_PUTENV
   if test $REPLACE_PUTENV = 1; then
     AC_LIBOBJ([putenv])
+    gl_PREREQ_PUTENV
   fi
   gl_STDLIB_MODULE_INDICATOR([putenv])
   dnl Check for prerequisites for memory fence checks.
@@ -1228,8 +1245,8 @@ changequote([, ])dnl
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
   AC_CHECK_DECLS_ONCE([alarm])
-  gt_TYPE_WCHAR_T
-  gt_TYPE_WINT_T
+  AC_REQUIRE([gt_TYPE_WCHAR_T])
+  AC_REQUIRE([gt_TYPE_WINT_T])
   dnl Check for prerequisites for memory fence checks.
   gl_FUNC_MMAP_ANON
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
@@ -1538,6 +1555,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/mempcpy.c
   lib/memrchr.c
   lib/mkdtemp.c
+  lib/mkstemps.c
   lib/msvc-inval.c
   lib/msvc-inval.h
   lib/msvc-nothrow.c
@@ -1563,8 +1581,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
-  lib/progname.c
-  lib/progname.h
   lib/quote.h
   lib/quotearg.c
   lib/quotearg.h
@@ -1587,6 +1603,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/same-inode.h
   lib/save-cwd.c
   lib/save-cwd.h
+  lib/secure_getenv.c
   lib/select.c
   lib/setenv.c
   lib/signal.in.h
@@ -1599,14 +1616,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stat-time.c
   lib/stat-time.h
   lib/stat.c
-  lib/statat.c
   lib/stdalign.in.h
   lib/stdarg.in.h
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
   lib/stdio-impl.h
-  lib/stdio.c
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/str-two-way.h
@@ -1737,8 +1752,10 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getlogin_r.m4
   m4/getopt.m4
   m4/getpagesize.m4
+  m4/gettext.m4
   m4/gettime.m4
   m4/gettimeofday.m4
+  m4/glibc2.m4
   m4/glibc21.m4
   m4/glob.m4
   m4/gnu-make.m4
@@ -1746,10 +1763,15 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/hostent.m4
   m4/human.m4
   m4/i-ring.m4
+  m4/iconv.m4
   m4/include_next.m4
   m4/inet_ntop.m4
   m4/inet_pton.m4
+  m4/intdiv0.m4
+  m4/intl.m4
+  m4/intldir.m4
   m4/intlmacosx.m4
+  m4/intmax.m4
   m4/intmax_t.m4
   m4/inttostr.m4
   m4/inttypes-pri.m4
@@ -1787,6 +1809,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mempcpy.m4
   m4/memrchr.m4
   m4/mkdtemp.m4
+  m4/mkstemps.m4
   m4/mmap-anon.m4
   m4/mode_t.m4
   m4/msvc-inval.m4
@@ -1794,6 +1817,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/multiarch.m4
   m4/netdb_h.m4
   m4/netinet_in_h.m4
+  m4/nls.m4
   m4/nocrash.m4
   m4/off_t.m4
   m4/onceonly.m4
@@ -1804,9 +1828,12 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/perror.m4
   m4/pipe.m4
   m4/pipe2.m4
+  m4/po.m4
   m4/pread.m4
+  m4/printf-posix.m4
   m4/printf.m4
   m4/priv-set.m4
+  m4/progtest.m4
   m4/putenv.m4
   m4/quote.m4
   m4/quotearg.m4
@@ -1822,6 +1849,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/safe-read.m4
   m4/safe-write.m4
   m4/save-cwd.m4
+  m4/secure_getenv.m4
   m4/select.m4
   m4/servent.m4
   m4/setenv.m4
@@ -1870,6 +1898,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/threadlib.m4
   m4/time_h.m4
   m4/timespec.m4
+  m4/uintmax_t.m4
   m4/ungetc.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4
@@ -1883,6 +1912,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/utimes.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
+  m4/visibility.m4
   m4/warn-on-use.m4
   m4/warnings.m4
   m4/wchar_h.m4
@@ -2156,6 +2186,8 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/pipe.c
   tests=lib/priv-set.c
   tests=lib/priv-set.h
+  tests=lib/progname.c
+  tests=lib/progname.h
   tests=lib/putenv.c
   tests=lib/rmdir.c
   tests=lib/root-uid.h
