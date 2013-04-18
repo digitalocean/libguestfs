@@ -1,3 +1,9 @@
+libguestfs (1:1.20.6-3) unstable; urgency=low
+
+  * Really enabled gtk-doc
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 18 Apr 2013 23:32:13 +0200
+
 libguestfs (1:1.20.6-2) unstable; urgency=low
 
   * Cleaned up misplaced and duplicate bash completion conffiles
