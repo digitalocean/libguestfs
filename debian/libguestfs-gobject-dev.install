@@ -4,3 +4,5 @@ usr/lib/*-*/libguestfs-gobject-*.so
 usr/lib/*-*/libguestfs-gobject-*.la
 
 usr/share/gir-1.0
+
+usr/share/gtk-doc

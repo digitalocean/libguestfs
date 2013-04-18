@@ -303,7 +303,8 @@ Description: guest disk image management system - GObject development headers
  The libguestfs library allows accessing and modifying guest disk
  images.
  .
- This package contains the development headers for the GObject bindings.
+ This package contains the development headers and documentation for
+ the GObject bindings.
 
 Package: gir1.2-guestfs-1.0
 Section: introspection

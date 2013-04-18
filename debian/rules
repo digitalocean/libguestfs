@@ -13,7 +13,8 @@ DEFAULT_CONFIG_FLAGS = \
 	--disable-appliance  \
 	--with-readline	     \
 	--disable-haskell    \
-	--disable-php
+	--disable-php	     \
+	--enable-gtk-doc
 
 BARE_CONFIG_FLAGS = \
 	$(DEFAULT_CONFIG_FLAGS) \
