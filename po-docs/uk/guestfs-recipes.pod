@@ -46,12 +46,12 @@ To checksum a single file:
 
  guestfish --ro -a disk.img -i checksum sha256 /etc/passwd
 
-or for a Windows guest:
+або для гостьової системи Windows:
 
- guestfish --ro -a disk.img -i \
+ guestfish --ro -a диск.img -i \
    checksum sha256 'win:\windows\system32\config\SOFTWARE'
 
-=head1 Cloning a virtual machine
+=head1 Клонування віртуальної машини
 
 Use a combination of tools like L<cp(1)>, L<dd(1)>, and virt tools like
 L<virt-sysprep(1)>, L<virt-sparsify(1)> and L<virt-resize(1)>.
@@ -120,7 +120,7 @@ L<https://rwmj.wordpress.com/2010/09/08/new-guestfish-n-options-in-1-5-9/#conten
 
 To touch a file (bring it up to date or create it):
 
- guestfish -a disk.img -i touch /file/to/touch
+ guestfish -a диск.img -i touch /файл/позначку/якого/слід/оновити
 
 To stat a file.  Since this is a read-only operation, we can make it safer
 by adding the I<--ro> flag.
@@ -430,7 +430,7 @@ L<https://rwmj.wordpress.com/2010/12/10/tip-list-services-in-a-windows-guest/#co
 
 =head1 Make a disk image sparse
 
-Use L<virt-sparsify(1)>.
+Скористайтеся L<virt-sparsify(1)>.
 
 =head1 Monitor disk usage over time
 
@@ -528,5 +528,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2012
+Copyright (C) 2009-2013 Red Hat Inc.
 

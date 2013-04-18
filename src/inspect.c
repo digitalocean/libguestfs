@@ -37,8 +37,6 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
-static int parent_device_already_probed (guestfs_h *g, const char *partition);
-
 /* The main inspection code. */
 char **
 guestfs__inspect_os (guestfs_h *g)
@@ -49,77 +47,18 @@ guestfs__inspect_os (guestfs_h *g)
   if (guestfs_umount_all (g) == -1)
     return NULL;
 
-  /* Iterate over all possible devices.  Try to mount each
-   * (read-only).  Examine ones which contain filesystems and add that
-   * information to the handle.
+  /* Iterate over all detected filesystems.  Inspect each one in turn
+   * and add that information to the handle.
    */
-  /* Look to see if any devices directly contain filesystems (RHBZ#590167). */
-  char **devices = guestfs_list_devices (g);
-  if (devices == NULL)
-    return NULL;
 
-  size_t i;
-  for (i = 0; devices[i] != NULL; ++i) {
-    if (guestfs___check_for_filesystem_on (g, devices[i], 1, 0) == -1) {
-      guestfs___free_string_list (devices);
+  CLEANUP_FREE_STRING_LIST char **fses = guestfs_list_filesystems (g);
+  if (fses == NULL) return NULL; 
+
+  for (char **fs = fses; *fs; fs += 2) {
+    if (guestfs___check_for_filesystem_on (g, *fs)) {
       guestfs___free_inspect_info (g);
       return NULL;
     }
-  }
-  guestfs___free_string_list (devices);
-
-  /* Look at all partitions. */
-  char **partitions = guestfs_list_partitions (g);
-  if (partitions == NULL) {
-    guestfs___free_inspect_info (g);
-    return NULL;
-  }
-
-  for (i = 0; partitions[i] != NULL; ++i) {
-    if (parent_device_already_probed (g, partitions[i]))
-      continue;
-
-    if (guestfs___check_for_filesystem_on (g, partitions[i], 0, i+1) == -1) {
-      guestfs___free_string_list (partitions);
-      guestfs___free_inspect_info (g);
-      return NULL;
-    }
-  }
-  guestfs___free_string_list (partitions);
-
-  /* Look at MD devices. */
-  char **mds = guestfs_list_md_devices (g);
-  if (mds == NULL) {
-    guestfs___free_inspect_info (g);
-    return NULL;
-  }
-
-  for (i = 0; mds[i] != NULL; ++i) {
-    if (guestfs___check_for_filesystem_on (g, mds[i], 0, i+1) == -1) {
-      guestfs___free_string_list (mds);
-      guestfs___free_inspect_info (g);
-      return NULL;
-    }
-  }
-  guestfs___free_string_list (mds);
-
-  /* Look at all LVs. */
-  if (guestfs___feature_available (g, "lvm2")) {
-    char **lvs;
-    lvs = guestfs_lvs (g);
-    if (lvs == NULL) {
-      guestfs___free_inspect_info (g);
-      return NULL;
-    }
-
-    for (i = 0; lvs[i] != NULL; ++i) {
-      if (guestfs___check_for_filesystem_on (g, lvs[i], 0, 0) == -1) {
-        guestfs___free_string_list (lvs);
-        guestfs___free_inspect_info (g);
-        return NULL;
-      }
-    }
-    guestfs___free_string_list (lvs);
   }
 
   /* At this point we have, in the handle, a list of all filesystems
@@ -131,29 +70,6 @@ guestfs__inspect_os (guestfs_h *g)
   if (ret == NULL)
     guestfs___free_inspect_info (g);
   return ret;
-}
-
-/* If we found a filesystem on the parent device then ignore the
- * partitions within.
- */
-static int
-parent_device_already_probed (guestfs_h *g, const char *partition)
-{
-  CLEANUP_FREE char *device = NULL;
-  size_t i;
-
-  guestfs_push_error_handler (g, NULL, NULL);
-  device = guestfs_part_to_dev (g, partition);
-  guestfs_pop_error_handler (g);
-  if (!device)
-    return 0;
-
-  for (i = 0; i < g->nr_fses; ++i) {
-    if (STREQ (device, g->fses[i].device))
-      return 1;
-  }
-
-  return 0;
 }
 
 static int
@@ -187,7 +103,7 @@ guestfs__inspect_get_roots (guestfs_h *g)
   count = 0;
   for (i = 0; i < g->nr_fses; ++i) {
     if (g->fses[i].is_root) {
-      ret[count] = safe_strdup (g, g->fses[i].device);
+      ret[count] = safe_strdup (g, g->fses[i].mountable);
       count++;
     }
   }
@@ -205,7 +121,7 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->type) {
   case OS_TYPE_DOS: ret = safe_strdup (g, "dos"); break;
   case OS_TYPE_FREEBSD: ret = safe_strdup (g, "freebsd"); break;
@@ -214,8 +130,11 @@ guestfs__inspect_get_type (guestfs_h *g, const char *root)
   case OS_TYPE_NETBSD: ret = safe_strdup (g, "netbsd"); break;
   case OS_TYPE_OPENBSD: ret = safe_strdup (g, "openbsd"); break;
   case OS_TYPE_WINDOWS: ret = safe_strdup (g, "windows"); break;
-  case OS_TYPE_UNKNOWN: default: ret = safe_strdup (g, "unknown"); break;
+  case OS_TYPE_UNKNOWN: ret = safe_strdup (g, "unknown"); break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -237,7 +156,7 @@ guestfs__inspect_get_distro (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->distro) {
   case OS_DISTRO_ARCHLINUX: ret = safe_strdup (g, "archlinux"); break;
   case OS_DISTRO_BUILDROOT: ret = safe_strdup (g, "buildroot"); break;
@@ -263,8 +182,11 @@ guestfs__inspect_get_distro (guestfs_h *g, const char *root)
   case OS_DISTRO_TTYLINUX: ret = safe_strdup (g, "ttylinux"); break;
   case OS_DISTRO_WINDOWS: ret = safe_strdup (g, "windows"); break;
   case OS_DISTRO_UBUNTU: ret = safe_strdup (g, "ubuntu"); break;
-  case OS_DISTRO_UNKNOWN: default: ret = safe_strdup (g, "unknown"); break;
+  case OS_DISTRO_UNKNOWN: ret = safe_strdup (g, "unknown"); break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -347,12 +269,15 @@ guestfs__inspect_get_format (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->format) {
   case OS_FORMAT_INSTALLED: ret = safe_strdup (g, "installed"); break;
   case OS_FORMAT_INSTALLER: ret = safe_strdup (g, "installer"); break;
-  case OS_FORMAT_UNKNOWN: default: ret = safe_strdup (g, "unknown"); break;
+  case OS_FORMAT_UNKNOWN: ret = safe_strdup (g, "unknown"); break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -427,7 +352,7 @@ guestfs__inspect_get_mountpoints (guestfs_h *g, const char *root)
   for (i = 0; i < nr; ++i)
     if (CRITERION (fs, i)) {
       ret[2*count] = safe_strdup (g, fs->fstab[i].mountpoint);
-      ret[2*count+1] = safe_strdup (g, fs->fstab[i].device);
+      ret[2*count+1] = safe_strdup (g, fs->fstab[i].mountable);
       count++;
     }
 #undef CRITERION
@@ -459,7 +384,7 @@ guestfs__inspect_get_filesystems (guestfs_h *g, const char *root)
   }
 
   for (i = 0; i < nr; ++i)
-    ret[i] = safe_strdup (g, fs->fstab[i].device);
+    ret[i] = safe_strdup (g, fs->fstab[i].mountable);
 
   return ret;
 }
@@ -507,7 +432,7 @@ guestfs__inspect_get_package_format (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->package_format) {
   case OS_PACKAGE_FORMAT_RPM: ret = safe_strdup (g, "rpm"); break;
   case OS_PACKAGE_FORMAT_DEB: ret = safe_strdup (g, "deb"); break;
@@ -516,10 +441,12 @@ guestfs__inspect_get_package_format (guestfs_h *g, const char *root)
   case OS_PACKAGE_FORMAT_PISI: ret = safe_strdup (g, "pisi"); break;
   case OS_PACKAGE_FORMAT_PKGSRC: ret = safe_strdup (g, "pkgsrc"); break;
   case OS_PACKAGE_FORMAT_UNKNOWN:
-  default:
     ret = safe_strdup (g, "unknown");
     break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -531,7 +458,7 @@ guestfs__inspect_get_package_management (guestfs_h *g, const char *root)
   if (!fs)
     return NULL;
 
-  char *ret;
+  char *ret = NULL;
   switch (fs->package_management) {
   case OS_PACKAGE_MANAGEMENT_YUM: ret = safe_strdup (g, "yum"); break;
   case OS_PACKAGE_MANAGEMENT_UP2DATE: ret = safe_strdup (g, "up2date"); break;
@@ -542,10 +469,12 @@ guestfs__inspect_get_package_management (guestfs_h *g, const char *root)
   case OS_PACKAGE_MANAGEMENT_URPMI: ret = safe_strdup (g, "urpmi"); break;
   case OS_PACKAGE_MANAGEMENT_ZYPPER: ret = safe_strdup (g, "zypper"); break;
   case OS_PACKAGE_MANAGEMENT_UNKNOWN:
-  default:
     ret = safe_strdup (g, "unknown");
     break;
   }
+
+  if (ret == NULL)
+    abort ();
 
   return ret;
 }
@@ -565,7 +494,7 @@ guestfs___free_inspect_info (guestfs_h *g)
 {
   size_t i;
   for (i = 0; i < g->nr_fses; ++i) {
-    free (g->fses[i].device);
+    free (g->fses[i].mountable);
     free (g->fses[i].product_name);
     free (g->fses[i].product_variant);
     free (g->fses[i].arch);
@@ -574,7 +503,7 @@ guestfs___free_inspect_info (guestfs_h *g)
     free (g->fses[i].windows_current_control_set);
     size_t j;
     for (j = 0; j < g->fses[i].nr_fstab; ++j) {
-      free (g->fses[i].fstab[j].device);
+      free (g->fses[i].fstab[j].mountable);
       free (g->fses[i].fstab[j].mountpoint);
     }
     free (g->fses[i].fstab);
@@ -584,23 +513,6 @@ guestfs___free_inspect_info (guestfs_h *g)
   free (g->fses);
   g->nr_fses = 0;
   g->fses = NULL;
-}
-
-/* In the Perl code this is a public function. */
-int
-guestfs___feature_available (guestfs_h *g, const char *feature)
-{
-  const char *groups[] = { feature, NULL };
-  int r;
-
-  /* If there's an error we should ignore it, so to do that we have to
-   * temporarily replace the error handler with a null one.
-   */
-  guestfs_push_error_handler (g, NULL, NULL);
-  r = guestfs_available (g, (char * const *) groups);
-  guestfs_pop_error_handler (g);
-
-  return r == 0 ? 1 : 0;
 }
 
 /* Download a guest file to a local temporary file.  The file is
@@ -688,7 +600,7 @@ guestfs___search_for_root (guestfs_h *g, const char *root)
   struct inspect_fs *fs;
   for (i = 0; i < g->nr_fses; ++i) {
     fs = &g->fses[i];
-    if (fs->is_root && STREQ (root, fs->device))
+    if (fs->is_root && STREQ (root, fs->mountable))
       return fs;
   }
 

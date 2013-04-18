@@ -112,6 +112,10 @@ val delete_event_callback : t -> event_handle -> unit
 (** [delete_event_callback g eh] removes a previously registered
     event callback.  See {!set_event_callback}. *)
 
+val event_to_string : event list -> string
+(** [event_to_string events] returns the event(s) as a printable string
+    for debugging etc. *)
+
 val last_errno : t -> int
 (** [last_errno g] returns the last errno that happened on the handle [g]
     (or [0] if there was no errno).  Note that the returned integer is the
@@ -120,10 +124,6 @@ val last_errno : t -> int
     [last_errno] can be overwritten by subsequent operations on a handle,
     so if you want to capture the errno correctly, you must call this
     in the {!Error} exception handler, before any other operation on [g]. *)
-
-val user_cancel : t -> unit
-(** Cancel current transfer.  This is safe to call from OCaml signal
-    handlers and threads. *)
 
 ";
   generate_ocaml_structure_decls ();
@@ -182,7 +182,6 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_event_callback : event_callback -> event list -> event_handle
   method delete_event_callback : event_handle -> unit
   method last_errno : unit -> int
-  method user_cancel : unit -> unit
   method ocaml_handle : t
 ";
 
@@ -249,10 +248,10 @@ external set_event_callback : t -> event_callback -> event list -> event_handle
   = \"ocaml_guestfs_set_event_callback\"
 external delete_event_callback : t -> event_handle -> unit
   = \"ocaml_guestfs_delete_event_callback\"
+external event_to_string : event list -> string
+  = \"ocaml_guestfs_event_to_string\"
 
 external last_errno : t -> int = \"ocaml_guestfs_last_errno\"
-
-external user_cancel : t -> unit = \"ocaml_guestfs_user_cancel\" \"noalloc\"
 
 (* Give the exceptions names, so they can be raised from the C code. *)
 let () =
@@ -279,7 +278,6 @@ class guestfs ?environment ?close_on_exit () =
     method set_event_callback = set_event_callback g
     method delete_event_callback = delete_event_callback g
     method last_errno () = last_errno g
-    method user_cancel () = user_cancel g
     method ocaml_handle = g
 ";
 
@@ -499,7 +497,7 @@ copy_table (char * const * argv)
       List.iter (
         function
         | Pathname n
-        | Device n | Dev_or_Path n
+        | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
         | String n
         | FileIn n
         | FileOut n
@@ -585,8 +583,9 @@ copy_table (char * const * argv)
       (* Free strings if we copied them above. *)
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | OptString n
-        | FileIn n | FileOut n | BufferIn n | Key n ->
+        | Pathname n | Device n | Mountable n
+        | Dev_or_Path n | Mountable_or_Path n | String n
+        | OptString n | FileIn n | FileOut n | BufferIn n | Key n ->
             pr "  free (%s);\n" n
         | StringList n | DeviceList n ->
             pr "  guestfs___free_string_list (%s);\n" n;
@@ -714,8 +713,9 @@ and generate_ocaml_function_type ?(extra_unit = false) (ret, args, optargs) =
   ) optargs;
   List.iter (
     function
-    | Pathname _ | Device _ | Dev_or_Path _ | String _ | FileIn _ | FileOut _
-    | BufferIn _ | Key _ -> pr "string -> "
+    | Pathname _ | Device _ | Mountable _
+    | Dev_or_Path _ | Mountable_or_Path _ | String _
+    | FileIn _ | FileOut _ | BufferIn _ | Key _ -> pr "string -> "
     | OptString _ -> pr "string option -> "
     | StringList _ | DeviceList _ -> pr "string array -> "
     | Bool _ -> pr "bool -> "

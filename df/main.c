@@ -25,19 +25,22 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <errno.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
+
+#include <libxml/uri.h>
 
 #ifdef HAVE_LIBVIRT
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 #endif
 
-#include "progname.h"
-
 #include "guestfs.h"
 #include "options.h"
+#include "domains.h"
+#include "parallel.h"
 #include "virt-df.h"
 
 /* These globals are shared with options.c. */
@@ -54,7 +57,6 @@ int inspector = 0;
 int csv = 0;                    /* --csv */
 int human = 0;                  /* --human-readable|-h */
 int inodes = 0;                 /* --inodes */
-int one_per_guest = 0;          /* --one-per-guest */
 int uuid = 0;                   /* --uuid */
 
 static char *make_display_name (struct drv *drvs);
@@ -82,6 +84,7 @@ usage (int status)
              "  --help               Display brief help\n"
              "  -i|--inodes          Display inodes\n"
              "  --one-per-guest      Separate appliance per guest\n"
+             "  -P nr_threads        Use at most nr_threads\n"
              "  --uuid               Add UUIDs to --long output\n"
              "  -v|--verbose         Verbose messages\n"
              "  -V|--version         Display version and exit\n"
@@ -96,16 +99,13 @@ usage (int status)
 int
 main (int argc, char *argv[])
 {
-  /* Set global program name that is not polluted with libtool artifacts.  */
-  set_program_name (argv[0]);
-
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
 
   enum { HELP_OPTION = CHAR_MAX + 1 };
 
-  static const char *options = "a:c:d:hivVx";
+  static const char *options = "a:c:d:hiP:vVx";
   static const struct option long_options[] = {
     { "add", 1, 0, 'a' },
     { "connect", 1, 0, 'c' },
@@ -115,6 +115,7 @@ main (int argc, char *argv[])
     { "help", 0, 0, HELP_OPTION },
     { "human-readable", 0, 0, 'h' },
     { "inodes", 0, 0, 'i' },
+    { "long-options", 0, 0, 0 },
     { "one-per-guest", 0, 0, 0 },
     { "uuid", 0, 0, 0 },
     { "verbose", 0, 0, 'v' },
@@ -126,6 +127,8 @@ main (int argc, char *argv[])
   const char *format = NULL;
   int c;
   int option_index;
+  size_t max_threads = 0;
+  int err;
 
   g = guestfs_create ();
   if (g == NULL) {
@@ -133,15 +136,15 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  argv[0] = (char *) program_name;
-
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "format")) {
+      if (STREQ (long_options[option_index].name, "long-options"))
+        display_long_options (long_options);
+      else if (STREQ (long_options[option_index].name, "format")) {
         if (!optarg || STREQ (optarg, ""))
           format = NULL;
         else
@@ -149,7 +152,7 @@ main (int argc, char *argv[])
       } else if (STREQ (long_options[option_index].name, "csv")) {
         csv = 1;
       } else if (STREQ (long_options[option_index].name, "one-per-guest")) {
-        one_per_guest = 1;
+        /* nothing - left for backwards compatibility */
       } else if (STREQ (long_options[option_index].name, "uuid")) {
         uuid = 1;
       } else {
@@ -177,6 +180,13 @@ main (int argc, char *argv[])
 
     case 'i':
       inodes = 1;
+      break;
+
+    case 'P':
+      if (sscanf (optarg, "%zu", &max_threads) != 1) {
+        fprintf (stderr, _("%s: -P option is not numeric\n"), program_name);
+        exit (EXIT_FAILURE);
+      }
       break;
 
     case 'v':
@@ -252,19 +262,24 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  /* If the user didn't specify any drives, then we ask libvirt for
-   * the full list of guests and drives, which we add in batches.
+  /* virt-df has two modes.  If the user didn't specify any drives,
+   * then we do the df on every libvirt guest.  That's the if-clause
+   * below.  If the user specified domains/drives, then we assume they
+   * belong to a single guest.  That's the else-clause below.
    */
   if (drvs == NULL) {
-#if defined(HAVE_LIBVIRT) && defined(HAVE_LIBXML2)
-    get_domains_from_libvirt ();
+#if defined(HAVE_LIBVIRT)
+    get_all_libvirt_domains (libvirt_uri);
+    print_title ();
+    err = start_threads (max_threads, g, df_work);
+    free_domains ();
 #else
-    fprintf (stderr, _("%s: compiled without support for libvirt and/or libxml2.\n"),
+    fprintf (stderr, _("%s: compiled without support for libvirt.\n"),
              program_name);
     exit (EXIT_FAILURE);
 #endif
   }
-  else {
+  else {                        /* Single guest. */
     CLEANUP_FREE char *name = NULL;
 
     /* Add domains/drives from the command line (for a single guest). */
@@ -284,7 +299,7 @@ main (int argc, char *argv[])
      * guestfs_add_domain so the UUID is not available easily for
      * single '-d' command-line options.
      */
-    (void) df_on_handle (name, NULL, NULL, 0);
+    err = df_on_handle (g, name, NULL, stdout);
 
     /* Free up data structures, no longer needed after this point. */
     free_drives (drvs);
@@ -292,16 +307,17 @@ main (int argc, char *argv[])
 
   guestfs_close (g);
 
-  exit (EXIT_SUCCESS);
+  exit (err == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 /* Generate a display name for the single guest mode.  See comments in
  * https://bugzilla.redhat.com/show_bug.cgi?id=880801
  */
-static const char *
+static char *
 single_drive_display_name (struct drv *drvs)
 {
-  const char *name;
+  char *name = NULL;
+  char *p;
 
   assert (drvs != NULL);
   assert (drvs->next == NULL);
@@ -313,13 +329,46 @@ single_drive_display_name (struct drv *drvs)
       name = drvs->a.filename;
     else
       name++;                   /* skip '/' character */
+    name = strdup (name);
+    if (name == NULL) {
+      perror ("strdup");
+      exit (EXIT_FAILURE);
+    }
     break;
+
+  case drv_uri:
+    name = (char *) xmlSaveUri (drvs->uri.uri);
+    if (name == NULL) {
+      fprintf (stderr, _("%s: xmlSaveUri: could not make printable URI\n"),
+               program_name);
+      exit (EXIT_FAILURE);
+    }
+    /* Try to shorten the URI to just the final element, if it will
+     * still make sense.
+     */
+    p = strrchr (name, '/');
+    if (p && strlen (p) > 1) {
+      p = strdup (p+1);
+      if (!p) {
+        perror ("strdup");
+        exit (EXIT_FAILURE);
+      }
+      free (name);
+      name = p;
+    }
+    break;
+
   case drv_d:
-    name = drvs->d.guest;
+    name = strdup (drvs->d.guest);
+    if (name == NULL) {
+      perror ("strdup");
+      exit (EXIT_FAILURE);
+    }
     break;
-  default:
-    abort ();
   }
+
+  if (!name)
+    abort ();
 
   return name;
 }
@@ -332,16 +381,9 @@ make_display_name (struct drv *drvs)
   assert (drvs != NULL);
 
   /* Single disk or domain. */
-  if (drvs->next == NULL) {
-    const char *name;
+  if (drvs->next == NULL)
+    ret = single_drive_display_name (drvs);
 
-    name = single_drive_display_name (drvs);
-    ret = strdup (name);
-    if (ret == NULL) {
-      perror ("strdup");
-      exit (EXIT_FAILURE);
-    }
-  }
   /* Multiple disks.  Multiple domains are possible, although that is
    * probably user error.  Choose the first name (last in the list),
    * and add '+' for each additional disk.
@@ -349,22 +391,20 @@ make_display_name (struct drv *drvs)
   else {
     size_t pluses = 0;
     size_t i, len;
-    const char *name;
 
     while (drvs->next != NULL) {
       drvs = drvs->next;
       pluses++;
     }
 
-    name = single_drive_display_name (drvs);
-    len = strlen (name);
+    ret = single_drive_display_name (drvs);
+    len = strlen (ret);
 
-    ret = malloc (len + pluses + 1);
+    ret = realloc (ret, len + pluses + 1);
     if (ret == NULL) {
-      perror ("malloc");
+      perror ("realloc");
       exit (EXIT_FAILURE);
     }
-    memcpy (ret, name, len);
     for (i = len; i < len + pluses; ++i)
       ret[i] = '+';
     ret[i] = '\0';

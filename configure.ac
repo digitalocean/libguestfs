@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [20])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_minor],   [21])
+m4_define([libguestfs_release], [31])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -80,16 +80,25 @@ AC_DEFINE([PACKAGE_VERSION_MINOR],[libguestfs_minor],[Minor version number.])
 AC_DEFINE([PACKAGE_VERSION_RELEASE],[libguestfs_release],[Release number.])
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_EXTRA],["$libguestfs_extra"],[Extra version string.])
 
-dnl Default attach method.
-AC_MSG_CHECKING([if the user specified a default attach method])
+dnl Default backend.
+AC_MSG_CHECKING([if the user specified a default backend])
+AC_ARG_WITH([default-backend],
+    [AS_HELP_STRING([--with-default-backend="direct|libvirt|..."],
+        [set default backend @<:@default=direct@:>@])],
+    [DEFAULT_BACKEND="$withval"],
+    [DEFAULT_BACKEND=direct])
+AC_MSG_RESULT([$DEFAULT_BACKEND])
+AC_DEFINE_UNQUOTED([DEFAULT_BACKEND],["$DEFAULT_BACKEND"],
+                   [Default backend.])
+
+dnl Fail with error if user does --with-default-attach-method.
 AC_ARG_WITH([default-attach-method],
-    [AS_HELP_STRING([--with-default-attach-method="appliance|libvirt|..."],
-        [set default attach method @<:@default=appliance@:>@])],
-    [DEFAULT_ATTACH_METHOD="$withval"],
-    [DEFAULT_ATTACH_METHOD=appliance])
-AC_MSG_RESULT([$DEFAULT_ATTACH_METHOD])
-AC_DEFINE_UNQUOTED([DEFAULT_ATTACH_METHOD],["$DEFAULT_ATTACH_METHOD"],
-                   [Default attach method.])
+    [AS_HELP_STRING([--with-default-attach-method="..."],
+        [use --with-default-backend instead])],
+    [AC_MSG_FAILURE([--with-default-attach-method no longer works in
+this version of libguestfs, use
+  ./configure --with-default-backend=$withval
+instead.])])
 
 dnl Early gnulib initialization.
 gl_EARLY
@@ -262,6 +271,9 @@ AC_CHECK_MEMBER([struct stat.st_blksize],[
 
 dnl Define a C symbol for the host CPU architecture.
 AC_DEFINE_UNQUOTED([host_cpu],["$host_cpu"],[Host architecture.])
+
+dnl Check if libc has program_invocation_short_name.
+AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
 
 dnl Headers.
 AC_CHECK_HEADERS([\
@@ -461,6 +473,19 @@ AC_ARG_WITH([febootstrap-packager-config],
 
 AC_SUBST([SUPERMIN_PACKAGER_CONFIG])
 
+dnl Pass additional supermin options.
+dnl
+SUPERMIN_EXTRA_OPTIONS=no
+AC_MSG_CHECKING([for --with-supermin-extra-options option])
+AC_ARG_WITH([supermin-extra-options],
+    [AS_HELP_STRING([--with-supermin-extra-options=STRING],
+        [Pass additional supermin options. @<:@default=no@:>@])],
+    [SUPERMIN_EXTRA_OPTIONS="$withval"
+     AC_MSG_RESULT([$SUPERMIN_EXTRA_OPTIONS"])],
+    [AC_MSG_RESULT([not set])])
+
+AC_SUBST([SUPERMIN_EXTRA_OPTIONS])
+
 if test "x$enable_appliance" = "xyes"; then
     test "x$SUPERMIN" = "xno" &&
         AC_MSG_ERROR([supermin (formerly called febootstrap) must be installed])
@@ -490,6 +515,14 @@ if test -f /etc/arch-release; then
 fi
 AC_MSG_RESULT([$DISTRO])
 AC_SUBST([DISTRO])
+
+dnl Add extra packages to the appliance.
+AC_ARG_WITH([extra-packages],
+    [AS_HELP_STRING([--with-extra-packages],
+                    [add extra packages to the appliance])],
+    [EXTRA_PACKAGES="$withval"],
+    [EXTRA_PACKAGES=])
+AC_SUBST([EXTRA_PACKAGES])
 
 dnl Check for rpcgen and XDR library.  rpcgen is optional.
 AC_CHECK_PROG([RPCGEN],[rpcgen],[rpcgen],[no])
@@ -817,18 +850,12 @@ AM_CONDITIONAL([HAVE_LIBVIRT],[test "x$LIBVIRT_LIBS" != "x"])
 libvirt_ro_uri='qemu+unix:///system?socket=/var/run/libvirt/libvirt-sock-ro'
 AC_SUBST([libvirt_ro_uri])
 
-dnl libxml2 (highly recommended)
-PKG_CHECK_MODULES([LIBXML2], [libxml-2.0],[
-    AC_SUBST([LIBXML2_CFLAGS])
-    AC_SUBST([LIBXML2_LIBS])
-    AC_DEFINE([HAVE_LIBXML2],[1],[libxml2 found at compile time.])
-    old_LIBS="$LIBS"
-    LIBS="$LIBS $LIBXML2_LIBS"
-    AC_CHECK_FUNCS([xmlBufferDetach])
-    LIBS="$old_LIBS"
-],
-    [AC_MSG_WARN([libxml2 not found, some core features will be disabled])])
-AM_CONDITIONAL([HAVE_LIBXML2],[test "x$LIBXML2_LIBS" != "x"])
+dnl libxml2 (required)
+PKG_CHECK_MODULES([LIBXML2], [libxml-2.0])
+old_LIBS="$LIBS"
+LIBS="$LIBS $LIBXML2_LIBS"
+AC_CHECK_FUNCS([xmlBufferDetach])
+LIBS="$old_LIBS"
 
 dnl libconfig (highly recommended)
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig],[
@@ -953,6 +980,14 @@ AM_CONDITIONAL([HAVE_OCAML],
                [test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno"])
 AM_CONDITIONAL([HAVE_OCAMLDOC],
                [test "x$OCAMLDOC" != "xno"])
+
+AS_IF([test "x$OCAMLC" != "xno"],[
+    dnl Check for <caml/unixsupport.h> header.
+    old_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS -I`$OCAMLC -where`"
+    AC_CHECK_HEADERS([caml/unixsupport.h],[],[],[#include <caml/mlvalues.h>])
+    CPPFLAGS="$old_CPPFLAGS"
+])
 
 OCAML_PKG_gettext=no
 AS_IF([test "x$OCAMLC" != "xno"],[
@@ -1467,6 +1502,19 @@ m4_ifdef([GTK_DOC_CHECK], [
     AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
+dnl Bash completion.
+PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [
+    bash_completion=yes
+    AC_MSG_CHECKING([for bash-completions directory])
+    BASH_COMPLETIONS_DIR="`pkg-config --variable=completionsdir bash-completion`"
+    AC_MSG_RESULT([$BASH_COMPLETIONS_DIR])
+    AC_SUBST([BASH_COMPLETIONS_DIR])
+],[
+    bash_completion=no
+    AC_MSG_WARN([bash-completion not installed])
+])
+AM_CONDITIONAL([HAVE_BASH_COMPLETION],[test "x$bash_completion" = "xyes"])
+
 dnl Library versioning.
 MAX_PROC_NR=`cat $srcdir/src/MAX_PROC_NR`
 AC_SUBST(MAX_PROC_NR)
@@ -1492,6 +1540,7 @@ AC_CONFIG_FILES([run],
 AC_CONFIG_FILES([Makefile
                  align/Makefile
                  appliance/Makefile
+                 bash/Makefile
                  cat/Makefile
                  csharp/Makefile
                  daemon/Makefile
@@ -1556,6 +1605,8 @@ AC_CONFIG_FILES([Makefile
                  tests/lvm/Makefile
                  tests/md/Makefile
                  tests/mount-local/Makefile
+                 tests/mountable/Makefile
+                 tests/nbd/Makefile
                  tests/ntfsclone/Makefile
                  tests/parallel/Makefile
                  tests/protocol/Makefile
@@ -1563,6 +1614,7 @@ AC_CONFIG_FILES([Makefile
                  tests/regressions/Makefile
                  tests/rsync/Makefile
                  tests/selinux/Makefile
+                 tests/syslinux/Makefile
                  tests/tmpdirs/Makefile
                  tests/xml/Makefile
                  tools/Makefile])
@@ -1609,6 +1661,8 @@ AS_ECHO_N(["gobject bindings .................... "])
 if test "x$HAVE_GOBJECT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["gobject introspection ............... "])
 if test "x$HAVE_INTROSPECTION_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+AS_ECHO_N(["bash completion ..................... "])
+if test "x$HAVE_BASH_COMPLETION_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"
 echo "then you should check the preceding messages."

@@ -36,14 +36,12 @@
 #include <libvirt/virterror.h>
 #endif
 
-#ifdef HAVE_LIBXML2
 #include <libxml/xmlIO.h>
 #include <libxml/xmlwriter.h>
 #include <libxml/xpath.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlsave.h>
-#endif
 
 #if HAVE_LIBSELINUX
 #include <selinux/selinux.h>
@@ -73,8 +71,7 @@
                              MIN_LIBVIRT_MICRO)
 
 #if defined(HAVE_LIBVIRT) && \
-  LIBVIR_VERSION_NUMBER >= MIN_LIBVIRT_VERSION && \
-  defined(HAVE_LIBXML2)
+  LIBVIR_VERSION_NUMBER >= MIN_LIBVIRT_VERSION
 
 #ifndef HAVE_XMLBUFFERDETACH
 /* Added in libxml2 2.8.0.  This is mostly a copy of the function from
@@ -101,12 +98,13 @@ xmlBufferDetach (xmlBufferPtr buf)
 
 /* Pointed to by 'struct drive *' -> priv field. */
 struct drive_libvirt {
-  /* This is either the original path, made absolute.  Or for readonly
-   * drives, it is an (absolute path to) the overlay file that we
-   * create.  This is always non-NULL.
+  /* The drive that we actually add.  If using an overlay, then this
+   * might be different from drive->src.  Call it 'real_src' so we
+   * don't confuse accesses to this with accesses to 'drive->src'.
    */
-  char *path;
-  /* The format of priv->path. */
+  struct drive_source real_src;
+
+  /* The format of the drive we add. */
   char *format;
 };
 
@@ -119,11 +117,11 @@ struct libvirt_xml_params {
   char *appliance_overlay;      /* path to qcow2 overlay backed by appliance */
   char appliance_dev[64];       /* appliance device name */
   size_t appliance_index;       /* index of appliance */
-  char guestfsd_sock[UNIX_PATH_MAX]; /* paths to sockets */
-  char console_sock[UNIX_PATH_MAX];
+  char guestfsd_path[UNIX_PATH_MAX]; /* paths to sockets */
+  char console_path[UNIX_PATH_MAX];
   bool enable_svirt;            /* false if we decided to disable sVirt */
   bool is_kvm;                  /* false = qemu, true = kvm */
-  bool is_root;                 /* true = euid is root */
+  bool current_proc_is_root;    /* true = euid is root */
 };
 
 static int parse_capabilities (guestfs_h *g, const char *capabilities_xml, struct libvirt_xml_params *params);
@@ -135,8 +133,8 @@ static int is_custom_qemu (guestfs_h *g);
 static int is_blk (const char *path);
 static int random_chars (char *ret, size_t len);
 static void ignore_errors (void *ignore, virErrorPtr ignore2);
-static char *make_qcow2_overlay (guestfs_h *g, const char *path, const char *format);
-static int make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv);
+static char *make_qcow2_overlay (guestfs_h *g, const char *backing_device, const char *format, const char *selinux_imagelabel);
+static int make_drive_priv (guestfs_h *g, struct drive *drv, const char *selinux_imagelabel);
 static void drive_free_priv (void *);
 static void set_socket_create_context (guestfs_h *g);
 static void clear_socket_create_context (guestfs_h *g);
@@ -145,6 +143,7 @@ static void selinux_warning (guestfs_h *g, const char *func, const char *selinux
 static int
 launch_libvirt (guestfs_h *g, const char *libvirt_uri)
 {
+  int daemon_accept_sock = -1, console_sock = -1;
   unsigned long version;
   virConnectPtr conn = NULL;
   virDomainPtr dom = NULL;
@@ -157,17 +156,17 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   CLEANUP_FREE xmlChar *xml = NULL;
   CLEANUP_FREE char *appliance = NULL;
   struct sockaddr_un addr;
-  int console = -1, r;
+  int r;
   uint32_t size;
   CLEANUP_FREE void *buf = NULL;
   struct drive *drv;
   size_t i;
 
-  params.is_root = geteuid () == 0;
+  params.current_proc_is_root = geteuid () == 0;
 
   /* XXX: It should be possible to make this work. */
-  if (g->direct) {
-    error (g, _("direct mode flag is not supported yet for libvirt attach method"));
+  if (g->direct_mode) {
+    error (g, _("direct mode flag is not supported yet for libvirt backend"));
     return -1;
   }
 
@@ -177,7 +176,7 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
          version / 1000000UL, version / 1000UL % 1000UL, version % 1000UL);
   if (version < MIN_LIBVIRT_VERSION) {
     error (g, _("you must have libvirt >= %d.%d.%d "
-                "to use the 'libvirt' attach-method"),
+                "to use the 'libvirt' backend"),
            MIN_LIBVIRT_MAJOR, MIN_LIBVIRT_MINOR, MIN_LIBVIRT_MICRO);
     return -1;
   }
@@ -234,18 +233,18 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   guestfs___launch_send_progress (g, 3);
   TRACE0 (launch_build_libvirt_appliance_end);
 
-  /* Create overlays for read-only drives and the appliance.  This
-   * works around lack of support for <transient/> disks in libvirt.
-   * Note that appliance can be NULL if using the old-style appliance.
-   */
+  /* Note that appliance can be NULL if using the old-style appliance. */
   if (appliance) {
-    params.appliance_overlay = make_qcow2_overlay (g, appliance, "raw");
+    params.appliance_overlay = make_qcow2_overlay (g, appliance, "raw", NULL);
     if (!params.appliance_overlay)
       goto cleanup;
   }
 
+  /* Set up the drv->priv part of the struct.  A side-effect of this
+   * may be that we create qcow2 overlays for drives.
+   */
   ITER_DRIVES (g, i, drv) {
-    if (make_qcow2_overlay_for_drive (g, drv) == -1)
+    if (make_drive_priv (g, drv, g->virt_selinux_imagelabel) == -1)
       goto cleanup;
   }
 
@@ -254,56 +253,51 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   /* Using virtio-serial, we need to create a local Unix domain socket
    * for qemu to connect to.
    */
-  snprintf (params.guestfsd_sock, sizeof params.guestfsd_sock,
+  snprintf (params.guestfsd_path, sizeof params.guestfsd_path,
             "%s/guestfsd.sock", g->tmpdir);
-  unlink (params.guestfsd_sock);
+  unlink (params.guestfsd_path);
 
   set_socket_create_context (g);
 
-  g->sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
-  if (g->sock == -1) {
+  daemon_accept_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
+  if (daemon_accept_sock == -1) {
     perrorf (g, "socket");
     goto cleanup;
   }
 
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
-    goto cleanup;
-  }
-
   addr.sun_family = AF_UNIX;
-  memcpy (addr.sun_path, params.guestfsd_sock, UNIX_PATH_MAX);
+  memcpy (addr.sun_path, params.guestfsd_path, UNIX_PATH_MAX);
 
-  if (bind (g->sock, &addr, sizeof addr) == -1) {
+  if (bind (daemon_accept_sock, &addr, sizeof addr) == -1) {
     perrorf (g, "bind");
     goto cleanup;
   }
 
-  if (listen (g->sock, 1) == -1) {
+  if (listen (daemon_accept_sock, 1) == -1) {
     perrorf (g, "listen");
     goto cleanup;
   }
 
   /* For the serial console. */
-  snprintf (params.console_sock, sizeof params.console_sock,
+  snprintf (params.console_path, sizeof params.console_path,
             "%s/console.sock", g->tmpdir);
-  unlink (params.console_sock);
+  unlink (params.console_path);
 
-  console = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
-  if (console == -1) {
+  console_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
+  if (console_sock == -1) {
     perrorf (g, "socket");
     goto cleanup;
   }
 
   addr.sun_family = AF_UNIX;
-  memcpy (addr.sun_path, params.console_sock, UNIX_PATH_MAX);
+  memcpy (addr.sun_path, params.console_path, UNIX_PATH_MAX);
 
-  if (bind (console, &addr, sizeof addr) == -1) {
+  if (bind (console_sock, &addr, sizeof addr) == -1) {
     perrorf (g, "bind");
     goto cleanup;
   }
 
-  if (listen (console, 1) == -1) {
+  if (listen (console_sock, 1) == -1) {
     perrorf (g, "listen");
     goto cleanup;
   }
@@ -313,33 +307,44 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   /* libvirt, if running as root, will run the qemu process as
    * qemu.qemu, which means it won't be able to access the socket.
    * There are roughly three things that get in the way:
+   *
    * (1) Permissions of the socket.
-   * (2) Permissions of the parent directory(-ies).  Remember this
-   *     if $TMPDIR is located in your home directory.
-   * (3) SELinux/sVirt will prevent access.  libvirt ought to
-   *     label the socket.
+   *
+   * (2) Permissions of the parent directory(-ies).  Remember this if
+   *     $TMPDIR is located in your home directory.
+   *
+   * (3) SELinux/sVirt will prevent access.  libvirt ought to label
+   *     the socket.
+   *
+   * Note that the 'current_proc_is_root' flag here just means that we
+   * are root.  It's also possible for non-root user to try to use the
+   * system libvirtd by specifying a qemu:///system URI (RHBZ#913774)
+   * but there's no sane way to test for that.
    */
-  if (params.is_root) {
+  if (params.current_proc_is_root) {
+    /* Current process is root, so try to create sockets that are
+     * owned by root.qemu with mode 0660 and hence accessible to qemu.
+     */
     struct group *grp;
 
-    if (chmod (params.guestfsd_sock, 0775) == -1) {
-      perrorf (g, "chmod: %s", params.guestfsd_sock);
+    if (chmod (params.guestfsd_path, 0660) == -1) {
+      perrorf (g, "chmod: %s", params.guestfsd_path);
       goto cleanup;
     }
 
-    if (chmod (params.console_sock, 0775) == -1) {
-      perrorf (g, "chmod: %s", params.console_sock);
+    if (chmod (params.console_path, 0660) == -1) {
+      perrorf (g, "chmod: %s", params.console_path);
       goto cleanup;
     }
 
     grp = getgrnam ("qemu");
     if (grp != NULL) {
-      if (chown (params.guestfsd_sock, 0, grp->gr_gid) == -1) {
-        perrorf (g, "chown: %s", params.guestfsd_sock);
+      if (chown (params.guestfsd_path, 0, grp->gr_gid) == -1) {
+        perrorf (g, "chown: %s", params.guestfsd_path);
         goto cleanup;
       }
-      if (chown (params.console_sock, 0, grp->gr_gid) == -1) {
-        perrorf (g, "chown: %s", params.console_sock);
+      if (chown (params.console_path, 0, grp->gr_gid) == -1) {
+        perrorf (g, "chown: %s", params.console_path);
         goto cleanup;
       }
     } else
@@ -378,32 +383,37 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
   g->state = LAUNCHING;
 
   /* Wait for console socket to open. */
-  r = accept4 (console, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC);
+  r = accept4 (console_sock, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC);
   if (r == -1) {
     perrorf (g, "accept");
     goto cleanup;
   }
-  if (close (console) == -1) {
+  if (close (console_sock) == -1) {
     perrorf (g, "close: console socket");
-    console = -1;
+    console_sock = -1;
     close (r);
     goto cleanup;
   }
-  console = -1;
-  g->fd[0] = r; /* This is the accepted console socket. */
-
-  g->fd[1] = dup (g->fd[0]);
-  if (g->fd[1] == -1) {
-    perrorf (g, "dup");
-    goto cleanup;
-  }
+  console_sock = r;         /* This is the accepted console socket. */
 
   /* Wait for libvirt domain to start and to connect back to us via
    * virtio-serial and send the GUESTFS_LAUNCH_FLAG message.
    */
-  r = guestfs___accept_from_daemon (g);
+  g->conn =
+    guestfs___new_conn_socket_listening (g, daemon_accept_sock, console_sock);
+  if (!g->conn)
+    goto cleanup;
+
+  /* g->conn now owns these sockets. */
+  daemon_accept_sock = console_sock = -1;
+
+  r = g->conn->ops->accept_connection (g, g->conn);
   if (r == -1)
     goto cleanup;
+  if (r == 0) {
+    guestfs___launch_failed_error (g);
+    goto cleanup;
+  }
 
   /* NB: We reach here just because qemu has opened the socket.  It
    * does not mean the daemon is up until we read the
@@ -411,20 +421,6 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
    * happen even if we reach here, even early failures like not being
    * able to open a drive.
    */
-
-  /* Close the listening socket. */
-  if (close (g->sock) == -1) {
-    perrorf (g, "close: listening socket");
-    close (r);
-    g->sock = -1;
-    goto cleanup;
-  }
-  g->sock = r; /* This is the accepted data socket. */
-
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
-    goto cleanup;
-  }
 
   r = guestfs___recv_from_daemon (g, &size, &buf);
 
@@ -470,19 +466,13 @@ launch_libvirt (guestfs_h *g, const char *libvirt_uri)
  cleanup:
   clear_socket_create_context (g);
 
-  if (console >= 0)
-    close (console);
-  if (g->fd[0] >= 0) {
-    close (g->fd[0]);
-    g->fd[0] = -1;
-  }
-  if (g->fd[1] >= 0) {
-    close (g->fd[1]);
-    g->fd[1] = -1;
-  }
-  if (g->sock >= 0) {
-    close (g->sock);
-    g->sock = -1;
+  if (console_sock >= 0)
+    close (console_sock);
+  if (daemon_accept_sock >= 0)
+    close (daemon_accept_sock);
+  if (g->conn) {
+    g->conn->ops->free_connection (g, g->conn);
+    g->conn = NULL;
   }
 
   if (dom) {
@@ -566,15 +556,15 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
     error (g,
            _("libvirt hypervisor doesn't support qemu or KVM,\n"
              "so we cannot create the libguestfs appliance.\n"
-             "The current attach-method is '%s'.\n"
+             "The current backend is '%s'.\n"
              "Check that the PATH environment variable is set and contains\n"
              "the path to the qemu ('qemu-system-*') or KVM ('qemu-kvm', 'kvm' etc).\n"
              "Or: try setting:\n"
-             "  export LIBGUESTFS_ATTACH_METHOD=libvirt:qemu:///session\n"
+             "  export LIBGUESTFS_BACKEND=libvirt:qemu:///session\n"
              "Or: if you want to have libguestfs run qemu directly, try:\n"
-             "  export LIBGUESTFS_ATTACH_METHOD=appliance\n"
+             "  export LIBGUESTFS_BACKEND=direct\n"
              "For further help, read the guestfs(3) man page and libguestfs FAQ."),
-           guestfs__get_attach_method (g));
+           guestfs__get_backend (g));
     return -1;
   }
 
@@ -705,6 +695,8 @@ static int construct_libvirt_xml_lifecycle (guestfs_h *g, const struct libvirt_x
 static int construct_libvirt_xml_devices (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_qemu_cmdline (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_disk (guestfs_h *g, xmlTextWriterPtr xo, struct drive *drv, size_t drv_index);
+static int construct_libvirt_xml_disk_source_hosts (guestfs_h *g, xmlTextWriterPtr xo, const struct drive_source *src);
+static int construct_libvirt_xml_disk_source_seclabel (guestfs_h *g, xmlTextWriterPtr xo);
 static int construct_libvirt_xml_appliance (guestfs_h *g, const struct libvirt_xml_params *params, xmlTextWriterPtr xo);
 
 /* Note this macro is rather specialized: It assumes that any local
@@ -909,6 +901,31 @@ construct_libvirt_xml_seclabel (guestfs_h *g,
                                            BAD_CAST "none"));
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
+  else if (g->virt_selinux_label && g->virt_selinux_imagelabel) {
+    /* Enable sVirt and pass a custom <seclabel/> inherited from the
+     * original libvirt domain (when guestfs_add_domain was called).
+     * https://bugzilla.redhat.com/show_bug.cgi?id=912499#c7
+     */
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "seclabel"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
+                                           BAD_CAST "static"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "model",
+                                           BAD_CAST "selinux"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "relabel",
+                                           BAD_CAST "yes"));
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "label"));
+    XMLERROR (-1, xmlTextWriterWriteString (xo,
+                                            BAD_CAST g->virt_selinux_label));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "imagelabel"));
+    XMLERROR (-1, xmlTextWriterWriteString (xo,
+                                            BAD_CAST g->virt_selinux_imagelabel));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
 
   return 0;
 }
@@ -982,7 +999,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
                                          BAD_CAST "connect"));
   XMLERROR (-1,
             xmlTextWriterWriteAttribute (xo, BAD_CAST "path",
-                                         BAD_CAST params->console_sock));
+                                         BAD_CAST params->console_path));
   XMLERROR (-1, xmlTextWriterEndElement (xo));
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "target"));
   XMLERROR (-1,
@@ -1002,7 +1019,7 @@ construct_libvirt_xml_devices (guestfs_h *g,
                                          BAD_CAST "connect"));
   XMLERROR (-1,
             xmlTextWriterWriteAttribute (xo, BAD_CAST "path",
-                                         BAD_CAST params->guestfsd_sock));
+                                         BAD_CAST params->guestfsd_path));
   XMLERROR (-1, xmlTextWriterEndElement (xo));
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "target"));
   XMLERROR (-1,
@@ -1025,57 +1042,110 @@ construct_libvirt_xml_disk (guestfs_h *g,
                             struct drive *drv, size_t drv_index)
 {
   char drive_name[64] = "sd";
+  const char *protocol_str;
   char scsi_target[64];
-  struct drive_libvirt *drv_priv;
+  struct drive_libvirt *drv_priv = (struct drive_libvirt *) drv->priv;
   CLEANUP_FREE char *format = NULL;
   int is_host_device;
 
   /* XXX We probably could support this if we thought about it some more. */
   if (drv->iface) {
-    error (g, _("'iface' parameter is not supported by the libvirt attach-method"));
+    error (g, _("'iface' parameter is not supported by the libvirt backend"));
     return -1;
   }
 
   guestfs___drive_name (drv_index, &drive_name[2]);
   snprintf (scsi_target, sizeof scsi_target, "%zu", drv_index);
 
-  drv_priv = (struct drive_libvirt *) drv->priv;
-
-  /* Change the libvirt XML according to whether the host path is
-   * a device or a file.  For devices, use:
-   *   <disk type=block device=disk>
-   *     <source dev=[path]>
-   * For files, use:
-   *   <disk type=file device=disk>
-   *     <source file=[path]>
-   */
-  is_host_device = is_blk (drv_priv->path);
-
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "disk"));
   XMLERROR (-1,
             xmlTextWriterWriteAttribute (xo, BAD_CAST "device",
                                          BAD_CAST "disk"));
-  if (!is_host_device) {
+
+  switch (drv_priv->real_src.protocol) {
+  case drive_protocol_file:
+    /* Change the libvirt XML according to whether the host path is
+     * a device or a file.  For devices, use:
+     *   <disk type=block device=disk>
+     *     <source dev=[path]>
+     * For files, use:
+     *   <disk type=file device=disk>
+     *     <source file=[path]>
+     */
+    is_host_device = is_blk (drv_priv->real_src.u.path);
+
+    if (!is_host_device) {
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
+                                             BAD_CAST "file"));
+
+      XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "source"));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "file",
+                                             BAD_CAST drv_priv->real_src.u.path));
+      if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
+        return -1;
+      XMLERROR (-1, xmlTextWriterEndElement (xo));
+    }
+    else {
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
+                                             BAD_CAST "block"));
+
+      XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "source"));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "dev",
+                                             BAD_CAST drv_priv->real_src.u.path));
+      if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
+        return -1;
+      XMLERROR (-1, xmlTextWriterEndElement (xo));
+    }
+    break;
+
+    /* For network protocols:
+     *   <disk type=network device=disk>
+     *     <source protocol=[protocol] [name=exportname]>
+     * and then zero or more of:
+     *       <host name='example.com' port='10809'/>
+     * or:
+     *       <host transport='unix' socket='/path/to/socket'/>
+     */
+  case drive_protocol_gluster:
+    protocol_str = "gluster"; goto network_protocols;
+  case drive_protocol_nbd:
+    protocol_str = "nbd"; goto network_protocols;
+  case drive_protocol_rbd:
+    protocol_str = "rbd"; goto network_protocols;
+  case drive_protocol_sheepdog:
+    protocol_str = "sheepdog"; goto network_protocols;
+  case drive_protocol_ssh:
+    protocol_str = "ssh";
+    /*FALLTHROUGH*/
+  network_protocols:
     XMLERROR (-1,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
-                                           BAD_CAST "file"));
-
+                                           BAD_CAST "network"));
     XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "source"));
     XMLERROR (-1,
-              xmlTextWriterWriteAttribute (xo, BAD_CAST "file",
-                                           BAD_CAST drv_priv->path));
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "protocol",
+                                           BAD_CAST protocol_str));
+    if (STRNEQ (drv_priv->real_src.u.exportname, ""))
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "name",
+                                             BAD_CAST drv_priv->real_src.u.exportname));
+    if (construct_libvirt_xml_disk_source_hosts (g, xo,
+                                                 &drv_priv->real_src) == -1)
+      return -1;
+    if (construct_libvirt_xml_disk_source_seclabel (g, xo) == -1)
+      return -1;
     XMLERROR (-1, xmlTextWriterEndElement (xo));
-  }
-  else {
-    XMLERROR (-1,
-              xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
-                                           BAD_CAST "block"));
-
-    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "source"));
-    XMLERROR (-1,
-              xmlTextWriterWriteAttribute (xo, BAD_CAST "dev",
-                                           BAD_CAST drv_priv->path));
-    XMLERROR (-1, xmlTextWriterEndElement (xo));
+    if (drv_priv->real_src.username != NULL) {
+      XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "auth"));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "username",
+                                             BAD_CAST drv_priv->real_src.username));
+      XMLERROR (-1, xmlTextWriterEndElement (xo));
+    }
   }
 
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "target"));
@@ -1096,7 +1166,7 @@ construct_libvirt_xml_disk (guestfs_h *g,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
                                            BAD_CAST drv_priv->format));
   }
-  else {
+  else if (drv_priv->real_src.protocol == drive_protocol_file) {
     /* libvirt has disabled the feature of detecting the disk format,
      * unless the administrator sets allow_disk_format_probing=1 in
      * qemu.conf.  There is no way to detect if this option is set, so we
@@ -1107,15 +1177,14 @@ construct_libvirt_xml_disk (guestfs_h *g,
      * the users pass the format to libguestfs which will faithfully pass
      * that to libvirt and this function won't be used.
      */
-    format = guestfs_disk_format (g, drv_priv->path);
+    format = guestfs_disk_format (g, drv_priv->real_src.u.path);
     if (!format)
       return -1;
 
     if (STREQ (format, "unknown")) {
-      error (g, _("could not auto-detect the format of '%s'\n"
+      error (g, _("could not auto-detect the format.\n"
                   "If the format is known, pass the format to libguestfs, eg. using the\n"
-                  "'--format' option, or via the optional 'format' argument to 'add-drive'."),
-             drv->path);
+                  "'--format' option, or via the optional 'format' argument to 'add-drive'."));
       return -1;
     }
 
@@ -1123,6 +1192,13 @@ construct_libvirt_xml_disk (guestfs_h *g,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "type",
                                            BAD_CAST format));
   }
+  else {
+    error (g, _("could not auto-detect the format when using a non-file protocol.\n"
+                "If the format is known, pass the format to libguestfs, eg. using the\n"
+                "'--format' option, or via the optional 'format' argument to 'add-drive'."));
+    return -1;
+  }
+
   if (drv->use_cache_none) {
     XMLERROR (-1,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "cache",
@@ -1155,6 +1231,73 @@ construct_libvirt_xml_disk (guestfs_h *g,
   XMLERROR (-1, xmlTextWriterEndElement (xo));
 
   XMLERROR (-1, xmlTextWriterEndElement (xo));
+
+  return 0;
+}
+
+static int
+construct_libvirt_xml_disk_source_hosts (guestfs_h *g,
+                                         xmlTextWriterPtr xo,
+                                         const struct drive_source *src)
+{
+  size_t i;
+
+  for (i = 0; i < src->nr_servers; ++i) {
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "host"));
+
+    switch (src->servers[i].transport) {
+    case drive_transport_none:
+    case drive_transport_tcp: {
+      const char *hostname;
+      int port;
+      char port_str[64];
+
+      hostname = src->servers[i].u.hostname;
+      port = src->servers[i].port;
+      snprintf (port_str, sizeof port_str, "%d", port);
+
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "name",
+                                             BAD_CAST hostname));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "port",
+                                             BAD_CAST port_str));
+      break;
+    }
+
+    case drive_transport_unix: {
+      const char *socket = src->servers[i].u.socket;
+
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "transport",
+                                             BAD_CAST "unix"));
+      XMLERROR (-1,
+                xmlTextWriterWriteAttribute (xo, BAD_CAST "socket",
+                                             BAD_CAST socket));
+      break;
+    }
+    }
+
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
+
+  return 0;
+}
+
+static int
+construct_libvirt_xml_disk_source_seclabel (guestfs_h *g,
+                                            xmlTextWriterPtr xo)
+{
+  if (g->virt_selinux_norelabel_disks) {
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "seclabel"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "model",
+                                           BAD_CAST "selinux"));
+    XMLERROR (-1,
+              xmlTextWriterWriteAttribute (xo, BAD_CAST "relabel",
+                                           BAD_CAST "no"));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
 
   return 0;
 }
@@ -1225,7 +1368,7 @@ construct_libvirt_xml_appliance (guestfs_h *g,
   XMLERROR (-1, xmlTextWriterEndElement (xo));
 
   /* We'd like to do this, but it's not supported by libvirt.
-   * See construct_libvirt_xml_qemu_cmdline for the workaround.
+   * See make_drive_priv for the workaround.
    *
    * XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "transient"));
    * XMLERROR (-1, xmlTextWriterEndElement (xo));
@@ -1357,17 +1500,16 @@ ignore_errors (void *ignore, virErrorPtr ignore2)
   /* empty */
 }
 
-/* Create a temporary qcow2 overlay on top of 'path'. */
+/* Create a temporary qcow2 overlay on top of 'backing_device', which is
+ * either an absolute path or a qemu device name.
+ */
 static char *
-make_qcow2_overlay (guestfs_h *g, const char *path, const char *format)
+make_qcow2_overlay (guestfs_h *g, const char *backing_device,
+                    const char *format, const char *selinux_imagelabel)
 {
   char *tmpfile = NULL;
   CLEANUP_CMD_CLOSE struct command *cmd = guestfs___new_command (g);
   int r;
-
-  /* Path must be absolute. */
-  assert (path);
-  assert (path[0] == '/');
 
   tmpfile = safe_asprintf (g, "%s/snapshot%d", g->tmpdir, ++g->unique);
 
@@ -1376,7 +1518,7 @@ make_qcow2_overlay (guestfs_h *g, const char *path, const char *format)
   guestfs___cmd_add_arg (cmd, "-f");
   guestfs___cmd_add_arg (cmd, "qcow2");
   guestfs___cmd_add_arg (cmd, "-b");
-  guestfs___cmd_add_arg (cmd, path);
+  guestfs___cmd_add_arg (cmd, backing_device);
   if (format) {
     guestfs___cmd_add_arg (cmd, "-o");
     guestfs___cmd_add_arg_format (cmd, "backing_fmt=%s", format);
@@ -1386,9 +1528,18 @@ make_qcow2_overlay (guestfs_h *g, const char *path, const char *format)
   if (r == -1)
     goto error;
   if (!WIFEXITED (r) || WEXITSTATUS (r) != 0) {
-    guestfs___external_command_failed (g, r, "qemu-img create", path);
+    guestfs___external_command_failed (g, r, "qemu-img create", backing_device);
     goto error;
   }
+
+#if HAVE_LIBSELINUX
+  if (selinux_imagelabel) {
+    debug (g, "setting SELinux label on %s to %s",
+           tmpfile, selinux_imagelabel);
+    if (setfilecon (tmpfile, (security_context_t) selinux_imagelabel) == -1)
+      selinux_warning (g, __func__, "setfilecon", tmpfile);
+  }
+#endif
 
   return tmpfile;               /* caller frees */
 
@@ -1398,8 +1549,14 @@ make_qcow2_overlay (guestfs_h *g, const char *path, const char *format)
   return NULL;
 }
 
+/* This sets up the drv->priv structure, which contains the drive
+ * that we're actually going to add.  If asked to make a drive readonly
+ * then because libvirt doesn't support <transient/> we have to add
+ * a qcow2 overlay here.
+ */
 static int
-make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv)
+make_drive_priv (guestfs_h *g, struct drive *drv,
+                 const char *selinux_imagelabel)
 {
   char *path;
   struct drive_libvirt *drv_priv;
@@ -1410,24 +1567,54 @@ make_qcow2_overlay_for_drive (guestfs_h *g, struct drive *drv)
   drv->priv = drv_priv = safe_calloc (g, 1, sizeof (struct drive_libvirt));
   drv->free_priv = drive_free_priv;
 
-  /* Even for non-readonly paths, we need to make the paths absolute here. */
-  path = realpath (drv->path, NULL);
-  if (path == NULL) {
-    perrorf (g, _("realpath: could not convert '%s' to absolute path"),
-             drv->path);
-    return -1;
-  }
+  switch (drv->src.protocol) {
+  case drive_protocol_file:
 
-  if (!drv->readonly) {
-    drv_priv->path = path;
-    drv_priv->format = drv->format ? safe_strdup (g, drv->format) : NULL;
-  }
-  else {
-    drv_priv->path = make_qcow2_overlay (g, path, drv->format);
-    free (path);
-    if (!drv_priv->path)
+    /* Even for non-readonly paths, we need to make the paths absolute here. */
+    path = realpath (drv->src.u.path, NULL);
+    if (path == NULL) {
+      perrorf (g, _("realpath: could not convert '%s' to absolute path"),
+               drv->src.u.path);
       return -1;
-    drv_priv->format = safe_strdup (g, "qcow2");
+    }
+
+    drv_priv->real_src.protocol = drive_protocol_file;
+
+    if (!drv->readonly) {
+      drv_priv->real_src.u.path = path;
+      drv_priv->format = drv->format ? safe_strdup (g, drv->format) : NULL;
+    }
+    else {
+      drv_priv->real_src.u.path = make_qcow2_overlay (g, path, drv->format,
+                                                      selinux_imagelabel);
+      free (path);
+      if (!drv_priv->real_src.u.path)
+        return -1;
+      drv_priv->format = safe_strdup (g, "qcow2");
+    }
+    break;
+
+  case drive_protocol_gluster:
+  case drive_protocol_nbd:
+  case drive_protocol_rbd:
+  case drive_protocol_sheepdog:
+  case drive_protocol_ssh:
+    if (!drv->readonly) {
+      guestfs___copy_drive_source (g, &drv->src, &drv_priv->real_src);
+      drv_priv->format = drv->format ? safe_strdup (g, drv->format) : NULL;
+    }
+    else {
+      CLEANUP_FREE char *qemu_device;
+
+      drv_priv->real_src.protocol = drive_protocol_file;
+      qemu_device = guestfs___drive_source_qemu_param (g, &drv->src);
+      drv_priv->real_src.u.path = make_qcow2_overlay (g, qemu_device,
+                                                      drv->format,
+                                                      selinux_imagelabel);
+      if (!drv_priv->real_src.u.path)
+        return -1;
+      drv_priv->format = safe_strdup (g, "qcow2");
+    }
   }
 
   return 0;
@@ -1438,7 +1625,7 @@ drive_free_priv (void *priv)
 {
   struct drive_libvirt *drv_priv = priv;
 
-  free (drv_priv->path);
+  guestfs___free_drive_source (&drv_priv->real_src);
   free (drv_priv->format);
   free (drv_priv);
 }
@@ -1537,10 +1724,7 @@ hot_add_drive_libvirt (guestfs_h *g, struct drive *drv, size_t drv_index)
     return -1;
   }
 
-  /* Create overlay for read-only drive.  This works around lack of
-   * support for <transient/> disks in libvirt.
-   */
-  if (make_qcow2_overlay_for_drive (g, drv) == -1)
+  if (make_drive_priv (g, drv, g->virt_selinux_imagelabel) == -1)
     return -1;
 
   /* Create the XML for the new disk. */
@@ -1615,7 +1799,7 @@ construct_libvirt_xml_hot_add_disk (guestfs_h *g, struct drive *drv,
   return ret;
 }
 
-struct attach_ops attach_ops_libvirt = {
+struct backend_ops backend_ops_libvirt = {
   .launch = launch_libvirt,
   .shutdown = shutdown_libvirt,
   .max_disks = max_disks_libvirt,
@@ -1623,12 +1807,12 @@ struct attach_ops attach_ops_libvirt = {
   .hot_remove_drive = hot_remove_drive_libvirt,
 };
 
-#else /* no libvirt or libxml2 at compile time */
+#else /* no libvirt at compile time */
 
 #define NOT_IMPL(r)                                                     \
-  error (g, _("libvirt attach-method is not available because "         \
+  error (g, _("libvirt backend is not available because "         \
               "this version of libguestfs was compiled "                \
-              "without libvirt or libvirt < %d.%d.%d or without libxml2"), \
+              "without libvirt or libvirt < %d.%d.%d"), \
          MIN_LIBVIRT_MAJOR, MIN_LIBVIRT_MINOR, MIN_LIBVIRT_MICRO);      \
   return r
 
@@ -1650,10 +1834,28 @@ max_disks_libvirt (guestfs_h *g)
   NOT_IMPL (-1);
 }
 
-struct attach_ops attach_ops_libvirt = {
+struct backend_ops backend_ops_libvirt = {
   .launch = launch_libvirt,
   .shutdown = shutdown_libvirt,
   .max_disks = max_disks_libvirt,
 };
 
-#endif /* no libvirt or libxml2 at compile time */
+#endif /* no libvirt at compile time */
+
+int
+guestfs__internal_set_libvirt_selinux_label (guestfs_h *g, const char *label,
+                                             const char *imagelabel)
+{
+  free (g->virt_selinux_label);
+  g->virt_selinux_label = safe_strdup (g, label);
+  free (g->virt_selinux_imagelabel);
+  g->virt_selinux_imagelabel = safe_strdup (g, imagelabel);
+  return 0;
+}
+
+int
+guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, int flag)
+{
+  g->virt_selinux_norelabel_disks = flag;
+  return 0;
+}

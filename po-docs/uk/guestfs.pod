@@ -586,9 +586,9 @@ In libguestfs E<ge> 1.20, you may add drives and remove after calling
 L</guestfs_launch>.  There are some restrictions, see below.  This is called
 I<hotplugging>.
 
-Only a subset of the attach-method backends support hotplugging (currently
-only the libvirt attach-method has support).  It also requires that you use
-libvirt E<ge> 0.10.3 and qemu E<ge> 1.2.
+Only a subset of the backends support hotplugging (currently only the
+libvirt backend has support).  It also requires that you use libvirt E<ge>
+0.10.3 and qemu E<ge> 1.2.
 
 To hot-add a disk, simply call L</guestfs_add_drive_opts> after
 L</guestfs_launch>.  It is mandatory to specify the C<label> parameter so
@@ -613,13 +613,141 @@ Backends that support hotplugging do not require that you add E<ge> 1 disk
 before calling launch.  When hotplugging is supported you don't need to add
 any disks.
 
+=head2 REMOTE STORAGE
+
+=head3 CEPH
+
+Libguestfs can access Ceph (librbd/RBD) disks.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **servers = { "ceph1.example.org:3000", /* ... */, NULL };
+ guestfs_add_drive_opts (g, "pool/image",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "rbd",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         -1);
+
+C<servers> (the C<server> parameter) is a list of one or more Ceph servers.
+The server string is documented in L</guestfs_add_drive_opts>.
+
+=head3 GLUSTER
+
+Libguestfs can access Gluster disks.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **servers = { "gluster.example.org:3000", NULL };
+ guestfs_add_drive_opts (g, "volname/image",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "gluster",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         -1);
+
+C<servers> (the C<server> parameter) is a list which must have a single
+element.  The single element is a string defining the Gluster server.  The
+format of this string is documented in L</guestfs_add_drive_opts>.
+
+=head3 NETWORK BLOCK DEVICE
+
+Libguestfs can access Network Block Device (NBD) disks remotely.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **server = { "nbd.example.org:3000", NULL };
+ guestfs_add_drive_opts (g, "" /* export name - see below */,
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "nbd",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, server,
+                         -1);
+
+Нотатки:
+
+=over 4
+
+=item *
+
+C<server> is in fact a list of servers.  For NBD you must always supply a
+list with a single element.  (Other remote protocols require zero or more
+than one server, hence the requirement for this parameter to be a list).
+
+=item *
+
+The C<server> string is documented in L</guestfs_add_drive_opts>.  To
+connect to a local qemu-nbd instance over a Unix domain socket, use
+C<"unix:/path/to/socket">.
+
+=item *
+
+The C<filename> parameter is the NBD export name.  Use an empty string to
+mean the default export.  Many NBD servers, including qemu-nbd, do not
+support export names.
+
+=item *
+
+If using qemu-nbd as your server, you should always specify the C<-t>
+option.  The reason is that libguestfs may open several connections to the
+server.
+
+=item *
+
+The libvirt backend requires that you set the C<format> parameter of
+L</guestfs_add_drive_opts> accurately when you use writable NBD disks.
+
+=item *
+
+The libvirt backend has a bug that stops Unix domain socket connections from
+working: L<https://bugzilla.redhat.com/show_bug.cgi?id=922888>
+
+=item *
+
+The direct backend does not support readonly connections because of a bug in
+qemu: L<https://bugs.launchpad.net/qemu/+bug/1155677>
+
+=back
+
+=head3 SHEEPDOG
+
+Libguestfs can access Sheepdog disks.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **servers = { /* optional servers ... */ NULL };
+ guestfs_add_drive_opts (g, "volume",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "sheepdog",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         -1);
+
+The optional list of C<servers> may be zero or more server addresses
+(C<"hostname:port">).  The format of the server strings is documented in
+L</guestfs_add_drive_opts>.
+
+=head3 SSH
+
+Libguestfs can access disks over a Secure Shell (SSH) connection.
+
+To do this, set the C<protocol> and C<server> and (optionally)  C<username>
+parameters of L</guestfs_add_drive_opts> like this:
+
+ char **server = { "remote.example.com", NULL };
+ guestfs_add_drive_opts (g, "/path/to/disk.img",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "ssh",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, server,
+                         GUESTFS_ADD_DRIVE_OPTS_USERNAME, "remoteuser",
+                         -1);
+
+The format of the server string is documented in L</guestfs_add_drive_opts>.
+
 =head2 ПЕРЕВІРКА
 
 Libguestfs has APIs for inspecting an unknown disk image to find out if it
-contains operating systems, an install CD or a live CD.  (These APIs used to
-be in a separate Perl-only library called L<Sys::Guestfs::Lib(3)> but since
-version 1.5.3 the most frequently used part of this library has been
-rewritten in C and moved into the core code).
+contains operating systems, an install CD or a live CD.
 
 Add all disks belonging to the unknown virtual machine and call
 L</guestfs_launch> in the usual way.
@@ -878,9 +1006,46 @@ available.  See the C<gobject> directory in the source.
 
 =item B<Haskell>
 
-This is the only language binding that is working but incomplete.  Only
-calls which return simple integers have been bound in Haskell, and we are
-looking for help to complete this binding.
+This language binding is working but incomplete:
+
+=over 4
+
+=item *
+
+Functions with optional arguments are not bound.  Implementing optional
+arguments in Haskell seems to be very complex.
+
+=item *
+
+Events are not bound.
+
+=item *
+
+Functions with the following return types are not bound:
+
+=over 4
+
+=item *
+
+Any function returning a struct.
+
+=item *
+
+Any function returning a list of structs.
+
+=item *
+
+A few functions that return fixed length buffers (specifically ones declared
+C<RBufferOut> in the generator).
+
+=item *
+
+A tiny number of obscure functions that return constant strings
+(specifically ones declared C<RConstOptString> in the generator).
+
+=back
+
+=back
 
 =item B<Java>
 
@@ -1097,22 +1262,33 @@ right one to remove, putting the remaining options into the C<args> array.
  
  exec qemu-kvm -machine pc,accel=tcg "${args[@]}"
 
-=head2 ATTACH METHOD
+=begin html
 
-The attach method controls how libguestfs creates and/or connects to the
-back-end daemon, eg. by starting qemu directly, or by using libvirt to
-manage an appliance, or connecting to an already running daemon.
+<!-- old anchor for the next section --> <a name="attach-method"/>
 
-You can set the attach method by calling L</guestfs_set_attach_method>, or
-by setting the environment variable C<LIBGUESTFS_ATTACH_METHOD>.
+=end html
 
-Possible attach methods are described below:
+=head2 BACKEND
+
+The backend (previously known as the "attach method") controls how
+libguestfs creates and/or connects to the backend daemon, eg. by starting
+qemu directly, or by using libvirt to manage an appliance, or connecting to
+an already running daemon.
+
+You can set the backend by calling L</guestfs_set_backend>, or by setting
+the environment variable C<LIBGUESTFS_BACKEND>.
+
+Possible backends are described below:
 
 =over 4
+
+=item C<direct>
 
 =item C<appliance>
 
 Run qemu directly to launch an appliance.
+
+C<direct> and C<appliance> are synonyms.
 
 This is the ordinary method and normally the default, but see the note
 below.
@@ -1124,10 +1300,10 @@ below.
 Use libvirt to launch and manage the appliance.
 
 The optional I<URI> is the libvirt connection URI to use (see
-L<http://libvirt.org/uri.html>).  The typical libvirt attach method with a
-URI would be C<libvirt:qemu:///session>
+L<http://libvirt.org/uri.html>).  The typical libvirt backend with a URI
+would be C<libvirt:qemu:///session>
 
-The libvirt attach method supports more features, including hotplugging (see
+The libvirt backend supports more features, including hotplugging (see
 L</HOTPLUGGING>) and sVirt.
 
 =item C<unix:I<шлях>>
@@ -1140,16 +1316,15 @@ DAEMONS>.
 
 =back
 
-C<appliance> is usually the default attach method.  However since libguestfs
-E<ge> 1.19.24, libguestfs can be built with a different default by doing:
+C<direct> is usually the default backend.  However since libguestfs E<ge>
+1.19.24, libguestfs can be built with a different default by doing:
 
- ./configure --with-default-attach-method=...
+ ./configure --with-default-backend=...
 
-To find out if libguestfs was compiled with a different default attach
-method, do:
+To find out if libguestfs was compiled with a different default backend, do:
 
- unset LIBGUESTFS_ATTACH_METHOD
- guestfish get-attach-method
+ unset LIBGUESTFS_BACKEND
+ guestfish get-backend
 
 =head2 ДОЛУЧЕННЯ ДО ЗАПУЩЕНИХ ФОНОВИХ СЛУЖБ
 
@@ -1160,19 +1335,19 @@ I<Note (2):> This section explains how to attach to a running daemon from a
 low level perspective.  For most users, simply using virt tools such as
 L<guestfish(1)> with the I<--live> option will "just work".
 
-=head3 За допомогою guestfs_set_attach_method
+=head3 Using guestfs_set_backend
 
-By calling L</guestfs_set_attach_method> you can change how the library
-connects to the C<guestfsd> daemon in L</guestfs_launch> (read
-L</ARCHITECTURE> for some background).
+By calling L</guestfs_set_backend> you can change how the library connects
+to the C<guestfsd> daemon in L</guestfs_launch> (read L</ARCHITECTURE> for
+some background).
 
-The normal attach method is C<appliance>, where a small appliance is created
+The normal backend is C<direct>, where a small appliance is created
 containing the daemon, and then the library connects to this.  C<libvirt> or
 C<libvirt:I<URI>> are alternatives that use libvirt to start the appliance.
 
-Setting attach method to C<unix:I<path>> (where I<path> is the path of a
-Unix domain socket) causes L</guestfs_launch> to connect to an existing
-daemon over the Unix domain socket.
+Setting the backend to C<unix:I<path>> (where I<path> is the path of a Unix
+domain socket) causes L</guestfs_launch> to connect to an existing daemon
+over the Unix domain socket.
 
 The normal use for this is to connect to a running virtual machine that
 contains a C<guestfsd> daemon, and send commands so you can read and write
@@ -1180,9 +1355,9 @@ files inside the live virtual machine.
 
 =head3 За допомогою guestfs_add_domain з прапорцем live
 
-L</guestfs_add_domain> provides some help for getting the correct attach
-method.  If you pass the C<live> option to this function, then (if the
-virtual machine is running) it will examine the libvirt XML looking for a
+L</guestfs_add_domain> provides some help for getting the correct backend.
+If you pass the C<live> option to this function, then (if the virtual
+machine is running) it will examine the libvirt XML looking for a
 virtio-serial channel to connect to:
 
  <domain>
@@ -1197,8 +1372,8 @@ virtio-serial channel to connect to:
    </devices>
  </domain>
 
-L</guestfs_add_domain> extracts C</path/to/socket> and sets the attach
-method to C<unix:/path/to/socket>.
+L</guestfs_add_domain> extracts C</path/to/socket> and sets the backend to
+C<unix:/path/to/socket>.
 
 Some of the libguestfs tools (including guestfish) support a I<--live>
 option which is passed through to L</guestfs_add_domain> thus allowing you
@@ -2388,6 +2563,25 @@ Delete a callback that was previously registered.  C<event_handle> should be
 the integer that was returned by a previous call to
 C<guestfs_set_event_callback> on the same handle.
 
+=head3 guestfs_event_to_string
+
+ char *guestfs_event_to_string (uint64_t event);
+
+C<event> is either a single event or a bitmask of events.  This returns a
+string representation (useful for debugging or printing events).
+
+A single event is returned as the name in lower case, eg. C<"close">.
+
+A bitmask of several events is returned as a comma-separated list,
+eg. C<"close,progress">.
+
+If zero is passed, then the empty string C<""> is returned.
+
+On success this returns a string.  On error it returns NULL and sets
+C<errno>.
+
+The returned string must be freed by the caller.
+
 =head3 guestfs_event_callback
 
  typedef void (*guestfs_event_callback) (
@@ -2465,10 +2659,10 @@ example, messages are directed to syslog:
 
 Some libguestfs API calls can open libvirt connections.  Currently the only
 ones are L</guestfs_add_domain>; and L</guestfs_launch> if the libvirt
-attach-method has been selected.  Libvirt connections may require
-authentication, for example if they need to access a remote server or to
-access root services from non-root.  Libvirt authentication happens via a
-callback mechanism, see
+backend has been selected.  Libvirt connections may require authentication,
+for example if they need to access a remote server or to access root
+services from non-root.  Libvirt authentication happens via a callback
+mechanism, see
 L<http://libvirt.org/guide/html/Application_Development_Guide-Connections.html>
 
 You may provide libvirt authentication data by registering a callback for
@@ -2590,34 +2784,8 @@ Currently only operations that involve uploading or downloading data can be
 cancelled (technically: operations that have C<FileIn> or C<FileOut>
 parameters in the generator).
 
-=head2 guestfs_user_cancel
-
- void guestfs_user_cancel (guestfs_h *g);
-
-C<guestfs_user_cancel> cancels the current upload or download operation.
-
-Unlike most other libguestfs calls, this function is signal safe and thread
-safe.  You can call it from a signal handler or from another thread, without
-needing to do any locking.
-
-The transfer that was in progress (if there is one) will stop shortly
-afterwards, and will return an error.  The errno (see
-L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this to find
-out if the operation was cancelled or failed because of another error.
-
-No cleanup is performed: for example, if a file was being uploaded then
-after cancellation there may be a partially uploaded file.  It is the
-caller's responsibility to clean up if necessary.
-
-There are two common places that you might call C<guestfs_user_cancel>.
-
-In an interactive text-based program, you might call it from a C<SIGINT>
-signal handler so that pressing C<^C> cancels the current operation.  (You
-also need to call L</guestfs_set_pgroup> so that child processes don't
-receive the C<^C> signal).
-
-In a graphical program, when the main thread is displaying a progress bar
-with a cancel button, wire up the cancel button to call this function.
+To cancel the transfer, call L</guestfs_user_cancel>.  For more information,
+read the description of L</guestfs_user_cancel>.
 
 =head1 PRIVATE DATA AREA
 
@@ -3270,7 +3438,7 @@ I need:
 
  . localenv
  ./autogen.sh \
-     --with-default-attach-method=libvirt \
+     --with-default-backend=libvirt \
      --enable-gcc-warnings \
      --enable-gtk-doc \
      -C \
@@ -3489,8 +3657,8 @@ libvirt guests (read-only).
 =item C<make check-with-appliance>
 
 Runs all tests using default appliance back-end.  This only has any effect
-if a non-default attach-method was selected using C<./configure
---with-default-attach-method=...>
+if a non-default backend was selected using C<./configure
+--with-default-backend=...>
 
 =item C<make check-valgrind-with-appliance>
 
@@ -3508,8 +3676,8 @@ directory on the command line, eg:
 =item C<make check-with-upstream-libvirt>
 
 Runs all tests using a local libvirt.  This only has any effect if the
-libvirt attach-method was selected using C<./configure
---with-default-attach-method=libvirt>
+libvirt backend was selected using C<./configure
+--with-default-backend=libvirt>
 
 It looks for libvirt in LIBVIRTDIR (defaults to C<$HOME/d/libvirt>), but you
 can set this to another directory on the command line, eg:
@@ -3585,6 +3753,10 @@ L<virt-alignment-scan(1)> command and documentation.
 =item C<appliance>
 
 The libguestfs appliance, build scripts and so on.
+
+=item C<bash>
+
+Bash tab-completion scripts.
 
 =item C<build-aux>
 
@@ -3929,8 +4101,12 @@ Pass additional options to the guest kernel.
 
 =item LIBGUESTFS_ATTACH_METHOD
 
-Choose the default way to create the appliance.  See
-L</guestfs_set_attach_method> and L</ATTACH METHOD>.
+This is the old way to set C<LIBGUESTFS_BACKEND>.
+
+=item LIBGUESTFS_BACKEND
+
+Choose the default way to create the appliance.  See L</guestfs_set_backend>
+and L</BACKEND>.
 
 =item LIBGUESTFS_CACHEDIR
 
@@ -3984,8 +4160,8 @@ effect as calling C<guestfs_set_trace (g, 1)>.
 =item ШЛЯХ
 
 Libguestfs may run some external programs, and relies on C<$PATH> being set
-to a reasonable value.  If using the libvirt attach-method, libvirt will not
-work at all unless C<$PATH> contains the path of qemu/KVM.  Note that PHP by
+to a reasonable value.  If using the libvirt backend, libvirt will not work
+at all unless C<$PATH> contains the path of qemu/KVM.  Note that PHP by
 default removes C<$PATH> from the environment which tends to break
 everything.
 
@@ -4031,5 +4207,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2012
+Copyright (C) 2009-2013 Red Hat Inc.
 

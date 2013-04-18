@@ -5409,7 +5409,7 @@ guestfs_ntfsresize_size (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC char *
 guestfs_vfs_uuid (guestfs_h *g,
-                  const char *device)
+                  const char *mountable)
 {
   struct guestfs_vfs_uuid_args args;
   guestfs_message_header hdr;
@@ -5424,16 +5424,16 @@ guestfs_vfs_uuid (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "vfs_uuid", 8);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "vfs_uuid", "device");
+           "vfs_uuid", "mountable");
     return NULL;
   }
 
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "vfs_uuid");
-    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", mountable);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
@@ -5444,7 +5444,7 @@ guestfs_vfs_uuid (guestfs_h *g,
     return NULL;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   serial = guestfs___send (g, GUESTFS_PROC_VFS_UUID,
                            progress_hint, 0,
                            (xdrproc_t) xdr_guestfs_vfs_uuid_args, (char *) &args);
@@ -7818,6 +7818,201 @@ guestfs_ldmtool_volume_hint (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "ldmtool_volume_hint");
     fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC char *
+guestfs_part_get_gpt_type (guestfs_h *g,
+                           const char *device,
+                           int partnum)
+{
+  struct guestfs_part_get_gpt_type_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_part_get_gpt_type_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char *ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "part_get_gpt_type", 17);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "part_get_gpt_type", "device");
+    return NULL;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "part_get_gpt_type");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " %d", partnum);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "part_get_gpt_type") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_get_gpt_type", "NULL");
+    return NULL;
+  }
+
+  args.device = (char *) device;
+  args.partnum = partnum;
+  serial = guestfs___send (g, GUESTFS_PROC_PART_GET_GPT_TYPE,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_part_get_gpt_type_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_get_gpt_type", "NULL");
+    return NULL;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "part_get_gpt_type", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_part_get_gpt_type_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_get_gpt_type", "NULL");
+    return NULL;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_PART_GET_GPT_TYPE, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_get_gpt_type", "NULL");
+    return NULL;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "part_get_gpt_type", "NULL");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "part_get_gpt_type", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "part_get_gpt_type",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return NULL;
+  }
+
+  ret_v = ret.guid; /* caller will free */
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "part_get_gpt_type");
+    fprintf (trace_buffer.fp, "\"%s\"", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_is_whole_device (guestfs_h *g,
+                         const char *device)
+{
+  struct guestfs_is_whole_device_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  struct guestfs_is_whole_device_ret ret;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "is_whole_device", 15);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "is_whole_device", "device");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "is_whole_device");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "is_whole_device") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_whole_device", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  serial = guestfs___send (g, GUESTFS_PROC_IS_WHOLE_DEVICE,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_is_whole_device_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_whole_device", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+  memset (&ret, 0, sizeof ret);
+
+  r = guestfs___recv (g, "is_whole_device", &hdr, &err,
+        (xdrproc_t) xdr_guestfs_is_whole_device_ret, (char *) &ret);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_whole_device", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_IS_WHOLE_DEVICE, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_whole_device", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "is_whole_device", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "is_whole_device", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "is_whole_device",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = ret.flag;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "is_whole_device");
+    fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

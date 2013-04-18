@@ -255,6 +255,9 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_IFACE, const char *iface,
  GUESTFS_ADD_DRIVE_OPTS_NAME, const char *name,
  GUESTFS_ADD_DRIVE_OPTS_LABEL, const char *label,
+ GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, const char *protocol,
+ GUESTFS_ADD_DRIVE_OPTS_SERVER, char *const *server,
+ GUESTFS_ADD_DRIVE_OPTS_USERNAME, const char *username,
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -321,6 +324,96 @@ As well as its usual name in the API (such as C</dev/sda>),
 the drive will also be named C</dev/disk/guestfs/I<label>>.
 
 See L<guestfs(3)/DISK LABELS>.
+
+=item C<protocol>
+
+The optional protocol argument can be used to select an alternate
+source protocol.
+
+See also: L<guestfs(3)/REMOTE STORAGE>.
+
+=over 4
+
+=item C<protocol = "file">
+
+C<filename> is interpreted as a local file or device.
+This is the default if the optional protocol parameter
+is omitted.
+
+=item C<protocol = "gluster">
+
+Connect to the GlusterFS server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = "nbd">
+
+Connect to the Network Block Device server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
+
+=item C<protocol = "rbd">
+
+Connect to the Ceph (librbd/RBD) server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/CEPH>.
+
+=item C<protocol = "sheepdog">
+
+Connect to the Sheepdog server.
+The C<server> parameter may also be supplied - see below.
+
+See also: L<guestfs(3)/SHEEPDOG>.
+
+=item C<protocol = "ssh">
+
+Connect to the Secure Shell (ssh) server.
+
+The C<server> parameter must be supplied.
+The C<username> parameter may be supplied.  See below.
+
+See also: L<guestfs(3)/SSH>.
+
+=back
+
+=item C<server>
+
+For protocols which require access to a remote server, this
+is a list of server(s).
+
+ Protocol       Number of servers required
+ --------       --------------------------
+ file           List must be empty or param not used at all
+ gluster        Exactly one
+ nbd            Exactly one
+ rbd            One or more
+ sheepdog       Zero or more
+ ssh            Exactly one
+
+Each list element is a string specifying a server.  The string must be
+in one of the following formats:
+
+ hostname
+ hostname:port
+ tcp:hostname
+ tcp:hostname:port
+ unix:/path/to/socket
+
+If the port number is omitted, then the standard port number
+for the protocol is used (see C</etc/services>).
+
+=item C<username>
+
+For the C<ssh> protocol only, this specifies the remote username.
+
+If not given, then the local username is used.  But note this sometimes
+may give unexpected results, for example if using the libvirt backend
+and if the libvirt backend is configured to start the qemu appliance
+as a special user such as C<qemu.qemu>.  If in doubt, specify the
+remote username you want.
 
 =back
 
@@ -713,6 +806,12 @@ I<Notes:>
 
 =item *
 
+C<guestfs_feature_available> is the same as this call, but
+with a slightly simpler to use API: that call returns a boolean
+true/false instead of throwing an error.
+
+=item *
+
 You must call C<guestfs_launch> before calling this function.
 
 The reason is because we don't know what groups are
@@ -756,10 +855,11 @@ This function returns 0 on success or -1 on error.
 This command returns a list of all optional groups that this
 daemon knows about.  Note this returns both supported and unsupported
 groups.  To find out which ones the daemon can actually support
-you have to call C<guestfs_available> on each member of the
-returned list.
+you have to call C<guestfs_available> / C<guestfs_feature_available>
+on each member of the returned list.
 
-See also C<guestfs_available> and L<guestfs(3)/AVAILABILITY>.
+See also C<guestfs_available>, C<guestfs_feature_available>
+and L<guestfs(3)/AVAILABILITY>.
 
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
@@ -1707,6 +1807,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,
+ GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,
 
 The four calls C<guestfs_copy_device_to_device>,
 C<guestfs_copy_device_to_file>,
@@ -1726,6 +1827,12 @@ overlapping regions may not be copied correctly.
 
 If the destination is a file, it is created if required.  If
 the destination file is not large enough, it is extended.
+
+If the C<sparse> flag is true then the call avoids writing
+blocks that contain only zeroes, which can help in some situations
+where the backing disk is thin-provisioned.  Note that unless
+the target is already zeroed, using this option will result
+in incorrect copying.
 
 This function returns 0 on success or -1 on error.
 
@@ -1776,6 +1883,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,
+ GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,
 
 See C<guestfs_copy_device_to_device> for a general overview
 of this call.
@@ -1829,6 +1937,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,
+ GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,
 
 See C<guestfs_copy_device_to_device> for a general overview
 of this call.
@@ -1882,6 +1991,7 @@ See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,
+ GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,
 
 See C<guestfs_copy_device_to_device> for a general overview
 of this call.
@@ -2416,6 +2526,35 @@ This function returns a C truth value on success or -1 on error.
 
 (Added in 0.8)
 
+=head2 guestfs_extlinux
+
+ int
+ guestfs_extlinux (guestfs_h *g,
+                   const char *directory);
+
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike C<guestfs_syslinux> which requires a FAT filesystem, this can
+be used on an ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a
+directory within the mountpoint.
+
+You also have to mark the partition as "active"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must
+be installed (eg. using C<guestfs_pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<extlinux(1)> man page for further information.
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<extlinux.conf> on the filesystem
+under C<directory>.  For further information
+about the contents of this file, see L<extlinux(1)>.
+
+See also C<guestfs_syslinux>.
+
+This function returns 0 on success or -1 on error.
+
 =head2 guestfs_fallocate
 
  int
@@ -2468,6 +2607,19 @@ a file in the host and attach it as a device.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.3.17)
+
+=head2 guestfs_feature_available
+
+ int
+ guestfs_feature_available (guestfs_h *g,
+                            char *const *groups);
+
+This is the same as C<guestfs_available>, but unlike that
+call it returns a simple true/false boolean result, instead
+of throwing an exception if a feature is not found.  For
+other documentation see C<guestfs_available>.
+
+This function returns a C truth value on success or -1 on error.
 
 =head2 guestfs_fgrep
 
@@ -2694,7 +2846,8 @@ it doesn't mean that a particular filesystem can be mounted,
 since filesystems can fail for other reasons such as it being
 a later version of the filesystem, or having incompatible features.
 
-See also C<guestfs_available>, L<guestfs(3)/AVAILABILITY>.
+See also C<guestfs_available>, C<guestfs_feature_available>,
+L<guestfs(3)/AVAILABILITY>.
 
 This function returns a C truth value on success or -1 on error.
 
@@ -2990,9 +3143,16 @@ The string is owned by the guest handle and must I<not> be freed.
  char *
  guestfs_get_attach_method (guestfs_h *g);
 
-Return the current attach method.
+I<This function is deprecated.>
+In new code, use the L</guestfs_get_backend> call instead.
 
-See C<guestfs_set_attach_method> and L<guestfs(3)/ATTACH METHOD>.
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+Return the current backend.
+
+See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
 
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
@@ -3009,6 +3169,20 @@ Get the autosync flag.
 This function returns a C truth value on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_get_backend
+
+ char *
+ guestfs_get_backend (guestfs_h *g);
+
+Return the current backend.
+
+This handle property was previously called the "attach method".
+
+See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
 
 =head2 guestfs_get_cachedir
 
@@ -3354,6 +3528,16 @@ This is an internal call used for debugging and testing.
 On error this function returns -1.
 
 (Added in 1.0.56)
+
+=head2 guestfs_get_program
+
+ const char *
+ guestfs_get_program (guestfs_h *g);
+
+Get the program name.  See C<guestfs_set_program>.
+
+This function returns a string, or NULL on error.
+The string is owned by the guest handle and must I<not> be freed.
 
 =head2 guestfs_get_qemu
 
@@ -5439,6 +5623,19 @@ This function returns a C truth value on success or -1 on error.
 
 (Added in 1.5.10)
 
+=head2 guestfs_is_whole_device
+
+ int
+ guestfs_is_whole_device (guestfs_h *g,
+                          const char *device);
+
+This returns C<true> if and only if C<device> refers to a whole block
+device. That is, not a partition or a logical device.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.21.9)
+
 =head2 guestfs_is_zero
 
  int
@@ -5591,6 +5788,8 @@ hotplugged disks or have just created a Windows dynamic disk.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_diskgroup_disks
 
  char **
@@ -5605,6 +5804,8 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_diskgroup_name
 
  char *
@@ -5617,6 +5818,8 @@ the list returned by C<guestfs_ldmtool_scan>.
 
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_diskgroup_volumes
 
@@ -5632,6 +5835,8 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_remove_all
 
  int
@@ -5642,6 +5847,8 @@ It removes the device mapper mappings for all Windows dynamic disk
 volumes
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_scan
 
@@ -5658,6 +5865,8 @@ block devices, call C<guestfs_ldmtool_scan_devices> instead.
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_scan_devices
 
@@ -5676,6 +5885,8 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_volume_hint
 
  char *
@@ -5691,6 +5902,8 @@ not always, the name of a Windows drive, eg. C<E:>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_volume_partitions
 
  char **
@@ -5704,6 +5917,8 @@ group with GUID C<diskgroup>.
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_volume_type
 
@@ -5721,6 +5936,8 @@ Other types may also be returned.
 
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_lgetxattr
 
@@ -5848,7 +6065,7 @@ I<The caller must free the strings and the array after use>.
  guestfs_list_filesystems (guestfs_h *g);
 
 This inspection command looks for filesystems on partitions,
-block devices and logical volumes, returning a list of devices
+block devices and logical volumes, returning a list of C<mountables>
 containing filesystems and their type.
 
 The return value is a hash, where the keys are the devices
@@ -5859,6 +6076,9 @@ For example:
  "/dev/sda2" => "ext2"
  "/dev/vg_guest/lv_root" => "ext4"
  "/dev/vg_guest/lv_swap" => "swap"
+
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to C<guestfs_mount>.
 
 The value can have the special value "unknown", meaning the
 content of the device is undetermined or empty.
@@ -5897,6 +6117,8 @@ This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_list_ldm_volumes
 
  char **
@@ -5909,6 +6131,8 @@ device names.
 This function returns a NULL-terminated array of strings
 (like L<environ(3)>), or NULL if there was an error.
 I<The caller must free the strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_list_md_devices
 
@@ -7615,14 +7839,15 @@ This function returns 0 on success or -1 on error.
 
  int
  guestfs_mount (guestfs_h *g,
-                const char *device,
+                const char *mountable,
                 const char *mountpoint);
 
 Mount a guest disk at a position in the filesystem.  Block devices
 are named C</dev/sda>, C</dev/sdb> and so on, as they were added to
 the guest.  If those block devices contain partitions, they will have
 the usual names (eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style
-names can be used.
+names can be used, or 'mountable' strings returned by
+C<guestfs_list_filesystems> or C<guestfs_inspect_get_mountpoints>.
 
 The rules are the same as for L<mount(2)>:  A filesystem must
 first be mounted on C</> before others can be mounted.  Other
@@ -7806,7 +8031,7 @@ This function returns 0 on success or -1 on error.
  int
  guestfs_mount_options (guestfs_h *g,
                         const char *options,
-                        const char *device,
+                        const char *mountable,
                         const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it
@@ -7825,7 +8050,7 @@ This function returns 0 on success or -1 on error.
 
  int
  guestfs_mount_ro (guestfs_h *g,
-                   const char *device,
+                   const char *mountable,
                    const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it
@@ -7841,7 +8066,7 @@ This function returns 0 on success or -1 on error.
  guestfs_mount_vfs (guestfs_h *g,
                     const char *options,
                     const char *vfstype,
-                    const char *device,
+                    const char *mountable,
                     const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it
@@ -8291,6 +8516,22 @@ This function returns a C truth value on success or -1 on error.
 
 (Added in 1.3.2)
 
+=head2 guestfs_part_get_gpt_type
+
+ char *
+ guestfs_part_get_gpt_type (guestfs_h *g,
+                            const char *device,
+                            int partnum);
+
+Return the type GUID of numbered GPT partition C<partnum>. For MBR partitions,
+return an appropriate GUID corresponding to the MBR type. Behaviour is undefined
+for other partition types.
+
+This function returns a string, or NULL on error.
+I<The caller must free the returned string after use>.
+
+(Added in 1.21.1)
+
 =head2 guestfs_part_get_mbr_id
 
  int
@@ -8468,6 +8709,25 @@ no means universally recognized.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.0.78)
+
+=head2 guestfs_part_set_gpt_type
+
+ int
+ guestfs_part_set_gpt_type (guestfs_h *g,
+                            const char *device,
+                            int partnum,
+                            const char *guid);
+
+Set the type GUID of numbered GPT partition C<partnum> to C<guid>. Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
+
+See L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
+for a useful list of type GUIDs.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.21.1)
 
 =head2 guestfs_part_set_mbr_id
 
@@ -8975,7 +9235,7 @@ labels (see the optional C<label> argument to C<guestfs_add_drive_opts>).
 If you didn't use a label, then they cannot be removed.
 
 You can call this function before or after launching the handle.
-If called after launch, if the attach-method supports it, we try to hot
+If called after launch, if the backend supports it, we try to hot
 unplug the drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not>
 be in use (eg. mounted) when you do this.  We try to detect if the
 disk is in use and stop you from doing this.
@@ -9012,6 +9272,8 @@ the same as the Linux L<rename(2)> system call.  In most cases
 you are better to use C<guestfs_mv> instead.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.21.5)
 
 =head2 guestfs_resize2fs
 
@@ -9403,12 +9665,19 @@ This function returns 0 on success or -1 on error.
 
  int
  guestfs_set_attach_method (guestfs_h *g,
-                            const char *attachmethod);
+                            const char *backend);
 
-Set the method that libguestfs uses to connect to the back end
+I<This function is deprecated.>
+In new code, use the L</guestfs_set_backend> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
+
+Set the method that libguestfs uses to connect to the backend
 guestfsd daemon.
 
-See L<guestfs(3)/ATTACH METHOD>.
+See L<guestfs(3)/BACKEND>.
 
 This function returns 0 on success or -1 on error.
 
@@ -9431,6 +9700,21 @@ disabled by default).
 This function returns 0 on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_set_backend
+
+ int
+ guestfs_set_backend (guestfs_h *g,
+                      const char *backend);
+
+Set the method that libguestfs uses to connect to the backend
+guestfsd daemon.
+
+This handle property was previously called the "attach method".
+
+See L<guestfs(3)/BACKEND>.
+
+This function returns 0 on success or -1 on error.
 
 =head2 guestfs_set_cachedir
 
@@ -9601,10 +9885,10 @@ This function returns 0 on success or -1 on error.
 
  int
  guestfs_set_label (guestfs_h *g,
-                    const char *device,
+                    const char *mountable,
                     const char *label);
 
-Set the filesystem label on C<device> to C<label>.
+Set the filesystem label on C<mountable> to C<label>.
 
 Only some filesystem types support labels, and libguestfs supports
 setting labels on only a subset of these.
@@ -9612,6 +9896,9 @@ setting labels on only a subset of these.
 On ext2/3/4 filesystems, labels are limited to 16 bytes.
 
 On NTFS filesystems, labels are limited to 128 unicode characters.
+
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 
 To read the label on a filesystem, call C<guestfs_vfs_label>.
 
@@ -9756,6 +10043,21 @@ long-running commands gracefully (see C<guestfs_user_cancel>).
 This function returns 0 on success or -1 on error.
 
 (Added in 1.11.18)
+
+=head2 guestfs_set_program
+
+ int
+ guestfs_set_program (guestfs_h *g,
+                      const char *program);
+
+Set the program name.  This is an informative string which the
+main program may optionally set in the handle.
+
+When the handle is created, the program name in the handle is
+set to the basename from C<argv[0]>.  If that was not possible,
+it is set to the empty string (but never C<NULL>).
+
+This function returns 0 on success or -1 on error.
 
 =head2 guestfs_set_qemu
 
@@ -10410,6 +10712,74 @@ closing the handle.
 This function returns 0 on success or -1 on error.
 
 (Added in 0.3)
+
+=head2 guestfs_syslinux
+
+ int
+ guestfs_syslinux (guestfs_h *g,
+                   const char *device,
+                   ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_SYSLINUX_DIRECTORY, const char *directory,
+
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted
+as a FAT filesystem, or a partition formatted as a FAT filesystem.
+In the latter case, the partition should be marked as "active"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must be
+installed (eg. using C<guestfs_pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<syslinux(1)> man page for further information.
+
+The optional arguments are:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the
+root directory of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<syslinux.cfg> on the FAT filesystem,
+either in the root directory, or under C<directory> if that
+optional argument is being used.  For further information
+about the contents of this file, see L<syslinux(1)>.
+
+See also C<guestfs_extlinux>.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_syslinux_va
+
+ int
+ guestfs_syslinux_va (guestfs_h *g,
+                      const char *device,
+                      va_list args);
+
+This is the "va_list variant" of L</guestfs_syslinux>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_syslinux_argv
+
+ int
+ guestfs_syslinux_argv (guestfs_h *g,
+                        const char *device,
+                        const struct guestfs_syslinux_argv *optargs);
+
+This is the "argv variant" of L</guestfs_syslinux>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_tail
 
@@ -11079,6 +11449,42 @@ event callback.  See L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
 (Added in 1.5.17)
 
+=head2 guestfs_user_cancel
+
+ int
+ guestfs_user_cancel (guestfs_h *g);
+
+This function cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and
+thread safe.  You can call it from a signal handler or from another
+thread, without needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this
+to find out if the operation was cancelled or failed because of
+another error.
+
+No cleanup is performed: for example, if a file was being uploaded
+then after cancellation there may be a partially uploaded file.  It is
+the caller's responsibility to clean up if necessary.
+
+There are two common places that you might call C<guestfs_user_cancel>:
+
+In an interactive text-based program, you might call it from a
+C<SIGINT> signal handler so that pressing C<^C> cancels the current
+operation.  (You also need to call L</guestfs_set_pgroup> so that
+child processes don't receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress
+bar with a cancel button, wire up the cancel button to call this
+function.
+
+This function returns 0 on success or -1 on error.
+
+(Added in 1.11.18)
+
 =head2 guestfs_utimens
 
  int
@@ -11159,7 +11565,7 @@ I<Note:> Don't use this call to test for availability
 of features.  In enterprise distributions we backport
 features from later versions into earlier versions,
 making this an unreliable way to test for features.
-Use C<guestfs_available> instead.
+Use C<guestfs_available> or C<guestfs_feature_available> instead.
 
 This function returns a C<struct guestfs_version *>,
 or NULL if there was an error.
@@ -11171,10 +11577,9 @@ I<The caller must call C<guestfs_free_version> after use>.
 
  char *
  guestfs_vfs_label (guestfs_h *g,
-                    const char *device);
+                    const char *mountable);
 
-This returns the filesystem label of the filesystem on
-C<device>.
+This returns the label of the filesystem on C<mountable>.
 
 If the filesystem is unlabeled, this returns the empty string.
 
@@ -11189,10 +11594,10 @@ I<The caller must free the returned string after use>.
 
  char *
  guestfs_vfs_type (guestfs_h *g,
-                   const char *device);
+                   const char *mountable);
 
 This command gets the filesystem type corresponding to
-the filesystem on C<device>.
+the filesystem on C<mountable>.
 
 For most filesystems, the result is the name of the Linux
 VFS module which would be used to mount this filesystem
@@ -11208,10 +11613,9 @@ I<The caller must free the returned string after use>.
 
  char *
  guestfs_vfs_uuid (guestfs_h *g,
-                   const char *device);
+                   const char *mountable);
 
-This returns the filesystem UUID of the filesystem on
-C<device>.
+This returns the filesystem UUID of the filesystem on C<mountable>.
 
 If the filesystem does not have a UUID, this returns the empty string.
 

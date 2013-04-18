@@ -788,6 +788,55 @@ guestfs_set_cachedir (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC int
+guestfs_internal_set_libvirt_selinux_label (guestfs_h *g,
+                                            const char *label,
+                                            const char *imagelabel)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_set_libvirt_selinux_label", 34);
+  if (label == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_set_libvirt_selinux_label", "label");
+    return -1;
+  }
+  if (imagelabel == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_set_libvirt_selinux_label", "imagelabel");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_set_libvirt_selinux_label");
+    fprintf (trace_buffer.fp, " \"%s\"", label);
+    fprintf (trace_buffer.fp, " \"%s\"", imagelabel);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__internal_set_libvirt_selinux_label (g, label, imagelabel);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "internal_set_libvirt_selinux_label");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_set_libvirt_selinux_label", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
 guestfs_aug_init (guestfs_h *g,
                   const char *root,
                   int flags)
@@ -1381,7 +1430,7 @@ guestfs_tgz_out (guestfs_h *g,
 GUESTFS_DLL_PUBLIC int
 guestfs_mount_options (guestfs_h *g,
                        const char *options,
-                       const char *device,
+                       const char *mountable,
                        const char *mountpoint)
 {
   struct guestfs_mount_options_args args;
@@ -1401,9 +1450,9 @@ guestfs_mount_options (guestfs_h *g,
            "mount_options", "options");
     return -1;
   }
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mount_options", "device");
+           "mount_options", "mountable");
     return -1;
   }
   if (mountpoint == NULL) {
@@ -1416,7 +1465,7 @@ guestfs_mount_options (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "mount_options");
     fprintf (trace_buffer.fp, " \"%s\"", options);
-    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", mountable);
     fprintf (trace_buffer.fp, " \"%s\"", mountpoint);
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -1429,7 +1478,7 @@ guestfs_mount_options (guestfs_h *g,
   }
 
   args.options = (char *) options;
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.mountpoint = (char *) mountpoint;
   serial = guestfs___send (g, GUESTFS_PROC_MOUNT_OPTIONS,
                            progress_hint, 0,
@@ -5900,6 +5949,120 @@ guestfs_ldmtool_scan (guestfs_h *g)
       fputs ("\"", trace_buffer.fp);
     }
     fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_internal_rhbz914931 (guestfs_h *g,
+                             const char *filename,
+                             int count)
+{
+  struct guestfs_internal_rhbz914931_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  uint64_t progress_hint = 0;
+  struct stat progress_stat;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_rhbz914931", 19);
+  if (filename == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "internal_rhbz914931", "filename");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_rhbz914931");
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    fprintf (trace_buffer.fp, " %d", count);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (stat (filename, &progress_stat) == 0 &&
+      S_ISREG (progress_stat.st_mode))
+    progress_hint += progress_stat.st_size;
+
+  if (guestfs___check_appliance_up (g, "internal_rhbz914931") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_rhbz914931", "-1");
+    return -1;
+  }
+
+  args.count = count;
+  serial = guestfs___send (g, GUESTFS_PROC_INTERNAL_RHBZ914931,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_internal_rhbz914931_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_rhbz914931", "-1");
+    return -1;
+  }
+
+  r = guestfs___send_file (g, filename);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_rhbz914931", "-1");
+    /* daemon will send an error reply which we discard */
+    guestfs___recv_discard (g, "internal_rhbz914931");
+    return -1;
+  }
+  if (r == -2) /* daemon cancelled */
+    goto read_reply;
+
+ read_reply:
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "internal_rhbz914931", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_rhbz914931", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_INTERNAL_RHBZ914931, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_rhbz914931", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_rhbz914931", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "internal_rhbz914931", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "internal_rhbz914931",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "internal_rhbz914931");
+    fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

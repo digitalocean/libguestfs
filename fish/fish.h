@@ -50,7 +50,6 @@ extern void free_file_in (char *s);
 extern char *file_out (const char *arg);
 extern void extended_help_message (void);
 extern void progress_callback (guestfs_h *g, void *data, uint64_t event, int event_handle, int flags, const char *buf, size_t buf_len, const uint64_t *array, size_t array_len);
-extern int feature_available (guestfs_h *g, const char *feature);
 
 /* in cmds.c (auto-generated) */
 extern void list_commands (void);
@@ -69,8 +68,6 @@ extern void init_event_handlers (void);
 extern void free_event_handlers (void);
 
 /* in event-names.c (auto-generated) */
-extern const char *event_name_of_event_bitmask (uint64_t);
-extern void print_event_set (uint64_t, FILE *);
 extern int event_bitmask_of_event_set (const char *arg, uint64_t *);
 
 /* in alloc.c */

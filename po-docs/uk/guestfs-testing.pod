@@ -209,7 +209,8 @@ Do the results match what is actually in the guest?
 
  virt-ls -lR -d Guest / | grep -i '^-.*\.png$'
 
-Display files larger than 10MB in home directories:
+Щоб переглянути список файлів у домашніх каталогах, розмір яких перевищує 10
+МБ:
 
  virt-ls -lR -d Guest /home | awk '$3 > 10*1024*1024'
 
@@ -313,5 +314,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2011-2012 Red Hat Inc.
+© Red Hat Inc., 2011–2012
 

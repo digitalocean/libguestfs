@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2012 Free Software Foundation, Inc.
+# Copyright (C) 2002-2013 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,6 +46,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module alloca:
   # Code from module alloca-opt:
   # Code from module alloca-opt-tests:
+  # Code from module allocator:
+  # Code from module areadlink:
+  # Code from module areadlink-tests:
+  # Code from module areadlinkat:
+  # Code from module areadlinkat-tests:
   # Code from module argmatch:
   # Code from module argmatch-tests:
   # Code from module arpa_inet:
@@ -66,6 +71,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module c-strcase:
   # Code from module c-strcase-tests:
   # Code from module c-strcaseeq:
+  # Code from module careadlinkat:
   # Code from module chdir:
   # Code from module chdir-long:
   # Code from module chdir-tests:
@@ -170,6 +176,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module getopt-posix:
   # Code from module getopt-posix-tests:
   # Code from module getpagesize:
+  # Code from module gettext:
   # Code from module gettext-h:
   # Code from module gettime:
   # Code from module gettimeofday:
@@ -241,6 +248,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module memrchr:
   # Code from module memrchr-tests:
   # Code from module mkdtemp:
+  # Code from module mkstemps:
   # Code from module msvc-inval:
   # Code from module msvc-nothrow:
   # Code from module multiarch:
@@ -268,6 +276,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module pipe2-tests:
   # Code from module pread:
   # Code from module pread-tests:
+  # Code from module priv-set:
+  # Code from module priv-set-tests:
   # Code from module progname:
   # Code from module putenv:
   # Code from module quote:
@@ -285,11 +295,17 @@ AC_DEFUN([gl_EARLY],
   # Code from module readdir:
   # Code from module readlink:
   # Code from module readlink-tests:
+  # Code from module readlinkat:
+  # Code from module readlinkat-tests:
   # Code from module realloc-posix:
+  # Code from module rmdir:
+  # Code from module rmdir-tests:
+  # Code from module root-uid:
   # Code from module safe-read:
   # Code from module safe-write:
   # Code from module same-inode:
   # Code from module save-cwd:
+  # Code from module secure_getenv:
   # Code from module select:
   # Code from module select-tests:
   # Code from module servent:
@@ -393,6 +409,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module unistd-safer:
   # Code from module unistd-safer-tests:
   # Code from module unistd-tests:
+  # Code from module unlink:
+  # Code from module unlink-tests:
+  # Code from module unlinkat:
+  # Code from module unlinkat-tests:
+  # Code from module unlinkdir:
   # Code from module unsetenv:
   # Code from module unsetenv-tests:
   # Code from module useless-if-before-free:
@@ -462,10 +483,12 @@ LTALLOCA=`echo "$ALLOCA" | sed -e 's/\.[^.]* /.lo /g;s/\.[^.]*$/.lo/'`
 changequote([, ])dnl
 AC_SUBST([LTALLOCA])
   gl_FUNC_ALLOCA
+  gl_MODULE_INDICATOR([areadlinkat])
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
   AC_LIBOBJ([openat-proc])
   gl_BYTESWAP
+  AC_CHECK_FUNCS_ONCE([readlinkat])
   gl_UNISTD_MODULE_INDICATOR([chdir])
   gl_FUNC_CHDIR_LONG
   if test $gl_cv_have_arbitrary_file_name_length_limit = yes; then
@@ -577,7 +600,6 @@ AC_SUBST([LTALLOCA])
   if test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1; then
     AC_LIBOBJ([fstatat])
   fi
-  gl_MODULE_INDICATOR([fstatat]) dnl for lib/openat.h
   gl_SYS_STAT_MODULE_INDICATOR([fstatat])
   gl_FSUSAGE
   if test $gl_cv_fs_space = yes; then
@@ -778,6 +800,12 @@ AC_SUBST([LTALLOCA])
     gl_PREREQ_MKDTEMP
   fi
   gl_STDLIB_MODULE_INDICATOR([mkdtemp])
+  gl_FUNC_MKSTEMPS
+  if test $HAVE_MKSTEMPS = 0; then
+    AC_LIBOBJ([mkstemps])
+  fi
+  gl_MODULE_INDICATOR([mkstemps])
+  gl_STDLIB_MODULE_INDICATOR([mkstemps])
   gl_MSVC_INVAL
   if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
     AC_LIBOBJ([msvc-inval])
@@ -823,8 +851,6 @@ AC_SUBST([LTALLOCA])
     AC_LIBOBJ([pread])
   fi
   gl_UNISTD_MODULE_INDICATOR([pread])
-  AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
-  AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
   gl_QUOTE
   gl_QUOTEARG
   gl_FUNC_RAISE
@@ -857,6 +883,11 @@ AC_SUBST([LTALLOCA])
     gl_PREREQ_READLINK
   fi
   gl_UNISTD_MODULE_INDICATOR([readlink])
+  gl_FUNC_READLINKAT
+  if test $HAVE_READLINKAT = 0; then
+    AC_LIBOBJ([readlinkat])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([readlinkat])
   gl_FUNC_REALLOC_POSIX
   if test $REPLACE_REALLOC = 1; then
     AC_LIBOBJ([realloc])
@@ -865,6 +896,12 @@ AC_SUBST([LTALLOCA])
   gl_PREREQ_SAFE_READ
   gl_PREREQ_SAFE_WRITE
   gl_SAVE_CWD
+  gl_FUNC_SECURE_GETENV
+  if test $HAVE_SECURE_GETENV = 0; then
+    AC_LIBOBJ([secure_getenv])
+    gl_PREREQ_SECURE_GETENV
+  fi
+  gl_STDLIB_MODULE_INDICATOR([secure_getenv])
   gl_FUNC_SELECT
   if test $REPLACE_SELECT = 1; then
     AC_LIBOBJ([select])
@@ -1117,6 +1154,8 @@ changequote([, ])dnl
     AC_LIBOBJ([getpagesize])
   fi
   gl_UNISTD_MODULE_INDICATOR([getpagesize])
+  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
+  AM_GNU_GETTEXT_VERSION([0.18.1])
   AC_C_BIGENDIAN
   gl_FUNC_INET_PTON
   if test $HAVE_INET_PTON = 0 || test $REPLACE_INET_NTOP = 1; then
@@ -1171,15 +1210,24 @@ changequote([, ])dnl
     AC_LIBOBJ([pipe])
   fi
   gl_UNISTD_MODULE_INDICATOR([pipe])
+  gl_PRIV_SET
+  AC_CHECK_DECLS([program_invocation_name], [], [], [#include <errno.h>])
+  AC_CHECK_DECLS([program_invocation_short_name], [], [], [#include <errno.h>])
   gl_FUNC_PUTENV
   if test $REPLACE_PUTENV = 1; then
     AC_LIBOBJ([putenv])
+    gl_PREREQ_PUTENV
   fi
   gl_STDLIB_MODULE_INDICATOR([putenv])
   dnl Check for prerequisites for memory fence checks.
   gl_FUNC_MMAP_ANON
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
   AC_CHECK_FUNCS_ONCE([mprotect])
+  gl_FUNC_RMDIR
+  if test $REPLACE_RMDIR = 1; then
+    AC_LIBOBJ([rmdir])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([rmdir])
   AC_CHECK_HEADERS_ONCE([sys/wait.h])
   gl_FUNC_SETLOCALE
   if test $REPLACE_SETLOCALE = 1; then
@@ -1197,8 +1245,8 @@ changequote([, ])dnl
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
   AC_CHECK_DECLS_ONCE([alarm])
-  gt_TYPE_WCHAR_T
-  gt_TYPE_WINT_T
+  AC_REQUIRE([gt_TYPE_WCHAR_T])
+  AC_REQUIRE([gt_TYPE_WINT_T])
   dnl Check for prerequisites for memory fence checks.
   gl_FUNC_MMAP_ANON
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
@@ -1207,6 +1255,17 @@ changequote([, ])dnl
   AC_PROG_MKDIR_P
   AC_CHECK_FUNCS_ONCE([shutdown])
   gl_THREAD
+  gl_FUNC_UNLINK
+  if test $REPLACE_UNLINK = 1; then
+    AC_LIBOBJ([unlink])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([unlink])
+  gl_FUNC_UNLINKAT
+  if test $HAVE_UNLINKAT = 0 || test $REPLACE_UNLINKAT = 1; then
+    AC_LIBOBJ([unlinkat])
+  fi
+  gl_UNISTD_MODULE_INDICATOR([unlinkat])
+  gl_UNLINKDIR
   gl_FUNC_UNSETENV
   if test $HAVE_UNSETENV = 0 || test $REPLACE_UNSETENV = 1; then
     AC_LIBOBJ([unsetenv])
@@ -1348,6 +1407,11 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/accept4.c
   lib/alloca.c
   lib/alloca.in.h
+  lib/allocator.c
+  lib/allocator.h
+  lib/areadlink.c
+  lib/areadlink.h
+  lib/areadlinkat.c
   lib/argmatch.c
   lib/argmatch.h
   lib/arpa_inet.in.h
@@ -1366,6 +1430,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/c-strcasecmp.c
   lib/c-strcaseeq.h
   lib/c-strncasecmp.c
+  lib/careadlinkat.c
+  lib/careadlinkat.h
   lib/chdir-long.c
   lib/chdir-long.h
   lib/cloexec.c
@@ -1489,6 +1555,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/mempcpy.c
   lib/memrchr.c
   lib/mkdtemp.c
+  lib/mkstemps.c
   lib/msvc-inval.c
   lib/msvc-inval.h
   lib/msvc-nothrow.c
@@ -1514,8 +1581,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
-  lib/progname.c
-  lib/progname.h
   lib/quote.h
   lib/quotearg.c
   lib/quotearg.h
@@ -1527,6 +1592,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/read.c
   lib/readdir.c
   lib/readlink.c
+  lib/readlinkat.c
   lib/realloc.c
   lib/ref-add.sin
   lib/ref-del.sin
@@ -1537,6 +1603,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/same-inode.h
   lib/save-cwd.c
   lib/save-cwd.h
+  lib/secure_getenv.c
   lib/select.c
   lib/setenv.c
   lib/signal.in.h
@@ -1549,14 +1616,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stat-time.c
   lib/stat-time.h
   lib/stat.c
-  lib/statat.c
   lib/stdalign.in.h
   lib/stdarg.in.h
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
   lib/stdio-impl.h
-  lib/stdio.c
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/str-two-way.h
@@ -1687,8 +1752,10 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getlogin_r.m4
   m4/getopt.m4
   m4/getpagesize.m4
+  m4/gettext.m4
   m4/gettime.m4
   m4/gettimeofday.m4
+  m4/glibc2.m4
   m4/glibc21.m4
   m4/glob.m4
   m4/gnu-make.m4
@@ -1696,10 +1763,15 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/hostent.m4
   m4/human.m4
   m4/i-ring.m4
+  m4/iconv.m4
   m4/include_next.m4
   m4/inet_ntop.m4
   m4/inet_pton.m4
+  m4/intdiv0.m4
+  m4/intl.m4
+  m4/intldir.m4
   m4/intlmacosx.m4
+  m4/intmax.m4
   m4/intmax_t.m4
   m4/inttostr.m4
   m4/inttypes-pri.m4
@@ -1737,6 +1809,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mempcpy.m4
   m4/memrchr.m4
   m4/mkdtemp.m4
+  m4/mkstemps.m4
   m4/mmap-anon.m4
   m4/mode_t.m4
   m4/msvc-inval.m4
@@ -1744,6 +1817,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/multiarch.m4
   m4/netdb_h.m4
   m4/netinet_in_h.m4
+  m4/nls.m4
   m4/nocrash.m4
   m4/off_t.m4
   m4/onceonly.m4
@@ -1754,8 +1828,12 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/perror.m4
   m4/pipe.m4
   m4/pipe2.m4
+  m4/po.m4
   m4/pread.m4
+  m4/printf-posix.m4
   m4/printf.m4
+  m4/priv-set.m4
+  m4/progtest.m4
   m4/putenv.m4
   m4/quote.m4
   m4/quotearg.m4
@@ -1765,10 +1843,13 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/read.m4
   m4/readdir.m4
   m4/readlink.m4
+  m4/readlinkat.m4
   m4/realloc.m4
+  m4/rmdir.m4
   m4/safe-read.m4
   m4/safe-write.m4
   m4/save-cwd.m4
+  m4/secure_getenv.m4
   m4/select.m4
   m4/servent.m4
   m4/setenv.m4
@@ -1817,9 +1898,13 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/threadlib.m4
   m4/time_h.m4
   m4/timespec.m4
+  m4/uintmax_t.m4
   m4/ungetc.m4
   m4/unistd-safer.m4
   m4/unistd_h.m4
+  m4/unlink.m4
+  m4/unlinkat.m4
+  m4/unlinkdir.m4
   m4/usleep.m4
   m4/utimbuf.m4
   m4/utimecmp.m4
@@ -1827,6 +1912,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/utimes.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
+  m4/visibility.m4
   m4/warn-on-use.m4
   m4/warnings.m4
   m4/wchar_h.m4
@@ -1849,6 +1935,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-accept.c
   tests/test-accept4.c
   tests/test-alloca-opt.c
+  tests/test-areadlink.c
+  tests/test-areadlink.h
+  tests/test-areadlinkat.c
   tests/test-argmatch.c
   tests/test-arpa_inet.c
   tests/test-binary-io.c
@@ -1972,6 +2061,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-pipe2.c
   tests/test-pread.c
   tests/test-pread.sh
+  tests/test-priv-set.c
   tests/test-quotearg-simple.c
   tests/test-quotearg.h
   tests/test-raise.c
@@ -1980,6 +2070,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-read.c
   tests/test-readlink.c
   tests/test-readlink.h
+  tests/test-readlinkat.c
+  tests/test-rmdir.c
+  tests/test-rmdir.h
   tests/test-select-fd.c
   tests/test-select-in.sh
   tests/test-select-out.sh
@@ -2029,6 +2122,9 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-thread_self.c
   tests/test-time.c
   tests/test-unistd.c
+  tests/test-unlink.c
+  tests/test-unlink.h
+  tests/test-unlinkat.c
   tests/test-unsetenv.c
   tests/test-usleep.c
   tests/test-utimens-common.h
@@ -2064,6 +2160,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-xvasprintf.c
   tests/zerosize-ptr.h
   tests=lib/anytostr.c
+  tests=lib/at-func.c
   tests=lib/bind.c
   tests=lib/btowc.c
   tests=lib/dup-safer-flag.c
@@ -2087,12 +2184,22 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/mbtowc.c
   tests=lib/offtostr.c
   tests=lib/pipe.c
+  tests=lib/priv-set.c
+  tests=lib/priv-set.h
+  tests=lib/progname.c
+  tests=lib/progname.h
   tests=lib/putenv.c
+  tests=lib/rmdir.c
+  tests=lib/root-uid.h
   tests=lib/setlocale.c
   tests=lib/setsockopt.c
   tests=lib/sys_ioctl.in.h
   tests=lib/uinttostr.c
   tests=lib/umaxtostr.c
+  tests=lib/unlink.c
+  tests=lib/unlinkat.c
+  tests=lib/unlinkdir.c
+  tests=lib/unlinkdir.h
   tests=lib/unsetenv.c
   tests=lib/usleep.c
   tests=lib/utimecmp.c

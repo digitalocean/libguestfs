@@ -30,33 +30,27 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
-/* Alternate attach method: instead of launching the appliance,
+/* Alternate backend: instead of launching the appliance,
  * connect to an existing unix socket.
  */
 static int
 launch_unix (guestfs_h *g, const char *sockpath)
 {
-  int r;
+  int r, daemon_sock = -1;
   struct sockaddr_un addr;
   uint32_t size;
   void *buf = NULL;
 
   if (g->qemu_params) {
-    error (g, _("cannot set qemu parameters with the 'unix:' attach method"));
+    error (g, _("cannot set qemu parameters with the 'unix:' backend"));
     return -1;
   }
-
-  /* Set these to nothing so we don't try to read from random file
-   * descriptors.
-   */
-  g->fd[0] = -1;
-  g->fd[1] = -1;
 
   if (g->verbose)
     guestfs___print_timestamped_message (g, "connecting to %s", sockpath);
 
-  g->sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
-  if (g->sock == -1) {
+  daemon_sock = socket (AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);
+  if (daemon_sock == -1) {
     perrorf (g, "socket");
     return -1;
   }
@@ -67,20 +61,22 @@ launch_unix (guestfs_h *g, const char *sockpath)
 
   g->state = LAUNCHING;
 
-  if (connect (g->sock, &addr, sizeof addr) == -1) {
+  if (connect (daemon_sock, &addr, sizeof addr) == -1) {
     perrorf (g, "bind");
     goto cleanup;
   }
 
-  if (fcntl (g->sock, F_SETFL, O_NONBLOCK) == -1) {
-    perrorf (g, "fcntl");
+  g->conn = guestfs___new_conn_socket_connected (g, daemon_sock, -1);
+  if (!g->conn)
     goto cleanup;
-  }
+
+  /* g->conn now owns this socket. */
+  daemon_sock = -1;
 
   r = guestfs___recv_from_daemon (g, &size, &buf);
   free (buf);
 
-  if (r == -1) return -1;
+  if (r == -1) goto cleanup;
 
   if (size != GUESTFS_LAUNCH_FLAG) {
     error (g, _("guestfs_launch failed, unexpected initial message from guestfsd"));
@@ -98,20 +94,25 @@ launch_unix (guestfs_h *g, const char *sockpath)
   return 0;
 
  cleanup:
-  close (g->sock);
+  if (daemon_sock >= 0)
+    close (daemon_sock);
+  if (g->conn) {
+    g->conn->ops->free_connection (g, g->conn);
+    g->conn = NULL;
+  }
   return -1;
 }
 
 static int
 shutdown_unix (guestfs_h *g, int check_for_errors)
 {
-  /* Merely closing g->sock is sufficient and that is already done
+  /* Merely closing g->daemon_sock is sufficient and that is already done
    * in the calling code.
    */
   return 0;
 }
 
-struct attach_ops attach_ops_unix = {
+struct backend_ops backend_ops_unix = {
   .launch = launch_unix,
   .shutdown = shutdown_unix,
 };

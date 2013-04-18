@@ -873,6 +873,53 @@ guestfs_get_attach_method (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_set_backend (guestfs_h *g,
+                     const char *backend)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  if (g->state != CONFIG) {
+    error (g, "%s: this function can only be called in the config state",
+              "set_backend");
+    return -1;
+  }
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_backend", 11);
+  if (backend == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_backend", "backend");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_backend");
+    fprintf (trace_buffer.fp, " \"%s\"", backend);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__set_backend (g, backend);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_backend");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_backend", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC char *
 guestfs_inspect_get_product_variant (guestfs_h *g,
                                      const char *root)
@@ -1234,6 +1281,84 @@ guestfs_get_cachedir (guestfs_h *g)
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "get_cachedir", "NULL");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g,
+                                                      int norelabeldisks)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "internal_set_libvirt_selinux_norelabel_disks", 44);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "internal_set_libvirt_selinux_norelabel_disks");
+    fputs (norelabeldisks ? " true" : " false", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__internal_set_libvirt_selinux_norelabel_disks (g, norelabeldisks);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "internal_set_libvirt_selinux_norelabel_disks");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "internal_set_libvirt_selinux_norelabel_disks", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_set_program (guestfs_h *g,
+                     const char *program)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_program", 11);
+  if (program == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_program", "program");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_program");
+    fprintf (trace_buffer.fp, " \"%s\"", program);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__set_program (g, program);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_program");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_program", "-1");
   }
 
   return r;
@@ -4063,7 +4188,7 @@ guestfs_pwrite (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC char *
 guestfs_vfs_label (guestfs_h *g,
-                   const char *device)
+                   const char *mountable)
 {
   struct guestfs_vfs_label_args args;
   guestfs_message_header hdr;
@@ -4078,16 +4203,16 @@ guestfs_vfs_label (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "vfs_label", 9);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "vfs_label", "device");
+           "vfs_label", "mountable");
     return NULL;
   }
 
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "vfs_label");
-    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", mountable);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
@@ -4098,7 +4223,7 @@ guestfs_vfs_label (guestfs_h *g,
     return NULL;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   serial = guestfs___send (g, GUESTFS_PROC_VFS_LABEL,
                            progress_hint, 0,
                            (xdrproc_t) xdr_guestfs_vfs_label_args, (char *) &args);
@@ -6554,6 +6679,100 @@ guestfs_rename (guestfs_h *g,
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s = ", "rename");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_extlinux (guestfs_h *g,
+                  const char *directory)
+{
+  struct guestfs_extlinux_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "extlinux", 8);
+  if (directory == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "extlinux", "directory");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "extlinux");
+    fprintf (trace_buffer.fp, " \"%s\"", directory);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "extlinux") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "extlinux", "-1");
+    return -1;
+  }
+
+  args.directory = (char *) directory;
+  serial = guestfs___send (g, GUESTFS_PROC_EXTLINUX,
+                           progress_hint, 0,
+                           (xdrproc_t) xdr_guestfs_extlinux_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "extlinux", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "extlinux", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "extlinux", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_EXTLINUX, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "extlinux", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "extlinux", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "extlinux", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "extlinux",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "extlinux");
     fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }

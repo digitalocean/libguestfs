@@ -34,7 +34,9 @@ check_PROGRAMS = \
 	test-private-data \
 	test-user-cancel \
 	test-debug-to-file \
-	test-environment
+	test-environment \
+	test-pwd \
+	test-event-string
 
 TESTS = \
 	tests \
@@ -46,7 +48,8 @@ TESTS = \
 	test-private-data \
 	test-user-cancel \
 	test-debug-to-file \
-	test-environment
+	test-environment \
+	test-event-string
 
 if HAVE_CXX
 check_PROGRAMS += test-just-header-cxx
@@ -63,20 +66,29 @@ EXTRA_DIST += test-add-libvirt-dom.c
 TESTS_ENVIRONMENT = \
 	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
 	SKIP_TEST_COMMAND_LINES=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
+	SKIP_TEST_COMMAND=$(shell ldd test-pwd | grep -sq 'not a dynamic executable' || echo 1) \
 	$(top_builddir)/run --test $(VG)
 
 #SKIP_TEST_CHECKSUM_8=$(shell if test `find ../initramfs -name squashfs.ko | wc -l` -eq 0; then echo 1; fi)
 
-tests_SOURCES = tests.c
+tests_SOURCES = \
+	tests.c \
+	tests.h \
+	tests-main.c
 tests_CPPFLAGS = \
 	-DGUESTFS_PRIVATE=1 \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 tests_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
+	$(PCRE_CFLAGS)
 tests_LDADD = \
+	$(PCRE_LIBS) \
+	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS) \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
 # This binary must be statically linked.  It is used for testing
@@ -84,6 +96,9 @@ tests_LDADD = \
 
 test_command_SOURCES = test-command.c
 test_command_LDFLAGS = -all-static
+
+test_pwd_SOURCES = test-pwd.c
+test_pwd_LDFLAGS = -all-static
 
 # Hand-written C API tests.
 
@@ -187,6 +202,18 @@ test_environment_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
 test_environment_LDADD = \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+
+test_event_string_SOURCES = test-event-string.c
+test_event_string_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib
+test_event_string_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+test_event_string_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 

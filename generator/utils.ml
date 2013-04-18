@@ -250,7 +250,8 @@ let map_chars f str =
   List.map f (explode str)
 
 let name_of_argt = function
-  | Pathname n | Device n | Dev_or_Path n | String n | OptString n
+  | Pathname n | Device n | Mountable n | Dev_or_Path n
+  | Mountable_or_Path n | String n | OptString n
   | StringList n | DeviceList n | Bool n | Int n | Int64 n
   | FileIn n | FileOut n | BufferIn n | Key n | Pointer (_, n) -> n
 
@@ -258,15 +259,12 @@ let name_of_optargt = function
   | OBool n | OInt n | OInt64 n | OString n | OStringList n -> n
 
 let seq_of_test = function
-  | TestRun s | TestOutput (s, _) | TestOutputList (s, _)
-  | TestOutputListOfDevices (s, _)
-  | TestOutputInt (s, _) | TestOutputIntOp (s, _, _)
-  | TestOutputTrue s | TestOutputFalse s
-  | TestOutputLength (s, _) | TestOutputBuffer (s, _)
-  | TestOutputStruct (s, _)
-  | TestOutputFileMD5 (s, _)
-  | TestOutputDevice (s, _)
-  | TestOutputHashtable (s, _)
+  | TestRun s
+  | TestResult (s, _)
+  | TestResultString (s, _)
+  | TestResultDevice (s, _)
+  | TestResultTrue s
+  | TestResultFalse s
   | TestLastFail s -> s
 
 let c_quote str =

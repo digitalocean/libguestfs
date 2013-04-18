@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-guestfish - the libguestfs Filesystem Interactive SHell
+guestfish - the guest filesystem shell
 
 =head1 SYNOPSIS
 
@@ -44,7 +44,7 @@ L<virt-rescue(1)> command.
 
  $ guestfish
  
- Welcome to guestfish, the libguestfs filesystem interactive shell for
+ Welcome to guestfish, the guest filesystem shell for
  editing virtual machine filesystems.
  
  Type: 'help' for a list of commands
@@ -138,6 +138,12 @@ To list what is available do:
 
  guestfish -N help | less
 
+=head2 Remote drives
+
+Access a remote disk using ssh:
+
+ guestfish -a ssh://example.com/path/to/disk.img
+
 =head2 Remote control
 
  eval "`guestfish --listen`"
@@ -177,6 +183,12 @@ force a particular format use the I<--format=..> option.
 Using this flag is mostly equivalent to using the C<add> command,
 with C<readonly:true> if the I<--ro> flag was given, and
 with C<format:...> if the I<--format=...> flag was given.
+
+=item B<-a URI>
+
+=item B<--add URI>
+
+Add a remote disk.  See L</ADDING REMOTE STORAGE>.
 
 =item B<-c URI>
 
@@ -1053,10 +1065,6 @@ C<:> (colon) characters.  For example, I<-N fs> creates a default
 the partition formatted as ext2.  I<-N fs:ext4:1G> is the same, but
 for an ext4 filesystem on a 1GB disk instead.
 
-To list the available types and any extra parameters they take, run:
-
- guestfish -N help | less
-
 Note that the prepared filesystem is not mounted.  You would usually
 have to use the C<mount /dev/sda1 /> command or add the
 I<-m /dev/sda1> option.
@@ -1077,6 +1085,96 @@ Create a 32MB disk with a VFAT-formatted partition, and mount it:
 Create a blank 200MB disk:
 
  guestfish -N disk:200M
+
+__PREPOPTS__
+
+=head1 ADDING REMOTE STORAGE
+
+I<For API-level documentation on this topic, see
+L<guestfs(3)/guestfs_add_drive_opts> and
+L<guestfs(3)/REMOTE STORAGE>>.
+
+On the command line, you can use the I<-a> option to add network
+block devices using a URI-style format, for example:
+
+ guestfish -a ssh://root@example.com/disk.img
+
+URIs I<cannot> be used with the L</add> command.  The equivalent
+command using the API directly is:
+
+ ><fs> add /disk.img protocol:ssh server:tcp:example.com username:root
+
+The possible I<-a URI> formats are described below.
+
+=head2 B<-a disk.img>
+
+=head2 B<-a file:///path/to/disk.img>
+
+Add the local disk image (or device) called C<disk.img>.
+
+=head2 B<-a gluster://example.com[:port]/disk>
+
+Add a disk image located on GlusterFS storage.
+
+The server is the one running C<glusterd>, and may be C<localhost>.
+
+The equivalent API command would be:
+
+ ><fs> add /disk protocol:gluster server:tcp:example.com
+
+=head2 B<-a nbd://example.com[:port]>
+
+=head2 B<-a nbd://example.com[:port]/exportname>
+
+=head2 B<-a nbd://?socket=/socket>
+
+=head2 B<-a nbd:///exportname?socket=/socket>
+
+Add a disk located on Network Block Device (nbd) storage.
+
+The I</exportname> part of the URI specifies an NBD export name, but
+is usually left empty.
+
+The optional I<?socket> parameter can be used to specify a Unix domain
+socket that we talk to the NBD server over.  Note that you cannot mix
+server name (ie. TCP/IP) and socket path.
+
+The equivalent API command would be (no export name):
+
+ ><fs> add "" protocol:nbd server:[tcp:example.com|unix:/socket]
+
+=head2 B<-a rbd://example.com[:port]/disk>
+
+Add a disk image located on a Ceph (RBD/librbd) storage volume.
+
+Although libguestfs and Ceph supports multiple servers, only a single
+server can be specified when using this URI syntax.
+
+The equivalent API command would be:
+
+ ><fs> add /disk protocol:rbd server:tcp:example.com
+
+=head2 B<-a sheepdog://[example.com[:port]]/volume/image>
+
+Add a disk image located on a Sheepdog volume.
+
+The server name is optional.  Although libguestfs and Sheepdog
+supports multiple servers, only at most one server can be specified
+when using this URI syntax.
+
+The equivalent API command would be:
+
+ ><fs> add /disk protocol:sheepdog [server:tcp:example.com]
+
+=head2 B<-a ssh://[user@]example.com[:port]/disk.img>
+
+Add a disk image located on a remote server, accessed using the Secure
+Shell (ssh) SFTP protocol.  SFTP is supported out of the box by all
+major SSH servers.
+
+The equivalent API command would be:
+
+ ><fs> add /disk protocol:ssh server:tcp:example.com [username:user]
 
 =head1 PROGRESS BARS
 
@@ -1253,8 +1351,12 @@ Pass additional options to the guest kernel.
 
 =item LIBGUESTFS_ATTACH_METHOD
 
+This is the old way to set C<LIBGUESTFS_BACKEND>.
+
+=item LIBGUESTFS_BACKEND
+
 Choose the default way to create the appliance.  See
-L<guestfs(3)/guestfs_set_attach_method>.
+L<guestfs(3)/guestfs_set_backend>.
 
 =item LIBGUESTFS_CACHEDIR
 
@@ -1313,7 +1415,7 @@ set, it uses C<more>.
 
 Libguestfs and guestfish may run some external programs, and rely on
 C<$PATH> being set to a reasonable value.  If using the libvirt
-attach-method, libvirt will not work at all unless C<$PATH> contains
+backend, libvirt will not work at all unless C<$PATH> contains
 the path of qemu/KVM.
 
 =item SUPERMIN_KERNEL

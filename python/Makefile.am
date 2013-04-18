@@ -47,7 +47,7 @@ libguestfsmod_la_CPPFLAGS = \
 	-I$(top_srcdir)/src -I$(top_builddir)/src
 
 libguestfsmod_la_CFLAGS = \
-	-Wall
+	$(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 libguestfsmod_la_LIBADD = \
 	$(top_builddir)/src/libutils.la \

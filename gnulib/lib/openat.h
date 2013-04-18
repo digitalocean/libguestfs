@@ -1,5 +1,5 @@
 /* provide a replacement openat function
-   Copyright (C) 2004-2006, 2008-2012 Free Software Foundation, Inc.
+   Copyright (C) 2004-2006, 2008-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -89,19 +89,19 @@ lchmodat (int fd, char const *file, mode_t mode)
 
 #endif
 
-#if GNULIB_FSTATAT
+#if GNULIB_STATAT
 
-# ifndef FSTATAT_INLINE
-#  define FSTATAT_INLINE _GL_INLINE
+# ifndef STATAT_INLINE
+#  define STATAT_INLINE _GL_INLINE
 # endif
 
-FSTATAT_INLINE int
+STATAT_INLINE int
 statat (int fd, char const *name, struct stat *st)
 {
   return fstatat (fd, name, st, 0);
 }
 
-FSTATAT_INLINE int
+STATAT_INLINE int
 lstatat (int fd, char const *name, struct stat *st)
 {
   return fstatat (fd, name, st, AT_SYMLINK_NOFOLLOW);

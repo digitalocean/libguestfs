@@ -25,11 +25,10 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <errno.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
-
-#include "progname.h"
 
 #include "guestfs.h"
 #include "options.h"
@@ -54,7 +53,6 @@ static int have_wipefs;
 static void parse_vg_lv (const char *lvm);
 static int do_format (void);
 static int do_rescan (char **devices);
-static int feature_available (guestfs_h *g, const char *feature);
 
 static void __attribute__((noreturn))
 usage (int status)
@@ -97,9 +95,6 @@ usage (int status)
 int
 main (int argc, char *argv[])
 {
-  /* Set global program name that is not polluted with libtool artifacts.  */
-  set_program_name (argv[0]);
-
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
@@ -112,6 +107,7 @@ main (int argc, char *argv[])
     { "filesystem", 1, 0, 0 },
     { "format", 2, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
+    { "long-options", 0, 0, 0 },
     { "lvm", 2, 0, 0 },
     { "partition", 2, 0, 0 },
     { "verbose", 0, 0, 'v' },
@@ -120,7 +116,6 @@ main (int argc, char *argv[])
     { 0, 0, 0, 0 }
   };
   struct drv *drvs = NULL;
-  struct drv *drv;
   const char *format = NULL;
   int c;
   int option_index;
@@ -132,15 +127,15 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  argv[0] = (char *) program_name;
-
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "format")) {
+      if (STREQ (long_options[option_index].name, "long-options"))
+        display_long_options (long_options);
+      else if (STREQ (long_options[option_index].name, "format")) {
         if (!optarg || STREQ (optarg, ""))
           format = NULL;
         else
@@ -231,6 +226,8 @@ main (int argc, char *argv[])
    * to completely restart the guest.  Hence this complex retry logic.
    */
   for (retries = 0; retries <= 1; ++retries) {
+    const char *wipefs[] = { "wipefs", NULL };
+
     /* Add domains/drives from the command line (for a single guest). */
     add_drives (drvs, 'a');
 
@@ -238,7 +235,7 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
 
     /* Test if the wipefs API is available. */
-    have_wipefs = feature_available (g, "wipefs");
+    have_wipefs = guestfs_feature_available (g, (char **) wipefs);
 
     /* Perform the format. */
     retry = do_format ();
@@ -427,20 +424,4 @@ do_rescan (char **devices)
   guestfs_pop_error_handler (g);
 
   return errors ? 1 : 0;
-}
-
-static int
-feature_available (guestfs_h *g, const char *feature)
-{
-  /* If there's an error we should ignore it, so to do that we have to
-   * temporarily replace the error handler with a null one.
-   */
-  guestfs_push_error_handler (g, NULL, NULL);
-
-  const char *groups[] = { feature, NULL };
-  int r = guestfs_available (g, (char * const *) groups);
-
-  guestfs_pop_error_handler (g);
-
-  return r == 0 ? 1 : 0;
 }

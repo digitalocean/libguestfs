@@ -293,7 +293,7 @@ extern int64_t get_int64 (ETERM *term);
         fun i ->
           function
           | Pathname n
-          | Device n | Dev_or_Path n
+          | Device n | Mountable n | Dev_or_Path n | Mountable_or_Path n
           | String n
           | FileIn n
           | FileOut n
@@ -386,8 +386,9 @@ extern int64_t get_int64 (ETERM *term);
       (* Free strings if we copied them above. *)
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | OptString n
-        | FileIn n | FileOut n | Key n ->
+        | Pathname n | Device n | Mountable n
+        | Dev_or_Path n | Mountable_or_Path n | String n
+        | OptString n | FileIn n | FileOut n | Key n ->
             pr "  free (%s);\n" n
         | StringList n | DeviceList n ->
             pr "  guestfs___free_string_list (%s);\n" n;

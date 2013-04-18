@@ -99,6 +99,10 @@ val delete_event_callback : t -> event_handle -> unit
 (** [delete_event_callback g eh] removes a previously registered
     event callback.  See {!set_event_callback}. *)
 
+val event_to_string : event list -> string
+(** [event_to_string events] returns the event(s) as a printable string
+    for debugging etc. *)
+
 val last_errno : t -> int
 (** [last_errno g] returns the last errno that happened on the handle [g]
     (or [0] if there was no errno).  Note that the returned integer is the
@@ -107,10 +111,6 @@ val last_errno : t -> int
     [last_errno] can be overwritten by subsequent operations on a handle,
     so if you want to capture the errno correctly, you must call this
     in the {!Error} exception handler, before any other operation on [g]. *)
-
-val user_cancel : t -> unit
-(** Cancel current transfer.  This is safe to call from OCaml signal
-    handlers and threads. *)
 
 type int_bool = {
   i : int32;
@@ -365,10 +365,10 @@ val add_cdrom : t -> string -> unit
 val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
 (** add the disk(s) from a named libvirt domain *)
 
-val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
+val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
 (** add an image to examine or modify *)
 
-val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
+val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
 
 val add_drive_ro : t -> string -> unit
 (** add a drive in snapshot mode (read-only) *)
@@ -553,16 +553,16 @@ val compress_out : t -> ?level:int -> string -> string -> string -> unit
 val config : t -> string -> string option -> unit
 (** add qemu parameters *)
 
-val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source device to destination device *)
 
-val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_device_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source device to destination file *)
 
-val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_file_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source file to destination device *)
 
-val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+val copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source file to destination file *)
 
 val copy_size : t -> string -> string -> int64 -> unit
@@ -652,6 +652,9 @@ val equal : t -> string -> string -> bool
 val exists : t -> string -> bool
 (** test if file or directory exists *)
 
+val extlinux : t -> string -> unit
+(** install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem *)
+
 val fallocate : t -> string -> int -> unit
 (** preallocate a file in the guest filesystem
 
@@ -660,6 +663,9 @@ val fallocate : t -> string -> int -> unit
 
 val fallocate64 : t -> string -> int64 -> unit
 (** preallocate a file in the guest filesystem *)
+
+val feature_available : t -> string array -> bool
+(** test availability of some parts of the API *)
 
 val fgrep : t -> string -> string -> string array
 (** return lines matching a pattern
@@ -716,10 +722,16 @@ val get_append : t -> string option
 (** get the additional kernel options *)
 
 val get_attach_method : t -> string
-(** get the attach method *)
+(** get the backend
+
+    @deprecated Use {!get_backend} instead
+ *)
 
 val get_autosync : t -> bool
 (** get autosync mode *)
+
+val get_backend : t -> string
+(** get the backend *)
 
 val get_cachedir : t -> string
 (** get the appliance cache directory *)
@@ -771,6 +783,9 @@ val get_pgroup : t -> bool
 
 val get_pid : t -> int
 (** get PID of qemu subprocess *)
+
+val get_program : t -> string
+(** get the program name *)
 
 val get_qemu : t -> string
 (** get the qemu binary *)
@@ -1073,6 +1088,9 @@ val is_socket : t -> string -> bool
 
 val is_symlink : t -> string -> bool
 (** test if symbolic link *)
+
+val is_whole_device : t -> string -> bool
+(** test if a device is a whole device *)
 
 val is_zero : t -> string -> bool
 (** test if a file contains all zero bytes *)
@@ -1461,6 +1479,9 @@ val part_disk : t -> string -> string -> unit
 val part_get_bootable : t -> string -> int -> bool
 (** return true if a partition is bootable *)
 
+val part_get_gpt_type : t -> string -> int -> string
+(** get the type GUID of a GPT partition *)
+
 val part_get_mbr_id : t -> string -> int -> int
 (** get the MBR type byte (ID byte) from a partition *)
 
@@ -1475,6 +1496,9 @@ val part_list : t -> string -> partition array
 
 val part_set_bootable : t -> string -> int -> bool -> unit
 (** make a partition bootable *)
+
+val part_set_gpt_type : t -> string -> int -> string -> unit
+(** set the type GUID of a GPT partition *)
 
 val part_set_mbr_id : t -> string -> int -> int -> unit
 (** set the MBR type byte (ID byte) of a partition *)
@@ -1603,10 +1627,16 @@ val set_append : t -> string option -> unit
 (** add options to kernel command line *)
 
 val set_attach_method : t -> string -> unit
-(** set the attach method *)
+(** set the backend
+
+    @deprecated Use {!set_backend} instead
+ *)
 
 val set_autosync : t -> bool -> unit
 (** set autosync mode *)
+
+val set_backend : t -> string -> unit
+(** set the backend *)
 
 val set_cachedir : t -> string option -> unit
 (** set the appliance cache directory *)
@@ -1649,6 +1679,9 @@ val set_path : t -> string option -> unit
 
 val set_pgroup : t -> bool -> unit
 (** set process group flag *)
+
+val set_program : t -> string -> unit
+(** set the program name *)
 
 val set_qemu : t -> string option -> unit
 (** set the qemu binary *)
@@ -1758,6 +1791,9 @@ val swapon_uuid : t -> string -> unit
 val sync : t -> unit
 (** sync disks, writes are flushed through to the disk image *)
 
+val syslinux : t -> ?directory:string -> string -> unit
+(** install the SYSLINUX bootloader *)
+
 val tail : t -> string -> string array
 (** return last 10 lines of a file *)
 
@@ -1832,6 +1868,9 @@ val upload : t -> string -> string -> unit
 
 val upload_offset : t -> string -> string -> int64 -> unit
 (** upload a file from the local machine with offset *)
+
+val user_cancel : t -> unit
+(** cancel the current upload or download operation *)
 
 val utimens : t -> string -> int64 -> int64 -> int64 -> int64 -> unit
 (** set timestamp of a file with nanosecond precision *)
@@ -2016,15 +2055,14 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_event_callback : event_callback -> event list -> event_handle
   method delete_event_callback : event_handle -> unit
   method last_errno : unit -> int
-  method user_cancel : unit -> unit
   method ocaml_handle : t
   method acl_delete_def_file : string -> unit
   method acl_get_file : string -> string -> string
   method acl_set_file : string -> string -> string -> unit
   method add_cdrom : string -> unit
   method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
-  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
-  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> string -> unit
+  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
+  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
   method add_drive_ro : string -> unit
   method add_drive_ro_with_if : string -> string -> unit
   method add_drive_with_if : string -> string -> unit
@@ -2084,10 +2122,10 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method compress_device_out : ?level:int -> string -> string -> string -> unit
   method compress_out : ?level:int -> string -> string -> string -> unit
   method config : string -> string option -> unit
-  method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
-  method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
-  method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
-  method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> string -> string -> unit
+  method copy_device_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_device_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_file_to_device : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
+  method copy_file_to_file : ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
   method copy_size : string -> string -> int64 -> unit
   method cp : string -> string -> unit
   method cp_a : string -> string -> unit
@@ -2113,8 +2151,10 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method egrepi : string -> string -> string array
   method equal : string -> string -> bool
   method exists : string -> bool
+  method extlinux : string -> unit
   method fallocate : string -> int -> unit
   method fallocate64 : string -> int64 -> unit
+  method feature_available : string array -> bool
   method fgrep : string -> string -> string array
   method fgrepi : string -> string -> string array
   method file : string -> string
@@ -2133,6 +2173,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_append : unit -> string option
   method get_attach_method : unit -> string
   method get_autosync : unit -> bool
+  method get_backend : unit -> string
   method get_cachedir : unit -> string
   method get_direct : unit -> bool
   method get_e2attrs : string -> string
@@ -2148,6 +2189,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_path : unit -> string
   method get_pgroup : unit -> bool
   method get_pid : unit -> int
+  method get_program : unit -> string
   method get_qemu : unit -> string
   method get_recovery_proc : unit -> bool
   method get_selinux : unit -> bool
@@ -2256,6 +2298,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method is_ready : unit -> bool
   method is_socket : string -> bool
   method is_symlink : string -> bool
+  method is_whole_device : string -> bool
   method is_zero : string -> bool
   method is_zero_device : string -> bool
   method isoinfo : string -> isoinfo
@@ -2375,11 +2418,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method part_del : string -> int -> unit
   method part_disk : string -> string -> unit
   method part_get_bootable : string -> int -> bool
+  method part_get_gpt_type : string -> int -> string
   method part_get_mbr_id : string -> int -> int
   method part_get_parttype : string -> string
   method part_init : string -> string -> unit
   method part_list : string -> partition array
   method part_set_bootable : string -> int -> bool -> unit
+  method part_set_gpt_type : string -> int -> string -> unit
   method part_set_mbr_id : string -> int -> int -> unit
   method part_set_name : string -> int -> string -> unit
   method part_to_dev : string -> string
@@ -2424,6 +2469,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_append : string option -> unit
   method set_attach_method : string -> unit
   method set_autosync : bool -> unit
+  method set_backend : string -> unit
   method set_cachedir : string option -> unit
   method set_direct : bool -> unit
   method set_e2attrs : ?clear:bool -> string -> string -> unit
@@ -2437,6 +2483,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_network : bool -> unit
   method set_path : string option -> unit
   method set_pgroup : bool -> unit
+  method set_program : string -> unit
   method set_qemu : string option -> unit
   method set_recovery_proc : bool -> unit
   method set_selinux : bool -> unit
@@ -2469,6 +2516,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method swapon_label : string -> unit
   method swapon_uuid : string -> unit
   method sync : unit -> unit
+  method syslinux : ?directory:string -> string -> unit
   method tail : string -> string array
   method tail_n : int -> string -> string array
   method tar_in : ?compress:string -> string -> string -> unit
@@ -2491,6 +2539,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method umount_local : ?retry:bool -> unit -> unit
   method upload : string -> string -> unit
   method upload_offset : string -> string -> int64 -> unit
+  method user_cancel : unit -> unit
   method utimens : string -> int64 -> int64 -> int64 -> int64 -> unit
   method utsname : unit -> utsname
   method version : unit -> version

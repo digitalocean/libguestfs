@@ -121,6 +121,12 @@ C<ok>, якщо вирівнювання є оптимальним з огляд
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
+=item B<-a URI>
+
+=item B<--add URI>
+
+Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+
 =item B<-c> адреса
 
 =item B<--connect> адреса
@@ -162,6 +168,17 @@ auto-detection for subsequent I<-a> options.
 If you have untrusted raw-format guest disk images, you should use this
 option to specify the disk format.  This avoids a possible security problem
 with malicious guests (CVE-2010-3851).
+
+=item B<-P> nr_threads
+
+Since libguestfs 1.22, virt-alignment-scan is multithreaded and examines
+guests in parallel.  By default the number of threads to use is chosen based
+on the amount of free memory available at the time that virt-alignment-scan
+is started.  You can force virt-alignment-scan to use at most C<nr_threads>
+by using the I<-P> option.
+
+Note that I<-P 0> means to autodetect, and I<-P 1> means to use a single
+thread.
 
 =item B<-q>
 
@@ -237,12 +254,12 @@ some NetApp hardware.
 Partitions which are not aligned correctly to the underlying storage cause
 extra I/O.  For example:
 
-                       sect#63
+                       розділ№63
                        +--------------------------+------
-                       |         guest            |
-                       |    filesystem block      |
+                       |   блок файлової системи  |
+                       |    гостьової системи     |
  ---+------------------+------+-------------------+-----+---
-    |  host block             |  host block             |
+    |  блок основної системи  |  блок основної системи  |
     |                         |                         |
  ---+-------------------------+-------------------------+---
 

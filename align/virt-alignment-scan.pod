@@ -117,6 +117,12 @@ Add I<file> which should be a disk image from a virtual machine.
 The format of the disk image is auto-detected.  To override this and
 force a particular format use the I<--format=..> option.
 
+=item B<-a URI>
+
+=item B<--add URI>
+
+Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+
 =item B<-c> URI
 
 =item B<--connect> URI
@@ -157,6 +163,18 @@ auto-detection for C<another.img>.
 If you have untrusted raw-format guest disk images, you should use
 this option to specify the disk format.  This avoids a possible
 security problem with malicious guests (CVE-2010-3851).
+
+=item B<-P> nr_threads
+
+Since libguestfs 1.22, virt-alignment-scan is multithreaded and
+examines guests in parallel.  By default the number of threads to use
+is chosen based on the amount of free memory available at the time
+that virt-alignment-scan is started.  You can force
+virt-alignment-scan to use at most C<nr_threads> by using the I<-P>
+option.
+
+Note that I<-P 0> means to autodetect, and I<-P 1> means to use a
+single thread.
 
 =item B<-q>
 

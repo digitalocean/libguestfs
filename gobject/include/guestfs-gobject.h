@@ -83,3 +83,4 @@
 #include <guestfs-gobject/optargs-xfs_repair.h>
 #include <guestfs-gobject/optargs-mke2fs.h>
 #include <guestfs-gobject/optargs-mktemp.h>
+#include <guestfs-gobject/optargs-syslinux.h>

@@ -324,11 +324,11 @@ Guestfish will prompt for these separately."
       );
       List.iter (
         function
-        | Device n
+        | Device n | Mountable n
         | String n
         | OptString n -> pr "  const char *%s;\n" n
         | Pathname n
-        | Dev_or_Path n
+        | Dev_or_Path n | Mountable_or_Path n
         | FileIn n
         | FileOut n
         | Key n -> pr "  char *%s;\n" n
@@ -407,11 +407,11 @@ Guestfish will prompt for these separately."
 
       List.iter (
         function
-        | Device name
+        | Device name | Mountable name
         | String name ->
             pr "  %s = argv[i++];\n" name
         | Pathname name
-        | Dev_or_Path name ->
+        | Dev_or_Path name | Mountable_or_Path name ->
             pr "  %s = win_prefix (argv[i++]); /* process \"win:\" prefix */\n" name;
             pr "  if (%s == NULL) goto out_%s;\n" name name
         | OptString name ->
@@ -436,7 +436,11 @@ Guestfish will prompt for these separately."
             pr "    input_lineno++;\n";
             pr "  if (%s == NULL) goto out_%s;\n" name name
         | Bool name ->
-            pr "  %s = is_true (argv[i++]) ? 1 : 0;\n" name
+            pr "  switch (is_true (argv[i++])) {\n";
+            pr "    case -1: goto out_%s;\n" name;
+            pr "    case 0:  %s = 0; break;\n" name;
+            pr "    default: %s = 1;\n" name;
+            pr "  }\n"
         | Int name ->
             let range =
               let min = "(-(2LL<<30))"
@@ -471,8 +475,11 @@ Guestfish will prompt for these separately."
             pr "if (STRPREFIX (argv[i], \"%s:\")) {\n" n;
             (match argt with
              | OBool n ->
-                 pr "      optargs_s.%s = is_true (&argv[i][%d]) ? 1 : 0;\n"
-                   n (len+1);
+                 pr "      switch (is_true (&argv[i][%d])) {\n" (len+1);
+                 pr "        case -1: goto out;\n";
+                 pr "        case 0:  optargs_s.%s = 0; break;\n" n;
+                 pr "        default: optargs_s.%s = 1;\n" n;
+                 pr "      }\n"
              | OInt n ->
                  let range =
                    let min = "(-(2LL<<30))"
@@ -612,13 +619,14 @@ Guestfish will prompt for these separately."
       ) (List.rev optargs);
       List.iter (
         function
-        | Device _ | String _
-        | OptString _ | Bool _
+        | Device _ | Mountable _ | String _
+        | OptString _
         | BufferIn _ -> ()
+        | Bool name
         | Int name | Int64 name ->
             pr " out_%s:\n" name
-        | Pathname name | Dev_or_Path name | FileOut name
-        | Key name ->
+        | Pathname name | Dev_or_Path name | Mountable_or_Path name
+        | FileOut name | Key name ->
             pr "  free (%s);\n" name;
             pr " out_%s:\n" name
         | FileIn name ->
@@ -844,7 +852,8 @@ and generate_fish_actions_pod () =
       pr " %s" name;
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n ->
+        | Pathname n | Device n | Mountable n
+        | Dev_or_Path n | Mountable_or_Path n | String n ->
             pr " %s" n
         | OptString n -> pr " %s" n
         | StringList n | DeviceList n -> pr " '%s ...'" n
@@ -929,7 +938,7 @@ extern const struct prep preps[];
 " (List.length prepopts);
 
   List.iter (
-    fun (name, shortdesc, args, longdesc) ->
+    fun (name, _, _, _) ->
       pr "\
 extern void prep_prelaunch_%s (const char *filename, prep_data *data);
 extern void prep_postlaunch_%s (const char *filename, prep_data *data, const char *device);
@@ -937,7 +946,6 @@ extern void prep_postlaunch_%s (const char *filename, prep_data *data, const cha
 " name name;
   ) prepopts;
 
-  pr "\n";
   pr "#endif /* PREPOPTS_H */\n"
 
 and generate_fish_prep_options_c () =
@@ -954,7 +962,7 @@ and generate_fish_prep_options_c () =
 ";
 
   List.iter (
-    fun (name, shortdesc, args, longdesc) ->
+    fun (name, _, args, _) ->
       pr "static struct prep_param %s_args[] = {\n" name;
       List.iter (
         fun (n, default, desc) ->
@@ -967,6 +975,22 @@ and generate_fish_prep_options_c () =
   pr "const struct prep preps[] = {\n";
   List.iter (
     fun (name, shortdesc, args, longdesc) ->
+      let longdesc = pod2text ~discard:true ~trim:true "NAME" longdesc in
+      let rec loop = function
+        | [] -> []
+        | [""] -> []
+        | x :: xs -> x :: loop xs
+      in
+      let longdesc = loop longdesc in
+      let rec loop = function
+        | [] -> []
+        | [x] -> ["  " ^ x]
+        | "" :: xs -> "\n" :: loop xs
+        | x :: xs -> ("  " ^ x ^ "\n") :: loop xs
+      in
+      let longdesc = loop longdesc in
+      let longdesc = String.concat "" longdesc in
+
       pr "  { \"%s\", %d, %s_args,
     \"%s\",
     \"%s\",
@@ -977,6 +1001,31 @@ and generate_fish_prep_options_c () =
         name name;
   ) prepopts;
   pr "};\n"
+
+and generate_fish_prep_options_pod () =
+  List.iter (
+    fun (name, shortdesc, args, longdesc) ->
+      pr "=head2 B<-N %s> - %s\n" name shortdesc;
+      pr "\n";
+      pr "C<guestfish -N %s" name;
+      let rec loop = function
+        | [] -> ()
+        | (n,_,_) :: args -> pr "[:I<%s>" n; loop args; pr "]";
+      in
+      loop args;
+      pr ">\n";
+      pr "\n";
+      pr "%s\n\n" longdesc;
+      if args <> [] then (
+        pr "The optional parameters are:\n\n";
+        pr " %-13s %s\n" "Name" "Default value";
+        List.iter (
+          fun (n, default, desc) ->
+            pr " %-13s %-13s %s\n" n default desc
+        ) args;
+        pr "\n"
+      )
+  ) prepopts
 
 and generate_fish_event_names () =
   generate_header CStyle GPLv2plus;
@@ -990,48 +1039,6 @@ and generate_fish_event_names () =
 #include <libintl.h>
 
 #include \"fish.h\"
-
-const char *
-event_name_of_event_bitmask (uint64_t ev)
-{
-  switch (ev) {
-";
-
-  List.iter (
-    fun (name, _) ->
-      pr "  case GUESTFS_EVENT_%s:\n" (String.uppercase name);
-      pr "    return \"%s\";\n" name
-  ) events;
-
-  pr "  default:
-    abort (); /* should not happen */
-  }
-}
-
-void
-print_event_set (uint64_t event_bitmask, FILE *fp)
-{
-  int comma = 0;
-
-  if (event_bitmask == GUESTFS_EVENT_ALL) {
-    fputs (\"*\", fp);
-    return;
-  }
-
-";
-
-  iteri (
-    fun i (name, _) ->
-      pr "  if (event_bitmask & GUESTFS_EVENT_%s) {\n" (String.uppercase name);
-      if i > 0 then
-        pr "    if (comma) fputc (',', fp);\n";
-      pr "    comma = 1;\n";
-      pr "    fputs (\"%s\", fp);\n" name;
-      pr "  }\n"
-  ) events;
-
-  pr "\
-}
 
 int
 event_bitmask_of_event_set (const char *arg, uint64_t *eventset_r)

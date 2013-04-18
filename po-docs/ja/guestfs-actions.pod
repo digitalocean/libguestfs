@@ -6,8 +6,8 @@
  guestfs_acl_delete_def_file (guestfs_h *g,
                               const char *dir);
 
-This function deletes the default POSIX Access Control List (ACL)  attached
-to directory C<dir>.
+この関数はディレクトリー C<dir> に設定されている標準の POSIX アクセス制御リスト (ACL: Access Control List)
+を削除します。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -161,28 +161,27 @@ E<lt>readonly/E<gt> flag is found.
 
 C<readonly> が真ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。
 
 =item readonlydisk = "read"
 
 C<readonly> が偽ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.  Other disks
-are added read/write.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。他のディスクは読み書き用で追加されます。
 
 C<readonly> が真ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。
 
 =item readonlydisk = "write" (デフォルト)
 
 C<readonly> が偽ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read/write.
+E<lt>readonly/E<gt> フラグを持つディスクは読み書き用で追加されます。
 
 C<readonly> が真ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。
 
 =item readonlydisk = "ignore"
 
@@ -251,6 +250,9 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_IFACE, const char *iface,
  GUESTFS_ADD_DRIVE_OPTS_NAME, const char *name,
  GUESTFS_ADD_DRIVE_OPTS_LABEL, const char *label,
+ GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, const char *protocol,
+ GUESTFS_ADD_DRIVE_OPTS_SERVER, char *const *server,
+ GUESTFS_ADD_DRIVE_OPTS_USERNAME, const char *username,
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -312,6 +314,94 @@ I<only> ASCII characters C<[a-zA-Z]>.  As well as its usual name in the API
 C</dev/disk/guestfs/I<label>>.
 
 L<guestfs(3)/ディスクラベル>を参照してください。
+
+=item C<protocol>
+
+The optional protocol argument can be used to select an alternate source
+protocol.
+
+See also: L<guestfs(3)/REMOTE STORAGE>.
+
+=over 4
+
+=item C<protocol = "file">
+
+C<filename> is interpreted as a local file or device.  This is the default
+if the optional protocol parameter is omitted.
+
+=item C<protocol = "gluster">
+
+Connect to the GlusterFS server.  The C<server> parameter must also be
+supplied - see below.
+
+See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = "nbd">
+
+Connect to the Network Block Device server.  The C<server> parameter must
+also be supplied - see below.
+
+See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
+
+=item C<protocol = "rbd">
+
+Connect to the Ceph (librbd/RBD) server.  The C<server> parameter must also
+be supplied - see below.
+
+See also: L<guestfs(3)/CEPH>.
+
+=item C<protocol = "sheepdog">
+
+Connect to the Sheepdog server.  The C<server> parameter may also be
+supplied - see below.
+
+See also: L<guestfs(3)/SHEEPDOG>.
+
+=item C<protocol = "ssh">
+
+Connect to the Secure Shell (ssh) server.
+
+The C<server> parameter must be supplied.  The C<username> parameter may be
+supplied.  See below.
+
+See also: L<guestfs(3)/SSH>.
+
+=back
+
+=item C<server>
+
+For protocols which require access to a remote server, this is a list of
+server(s).
+
+ Protocol       Number of servers required
+ --------       --------------------------
+ file           List must be empty or param not used at all
+ gluster        Exactly one
+ nbd            Exactly one
+ rbd            One or more
+ sheepdog       Zero or more
+ ssh            Exactly one
+
+Each list element is a string specifying a server.  The string must be in
+one of the following formats:
+
+ hostname
+ hostname:port
+ tcp:hostname
+ tcp:hostname:port
+ unix:/path/to/socket
+
+If the port number is omitted, then the standard port number for the
+protocol is used (see C</etc/services>).
+
+=item C<username>
+
+For the C<ssh> protocol only, this specifies the remote username.
+
+If not given, then the local username is used.  But note this sometimes may
+give unexpected results, for example if using the libvirt backend and if the
+libvirt backend is configured to start the qemu appliance as a special user
+such as C<qemu.qemu>.  If in doubt, specify the remote username you want.
 
 =back
 
@@ -685,6 +775,12 @@ I<注記:>
 
 =item *
 
+C<guestfs_feature_available> is the same as this call, but with a slightly
+simpler to use API: that call returns a boolean true/false instead of
+throwing an error.
+
+=item *
+
 この関数を呼び出す前に C<guestfs_launch> を呼び出す必要があります。
 
 The reason is because we don't know what groups are supported by the
@@ -724,9 +820,11 @@ C<guestfs_filesystem_available> 参照。
 This command returns a list of all optional groups that this daemon knows
 about.  Note this returns both supported and unsupported groups.  To find
 out which ones the daemon can actually support you have to call
-C<guestfs_available> on each member of the returned list.
+C<guestfs_available> / C<guestfs_feature_available> on each member of the
+returned list.
 
-C<guestfs_available> および L<guestfs(3)/AVAILABILITY> 参照。
+See also C<guestfs_available>, C<guestfs_feature_available> and
+L<guestfs(3)/AVAILABILITY>.
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
@@ -741,7 +839,7 @@ strings and the array after use>.
                     const char *base64file,
                     const char *filename);
 
-This command uploads base64-encoded data from C<base64file> to C<filename>.
+このコマンドは Base64 エンコードしたデータを C<base64file> から C<filename> にアップロードします。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -968,7 +1066,7 @@ C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrf
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_device_delete
 
@@ -982,7 +1080,7 @@ C<devices> にあるデバイスの一覧を C<fs> にマウントされた btrf
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_filesystem_balance
 
@@ -995,7 +1093,7 @@ underlying devices.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_filesystem_resize
 
@@ -1064,7 +1162,7 @@ C<fs> にマウントされた btrfs ファイルシステムにおいて強制�
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_fsck
 
@@ -1084,7 +1182,7 @@ btrfs ファイルシステムをチェックするために使用されると�
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.43 にて追加)
+(1.17.43 において追加)
 
 =head2 guestfs_btrfs_fsck_va
 
@@ -1119,7 +1217,7 @@ btrfs ファイルシステムを含むデバイスの seeding 機能を有効�
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.43 にて追加)
+(1.17.43 において追加)
 
 =head2 guestfs_btrfs_subvolume_create
 
@@ -1132,7 +1230,7 @@ btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/des
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_subvolume_delete
 
@@ -1144,7 +1242,7 @@ btrfs サブツリーを作成します。The C<dest> 引数は、C</path/to/des
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_subvolume_list
 
@@ -1157,7 +1255,7 @@ C<fs> にマウントされている btrfs ファイルシステムの btrfs ス
 この関数は C<struct guestfs_btrfssubvolume_list *> を返します。エラーが発生した場合、NULL が返されます。
 I<呼び出し元は使用後に C<guestfs_free_btrfssubvolume_list> を呼び出す必要があります>。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_subvolume_set_default
 
@@ -1171,7 +1269,7 @@ default.  See C<guestfs_btrfs_subvolume_list> to get a list of subvolumes.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_btrfs_subvolume_snapshot
 
@@ -1185,7 +1283,7 @@ btrfs サブボリューム C<source> の書き込み可能なスナップショ
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.35 にて追加)
+(1.17.35 において追加)
 
 =head2 guestfs_canonical_device_name
 
@@ -1219,7 +1317,7 @@ C<guestfs_lvm_canonical_lvm_name> を使用して C</dev/VG/LV> 形式に変換�
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(1.19.7 にて追加)
+(1.19.7 において追加)
 
 =head2 guestfs_cap_get_file
 
@@ -1631,6 +1729,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE, int64_t size,
+ GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE, int sparse,
 
 4 つの呼び出し C<guestfs_copy_device_to_device>, C<guestfs_copy_device_to_file>,
 C<guestfs_copy_file_to_device>, および C<guestfs_copy_file_to_file> は、ソース
@@ -1644,6 +1743,11 @@ defaults to copying as much as possible until we hit the end of the source.
 ソースと宛先は同じオブジェクトである可能性があります。しかしながら、重なり合う領域は正しくコピーされないかもしれません。
 
 宛先がファイルならば、必要に応じて作成されます。宛先ファイルが十分に大きくなければ、拡張されます。
+
+If the C<sparse> flag is true then the call avoids writing blocks that
+contain only zeroes, which can help in some situations where the backing
+disk is thin-provisioned.  Note that unless the target is already zeroed,
+using this option will result in incorrect copying.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -1693,6 +1797,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_DEVICE_TO_FILE_SIZE, int64_t size,
+ GUESTFS_COPY_DEVICE_TO_FILE_SPARSE, int sparse,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -1744,6 +1849,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_DEVICE_SIZE, int64_t size,
+ GUESTFS_COPY_FILE_TO_DEVICE_SPARSE, int sparse,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -1795,6 +1901,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET, int64_t srcoffset,
  GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET, int64_t destoffset,
  GUESTFS_COPY_FILE_TO_FILE_SIZE, int64_t size,
+ GUESTFS_COPY_FILE_TO_FILE_SPARSE, int sparse,
 
 この呼び出しの一般的な概要は C<guestfs_copy_device_to_device> を参照してください。
 
@@ -1921,8 +2028,7 @@ partial copies (see C<guestfs_copy_device_to_device>).
  guestfs_device_index (guestfs_h *g,
                        const char *device);
 
-This function takes a device name (eg. "/dev/sdb") and returns the index of
-the device in the list of devices.
+この関数はデバイス名 (例: "/dev/sdb") を取得し、デバイスの一覧にあるデバイスのインデックスを返します。
 
 Index numbers start from 0.  The named device must exist, for example as a
 string returned from C<guestfs_list_devices>.
@@ -1931,7 +2037,7 @@ C<guestfs_list_devices>, C<guestfs_part_to_dev> 参照。
 
 この関数はエラーのとき -1 を返します。
 
-(1.19.7 にて追加)
+(1.19.7 において追加)
 
 =head2 guestfs_df
 
@@ -1980,7 +2086,7 @@ circumstances.  See L<guestfs(3)/CVE-2010-3851>.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.38)
+(1.19.38 において追加)
 
 =head2 guestfs_disk_has_backing_file
 
@@ -1995,7 +2101,7 @@ See L<guestfs(3)/CVE-2010-3851>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.19.39)
+(1.19.39 にて追加)
 
 =head2 guestfs_disk_virtual_size
 
@@ -2010,7 +2116,7 @@ See L<guestfs(3)/CVE-2010-3851>.
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.39)
+(1.19.39 にて追加)
 
 =head2 guestfs_dmesg
 
@@ -2297,6 +2403,33 @@ This function returns a C truth value on success or -1 on error.
 
 (0.8 において追加)
 
+=head2 guestfs_extlinux
+
+ int
+ guestfs_extlinux (guestfs_h *g,
+                   const char *directory);
+
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike C<guestfs_syslinux> which requires a FAT filesystem, this can be used
+on an ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a directory within
+the mountpoint.
+
+You also have to mark the partition as "active"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must be installed
+(eg. using C<guestfs_pwrite_device>) on the first sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.  See the
+L<extlinux(1)> man page for further information.
+
+Additional configuration can be supplied to SYSLINUX by placing a file
+called C<extlinux.conf> on the filesystem under C<directory>.  For further
+information about the contents of this file, see L<extlinux(1)>.
+
+See also C<guestfs_syslinux>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
 =head2 guestfs_fallocate
 
  int
@@ -2343,6 +2476,18 @@ commands which create a file in the host and attach it as a device.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.3.17 において追加)
+
+=head2 guestfs_feature_available
+
+ int
+ guestfs_feature_available (guestfs_h *g,
+                            char *const *groups);
+
+This is the same as C<guestfs_available>, but unlike that call it returns a
+simple true/false boolean result, instead of throwing an exception if a
+feature is not found.  For other documentation see C<guestfs_available>.
+
+This function returns a C truth value on success or -1 on error.
 
 =head2 guestfs_fgrep
 
@@ -2463,7 +2608,7 @@ Intel Itanium.
 
 libguestfs は将来他のアーキテクチャー文字列を返すかもしれません。
 
-The function works on at least the following types of files:
+この関数は少なくとも以下の種類のファイルにおいて機能します:
 
 =over 4
 
@@ -2560,11 +2705,12 @@ mean that a particular filesystem can be mounted, since filesystems can fail
 for other reasons such as it being a later version of the filesystem, or
 having incompatible features.
 
-C<guestfs_available>, L<guestfs(3)/AVAILABILITY> 参照。
+See also C<guestfs_available>, C<guestfs_feature_available>,
+L<guestfs(3)/AVAILABILITY>.
 
 This function returns a C truth value on success or -1 on error.
 
-(1.19.5 にて追加)
+(1.19.5 において追加)
 
 =head2 guestfs_fill
 
@@ -2798,7 +2944,7 @@ C<guestfs_zero_free_space>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.19.6 にて追加)
+(1.19.6 において追加)
 
 =head2 guestfs_fstrim_va
 
@@ -2830,7 +2976,7 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 Return the additional kernel options which are added to the guest kernel
 command line.
 
-If C<NULL> then no options are added.
+C<NULL> ならば、オプションが追加されません。
 
 This function returns a string which may be NULL.  There is no way to return
 an error from this function.  The string is owned by the guest handle and
@@ -2843,9 +2989,16 @@ must I<not> be freed.
  char *
  guestfs_get_attach_method (guestfs_h *g);
 
-Return the current attach method.
+I<This function is deprecated.> In new code, use the L</guestfs_get_backend>
+call instead.
 
-See C<guestfs_set_attach_method> and L<guestfs(3)/ATTACH METHOD>.
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+Return the current backend.
+
+See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
@@ -2862,6 +3015,19 @@ This function returns a C truth value on success or -1 on error.
 
 (0.3 において追加)
 
+=head2 guestfs_get_backend
+
+ char *
+ guestfs_get_backend (guestfs_h *g);
+
+Return the current backend.
+
+This handle property was previously called the "attach method".
+
+See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
 =head2 guestfs_get_cachedir
 
  char *
@@ -2871,7 +3037,7 @@ This function returns a C truth value on success or -1 on error.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.58)
+(1.19.58 において追加)
 
 =head2 guestfs_get_direct
 
@@ -2997,7 +3163,7 @@ C<guestfs_getxattr>).
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(1.17.31 にて追加)
+(1.17.31 において追加)
 
 =head2 guestfs_get_e2generation
 
@@ -3017,7 +3183,7 @@ C<guestfs_set_e2generation> 参照。
 
 この関数はエラーのとき -1 を返します。
 
-(1.17.31 にて追加)
+(1.17.31 において追加)
 
 =head2 guestfs_get_e2label
 
@@ -3069,7 +3235,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.52)
+(1.19.52 において追加))
 
 =head2 guestfs_get_libvirt_requested_credential_defresult
 
@@ -3085,7 +3251,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.52)
+(1.19.52 において追加))
 
 =head2 guestfs_get_libvirt_requested_credential_prompt
 
@@ -3101,7 +3267,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.52)
+(1.19.52 において追加))
 
 =head2 guestfs_get_libvirt_requested_credentials
 
@@ -3121,7 +3287,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.19.52)
+(1.19.52 において追加))
 
 =head2 guestfs_get_memsize
 
@@ -3145,7 +3311,7 @@ libguestfs のアーキテクチャーの詳細は L<guestfs(3)> を参照して
  int
  guestfs_get_network (guestfs_h *g);
 
-This returns the enable network flag.
+これは有効化されているネットワークフラグを返します。
 
 This function returns a C truth value on success or -1 on error.
 
@@ -3171,7 +3337,7 @@ the guest handle and must I<not> be freed.
  int
  guestfs_get_pgroup (guestfs_h *g);
 
-This returns the process group flag.
+これはプロセスグループフラグを返します。
 
 This function returns a C truth value on success or -1 on error.
 
@@ -3190,6 +3356,16 @@ This is an internal call used for debugging and testing.
 この関数はエラーのとき -1 を返します。
 
 (1.0.56 において追加)
+
+=head2 guestfs_get_program
+
+ const char *
+ guestfs_get_program (guestfs_h *g);
+
+Get the program name.  See C<guestfs_set_program>.
+
+This function returns a string, or NULL on error.  The string is owned by
+the guest handle and must I<not> be freed.
 
 =head2 guestfs_get_qemu
 
@@ -3265,7 +3441,7 @@ Get the directory used by the handle to store temporary files.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.58)
+(1.19.58 において追加)
 
 =head2 guestfs_get_trace
 
@@ -3419,7 +3595,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 This calls the external C<grep> program and returns the matching lines.
 
-The optional flags are:
+オプションのフラグは次のとおりです:
 
 =over 4
 
@@ -3610,7 +3786,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_commit
 
@@ -3627,7 +3803,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_add_child
 
@@ -3642,7 +3818,7 @@ between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_children
 
@@ -3657,7 +3833,7 @@ C<nodeh> のサブキーであるノードの一覧を返します。
 この関数は C<struct guestfs_hivex_node_list *> を返します。エラーが発生すると NULL を返します。
 I<呼び出し元は使用した後に C<guestfs_free_hivex_node_list> を呼び出す必要があります>。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_delete_child
 
@@ -3671,7 +3847,7 @@ C<nodeh> を削除します。必要に応じて、再帰的に削除します�
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_get_child
 
@@ -3687,7 +3863,7 @@ return C<0> meaning the name was not found.
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_get_value
 
@@ -3703,7 +3879,7 @@ exists.  This can return C<0> meaning the key was not found.
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_name
 
@@ -3717,7 +3893,7 @@ C<nodeh> の名前を返します。
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_parent
 
@@ -3731,7 +3907,7 @@ C<nodeh> の親ノードを返します。
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_set_value
 
@@ -3750,7 +3926,7 @@ name, C<t> is the type, and C<val> is the data.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_node_values
 
@@ -3765,7 +3941,7 @@ Return the array of (key, datatype, data) tuples attached to C<nodeh>.
 この関数は C<struct guestfs_hivex_value_list *> を返します。エラーが発生すると NULL を返します。
 I<呼び出し元は使用した後に C<guestfs_free_hivex_value_list> を呼び出す必要があります>。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_open
 
@@ -3790,7 +3966,7 @@ closed.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_open_va
 
@@ -3825,7 +4001,7 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_value_key
 
@@ -3833,13 +4009,13 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
  guestfs_hivex_value_key (guestfs_h *g,
                           int64_t valueh);
 
-Return the key (name) field of a (key, datatype, data) tuple.
+(key, datatype, data) 組のキー (name) 項目を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_value_type
 
@@ -3847,13 +4023,13 @@ Return the key (name) field of a (key, datatype, data) tuple.
  guestfs_hivex_value_type (guestfs_h *g,
                            int64_t valueh);
 
-Return the data type field from a (key, datatype, data) tuple.
+(key, datatype, data) 組の datatype 項目を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_value_utf8
 
@@ -3872,7 +4048,7 @@ contain arbitrary or unexpected data.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_hivex_value_value
 
@@ -3881,7 +4057,7 @@ contain arbitrary or unexpected data.
                             int64_t valueh,
                             size_t *size_r);
 
-Return the data field of a (key, datatype, data) tuple.
+(key, datatype, data) 組のデータ項目を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
@@ -3891,7 +4067,7 @@ This function returns a buffer, or NULL on error.  The size of the returned
 buffer is written to C<*size_r>.  I<The caller must free the returned buffer
 after use>.
 
-(Added in 1.19.35)
+(1.19.35 において追加)
 
 =head2 guestfs_initrd_cat
 
@@ -4166,11 +4342,11 @@ Slackware.
 
 =item "sles"
 
-SuSE Linux Enterprise Server or Desktop.
+SuSE Linux Enterprise Server または Desktop.
 
 =item "suse-based"
 
-Some openSuSE-derived distro.
+いくつかの openSuSE 派生ディストリビューション.
 
 =item "ttylinux"
 
@@ -4270,7 +4446,7 @@ strings and the array after use>.
 This returns the format of the inspected operating system.  You can use it
 to detect install images, live CDs and similar.
 
-Currently defined formats are:
+今のところ定義されている形式は次のとおりです:
 
 =over 4
 
@@ -4280,8 +4456,8 @@ Currently defined formats are:
 
 =item "installer"
 
-The disk image being inspected is not an installed operating system, but a
-I<bootable> install disk, live CD, or similar.
+検査されるディスクイメージが、インストールされたオペレーティング・システムではなく、I<ブート可能な> インストールディスク、ライブ
+CD、または似たようなものです。
 
 =item "unknown"
 
@@ -4505,8 +4681,8 @@ This returns the string C<unknown> if we could not determine the package
 format I<or> if the operating system does not have a real packaging system
 (eg. Windows).
 
-Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
-C<pkgsrc>.  Future versions of libguestfs may return other strings.
+利用可能な文字列: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>。将来のバージョン
+libguestfs は他の文字列を返す可能性があります。
 
 詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
@@ -4649,7 +4825,7 @@ MS-DOS, FreeDOS およびその他.
 
 =item "unknown"
 
-The operating system type could not be determined.
+オペレーティング・システムの種類がわかりませんでした。
 
 =back
 
@@ -4951,7 +5127,7 @@ This function returns a C<struct guestfs_application2_list *>, or NULL if
 there was an error.  I<The caller must call
 C<guestfs_free_application2_list> after use>.
 
-(Added in 1.19.56)
+(1.19.56 において追加)
 
 =head2 guestfs_inspect_os
 
@@ -5167,6 +5343,19 @@ This function returns a C truth value on success or -1 on error.
 
 (1.5.10 において追加)
 
+=head2 guestfs_is_whole_device
+
+ int
+ guestfs_is_whole_device (guestfs_h *g,
+                          const char *device);
+
+This returns C<true> if and only if C<device> refers to a whole block
+device. That is, not a partition or a logical device.
+
+This function returns a C truth value on success or -1 on error.
+
+(Added in 1.21.9)
+
 =head2 guestfs_is_zero
 
  int
@@ -5208,7 +5397,7 @@ would I<not> call this.  Instead you would call C<guestfs_isoinfo_device>.
 This function returns a C<struct guestfs_isoinfo *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_isoinfo> after use>.
 
-(1.17.19 にて追加)
+(1.17.19 において追加)
 
 =head2 guestfs_isoinfo_device
 
@@ -5230,7 +5419,7 @@ L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor> を参照して�
 This function returns a C<struct guestfs_isoinfo *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_isoinfo> after use>.
 
-(1.17.19 にて追加)
+(1.17.19 において追加)
 
 =head2 guestfs_kill_subprocess
 
@@ -5314,6 +5503,8 @@ Windows dynamic disk.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_diskgroup_disks
 
  char **
@@ -5328,6 +5519,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_diskgroup_name
 
  char *
@@ -5339,6 +5532,8 @@ should be the GUID of a disk group, one element from the list returned by
 C<guestfs_ldmtool_scan>.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_diskgroup_volumes
 
@@ -5354,6 +5549,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_remove_all
 
  int
@@ -5363,6 +5560,8 @@ This is essentially the opposite of C<guestfs_ldmtool_create_all>.  It
 removes the device mapper mappings for all Windows dynamic disk volumes
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_scan
 
@@ -5379,6 +5578,8 @@ call C<guestfs_ldmtool_scan_devices> instead.
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_scan_devices
 
@@ -5397,6 +5598,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_volume_hint
 
  char *
@@ -5411,6 +5614,8 @@ Windows drive, eg. C<E:>.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
+(Added in 1.20.0)
+
 =head2 guestfs_ldmtool_volume_partitions
 
  char **
@@ -5424,6 +5629,8 @@ group with GUID C<diskgroup>.
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_ldmtool_volume_type
 
@@ -5440,6 +5647,8 @@ C<spanned>, C<striped>, C<mirrored>, C<raid5>.  Other types may also be
 returned.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.20.0)
 
 =head2 guestfs_lgetxattr
 
@@ -5533,7 +5742,7 @@ was an error.  The array of strings will always have length C<2n+1>, where
 C<n> keys and values alternate, followed by the trailing NULL entry.  I<The
 caller must free the strings and the array after use>.
 
-(Added in 1.19.49)
+(1.19.49 において追加)
 
 =head2 guestfs_list_dm_devices
 
@@ -5561,8 +5770,8 @@ strings and the array after use>.
  guestfs_list_filesystems (guestfs_h *g);
 
 This inspection command looks for filesystems on partitions, block devices
-and logical volumes, returning a list of devices containing filesystems and
-their type.
+and logical volumes, returning a list of C<mountables> containing
+filesystems and their type.
 
 The return value is a hash, where the keys are the devices containing
 filesystems, and the values are the filesystem types.  For example:
@@ -5571,6 +5780,9 @@ filesystems, and the values are the filesystem types.  For example:
  "/dev/sda2" => "ext2"
  "/dev/vg_guest/lv_root" => "ext4"
  "/dev/vg_guest/lv_swap" => "swap"
+
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to C<guestfs_mount>.
 
 The value can have the special value "unknown", meaning the content of the
 device is undetermined or empty.  "swap" means a Linux swap partition.
@@ -5605,6 +5817,8 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
+(Added in 1.20.0)
+
 =head2 guestfs_list_ldm_volumes
 
  char **
@@ -5616,6 +5830,8 @@ launch time.  It returns a list of device names.
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
+
+(Added in 1.20.0)
 
 =head2 guestfs_list_md_devices
 
@@ -5773,9 +5989,9 @@ This specialized command is used to get a listing of the filenames in the
 directory C<dir>.  The list of filenames is written to the local file
 C<filenames> (on the host).
 
-In the output file, the filenames are separated by C<\0> characters.
+出力ファイルにおいて、ファイル名が C<\0> 文字により区切られます。
 
-C<.> and C<..> are not returned.  The filenames are not sorted.
+C<.> および C<..> は返されません。ファイル名は並べ替えられません。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -6018,7 +6234,7 @@ possible LV.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.18 にて追加)
+(1.17.18 において追加)
 
 =head2 guestfs_lvm_canonical_lv_name
 
@@ -6236,7 +6452,7 @@ libguestfs the limit was 25.
 
 この関数はエラーのとき -1 を返します。
 
-(1.19.7 にて追加)
+(1.19.7 において追加)
 
 =head2 guestfs_md_create
 
@@ -6432,7 +6648,7 @@ This function returns a C<struct guestfs_mdstat_list *>, or NULL if there
 was an error.  I<The caller must call C<guestfs_free_mdstat_list> after
 use>.
 
-(1.17.21 にて追加)
+(1.17.21 において追加)
 
 =head2 guestfs_md_stop
 
@@ -6570,7 +6786,7 @@ C<blockscount> はブロックにおけるファイルシステムの容量で�
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.44)
+(1.19.44 において追加)
 
 =head2 guestfs_mke2fs_va
 
@@ -6894,7 +7110,7 @@ btrfs ファイルシステムは複数のデバイスを結合できるので�
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.25 にて追加)
+(1.17.25 において追加)
 
 =head2 guestfs_mkfs_btrfs_va
 
@@ -6930,7 +7146,7 @@ create the C<lost+found> directory.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.56)
+(1.19.56 において追加)
 
 =head2 guestfs_mkmountpoint
 
@@ -7074,14 +7290,14 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_MKSWAP_OPTS_LABEL, const char *label,
  GUESTFS_MKSWAP_OPTS_UUID, const char *uuid,
 
-Create a Linux swap partition on C<device>.
+Linux swap パーティションを C<device> に作成します。
 
 The option arguments C<label> and C<uuid> allow you to set the label and/or
 UUID of the new swap partition.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.34)
+(1.19.34 において追加)
 
 =head2 guestfs_mkswap_opts_va
 
@@ -7090,7 +7306,7 @@ UUID of the new swap partition.
                          const char *device,
                          va_list args);
 
-This is the "va_list variant" of L</guestfs_mkswap_opts>.
+これは L</guestfs_mkswap_opts> の "va_list variant" です。
 
 L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
@@ -7101,7 +7317,7 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
                            const char *device,
                            const struct guestfs_mkswap_opts_argv *optargs);
 
-This is the "argv variant" of L</guestfs_mkswap_opts>.
+これは L</guestfs_mkswap_opts> の "argv variant" です。
 
 L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
@@ -7195,7 +7411,7 @@ is appended to the temporary name.
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
-(1.19.53 にて追加)
+(1.19.53 において追加)
 
 =head2 guestfs_mktemp_va
 
@@ -7238,13 +7454,15 @@ C<appliance/kmod.whitelist.in> in the source).
 
  int
  guestfs_mount (guestfs_h *g,
-                const char *device,
+                const char *mountable,
                 const char *mountpoint);
 
 Mount a guest disk at a position in the filesystem.  Block devices are named
 C</dev/sda>, C</dev/sdb> and so on, as they were added to the guest.  If
 those block devices contain partitions, they will have the usual names
-(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used.
+(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used, or
+'mountable' strings returned by C<guestfs_list_filesystems> or
+C<guestfs_inspect_get_mountpoints>.
 
 The rules are the same as for L<mount(2)>: A filesystem must first be
 mounted on C</> before others can be mounted.  Other filesystems can only be
@@ -7351,7 +7569,7 @@ C<guestfs_mount_local_run> to run the main loop.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.22 にて追加)
+(1.17.22 において追加)
 
 =head2 guestfs_mount_local_va
 
@@ -7396,7 +7614,7 @@ libguestfs (see L<guestfs(3)/MULTIPLE HANDLES AND MULTIPLE THREADS>).
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.22 にて追加)
+(1.17.22 において追加)
 
 =head2 guestfs_mount_loop
 
@@ -7418,7 +7636,7 @@ mountpoint>.
  int
  guestfs_mount_options (guestfs_h *g,
                         const char *options,
-                        const char *device,
+                        const char *mountable,
                         const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it allows you to set
@@ -7435,7 +7653,7 @@ If the C<options> parameter is an empty string, then no options are passed
 
  int
  guestfs_mount_ro (guestfs_h *g,
-                   const char *device,
+                   const char *mountable,
                    const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it mounts the
@@ -7451,7 +7669,7 @@ filesystem with the read-only (I<-o ro>) flag.
  guestfs_mount_vfs (guestfs_h *g,
                     const char *options,
                     const char *vfstype,
-                    const char *device,
+                    const char *mountable,
                     const char *mountpoint);
 
 This is the same as the C<guestfs_mount> command, but it allows you to set
@@ -7787,7 +8005,7 @@ L<guestfs(3)/guestfs_create_flags>, and C<guestfs_parse_environment_list>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.19.53 にて追加)
+(1.19.53 において追加)
 
 =head2 guestfs_parse_environment_list
 
@@ -7804,7 +8022,7 @@ explicit list of strings instead of the program's environment.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.19.53 にて追加)
+(1.19.53 において追加)
 
 =head2 guestfs_part_add
 
@@ -7881,6 +8099,21 @@ C<guestfs_part_set_bootable> 参照。
 This function returns a C truth value on success or -1 on error.
 
 (1.3.2 において追加)
+
+=head2 guestfs_part_get_gpt_type
+
+ char *
+ guestfs_part_get_gpt_type (guestfs_h *g,
+                            const char *device,
+                            int partnum);
+
+Return the type GUID of numbered GPT partition C<partnum>. For MBR
+partitions, return an appropriate GUID corresponding to the MBR
+type. Behaviour is undefined for other partition types.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
+(Added in 1.21.1)
 
 =head2 guestfs_part_get_mbr_id
 
@@ -8055,6 +8288,26 @@ recognized.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.0.78 において追加)
+
+=head2 guestfs_part_set_gpt_type
+
+ int
+ guestfs_part_set_gpt_type (guestfs_h *g,
+                            const char *device,
+                            int partnum,
+                            const char *guid);
+
+Set the type GUID of numbered GPT partition C<partnum> to C<guid>. Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
+
+See
+L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
+for a useful list of type GUIDs.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.21.1)
 
 =head2 guestfs_part_set_mbr_id
 
@@ -8549,14 +8802,14 @@ the optional C<label> argument to C<guestfs_add_drive_opts>).  If you didn't
 use a label, then they cannot be removed.
 
 You can call this function before or after launching the handle.  If called
-after launch, if the attach-method supports it, we try to hot unplug the
-drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use
-(eg. mounted) when you do this.  We try to detect if the disk is in use and
-stop you from doing this.
+after launch, if the backend supports it, we try to hot unplug the drive:
+see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use (eg. mounted)
+when you do this.  We try to detect if the disk is in use and stop you from
+doing this.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.49)
+(1.19.49 において追加)
 
 =head2 guestfs_removexattr
 
@@ -8585,6 +8838,8 @@ the Linux L<rename(2)> system call.  In most cases you are better to use
 C<guestfs_mv> instead.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(Added in 1.21.5)
 
 =head2 guestfs_resize2fs
 
@@ -8665,7 +8920,7 @@ empty directory, or C<guestfs_rm_rf> to remove directories recursively.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.42)
+(1.19.42 において追加)
 
 =head2 guestfs_rm_rf
 
@@ -8963,12 +9218,19 @@ C<append> を C<NULL> に設定することは、追加のオプションが渡�
 
  int
  guestfs_set_attach_method (guestfs_h *g,
-                            const char *attachmethod);
+                            const char *backend);
 
-Set the method that libguestfs uses to connect to the back end guestfsd
+I<This function is deprecated.> In new code, use the L</guestfs_set_backend>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 
-See L<guestfs(3)/ATTACH METHOD>.
+See L<guestfs(3)/BACKEND>.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -8990,6 +9252,21 @@ handle is closed (also if the program exits without closing handles).
 
 (0.3 において追加)
 
+=head2 guestfs_set_backend
+
+ int
+ guestfs_set_backend (guestfs_h *g,
+                      const char *backend);
+
+Set the method that libguestfs uses to connect to the backend guestfsd
+daemon.
+
+This handle property was previously called the "attach method".
+
+See L<guestfs(3)/BACKEND>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
 =head2 guestfs_set_cachedir
 
  int
@@ -9007,7 +9284,7 @@ default.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.58)
+(1.19.58 において追加)
 
 =head2 guestfs_set_direct
 
@@ -9064,7 +9341,7 @@ error.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.31 にて追加)
+(1.17.31 において追加)
 
 =head2 guestfs_set_e2attrs_va
 
@@ -9103,7 +9380,7 @@ C<guestfs_get_e2generation> 参照。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.31 にて追加)
+(1.17.31 において追加)
 
 =head2 guestfs_set_e2label
 
@@ -9150,16 +9427,19 @@ the existing UUID of a filesystem.
 
  int
  guestfs_set_label (guestfs_h *g,
-                    const char *device,
+                    const char *mountable,
                     const char *label);
 
-C<device> のファイルシステムのラベルを C<label> に設定します。
+Set the filesystem label on C<mountable> to C<label>.
 
 いくつかのファイルシステム形式のみがラベルをサポートします。そして libguestfs はこれらのサブセットのみにおいてラベルの設定をサポートします。
 
 ext2/3/4 ファイルシステムでは、ラベルは 16 バイトに制限されます。
 
 NTFS ファイルシステムでは、ラベルは 128 Unicode 文字に制限されます。
+
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 
 ファイルシステムにあるラベルを読み込むには C<guestfs_vfs_label> を呼び出します。
 
@@ -9182,7 +9462,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.52)
+(1.19.52 において追加))
 
 =head2 guestfs_set_libvirt_supported_credentials
 
@@ -9194,8 +9474,7 @@ Call this function before setting an event handler for
 C<GUESTFS_EVENT_LIBVIRT_AUTH>, to supply the list of credential types that
 the program knows how to process.
 
-The C<creds> list must be a non-empty list of strings.  Possible strings
-are:
+C<creds> 一覧は文字列の空ではない一覧にする必要があります。利用可能な文字列は次のとおりです:
 
 =over 4
 
@@ -9219,13 +9498,13 @@ are:
 
 =back
 
-See libvirt documentation for the meaning of these credential types.
+これらのクレデンシャル種別の意味は libvirt ドキュメントを参照してください。
 
 See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.52)
+(1.19.52 において追加))
 
 =head2 guestfs_set_memsize
 
@@ -9298,6 +9577,21 @@ C<guestfs_user_cancel>).
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (1.11.18 において追加)
+
+=head2 guestfs_set_program
+
+ int
+ guestfs_set_program (guestfs_h *g,
+                      const char *program);
+
+Set the program name.  This is an informative string which the main program
+may optionally set in the handle.
+
+When the handle is created, the program name in the handle is set to the
+basename from C<argv[0]>.  If that was not possible, it is set to the empty
+string (but never C<NULL>).
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 =head2 guestfs_set_qemu
 
@@ -9396,7 +9690,7 @@ default.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.58)
+(1.19.58 において追加)
 
 =head2 guestfs_set_trace
 
@@ -9917,6 +10211,71 @@ closing the handle.
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
 (0.3 において追加)
+
+=head2 guestfs_syslinux
+
+ int
+ guestfs_syslinux (guestfs_h *g,
+                   const char *device,
+                   ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_SYSLINUX_DIRECTORY, const char *directory,
+
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted as a FAT
+filesystem, or a partition formatted as a FAT filesystem.  In the latter
+case, the partition should be marked as "active"
+(C<guestfs_part_set_bootable>) and a Master Boot Record must be installed
+(eg. using C<guestfs_pwrite_device>) on the first sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.  See the
+L<syslinux(1)> man page for further information.
+
+オプション引数は次のとおりです:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the root directory
+of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by placing a file
+called C<syslinux.cfg> on the FAT filesystem, either in the root directory,
+or under C<directory> if that optional argument is being used.  For further
+information about the contents of this file, see L<syslinux(1)>.
+
+See also C<guestfs_extlinux>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_syslinux_va
+
+ int
+ guestfs_syslinux_va (guestfs_h *g,
+                      const char *device,
+                      va_list args);
+
+This is the "va_list variant" of L</guestfs_syslinux>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
+
+=head2 guestfs_syslinux_argv
+
+ int
+ guestfs_syslinux_argv (guestfs_h *g,
+                        const char *device,
+                        const struct guestfs_syslinux_argv *optargs);
+
+This is the "argv variant" of L</guestfs_syslinux>.
+
+L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
 =head2 guestfs_tail
 
@@ -10485,7 +10844,7 @@ libguestfs がローカルマウントポイントにあるファイルシステ
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(1.17.22 にて追加)
+(1.17.22 において追加)
 
 =head2 guestfs_umount_local_va
 
@@ -10560,6 +10919,40 @@ L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
 (1.5.17 において追加)
 
+=head2 guestfs_user_cancel
+
+ int
+ guestfs_user_cancel (guestfs_h *g);
+
+This function cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and thread
+safe.  You can call it from a signal handler or from another thread, without
+needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this to find
+out if the operation was cancelled or failed because of another error.
+
+No cleanup is performed: for example, if a file was being uploaded then
+after cancellation there may be a partially uploaded file.  It is the
+caller's responsibility to clean up if necessary.
+
+There are two common places that you might call C<guestfs_user_cancel>:
+
+In an interactive text-based program, you might call it from a C<SIGINT>
+signal handler so that pressing C<^C> cancels the current operation.  (You
+also need to call L</guestfs_set_pgroup> so that child processes don't
+receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress bar
+with a cancel button, wire up the cancel button to call this function.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+(1.11.18 において追加)
+
 =head2 guestfs_utimens
 
  int
@@ -10609,7 +11002,7 @@ C<guestfs_free_utsname> を呼び出す必要があります>。
  struct guestfs_version *
  guestfs_version (guestfs_h *g);
 
-Return the libguestfs version number that the program is linked against.
+プログラムがリンクしている libguestfs バージョン番号を返します。
 
 Note that because of dynamic linking this is not necessarily the version of
 libguestfs that you compiled against.  You can compile the program, and then
@@ -10633,7 +11026,7 @@ To construct the original version string: C<$major.$minor.$release$extra>
 I<Note:> Don't use this call to test for availability of features.  In
 enterprise distributions we backport features from later versions into
 earlier versions, making this an unreliable way to test for features.  Use
-C<guestfs_available> instead.
+C<guestfs_available> or C<guestfs_feature_available> instead.
 
 This function returns a C<struct guestfs_version *>, or NULL if there was an
 error.  I<The caller must call C<guestfs_free_version> after use>.
@@ -10644,9 +11037,9 @@ error.  I<The caller must call C<guestfs_free_version> after use>.
 
  char *
  guestfs_vfs_label (guestfs_h *g,
-                    const char *device);
+                    const char *mountable);
 
-This returns the filesystem label of the filesystem on C<device>.
+This returns the label of the filesystem on C<mountable>.
 
 ファイルシステムにラベルが付いていないと、空の文字列が返されます。
 
@@ -10660,10 +11053,10 @@ This returns the filesystem label of the filesystem on C<device>.
 
  char *
  guestfs_vfs_type (guestfs_h *g,
-                   const char *device);
+                   const char *mountable);
 
 This command gets the filesystem type corresponding to the filesystem on
-C<device>.
+C<mountable>.
 
 For most filesystems, the result is the name of the Linux VFS module which
 would be used to mount this filesystem if you mounted it without specifying
@@ -10677,9 +11070,9 @@ the filesystem type.  For example a string such as C<ext3> or C<ntfs>.
 
  char *
  guestfs_vfs_uuid (guestfs_h *g,
-                   const char *device);
+                   const char *mountable);
 
-This returns the filesystem UUID of the filesystem on C<device>.
+This returns the filesystem UUID of the filesystem on C<mountable>.
 
 ファイルシステムが UUID を持っていないと、空の文字列を返します。
 
@@ -10729,7 +11122,7 @@ This command is the same as running C<vgchange -a y|n>
  guestfs_vgchange_uuid (guestfs_h *g,
                         const char *vg);
 
-Generate a new random UUID for the volume group C<vg>.
+ランダムな新しい UUID をボリュームグループ C<vg> に対して生成します。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -10793,7 +11186,7 @@ This function returns a buffer, or NULL on error.  The size of the returned
 buffer is written to C<*size_r>.  I<The caller must free the returned buffer
 after use>.
 
-(1.17.20 にて追加)
+(1.17.20 において追加)
 
 =head2 guestfs_vgpvuuids
 
@@ -10836,7 +11229,7 @@ This also forcibly removes all logical volumes in the volume group (if any).
                    const char *volgroup,
                    const char *newvolgroup);
 
-Rename a volume group C<volgroup> with the new name C<newvolgroup>.
+ボリュームグループ C<volgroup> の名前を新しい名前 C<newvolgroup> に変更します。
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -10893,7 +11286,7 @@ volumes, volume groups and logical volumes.
  guestfs_vguuid (guestfs_h *g,
                  const char *vgname);
 
-This command returns the UUID of the LVM VG named C<vgname>.
+このコマンドは C<vgname> という名前の LVM ボリュームグループの UUID を返します。
 
 この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
 
@@ -11001,8 +11394,7 @@ C<guestfs_write_append> 参照。
                        const char *content,
                        size_t content_size);
 
-This call appends C<content> to the end of file C<path>.  If C<path> does
-not exist, then a new file is created.
+この関数は C<content> を C<path> ファイルの最後に追加します。もし C<path> が存在しなければ、新しいファイルが作成されます。
 
 C<guestfs_write> 参照。
 
@@ -11059,7 +11451,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_XFS_ADMIN_LABEL, const char *label,
  GUESTFS_XFS_ADMIN_UUID, const char *uuid,
 
-Change the parameters of the XFS filesystem on C<device>.
+C<device> において XFS ファイルシステムのパラメーターを変更します。
 
 Devices that are mounted cannot be modified.  Administrators must unmount
 filesystems before this call can modify parameters.
@@ -11069,7 +11461,7 @@ using the C<guestfs_xfs_info> and C<guestfs_xfs_growfs> calls.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
-(Added in 1.19.33)
+(1.19.33 において追加)
 
 =head2 guestfs_xfs_admin_va
 
@@ -11199,7 +11591,7 @@ The returned status indicates whether filesystem corruption was detected
 
 この関数はエラーのとき -1 を返します。
 
-(Added in 1.19.36)
+(1.19.36 において追加)
 
 =head2 guestfs_xfs_repair_va
 
@@ -11341,7 +11733,7 @@ that the caller can display a progress bar or indicator.  To receive these
 messages, the caller must register a progress event callback.  See
 L<guestfs(3)/GUESTFS_EVENT_PROGRESS>.
 
-(1.17.18 にて追加)
+(1.17.18 において追加)
 
 =head2 guestfs_zerofree
 
@@ -11375,7 +11767,7 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
-This calls the external C<zfgrep> program and returns the matching lines.
+これは外部の C<zfgrep> プログラムを呼び出し、一致する行を返します。
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
@@ -11399,7 +11791,7 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
-This calls the external C<zfgrep -i> program and returns the matching lines.
+これは外部の C<zfgrep -i> プログラムを呼び出し、一致する行を返します。
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the

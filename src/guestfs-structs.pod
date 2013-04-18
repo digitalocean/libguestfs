@@ -440,3 +440,19 @@
  void guestfs_free_hivex_value (struct guestfs_free_hivex_value *);
  void guestfs_free_hivex_value_list (struct guestfs_free_hivex_value_list *);
 
+=head2 guestfs_internal_mountable
+
+ struct guestfs_internal_mountable {
+   int32_t im_type;
+   char *im_device;
+   char *im_volume;
+ };
+ 
+ struct guestfs_internal_mountable_list {
+   uint32_t len; /* Number of elements in list. */
+   struct guestfs_internal_mountable *val; /* Elements. */
+ };
+ 
+ void guestfs_free_internal_mountable (struct guestfs_free_internal_mountable *);
+ void guestfs_free_internal_mountable_list (struct guestfs_free_internal_mountable_list *);
+

@@ -32,6 +32,14 @@
 
 #include "guestfs-internal-all.h"
 
+/* Mountables */
+
+typedef struct {
+  mountable_type_t type;
+  const char *device;
+  const char *volume;
+} mountable_t;
+
 /*-- in guestfsd.c --*/
 extern int verbose;
 
@@ -48,6 +56,14 @@ extern int xwrite (int sock, const void *buf, size_t len)
   __attribute__((__warn_unused_result__));
 extern int xread (int sock, void *buf, size_t len)
   __attribute__((__warn_unused_result__));
+
+extern char *mountable_to_string (const mountable_t *mountable);
+
+/*-- in mount.c --*/
+
+extern int mount_vfs_nochroot (const char *options, const char *vfstype,
+                               const mountable_t *mountable,
+                               const char *mp, const char *user_mp);
 
 /* Growable strings buffer. */
 struct stringsbuf {
@@ -115,6 +131,8 @@ extern int is_power_of_2 (unsigned long v);
 extern void trim (char *str);
 
 extern int device_name_translation (char *device);
+
+extern int parse_btrfsvol (char *desc, mountable_t *mountable);
 
 extern int prog_exists (const char *prog);
 
@@ -343,6 +361,33 @@ is_zero (const char *buffer, size_t size)
     }                                                                   \
   } while (0)
 
+/* All functions that take a mountable argument must call this macro.
+ * It parses the mountable into a mountable_t, ensures any
+ * underlying device exists, and does device name translation
+ * (described in the guestfs(3) manpage).
+ *
+ * Note that the "string" argument may be modified.
+ */
+#define RESOLVE_MOUNTABLE(string,mountable,cancel_stmt,fail_stmt)       \
+  do {                                                                  \
+    if (STRPREFIX ((string), "btrfsvol:")) {                            \
+      if (parse_btrfsvol ((string) + strlen ("btrfsvol:"), &(mountable)) == -1)\
+      {                                                                 \
+        cancel_stmt;                                                    \
+        reply_with_error ("%s: %s: expecting a btrfs volume",           \
+                          __func__, (string));                          \
+        fail_stmt;                                                      \
+      }                                                                 \
+    }                                                                   \
+                                                                        \
+    else {                                                              \
+      (mountable).type = MOUNTABLE_DEVICE;                              \
+      (mountable).device = (string);                                    \
+      (mountable).volume = NULL;                                        \
+      RESOLVE_DEVICE((string), cancel_stmt, fail_stmt);                 \
+    }                                                                   \
+  } while (0)
+
 /* Helper for functions which need either an absolute path in the
  * mounted filesystem, OR a /dev/ device which exists.
  *
@@ -362,6 +407,24 @@ is_zero (const char *buffer, size_t size)
       ABS_PATH ((path), cancel_stmt, fail_stmt);                        \
     }									\
   } while (0)
+
+/* Helper for functions which need either an absolute path in the
+ * mounted filesystem, OR a valid mountable description.
+ */
+#define REQUIRE_ROOT_OR_RESOLVE_MOUNTABLE(string, mountable,            \
+                                          cancel_stmt, fail_stmt)       \
+  do {                                                                  \
+    if (STREQLEN ((string), "/dev/", strlen ("/dev/")) || (string)[0] != '/') {\
+      RESOLVE_MOUNTABLE (string, mountable, cancel_stmt, fail_stmt);    \
+    }                                                                   \
+                                                                        \
+    else {                                                              \
+      NEED_ROOT (cancel_stmt, fail_stmt);                               \
+      (mountable).type = MOUNTABLE_PATH;                                \
+      (mountable).device = (string);                                    \
+    }                                                                   \
+  } while (0)                                                           \
+
 
 /* NB:
  * (1) You must match CHROOT_IN and CHROOT_OUT even along error paths.

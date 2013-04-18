@@ -26,6 +26,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <getopt.h>
 #include <signal.h>
 #include <locale.h>
@@ -36,7 +37,6 @@
 
 #include "guestfs.h"
 
-#include "progname.h"
 #include "ignore-value.h"
 
 #include "options.h"
@@ -118,6 +118,7 @@ usage (int status)
              "  --keys-from-stdin    Read passphrases from stdin\n"
              "  --live               Connect to a live virtual machine\n"
              "  -m|--mount dev[:mnt[:opts]] Mount dev on mnt (if omitted, /)\n"
+             "  --no-fork            Don't daemonize\n"
              "  -n|--no-sync         Don't autosync\n"
              "  -o|--option opt      Pass extra option to FUSE\n"
              "  --pid-file filename  Write PID to filename\n"
@@ -160,7 +161,9 @@ main (int argc, char *argv[])
     { "inspector", 0, 0, 'i' },
     { "keys-from-stdin", 0, 0, 0 },
     { "live", 0, 0, 0 },
+    { "long-options", 0, 0, 0 },
     { "mount", 1, 0, 'm' },
+    { "no-fork", 0, 0, 0 },
     { "no-sync", 0, 0, 'n' },
     { "option", 1, 0, 'o' },
     { "pid-file", 1, 0, 0 },
@@ -194,9 +197,6 @@ main (int argc, char *argv[])
   /* LC_ALL=C is required so we can parse error messages. */
   setenv ("LC_ALL", "C", 1);
 
-  /* Set global program name that is not polluted with libtool artifacts.  */
-  set_program_name (argv[0]);
-
   memset (&sa, 0, sizeof sa);
   sa.sa_handler = SIG_IGN;
   sa.sa_flags = SA_RESTART;
@@ -214,7 +214,9 @@ main (int argc, char *argv[])
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "dir-cache-timeout"))
+      if (STREQ (long_options[option_index].name, "long-options"))
+        display_long_options (long_options);
+      else if (STREQ (long_options[option_index].name, "dir-cache-timeout"))
         dir_cache_timeout = atoi (optarg);
       else if (STREQ (long_options[option_index].name, "fuse-help"))
         fuse_help ();
@@ -234,6 +236,8 @@ main (int argc, char *argv[])
         live = 1;
       } else if (STREQ (long_options[option_index].name, "pid-file")) {
         pid_file = optarg;
+      } else if (STREQ (long_options[option_index].name, "no-fork")) {
+        do_fork = 0;
       } else {
         fprintf (stderr, _("%s: unknown long option: %s (%d)\n"),
                  program_name, long_options[option_index].name, option_index);

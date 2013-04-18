@@ -2,7 +2,7 @@
 
 =head1 НАЗВА
 
-guestfs-examples - Examples of using libguestfs from C
+guestfs-examples — приклади використання libguestfs з коду мовою C
 
 =head1 КОРОТКИЙ ОПИС
 
@@ -22,13 +22,37 @@ This manual page contains examples of calling libguestfs from the C
 programming language.  If you are not familiar with using libguestfs, you
 also need to read L<guestfs(3)>.
 
-=head1 ПРИКЛАД 1. СТВОРЕННЯ ОБРАЗУ ДИСКА
+=head1 EXAMPLE: CREATE A DISK IMAGE
 
-@EXAMPLE1@
+@CREATE_DISK@
 
-=head1 ПРИКЛАД 2. ПЕРЕВІРКА ОБРАЗУ ДИСКА ВІРТУАЛЬНОЇ МАШИНИ
+=head1 EXAMPLE: INSPECT A VIRTUAL MACHINE DISK IMAGE
 
-@EXAMPLE2@
+@INSPECT_VM@
+
+=head1 EXAMPLE: ENABLE DEBUGGING AND LOGGING
+
+@DEBUG_LOGGING@
+
+=head1 EXAMPLE: DISPLAY THE OPERATING SYSTEM ICON OF A GUEST
+
+@DISPLAY_ICON@
+
+=head1 EXAMPLE: THE LIBVIRT AUTHENTICATION API
+
+@LIBVIRT_AUTH@
+
+=head1 EXAMPLE: THE MOUNT LOCAL API
+
+@MOUNT_LOCAL@
+
+=head1 EXAMPLE: MULTIPLE HANDLES AND THREADS
+
+@COPY_OVER@
+
+=head1 EXAMPLE: FETCH DHCP ADDRESS FROM A GUEST
+
+@VIRT_DHCP_ADDRESS@
 
 =head1 ТАКОЖ ПЕРЕГЛЯНЬТЕ
 
@@ -42,5 +66,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2010–2012
+Copyright (C) 2010-2013 Red Hat Inc.
 

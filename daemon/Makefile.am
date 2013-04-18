@@ -138,6 +138,7 @@ guestfsd_SOURCES = \
 	mktemp.c \
 	modprobe.c \
 	mount.c \
+	mountable.c \
 	names.c \
 	ntfs.c \
 	ntfsclone.c \
@@ -160,6 +161,7 @@ guestfsd_SOURCES = \
 	stubs.c \
 	swap.c \
 	sync.c \
+	syslinux.c \
 	tar.c \
 	truncate.c \
 	umask.c \

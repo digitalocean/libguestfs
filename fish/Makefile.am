@@ -34,6 +34,7 @@ generator_built = \
 	fish-cmds.h \
 	guestfish-actions.pod \
 	guestfish-commands.pod \
+	guestfish-prepopts.pod \
 	prepopts.h \
 	prepopts.c
 
@@ -47,7 +48,6 @@ EXTRA_DIST = \
 	$(BUILT_SOURCES) \
 	rc_protocol.x \
 	guestfish.pod \
-	guestfish-bash-completion.sh \
 	libguestfs-tools.conf \
 	virt-copy-in \
 	virt-copy-out \
@@ -130,7 +130,8 @@ guestfish_CPPFLAGS = \
 guestfish_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
-	$(LIBCONFIG_CFLAGS)
+	$(LIBCONFIG_CFLAGS) \
+	$(LIBXML2_CFLAGS)
 
 guestfish_LDADD = \
 	$(LIBCONFIG_LIBS) \
@@ -188,12 +189,13 @@ noinst_DATA = \
 
 guestfish.1 $(top_builddir)/html/guestfish.1.html: stamp-guestfish.pod
 
-stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod
+stamp-guestfish.pod: guestfish.pod guestfish-actions.pod guestfish-commands.pod guestfish-prepopts.pod
 	$(PODWRAPPER) \
 	  --man guestfish.1 \
 	  --html $(top_builddir)/html/guestfish.1.html \
 	  --insert $(srcdir)/guestfish-actions.pod:__ACTIONS__ \
 	  --insert $(srcdir)/guestfish-commands.pod:__FISH_COMMANDS__ \
+	  --insert $(srcdir)/guestfish-prepopts.pod:__PREPOPTS__ \
 	  --license GPLv2+ \
 	  $<
 	touch $@
@@ -242,11 +244,6 @@ stamp-virt-tar-out.pod: virt-tar-out.pod
 
 toolsconfdir = $(sysconfdir)
 toolsconf_DATA = libguestfs-tools.conf
-
-# Bash completion script.
-
-bashcompletiondir = $(sysconfdir)/bash_completion.d
-bashcompletion_DATA = guestfish-bash-completion.sh
 
 # Tests.
 

@@ -21,6 +21,7 @@
 
 {
     global:
+        guestfs___add_libvirt_dom;
         guestfs___safe_calloc;
         guestfs___safe_malloc;
         guestfs___safe_memdup;
@@ -145,9 +146,12 @@
         guestfs_egrep;
         guestfs_egrepi;
         guestfs_equal;
+        guestfs_event_to_string;
         guestfs_exists;
+        guestfs_extlinux;
         guestfs_fallocate;
         guestfs_fallocate64;
+        guestfs_feature_available;
         guestfs_fgrep;
         guestfs_fgrepi;
         guestfs_file;
@@ -178,6 +182,8 @@
         guestfs_free_inotify_event_list;
         guestfs_free_int_bool;
         guestfs_free_int_bool_list;
+        guestfs_free_internal_mountable;
+        guestfs_free_internal_mountable_list;
         guestfs_free_isoinfo;
         guestfs_free_isoinfo_list;
         guestfs_free_lvm_lv;
@@ -209,6 +215,7 @@
         guestfs_get_append;
         guestfs_get_attach_method;
         guestfs_get_autosync;
+        guestfs_get_backend;
         guestfs_get_cachedir;
         guestfs_get_direct;
         guestfs_get_e2attrs;
@@ -227,6 +234,7 @@
         guestfs_get_pgroup;
         guestfs_get_pid;
         guestfs_get_private;
+        guestfs_get_program;
         guestfs_get_qemu;
         guestfs_get_recovery_proc;
         guestfs_get_selinux;
@@ -308,7 +316,11 @@
         guestfs_internal_hot_remove_drive_precheck;
         guestfs_internal_lstatlist;
         guestfs_internal_lxattrlist;
+        guestfs_internal_parse_mountable;
         guestfs_internal_readlinklist;
+        guestfs_internal_rhbz914931;
+        guestfs_internal_set_libvirt_selinux_label;
+        guestfs_internal_set_libvirt_selinux_norelabel_disks;
         guestfs_internal_test;
         guestfs_internal_test_63_optargs;
         guestfs_internal_test_63_optargs_argv;
@@ -356,6 +368,7 @@
         guestfs_is_ready;
         guestfs_is_socket;
         guestfs_is_symlink;
+        guestfs_is_whole_device;
         guestfs_is_zero;
         guestfs_is_zero_device;
         guestfs_isoinfo;
@@ -500,11 +513,13 @@
         guestfs_part_del;
         guestfs_part_disk;
         guestfs_part_get_bootable;
+        guestfs_part_get_gpt_type;
         guestfs_part_get_mbr_id;
         guestfs_part_get_parttype;
         guestfs_part_init;
         guestfs_part_list;
         guestfs_part_set_bootable;
+        guestfs_part_set_gpt_type;
         guestfs_part_set_mbr_id;
         guestfs_part_set_name;
         guestfs_part_to_dev;
@@ -557,6 +572,7 @@
         guestfs_set_append;
         guestfs_set_attach_method;
         guestfs_set_autosync;
+        guestfs_set_backend;
         guestfs_set_cachedir;
         guestfs_set_close_callback;
         guestfs_set_direct;
@@ -579,6 +595,7 @@
         guestfs_set_path;
         guestfs_set_pgroup;
         guestfs_set_private;
+        guestfs_set_program;
         guestfs_set_progress_callback;
         guestfs_set_qemu;
         guestfs_set_recovery_proc;
@@ -613,6 +630,9 @@
         guestfs_swapon_label;
         guestfs_swapon_uuid;
         guestfs_sync;
+        guestfs_syslinux;
+        guestfs_syslinux_argv;
+        guestfs_syslinux_va;
         guestfs_tail;
         guestfs_tail_n;
         guestfs_tar_in;

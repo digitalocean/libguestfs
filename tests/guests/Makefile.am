@@ -49,6 +49,7 @@ check_DATA = \
 	fedora.img \
 	fedora-md1.img \
 	fedora-md2.img \
+	fedora-btrfs.img \
 	ubuntu.img \
 	windows.img
 
@@ -79,6 +80,11 @@ stamp-fedora-md.img: guest-aux/make-fedora-img.pl \
 	rm -f $@
 	SRCDIR=$(srcdir) LAYOUT=partitions-md $(top_builddir)/run --test $<
 	touch $@
+
+fedora-btrfs.img: guest-aux/make-fedora-img.pl \
+		guest-aux/fedora-name.db \
+		guest-aux/fedora-packages.db
+	SRCDIR=$(srcdir) LAYOUT=btrfs $(top_builddir)/run --test $<
 
 guest-aux/fedora-name.db: guest-aux/fedora-name.db.txt
 	rm -f $@ $@-t

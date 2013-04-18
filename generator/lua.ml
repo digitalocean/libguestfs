@@ -292,18 +292,6 @@ free_per_handle_table (lua_State *L, guestfs_h *g)
   lua_settable (L, LUA_REGISTRYINDEX);
 }
 
-/* User cancel. */
-static int
-guestfs_lua_user_cancel (lua_State *L)
-{
-  struct userdata *u = get_handle (L, 1);
-
-  if (u->g)
-    guestfs_user_cancel (u->g);
-
-  return 0;
-}
-
 /* Set an event callback. */
 static int
 guestfs_lua_set_event_callback (lua_State *L)
@@ -469,7 +457,8 @@ guestfs_lua_delete_event_callback (lua_State *L)
 
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n
+        | Pathname n | Device n | Mountable n
+        | Dev_or_Path n | Mountable_or_Path n | String n
         | FileIn n | FileOut n | Key n ->
           pr "  const char *%s;\n" n
         | BufferIn n ->
@@ -499,7 +488,8 @@ guestfs_lua_delete_event_callback (lua_State *L)
         fun i ->
           let i = i+2 in (* Lua indexes from 1(!), plus the handle. *)
           function
-          | Pathname n | Device n | Dev_or_Path n | String n
+          | Pathname n | Device n | Mountable n
+          | Dev_or_Path n | Mountable_or_Path n | String n
           | FileIn n | FileOut n | Key n ->
             pr "  %s = luaL_checkstring (L, %d);\n" n i
           | BufferIn n ->
@@ -559,7 +549,8 @@ guestfs_lua_delete_event_callback (lua_State *L)
       (* Free temporary data. *)
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _
         | FileIn _ | FileOut _ | Key _
         | BufferIn _ | OptString _
         | Bool _ | Int _ | Int64 _
@@ -882,7 +873,6 @@ static luaL_Reg functions[] = {
 /* Methods. */
 static luaL_Reg methods[] = {
   { \"close\", guestfs_lua_close },
-  { \"user_cancel\", guestfs_lua_user_cancel },
   { \"set_event_callback\", guestfs_lua_set_event_callback },
   { \"delete_event_callback\", guestfs_lua_delete_event_callback },
 

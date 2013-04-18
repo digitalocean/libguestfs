@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
 #include <syslog.h>
@@ -42,23 +41,33 @@ main (int argc, char *argv[])
                                   event_bitmask, 0, NULL) == -1)
     exit (EXIT_FAILURE);
 
-  /* This is how debugging is enabled: Setting the 'trace' flag in the
-   * handle means that each libguestfs call is logged.  Setting the
-   * 'verbose' flag enables a great deal of extra debugging throughout
-   * the system.  Note that you should set the flags early on after
-   * creating the handle.
+  /* This is how debugging is enabled:
+   *
+   * Setting the 'trace' flag in the handle means that each libguestfs
+   * call is logged (name, parameters, return).  This flag is useful
+   * to see how libguestfs is being used by a program.
+   *
+   * Setting the 'verbose' flag enables a great deal of extra
+   * debugging throughout the system.  This is useful if there is a
+   * libguestfs error which you don't understand.
+   *
+   * Note that you should set the flags early on after creating the
+   * handle.  In particular if you set the verbose flag after launch
+   * then you won't see all messages.
    *
    * For more information see:
    * http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs
    *
-   * Note that error messages raised by APIs are *not* debugging or
-   * trace information, and they are not affected by any of this.  You
-   * may have to log them separately.
+   * Error messages raised by APIs are *not* debugging information,
+   * and they are not affected by any of this.  You may have to log
+   * them separately.
    */
   guestfs_set_trace (g, 1);
   guestfs_set_verbose (g, 1);
 
-  /* Add a dummy disk image. */
+  /* Do some operations which will generate plenty of trace and debug
+   * messages.
+   */
   if (guestfs_add_drive (g, "/dev/null") == -1)
     exit (EXIT_FAILURE);
 
@@ -66,11 +75,9 @@ main (int argc, char *argv[])
           "Take a look in your system log file,\n"
           "eg. /var/log/messages.\n");
 
-  /* Run the libguestfs back-end. */
   if (guestfs_launch (g) == -1)
     exit (EXIT_FAILURE);
 
-  /* ... and close. */
   guestfs_close (g);
 
   exit (EXIT_SUCCESS);
@@ -94,11 +101,13 @@ message_callback (guestfs_h *g, void *opaque,
                   const uint64_t *array, size_t array_len)
 {
   const int priority = LOG_USER|LOG_INFO;
-  char *msg;
+  char *event_name, *msg;
 
   if (buf_len > 0) {
+    event_name = guestfs_event_to_string (event);
     msg = strndup (buf, buf_len);
-    syslog (priority, "[%" PRIi64 "] %s", event, msg);
+    syslog (priority, "[%s] %s", event_name, msg);
     free (msg);
+    free (event_name);
   }
 }

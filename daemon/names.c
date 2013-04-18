@@ -410,5 +410,13 @@ const char *function_names[] = {
   [389] = "ldmtool_volume_type",
   [390] = "ldmtool_volume_hint",
   [391] = "ldmtool_volume_partitions",
+  [392] = "part_set_gpt_type",
+  [393] = "part_get_gpt_type",
   [394] = "rename",
+  [395] = "is_whole_device",
+  [396] = "internal_parse_mountable",
+  [397] = "internal_rhbz914931",
+  [398] = "feature_available",
+  [399] = "syslinux",
+  [400] = "extlinux",
 };

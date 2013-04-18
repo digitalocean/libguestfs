@@ -137,8 +137,10 @@ extern struct command_entry egrepi_cmd_entry;
 extern struct command_entry equal_cmd_entry;
 extern struct command_entry event_cmd_entry;
 extern struct command_entry exists_cmd_entry;
+extern struct command_entry extlinux_cmd_entry;
 extern struct command_entry fallocate_cmd_entry;
 extern struct command_entry fallocate64_cmd_entry;
+extern struct command_entry feature_available_cmd_entry;
 extern struct command_entry fgrep_cmd_entry;
 extern struct command_entry fgrepi_cmd_entry;
 extern struct command_entry file_cmd_entry;
@@ -157,6 +159,7 @@ extern struct command_entry fstrim_cmd_entry;
 extern struct command_entry get_append_cmd_entry;
 extern struct command_entry get_attach_method_cmd_entry;
 extern struct command_entry get_autosync_cmd_entry;
+extern struct command_entry get_backend_cmd_entry;
 extern struct command_entry get_cachedir_cmd_entry;
 extern struct command_entry get_direct_cmd_entry;
 extern struct command_entry get_e2attrs_cmd_entry;
@@ -172,6 +175,7 @@ extern struct command_entry get_network_cmd_entry;
 extern struct command_entry get_path_cmd_entry;
 extern struct command_entry get_pgroup_cmd_entry;
 extern struct command_entry get_pid_cmd_entry;
+extern struct command_entry get_program_cmd_entry;
 extern struct command_entry get_qemu_cmd_entry;
 extern struct command_entry get_recovery_proc_cmd_entry;
 extern struct command_entry get_selinux_cmd_entry;
@@ -250,6 +254,7 @@ extern struct command_entry is_file_cmd_entry;
 extern struct command_entry is_lv_cmd_entry;
 extern struct command_entry is_socket_cmd_entry;
 extern struct command_entry is_symlink_cmd_entry;
+extern struct command_entry is_whole_device_cmd_entry;
 extern struct command_entry is_zero_cmd_entry;
 extern struct command_entry is_zero_device_cmd_entry;
 extern struct command_entry isoinfo_cmd_entry;
@@ -370,11 +375,13 @@ extern struct command_entry part_add_cmd_entry;
 extern struct command_entry part_del_cmd_entry;
 extern struct command_entry part_disk_cmd_entry;
 extern struct command_entry part_get_bootable_cmd_entry;
+extern struct command_entry part_get_gpt_type_cmd_entry;
 extern struct command_entry part_get_mbr_id_cmd_entry;
 extern struct command_entry part_get_parttype_cmd_entry;
 extern struct command_entry part_init_cmd_entry;
 extern struct command_entry part_list_cmd_entry;
 extern struct command_entry part_set_bootable_cmd_entry;
+extern struct command_entry part_set_gpt_type_cmd_entry;
 extern struct command_entry part_set_mbr_id_cmd_entry;
 extern struct command_entry part_set_name_cmd_entry;
 extern struct command_entry part_to_dev_cmd_entry;
@@ -420,6 +427,7 @@ extern struct command_entry scrub_freespace_cmd_entry;
 extern struct command_entry set_append_cmd_entry;
 extern struct command_entry set_attach_method_cmd_entry;
 extern struct command_entry set_autosync_cmd_entry;
+extern struct command_entry set_backend_cmd_entry;
 extern struct command_entry set_cachedir_cmd_entry;
 extern struct command_entry set_direct_cmd_entry;
 extern struct command_entry set_e2attrs_cmd_entry;
@@ -433,6 +441,7 @@ extern struct command_entry set_memsize_cmd_entry;
 extern struct command_entry set_network_cmd_entry;
 extern struct command_entry set_path_cmd_entry;
 extern struct command_entry set_pgroup_cmd_entry;
+extern struct command_entry set_program_cmd_entry;
 extern struct command_entry set_qemu_cmd_entry;
 extern struct command_entry set_recovery_proc_cmd_entry;
 extern struct command_entry set_selinux_cmd_entry;
@@ -468,6 +477,7 @@ extern struct command_entry swapon_file_cmd_entry;
 extern struct command_entry swapon_label_cmd_entry;
 extern struct command_entry swapon_uuid_cmd_entry;
 extern struct command_entry sync_cmd_entry;
+extern struct command_entry syslinux_cmd_entry;
 extern struct command_entry tail_cmd_entry;
 extern struct command_entry tail_n_cmd_entry;
 extern struct command_entry tar_in_cmd_entry;
@@ -489,6 +499,7 @@ extern struct command_entry umount_local_cmd_entry;
 extern struct command_entry unsetenv_cmd_entry;
 extern struct command_entry upload_cmd_entry;
 extern struct command_entry upload_offset_cmd_entry;
+extern struct command_entry user_cancel_cmd_entry;
 extern struct command_entry utimens_cmd_entry;
 extern struct command_entry utsname_cmd_entry;
 extern struct command_entry version_cmd_entry;
@@ -722,8 +733,11 @@ egrepi, &egrepi_cmd_entry
 equal, &equal_cmd_entry
 event, &event_cmd_entry
 exists, &exists_cmd_entry
+extlinux, &extlinux_cmd_entry
 fallocate, &fallocate_cmd_entry
 fallocate64, &fallocate64_cmd_entry
+feature_available, &feature_available_cmd_entry
+feature-available, &feature_available_cmd_entry
 fgrep, &fgrep_cmd_entry
 fgrepi, &fgrepi_cmd_entry
 file, &file_cmd_entry
@@ -751,6 +765,8 @@ get_attach_method, &get_attach_method_cmd_entry
 get-attach-method, &get_attach_method_cmd_entry
 get_autosync, &get_autosync_cmd_entry
 get-autosync, &get_autosync_cmd_entry
+get_backend, &get_backend_cmd_entry
+get-backend, &get_backend_cmd_entry
 get_cachedir, &get_cachedir_cmd_entry
 get-cachedir, &get_cachedir_cmd_entry
 get_direct, &get_direct_cmd_entry
@@ -782,6 +798,8 @@ get-pgroup, &get_pgroup_cmd_entry
 get_pid, &get_pid_cmd_entry
 get-pid, &get_pid_cmd_entry
 pid, &get_pid_cmd_entry
+get_program, &get_program_cmd_entry
+get-program, &get_program_cmd_entry
 get_qemu, &get_qemu_cmd_entry
 get-qemu, &get_qemu_cmd_entry
 get_recovery_proc, &get_recovery_proc_cmd_entry
@@ -930,6 +948,8 @@ is_socket, &is_socket_cmd_entry
 is-socket, &is_socket_cmd_entry
 is_symlink, &is_symlink_cmd_entry
 is-symlink, &is_symlink_cmd_entry
+is_whole_device, &is_whole_device_cmd_entry
+is-whole-device, &is_whole_device_cmd_entry
 is_zero, &is_zero_cmd_entry
 is-zero, &is_zero_cmd_entry
 is_zero_device, &is_zero_device_cmd_entry
@@ -1135,6 +1155,8 @@ part_disk, &part_disk_cmd_entry
 part-disk, &part_disk_cmd_entry
 part_get_bootable, &part_get_bootable_cmd_entry
 part-get-bootable, &part_get_bootable_cmd_entry
+part_get_gpt_type, &part_get_gpt_type_cmd_entry
+part-get-gpt-type, &part_get_gpt_type_cmd_entry
 part_get_mbr_id, &part_get_mbr_id_cmd_entry
 part-get-mbr-id, &part_get_mbr_id_cmd_entry
 part_get_parttype, &part_get_parttype_cmd_entry
@@ -1145,6 +1167,8 @@ part_list, &part_list_cmd_entry
 part-list, &part_list_cmd_entry
 part_set_bootable, &part_set_bootable_cmd_entry
 part-set-bootable, &part_set_bootable_cmd_entry
+part_set_gpt_type, &part_set_gpt_type_cmd_entry
+part-set-gpt-type, &part_set_gpt_type_cmd_entry
 part_set_mbr_id, &part_set_mbr_id_cmd_entry
 part-set-mbr-id, &part_set_mbr_id_cmd_entry
 part_set_name, &part_set_name_cmd_entry
@@ -1219,6 +1243,9 @@ attach-method, &set_attach_method_cmd_entry
 set_autosync, &set_autosync_cmd_entry
 set-autosync, &set_autosync_cmd_entry
 autosync, &set_autosync_cmd_entry
+set_backend, &set_backend_cmd_entry
+set-backend, &set_backend_cmd_entry
+backend, &set_backend_cmd_entry
 set_cachedir, &set_cachedir_cmd_entry
 set-cachedir, &set_cachedir_cmd_entry
 cachedir, &set_cachedir_cmd_entry
@@ -1251,6 +1278,9 @@ path, &set_path_cmd_entry
 set_pgroup, &set_pgroup_cmd_entry
 set-pgroup, &set_pgroup_cmd_entry
 pgroup, &set_pgroup_cmd_entry
+set_program, &set_program_cmd_entry
+set-program, &set_program_cmd_entry
+program, &set_program_cmd_entry
 set_qemu, &set_qemu_cmd_entry
 set-qemu, &set_qemu_cmd_entry
 qemu, &set_qemu_cmd_entry
@@ -1314,6 +1344,7 @@ swapon-label, &swapon_label_cmd_entry
 swapon_uuid, &swapon_uuid_cmd_entry
 swapon-uuid, &swapon_uuid_cmd_entry
 sync, &sync_cmd_entry
+syslinux, &syslinux_cmd_entry
 tail, &tail_cmd_entry
 tail_n, &tail_n_cmd_entry
 tail-n, &tail_n_cmd_entry
@@ -1352,6 +1383,8 @@ unsetenv, &unsetenv_cmd_entry
 upload, &upload_cmd_entry
 upload_offset, &upload_offset_cmd_entry
 upload-offset, &upload_offset_cmd_entry
+user_cancel, &user_cancel_cmd_entry
+user-cancel, &user_cancel_cmd_entry
 utimens, &utimens_cmd_entry
 utsname, &utsname_cmd_entry
 version, &version_cmd_entry

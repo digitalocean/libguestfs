@@ -39,14 +39,13 @@
 
 #include "guestfs.h"
 #include "guestfs-internal-frontend.h"
+#include "estimate-max-threads.h"
 
 #include "ignore-value.h"
 
 #define TOTAL_TIME 60           /* Seconds, excluding launch. */
 #define DEBUG 1                 /* Print overview debugging messages. */
-#define MIN_THREADS 2
 #define MAX_THREADS 12
-#define MBYTES_PER_THREAD 900
 
 struct thread_state {
   pthread_t thread;             /* Thread handle. */
@@ -60,10 +59,9 @@ static size_t nr_threads;
 static void *start_thread (void *) __attribute__((noreturn));
 static void test_mountpoint (const char *mp);
 static void cleanup_thread_state (void);
-static char *read_line_from (const char *cmd);
-static int unmount (const char *mp, unsigned flags);
-#define UNMOUNT_SILENT 1
-#define UNMOUNT_RMDIR  2
+static int guestunmount (const char *mp, unsigned flags);
+#define GUESTUNMOUNT_SILENT 1
+#define GUESTUNMOUNT_RMDIR  2
 
 static volatile sig_atomic_t quit = 0;
 
@@ -81,8 +79,8 @@ catch_sigint (int signal)
 int
 main (int argc, char *argv[])
 {
-  size_t i, mbytes;
-  char *skip, *mbytes_s;
+  size_t i;
+  char *skip;
   struct sigaction sa;
   int fd, r, errors = 0;
   void *status;
@@ -99,31 +97,18 @@ main (int argc, char *argv[])
   skip = getenv ("SKIP_TEST_PARALLEL_MOUNT_LOCAL");
   if (skip && STREQ (skip, "1")) {
     fprintf (stderr, "%s: test skipped because environment variable set.\n",
-             argv[0]);
+             program_name);
     exit (77);
   }
 
   if (access ("/dev/fuse", W_OK) == -1) {
     fprintf (stderr, "%s: test skipped because /dev/fuse is not writable.\n",
-             argv[0]);
+             program_name);
     exit (77);
   }
 
   /* Choose the number of threads based on the amount of free memory. */
-  mbytes_s = read_line_from ("LANG=C free -m | "
-                             "grep 'buffers/cache' | awk '{print $NF}'");
-  if (!mbytes_s)
-    nr_threads = MIN_THREADS; /* default */
-  else {
-    if (sscanf (mbytes_s, "%zu", &mbytes) != 1)
-      error (EXIT_FAILURE, 0, "expecting integer but got \"%s\"", mbytes_s);
-    free (mbytes_s);
-    nr_threads = mbytes / MBYTES_PER_THREAD;
-    if (nr_threads < MIN_THREADS)
-      nr_threads = MIN_THREADS;
-    else if (nr_threads > MAX_THREADS)
-      nr_threads = MAX_THREADS;
-  }
+  nr_threads = MIN (MAX_THREADS, estimate_max_threads ());
 
   memset (&sa, 0, sizeof sa);
   sa.sa_handler = catch_sigint;
@@ -374,8 +359,8 @@ test_mountpoint (const char *mp)
   ret = EXIT_SUCCESS;
  error:
   ignore_value (chdir (".."));
-  if (unmount (mp, 0) == -1)
-    error (EXIT_FAILURE, 0, "fusermount -u %s: failed, see earlier errors", mp);
+  if (guestunmount (mp, 0) == -1)
+    error (EXIT_FAILURE, 0, "guestunmount %s: failed, see earlier errors", mp);
 
   if (DEBUG) {
     printf ("%-8s > unmounted filesystem\n", mp);
@@ -385,49 +370,28 @@ test_mountpoint (const char *mp)
   exit (ret);
 }
 
-/* We may need to retry this a few times because of processes which
- * run in the background jumping into mountpoints.  Only display
- * errors if it still fails after many retries.
- */
 static int
-unmount (const char *mp, unsigned flags)
+guestunmount (const char *mp, unsigned flags)
 {
-  char logfile[256];
   char cmd[256];
-  int tries = 5, status, r;
+  int status, r;
 
-  if (flags & UNMOUNT_RMDIR) {
+  if (flags & GUESTUNMOUNT_RMDIR) {
     r = rmdir (mp);
     if (r == 0 || (r == -1 && errno != EBUSY && errno != ENOTCONN))
       return 0;
   }
 
-  snprintf (logfile, sizeof logfile, "%s.fusermount.tmp", mp);
-  unlink (logfile);
+  snprintf (cmd, sizeof cmd,
+            "../../fuse/guestunmount%s %s",
+            (flags & GUESTUNMOUNT_SILENT) ? " --quiet" : "", mp);
 
-  snprintf (cmd, sizeof cmd, "fusermount -u %s >> %s 2>&1", mp, logfile);
-
-  while (tries > 0) {
-    status = system (cmd);
-    if (WIFEXITED (status) && WEXITSTATUS (status) == 0)
-      break;
-    sleep (1);
-    tries--;
-  }
-
-  if (tries == 0) {             /* Failed. */
-    if (!(flags & UNMOUNT_SILENT)) {
-      fprintf (stderr, "fusermount -u %s: command failed:\n", mp);
-      snprintf (cmd, sizeof cmd, "cat %s", logfile);
-      ignore_value (system (cmd));
-    }
-    unlink (logfile);
+  status = system (cmd);
+  if (!WIFEXITED (status) ||
+      (WEXITSTATUS (status) != 0 && WEXITSTATUS (status) != 2))
     return -1;
-  }
 
-  unlink (logfile);
-
-  if (flags & UNMOUNT_RMDIR) {
+  if (flags & GUESTUNMOUNT_RMDIR) {
     if (rmdir (mp) == -1)
       return -1;
   }
@@ -448,29 +412,8 @@ cleanup_thread_state (void)
     }
 
     if (threads[i].mp) {
-      unmount (threads[i].mp, UNMOUNT_SILENT|UNMOUNT_RMDIR);
+      guestunmount (threads[i].mp, GUESTUNMOUNT_SILENT|GUESTUNMOUNT_RMDIR);
       free (threads[i].mp);
     }
   }
-}
-
-/* Run external command and read the first line of output. */
-static char *
-read_line_from (const char *cmd)
-{
-  FILE *pp;
-  char *ret = NULL;
-  size_t allocsize;
-
-  pp = popen (cmd, "r");
-  if (pp == NULL)
-    error (EXIT_FAILURE, errno, "%s: external command failed", cmd);
-
-  if (getline (&ret, &allocsize, pp) == -1)
-    error (EXIT_FAILURE, errno, "could not read line from external command");
-
-  if (pclose (pp) == -1)
-    error (EXIT_FAILURE, errno, "pclose");
-
-  return ret;
 }

@@ -42,10 +42,21 @@ L</guestfs_btrfs_subvolume_set_default>
 L</guestfs_btrfs_subvolume_snapshot>
 L</guestfs_mkfs_btrfs>
 
+=item B<extlinux>
+
+The following functions:
+L</guestfs_extlinux>
+
 =item B<fstrim>
 
 The following functions:
 L</guestfs_fstrim>
+
+=item B<gdisk>
+
+The following functions:
+L</guestfs_part_get_gpt_type>
+L</guestfs_part_set_gpt_type>
 
 =item B<grub>
 
@@ -145,7 +156,6 @@ L</guestfs_luks_open_ro>
 =item B<lvm2>
 
 The following functions:
-L</guestfs_is_lv>
 L</guestfs_lvcreate>
 L</guestfs_lvcreate_free>
 L</guestfs_lvm_remove_all>
@@ -227,6 +237,11 @@ L</guestfs_scrub_freespace>
 The following functions:
 L</guestfs_getcon>
 L</guestfs_setcon>
+
+=item B<syslinux>
+
+The following functions:
+L</guestfs_syslinux>
 
 =item B<wipefs>
 

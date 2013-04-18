@@ -1,5 +1,5 @@
 (* virt-resize
- * Copyright (C) 2010-2012 Red Hat Inc.
+ * Copyright (C) 2010-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,6 +91,7 @@ let infile, outfile, align_first, alignment, copy_boot_loader,
     "--no-extra-partition", Arg.Clear extra_partition, " " ^ s_"Don't create extra partition";
     "--format",  Arg.Set_string format,     s_"format" ^ " " ^ s_"Format of input disk";
     "--ignore",  Arg.String (add ignores),  s_"part" ^ " " ^ s_"Ignore partition";
+    "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--lv-expand", Arg.String (add lv_expands), s_"lv" ^ " " ^ s_"Expand logical volume";
     "--LV-expand", Arg.String (add lv_expands), s_"lv" ^ " -\"-";
     "--lvexpand", Arg.String (add lv_expands), s_"lv" ^ " -\"-";
@@ -109,6 +110,7 @@ let infile, outfile, align_first, alignment, copy_boot_loader,
     "-V",        Arg.Unit display_version,  " " ^ s_"Display version and exit";
     "--version", Arg.Unit display_version,  " -\"-";
   ] in
+  long_options := argspec;
   let disks = ref [] in
   let anon_fun s = disks := s :: !disks in
   let usage_msg =
@@ -175,9 +177,9 @@ read the man page virt-resize(1).
     let g = new G.guestfs () in
     g#add_drive "/dev/null";
     g#launch ();
-    if feature_available g [| "ntfsprogs"; "ntfs3g" |] then
+    if g#feature_available [| "ntfsprogs"; "ntfs3g" |] then
       printf "ntfs\n";
-    if feature_available g [| "btrfs" |] then
+    if g#feature_available [| "btrfs" |] then
       printf "btrfs\n";
     exit 0
   );
@@ -220,8 +222,8 @@ let connect_both_disks () =
   g#lvm_set_filter [|"/dev/sda"|];
 
   (* Update features available in the daemon. *)
-  ntfs_available := feature_available g [|"ntfsprogs"; "ntfs3g"|];
-  btrfs_available := feature_available g [|"btrfs"|];
+  ntfs_available := g#feature_available [|"ntfsprogs"; "ntfs3g"|];
+  btrfs_available := g#feature_available [|"btrfs"|];
 
   g
 
@@ -1033,7 +1035,7 @@ let () =
 
         (match p.p_type with
          | ContentUnknown | ContentPV _ | ContentFS _ ->
-           g#copy_device_to_device ~size:copysize source target
+           g#copy_device_to_device ~size:copysize ~sparse:true source target
 
          | ContentExtendedPartition ->
            (* You can't just copy an extended partition by name, eg.

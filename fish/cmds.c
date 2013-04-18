@@ -103,6 +103,8 @@ static int run_inspect_is_netinst (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_is_multipart (const char *cmd, size_t argc, char *argv[]);
 static int run_set_attach_method (const char *cmd, size_t argc, char *argv[]);
 static int run_get_attach_method (const char *cmd, size_t argc, char *argv[]);
+static int run_set_backend (const char *cmd, size_t argc, char *argv[]);
+static int run_get_backend (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_product_variant (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_windows_current_control_set (const char *cmd, size_t argc, char *argv[]);
 static int run_inspect_get_drive_mappings (const char *cmd, size_t argc, char *argv[]);
@@ -144,6 +146,9 @@ static int run_set_tmpdir (const char *cmd, size_t argc, char *argv[]);
 static int run_get_tmpdir (const char *cmd, size_t argc, char *argv[]);
 static int run_set_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_get_cachedir (const char *cmd, size_t argc, char *argv[]);
+static int run_user_cancel (const char *cmd, size_t argc, char *argv[]);
+static int run_set_program (const char *cmd, size_t argc, char *argv[]);
+static int run_get_program (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -519,7 +524,13 @@ static int run_ldmtool_diskgroup_disks (const char *cmd, size_t argc, char *argv
 static int run_ldmtool_volume_type (const char *cmd, size_t argc, char *argv[]);
 static int run_ldmtool_volume_hint (const char *cmd, size_t argc, char *argv[]);
 static int run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[]);
+static int run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[]);
+static int run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[]);
 static int run_rename (const char *cmd, size_t argc, char *argv[]);
+static int run_is_whole_device (const char *cmd, size_t argc, char *argv[]);
+static int run_feature_available (const char *cmd, size_t argc, char *argv[]);
+static int run_syslinux (const char *cmd, size_t argc, char *argv[]);
+static int run_extlinux (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -757,7 +768,7 @@ struct command_entry get_pid_cmd_entry = {
 
 struct command_entry version_cmd_entry = {
   .name = "version",
-  .help = "NAME\n    version - get the library version number\n\nSYNOPSIS\n     version\n\nDESCRIPTION\n    Return the libguestfs version number that the program is linked against.\n\n    Note that because of dynamic linking this is not necessarily the version\n    of libguestfs that you compiled against. You can compile the program,\n    and then at runtime dynamically link against a completely different\n    \"libguestfs.so\" library.\n\n    This call was added in version 1.0.58. In previous versions of\n    libguestfs there was no way to get the version number. From C code you\n    can use dynamic linker functions to find out if this symbol exists (if\n    it doesn't, then it's an earlier version).\n\n    The call returns a structure with four elements. The first three\n    (\"major\", \"minor\" and \"release\") are numbers and correspond to the usual\n    version triplet. The fourth element (\"extra\") is a string and is\n    normally empty, but may be used for distro-specific information.\n\n    To construct the original version string: \"$major.$minor.$release$extra\"\n\n    See also: \"LIBGUESTFS VERSION NUMBERS\" in guestfs(3).\n\n    *Note:* Don't use this call to test for availability of features. In\n    enterprise distributions we backport features from later versions into\n    earlier versions, making this an unreliable way to test for features.\n    Use \"available\" instead.\n\n",
+  .help = "NAME\n    version - get the library version number\n\nSYNOPSIS\n     version\n\nDESCRIPTION\n    Return the libguestfs version number that the program is linked against.\n\n    Note that because of dynamic linking this is not necessarily the version\n    of libguestfs that you compiled against. You can compile the program,\n    and then at runtime dynamically link against a completely different\n    \"libguestfs.so\" library.\n\n    This call was added in version 1.0.58. In previous versions of\n    libguestfs there was no way to get the version number. From C code you\n    can use dynamic linker functions to find out if this symbol exists (if\n    it doesn't, then it's an earlier version).\n\n    The call returns a structure with four elements. The first three\n    (\"major\", \"minor\" and \"release\") are numbers and correspond to the usual\n    version triplet. The fourth element (\"extra\") is a string and is\n    normally empty, but may be used for distro-specific information.\n\n    To construct the original version string: \"$major.$minor.$release$extra\"\n\n    See also: \"LIBGUESTFS VERSION NUMBERS\" in guestfs(3).\n\n    *Note:* Don't use this call to test for availability of features. In\n    enterprise distributions we backport features from later versions into\n    earlier versions, making this an unreliable way to test for features.\n    Use \"available\" or \"feature_available\" instead.\n\n",
   .run = run_version
 };
 
@@ -895,13 +906,13 @@ struct command_entry get_network_cmd_entry = {
 
 struct command_entry list_filesystems_cmd_entry = {
   .name = "list-filesystems",
-  .help = "NAME\n    list-filesystems - list filesystems\n\nSYNOPSIS\n     list-filesystems\n\nDESCRIPTION\n    This inspection command looks for filesystems on partitions, block\n    devices and logical volumes, returning a list of devices containing\n    filesystems and their type.\n\n    The return value is a hash, where the keys are the devices containing\n    filesystems, and the values are the filesystem types. For example:\n\n     \"/dev/sda1\" => \"ntfs\"\n     \"/dev/sda2\" => \"ext2\"\n     \"/dev/vg_guest/lv_root\" => \"ext4\"\n     \"/dev/vg_guest/lv_swap\" => \"swap\"\n\n    The value can have the special value \"unknown\", meaning the content of\n    the device is undetermined or empty. \"swap\" means a Linux swap\n    partition.\n\n    This command runs other libguestfs commands, which might include \"mount\"\n    and \"umount\", and therefore you should use this soon after launch and\n    only when nothing is mounted.\n\n    Not all of the filesystems returned will be mountable. In particular,\n    swap partitions are returned in the list. Also this command does not\n    check that each filesystem found is valid and mountable, and some\n    filesystems might be mountable but require special options. Filesystems\n    may not all belong to a single logical operating system (use\n    \"inspect_os\" to look for OSes).\n\n",
+  .help = "NAME\n    list-filesystems - list filesystems\n\nSYNOPSIS\n     list-filesystems\n\nDESCRIPTION\n    This inspection command looks for filesystems on partitions, block\n    devices and logical volumes, returning a list of \"mountables\" containing\n    filesystems and their type.\n\n    The return value is a hash, where the keys are the devices containing\n    filesystems, and the values are the filesystem types. For example:\n\n     \"/dev/sda1\" => \"ntfs\"\n     \"/dev/sda2\" => \"ext2\"\n     \"/dev/vg_guest/lv_root\" => \"ext4\"\n     \"/dev/vg_guest/lv_swap\" => \"swap\"\n\n    The key is not necessarily a block device. It may also be an opaque\n    'mountable' string which can be passed to \"mount\".\n\n    The value can have the special value \"unknown\", meaning the content of\n    the device is undetermined or empty. \"swap\" means a Linux swap\n    partition.\n\n    This command runs other libguestfs commands, which might include \"mount\"\n    and \"umount\", and therefore you should use this soon after launch and\n    only when nothing is mounted.\n\n    Not all of the filesystems returned will be mountable. In particular,\n    swap partitions are returned in the list. Also this command does not\n    check that each filesystem found is valid and mountable, and some\n    filesystems might be mountable but require special options. Filesystems\n    may not all belong to a single logical operating system (use\n    \"inspect_os\" to look for OSes).\n\n",
   .run = run_list_filesystems
 };
 
 struct command_entry add_drive_cmd_entry = {
   .name = "add-drive",
-  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
+  .help = "NAME\n    add-drive - add an image to examine or modify\n\nSYNOPSIS\n     add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..]\n\nDESCRIPTION\n    This function adds a disk image called \"filename\" to the handle.\n    \"filename\" may be a regular host file or a host device.\n\n    When this function is called before \"launch\" (the usual case) then the\n    first time you call this function, the disk appears in the API as\n    \"/dev/sda\", the second time as \"/dev/sdb\", and so on.\n\n    In libguestfs ≥ 1.20 you can also call this function after launch (with\n    some restrictions). This is called \"hotplugging\". When hotplugging, you\n    must specify a \"label\" so that the new disk gets a predictable name. For\n    more information see \"HOTPLUGGING\" in guestfs(3).\n\n    You don't necessarily need to be root when using libguestfs. However you\n    obviously do need sufficient permissions to access the filename for\n    whatever operations you want to perform (ie. read access if you just\n    want to read the image or write access if you want to modify the image).\n\n    This call checks that \"filename\" exists.\n\n    \"filename\" may be the special string \"/dev/null\". See \"NULL DISKS\" in\n    guestfs(3).\n\n    The optional arguments are:\n\n    \"readonly\"\n        If true then the image is treated as read-only. Writes are still\n        allowed, but they are stored in a temporary snapshot overlay which\n        is discarded at the end. The disk that you add is not modified.\n\n    \"format\"\n        This forces the image format. If you omit this (or use \"add_drive\"\n        or \"add_drive_ro\") then the format is automatically detected.\n        Possible formats include \"raw\" and \"qcow2\".\n\n        Automatic detection of the format opens you up to a potential\n        security hole when dealing with untrusted raw-format images. See\n        CVE-2010-3851 and RHBZ#642934. Specifying the format closes this\n        security hole.\n\n    \"iface\"\n        This rarely-used option lets you emulate the behaviour of the\n        deprecated \"add_drive_with_if\" call (q.v.)\n\n    \"name\"\n        The name the drive had in the original guest, e.g. \"/dev/sdb\". This\n        is used as a hint to the guest inspection process if it is\n        available.\n\n    \"label\"\n        Give the disk a label. The label should be a unique, short string\n        using *only* ASCII characters \"[a-zA-Z]\". As well as its usual name\n        in the API (such as \"/dev/sda\"), the drive will also be named\n        \"/dev/disk/guestfs/*label*\".\n\n        See \"DISK LABELS\" in guestfs(3).\n\n    \"protocol\"\n        The optional protocol argument can be used to select an alternate\n        source protocol.\n\n        See also: \"REMOTE STORAGE\" in guestfs(3).\n\n        \"protocol = \"file\"\"\n            \"filename\" is interpreted as a local file or device. This is the\n            default if the optional protocol parameter is omitted.\n\n        \"protocol = \"gluster\"\"\n            Connect to the GlusterFS server. The \"server\" parameter must\n            also be supplied - see below.\n\n            See also: \"GLUSTER\" in guestfs(3)\n\n        \"protocol = \"nbd\"\"\n            Connect to the Network Block Device server. The \"server\"\n            parameter must also be supplied - see below.\n\n            See also: \"NETWORK BLOCK DEVICE\" in guestfs(3).\n\n        \"protocol = \"rbd\"\"\n            Connect to the Ceph (librbd/RBD) server. The \"server\" parameter\n            must also be supplied - see below.\n\n            See also: \"CEPH\" in guestfs(3).\n\n        \"protocol = \"sheepdog\"\"\n            Connect to the Sheepdog server. The \"server\" parameter may also\n            be supplied - see below.\n\n            See also: \"SHEEPDOG\" in guestfs(3).\n\n        \"protocol = \"ssh\"\"\n            Connect to the Secure Shell (ssh) server.\n\n            The \"server\" parameter must be supplied. The \"username\"\n            parameter may be supplied. See below.\n\n            See also: \"SSH\" in guestfs(3).\n\n    \"server\"\n        For protocols which require access to a remote server, this is a\n        list of server(s).\n\n         Protocol       Number of servers required\n         --------       --------------------------\n         file           List must be empty or param not used at all\n         gluster        Exactly one\n         nbd            Exactly one\n         rbd            One or more\n         sheepdog       Zero or more\n         ssh            Exactly one\n\n        Each list element is a string specifying a server. The string must\n        be in one of the following formats:\n\n         hostname\n         hostname:port\n         tcp:hostname\n         tcp:hostname:port\n         unix:/path/to/socket\n\n        If the port number is omitted, then the standard port number for the\n        protocol is used (see \"/etc/services\").\n\n    \"username\"\n        For the \"ssh\" protocol only, this specifies the remote username.\n\n        If not given, then the local username is used. But note this\n        sometimes may give unexpected results, for example if using the\n        libvirt backend and if the libvirt backend is configured to start\n        the qemu appliance as a special user such as \"qemu.qemu\". If in\n        doubt, specify the remote username you want.\n\n    You can use 'add' or 'add-drive-opts' as an alias for this command.\n\n",
   .run = run_add_drive
 };
 
@@ -985,14 +996,26 @@ struct command_entry inspect_is_multipart_cmd_entry = {
 
 struct command_entry set_attach_method_cmd_entry = {
   .name = "set-attach-method",
-  .help = "NAME\n    set-attach-method - set the attach method\n\nSYNOPSIS\n     set-attach-method attachmethod\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the back end guestfsd\n    daemon.\n\n    See \"ATTACH METHOD\" in guestfs(3).\n\n    You can use 'attach-method' as an alias for this command.\n\n",
+  .help = "NAME\n    set-attach-method - set the backend\n\nSYNOPSIS\n     set-attach-method backend\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the backend guestfsd\n    daemon.\n\n    See \"BACKEND\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"set-backend\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n    You can use 'attach-method' as an alias for this command.\n\n",
   .run = run_set_attach_method
 };
 
 struct command_entry get_attach_method_cmd_entry = {
   .name = "get-attach-method",
-  .help = "NAME\n    get-attach-method - get the attach method\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current attach method.\n\n    See \"set_attach_method\" and \"ATTACH METHOD\" in guestfs(3).\n\n",
+  .help = "NAME\n    get-attach-method - get the backend\n\nSYNOPSIS\n     get-attach-method\n\nDESCRIPTION\n    Return the current backend.\n\n    See \"set_backend\" and \"BACKEND\" in guestfs(3).\n\n    *This function is deprecated.* In new code, use the \"get-backend\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_attach_method
+};
+
+struct command_entry set_backend_cmd_entry = {
+  .name = "set-backend",
+  .help = "NAME\n    set-backend - set the backend\n\nSYNOPSIS\n     set-backend backend\n\nDESCRIPTION\n    Set the method that libguestfs uses to connect to the backend guestfsd\n    daemon.\n\n    This handle property was previously called the \"attach method\".\n\n    See \"BACKEND\" in guestfs(3).\n\n    You can use 'backend' as an alias for this command.\n\n",
+  .run = run_set_backend
+};
+
+struct command_entry get_backend_cmd_entry = {
+  .name = "get-backend",
+  .help = "NAME\n    get-backend - get the backend\n\nSYNOPSIS\n     get-backend\n\nDESCRIPTION\n    Return the current backend.\n\n    This handle property was previously called the \"attach method\".\n\n    See \"set_backend\" and \"BACKEND\" in guestfs(3).\n\n",
+  .run = run_get_backend
 };
 
 struct command_entry inspect_get_product_variant_cmd_entry = {
@@ -1165,7 +1188,7 @@ struct command_entry disk_has_backing_file_cmd_entry = {
 
 struct command_entry remove_drive_cmd_entry = {
   .name = "remove-drive",
-  .help = "NAME\n    remove-drive - remove a disk image\n\nSYNOPSIS\n     remove-drive label\n\nDESCRIPTION\n    This function is conceptually the opposite of \"add_drive_opts\". It\n    removes the drive that was previously added with label \"label\".\n\n    Note that in order to remove drives, you have to add them with labels\n    (see the optional \"label\" argument to \"add_drive_opts\"). If you didn't\n    use a label, then they cannot be removed.\n\n    You can call this function before or after launching the handle. If\n    called after launch, if the attach-method supports it, we try to hot\n    unplug the drive: see \"HOTPLUGGING\" in guestfs(3). The disk must not be\n    in use (eg. mounted) when you do this. We try to detect if the disk is\n    in use and stop you from doing this.\n\n",
+  .help = "NAME\n    remove-drive - remove a disk image\n\nSYNOPSIS\n     remove-drive label\n\nDESCRIPTION\n    This function is conceptually the opposite of \"add_drive_opts\". It\n    removes the drive that was previously added with label \"label\".\n\n    Note that in order to remove drives, you have to add them with labels\n    (see the optional \"label\" argument to \"add_drive_opts\"). If you didn't\n    use a label, then they cannot be removed.\n\n    You can call this function before or after launching the handle. If\n    called after launch, if the backend supports it, we try to hot unplug\n    the drive: see \"HOTPLUGGING\" in guestfs(3). The disk must not be in use\n    (eg. mounted) when you do this. We try to detect if the disk is in use\n    and stop you from doing this.\n\n",
   .run = run_remove_drive
 };
 
@@ -1241,9 +1264,27 @@ struct command_entry get_cachedir_cmd_entry = {
   .run = run_get_cachedir
 };
 
+struct command_entry user_cancel_cmd_entry = {
+  .name = "user-cancel",
+  .help = "NAME\n    user-cancel - cancel the current upload or download operation\n\nSYNOPSIS\n     user-cancel\n\nDESCRIPTION\n    This function cancels the current upload or download operation.\n\n    Unlike most other libguestfs calls, this function is signal safe and\n    thread safe. You can call it from a signal handler or from another\n    thread, without needing to do any locking.\n\n    The transfer that was in progress (if there is one) will stop shortly\n    afterwards, and will return an error. The errno (see\n    \"guestfs_last_errno\") is set to \"EINTR\", so you can test for this to\n    find out if the operation was cancelled or failed because of another\n    error.\n\n    No cleanup is performed: for example, if a file was being uploaded then\n    after cancellation there may be a partially uploaded file. It is the\n    caller's responsibility to clean up if necessary.\n\n    There are two common places that you might call \"user_cancel\":\n\n    In an interactive text-based program, you might call it from a \"SIGINT\"\n    signal handler so that pressing \"^C\" cancels the current operation. (You\n    also need to call \"guestfs_set_pgroup\" so that child processes don't\n    receive the \"^C\" signal).\n\n    In a graphical program, when the main thread is displaying a progress\n    bar with a cancel button, wire up the cancel button to call this\n    function.\n\n",
+  .run = run_user_cancel
+};
+
+struct command_entry set_program_cmd_entry = {
+  .name = "set-program",
+  .help = "NAME\n    set-program - set the program name\n\nSYNOPSIS\n     set-program program\n\nDESCRIPTION\n    Set the program name. This is an informative string which the main\n    program may optionally set in the handle.\n\n    When the handle is created, the program name in the handle is set to the\n    basename from \"argv[0]\". If that was not possible, it is set to the\n    empty string (but never \"NULL\").\n\n    You can use 'program' as an alias for this command.\n\n",
+  .run = run_set_program
+};
+
+struct command_entry get_program_cmd_entry = {
+  .name = "get-program",
+  .help = "NAME\n    get-program - get the program name\n\nSYNOPSIS\n     get-program\n\nDESCRIPTION\n    Get the program name. See \"set_program\".\n\n",
+  .run = run_get_program
+};
+
 struct command_entry mount_cmd_entry = {
   .name = "mount",
-  .help = "NAME\n    mount - mount a guest disk at a position in the filesystem\n\nSYNOPSIS\n     mount device mountpoint\n\nDESCRIPTION\n    Mount a guest disk at a position in the filesystem. Block devices are\n    named \"/dev/sda\", \"/dev/sdb\" and so on, as they were added to the guest.\n    If those block devices contain partitions, they will have the usual\n    names (eg. \"/dev/sda1\"). Also LVM \"/dev/VG/LV\"-style names can be used.\n\n    The rules are the same as for mount(2): A filesystem must first be\n    mounted on \"/\" before others can be mounted. Other filesystems can only\n    be mounted on directories which already exist.\n\n    The mounted filesystem is writable, if we have sufficient permissions on\n    the underlying device.\n\n    Before libguestfs 1.13.16, this call implicitly added the options \"sync\"\n    and \"noatime\". The \"sync\" option greatly slowed writes and caused many\n    problems for users. If your program might need to work with older\n    versions of libguestfs, use \"mount_options\" instead (using an empty\n    string for the first parameter if you don't want any options).\n\n",
+  .help = "NAME\n    mount - mount a guest disk at a position in the filesystem\n\nSYNOPSIS\n     mount mountable mountpoint\n\nDESCRIPTION\n    Mount a guest disk at a position in the filesystem. Block devices are\n    named \"/dev/sda\", \"/dev/sdb\" and so on, as they were added to the guest.\n    If those block devices contain partitions, they will have the usual\n    names (eg. \"/dev/sda1\"). Also LVM \"/dev/VG/LV\"-style names can be used,\n    or 'mountable' strings returned by \"list_filesystems\" or\n    \"inspect_get_mountpoints\".\n\n    The rules are the same as for mount(2): A filesystem must first be\n    mounted on \"/\" before others can be mounted. Other filesystems can only\n    be mounted on directories which already exist.\n\n    The mounted filesystem is writable, if we have sufficient permissions on\n    the underlying device.\n\n    Before libguestfs 1.13.16, this call implicitly added the options \"sync\"\n    and \"noatime\". The \"sync\" option greatly slowed writes and caused many\n    problems for users. If your program might need to work with older\n    versions of libguestfs, use \"mount_options\" instead (using an empty\n    string for the first parameter if you don't want any options).\n\n",
   .run = run_mount
 };
 
@@ -1651,19 +1692,19 @@ struct command_entry tgz_out_cmd_entry = {
 
 struct command_entry mount_ro_cmd_entry = {
   .name = "mount-ro",
-  .help = "NAME\n    mount-ro - mount a guest disk, read-only\n\nSYNOPSIS\n     mount-ro device mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it mounts the filesystem\n    with the read-only (*-o ro*) flag.\n\n",
+  .help = "NAME\n    mount-ro - mount a guest disk, read-only\n\nSYNOPSIS\n     mount-ro mountable mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it mounts the filesystem\n    with the read-only (*-o ro*) flag.\n\n",
   .run = run_mount_ro
 };
 
 struct command_entry mount_options_cmd_entry = {
   .name = "mount-options",
-  .help = "NAME\n    mount-options - mount a guest disk with mount options\n\nSYNOPSIS\n     mount-options options device mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set the\n    mount options as for the mount(8) *-o* flag.\n\n    If the \"options\" parameter is an empty string, then no options are\n    passed (all options default to whatever the filesystem uses).\n\n",
+  .help = "NAME\n    mount-options - mount a guest disk with mount options\n\nSYNOPSIS\n     mount-options options mountable mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set the\n    mount options as for the mount(8) *-o* flag.\n\n    If the \"options\" parameter is an empty string, then no options are\n    passed (all options default to whatever the filesystem uses).\n\n",
   .run = run_mount_options
 };
 
 struct command_entry mount_vfs_cmd_entry = {
   .name = "mount-vfs",
-  .help = "NAME\n    mount-vfs - mount a guest disk with mount options and vfstype\n\nSYNOPSIS\n     mount-vfs options vfstype device mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set both\n    the mount options and the vfstype as for the mount(8) *-o* and *-t*\n    flags.\n\n",
+  .help = "NAME\n    mount-vfs - mount a guest disk with mount options and vfstype\n\nSYNOPSIS\n     mount-vfs options vfstype mountable mountpoint\n\nDESCRIPTION\n    This is the same as the \"mount\" command, but it allows you to set both\n    the mount options and the vfstype as for the mount(8) *-o* and *-t*\n    flags.\n\n",
   .run = run_mount_vfs
 };
 
@@ -2389,7 +2430,7 @@ struct command_entry case_sensitive_path_cmd_entry = {
 
 struct command_entry vfs_type_cmd_entry = {
   .name = "vfs-type",
-  .help = "NAME\n    vfs-type - get the Linux VFS type corresponding to a mounted device\n\nSYNOPSIS\n     vfs-type device\n\nDESCRIPTION\n    This command gets the filesystem type corresponding to the filesystem on\n    \"device\".\n\n    For most filesystems, the result is the name of the Linux VFS module\n    which would be used to mount this filesystem if you mounted it without\n    specifying the filesystem type. For example a string such as \"ext3\" or\n    \"ntfs\".\n\n",
+  .help = "NAME\n    vfs-type - get the Linux VFS type corresponding to a mounted device\n\nSYNOPSIS\n     vfs-type mountable\n\nDESCRIPTION\n    This command gets the filesystem type corresponding to the filesystem on\n    \"mountable\".\n\n    For most filesystems, the result is the name of the Linux VFS module\n    which would be used to mount this filesystem if you mounted it without\n    specifying the filesystem type. For example a string such as \"ext3\" or\n    \"ntfs\".\n\n",
   .run = run_vfs_type
 };
 
@@ -2479,7 +2520,7 @@ struct command_entry fill_cmd_entry = {
 
 struct command_entry available_cmd_entry = {
   .name = "available",
-  .help = "NAME\n    available - test availability of some parts of the API\n\nSYNOPSIS\n     available groups\n\nDESCRIPTION\n    This command is used to check the availability of some groups of\n    functionality in the appliance, which not all builds of the libguestfs\n    appliance will be able to provide.\n\n    The libguestfs groups, and the functions that those groups correspond\n    to, are listed in \"AVAILABILITY\" in guestfs(3). You can also fetch this\n    list at runtime by calling \"available_all_groups\".\n\n    The argument \"groups\" is a list of group names, eg: \"[\"inotify\",\n    \"augeas\"]\" would check for the availability of the Linux inotify\n    functions and Augeas (configuration file editing) functions.\n\n    The command returns no error if *all* requested groups are available.\n\n    It fails with an error if one or more of the requested groups is\n    unavailable in the appliance.\n\n    If an unknown group name is included in the list of groups then an error\n    is always returned.\n\n    *Notes:*\n\n    *   You must call \"launch\" before calling this function.\n\n        The reason is because we don't know what groups are supported by the\n        appliance/daemon until it is running and can be queried.\n\n    *   If a group of functions is available, this does not necessarily mean\n        that they will work. You still have to check for errors when calling\n        individual API functions even if they are available.\n\n    *   It is usually the job of distro packagers to build complete\n        functionality into the libguestfs appliance. Upstream libguestfs, if\n        built from source with all requirements satisfied, will support\n        everything.\n\n    *   This call was added in version 1.0.80. In previous versions of\n        libguestfs all you could do would be to speculatively execute a\n        command to find out if the daemon implemented it. See also\n        \"version\".\n\n    See also \"filesystem_available\".\n\n",
+  .help = "NAME\n    available - test availability of some parts of the API\n\nSYNOPSIS\n     available groups\n\nDESCRIPTION\n    This command is used to check the availability of some groups of\n    functionality in the appliance, which not all builds of the libguestfs\n    appliance will be able to provide.\n\n    The libguestfs groups, and the functions that those groups correspond\n    to, are listed in \"AVAILABILITY\" in guestfs(3). You can also fetch this\n    list at runtime by calling \"available_all_groups\".\n\n    The argument \"groups\" is a list of group names, eg: \"[\"inotify\",\n    \"augeas\"]\" would check for the availability of the Linux inotify\n    functions and Augeas (configuration file editing) functions.\n\n    The command returns no error if *all* requested groups are available.\n\n    It fails with an error if one or more of the requested groups is\n    unavailable in the appliance.\n\n    If an unknown group name is included in the list of groups then an error\n    is always returned.\n\n    *Notes:*\n\n    *   \"feature_available\" is the same as this call, but with a slightly\n        simpler to use API: that call returns a boolean true/false instead\n        of throwing an error.\n\n    *   You must call \"launch\" before calling this function.\n\n        The reason is because we don't know what groups are supported by the\n        appliance/daemon until it is running and can be queried.\n\n    *   If a group of functions is available, this does not necessarily mean\n        that they will work. You still have to check for errors when calling\n        individual API functions even if they are available.\n\n    *   It is usually the job of distro packagers to build complete\n        functionality into the libguestfs appliance. Upstream libguestfs, if\n        built from source with all requirements satisfied, will support\n        everything.\n\n    *   This call was added in version 1.0.80. In previous versions of\n        libguestfs all you could do would be to speculatively execute a\n        command to find out if the daemon implemented it. See also\n        \"version\".\n\n    See also \"filesystem_available\".\n\n",
   .run = run_available
 };
 
@@ -2677,7 +2718,7 @@ struct command_entry ntfsresize_size_cmd_entry = {
 
 struct command_entry available_all_groups_cmd_entry = {
   .name = "available-all-groups",
-  .help = "NAME\n    available-all-groups - return a list of all optional groups\n\nSYNOPSIS\n     available-all-groups\n\nDESCRIPTION\n    This command returns a list of all optional groups that this daemon\n    knows about. Note this returns both supported and unsupported groups. To\n    find out which ones the daemon can actually support you have to call\n    \"available\" on each member of the returned list.\n\n    See also \"available\" and \"AVAILABILITY\" in guestfs(3).\n\n",
+  .help = "NAME\n    available-all-groups - return a list of all optional groups\n\nSYNOPSIS\n     available-all-groups\n\nDESCRIPTION\n    This command returns a list of all optional groups that this daemon\n    knows about. Note this returns both supported and unsupported groups. To\n    find out which ones the daemon can actually support you have to call\n    \"available\" / \"feature_available\" on each member of the returned list.\n\n    See also \"available\", \"feature_available\" and \"AVAILABILITY\" in\n    guestfs(3).\n\n",
   .run = run_available_all_groups
 };
 
@@ -2689,13 +2730,13 @@ struct command_entry fallocate64_cmd_entry = {
 
 struct command_entry vfs_label_cmd_entry = {
   .name = "vfs-label",
-  .help = "NAME\n    vfs-label - get the filesystem label\n\nSYNOPSIS\n     vfs-label device\n\nDESCRIPTION\n    This returns the filesystem label of the filesystem on \"device\".\n\n    If the filesystem is unlabeled, this returns the empty string.\n\n    To find a filesystem from the label, use \"findfs_label\".\n\n",
+  .help = "NAME\n    vfs-label - get the filesystem label\n\nSYNOPSIS\n     vfs-label mountable\n\nDESCRIPTION\n    This returns the label of the filesystem on \"mountable\".\n\n    If the filesystem is unlabeled, this returns the empty string.\n\n    To find a filesystem from the label, use \"findfs_label\".\n\n",
   .run = run_vfs_label
 };
 
 struct command_entry vfs_uuid_cmd_entry = {
   .name = "vfs-uuid",
-  .help = "NAME\n    vfs-uuid - get the filesystem UUID\n\nSYNOPSIS\n     vfs-uuid device\n\nDESCRIPTION\n    This returns the filesystem UUID of the filesystem on \"device\".\n\n    If the filesystem does not have a UUID, this returns the empty string.\n\n    To find a filesystem from the UUID, use \"findfs_uuid\".\n\n",
+  .help = "NAME\n    vfs-uuid - get the filesystem UUID\n\nSYNOPSIS\n     vfs-uuid mountable\n\nDESCRIPTION\n    This returns the filesystem UUID of the filesystem on \"mountable\".\n\n    If the filesystem does not have a UUID, this returns the empty string.\n\n    To find a filesystem from the UUID, use \"findfs_uuid\".\n\n",
   .run = run_vfs_uuid
 };
 
@@ -2923,25 +2964,25 @@ struct command_entry part_to_partnum_cmd_entry = {
 
 struct command_entry copy_device_to_device_cmd_entry = {
   .name = "copy-device-to-device",
-  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n",
+  .help = "NAME\n    copy-device-to-device - copy from source device to destination device\n\nSYNOPSIS\n     copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    The four calls \"copy_device_to_device\", \"copy_device_to_file\",\n    \"copy_file_to_device\", and \"copy_file_to_file\" let you copy from a\n    source (device|file) to a destination (device|file).\n\n    Partial copies can be made since you can specify optionally the source\n    offset, destination offset and size to copy. These values are all\n    specified in bytes. If not given, the offsets both default to zero, and\n    the size defaults to copying as much as possible until we hit the end of\n    the source.\n\n    The source and destination may be the same object. However overlapping\n    regions may not be copied correctly.\n\n    If the destination is a file, it is created if required. If the\n    destination file is not large enough, it is extended.\n\n    If the \"sparse\" flag is true then the call avoids writing blocks that\n    contain only zeroes, which can help in some situations where the backing\n    disk is thin-provisioned. Note that unless the target is already zeroed,\n    using this option will result in incorrect copying.\n\n",
   .run = run_copy_device_to_device
 };
 
 struct command_entry copy_device_to_file_cmd_entry = {
   .name = "copy-device-to-file",
-  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .help = "NAME\n    copy-device-to-file - copy from source device to destination file\n\nSYNOPSIS\n     copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
   .run = run_copy_device_to_file
 };
 
 struct command_entry copy_file_to_device_cmd_entry = {
   .name = "copy-file-to-device",
-  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
+  .help = "NAME\n    copy-file-to-device - copy from source file to destination device\n\nSYNOPSIS\n     copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n",
   .run = run_copy_file_to_device
 };
 
 struct command_entry copy_file_to_file_cmd_entry = {
   .name = "copy-file-to-file",
-  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
+  .help = "NAME\n    copy-file-to-file - copy from source file to destination file\n\nSYNOPSIS\n     copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]\n\nDESCRIPTION\n    See \"copy_device_to_device\" for a general overview of this call.\n\n    This is not the function you want for copying files. This is for copying\n    blocks within existing files. See \"cp\", \"cp_a\" and \"mv\" for general file\n    copying and moving functions.\n\n",
   .run = run_copy_file_to_file
 };
 
@@ -3019,7 +3060,7 @@ struct command_entry ntfsclone_in_cmd_entry = {
 
 struct command_entry set_label_cmd_entry = {
   .name = "set-label",
-  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label device label\n\nDESCRIPTION\n    Set the filesystem label on \"device\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    On ext2/3/4 filesystems, labels are limited to 16 bytes.\n\n    On NTFS filesystems, labels are limited to 128 unicode characters.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    On ext2/3/4 filesystems, labels are limited to 16 bytes.\n\n    On NTFS filesystems, labels are limited to 128 unicode characters.\n\n    Setting the label on a btrfs subvolume will set the label on its parent\n    filesystem.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
   .run = run_set_label
 };
 
@@ -3157,7 +3198,7 @@ struct command_entry btrfs_fsck_cmd_entry = {
 
 struct command_entry filesystem_available_cmd_entry = {
   .name = "filesystem-available",
-  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be mounted, since\n    filesystems can fail for other reasons such as it being a later version\n    of the filesystem, or having incompatible features.\n\n    See also \"available\", \"AVAILABILITY\" in guestfs(3).\n\n",
+  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be mounted, since\n    filesystems can fail for other reasons such as it being a later version\n    of the filesystem, or having incompatible features.\n\n    See also \"available\", \"feature_available\", \"AVAILABILITY\" in guestfs(3).\n\n",
   .run = run_filesystem_available
 };
 
@@ -3491,10 +3532,46 @@ struct command_entry ldmtool_volume_partitions_cmd_entry = {
   .run = run_ldmtool_volume_partitions
 };
 
+struct command_entry part_set_gpt_type_cmd_entry = {
+  .name = "part-set-gpt-type",
+  .help = "NAME\n    part-set-gpt-type - set the type GUID of a GPT partition\n\nSYNOPSIS\n     part-set-gpt-type device partnum guid\n\nDESCRIPTION\n    Set the type GUID of numbered GPT partition \"partnum\" to \"guid\". Return\n    an error if the partition table of \"device\" isn't GPT, or if \"guid\" is\n    not a valid GUID.\n\n    See\n    <http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>\n    for a useful list of type GUIDs.\n\n",
+  .run = run_part_set_gpt_type
+};
+
+struct command_entry part_get_gpt_type_cmd_entry = {
+  .name = "part-get-gpt-type",
+  .help = "NAME\n    part-get-gpt-type - get the type GUID of a GPT partition\n\nSYNOPSIS\n     part-get-gpt-type device partnum\n\nDESCRIPTION\n    Return the type GUID of numbered GPT partition \"partnum\". For MBR\n    partitions, return an appropriate GUID corresponding to the MBR type.\n    Behaviour is undefined for other partition types.\n\n",
+  .run = run_part_get_gpt_type
+};
+
 struct command_entry rename_cmd_entry = {
   .name = "rename",
   .help = "NAME\n    rename - rename a file on the same filesystem\n\nSYNOPSIS\n     rename oldpath newpath\n\nDESCRIPTION\n    Rename a file to a new place on the same filesystem. This is the same as\n    the Linux rename(2) system call. In most cases you are better to use\n    \"mv\" instead.\n\n",
   .run = run_rename
+};
+
+struct command_entry is_whole_device_cmd_entry = {
+  .name = "is-whole-device",
+  .help = "NAME\n    is-whole-device - test if a device is a whole device\n\nSYNOPSIS\n     is-whole-device device\n\nDESCRIPTION\n    This returns \"true\" if and only if \"device\" refers to a whole block\n    device. That is, not a partition or a logical device.\n\n",
+  .run = run_is_whole_device
+};
+
+struct command_entry feature_available_cmd_entry = {
+  .name = "feature-available",
+  .help = "NAME\n    feature-available - test availability of some parts of the API\n\nSYNOPSIS\n     feature-available groups\n\nDESCRIPTION\n    This is the same as \"available\", but unlike that call it returns a\n    simple true/false boolean result, instead of throwing an exception if a\n    feature is not found. For other documentation see \"available\".\n\n",
+  .run = run_feature_available
+};
+
+struct command_entry syslinux_cmd_entry = {
+  .name = "syslinux",
+  .help = "NAME\n    syslinux - install the SYSLINUX bootloader\n\nSYNOPSIS\n     syslinux device [directory:..]\n\nDESCRIPTION\n    Install the SYSLINUX bootloader on \"device\".\n\n    The device parameter must be either a whole disk formatted as a FAT\n    filesystem, or a partition formatted as a FAT filesystem. In the latter\n    case, the partition should be marked as \"active\" (\"part_set_bootable\")\n    and a Master Boot Record must be installed (eg. using \"pwrite_device\")\n    on the first sector of the whole disk. The SYSLINUX package comes with\n    some suitable Master Boot Records. See the syslinux(1) man page for\n    further information.\n\n    The optional arguments are:\n\n    \"directory\"\n        Install SYSLINUX in the named subdirectory, instead of in the root\n        directory of the FAT filesystem.\n\n    Additional configuration can be supplied to SYSLINUX by placing a file\n    called \"syslinux.cfg\" on the FAT filesystem, either in the root\n    directory, or under \"directory\" if that optional argument is being used.\n    For further information about the contents of this file, see\n    syslinux(1).\n\n    See also \"extlinux\".\n\n",
+  .run = run_syslinux
+};
+
+struct command_entry extlinux_cmd_entry = {
+  .name = "extlinux",
+  .help = "NAME\n    extlinux - install the SYSLINUX bootloader on an ext2/3/4 or btrfs\n    filesystem\n\nSYNOPSIS\n     extlinux directory\n\nDESCRIPTION\n    Install the SYSLINUX bootloader on the device mounted at \"directory\".\n    Unlike \"syslinux\" which requires a FAT filesystem, this can be used on\n    an ext2/3/4 or btrfs filesystem.\n\n    The \"directory\" parameter can be either a mountpoint, or a directory\n    within the mountpoint.\n\n    You also have to mark the partition as \"active\" (\"part_set_bootable\")\n    and a Master Boot Record must be installed (eg. using \"pwrite_device\")\n    on the first sector of the whole disk. The SYSLINUX package comes with\n    some suitable Master Boot Records. See the extlinux(1) man page for\n    further information.\n\n    Additional configuration can be supplied to SYSLINUX by placing a file\n    called \"extlinux.conf\" on the filesystem under \"directory\". For further\n    information about the contents of this file, see extlinux(1).\n\n    See also \"syslinux\".\n\n",
+  .run = run_extlinux
 };
 
 void
@@ -3604,8 +3681,10 @@ list_commands (void)
   printf ("%-20s %s\n", "equal", _("test if two files have equal contents"));
   printf ("%-20s %s\n", "event", _("register a handler for an event or events"));
   printf ("%-20s %s\n", "exists", _("test if file or directory exists"));
+  printf ("%-20s %s\n", "extlinux", _("install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem"));
   printf ("%-20s %s\n", "fallocate", _("preallocate a file in the guest filesystem"));
   printf ("%-20s %s\n", "fallocate64", _("preallocate a file in the guest filesystem"));
+  printf ("%-20s %s\n", "feature-available", _("test availability of some parts of the API"));
   printf ("%-20s %s\n", "fgrep", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "fgrepi", _("return lines matching a pattern"));
   printf ("%-20s %s\n", "file", _("determine file type"));
@@ -3622,8 +3701,9 @@ list_commands (void)
   printf ("%-20s %s\n", "fsck", _("run the filesystem checker"));
   printf ("%-20s %s\n", "fstrim", _("trim free space in a filesystem"));
   printf ("%-20s %s\n", "get-append", _("get the additional kernel options"));
-  printf ("%-20s %s\n", "get-attach-method", _("get the attach method"));
+  printf ("%-20s %s\n", "get-attach-method", _("get the backend"));
   printf ("%-20s %s\n", "get-autosync", _("get autosync mode"));
+  printf ("%-20s %s\n", "get-backend", _("get the backend"));
   printf ("%-20s %s\n", "get-cachedir", _("get the appliance cache directory"));
   printf ("%-20s %s\n", "get-direct", _("get direct appliance mode flag"));
   printf ("%-20s %s\n", "get-e2attrs", _("get ext2 file attributes of a file"));
@@ -3639,6 +3719,7 @@ list_commands (void)
   printf ("%-20s %s\n", "get-path", _("get the search path"));
   printf ("%-20s %s\n", "get-pgroup", _("get process group flag"));
   printf ("%-20s %s\n", "get-pid", _("get PID of qemu subprocess"));
+  printf ("%-20s %s\n", "get-program", _("get the program name"));
   printf ("%-20s %s\n", "get-qemu", _("get the qemu binary"));
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
@@ -3717,6 +3798,7 @@ list_commands (void)
   printf ("%-20s %s\n", "is-lv", _("test if device is a logical volume"));
   printf ("%-20s %s\n", "is-socket", _("test if socket"));
   printf ("%-20s %s\n", "is-symlink", _("test if symbolic link"));
+  printf ("%-20s %s\n", "is-whole-device", _("test if a device is a whole device"));
   printf ("%-20s %s\n", "is-zero", _("test if a file contains all zero bytes"));
   printf ("%-20s %s\n", "is-zero-device", _("test if a device contains all zero bytes"));
   printf ("%-20s %s\n", "isoinfo", _("get ISO information from primary volume descriptor of ISO file"));
@@ -3837,11 +3919,13 @@ list_commands (void)
   printf ("%-20s %s\n", "part-del", _("delete a partition"));
   printf ("%-20s %s\n", "part-disk", _("partition whole disk with a single primary partition"));
   printf ("%-20s %s\n", "part-get-bootable", _("return true if a partition is bootable"));
+  printf ("%-20s %s\n", "part-get-gpt-type", _("get the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-get-mbr-id", _("get the MBR type byte (ID byte) from a partition"));
   printf ("%-20s %s\n", "part-get-parttype", _("get the partition table type"));
   printf ("%-20s %s\n", "part-init", _("create an empty partition table"));
   printf ("%-20s %s\n", "part-list", _("list partitions on a device"));
   printf ("%-20s %s\n", "part-set-bootable", _("make a partition bootable"));
+  printf ("%-20s %s\n", "part-set-gpt-type", _("set the type GUID of a GPT partition"));
   printf ("%-20s %s\n", "part-set-mbr-id", _("set the MBR type byte (ID byte) of a partition"));
   printf ("%-20s %s\n", "part-set-name", _("set partition name"));
   printf ("%-20s %s\n", "part-to-dev", _("convert partition name to device name"));
@@ -3885,8 +3969,9 @@ list_commands (void)
   printf ("%-20s %s\n", "scrub-file", _("scrub (securely wipe) a file"));
   printf ("%-20s %s\n", "scrub-freespace", _("scrub (securely wipe) free space"));
   printf ("%-20s %s\n", "set-append", _("add options to kernel command line"));
-  printf ("%-20s %s\n", "set-attach-method", _("set the attach method"));
+  printf ("%-20s %s\n", "set-attach-method", _("set the backend"));
   printf ("%-20s %s\n", "set-autosync", _("set autosync mode"));
+  printf ("%-20s %s\n", "set-backend", _("set the backend"));
   printf ("%-20s %s\n", "set-cachedir", _("set the appliance cache directory"));
   printf ("%-20s %s\n", "set-direct", _("enable or disable direct appliance mode"));
   printf ("%-20s %s\n", "set-e2attrs", _("set ext2 file attributes of a file"));
@@ -3900,6 +3985,7 @@ list_commands (void)
   printf ("%-20s %s\n", "set-network", _("set enable network flag"));
   printf ("%-20s %s\n", "set-path", _("set the search path"));
   printf ("%-20s %s\n", "set-pgroup", _("set process group flag"));
+  printf ("%-20s %s\n", "set-program", _("set the program name"));
   printf ("%-20s %s\n", "set-qemu", _("set the qemu binary"));
   printf ("%-20s %s\n", "set-recovery-proc", _("enable or disable the recovery process"));
   printf ("%-20s %s\n", "set-selinux", _("set SELinux enabled or disabled at appliance boot"));
@@ -3935,6 +4021,7 @@ list_commands (void)
   printf ("%-20s %s\n", "swapon-label", _("enable swap on labeled swap partition"));
   printf ("%-20s %s\n", "swapon-uuid", _("enable swap on swap partition by UUID"));
   printf ("%-20s %s\n", "sync", _("sync disks, writes are flushed through to the disk image"));
+  printf ("%-20s %s\n", "syslinux", _("install the SYSLINUX bootloader"));
   printf ("%-20s %s\n", "tail", _("return last 10 lines of a file"));
   printf ("%-20s %s\n", "tail-n", _("return last N lines of a file"));
   printf ("%-20s %s\n", "tar-in", _("unpack tarfile to directory"));
@@ -3956,6 +4043,7 @@ list_commands (void)
   printf ("%-20s %s\n", "unsetenv", _("unset an environment variable"));
   printf ("%-20s %s\n", "upload", _("upload a file from the local machine"));
   printf ("%-20s %s\n", "upload-offset", _("upload a file from the local machine with offset"));
+  printf ("%-20s %s\n", "user-cancel", _("cancel the current upload or download operation"));
   printf ("%-20s %s\n", "utimens", _("set timestamp of a file with nanosecond precision"));
   printf ("%-20s %s\n", "utsname", _("appliance kernel version"));
   printf ("%-20s %s\n", "version", _("get the library version number"));
@@ -4776,11 +4864,16 @@ run_set_autosync (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  autosync = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_autosync;
+    case 0:  autosync = 0; break;
+    default: autosync = 1;
+  }
   r = guestfs_set_autosync (g, autosync);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_autosync:
  out_noargs:
   return ret;
 }
@@ -4818,11 +4911,16 @@ run_set_verbose (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  verbose = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_verbose;
+    case 0:  verbose = 0; break;
+    default: verbose = 1;
+  }
   r = guestfs_set_verbose (g, verbose);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_verbose:
  out_noargs:
   return ret;
 }
@@ -4982,11 +5080,16 @@ run_set_selinux (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  selinux = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_selinux;
+    case 0:  selinux = 0; break;
+    default: selinux = 1;
+  }
   r = guestfs_set_selinux (g, selinux);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_selinux:
  out_noargs:
   return ret;
 }
@@ -5024,11 +5127,16 @@ run_set_trace (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  trace = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_trace;
+    case 0:  trace = 0; break;
+    default: trace = 1;
+  }
   r = guestfs_set_trace (g, trace);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_trace:
  out_noargs:
   return ret;
 }
@@ -5066,11 +5174,16 @@ run_set_direct (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  direct = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_direct;
+    case 0:  direct = 0; break;
+    default: direct = 1;
+  }
   r = guestfs_set_direct (g, direct);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_direct:
  out_noargs:
   return ret;
 }
@@ -5108,11 +5221,16 @@ run_set_recovery_proc (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  recoveryproc = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_recoveryproc;
+    case 0:  recoveryproc = 0; break;
+    default: recoveryproc = 1;
+  }
   r = guestfs_set_recovery_proc (g, recoveryproc);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_recoveryproc:
  out_noargs:
   return ret;
 }
@@ -5436,11 +5554,16 @@ run_set_network (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  network = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_network;
+    case 0:  network = 0; break;
+    default: network = 1;
+  }
   r = guestfs_set_network (g, network);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_network:
  out_noargs:
   return ret;
 }
@@ -5496,8 +5619,8 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 1 || argc > 6) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 6);
+  if (argc < 1 || argc > 9) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 9);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -5508,7 +5631,11 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      optargs_s.readonly = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.readonly = 0; break;
+        default: optargs_s.readonly = 1;
+      }
       this_mask = GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK;
       this_arg = "readonly";
     }
@@ -5532,6 +5659,22 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
       this_arg = "label";
     }
+    else if (STRPREFIX (argv[i], "protocol:")) {
+      optargs_s.protocol = &argv[i][9];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+      this_arg = "protocol";
+    }
+    else if (STRPREFIX (argv[i], "server:")) {
+      optargs_s.server = parse_string_list (&argv[i][7]);
+      if (optargs_s.server == NULL) goto out;
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+      this_arg = "server";
+    }
+    else if (STRPREFIX (argv[i], "username:")) {
+      optargs_s.username = &argv[i][9];
+      this_mask = GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+      this_arg = "username";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -5550,6 +5693,9 @@ run_add_drive (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) &&
+      optargs_s.server != NULL)
+    guestfs___free_string_list ((char **) optargs_s.server);
  out_noargs:
   return ret;
 }
@@ -5647,7 +5793,11 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "libvirturi";
     }
     else if (STRPREFIX (argv[i], "readonly:")) {
-      optargs_s.readonly = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.readonly = 0; break;
+        default: optargs_s.readonly = 1;
+      }
       this_mask = GUESTFS_ADD_DOMAIN_READONLY_BITMASK;
       this_arg = "readonly";
     }
@@ -5657,12 +5807,20 @@ run_add_domain (const char *cmd, size_t argc, char *argv[])
       this_arg = "iface";
     }
     else if (STRPREFIX (argv[i], "live:")) {
-      optargs_s.live = is_true (&argv[i][5]) ? 1 : 0;
+      switch (is_true (&argv[i][5])) {
+        case -1: goto out;
+        case 0:  optargs_s.live = 0; break;
+        default: optargs_s.live = 1;
+      }
       this_mask = GUESTFS_ADD_DOMAIN_LIVE_BITMASK;
       this_arg = "live";
     }
     else if (STRPREFIX (argv[i], "allowuuid:")) {
-      optargs_s.allowuuid = is_true (&argv[i][10]) ? 1 : 0;
+      switch (is_true (&argv[i][10])) {
+        case -1: goto out;
+        case 0:  optargs_s.allowuuid = 0; break;
+        default: optargs_s.allowuuid = 1;
+      }
       this_mask = GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK;
       this_arg = "allowuuid";
     }
@@ -5912,7 +6070,7 @@ run_set_attach_method (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *attachmethod;
+  const char *backend;
   size_t i = 0;
 
   if (argc != 1) {
@@ -5920,8 +6078,8 @@ run_set_attach_method (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  attachmethod = argv[i++];
-  r = guestfs_set_attach_method (g, attachmethod);
+  backend = argv[i++];
+  r = guestfs_set_attach_method (g, backend);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -5941,6 +6099,49 @@ run_get_attach_method (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   r = guestfs_get_attach_method (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_backend (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *backend;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  backend = argv[i++];
+  r = guestfs_set_backend (g, backend);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_backend (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_backend (g);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -6045,12 +6246,20 @@ run_inspect_get_icon (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "favicon:")) {
-      optargs_s.favicon = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.favicon = 0; break;
+        default: optargs_s.favicon = 1;
+      }
       this_mask = GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK;
       this_arg = "favicon";
     }
     else if (STRPREFIX (argv[i], "highquality:")) {
-      optargs_s.highquality = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.highquality = 0; break;
+        default: optargs_s.highquality = 1;
+      }
       this_mask = GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK;
       this_arg = "highquality";
     }
@@ -6095,11 +6304,16 @@ run_set_pgroup (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  pgroup = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_pgroup;
+    case 0:  pgroup = 0; break;
+    default: pgroup = 1;
+  }
   r = guestfs_set_pgroup (g, pgroup);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_pgroup:
  out_noargs:
   return ret;
 }
@@ -6207,7 +6421,11 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "readonly:")) {
-      optargs_s.readonly = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.readonly = 0; break;
+        default: optargs_s.readonly = 1;
+      }
       this_mask = GUESTFS_MOUNT_LOCAL_READONLY_BITMASK;
       this_arg = "readonly";
     }
@@ -6240,7 +6458,11 @@ run_mount_local (const char *cmd, size_t argc, char *argv[])
       this_arg = "cachetimeout";
     }
     else if (STRPREFIX (argv[i], "debugcalls:")) {
-      optargs_s.debugcalls = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.debugcalls = 0; break;
+        default: optargs_s.debugcalls = 1;
+      }
       this_mask = GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK;
       this_arg = "debugcalls";
     }
@@ -6305,7 +6527,11 @@ run_umount_local (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "retry:")) {
-      optargs_s.retry = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.retry = 0; break;
+        default: optargs_s.retry = 1;
+      }
       this_mask = GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK;
       this_arg = "retry";
     }
@@ -7173,11 +7399,72 @@ run_get_cachedir (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_user_cancel (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_user_cancel (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_program (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *program;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  program = argv[i++];
+  r = guestfs_set_program (g, program);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_program (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  const char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_program (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_mount (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -7186,9 +7473,9 @@ run_mount (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -7619,11 +7906,16 @@ run_aug_insert (const char *cmd, size_t argc, char *argv[])
   }
   augpath = argv[i++];
   label = argv[i++];
-  before = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_before;
+    case 0:  before = 0; break;
+    default: before = 1;
+  }
   r = guestfs_aug_insert (g, augpath, label, before);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_before:
  out_noargs:
   return ret;
 }
@@ -8332,12 +8624,20 @@ run_umount (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_UMOUNT_OPTS_FORCE_BITMASK;
       this_arg = "force";
     }
     else if (STRPREFIX (argv[i], "lazyunmount:")) {
-      optargs_s.lazyunmount = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazyunmount = 0; break;
+        default: optargs_s.lazyunmount = 1;
+      }
       this_mask = GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK;
       this_arg = "lazyunmount";
     }
@@ -9031,7 +9331,11 @@ run_tar_out (const char *cmd, size_t argc, char *argv[])
       this_arg = "compress";
     }
     else if (STRPREFIX (argv[i], "numericowner:")) {
-      optargs_s.numericowner = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.numericowner = 0; break;
+        default: optargs_s.numericowner = 1;
+      }
       this_mask = GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
       this_arg = "numericowner";
     }
@@ -9133,7 +9437,7 @@ run_mount_ro (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -9142,9 +9446,9 @@ run_mount_ro (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -9158,7 +9462,7 @@ run_mount_options (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   const char *options;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -9168,9 +9472,9 @@ run_mount_options (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   options = argv[i++];
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -9185,7 +9489,7 @@ run_mount_vfs (const char *cmd, size_t argc, char *argv[])
   int r;
   const char *options;
   const char *vfstype;
-  const char *device;
+  const char *mountable;
   const char *mountpoint;
   size_t i = 0;
 
@@ -9196,9 +9500,9 @@ run_mount_vfs (const char *cmd, size_t argc, char *argv[])
   }
   options = argv[i++];
   vfstype = argv[i++];
-  device = argv[i++];
+  mountable = argv[i++];
   mountpoint = argv[i++];
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -9993,11 +10297,16 @@ run_vg_activate_all (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  activate = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_activate;
+    case 0:  activate = 0; break;
+    default: activate = 1;
+  }
   r = guestfs_vg_activate_all (g, activate);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_activate:
  out_noargs:
   return ret;
 }
@@ -10016,7 +10325,11 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  activate = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_activate;
+    case 0:  activate = 0; break;
+    default: activate = 1;
+  }
   volgroups = parse_string_list (argv[i++]);
   if (volgroups == NULL) goto out_volgroups;
   r = guestfs_vg_activate (g, activate, volgroups);
@@ -10025,6 +10338,7 @@ run_vg_activate (const char *cmd, size_t argc, char *argv[])
  out:
   guestfs___free_string_list (volgroups);
  out_volgroups:
+ out_activate:
  out_noargs:
   return ret;
 }
@@ -10171,13 +10485,18 @@ run_ntfs_3g_probe (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  rw = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_rw;
+    case 0:  rw = 0; break;
+    default: rw = 1;
+  }
   device = argv[i++];
   r = guestfs_ntfs_3g_probe (g, rw, device);
   if (r == -1) goto out;
   ret = 0;
   printf ("%d\n", r);
  out:
+ out_rw:
  out_noargs:
   return ret;
 }
@@ -11543,22 +11862,38 @@ run_grep (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extended:")) {
-      optargs_s.extended = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.extended = 0; break;
+        default: optargs_s.extended = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_EXTENDED_BITMASK;
       this_arg = "extended";
     }
     else if (STRPREFIX (argv[i], "fixed:")) {
-      optargs_s.fixed = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.fixed = 0; break;
+        default: optargs_s.fixed = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_FIXED_BITMASK;
       this_arg = "fixed";
     }
     else if (STRPREFIX (argv[i], "insensitive:")) {
-      optargs_s.insensitive = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.insensitive = 0; break;
+        default: optargs_s.insensitive = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK;
       this_arg = "insensitive";
     }
     else if (STRPREFIX (argv[i], "compressed:")) {
-      optargs_s.compressed = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.compressed = 0; break;
+        default: optargs_s.compressed = 1;
+      }
       this_mask = GUESTFS_GREP_OPTS_COMPRESSED_BITMASK;
       this_arg = "compressed";
     }
@@ -12985,7 +13320,7 @@ run_vfs_type (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   char *r;
-  const char *device;
+  const char *mountable;
   size_t i = 0;
 
   if (argc != 1) {
@@ -12993,8 +13328,8 @@ run_vfs_type (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
-  r = guestfs_vfs_type (g, device);
+  mountable = argv[i++];
+  r = guestfs_vfs_type (g, mountable);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -13472,11 +13807,16 @@ run_part_set_bootable (const char *cmd, size_t argc, char *argv[])
     /* The check above should ensure this assignment does not overflow. */
     partnum = r;
   }
-  bootable = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_bootable;
+    case 0:  bootable = 0; break;
+    default: bootable = 1;
+  }
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_bootable:
  out_partnum:
  out_noargs:
   return ret;
@@ -14788,7 +15128,7 @@ run_vfs_label (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   char *r;
-  const char *device;
+  const char *mountable;
   size_t i = 0;
 
   if (argc != 1) {
@@ -14796,8 +15136,8 @@ run_vfs_label (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
-  r = guestfs_vfs_label (g, device);
+  mountable = argv[i++];
+  r = guestfs_vfs_label (g, mountable);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -14812,7 +15152,7 @@ run_vfs_uuid (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   char *r;
-  const char *device;
+  const char *mountable;
   size_t i = 0;
 
   if (argc != 1) {
@@ -14820,8 +15160,8 @@ run_vfs_uuid (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
-  r = guestfs_vfs_uuid (g, device);
+  mountable = argv[i++];
+  r = guestfs_vfs_uuid (g, mountable);
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
@@ -16019,7 +16359,11 @@ run_ntfsresize (const char *cmd, size_t argc, char *argv[])
       this_arg = "size";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK;
       this_arg = "force";
     }
@@ -16291,8 +16635,8 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16354,6 +16698,15 @@ run_copy_device_to_device (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
       this_arg = "size";
     }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+      this_arg = "sparse";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -16387,8 +16740,8 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16451,6 +16804,15 @@ run_copy_device_to_file (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       this_arg = "size";
     }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+      this_arg = "sparse";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -16486,8 +16848,8 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16550,6 +16912,15 @@ run_copy_file_to_device (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
       this_arg = "size";
     }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+      this_arg = "sparse";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -16585,8 +16956,8 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc < 2 || argc > 5) {
-    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 5);
+  if (argc < 2 || argc > 6) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 2, 6);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
@@ -16650,6 +17021,15 @@ run_copy_file_to_file (const char *cmd, size_t argc, char *argv[])
       this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       this_arg = "size";
     }
+    else if (STRPREFIX (argv[i], "sparse:")) {
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparse = 0; break;
+        default: optargs_s.sparse = 1;
+      }
+      this_mask = GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+      this_arg = "sparse";
+    }
     else {
       fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
                cmd, argv[i]);
@@ -16698,7 +17078,11 @@ run_tune2fs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_TUNE2FS_FORCE_BITMASK;
       this_arg = "force";
     }
@@ -17123,12 +17507,20 @@ run_e2fsck (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "correct:")) {
-      optargs_s.correct = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.correct = 0; break;
+        default: optargs_s.correct = 1;
+      }
       this_mask = GUESTFS_E2FSCK_CORRECT_BITMASK;
       this_arg = "correct";
     }
     else if (STRPREFIX (argv[i], "forceall:")) {
-      optargs_s.forceall = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.forceall = 0; break;
+        default: optargs_s.forceall = 1;
+      }
       this_mask = GUESTFS_E2FSCK_FORCEALL_BITMASK;
       this_arg = "forceall";
     }
@@ -17225,7 +17617,11 @@ run_ntfsfix (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clearbadsectors:")) {
-      optargs_s.clearbadsectors = is_true (&argv[i][16]) ? 1 : 0;
+      switch (is_true (&argv[i][16])) {
+        case -1: goto out;
+        case 0:  optargs_s.clearbadsectors = 0; break;
+        default: optargs_s.clearbadsectors = 1;
+      }
       this_mask = GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK;
       this_arg = "clearbadsectors";
     }
@@ -17276,27 +17672,47 @@ run_ntfsclone_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "metadataonly:")) {
-      optargs_s.metadataonly = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.metadataonly = 0; break;
+        default: optargs_s.metadataonly = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK;
       this_arg = "metadataonly";
     }
     else if (STRPREFIX (argv[i], "rescue:")) {
-      optargs_s.rescue = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.rescue = 0; break;
+        default: optargs_s.rescue = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK;
       this_arg = "rescue";
     }
     else if (STRPREFIX (argv[i], "ignorefscheck:")) {
-      optargs_s.ignorefscheck = is_true (&argv[i][14]) ? 1 : 0;
+      switch (is_true (&argv[i][14])) {
+        case -1: goto out;
+        case 0:  optargs_s.ignorefscheck = 0; break;
+        default: optargs_s.ignorefscheck = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK;
       this_arg = "ignorefscheck";
     }
     else if (STRPREFIX (argv[i], "preservetimestamps:")) {
-      optargs_s.preservetimestamps = is_true (&argv[i][19]) ? 1 : 0;
+      switch (is_true (&argv[i][19])) {
+        case -1: goto out;
+        case 0:  optargs_s.preservetimestamps = 0; break;
+        default: optargs_s.preservetimestamps = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK;
       this_arg = "preservetimestamps";
     }
     else if (STRPREFIX (argv[i], "force:")) {
-      optargs_s.force = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.force = 0; break;
+        default: optargs_s.force = 1;
+      }
       this_mask = GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK;
       this_arg = "force";
     }
@@ -17356,7 +17772,7 @@ run_set_label (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *device;
+  const char *mountable;
   const char *label;
   size_t i = 0;
 
@@ -17365,9 +17781,9 @@ run_set_label (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  device = argv[i++];
+  mountable = argv[i++];
   label = argv[i++];
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -17765,7 +18181,11 @@ run_set_e2attrs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "clear:")) {
-      optargs_s.clear = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.clear = 0; break;
+        default: optargs_s.clear = 1;
+      }
       this_mask = GUESTFS_SET_E2ATTRS_CLEAR_BITMASK;
       this_arg = "clear";
     }
@@ -18131,11 +18551,16 @@ run_btrfs_set_seeding (const char *cmd, size_t argc, char *argv[])
     goto out_noargs;
   }
   device = argv[i++];
-  seeding = is_true (argv[i++]) ? 1 : 0;
+  switch (is_true (argv[i++])) {
+    case -1: goto out_seeding;
+    case 0:  seeding = 0; break;
+    default: seeding = 1;
+  }
   r = guestfs_btrfs_set_seeding (g, device, seeding);
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_seeding:
  out_noargs:
   return ret;
 }
@@ -18179,7 +18604,11 @@ run_btrfs_fsck (const char *cmd, size_t argc, char *argv[])
       this_arg = "superblock";
     }
     else if (STRPREFIX (argv[i], "repair:")) {
-      optargs_s.repair = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.repair = 0; break;
+        default: optargs_s.repair = 1;
+      }
       this_mask = GUESTFS_BTRFS_FSCK_REPAIR_BITMASK;
       this_arg = "repair";
     }
@@ -18521,17 +18950,29 @@ run_xfs_growfs (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "datasec:")) {
-      optargs_s.datasec = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.datasec = 0; break;
+        default: optargs_s.datasec = 1;
+      }
       this_mask = GUESTFS_XFS_GROWFS_DATASEC_BITMASK;
       this_arg = "datasec";
     }
     else if (STRPREFIX (argv[i], "logsec:")) {
-      optargs_s.logsec = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.logsec = 0; break;
+        default: optargs_s.logsec = 1;
+      }
       this_mask = GUESTFS_XFS_GROWFS_LOGSEC_BITMASK;
       this_arg = "logsec";
     }
     else if (STRPREFIX (argv[i], "rtsec:")) {
-      optargs_s.rtsec = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.rtsec = 0; break;
+        default: optargs_s.rtsec = 1;
+      }
       this_mask = GUESTFS_XFS_GROWFS_RTSEC_BITMASK;
       this_arg = "rtsec";
     }
@@ -18676,12 +19117,20 @@ run_rsync (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.archive = 0; break;
+        default: optargs_s.archive = 1;
+      }
       this_mask = GUESTFS_RSYNC_ARCHIVE_BITMASK;
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.deletedest = 0; break;
+        default: optargs_s.deletedest = 1;
+      }
       this_mask = GUESTFS_RSYNC_DELETEDEST_BITMASK;
       this_arg = "deletedest";
     }
@@ -18736,12 +19185,20 @@ run_rsync_in (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.archive = 0; break;
+        default: optargs_s.archive = 1;
+      }
       this_mask = GUESTFS_RSYNC_IN_ARCHIVE_BITMASK;
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.deletedest = 0; break;
+        default: optargs_s.deletedest = 1;
+      }
       this_mask = GUESTFS_RSYNC_IN_DELETEDEST_BITMASK;
       this_arg = "deletedest";
     }
@@ -18794,12 +19251,20 @@ run_rsync_out (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "archive:")) {
-      optargs_s.archive = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.archive = 0; break;
+        default: optargs_s.archive = 1;
+      }
       this_mask = GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK;
       this_arg = "archive";
     }
     else if (STRPREFIX (argv[i], "deletedest:")) {
-      optargs_s.deletedest = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.deletedest = 0; break;
+        default: optargs_s.deletedest = 1;
+      }
       this_mask = GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK;
       this_arg = "deletedest";
     }
@@ -18925,27 +19390,47 @@ run_xfs_admin (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "extunwritten:")) {
-      optargs_s.extunwritten = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.extunwritten = 0; break;
+        default: optargs_s.extunwritten = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK;
       this_arg = "extunwritten";
     }
     else if (STRPREFIX (argv[i], "imgfile:")) {
-      optargs_s.imgfile = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.imgfile = 0; break;
+        default: optargs_s.imgfile = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_IMGFILE_BITMASK;
       this_arg = "imgfile";
     }
     else if (STRPREFIX (argv[i], "v2log:")) {
-      optargs_s.v2log = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.v2log = 0; break;
+        default: optargs_s.v2log = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_V2LOG_BITMASK;
       this_arg = "v2log";
     }
     else if (STRPREFIX (argv[i], "projid32bit:")) {
-      optargs_s.projid32bit = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.projid32bit = 0; break;
+        default: optargs_s.projid32bit = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK;
       this_arg = "projid32bit";
     }
     else if (STRPREFIX (argv[i], "lazycounter:")) {
-      optargs_s.lazycounter = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazycounter = 0; break;
+        default: optargs_s.lazycounter = 1;
+      }
       this_mask = GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK;
       this_arg = "lazycounter";
     }
@@ -19004,17 +19489,29 @@ run_hivex_open (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "verbose:")) {
-      optargs_s.verbose = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.verbose = 0; break;
+        default: optargs_s.verbose = 1;
+      }
       this_mask = GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK;
       this_arg = "verbose";
     }
     else if (STRPREFIX (argv[i], "debug:")) {
-      optargs_s.debug = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.debug = 0; break;
+        default: optargs_s.debug = 1;
+      }
       this_mask = GUESTFS_HIVEX_OPEN_DEBUG_BITMASK;
       this_arg = "debug";
     }
     else if (STRPREFIX (argv[i], "write:")) {
-      optargs_s.write = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.write = 0; break;
+        default: optargs_s.write = 1;
+      }
       this_mask = GUESTFS_HIVEX_OPEN_WRITE_BITMASK;
       this_arg = "write";
     }
@@ -19595,22 +20092,38 @@ run_xfs_repair (const char *cmd, size_t argc, char *argv[])
     const char *this_arg;
 
     if (STRPREFIX (argv[i], "forcelogzero:")) {
-      optargs_s.forcelogzero = is_true (&argv[i][13]) ? 1 : 0;
+      switch (is_true (&argv[i][13])) {
+        case -1: goto out;
+        case 0:  optargs_s.forcelogzero = 0; break;
+        default: optargs_s.forcelogzero = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK;
       this_arg = "forcelogzero";
     }
     else if (STRPREFIX (argv[i], "nomodify:")) {
-      optargs_s.nomodify = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.nomodify = 0; break;
+        default: optargs_s.nomodify = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK;
       this_arg = "nomodify";
     }
     else if (STRPREFIX (argv[i], "noprefetch:")) {
-      optargs_s.noprefetch = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.noprefetch = 0; break;
+        default: optargs_s.noprefetch = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK;
       this_arg = "noprefetch";
     }
     else if (STRPREFIX (argv[i], "forcegeometry:")) {
-      optargs_s.forcegeometry = is_true (&argv[i][14]) ? 1 : 0;
+      switch (is_true (&argv[i][14])) {
+        case -1: goto out;
+        case 0:  optargs_s.forcegeometry = 0; break;
+        default: optargs_s.forcegeometry = 1;
+      }
       this_mask = GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK;
       this_arg = "forcegeometry";
     }
@@ -20049,87 +20562,155 @@ run_mke2fs (const char *cmd, size_t argc, char *argv[])
       this_arg = "uuid";
     }
     else if (STRPREFIX (argv[i], "forcecreate:")) {
-      optargs_s.forcecreate = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.forcecreate = 0; break;
+        default: optargs_s.forcecreate = 1;
+      }
       this_mask = GUESTFS_MKE2FS_FORCECREATE_BITMASK;
       this_arg = "forcecreate";
     }
     else if (STRPREFIX (argv[i], "writesbandgrouponly:")) {
-      optargs_s.writesbandgrouponly = is_true (&argv[i][20]) ? 1 : 0;
+      switch (is_true (&argv[i][20])) {
+        case -1: goto out;
+        case 0:  optargs_s.writesbandgrouponly = 0; break;
+        default: optargs_s.writesbandgrouponly = 1;
+      }
       this_mask = GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK;
       this_arg = "writesbandgrouponly";
     }
     else if (STRPREFIX (argv[i], "lazyitableinit:")) {
-      optargs_s.lazyitableinit = is_true (&argv[i][15]) ? 1 : 0;
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazyitableinit = 0; break;
+        default: optargs_s.lazyitableinit = 1;
+      }
       this_mask = GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK;
       this_arg = "lazyitableinit";
     }
     else if (STRPREFIX (argv[i], "lazyjournalinit:")) {
-      optargs_s.lazyjournalinit = is_true (&argv[i][16]) ? 1 : 0;
+      switch (is_true (&argv[i][16])) {
+        case -1: goto out;
+        case 0:  optargs_s.lazyjournalinit = 0; break;
+        default: optargs_s.lazyjournalinit = 1;
+      }
       this_mask = GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK;
       this_arg = "lazyjournalinit";
     }
     else if (STRPREFIX (argv[i], "testfs:")) {
-      optargs_s.testfs = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.testfs = 0; break;
+        default: optargs_s.testfs = 1;
+      }
       this_mask = GUESTFS_MKE2FS_TESTFS_BITMASK;
       this_arg = "testfs";
     }
     else if (STRPREFIX (argv[i], "discard:")) {
-      optargs_s.discard = is_true (&argv[i][8]) ? 1 : 0;
+      switch (is_true (&argv[i][8])) {
+        case -1: goto out;
+        case 0:  optargs_s.discard = 0; break;
+        default: optargs_s.discard = 1;
+      }
       this_mask = GUESTFS_MKE2FS_DISCARD_BITMASK;
       this_arg = "discard";
     }
     else if (STRPREFIX (argv[i], "quotatype:")) {
-      optargs_s.quotatype = is_true (&argv[i][10]) ? 1 : 0;
+      switch (is_true (&argv[i][10])) {
+        case -1: goto out;
+        case 0:  optargs_s.quotatype = 0; break;
+        default: optargs_s.quotatype = 1;
+      }
       this_mask = GUESTFS_MKE2FS_QUOTATYPE_BITMASK;
       this_arg = "quotatype";
     }
     else if (STRPREFIX (argv[i], "extent:")) {
-      optargs_s.extent = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.extent = 0; break;
+        default: optargs_s.extent = 1;
+      }
       this_mask = GUESTFS_MKE2FS_EXTENT_BITMASK;
       this_arg = "extent";
     }
     else if (STRPREFIX (argv[i], "filetype:")) {
-      optargs_s.filetype = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.filetype = 0; break;
+        default: optargs_s.filetype = 1;
+      }
       this_mask = GUESTFS_MKE2FS_FILETYPE_BITMASK;
       this_arg = "filetype";
     }
     else if (STRPREFIX (argv[i], "flexbg:")) {
-      optargs_s.flexbg = is_true (&argv[i][7]) ? 1 : 0;
+      switch (is_true (&argv[i][7])) {
+        case -1: goto out;
+        case 0:  optargs_s.flexbg = 0; break;
+        default: optargs_s.flexbg = 1;
+      }
       this_mask = GUESTFS_MKE2FS_FLEXBG_BITMASK;
       this_arg = "flexbg";
     }
     else if (STRPREFIX (argv[i], "hasjournal:")) {
-      optargs_s.hasjournal = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.hasjournal = 0; break;
+        default: optargs_s.hasjournal = 1;
+      }
       this_mask = GUESTFS_MKE2FS_HASJOURNAL_BITMASK;
       this_arg = "hasjournal";
     }
     else if (STRPREFIX (argv[i], "journaldev:")) {
-      optargs_s.journaldev = is_true (&argv[i][11]) ? 1 : 0;
+      switch (is_true (&argv[i][11])) {
+        case -1: goto out;
+        case 0:  optargs_s.journaldev = 0; break;
+        default: optargs_s.journaldev = 1;
+      }
       this_mask = GUESTFS_MKE2FS_JOURNALDEV_BITMASK;
       this_arg = "journaldev";
     }
     else if (STRPREFIX (argv[i], "largefile:")) {
-      optargs_s.largefile = is_true (&argv[i][10]) ? 1 : 0;
+      switch (is_true (&argv[i][10])) {
+        case -1: goto out;
+        case 0:  optargs_s.largefile = 0; break;
+        default: optargs_s.largefile = 1;
+      }
       this_mask = GUESTFS_MKE2FS_LARGEFILE_BITMASK;
       this_arg = "largefile";
     }
     else if (STRPREFIX (argv[i], "quota:")) {
-      optargs_s.quota = is_true (&argv[i][6]) ? 1 : 0;
+      switch (is_true (&argv[i][6])) {
+        case -1: goto out;
+        case 0:  optargs_s.quota = 0; break;
+        default: optargs_s.quota = 1;
+      }
       this_mask = GUESTFS_MKE2FS_QUOTA_BITMASK;
       this_arg = "quota";
     }
     else if (STRPREFIX (argv[i], "resizeinode:")) {
-      optargs_s.resizeinode = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.resizeinode = 0; break;
+        default: optargs_s.resizeinode = 1;
+      }
       this_mask = GUESTFS_MKE2FS_RESIZEINODE_BITMASK;
       this_arg = "resizeinode";
     }
     else if (STRPREFIX (argv[i], "sparsesuper:")) {
-      optargs_s.sparsesuper = is_true (&argv[i][12]) ? 1 : 0;
+      switch (is_true (&argv[i][12])) {
+        case -1: goto out;
+        case 0:  optargs_s.sparsesuper = 0; break;
+        default: optargs_s.sparsesuper = 1;
+      }
       this_mask = GUESTFS_MKE2FS_SPARSESUPER_BITMASK;
       this_arg = "sparsesuper";
     }
     else if (STRPREFIX (argv[i], "uninitbg:")) {
-      optargs_s.uninitbg = is_true (&argv[i][9]) ? 1 : 0;
+      switch (is_true (&argv[i][9])) {
+        case -1: goto out;
+        case 0:  optargs_s.uninitbg = 0; break;
+        default: optargs_s.uninitbg = 1;
+      }
       this_mask = GUESTFS_MKE2FS_UNINITBG_BITMASK;
       this_arg = "uninitbg";
     }
@@ -20670,6 +21251,96 @@ run_ldmtool_volume_partitions (const char *cmd, size_t argc, char *argv[])
 }
 
 static int
+run_part_set_gpt_type (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  int partnum;
+  const char *guid;
+  size_t i = 0;
+
+  if (argc != 3) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  guid = argv[i++];
+  r = guestfs_part_set_gpt_type (g, device, partnum, guid);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_part_get_gpt_type (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+  const char *device;
+  int partnum;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "partnum", "xstrtoll", xerr);
+      goto out_partnum;
+    }
+    /* The Int type in the generator is a signed 31 bit int. */
+    if (r < (-(2LL<<30)) || r > ((2LL<<30)-1)) {
+      fprintf (stderr, _("%s: %s: integer out of range\n"), cmd, "partnum");
+      goto out_partnum;
+    }
+    /* The check above should ensure this assignment does not overflow. */
+    partnum = r;
+  }
+  r = guestfs_part_get_gpt_type (g, device, partnum);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
+ out:
+ out_partnum:
+ out_noargs:
+  return ret;
+}
+
+static int
 run_rename (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
@@ -20695,6 +21366,128 @@ run_rename (const char *cmd, size_t argc, char *argv[])
  out_newpath:
   free (oldpath);
  out_oldpath:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_is_whole_device (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  r = guestfs_is_whole_device (g, device);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_feature_available (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char **groups;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  groups = parse_string_list (argv[i++]);
+  if (groups == NULL) goto out_groups;
+  r = guestfs_feature_available (g, groups);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
+  guestfs___free_string_list (groups);
+ out_groups:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_syslinux (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "directory:")) {
+      optargs_s.directory = &argv[i][10];
+      this_mask = GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+      this_arg = "directory";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_extlinux (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_extlinux (g, directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (directory);
+ out_directory:
  out_noargs:
   return ret;
 }

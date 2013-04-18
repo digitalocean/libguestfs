@@ -25,11 +25,15 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
 
 check_PROGRAMS = $(TESTS)
 
-test_parallel_mount_local_SOURCES = test-parallel-mount-local.c
+test_parallel_mount_local_SOURCES = \
+	test-parallel-mount-local.c \
+	$(top_srcdir)/df/estimate-max-threads.c \
+	$(top_srcdir)/df/estimate-max-threads.h
 test_parallel_mount_local_CPPFLAGS = \
 	-DGUESTFS_WARN_DEPRECATED=1 \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
-	-I$(top_srcdir)/src -I$(top_builddir)/src
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/df
 test_parallel_mount_local_CFLAGS = \
 	-pthread \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \

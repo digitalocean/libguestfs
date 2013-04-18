@@ -25,13 +25,13 @@
 #include <unistd.h>
 #include <locale.h>
 #include <getopt.h>
+#include <errno.h>
 #include <assert.h>
 #include <libintl.h>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <utime.h>
 
-#include "progname.h"
 #include "xvasprintf.h"
 #include "c-ctype.h"
 
@@ -57,7 +57,6 @@ static void edit (const char *filename, const char *root);
 static char *edit_interactively (const char *tmpfile);
 static char *edit_non_interactively (const char *tmpfile);
 static int copy_attributes (const char *src, const char *dest);
-static int feature_available (guestfs_h *g, const char *feature);
 static int is_windows (guestfs_h *g, const char *root);
 static char *windows_path (guestfs_h *g, const char *root, const char *filename);
 static char *generate_random_name (const char *filename);
@@ -99,9 +98,6 @@ usage (int status)
 int
 main (int argc, char *argv[])
 {
-  /* Set global program name that is not polluted with libtool artifacts.  */
-  set_program_name (argv[0]);
-
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
@@ -122,6 +118,7 @@ main (int argc, char *argv[])
     { "format", 2, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
     { "keys-from-stdin", 0, 0, 0 },
+    { "long-options", 0, 0, 0 },
     { "verbose", 0, 0, 'v' },
     { "version", 0, 0, 'V' },
     { 0, 0, 0, 0 }
@@ -138,15 +135,15 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  argv[0] = (char *) program_name;
-
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
+      if (STREQ (long_options[option_index].name, "long-options"))
+        display_long_options (long_options);
+      else if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
         keys_from_stdin = 1;
       } else if (STREQ (long_options[option_index].name, "echo-keys")) {
         echo_keys = 1;
@@ -510,11 +507,12 @@ static int
 copy_attributes (const char *src, const char *dest)
 {
   CLEANUP_FREE_STAT struct guestfs_stat *stat = NULL;
+  const char *linuxxattrs[] = { "linuxxattrs", NULL };
   int has_linuxxattrs;
   CLEANUP_FREE char *selinux_context = NULL;
   size_t selinux_context_size;
 
-  has_linuxxattrs = feature_available (g, "linuxxattrs");
+  has_linuxxattrs = guestfs_feature_available (g, (char **) linuxxattrs);
 
   /* Get the mode. */
   stat = guestfs_stat (g, src);
@@ -548,22 +546,6 @@ copy_attributes (const char *src, const char *dest)
   }
 
   return 0;
-}
-
-static int
-feature_available (guestfs_h *g, const char *feature)
-{
-  /* If there's an error we should ignore it, so to do that we have to
-   * temporarily replace the error handler with a null one.
-   */
-  guestfs_push_error_handler (g, NULL, NULL);
-
-  const char *groups[] = { feature, NULL };
-  int r = guestfs_available (g, (char * const *) groups);
-
-  guestfs_pop_error_handler (g);
-
-  return r == 0 ? 1 : 0;
 }
 
 static int

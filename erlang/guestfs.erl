@@ -118,8 +118,10 @@
 -export([egrepi/3]).
 -export([equal/3]).
 -export([exists/2]).
+-export([extlinux/2]).
 -export([fallocate/3]).
 -export([fallocate64/3]).
+-export([feature_available/2]).
 -export([fgrep/3]).
 -export([fgrepi/3]).
 -export([file/2]).
@@ -138,6 +140,7 @@
 -export([get_append/1]).
 -export([get_attach_method/1]).
 -export([get_autosync/1]).
+-export([get_backend/1]).
 -export([get_cachedir/1]).
 -export([get_direct/1]).
 -export([get_e2attrs/2]).
@@ -153,6 +156,7 @@
 -export([get_path/1]).
 -export([get_pgroup/1]).
 -export([get_pid/1]).
+-export([get_program/1]).
 -export([get_qemu/1]).
 -export([get_recovery_proc/1]).
 -export([get_selinux/1]).
@@ -261,6 +265,7 @@
 -export([is_ready/1]).
 -export([is_socket/2]).
 -export([is_symlink/2]).
+-export([is_whole_device/2]).
 -export([is_zero/2]).
 -export([is_zero_device/2]).
 -export([isoinfo/2]).
@@ -380,11 +385,13 @@
 -export([part_del/3]).
 -export([part_disk/3]).
 -export([part_get_bootable/3]).
+-export([part_get_gpt_type/3]).
 -export([part_get_mbr_id/3]).
 -export([part_get_parttype/2]).
 -export([part_init/3]).
 -export([part_list/2]).
 -export([part_set_bootable/4]).
+-export([part_set_gpt_type/4]).
 -export([part_set_mbr_id/4]).
 -export([part_set_name/4]).
 -export([part_to_dev/2]).
@@ -429,6 +436,7 @@
 -export([set_append/2]).
 -export([set_attach_method/2]).
 -export([set_autosync/2]).
+-export([set_backend/2]).
 -export([set_cachedir/2]).
 -export([set_direct/2]).
 -export([set_e2attrs/3, set_e2attrs/4]).
@@ -442,6 +450,7 @@
 -export([set_network/2]).
 -export([set_path/2]).
 -export([set_pgroup/2]).
+-export([set_program/2]).
 -export([set_qemu/2]).
 -export([set_recovery_proc/2]).
 -export([set_selinux/2]).
@@ -474,6 +483,7 @@
 -export([swapon_label/2]).
 -export([swapon_uuid/2]).
 -export([sync/1]).
+-export([syslinux/2, syslinux/3]).
 -export([tail/2]).
 -export([tail_n/3]).
 -export([tar_in/3, tar_in/4]).
@@ -496,6 +506,7 @@
 -export([umount_local/1, umount_local/2]).
 -export([upload/3]).
 -export([upload_offset/4]).
+-export([user_cancel/1]).
 -export([utimens/6]).
 -export([utsname/1]).
 -export([version/1]).
@@ -886,11 +897,17 @@ equal(G, File1, File2) ->
 exists(G, Path) ->
   call_port(G, {exists, Path}).
 
+extlinux(G, Directory) ->
+  call_port(G, {extlinux, Directory}).
+
 fallocate(G, Path, Len) ->
   call_port(G, {fallocate, Path, Len}).
 
 fallocate64(G, Path, Len) ->
   call_port(G, {fallocate64, Path, Len}).
+
+feature_available(G, Groups) ->
+  call_port(G, {feature_available, Groups}).
 
 fgrep(G, Pattern, Path) ->
   call_port(G, {fgrep, Pattern, Path}).
@@ -948,6 +965,9 @@ get_attach_method(G) ->
 get_autosync(G) ->
   call_port(G, {get_autosync}).
 
+get_backend(G) ->
+  call_port(G, {get_backend}).
+
 get_cachedir(G) ->
   call_port(G, {get_cachedir}).
 
@@ -992,6 +1012,9 @@ get_pgroup(G) ->
 
 get_pid(G) ->
   call_port(G, {get_pid}).
+
+get_program(G) ->
+  call_port(G, {get_program}).
 
 get_qemu(G) ->
   call_port(G, {get_qemu}).
@@ -1330,6 +1353,9 @@ is_socket(G, Path) ->
 is_symlink(G, Path) ->
   call_port(G, {is_symlink, Path}).
 
+is_whole_device(G, Device) ->
+  call_port(G, {is_whole_device, Device}).
+
 is_zero(G, Path) ->
   call_port(G, {is_zero, Path}).
 
@@ -1626,8 +1652,8 @@ mktemp(G, Tmpl) ->
 modprobe(G, Modulename) ->
   call_port(G, {modprobe, Modulename}).
 
-mount(G, Device, Mountpoint) ->
-  call_port(G, {mount, Device, Mountpoint}).
+mount(G, Mountable, Mountpoint) ->
+  call_port(G, {mount, Mountable, Mountpoint}).
 
 mount_9p(G, Mounttag, Mountpoint, Optargs) ->
   call_port(G, {mount_9p, Mounttag, Mountpoint, Optargs}).
@@ -1645,14 +1671,14 @@ mount_local_run(G) ->
 mount_loop(G, File, Mountpoint) ->
   call_port(G, {mount_loop, File, Mountpoint}).
 
-mount_options(G, Options, Device, Mountpoint) ->
-  call_port(G, {mount_options, Options, Device, Mountpoint}).
+mount_options(G, Options, Mountable, Mountpoint) ->
+  call_port(G, {mount_options, Options, Mountable, Mountpoint}).
 
-mount_ro(G, Device, Mountpoint) ->
-  call_port(G, {mount_ro, Device, Mountpoint}).
+mount_ro(G, Mountable, Mountpoint) ->
+  call_port(G, {mount_ro, Mountable, Mountpoint}).
 
-mount_vfs(G, Options, Vfstype, Device, Mountpoint) ->
-  call_port(G, {mount_vfs, Options, Vfstype, Device, Mountpoint}).
+mount_vfs(G, Options, Vfstype, Mountable, Mountpoint) ->
+  call_port(G, {mount_vfs, Options, Vfstype, Mountable, Mountpoint}).
 
 mountpoints(G) ->
   call_port(G, {mountpoints}).
@@ -1712,6 +1738,9 @@ part_disk(G, Device, Parttype) ->
 part_get_bootable(G, Device, Partnum) ->
   call_port(G, {part_get_bootable, Device, Partnum}).
 
+part_get_gpt_type(G, Device, Partnum) ->
+  call_port(G, {part_get_gpt_type, Device, Partnum}).
+
 part_get_mbr_id(G, Device, Partnum) ->
   call_port(G, {part_get_mbr_id, Device, Partnum}).
 
@@ -1726,6 +1755,9 @@ part_list(G, Device) ->
 
 part_set_bootable(G, Device, Partnum, Bootable) ->
   call_port(G, {part_set_bootable, Device, Partnum, Bootable}).
+
+part_set_gpt_type(G, Device, Partnum, Guid) ->
+  call_port(G, {part_set_gpt_type, Device, Partnum, Guid}).
 
 part_set_mbr_id(G, Device, Partnum, Idbyte) ->
   call_port(G, {part_set_mbr_id, Device, Partnum, Idbyte}).
@@ -1859,11 +1891,14 @@ scrub_freespace(G, Dir) ->
 set_append(G, Append) ->
   call_port(G, {set_append, Append}).
 
-set_attach_method(G, Attachmethod) ->
-  call_port(G, {set_attach_method, Attachmethod}).
+set_attach_method(G, Backend) ->
+  call_port(G, {set_attach_method, Backend}).
 
 set_autosync(G, Autosync) ->
   call_port(G, {set_autosync, Autosync}).
+
+set_backend(G, Backend) ->
+  call_port(G, {set_backend, Backend}).
 
 set_cachedir(G, Cachedir) ->
   call_port(G, {set_cachedir, Cachedir}).
@@ -1885,8 +1920,8 @@ set_e2label(G, Device, Label) ->
 set_e2uuid(G, Device, Uuid) ->
   call_port(G, {set_e2uuid, Device, Uuid}).
 
-set_label(G, Device, Label) ->
-  call_port(G, {set_label, Device, Label}).
+set_label(G, Mountable, Label) ->
+  call_port(G, {set_label, Mountable, Label}).
 
 set_libvirt_requested_credential(G, Index, Cred) ->
   call_port(G, {set_libvirt_requested_credential, Index, Cred}).
@@ -1905,6 +1940,9 @@ set_path(G, Searchpath) ->
 
 set_pgroup(G, Pgroup) ->
   call_port(G, {set_pgroup, Pgroup}).
+
+set_program(G, Program) ->
+  call_port(G, {set_program, Program}).
 
 set_qemu(G, Qemu) ->
   call_port(G, {set_qemu, Qemu}).
@@ -2002,6 +2040,11 @@ swapon_uuid(G, Uuid) ->
 sync(G) ->
   call_port(G, {sync}).
 
+syslinux(G, Device, Optargs) ->
+  call_port(G, {syslinux, Device, Optargs}).
+syslinux(G, Device) ->
+  syslinux(G, Device, []).
+
 tail(G, Path) ->
   call_port(G, {tail, Path}).
 
@@ -2081,6 +2124,9 @@ upload(G, Filename, Remotefilename) ->
 upload_offset(G, Filename, Remotefilename, Offset) ->
   call_port(G, {upload_offset, Filename, Remotefilename, Offset}).
 
+user_cancel(G) ->
+  call_port(G, {user_cancel}).
+
 utimens(G, Path, Atsecs, Atnsecs, Mtsecs, Mtnsecs) ->
   call_port(G, {utimens, Path, Atsecs, Atnsecs, Mtsecs, Mtnsecs}).
 
@@ -2090,14 +2136,14 @@ utsname(G) ->
 version(G) ->
   call_port(G, {version}).
 
-vfs_label(G, Device) ->
-  call_port(G, {vfs_label, Device}).
+vfs_label(G, Mountable) ->
+  call_port(G, {vfs_label, Mountable}).
 
-vfs_type(G, Device) ->
-  call_port(G, {vfs_type, Device}).
+vfs_type(G, Mountable) ->
+  call_port(G, {vfs_type, Mountable}).
 
-vfs_uuid(G, Device) ->
-  call_port(G, {vfs_uuid, Device}).
+vfs_uuid(G, Mountable) ->
+  call_port(G, {vfs_uuid, Mountable}).
 
 vg_activate(G, Activate, Volgroups) ->
   call_port(G, {vg_activate, Activate, Volgroups}).

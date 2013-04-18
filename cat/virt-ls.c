@@ -25,13 +25,13 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <locale.h>
 #include <assert.h>
 #include <time.h>
 #include <libintl.h>
 
 #include "human.h"
-#include "progname.h"
 
 #include "guestfs.h"
 #include "options.h"
@@ -130,9 +130,6 @@ main (int argc, char *argv[])
   /* Current time for --time-days, --time-relative output. */
   time (&now);
 
-  /* Set global program name that is not polluted with libtool artifacts.  */
-  set_program_name (argv[0]);
-
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
@@ -155,6 +152,7 @@ main (int argc, char *argv[])
     { "human-readable", 0, 0, 'h' },
     { "keys-from-stdin", 0, 0, 0 },
     { "long", 0, 0, 'l' },
+    { "long-options", 0, 0, 0 },
     { "recursive", 0, 0, 'R' },
     { "time", 0, 0, 0 },
     { "times", 0, 0, 0 },
@@ -183,15 +181,15 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  argv[0] = (char *) program_name;
-
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
+      if (STREQ (long_options[option_index].name, "long-options"))
+        display_long_options (long_options);
+      else if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
         keys_from_stdin = 1;
       } else if (STREQ (long_options[option_index].name, "echo-keys")) {
         echo_keys = 1;

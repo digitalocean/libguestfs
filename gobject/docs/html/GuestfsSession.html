@@ -409,6 +409,9 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionEven
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-exists" title="guestfs_session_exists ()">guestfs_session_exists</a>              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-extlinux" title="guestfs_session_extlinux ()">guestfs_session_extlinux</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-fallocate" title="guestfs_session_fallocate ()">guestfs_session_fallocate</a>           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">gint32</span> len</code></em>,
@@ -416,6 +419,9 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionEven
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-fallocate64" title="guestfs_session_fallocate64 ()">guestfs_session_fallocate64</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">gint64</span> len</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()">guestfs_session_feature_available</a>   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *groups</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> **            <a class="link" href="GuestfsSession.html#guestfs-session-fgrep" title="guestfs_session_fgrep ()">guestfs_session_fgrep</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *pattern</code></em>,
@@ -480,6 +486,8 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-get-autosync" title="guestfs_session_get_autosync ()">guestfs_session_get_autosync</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-backend" title="guestfs_session_get_backend ()">guestfs_session_get_backend</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-cachedir" title="guestfs_session_get_cachedir ()">guestfs_session_get_cachedir</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-get-direct" title="guestfs_session_get_direct ()">guestfs_session_get_direct</a>          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -520,6 +528,8 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-get-pgroup" title="guestfs_session_get_pgroup ()">guestfs_session_get_pgroup</a>          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gint32</span>              <a class="link" href="GuestfsSession.html#guestfs-session-get-pid" title="guestfs_session_get_pid ()">guestfs_session_get_pid</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+const <span class="returnvalue">gchar</span> *       <a class="link" href="GuestfsSession.html#guestfs-session-get-program" title="guestfs_session_get_program ()">guestfs_session_get_program</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 const <span class="returnvalue">gchar</span> *       <a class="link" href="GuestfsSession.html#guestfs-session-get-qemu" title="guestfs_session_get_qemu ()">guestfs_session_get_qemu</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -886,6 +896,9 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-is-symlink" title="guestfs_session_is_symlink ()">guestfs_session_is_symlink</a>          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-is-whole-device" title="guestfs_session_is_whole_device ()">guestfs_session_is_whole_device</a>     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-is-zero" title="guestfs_session_is_zero ()">guestfs_session_is_zero</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -1226,7 +1239,7 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *modulename</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount" title="guestfs_session_mount ()">guestfs_session_mount</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount-9p" title="guestfs_session_mount_9p ()">guestfs_session_mount_9p</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -1247,17 +1260,17 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount-options" title="guestfs_session_mount_options ()">guestfs_session_mount_options</a>       (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *options</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount-ro" title="guestfs_session_mount_ro ()">guestfs_session_mount_ro</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount-vfs" title="guestfs_session_mount_vfs ()">guestfs_session_mount_vfs</a>           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *options</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *vfstype</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">GHashTable</span> *        <a class="link" href="GuestfsSession.html#guestfs-session-mountpoints" title="guestfs_session_mountpoints ()">guestfs_session_mountpoints</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
@@ -1322,6 +1335,10 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
                                                          <em class="parameter"><code><span class="type">gint32</span> partnum</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-part-get-gpt-type" title="guestfs_session_part_get_gpt_type ()">guestfs_session_part_get_gpt_type</a>   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint32</span> partnum</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gint32</span>              <a class="link" href="GuestfsSession.html#guestfs-session-part-get-mbr-id" title="guestfs_session_part_get_mbr_id ()">guestfs_session_part_get_mbr_id</a>     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
                                                          <em class="parameter"><code><span class="type">gint32</span> partnum</code></em>,
@@ -1340,6 +1357,11 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
                                                          <em class="parameter"><code><span class="type">gint32</span> partnum</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> bootable</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-part-set-gpt-type" title="guestfs_session_part_set_gpt_type ()">guestfs_session_part_set_gpt_type</a>   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint32</span> partnum</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *guid</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-part-set-mbr-id" title="guestfs_session_part_set_mbr_id ()">guestfs_session_part_set_mbr_id</a>     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
@@ -1492,10 +1514,13 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *append</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-attach-method" title="guestfs_session_set_attach_method ()">guestfs_session_set_attach_method</a>   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *attachmethod</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-autosync" title="guestfs_session_set_autosync ()">guestfs_session_set_autosync</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> autosync</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title="guestfs_session_set_backend ()">guestfs_session_set_backend</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-cachedir" title="guestfs_session_set_cachedir ()">guestfs_session_set_cachedir</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *cachedir</code></em>,
@@ -1521,7 +1546,7 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *uuid</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-label" title="guestfs_session_set_label ()">guestfs_session_set_label</a>           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *label</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-libvirt-requested-credential" title="guestfs_session_set_libvirt_requested_credential ()">guestfs_session_set_libvirt_requested_credential</a>
@@ -1545,6 +1570,9 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-pgroup" title="guestfs_session_set_pgroup ()">guestfs_session_set_pgroup</a>          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> pgroup</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-program" title="guestfs_session_set_program ()">guestfs_session_set_program</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *program</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-qemu" title="guestfs_session_set_qemu ()">guestfs_session_set_qemu</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *qemu</code></em>,
@@ -1656,6 +1684,10 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-sync" title="guestfs_session_sync ()">guestfs_session_sync</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()">guestfs_session_syslinux</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsSyslinux.html" title="GuestfsSyslinux"><span class="type">GuestfsSyslinux</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> **            <a class="link" href="GuestfsSession.html#guestfs-session-tail" title="guestfs_session_tail ()">guestfs_session_tail</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -1735,6 +1767,8 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">gint64</span> offset</code></em>,
                                                          <em class="parameter"><code><span class="type">GCancellable</span> *cancellable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-user-cancel" title="guestfs_session_user_cancel ()">guestfs_session_user_cancel</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-utimens" title="guestfs_session_utimens ()">guestfs_session_utimens</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">gint64</span> atsecs</code></em>,
@@ -1747,13 +1781,13 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <a class="link" href="GuestfsVersion.html" title="GuestfsVersion"><span class="returnvalue">GuestfsVersion</span></a> *    <a class="link" href="GuestfsSession.html#guestfs-session-version" title="guestfs_session_version ()">guestfs_session_version</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-vfs-label" title="guestfs_session_vfs_label ()">guestfs_session_vfs_label</a>           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-vfs-type" title="guestfs_session_vfs_type ()">guestfs_session_vfs_type</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-vfs-uuid" title="guestfs_session_vfs_uuid ()">guestfs_session_vfs_uuid</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-vg-activate" title="guestfs_session_vg_activate ()">guestfs_session_vg_activate</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> activate</code></em>,
@@ -2493,6 +2527,125 @@ in the API (such as "/dev/sda"), the drive will also be named
 </p>
 <p>
 See "DISK LABELS" in guestfs(3).
+</p>
+<p>
+<em class="parameter"><code>protocol</code></em>
+The optional protocol argument can be used to select an alternate
+source protocol.
+</p>
+<p>
+See also: "REMOTE STORAGE" in guestfs(3).
+</p>
+<p>
+"protocol = "file""
+<em class="parameter"><code>filename</code></em> is interpreted as a local file or device. This is the
+default if the optional protocol parameter is omitted.
+</p>
+<p>
+"protocol = "gluster""
+Connect to the GlusterFS server. The <em class="parameter"><code>server</code></em> parameter must also
+be supplied - see below.
+</p>
+<p>
+See also: "GLUSTER" in guestfs(3)
+</p>
+<p>
+"protocol = "nbd""
+Connect to the Network Block Device server. The <em class="parameter"><code>server</code></em>
+parameter must also be supplied - see below.
+</p>
+<p>
+See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+</p>
+<p>
+"protocol = "rbd""
+Connect to the Ceph (librbd/RBD) server. The <em class="parameter"><code>server</code></em> parameter
+must also be supplied - see below.
+</p>
+<p>
+See also: "CEPH" in guestfs(3).
+</p>
+<p>
+"protocol = "sheepdog""
+Connect to the Sheepdog server. The <em class="parameter"><code>server</code></em> parameter may also
+be supplied - see below.
+</p>
+<p>
+See also: "SHEEPDOG" in guestfs(3).
+</p>
+<p>
+"protocol = "ssh""
+Connect to the Secure Shell (ssh) server.
+</p>
+<p>
+The <em class="parameter"><code>server</code></em> parameter must be supplied. The <em class="parameter"><code>username</code></em> parameter
+may be supplied. See below.
+</p>
+<p>
+See also: "SSH" in guestfs(3).
+</p>
+<p>
+<em class="parameter"><code>server</code></em>
+For protocols which require access to a remote server, this is a
+list of server(s).
+</p>
+<p>
+Protocol       Number of servers required
+</p>
+<p>
+--------       --------------------------
+</p>
+<p>
+file           List must be empty or param not used at all
+</p>
+<p>
+gluster        Exactly one
+</p>
+<p>
+nbd            Exactly one
+</p>
+<p>
+rbd            One or more
+</p>
+<p>
+sheepdog       Zero or more
+</p>
+<p>
+ssh            Exactly one
+</p>
+<p>
+Each list element is a string specifying a server. The string must
+be in one of the following formats:
+</p>
+<p>
+hostname
+</p>
+<p>
+hostname:port
+</p>
+<p>
+tcp:hostname
+</p>
+<p>
+tcp:hostname:port
+</p>
+<p>
+unix:/path/to/socket
+</p>
+<p>
+If the port number is omitted, then the standard port number for the
+protocol is used (see "/etc/services").
+</p>
+<p>
+<em class="parameter"><code>username</code></em>
+For the <em class="parameter"><code>ssh</code></em> protocol only, this specifies the remote username.
+</p>
+<p>
+If not given, then the local username is used. But note this
+sometimes may give unexpected results, for example if using the
+libvirt backend and if the libvirt backend is configured to start
+the qemu appliance as a special user such as "qemu.qemu". If in
+doubt, specify the remote username you want.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -3374,6 +3527,11 @@ is always returned.
 *Notes:*
 </p>
 <p>
+*   <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a> is the same as this call, but
+with a slightly simpler to use API: that call returns a boolean
+true/false instead of throwing an error.
+</p>
+<p>
 *   You must call <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a> before calling this function.
 </p>
 <p>
@@ -3440,10 +3598,12 @@ return a list of all optional groups
 This command returns a list of all optional groups that this daemon
 knows about. Note this returns both supported and unsupported groups. To
 find out which ones the daemon can actually support you have to call
-<a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> on each member of the returned list.
+<a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> / <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a> on
+each member of the returned list.
 </p>
 <p>
-See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> and "AVAILABILITY" in guestfs(3).
+See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>,
+<a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a> and "AVAILABILITY" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -5579,6 +5739,12 @@ regions may not be copied correctly.
 If the destination is a file, it is created if required. If the
 destination file is not large enough, it is extended.
 </p>
+<p>
+If the <em class="parameter"><code>sparse</code></em> flag is true then the call avoids writing blocks that
+contain only zeroes, which can help in some situations where the backing
+disk is thin-provisioned. Note that unless the target is already zeroed,
+using this option will result in incorrect copying.
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">
@@ -7001,6 +7167,67 @@ See also <a class="link" href="GuestfsSession.html#guestfs-session-is-file" titl
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-extlinux"></a><h3>guestfs_session_extlinux ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_extlinux            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+</p>
+<p>
+Install the SYSLINUX bootloader on the device mounted at <em class="parameter"><code>directory</code></em>.
+Unlike <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()"><code class="function">guestfs_session_syslinux()</code></a> which requires a FAT filesystem, this
+can be used on an ext2/3/4 or btrfs filesystem.
+</p>
+<p>
+The <em class="parameter"><code>directory</code></em> parameter can be either a mountpoint, or a directory
+within the mountpoint.
+</p>
+<p>
+You also have to mark the partition as "active"
+(<a class="link" href="GuestfsSession.html#guestfs-session-part-set-bootable" title="guestfs_session_part_set_bootable ()"><code class="function">guestfs_session_part_set_bootable()</code></a>) and a Master Boot Record must be
+installed (eg. using <a class="link" href="GuestfsSession.html#guestfs-session-pwrite-device" title="guestfs_session_pwrite_device ()"><code class="function">guestfs_session_pwrite_device()</code></a>) on the first
+sector of the whole disk. The SYSLINUX package comes with some suitable
+Master Boot Records. See the extlinux(1) man page for further
+information.
+</p>
+<p>
+Additional configuration can be supplied to SYSLINUX by placing a file
+called "extlinux.conf" on the filesystem under <em class="parameter"><code>directory</code></em>. For further
+information about the contents of this file, see extlinux(1).
+</p>
+<p>
+See also <a class="link" href="GuestfsSession.html#guestfs-session-syslinux" title="guestfs_session_syslinux ()"><code class="function">guestfs_session_syslinux()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>directory</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-fallocate"></a><h3>guestfs_session_fallocate ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_fallocate           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
@@ -7105,6 +7332,48 @@ commands which create a file in the host and attach it as a device.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-feature-available"></a><h3>guestfs_session_feature_available ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint8</span>               guestfs_session_feature_available   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gchar</span> *const *groups</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+test availability of some parts of the API
+</p>
+<p>
+This is the same as <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>, but unlike that call it
+returns a simple true/false boolean result, instead of throwing an
+exception if a feature is not found. For other documentation see
+<a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>groups</code></em> :</span></p></td>
+<td>an array of strings. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
 </tr>
 </tbody>
 </table></div>
@@ -7455,7 +7724,8 @@ filesystems can fail for other reasons such as it being a later version
 of the filesystem, or having incompatible features.
 </p>
 <p>
-See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>, "AVAILABILITY" in guestfs(3).
+See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>,
+<a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>, "AVAILABILITY" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -8049,14 +8319,13 @@ If <em class="parameter"><code>NULL</code></em> then no options are added.
 <pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_get_attach_method   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-get the attach method
+get the backend
 </p>
 <p>
-Return the current attach method.
+Return the current backend.
 </p>
 <p>
-See <a class="link" href="GuestfsSession.html#guestfs-session-set-attach-method" title="guestfs_session_set_attach_method ()"><code class="function">guestfs_session_set_attach_method()</code></a> and "ATTACH METHOD" in
-guestfs(3).
+See <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title="guestfs_session_set_backend ()"><code class="function">guestfs_session_set_backend()</code></a> and "BACKEND" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -8110,6 +8379,46 @@ Get the autosync flag.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-get-backend"></a><h3>guestfs_session_get_backend ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_get_backend         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get the backend
+</p>
+<p>
+Return the current backend.
+</p>
+<p>
+This handle property was previously called the "attach method".
+</p>
+<p>
+See <a class="link" href="GuestfsSession.html#guestfs-session-set-backend" title="guestfs_session_set_backend ()"><code class="function">guestfs_session_set_backend()</code></a> and "BACKEND" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -8802,6 +9111,40 @@ This is an internal call used for debugging and testing.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-get-program"></a><h3>guestfs_session_get_program ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *       guestfs_session_get_program         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get the program name
+</p>
+<p>
+Get the program name. See <a class="link" href="GuestfsSession.html#guestfs-session-set-program" title="guestfs_session_set_program ()"><code class="function">guestfs_session_set_program()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -14201,6 +14544,46 @@ See also <a class="link" href="GuestfsSession.html#guestfs-session-stat" title="
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-is-whole-device"></a><h3>guestfs_session_is_whole_device ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint8</span>               guestfs_session_is_whole_device     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+test if a device is a whole device
+</p>
+<p>
+This returns <em class="parameter"><code>true</code></em> if and only if <em class="parameter"><code>device</code></em> refers to a whole block
+device. That is, not a partition or a logical device.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-is-zero"></a><h3>guestfs_session_is_zero ()</h3>
 <pre class="programlisting"><span class="returnvalue">gint8</span>               guestfs_session_is_zero             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
@@ -15238,7 +15621,7 @@ list filesystems
 </p>
 <p>
 This inspection command looks for filesystems on partitions, block
-devices and logical volumes, returning a list of devices containing
+devices and logical volumes, returning a list of <em class="parameter"><code>mountables</code></em> containing
 filesystems and their type.
 </p>
 <p>
@@ -15256,6 +15639,10 @@ filesystems, and the values are the filesystem types. For example:
 </p>
 <p>
 "/dev/vg_guest/lv_swap" =&gt; "swap"
+</p>
+<p>
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to <a class="link" href="GuestfsSession.html#guestfs-session-mount" title="guestfs_session_mount ()"><code class="function">guestfs_session_mount()</code></a>.
 </p>
 <p>
 The value can have the special value "unknown", meaning the content of
@@ -18862,7 +19249,7 @@ The kernel module must have been whitelisted when libguestfs was built
 <div class="refsect2">
 <a name="guestfs-session-mount"></a><h3>guestfs_session_mount ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_mount               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
@@ -18872,7 +19259,9 @@ mount a guest disk at a position in the filesystem
 Mount a guest disk at a position in the filesystem. Block devices are
 named "/dev/sda", "/dev/sdb" and so on, as they were added to the guest.
 If those block devices contain partitions, they will have the usual
-names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style names can be used.
+names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style names can be used,
+or 'mountable' strings returned by <a class="link" href="GuestfsSession.html#guestfs-session-list-filesystems" title="guestfs_session_list_filesystems ()"><code class="function">guestfs_session_list_filesystems()</code></a> or
+<a class="link" href="GuestfsSession.html#guestfs-session-inspect-get-mountpoints" title="guestfs_session_inspect_get_mountpoints ()"><code class="function">guestfs_session_inspect_get_mountpoints()</code></a>.
 </p>
 <p>
 The rules are the same as for mount(2): A filesystem must first be
@@ -18903,7 +19292,7 @@ options).
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>
@@ -19161,7 +19550,7 @@ file mountpoint".
 <a name="guestfs-session-mount-options"></a><h3>guestfs_session_mount_options ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_mount_options       (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *options</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
@@ -19192,7 +19581,7 @@ If the <em class="parameter"><code>options</code></em> parameter is an empty str
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>
@@ -19216,7 +19605,7 @@ If the <em class="parameter"><code>options</code></em> parameter is an empty str
 <div class="refsect2">
 <a name="guestfs-session-mount-ro"></a><h3>guestfs_session_mount_ro ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_mount_ro            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
@@ -19238,7 +19627,7 @@ the filesystem with the read-only (*-o ro*) flag.
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>
@@ -19264,7 +19653,7 @@ the filesystem with the read-only (*-o ro*) flag.
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_mount_vfs           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *options</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *vfstype</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
@@ -19297,7 +19686,7 @@ you to set both the mount options and the vfstype as for the mount(8)
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>
@@ -20165,6 +20554,54 @@ See also <a class="link" href="GuestfsSession.html#guestfs-session-part-set-boot
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-part-get-gpt-type"></a><h3>guestfs_session_part_get_gpt_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_part_get_gpt_type   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint32</span> partnum</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get the type GUID of a GPT partition
+</p>
+<p>
+Return the type GUID of numbered GPT partition <em class="parameter"><code>partnum</code></em>. For MBR
+partitions, return an appropriate GUID corresponding to the MBR type.
+Behaviour is undefined for other partition types.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>partnum</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> gint32]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-part-get-mbr-id"></a><h3>guestfs_session_part_get_mbr_id ()</h3>
 <pre class="programlisting"><span class="returnvalue">gint32</span>              guestfs_session_part_get_mbr_id     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
@@ -20466,6 +20903,64 @@ recognized.
 <tr>
 <td><p><span class="term"><em class="parameter"><code>bootable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> gboolean]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-part-set-gpt-type"></a><h3>guestfs_session_part_set_gpt_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_part_set_gpt_type   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint32</span> partnum</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *guid</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set the type GUID of a GPT partition
+</p>
+<p>
+Set the type GUID of numbered GPT partition <em class="parameter"><code>partnum</code></em> to <em class="parameter"><code>guid</code></em>. Return an
+error if the partition table of <em class="parameter"><code>device</code></em> isn't GPT, or if <em class="parameter"><code>guid</code></em> is not a
+valid GUID.
+</p>
+<p>
+See <a class="ulink" href="http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GU%20IDs" target="_top">
+http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
+</a> for a useful list of type GUIDs.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>partnum</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> gint32]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>guid</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> utf8]</span>
 </td>
 </tr>
 <tr>
@@ -21695,10 +22190,10 @@ If you didn't use a label, then they cannot be removed.
 </p>
 <p>
 You can call this function before or after launching the handle. If
-called after launch, if the attach-method supports it, we try to hot
-unplug the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be
-in use (eg. mounted) when you do this. We try to detect if the disk is
-in use and stop you from doing this.
+called after launch, if the backend supports it, we try to hot unplug
+the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be in use
+(eg. mounted) when you do this. We try to detect if the disk is in use
+and stop you from doing this.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -22571,17 +23066,17 @@ Setting <em class="parameter"><code>append</code></em> to <em class="parameter">
 <div class="refsect2">
 <a name="guestfs-session-set-attach-method"></a><h3>guestfs_session_set_attach_method ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_attach_method   (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *attachmethod</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-set the attach method
+set the backend
 </p>
 <p>
-Set the method that libguestfs uses to connect to the back end guestfsd
+Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 </p>
 <p>
-See "ATTACH METHOD" in guestfs(3).
+See "BACKEND" in guestfs(3).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -22595,7 +23090,7 @@ See "ATTACH METHOD" in guestfs(3).
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>attachmethod</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>backend</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> utf8]</span>
 </td>
 </tr>
@@ -22642,6 +23137,52 @@ disabled by default).
 <tr>
 <td><p><span class="term"><em class="parameter"><code>autosync</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> gboolean]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-set-backend"></a><h3>guestfs_session_set_backend ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_backend         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *backend</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set the backend
+</p>
+<p>
+Set the method that libguestfs uses to connect to the backend guestfsd
+daemon.
+</p>
+<p>
+This handle property was previously called the "attach method".
+</p>
+<p>
+See "BACKEND" in guestfs(3).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>backend</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> utf8]</span>
 </td>
 </tr>
 <tr>
@@ -22981,14 +23522,14 @@ filesystem.
 <div class="refsect2">
 <a name="guestfs-session-set-label"></a><h3>guestfs_session_set_label ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_label           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *label</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
 set filesystem label
 </p>
 <p>
-Set the filesystem label on <em class="parameter"><code>device</code></em> to <em class="parameter"><code>label</code></em>.
+Set the filesystem label on <em class="parameter"><code>mountable</code></em> to <em class="parameter"><code>label</code></em>.
 </p>
 <p>
 Only some filesystem types support labels, and libguestfs supports
@@ -22999,6 +23540,10 @@ On ext2/3/4 filesystems, labels are limited to 16 bytes.
 </p>
 <p>
 On NTFS filesystems, labels are limited to 128 unicode characters.
+</p>
+<p>
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 </p>
 <p>
 To read the label on a filesystem, call <a class="link" href="GuestfsSession.html#guestfs-session-vfs-label" title="guestfs_session_vfs_label ()"><code class="function">guestfs_session_vfs_label()</code></a>.
@@ -23015,7 +23560,7 @@ To read the label on a filesystem, call <a class="link" href="GuestfsSession.htm
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>
@@ -23317,7 +23862,7 @@ pressing "^C") won't be received by the child process.
 The default for this flag is false, because usually you want "^C" to
 kill the subprocess. Guestfish sets this flag to true when used
 interactively, so that "^C" can cancel long-running commands gracefully
-(see <a href="GuestfsSession.html#guestfs-session-user-cancel"><code class="function">guestfs_session_user_cancel()</code></a>).
+(see <a class="link" href="GuestfsSession.html#guestfs-session-user-cancel" title="guestfs_session_user_cancel ()"><code class="function">guestfs_session_user_cancel()</code></a>).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -23333,6 +23878,51 @@ interactively, so that "^C" can cancel long-running commands gracefully
 <tr>
 <td><p><span class="term"><em class="parameter"><code>pgroup</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> gboolean]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-set-program"></a><h3>guestfs_session_set_program ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_program         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *program</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set the program name
+</p>
+<p>
+Set the program name. This is an informative string which the main
+program may optionally set in the handle.
+</p>
+<p>
+When the handle is created, the program name in the handle is set to the
+basename from "argv[0]". If that was not possible, it is set to the
+empty string (but never <em class="parameter"><code>NULL</code></em>).
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>program</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> utf8]</span>
 </td>
 </tr>
 <tr>
@@ -24912,6 +25502,79 @@ closing the handle.
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-syslinux"></a><h3>guestfs_session_syslinux ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_syslinux            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsSyslinux.html" title="GuestfsSyslinux"><span class="type">GuestfsSyslinux</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+install the SYSLINUX bootloader
+</p>
+<p>
+Install the SYSLINUX bootloader on <em class="parameter"><code>device</code></em>.
+</p>
+<p>
+The device parameter must be either a whole disk formatted as a FAT
+filesystem, or a partition formatted as a FAT filesystem. In the latter
+case, the partition should be marked as "active"
+(<a class="link" href="GuestfsSession.html#guestfs-session-part-set-bootable" title="guestfs_session_part_set_bootable ()"><code class="function">guestfs_session_part_set_bootable()</code></a>) and a Master Boot Record must be
+installed (eg. using <a class="link" href="GuestfsSession.html#guestfs-session-pwrite-device" title="guestfs_session_pwrite_device ()"><code class="function">guestfs_session_pwrite_device()</code></a>) on the first
+sector of the whole disk. The SYSLINUX package comes with some suitable
+Master Boot Records. See the syslinux(1) man page for further
+information.
+</p>
+<p>
+The optional arguments are:
+</p>
+<p>
+<em class="parameter"><code>directory</code></em>
+Install SYSLINUX in the named subdirectory, instead of in the root
+directory of the FAT filesystem.
+</p>
+<p>
+Additional configuration can be supplied to SYSLINUX by placing a file
+called "syslinux.cfg" on the FAT filesystem, either in the root
+directory, or under <em class="parameter"><code>directory</code></em> if that optional argument is being used.
+For further information about the contents of this file, see
+syslinux(1).
+</p>
+<p>
+See also <a class="link" href="GuestfsSession.html#guestfs-session-extlinux" title="guestfs_session_extlinux ()"><code class="function">guestfs_session_extlinux()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>optargs</code></em> :</span></p></td>
+<td>a GuestfsSyslinux containing optional arguments. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-tail"></a><h3>guestfs_session_tail ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> **            guestfs_session_tail                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
@@ -25958,6 +26621,70 @@ See also <a class="link" href="GuestfsSession.html#guestfs-session-upload" title
 </div>
 <hr>
 <div class="refsect2">
+<a name="guestfs-session-user-cancel"></a><h3>guestfs_session_user_cancel ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_user_cancel         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+cancel the current upload or download operation
+</p>
+<p>
+This function cancels the current upload or download operation.
+</p>
+<p>
+Unlike most other libguestfs calls, this function is signal safe and
+thread safe. You can call it from a signal handler or from another
+thread, without needing to do any locking.
+</p>
+<p>
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error. The errno (see
+"guestfs_last_errno") is set to <em class="parameter"><code>EINTR</code></em>, so you can test for this to find
+out if the operation was cancelled or failed because of another error.
+</p>
+<p>
+No cleanup is performed: for example, if a file was being uploaded then
+after cancellation there may be a partially uploaded file. It is the
+caller's responsibility to clean up if necessary.
+</p>
+<p>
+There are two common places that you might call
+<a class="link" href="GuestfsSession.html#guestfs-session-user-cancel" title="guestfs_session_user_cancel ()"><code class="function">guestfs_session_user_cancel()</code></a>:
+</p>
+<p>
+In an interactive text-based program, you might call it from a <em class="parameter"><code>SIGINT</code></em>
+signal handler so that pressing "^C" cancels the current operation. (You
+also need to call "guestfs_set_pgroup" so that child processes don't
+receive the "^C" signal).
+</p>
+<p>
+In a graphical program, when the main thread is displaying a progress
+bar with a cancel button, wire up the cancel button to call this
+function.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="guestfs-session-utimens"></a><h3>guestfs_session_utimens ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_utimens             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
@@ -26112,7 +26839,8 @@ See also: "LIBGUESTFS VERSION NUMBERS" in guestfs(3).
 *Note:* Don't use this call to test for availability of features. In
 enterprise distributions we backport features from later versions into
 earlier versions, making this an unreliable way to test for features.
-Use <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> instead.
+Use <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a> or <a class="link" href="GuestfsSession.html#guestfs-session-feature-available" title="guestfs_session_feature_available ()"><code class="function">guestfs_session_feature_available()</code></a>
+instead.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -26141,13 +26869,13 @@ Use <a class="link" href="GuestfsSession.html#guestfs-session-available" title="
 <div class="refsect2">
 <a name="guestfs-session-vfs-label"></a><h3>guestfs_session_vfs_label ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_vfs_label           (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
 get the filesystem label
 </p>
 <p>
-This returns the filesystem label of the filesystem on <em class="parameter"><code>device</code></em>.
+This returns the label of the filesystem on <em class="parameter"><code>mountable</code></em>.
 </p>
 <p>
 If the filesystem is unlabeled, this returns the empty string.
@@ -26167,7 +26895,7 @@ To find a filesystem from the label, use <a class="link" href="GuestfsSession.ht
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>
@@ -26187,14 +26915,14 @@ To find a filesystem from the label, use <a class="link" href="GuestfsSession.ht
 <div class="refsect2">
 <a name="guestfs-session-vfs-type"></a><h3>guestfs_session_vfs_type ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_vfs_type            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
 get the Linux VFS type corresponding to a mounted device
 </p>
 <p>
 This command gets the filesystem type corresponding to the filesystem on
-<em class="parameter"><code>device</code></em>.
+<em class="parameter"><code>mountable</code></em>.
 </p>
 <p>
 For most filesystems, the result is the name of the Linux VFS module
@@ -26214,7 +26942,7 @@ specifying the filesystem type. For example a string such as <em class="paramete
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>
@@ -26234,13 +26962,13 @@ specifying the filesystem type. For example a string such as <em class="paramete
 <div class="refsect2">
 <a name="guestfs-session-vfs-uuid"></a><h3>guestfs_session_vfs_uuid ()</h3>
 <pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_vfs_uuid            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
 get the filesystem UUID
 </p>
 <p>
-This returns the filesystem UUID of the filesystem on <em class="parameter"><code>device</code></em>.
+This returns the filesystem UUID of the filesystem on <em class="parameter"><code>mountable</code></em>.
 </p>
 <p>
 If the filesystem does not have a UUID, this returns the empty string.
@@ -26260,7 +26988,7 @@ To find a filesystem from the UUID, use <a class="link" href="GuestfsSession.htm
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>mountable</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
 </td>
 </tr>

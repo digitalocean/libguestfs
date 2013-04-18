@@ -24,11 +24,11 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <errno.h>
 #include <locale.h>
 #include <assert.h>
 #include <libintl.h>
 
-#include "progname.h"
 #include "c-ctype.h"
 
 #include "guestfs.h"
@@ -83,9 +83,6 @@ usage (int status)
 int
 main (int argc, char *argv[])
 {
-  /* Set global program name that is not polluted with libtool artifacts.  */
-  set_program_name (argv[0]);
-
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEBASEDIR);
   textdomain (PACKAGE);
@@ -101,6 +98,7 @@ main (int argc, char *argv[])
     { "format", 2, 0, 0 },
     { "help", 0, 0, HELP_OPTION },
     { "keys-from-stdin", 0, 0, 0 },
+    { "long-options", 0, 0, 0 },
     { "verbose", 0, 0, 'v' },
     { "version", 0, 0, 'V' },
     { 0, 0, 0, 0 }
@@ -118,15 +116,15 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  argv[0] = (char *) program_name;
-
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
+      if (STREQ (long_options[option_index].name, "long-options"))
+        display_long_options (long_options);
+      else if (STREQ (long_options[option_index].name, "keys-from-stdin")) {
         keys_from_stdin = 1;
       } else if (STREQ (long_options[option_index].name, "echo-keys")) {
         echo_keys = 1;

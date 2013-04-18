@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsSyslinux
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsSyslinux ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsSyslinux:directory ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsSyslinuxClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_syslinux_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

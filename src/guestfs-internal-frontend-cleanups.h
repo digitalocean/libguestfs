@@ -111,6 +111,10 @@
   __attribute__((cleanup(guestfs___cleanup_free_hivex_value)))
 #define CLEANUP_FREE_HIVEX_VALUE_LIST \
   __attribute__((cleanup(guestfs___cleanup_free_hivex_value_list)))
+#define CLEANUP_FREE_INTERNAL_MOUNTABLE \
+  __attribute__((cleanup(guestfs___cleanup_free_internal_mountable)))
+#define CLEANUP_FREE_INTERNAL_MOUNTABLE_LIST \
+  __attribute__((cleanup(guestfs___cleanup_free_internal_mountable_list)))
 #else /* !HAVE_ATTRIBUTE_CLEANUP */
 #define CLEANUP_FREE_INT_BOOL
 #define CLEANUP_FREE_INT_BOOL_LIST
@@ -152,6 +156,8 @@
 #define CLEANUP_FREE_HIVEX_NODE_LIST
 #define CLEANUP_FREE_HIVEX_VALUE
 #define CLEANUP_FREE_HIVEX_VALUE_LIST
+#define CLEANUP_FREE_INTERNAL_MOUNTABLE
+#define CLEANUP_FREE_INTERNAL_MOUNTABLE_LIST
 #endif /* !HAVE_ATTRIBUTE_CLEANUP */
 
 /* These functions are used internally by the CLEANUP_* macros.
@@ -198,5 +204,7 @@ extern void guestfs___cleanup_free_hivex_node (void *ptr);
 extern void guestfs___cleanup_free_hivex_node_list (void *ptr);
 extern void guestfs___cleanup_free_hivex_value (void *ptr);
 extern void guestfs___cleanup_free_hivex_value_list (void *ptr);
+extern void guestfs___cleanup_free_internal_mountable (void *ptr);
+extern void guestfs___cleanup_free_internal_mountable_list (void *ptr);
 
 #endif /* GUESTFS_INTERNAL_FRONTEND_CLEANUPS_H_ */

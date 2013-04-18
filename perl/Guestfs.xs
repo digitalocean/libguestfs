@@ -24,7 +24,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
+#include <errno.h>
 
 #include "EXTERN.h"
 #include "perl.h"
@@ -280,6 +282,20 @@ PREINIT:
       }
 
 SV *
+event_to_string (event_bitmask)
+      int event_bitmask;
+PREINIT:
+      char *str;
+   CODE:
+      str = guestfs_event_to_string (event_bitmask);
+      if (str == NULL)
+        croak ("%s", strerror (errno));
+      RETVAL = newSVpv (str, 0);
+      free (str);
+ OUTPUT:
+      RETVAL
+
+SV *
 last_errno (g)
       guestfs_h *g;
 PREINIT:
@@ -289,12 +305,6 @@ PREINIT:
       RETVAL = newSViv (errnum);
  OUTPUT:
       RETVAL
-
-void
-user_cancel (g)
-      guestfs_h *g;
- PPCODE:
-      guestfs_user_cancel (g);
 
 void
 internal_test (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, ...)
@@ -1784,6 +1794,35 @@ PREINIT:
           optargs_s.label = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
         }
+        else if (STREQ (this_arg, "protocol")) {
+          optargs_s.protocol = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+        }
+        else if (STREQ (this_arg, "server")) {
+          size_t i, len;
+          char **r;
+          AV *av;
+          SV **svp;
+
+          /* XXX More checking required here. */
+          av = (AV *) SvRV (ST (items_i+1));
+
+          /* Note av_len returns index of final element. */
+          len = av_len (av) + 1;
+
+          r = guestfs___safe_malloc (g, (len+1) * sizeof (char *));
+          for (i = 0; i < len; ++i) {
+            svp = av_fetch (av, i, 0);
+            r[i] = SvPV_nolen (*svp);
+          }
+          r[i] = NULL;
+          optargs_s.server = r;
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+        }
+        else if (STREQ (this_arg, "username")) {
+          optargs_s.username = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -2071,13 +2110,13 @@ PREINIT:
       RETVAL
 
 void
-set_attach_method (g, attachmethod)
+set_attach_method (g, backend)
       guestfs_h *g;
-      char *attachmethod;
+      char *backend;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_set_attach_method (g, attachmethod);
+      r = guestfs_set_attach_method (g, backend);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -2088,6 +2127,31 @@ PREINIT:
       char *r;
    CODE:
       r = guestfs_get_attach_method (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
+set_backend (g, backend)
+      guestfs_h *g;
+      char *backend;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_backend (g, backend);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_backend (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_backend (g);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -2778,14 +2842,48 @@ PREINIT:
       RETVAL
 
 void
-mount (g, device, mountpoint)
+user_cancel (g)
       guestfs_h *g;
-      char *device;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_user_cancel (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+set_program (g, program)
+      guestfs_h *g;
+      char *program;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_program (g, program);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_program (g)
+      guestfs_h *g;
+PREINIT:
+      const char *r;
+   CODE:
+      r = guestfs_get_program (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+ OUTPUT:
+      RETVAL
+
+void
+mount (g, mountable, mountpoint)
+      guestfs_h *g;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount (g, device, mountpoint);
+      r = guestfs_mount (g, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -3925,41 +4023,41 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-mount_ro (g, device, mountpoint)
+mount_ro (g, mountable, mountpoint)
       guestfs_h *g;
-      char *device;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount_ro (g, device, mountpoint);
+      r = guestfs_mount_ro (g, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
 void
-mount_options (g, options, device, mountpoint)
+mount_options (g, options, mountable, mountpoint)
       guestfs_h *g;
       char *options;
-      char *device;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount_options (g, options, device, mountpoint);
+      r = guestfs_mount_options (g, options, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
 void
-mount_vfs (g, options, vfstype, device, mountpoint)
+mount_vfs (g, options, vfstype, mountable, mountpoint)
       guestfs_h *g;
       char *options;
       char *vfstype;
-      char *device;
+      char *mountable;
       char *mountpoint;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+      r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -5741,13 +5839,13 @@ PREINIT:
       RETVAL
 
 SV *
-vfs_type (g, device)
+vfs_type (g, mountable)
       guestfs_h *g;
-      char *device;
+      char *mountable;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_vfs_type (g, device);
+      r = guestfs_vfs_type (g, mountable);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -6425,13 +6523,13 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 SV *
-vfs_label (g, device)
+vfs_label (g, mountable)
       guestfs_h *g;
-      char *device;
+      char *mountable;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_vfs_label (g, device);
+      r = guestfs_vfs_label (g, mountable);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -6440,13 +6538,13 @@ PREINIT:
       RETVAL
 
 SV *
-vfs_uuid (g, device)
+vfs_uuid (g, mountable)
       guestfs_h *g;
-      char *device;
+      char *mountable;
 PREINIT:
       char *r;
    CODE:
-      r = guestfs_vfs_uuid (g, device);
+      r = guestfs_vfs_uuid (g, mountable);
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
@@ -7140,6 +7238,10 @@ PREINIT:
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
         }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -7180,6 +7282,10 @@ PREINIT:
         else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -7222,6 +7328,10 @@ PREINIT:
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
         }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",
@@ -7262,6 +7372,10 @@ PREINIT:
         else if (STREQ (this_arg, "size")) {
           optargs_s.size = my_SvIV64 (ST (items_i+1));
           this_mask = GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
+        }
+        else if (STREQ (this_arg, "sparse")) {
+          optargs_s.sparse = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
         }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
@@ -7615,14 +7729,14 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-set_label (g, device, label)
+set_label (g, mountable, label)
       guestfs_h *g;
-      char *device;
+      char *mountable;
       char *label;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_set_label (g, device, label);
+      r = guestfs_set_label (g, mountable, label);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -9391,6 +9505,35 @@ PREINIT:
       free (r);
 
 void
+part_set_gpt_type (g, device, partnum, guid)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+      char *guid;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_part_set_gpt_type (g, device, partnum, guid);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+part_get_gpt_type (g, device, partnum)
+      guestfs_h *g;
+      char *device;
+      int partnum;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_part_get_gpt_type (g, device, partnum);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
+ OUTPUT:
+      RETVAL
+
+void
 rename (g, oldpath, newpath)
       guestfs_h *g;
       char *oldpath;
@@ -9399,6 +9542,78 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_rename (g, oldpath, newpath);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+is_whole_device (g, device)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_is_whole_device (g, device);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+feature_available (g, groups)
+      guestfs_h *g;
+      char **groups;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_feature_available (g, groups);
+      free (groups);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+void
+syslinux (g, device, ...)
+      guestfs_h *g;
+      char *device;
+PREINIT:
+      int r;
+      struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_syslinux_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "directory")) {
+          optargs_s.directory = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_syslinux_argv (g, device, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+extlinux (g, directory)
+      guestfs_h *g;
+      char *directory;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_extlinux (g, directory);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

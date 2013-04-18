@@ -29,33 +29,68 @@ if HAVE_HASKELL
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
 
-# Don't run the bindtests: they don't build since the addition of optargs.
+# XXX Don't run the bindtests: they don't build since the addition of optargs.
 # Haskell bindings are incomplete.
+
+TESTS = Guestfs010Load Guestfs030Config
 if ENABLE_APPLIANCE
-TESTS = Guestfs005Load Guestfs010Basic
+TESTS += Guestfs050LVCreate
 endif ENABLE_APPLIANCE
 
 #check_DATA = Bindtests
 
 GHCFLAGS = -I$(top_builddir)/src -L$(top_builddir)/src/.libs -i$(srcdir)
 
-all_targets = Guestfs005Load Guestfs010Basic
+all_targets = Guestfs010Load Guestfs030Config Guestfs050LVCreate
 $(all_targets): $(top_builddir)/src/libguestfs.la
 
 all: $(all_targets)
 
-Guestfs.o: $(srcdir)/Guestfs.hs
-	$(GHC)  $(GHCFLAGS) -c $< -o $@
+built_tests = Bindtests Guestfs010Load Guestfs030Config Guestfs050LVCreate
 
-Bindtests: $(srcdir)/Bindtests.hs Guestfs.o
-	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
+# Building with ghc --make doesn't work properly here because it
+# always rebuilds Guestfs.o despite it being up to date. So if you:
+#
+# * build Guestfs010Load, then build it again, the second time it will
+# not be rebuilt.
+#
+# * build Guestfs010Load, then build Guestfs030Config, then build
+# Guestfs010Load again, it will be rebuilt every time.
+#
+# In the second case, building Guestfs030Config rebuilt Guestfs.o. As
+# this is a dependency of Guestfs010Load, Guestfs010Load is now
+# unnecessarily out of date.
+#
+# Because the default target builds all of the above, they will all be
+# rebuilt every time.
+#
+# An obvious choice would be to remove the Guestfs.o dependency, but
+# this would potentially result in corruption during a parallel build
+# as multiple ghc processes rebuild Guestfs.o simultaneously. I had
+# hoped that the solution below would work. It correctly builds
+# Guestfs010Load and Guestfs030Config, but Guestfs050LVCreate requires
+# additional link options which I haven't been able to work out.
 
-Guestfs005Load: $(srcdir)/Guestfs005Load.hs Guestfs.o
-	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
+#Guestfs.o: $(srcdir)/Guestfs.hs
+#	$(GHC)  $(GHCFLAGS) -c $< -o $@
+#
+#$(built_tests:%=%.o): %.o: %.hs Guestfs.o
+#	$(GHC)  $(GHCFLAGS) -main-is $(basename $<) -c $< -o $@
+#
+#$(built_tests): %: %.o Guestfs.o
+#	$(GHC)  $(GHCFLAGS) -main-is $@ -o $@ $< Guestfs.o -lguestfs
 
-Guestfs010Basic: $(srcdir)/Guestfs010Basic.hs Guestfs.o
-	$(GHC)  $(GHCFLAGS) -main-is $(shell basename $@) --make -o $@ $< -lguestfs
+# The solution below isn't ideal. It uses --make and avoids the
+# parallel make problem by putting object files in separate
+# directories per target.
 
-CLEANFILES = $(all_targets) *~ *.hi *.o
+$(built_tests): %: %.hs Guestfs.hs
+	$(GHC)  $(GHCFLAGS) --make -main-is $@ -odir .$@ -o $@ $< Guestfs.hs -lguestfs
+
+
+CLEANFILES = $(all_targets) *~ *.hi *.o test.img
+
+clean-local:
+	-rm -rf $(built_tests:%=.%)
 
 endif

@@ -185,58 +185,13 @@ public class GuestFS {
   /** Bitmask of all events. */
   public static final long EVENT_ALL = 0x1ff;
 
-  /** Utility function to turn an event number or bitmask into a string. */
+/** Utility function to turn an event number or bitmask into a string. */
   public static String eventToString (long events)
   {
-    if (events == 0)
-      return "";
-
-    String ret = "";
-
-    if ((events & EVENT_CLOSE) != 0) {
-      ret = ret + "|EVENT_CLOSE";
-      events &= ~0x1;
-    }
-    if ((events & EVENT_SUBPROCESS_QUIT) != 0) {
-      ret = ret + "|EVENT_SUBPROCESS_QUIT";
-      events &= ~0x2;
-    }
-    if ((events & EVENT_LAUNCH_DONE) != 0) {
-      ret = ret + "|EVENT_LAUNCH_DONE";
-      events &= ~0x4;
-    }
-    if ((events & EVENT_PROGRESS) != 0) {
-      ret = ret + "|EVENT_PROGRESS";
-      events &= ~0x8;
-    }
-    if ((events & EVENT_APPLIANCE) != 0) {
-      ret = ret + "|EVENT_APPLIANCE";
-      events &= ~0x10;
-    }
-    if ((events & EVENT_LIBRARY) != 0) {
-      ret = ret + "|EVENT_LIBRARY";
-      events &= ~0x20;
-    }
-    if ((events & EVENT_TRACE) != 0) {
-      ret = ret + "|EVENT_TRACE";
-      events &= ~0x40;
-    }
-    if ((events & EVENT_ENTER) != 0) {
-      ret = ret + "|EVENT_ENTER";
-      events &= ~0x80;
-    }
-    if ((events & EVENT_LIBVIRT_AUTH) != 0) {
-      ret = ret + "|EVENT_LIBVIRT_AUTH";
-      events &= ~0x100;
-    }
-
-    if (events != 0)
-      ret = events + ret;
-    else
-       ret = ret.substring (1);
-
-    return ret;
+    return _event_to_string (events);
   }
+
+  private static native String _event_to_string (long events);
 
   /**
    * Set an event handler.
@@ -1857,7 +1812,7 @@ public class GuestFS {
    * features. In enterprise distributions we backport
    * features from later versions into earlier versions,
    * making this an unreliable way to test for features. Use
-   * "g.available" instead.
+   * "g.available" or "g.feature_available" instead.
    * <p>
    * @throws LibGuestFSException
    */
@@ -2660,7 +2615,8 @@ public class GuestFS {
    * <p>
    * This inspection command looks for filesystems on
    * partitions, block devices and logical volumes, returning
-   * a list of devices containing filesystems and their type.
+   * a list of "mountables" containing filesystems and their
+   * type.
    * <p>
    * The return value is a hash, where the keys are the
    * devices containing filesystems, and the values are the
@@ -2670,6 +2626,10 @@ public class GuestFS {
    * "/dev/sda2" => "ext2"
    * "/dev/vg_guest/lv_root" => "ext4"
    * "/dev/vg_guest/lv_swap" => "swap"
+   * <p>
+   * The key is not necessarily a block device. It may also
+   * be an opaque 'mountable' string which can be passed to
+   * "g.mount".
    * <p>
    * The value can have the special value "unknown", meaning
    * the content of the device is undetermined or empty.
@@ -2776,6 +2736,88 @@ public class GuestFS {
    * <p>
    * See "DISK LABELS" in guestfs(3).
    * <p>
+   * "protocol"
+   * The optional protocol argument can be used to select
+   * an alternate source protocol.
+   * <p>
+   * See also: "REMOTE STORAGE" in guestfs(3).
+   * <p>
+   * "protocol = "file""
+   * "filename" is interpreted as a local file or
+   * device. This is the default if the optional
+   * protocol parameter is omitted.
+   * <p>
+   * "protocol = "gluster""
+   * Connect to the GlusterFS server. The "server"
+   * parameter must also be supplied - see below.
+   * <p>
+   * See also: "GLUSTER" in guestfs(3)
+   * <p>
+   * "protocol = "nbd""
+   * Connect to the Network Block Device server. The
+   * "server" parameter must also be supplied - see
+   * below.
+   * <p>
+   * See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+   * <p>
+   * "protocol = "rbd""
+   * Connect to the Ceph (librbd/RBD) server. The
+   * "server" parameter must also be supplied - see
+   * below.
+   * <p>
+   * See also: "CEPH" in guestfs(3).
+   * <p>
+   * "protocol = "sheepdog""
+   * Connect to the Sheepdog server. The "server"
+   * parameter may also be supplied - see below.
+   * <p>
+   * See also: "SHEEPDOG" in guestfs(3).
+   * <p>
+   * "protocol = "ssh""
+   * Connect to the Secure Shell (ssh) server.
+   * <p>
+   * The "server" parameter must be supplied. The
+   * "username" parameter may be supplied. See below.
+   * <p>
+   * See also: "SSH" in guestfs(3).
+   * <p>
+   * "server"
+   * For protocols which require access to a remote
+   * server, this is a list of server(s).
+   * <p>
+   * Protocol       Number of servers required
+   * --------       --------------------------
+   * file           List must be empty or param not used at all
+   * gluster        Exactly one
+   * nbd            Exactly one
+   * rbd            One or more
+   * sheepdog       Zero or more
+   * ssh            Exactly one
+   * <p>
+   * Each list element is a string specifying a server.
+   * The string must be in one of the following formats:
+   * <p>
+   * hostname
+   * hostname:port
+   * tcp:hostname
+   * tcp:hostname:port
+   * unix:/path/to/socket
+   * <p>
+   * If the port number is omitted, then the standard
+   * port number for the protocol is used (see
+   * "/etc/services").
+   * <p>
+   * "username"
+   * For the "ssh" protocol only, this specifies the
+   * remote username.
+   * <p>
+   * If not given, then the local username is used. But
+   * note this sometimes may give unexpected results, for
+   * example if using the libvirt backend and if the
+   * libvirt backend is configured to start the qemu
+   * appliance as a special user such as "qemu.qemu". If
+   * in doubt, specify the remote username you want.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -2832,8 +2874,32 @@ public class GuestFS {
       label = ((String) _optobj);
       _optargs_bitmask |= 16L;
     }
+    String protocol = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("protocol");
+    if (_optobj != null) {
+      protocol = ((String) _optobj);
+      _optargs_bitmask |= 32L;
+    }
+    String[] server = new String[]{};
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("server");
+    if (_optobj != null) {
+      server = ((String[]) _optobj);
+      _optargs_bitmask |= 64L;
+    }
+    String username = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("username");
+    if (_optobj != null) {
+      username = ((String) _optobj);
+      _optargs_bitmask |= 128L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username);
   }
 
   public void add_drive (String filename)
@@ -2854,7 +2920,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username)
     throws LibGuestFSException;
 
   /**
@@ -3512,34 +3578,47 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * set the attach method
+   * set the backend
    * <p>
    * Set the method that libguestfs uses to connect to the
-   * back end guestfsd daemon.
+   * backend guestfsd daemon.
    * <p>
-   * See "ATTACH METHOD" in guestfs(3).
+   * See "BACKEND" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "set_backend" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
-  public void set_attach_method (String attachmethod)
+  public void set_attach_method (String backend)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("set_attach_method: handle is closed");
 
-    _set_attach_method (g, attachmethod);
+    _set_attach_method (g, backend);
   }
 
-  private native void _set_attach_method (long g, String attachmethod)
+  private native void _set_attach_method (long g, String backend)
     throws LibGuestFSException;
 
   /**
-   * get the attach method
+   * get the backend
    * <p>
-   * Return the current attach method.
+   * Return the current backend.
    * <p>
-   * See "g.set_attach_method" and "ATTACH METHOD" in
-   * guestfs(3).
+   * See "g.set_backend" and "BACKEND" in guestfs(3).
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "get_backend" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -3553,6 +3632,55 @@ public class GuestFS {
   }
 
   private native String _get_attach_method (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the backend
+   * <p>
+   * Set the method that libguestfs uses to connect to the
+   * backend guestfsd daemon.
+   * <p>
+   * This handle property was previously called the "attach
+   * method".
+   * <p>
+   * See "BACKEND" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_backend (String backend)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_backend: handle is closed");
+
+    _set_backend (g, backend);
+  }
+
+  private native void _set_backend (long g, String backend)
+    throws LibGuestFSException;
+
+  /**
+   * get the backend
+   * <p>
+   * Return the current backend.
+   * <p>
+   * This handle property was previously called the "attach
+   * method".
+   * <p>
+   * See "g.set_backend" and "BACKEND" in guestfs(3).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_backend ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_backend: handle is closed");
+
+    return _get_backend (g);
+  }
+
+  private native String _get_backend (long g)
     throws LibGuestFSException;
 
   /**
@@ -4544,11 +4672,11 @@ public class GuestFS {
    * they cannot be removed.
    * <p>
    * You can call this function before or after launching the
-   * handle. If called after launch, if the attach-method
-   * supports it, we try to hot unplug the drive: see
-   * "HOTPLUGGING" in guestfs(3). The disk must not be in use
-   * (eg. mounted) when you do this. We try to detect if the
-   * disk is in use and stop you from doing this.
+   * handle. If called after launch, if the backend supports
+   * it, we try to hot unplug the drive: see "HOTPLUGGING" in
+   * guestfs(3). The disk must not be in use (eg. mounted)
+   * when you do this. We try to detect if the disk is in use
+   * and stop you from doing this.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4878,6 +5006,99 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * cancel the current upload or download operation
+   * <p>
+   * This function cancels the current upload or download
+   * operation.
+   * <p>
+   * Unlike most other libguestfs calls, this function is
+   * signal safe and thread safe. You can call it from a
+   * signal handler or from another thread, without needing
+   * to do any locking.
+   * <p>
+   * The transfer that was in progress (if there is one) will
+   * stop shortly afterwards, and will return an error. The
+   * errno (see "guestfs_last_errno") is set to "EINTR", so
+   * you can test for this to find out if the operation was
+   * cancelled or failed because of another error.
+   * <p>
+   * No cleanup is performed: for example, if a file was
+   * being uploaded then after cancellation there may be a
+   * partially uploaded file. It is the caller's
+   * responsibility to clean up if necessary.
+   * <p>
+   * There are two common places that you might call
+   * "g.user_cancel":
+   * <p>
+   * In an interactive text-based program, you might call it
+   * from a "SIGINT" signal handler so that pressing "^C"
+   * cancels the current operation. (You also need to call
+   * "guestfs_set_pgroup" so that child processes don't
+   * receive the "^C" signal).
+   * <p>
+   * In a graphical program, when the main thread is
+   * displaying a progress bar with a cancel button, wire up
+   * the cancel button to call this function.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void user_cancel ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("user_cancel: handle is closed");
+
+    _user_cancel (g);
+  }
+
+  private native void _user_cancel (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the program name
+   * <p>
+   * Set the program name. This is an informative string
+   * which the main program may optionally set in the handle.
+   * <p>
+   * When the handle is created, the program name in the
+   * handle is set to the basename from "argv[0]". If that
+   * was not possible, it is set to the empty string (but
+   * never "NULL").
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_program (String program)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_program: handle is closed");
+
+    _set_program (g, program);
+  }
+
+  private native void _set_program (long g, String program)
+    throws LibGuestFSException;
+
+  /**
+   * get the program name
+   * <p>
+   * Get the program name. See "g.set_program".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_program ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_program: handle is closed");
+
+    return _get_program (g);
+  }
+
+  private native String _get_program (long g)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.
@@ -4885,7 +5106,8 @@ public class GuestFS {
    * on, as they were added to the guest. If those block
    * devices contain partitions, they will have the usual
    * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
-   * names can be used.
+   * names can be used, or 'mountable' strings returned by
+   * "g.list_filesystems" or "g.inspect_get_mountpoints".
    * <p>
    * The rules are the same as for mount(2): A filesystem
    * must first be mounted on "/" before others can be
@@ -4905,16 +5127,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount (String device, String mountpoint)
+  public void mount (String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount: handle is closed");
 
-    _mount (g, device, mountpoint);
+    _mount (g, mountable, mountpoint);
   }
 
-  private native void _mount (long g, String device, String mountpoint)
+  private native void _mount (long g, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   /**
@@ -6772,16 +6994,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount_ro (String device, String mountpoint)
+  public void mount_ro (String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_ro: handle is closed");
 
-    _mount_ro (g, device, mountpoint);
+    _mount_ro (g, mountable, mountpoint);
   }
 
-  private native void _mount_ro (long g, String device, String mountpoint)
+  private native void _mount_ro (long g, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   /**
@@ -6797,16 +7019,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount_options (String options, String device, String mountpoint)
+  public void mount_options (String options, String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_options: handle is closed");
 
-    _mount_options (g, options, device, mountpoint);
+    _mount_options (g, options, mountable, mountpoint);
   }
 
-  private native void _mount_options (long g, String options, String device, String mountpoint)
+  private native void _mount_options (long g, String options, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   /**
@@ -6818,16 +7040,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public void mount_vfs (String options, String vfstype, String device, String mountpoint)
+  public void mount_vfs (String options, String vfstype, String mountable, String mountpoint)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("mount_vfs: handle is closed");
 
-    _mount_vfs (g, options, vfstype, device, mountpoint);
+    _mount_vfs (g, options, vfstype, mountable, mountpoint);
   }
 
-  private native void _mount_vfs (long g, String options, String vfstype, String device, String mountpoint)
+  private native void _mount_vfs (long g, String options, String vfstype, String mountable, String mountpoint)
     throws LibGuestFSException;
 
   public String debug (String subcmd, String[] extraargs)
@@ -10174,7 +10396,7 @@ public class GuestFS {
    * get the Linux VFS type corresponding to a mounted device
    * <p>
    * This command gets the filesystem type corresponding to
-   * the filesystem on "device".
+   * the filesystem on "mountable".
    * <p>
    * For most filesystems, the result is the name of the
    * Linux VFS module which would be used to mount this
@@ -10184,16 +10406,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public String vfs_type (String device)
+  public String vfs_type (String mountable)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_type: handle is closed");
 
-    return _vfs_type (g, device);
+    return _vfs_type (g, mountable);
   }
 
-  private native String _vfs_type (long g, String device)
+  private native String _vfs_type (long g, String mountable)
     throws LibGuestFSException;
 
   /**
@@ -10647,6 +10869,11 @@ public class GuestFS {
    * groups then an error is always returned.
    * <p>
    * *Notes:*
+   * <p>
+   * *   "g.feature_available" is the same as this call, but
+   * with a slightly simpler to use API: that call
+   * returns a boolean true/false instead of throwing an
+   * error.
    * <p>
    * *   You must call "g.launch" before calling this
    * function.
@@ -11456,9 +11683,11 @@ public class GuestFS {
    * this daemon knows about. Note this returns both
    * supported and unsupported groups. To find out which ones
    * the daemon can actually support you have to call
-   * "g.available" on each member of the returned list.
+   * "g.available" / "g.feature_available" on each member of
+   * the returned list.
    * <p>
-   * See also "g.available" and "AVAILABILITY" in guestfs(3).
+   * See also "g.available", "g.feature_available" and
+   * "AVAILABILITY" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -11510,8 +11739,7 @@ public class GuestFS {
   /**
    * get the filesystem label
    * <p>
-   * This returns the filesystem label of the filesystem on
-   * "device".
+   * This returns the label of the filesystem on "mountable".
    * <p>
    * If the filesystem is unlabeled, this returns the empty
    * string.
@@ -11521,23 +11749,23 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public String vfs_label (String device)
+  public String vfs_label (String mountable)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_label: handle is closed");
 
-    return _vfs_label (g, device);
+    return _vfs_label (g, mountable);
   }
 
-  private native String _vfs_label (long g, String device)
+  private native String _vfs_label (long g, String mountable)
     throws LibGuestFSException;
 
   /**
    * get the filesystem UUID
    * <p>
    * This returns the filesystem UUID of the filesystem on
-   * "device".
+   * "mountable".
    * <p>
    * If the filesystem does not have a UUID, this returns the
    * empty string.
@@ -11546,16 +11774,16 @@ public class GuestFS {
    * <p>
    * @throws LibGuestFSException
    */
-  public String vfs_uuid (String device)
+  public String vfs_uuid (String mountable)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("vfs_uuid: handle is closed");
 
-    return _vfs_uuid (g, device);
+    return _vfs_uuid (g, mountable);
   }
 
-  private native String _vfs_uuid (long g, String device)
+  private native String _vfs_uuid (long g, String mountable)
     throws LibGuestFSException;
 
   /**
@@ -12783,6 +13011,13 @@ public class GuestFS {
    * If the destination file is not large enough, it is
    * extended.
    * <p>
+   * If the "sparse" flag is true then the call avoids
+   * writing blocks that contain only zeroes, which can help
+   * in some situations where the backing disk is
+   * thin-provisioned. Note that unless the target is already
+   * zeroed, using this option will result in incorrect
+   * copying.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -12823,8 +13058,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_device_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_device_to_device (String src, String dest)
@@ -12833,7 +13076,7 @@ public class GuestFS {
     copy_device_to_device (src, dest, null);
   }
 
-  private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_device_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -12882,8 +13125,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_device_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_device_to_file (String src, String dest)
@@ -12892,7 +13143,7 @@ public class GuestFS {
     copy_device_to_file (src, dest, null);
   }
 
-  private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_device_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -12941,8 +13192,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_file_to_device (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_file_to_device (String src, String dest)
@@ -12951,7 +13210,7 @@ public class GuestFS {
     copy_file_to_device (src, dest, null);
   }
 
-  private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_file_to_device (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -13005,8 +13264,16 @@ public class GuestFS {
       size = ((Long) _optobj).longValue();
       _optargs_bitmask |= 4L;
     }
+    boolean sparse = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("sparse");
+    if (_optobj != null) {
+      sparse = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 8L;
+    }
 
-    _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size);
+    _copy_file_to_file (g, src, dest, _optargs_bitmask, srcoffset, destoffset, size, sparse);
   }
 
   public void copy_file_to_file (String src, String dest)
@@ -13015,7 +13282,7 @@ public class GuestFS {
     copy_file_to_file (src, dest, null);
   }
 
-  private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size)
+  private native void _copy_file_to_file (long g, String src, String dest, long _optargs_bitmask, long srcoffset, long destoffset, long size, boolean sparse)
     throws LibGuestFSException;
 
   /**
@@ -13718,7 +13985,7 @@ public class GuestFS {
   /**
    * set filesystem label
    * <p>
-   * Set the filesystem label on "device" to "label".
+   * Set the filesystem label on "mountable" to "label".
    * <p>
    * Only some filesystem types support labels, and
    * libguestfs supports setting labels on only a subset of
@@ -13729,20 +13996,23 @@ public class GuestFS {
    * On NTFS filesystems, labels are limited to 128 unicode
    * characters.
    * <p>
+   * Setting the label on a btrfs subvolume will set the
+   * label on its parent filesystem.
+   * <p>
    * To read the label on a filesystem, call "g.vfs_label".
    * <p>
    * @throws LibGuestFSException
    */
-  public void set_label (String device, String label)
+  public void set_label (String mountable, String label)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("set_label: handle is closed");
 
-    _set_label (g, device, label);
+    _set_label (g, mountable, label);
   }
 
-  private native void _set_label (long g, String device, String label)
+  private native void _set_label (long g, String mountable, String label)
     throws LibGuestFSException;
 
   /**
@@ -14496,7 +14766,8 @@ public class GuestFS {
    * for other reasons such as it being a later version of
    * the filesystem, or having incompatible features.
    * <p>
-   * See also "g.available", "AVAILABILITY" in guestfs(3).
+   * See also "g.available", "g.feature_available",
+   * "AVAILABILITY" in guestfs(3).
    * <p>
    * @throws LibGuestFSException
    */
@@ -16640,6 +16911,53 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * set the type GUID of a GPT partition
+   * <p>
+   * Set the type GUID of numbered GPT partition "partnum" to
+   * "guid". Return an error if the partition table of
+   * "device" isn't GPT, or if "guid" is not a valid GUID.
+   * <p>
+   * See
+   * <http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
+   * tion_type_GUIDs> for a useful list of type GUIDs.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void part_set_gpt_type (String device, int partnum, String guid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_set_gpt_type: handle is closed");
+
+    _part_set_gpt_type (g, device, partnum, guid);
+  }
+
+  private native void _part_set_gpt_type (long g, String device, int partnum, String guid)
+    throws LibGuestFSException;
+
+  /**
+   * get the type GUID of a GPT partition
+   * <p>
+   * Return the type GUID of numbered GPT partition
+   * "partnum". For MBR partitions, return an appropriate
+   * GUID corresponding to the MBR type. Behaviour is
+   * undefined for other partition types.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String part_get_gpt_type (String device, int partnum)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("part_get_gpt_type: handle is closed");
+
+    return _part_get_gpt_type (g, device, partnum);
+  }
+
+  private native String _part_get_gpt_type (long g, String device, int partnum)
+    throws LibGuestFSException;
+
+  /**
    * rename a file on the same filesystem
    * <p>
    * Rename a file to a new place on the same filesystem.
@@ -16658,6 +16976,155 @@ public class GuestFS {
   }
 
   private native void _rename (long g, String oldpath, String newpath)
+    throws LibGuestFSException;
+
+  /**
+   * test if a device is a whole device
+   * <p>
+   * This returns "true" if and only if "device" refers to a
+   * whole block device. That is, not a partition or a
+   * logical device.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean is_whole_device (String device)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("is_whole_device: handle is closed");
+
+    return _is_whole_device (g, device);
+  }
+
+  private native boolean _is_whole_device (long g, String device)
+    throws LibGuestFSException;
+
+  /**
+   * test availability of some parts of the API
+   * <p>
+   * This is the same as "g.available", but unlike that call
+   * it returns a simple true/false boolean result, instead
+   * of throwing an exception if a feature is not found. For
+   * other documentation see "g.available".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean feature_available (String[] groups)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("feature_available: handle is closed");
+
+    return _feature_available (g, groups);
+  }
+
+  private native boolean _feature_available (long g, String[] groups)
+    throws LibGuestFSException;
+
+  /**
+   * install the SYSLINUX bootloader
+   * <p>
+   * Install the SYSLINUX bootloader on "device".
+   * <p>
+   * The device parameter must be either a whole disk
+   * formatted as a FAT filesystem, or a partition formatted
+   * as a FAT filesystem. In the latter case, the partition
+   * should be marked as "active" ("g.part_set_bootable") and
+   * a Master Boot Record must be installed (eg. using
+   * "g.pwrite_device") on the first sector of the whole
+   * disk. The SYSLINUX package comes with some suitable
+   * Master Boot Records. See the syslinux(1) man page for
+   * further information.
+   * <p>
+   * The optional arguments are:
+   * <p>
+   * "directory"
+   * Install SYSLINUX in the named subdirectory, instead
+   * of in the root directory of the FAT filesystem.
+   * <p>
+   * Additional configuration can be supplied to SYSLINUX by
+   * placing a file called "syslinux.cfg" on the FAT
+   * filesystem, either in the root directory, or under
+   * "directory" if that optional argument is being used. For
+   * further information about the contents of this file, see
+   * syslinux(1).
+   * <p>
+   * See also "g.extlinux".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void syslinux (String device, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("syslinux: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String directory = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("directory");
+    if (_optobj != null) {
+      directory = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+
+    _syslinux (g, device, _optargs_bitmask, directory);
+  }
+
+  public void syslinux (String device)
+    throws LibGuestFSException
+  {
+    syslinux (device, null);
+  }
+
+  private native void _syslinux (long g, String device, long _optargs_bitmask, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+   * <p>
+   * Install the SYSLINUX bootloader on the device mounted at
+   * "directory". Unlike "g.syslinux" which requires a FAT
+   * filesystem, this can be used on an ext2/3/4 or btrfs
+   * filesystem.
+   * <p>
+   * The "directory" parameter can be either a mountpoint, or
+   * a directory within the mountpoint.
+   * <p>
+   * You also have to mark the partition as "active"
+   * ("g.part_set_bootable") and a Master Boot Record must be
+   * installed (eg. using "g.pwrite_device") on the first
+   * sector of the whole disk. The SYSLINUX package comes
+   * with some suitable Master Boot Records. See the
+   * extlinux(1) man page for further information.
+   * <p>
+   * Additional configuration can be supplied to SYSLINUX by
+   * placing a file called "extlinux.conf" on the filesystem
+   * under "directory". For further information about the
+   * contents of this file, see extlinux(1).
+   * <p>
+   * See also "g.syslinux".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void extlinux (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("extlinux: handle is closed");
+
+    _extlinux (g, directory);
+  }
+
+  private native void _extlinux (long g, String directory)
     throws LibGuestFSException;
 
 }

@@ -73,6 +73,7 @@
 /getlogin_r.m4
 /getopt.m4
 /getpagesize.m4
+/gettext.m4
 /gettime.m4
 /gettimeofday.m4
 /getugroups.m4
@@ -170,6 +171,7 @@
 /rawmemchr.m4
 /readdir.m4
 /read-file.m4
+/readlinkat.m4
 /readlink.m4
 /read.m4
 /realloc.m4
@@ -177,6 +179,7 @@
 /safe-read.m4
 /safe-write.m4
 /save-cwd.m4
+/secure_getenv.m4
 /select.m4
 /servent.m4
 /setenv.m4
@@ -234,6 +237,7 @@
 /ungetc.m4
 /unistd_h.m4
 /unistd-safer.m4
+/unlinkat.m4
 /unlinkdir.m4
 /unlink.m4
 /usleep.m4

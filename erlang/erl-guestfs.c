@@ -748,6 +748,21 @@ run_add_drive (ETERM *message)
       optargs_s.label = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "protocol")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+      optargs_s.protocol = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "server")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+      optargs_s.server = get_string_list (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "username")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+      optargs_s.username = erl_iolist_to_string (hd_value);
+    }
+    else
       return unknown_optarg ("add_drive", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -764,6 +779,12 @@ run_add_drive (ETERM *message)
     free ((char *) optargs_s.name);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK))
     free ((char *) optargs_s.label);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK))
+    free ((char *) optargs_s.protocol);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK))
+    guestfs___free_string_list ((char **) optargs_s.server);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK))
+    free ((char *) optargs_s.username);
   if (r == -1)
     return make_error ("add_drive");
 
@@ -1790,6 +1811,11 @@ run_copy_device_to_device (ETERM *message)
       optargs_s.size = get_int64 (hd_value);
     }
     else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("copy_device_to_device", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -1832,6 +1858,11 @@ run_copy_device_to_file (ETERM *message)
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       optargs_s.size = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
     }
     else
       return unknown_optarg ("copy_device_to_file", hd_name);
@@ -1878,6 +1909,11 @@ run_copy_file_to_device (ETERM *message)
       optargs_s.size = get_int64 (hd_value);
     }
     else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
+    }
+    else
       return unknown_optarg ("copy_file_to_device", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -1920,6 +1956,11 @@ run_copy_file_to_file (ETERM *message)
     if (atom_equals (hd_name, "size")) {
       optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       optargs_s.size = get_int64 (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "sparse")) {
+      optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+      optargs_s.sparse = get_bool (hd_value);
     }
     else
       return unknown_optarg ("copy_file_to_file", hd_name);
@@ -2349,6 +2390,20 @@ run_exists (ETERM *message)
 }
 
 static ETERM *
+run_extlinux (ETERM *message)
+{
+  char *directory = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_extlinux (g, directory);
+  free (directory);
+  if (r == -1)
+    return make_error ("extlinux");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_fallocate (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
@@ -2376,6 +2431,20 @@ run_fallocate64 (ETERM *message)
     return make_error ("fallocate64");
 
   return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_feature_available (ETERM *message)
+{
+  char **groups = get_string_list (ARG (0));
+  int r;
+
+  r = guestfs_feature_available (g, groups);
+  guestfs___free_string_list (groups);
+  if (r == -1)
+    return make_error ("feature_available");
+
+  return make_bool (r);
 }
 
 static ETERM *
@@ -2689,6 +2758,20 @@ run_get_autosync (ETERM *message)
 }
 
 static ETERM *
+run_get_backend (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_get_backend (g);
+  if (r == NULL)
+    return make_error ("get_backend");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_get_cachedir (ETERM *message)
 {
   char *r;
@@ -2894,6 +2977,18 @@ run_get_pid (ETERM *message)
     return make_error ("get_pid");
 
   return erl_mk_int (r);
+}
+
+static ETERM *
+run_get_program (ETERM *message)
+{
+  const char *r;
+
+  r = guestfs_get_program (g);
+  if (r == NULL)
+    return make_error ("get_program");
+
+  return erl_mk_string (r);
 }
 
 static ETERM *
@@ -4954,6 +5049,20 @@ run_is_symlink (ETERM *message)
 }
 
 static ETERM *
+run_is_whole_device (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_is_whole_device (g, device);
+  free (device);
+  if (r == -1)
+    return make_error ("is_whole_device");
+
+  return make_bool (r);
+}
+
+static ETERM *
 run_is_zero (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
@@ -6798,12 +6907,12 @@ run_modprobe (ETERM *message)
 static ETERM *
 run_mount (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *mountpoint = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_mount (g, device, mountpoint);
-  free (device);
+  r = guestfs_mount (g, mountable, mountpoint);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount");
@@ -6928,13 +7037,13 @@ static ETERM *
 run_mount_options (ETERM *message)
 {
   char *options = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  char *mountable = erl_iolist_to_string (ARG (1));
   char *mountpoint = erl_iolist_to_string (ARG (2));
   int r;
 
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   free (options);
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount_options");
@@ -6945,12 +7054,12 @@ run_mount_options (ETERM *message)
 static ETERM *
 run_mount_ro (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *mountpoint = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_mount_ro (g, device, mountpoint);
-  free (device);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount_ro");
@@ -6963,14 +7072,14 @@ run_mount_vfs (ETERM *message)
 {
   char *options = erl_iolist_to_string (ARG (0));
   char *vfstype = erl_iolist_to_string (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
+  char *mountable = erl_iolist_to_string (ARG (2));
   char *mountpoint = erl_iolist_to_string (ARG (3));
   int r;
 
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   free (options);
   free (vfstype);
-  free (device);
+  free (mountable);
   free (mountpoint);
   if (r == -1)
     return make_error ("mount_vfs");
@@ -7295,6 +7404,23 @@ run_part_get_bootable (ETERM *message)
 }
 
 static ETERM *
+run_part_get_gpt_type (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  char *r;
+
+  r = guestfs_part_get_gpt_type (g, device, partnum);
+  free (device);
+  if (r == NULL)
+    return make_error ("part_get_gpt_type");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
 run_part_get_mbr_id (ETERM *message)
 {
   char *device = erl_iolist_to_string (ARG (0));
@@ -7369,6 +7495,23 @@ run_part_set_bootable (ETERM *message)
   free (device);
   if (r == -1)
     return make_error ("part_set_bootable");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_part_set_gpt_type (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+  int partnum = get_int (ARG (1));
+  char *guid = erl_iolist_to_string (ARG (2));
+  int r;
+
+  r = guestfs_part_set_gpt_type (g, device, partnum, guid);
+  free (device);
+  free (guid);
+  if (r == -1)
+    return make_error ("part_set_gpt_type");
 
   return erl_mk_atom ("ok");
 }
@@ -8090,11 +8233,11 @@ run_set_append (ETERM *message)
 static ETERM *
 run_set_attach_method (ETERM *message)
 {
-  char *attachmethod = erl_iolist_to_string (ARG (0));
+  char *backend = erl_iolist_to_string (ARG (0));
   int r;
 
-  r = guestfs_set_attach_method (g, attachmethod);
-  free (attachmethod);
+  r = guestfs_set_attach_method (g, backend);
+  free (backend);
   if (r == -1)
     return make_error ("set_attach_method");
 
@@ -8110,6 +8253,20 @@ run_set_autosync (ETERM *message)
   r = guestfs_set_autosync (g, autosync);
   if (r == -1)
     return make_error ("set_autosync");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_set_backend (ETERM *message)
+{
+  char *backend = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_backend (g, backend);
+  free (backend);
+  if (r == -1)
+    return make_error ("set_backend");
 
   return erl_mk_atom ("ok");
 }
@@ -8229,12 +8386,12 @@ run_set_e2uuid (ETERM *message)
 static ETERM *
 run_set_label (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *label = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_set_label (g, device, label);
-  free (device);
+  r = guestfs_set_label (g, mountable, label);
+  free (mountable);
   free (label);
   if (r == -1)
     return make_error ("set_label");
@@ -8325,6 +8482,20 @@ run_set_pgroup (ETERM *message)
   r = guestfs_set_pgroup (g, pgroup);
   if (r == -1)
     return make_error ("set_pgroup");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_set_program (ETERM *message)
+{
+  char *program = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_program (g, program);
+  free (program);
+  if (r == -1)
+    return make_error ("set_program");
 
   return erl_mk_atom ("ok");
 }
@@ -8817,6 +8988,40 @@ run_sync (ETERM *message)
 }
 
 static ETERM *
+run_syslinux (ETERM *message)
+{
+  char *device = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "directory")) {
+      optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+      optargs_s.directory = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("syslinux", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+  free (device);
+  if ((optargs_s.bitmask & GUESTFS_SYSLINUX_DIRECTORY_BITMASK))
+    free ((char *) optargs_s.directory);
+  if (r == -1)
+    return make_error ("syslinux");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_tail (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
@@ -9265,6 +9470,18 @@ run_upload_offset (ETERM *message)
 }
 
 static ETERM *
+run_user_cancel (ETERM *message)
+{
+  int r;
+
+  r = guestfs_user_cancel (g);
+  if (r == -1)
+    return make_error ("user_cancel");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_utimens (ETERM *message)
 {
   char *path = erl_iolist_to_string (ARG (0));
@@ -9313,11 +9530,11 @@ run_version (ETERM *message)
 static ETERM *
 run_vfs_label (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
-  r = guestfs_vfs_label (g, device);
-  free (device);
+  r = guestfs_vfs_label (g, mountable);
+  free (mountable);
   if (r == NULL)
     return make_error ("vfs_label");
 
@@ -9329,11 +9546,11 @@ run_vfs_label (ETERM *message)
 static ETERM *
 run_vfs_type (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
-  r = guestfs_vfs_type (g, device);
-  free (device);
+  r = guestfs_vfs_type (g, mountable);
+  free (mountable);
   if (r == NULL)
     return make_error ("vfs_type");
 
@@ -9345,11 +9562,11 @@ run_vfs_type (ETERM *message)
 static ETERM *
 run_vfs_uuid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
-  r = guestfs_vfs_uuid (g, device);
-  free (device);
+  r = guestfs_vfs_uuid (g, mountable);
+  free (mountable);
   if (r == NULL)
     return make_error ("vfs_uuid");
 
@@ -10300,10 +10517,14 @@ dispatch (ETERM *message)
     return run_equal (message);
   else if (atom_equals (fun, "exists"))
     return run_exists (message);
+  else if (atom_equals (fun, "extlinux"))
+    return run_extlinux (message);
   else if (atom_equals (fun, "fallocate"))
     return run_fallocate (message);
   else if (atom_equals (fun, "fallocate64"))
     return run_fallocate64 (message);
+  else if (atom_equals (fun, "feature_available"))
+    return run_feature_available (message);
   else if (atom_equals (fun, "fgrep"))
     return run_fgrep (message);
   else if (atom_equals (fun, "fgrepi"))
@@ -10340,6 +10561,8 @@ dispatch (ETERM *message)
     return run_get_attach_method (message);
   else if (atom_equals (fun, "get_autosync"))
     return run_get_autosync (message);
+  else if (atom_equals (fun, "get_backend"))
+    return run_get_backend (message);
   else if (atom_equals (fun, "get_cachedir"))
     return run_get_cachedir (message);
   else if (atom_equals (fun, "get_direct"))
@@ -10370,6 +10593,8 @@ dispatch (ETERM *message)
     return run_get_pgroup (message);
   else if (atom_equals (fun, "get_pid"))
     return run_get_pid (message);
+  else if (atom_equals (fun, "get_program"))
+    return run_get_program (message);
   else if (atom_equals (fun, "get_qemu"))
     return run_get_qemu (message);
   else if (atom_equals (fun, "get_recovery_proc"))
@@ -10584,6 +10809,8 @@ dispatch (ETERM *message)
     return run_is_socket (message);
   else if (atom_equals (fun, "is_symlink"))
     return run_is_symlink (message);
+  else if (atom_equals (fun, "is_whole_device"))
+    return run_is_whole_device (message);
   else if (atom_equals (fun, "is_zero"))
     return run_is_zero (message);
   else if (atom_equals (fun, "is_zero_device"))
@@ -10816,6 +11043,8 @@ dispatch (ETERM *message)
     return run_part_disk (message);
   else if (atom_equals (fun, "part_get_bootable"))
     return run_part_get_bootable (message);
+  else if (atom_equals (fun, "part_get_gpt_type"))
+    return run_part_get_gpt_type (message);
   else if (atom_equals (fun, "part_get_mbr_id"))
     return run_part_get_mbr_id (message);
   else if (atom_equals (fun, "part_get_parttype"))
@@ -10826,6 +11055,8 @@ dispatch (ETERM *message)
     return run_part_list (message);
   else if (atom_equals (fun, "part_set_bootable"))
     return run_part_set_bootable (message);
+  else if (atom_equals (fun, "part_set_gpt_type"))
+    return run_part_set_gpt_type (message);
   else if (atom_equals (fun, "part_set_mbr_id"))
     return run_part_set_mbr_id (message);
   else if (atom_equals (fun, "part_set_name"))
@@ -10914,6 +11145,8 @@ dispatch (ETERM *message)
     return run_set_attach_method (message);
   else if (atom_equals (fun, "set_autosync"))
     return run_set_autosync (message);
+  else if (atom_equals (fun, "set_backend"))
+    return run_set_backend (message);
   else if (atom_equals (fun, "set_cachedir"))
     return run_set_cachedir (message);
   else if (atom_equals (fun, "set_direct"))
@@ -10940,6 +11173,8 @@ dispatch (ETERM *message)
     return run_set_path (message);
   else if (atom_equals (fun, "set_pgroup"))
     return run_set_pgroup (message);
+  else if (atom_equals (fun, "set_program"))
+    return run_set_program (message);
   else if (atom_equals (fun, "set_qemu"))
     return run_set_qemu (message);
   else if (atom_equals (fun, "set_recovery_proc"))
@@ -11004,6 +11239,8 @@ dispatch (ETERM *message)
     return run_swapon_uuid (message);
   else if (atom_equals (fun, "sync"))
     return run_sync (message);
+  else if (atom_equals (fun, "syslinux"))
+    return run_syslinux (message);
   else if (atom_equals (fun, "tail"))
     return run_tail (message);
   else if (atom_equals (fun, "tail_n"))
@@ -11042,6 +11279,8 @@ dispatch (ETERM *message)
     return run_upload (message);
   else if (atom_equals (fun, "upload_offset"))
     return run_upload_offset (message);
+  else if (atom_equals (fun, "user_cancel"))
+    return run_user_cancel (message);
   else if (atom_equals (fun, "utimens"))
     return run_utimens (message);
   else if (atom_equals (fun, "utsname"))

@@ -214,8 +214,10 @@ gchar *guestfs_session_inspect_get_format(GuestfsSession *session, const gchar *
 gint8 guestfs_session_inspect_is_live(GuestfsSession *session, const gchar *root, GError **err);
 gint8 guestfs_session_inspect_is_netinst(GuestfsSession *session, const gchar *root, GError **err);
 gint8 guestfs_session_inspect_is_multipart(GuestfsSession *session, const gchar *root, GError **err);
-gboolean guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachmethod, GError **err);
+gboolean guestfs_session_set_attach_method(GuestfsSession *session, const gchar *backend, GError **err);
 gchar *guestfs_session_get_attach_method(GuestfsSession *session, GError **err);
+gboolean guestfs_session_set_backend(GuestfsSession *session, const gchar *backend, GError **err);
+gchar *guestfs_session_get_backend(GuestfsSession *session, GError **err);
 gchar *guestfs_session_inspect_get_product_variant(GuestfsSession *session, const gchar *root, GError **err);
 gchar *guestfs_session_inspect_get_windows_current_control_set(GuestfsSession *session, const gchar *root, GError **err);
 GHashTable *guestfs_session_inspect_get_drive_mappings(GuestfsSession *session, const gchar *root, GError **err);
@@ -257,7 +259,10 @@ gboolean guestfs_session_set_tmpdir(GuestfsSession *session, const gchar *tmpdir
 gchar *guestfs_session_get_tmpdir(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_cachedir(GuestfsSession *session, const gchar *cachedir, GError **err);
 gchar *guestfs_session_get_cachedir(GuestfsSession *session, GError **err);
-gboolean guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err);
+gboolean guestfs_session_user_cancel(GuestfsSession *session, GError **err);
+gboolean guestfs_session_set_program(GuestfsSession *session, const gchar *program, GError **err);
+const gchar *guestfs_session_get_program(GuestfsSession *session, GError **err);
+gboolean guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err);
 gboolean guestfs_session_sync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err);
 gchar *guestfs_session_ll(GuestfsSession *session, const gchar *directory, GError **err);
@@ -325,9 +330,9 @@ gboolean guestfs_session_tar_in(GuestfsSession *session, const gchar *tarfile, c
 gboolean guestfs_session_tar_out(GuestfsSession *session, const gchar *directory, const gchar *tarfile, GuestfsTarOut *optargs, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_tgz_in(GuestfsSession *session, const gchar *tarball, const gchar *directory, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_tgz_out(GuestfsSession *session, const gchar *directory, const gchar *tarball, GCancellable *cancellable, GError **err);
-gboolean guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err);
-gboolean guestfs_session_mount_options(GuestfsSession *session, const gchar *options, const gchar *device, const gchar *mountpoint, GError **err);
-gboolean guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *device, const gchar *mountpoint, GError **err);
+gboolean guestfs_session_mount_ro(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err);
+gboolean guestfs_session_mount_options(GuestfsSession *session, const gchar *options, const gchar *mountable, const gchar *mountpoint, GError **err);
+gboolean guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *mountable, const gchar *mountpoint, GError **err);
 gchar *guestfs_session_debug(GuestfsSession *session, const gchar *subcmd, gchar *const *extraargs, GError **err);
 gboolean guestfs_session_lvremove(GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_vgremove(GuestfsSession *session, const gchar *vgname, GError **err);
@@ -448,7 +453,7 @@ gboolean guestfs_session_modprobe(GuestfsSession *session, const gchar *modulena
 gchar *guestfs_session_echo_daemon(GuestfsSession *session, gchar *const *words, GError **err);
 gboolean guestfs_session_find0(GuestfsSession *session, const gchar *directory, const gchar *files, GCancellable *cancellable, GError **err);
 gchar *guestfs_session_case_sensitive_path(GuestfsSession *session, const gchar *path, GError **err);
-gchar *guestfs_session_vfs_type(GuestfsSession *session, const gchar *device, GError **err);
+gchar *guestfs_session_vfs_type(GuestfsSession *session, const gchar *mountable, GError **err);
 gboolean guestfs_session_truncate(GuestfsSession *session, const gchar *path, GError **err);
 gboolean guestfs_session_truncate_size(GuestfsSession *session, const gchar *path, gint64 size, GError **err);
 gboolean guestfs_session_utimens(GuestfsSession *session, const gchar *path, gint64 atsecs, gint64 atnsecs, gint64 mtsecs, gint64 mtnsecs, GError **err);
@@ -498,8 +503,8 @@ gboolean guestfs_session_pvresize_size(GuestfsSession *session, const gchar *dev
 gboolean guestfs_session_ntfsresize_size(GuestfsSession *session, const gchar *device, gint64 size, GError **err);
 gchar **guestfs_session_available_all_groups(GuestfsSession *session, GError **err);
 gboolean guestfs_session_fallocate64(GuestfsSession *session, const gchar *path, gint64 len, GError **err);
-gchar *guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError **err);
-gchar *guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *device, GError **err);
+gchar *guestfs_session_vfs_label(GuestfsSession *session, const gchar *mountable, GError **err);
+gchar *guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *mountable, GError **err);
 gboolean guestfs_session_lvm_set_filter(GuestfsSession *session, gchar *const *devices, GError **err);
 gboolean guestfs_session_lvm_clear_filter(GuestfsSession *session, GError **err);
 gboolean guestfs_session_luks_open(GuestfsSession *session, const gchar *device, const gchar *key, const gchar *mapname, GError **err);
@@ -553,7 +558,7 @@ gboolean guestfs_session_wipefs(GuestfsSession *session, const gchar *device, GE
 gboolean guestfs_session_ntfsfix(GuestfsSession *session, const gchar *device, GuestfsNtfsfix *optargs, GError **err);
 gboolean guestfs_session_ntfsclone_out(GuestfsSession *session, const gchar *device, const gchar *backupfile, GuestfsNtfscloneOut *optargs, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_ntfsclone_in(GuestfsSession *session, const gchar *backupfile, const gchar *device, GCancellable *cancellable, GError **err);
-gboolean guestfs_session_set_label(GuestfsSession *session, const gchar *device, const gchar *label, GError **err);
+gboolean guestfs_session_set_label(GuestfsSession *session, const gchar *mountable, const gchar *label, GError **err);
 gboolean guestfs_session_zero_free_space(GuestfsSession *session, const gchar *directory, GError **err);
 gboolean guestfs_session_lvcreate_free(GuestfsSession *session, const gchar *logvol, const gchar *volgroup, gint32 percent, GError **err);
 GuestfsISOInfo *guestfs_session_isoinfo_device(GuestfsSession *session, const gchar *device, GError **err);
@@ -632,7 +637,13 @@ gchar **guestfs_session_ldmtool_diskgroup_disks(GuestfsSession *session, const g
 gchar *guestfs_session_ldmtool_volume_type(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err);
 gchar *guestfs_session_ldmtool_volume_hint(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err);
 gchar **guestfs_session_ldmtool_volume_partitions(GuestfsSession *session, const gchar *diskgroup, const gchar *volume, GError **err);
+gboolean guestfs_session_part_set_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err);
+gchar *guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err);
 gboolean guestfs_session_rename(GuestfsSession *session, const gchar *oldpath, const gchar *newpath, GError **err);
+gint8 guestfs_session_is_whole_device(GuestfsSession *session, const gchar *device, GError **err);
+gint8 guestfs_session_feature_available(GuestfsSession *session, gchar *const *groups, GError **err);
+gboolean guestfs_session_syslinux(GuestfsSession *session, const gchar *device, GuestfsSyslinux *optargs, GError **err);
+gboolean guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError **err);
 
 G_END_DECLS
 

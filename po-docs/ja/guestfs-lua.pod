@@ -97,7 +97,7 @@ strings.
 Note that the library also throws some errors as plain strings.  You may
 need to check the type.
 
-=head2 EVENTS
+=head2 イベント
 
 Events can be registered by calling C<set_event_callback>:
 

@@ -1,6 +1,6 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2002-2012 Free Software Foundation, Inc.
+# Copyright (C) 2002-2013 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -84,6 +84,23 @@ check_PROGRAMS += test-alloca-opt
 EXTRA_DIST += test-alloca-opt.c
 
 ## end   gnulib module alloca-opt-tests
+
+## begin gnulib module areadlink-tests
+
+TESTS += test-areadlink
+check_PROGRAMS += test-areadlink
+EXTRA_DIST += test-areadlink.h test-areadlink.c macros.h
+
+## end   gnulib module areadlink-tests
+
+## begin gnulib module areadlinkat-tests
+
+TESTS += test-areadlinkat
+check_PROGRAMS += test-areadlinkat
+test_areadlinkat_LDADD = $(LDADD) @LIBINTL@
+EXTRA_DIST += test-areadlink.h test-areadlinkat.c macros.h
+
+## end   gnulib module areadlinkat-tests
 
 ## begin gnulib module argmatch-tests
 
@@ -462,7 +479,7 @@ EXTRA_DIST += test-ftruncate.c test-ftruncate.sh signature.h macros.h
 
 TESTS += test-futimens
 check_PROGRAMS += test-futimens
-test_futimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME)
+test_futimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
 EXTRA_DIST += nap.h test-futimens.h test-utimens-common.h test-futimens.c signature.h macros.h
 
 ## end   gnulib module futimens-tests
@@ -536,6 +553,22 @@ EXTRA_DIST += getpagesize.c
 EXTRA_libtests_a_SOURCES += getpagesize.c
 
 ## end   gnulib module getpagesize
+
+## begin gnulib module gettext
+
+# This is for those projects which use "gettextize --intl" to put a source-code
+# copy of libintl into their package. In such projects, every Makefile.am needs
+# -I$(top_builddir)/intl, so that <libintl.h> can be found in this directory.
+# For the Makefile.ams in other directories it is the maintainer's
+# responsibility; for the one from gnulib we do it here.
+# This option has no effect when the user disables NLS (because then the intl
+# directory contains no libintl.h file) or when the project does not use
+# "gettextize --intl".
+AM_CPPFLAGS += -I$(top_builddir)/intl
+
+EXTRA_DIST += $(top_srcdir)/build-aux/config.rpath
+
+## end   gnulib module gettext
 
 ## begin gnulib module gettimeofday-tests
 
@@ -914,6 +947,28 @@ EXTRA_DIST += test-pread.c test-pread.sh signature.h macros.h
 
 ## end   gnulib module pread-tests
 
+## begin gnulib module priv-set
+
+libtests_a_SOURCES += priv-set.c
+
+EXTRA_DIST += priv-set.h
+
+## end   gnulib module priv-set
+
+## begin gnulib module priv-set-tests
+
+TESTS += test-priv-set
+check_PROGRAMS += test-priv-set
+EXTRA_DIST += test-priv-set.c macros.h
+
+## end   gnulib module priv-set-tests
+
+## begin gnulib module progname
+
+libtests_a_SOURCES += progname.h progname.c
+
+## end   gnulib module progname
+
 ## begin gnulib module putenv
 
 
@@ -971,6 +1026,39 @@ check_PROGRAMS += test-readlink
 EXTRA_DIST += test-readlink.h test-readlink.c signature.h macros.h
 
 ## end   gnulib module readlink-tests
+
+## begin gnulib module readlinkat-tests
+
+TESTS += test-readlinkat
+check_PROGRAMS += test-readlinkat
+test_readlinkat_LDADD = $(LDADD) @LIBINTL@
+EXTRA_DIST += test-readlink.h test-readlinkat.c signature.h macros.h
+
+## end   gnulib module readlinkat-tests
+
+## begin gnulib module rmdir
+
+
+EXTRA_DIST += rmdir.c
+
+EXTRA_libtests_a_SOURCES += rmdir.c
+
+## end   gnulib module rmdir
+
+## begin gnulib module rmdir-tests
+
+TESTS += test-rmdir
+check_PROGRAMS += test-rmdir
+EXTRA_DIST += test-rmdir.h test-rmdir.c signature.h macros.h
+
+## end   gnulib module rmdir-tests
+
+## begin gnulib module root-uid
+
+
+EXTRA_DIST += root-uid.h
+
+## end   gnulib module root-uid
 
 ## begin gnulib module select-tests
 
@@ -1437,6 +1525,49 @@ EXTRA_DIST += test-unistd.c
 
 ## end   gnulib module unistd-tests
 
+## begin gnulib module unlink
+
+
+EXTRA_DIST += unlink.c
+
+EXTRA_libtests_a_SOURCES += unlink.c
+
+## end   gnulib module unlink
+
+## begin gnulib module unlink-tests
+
+TESTS += test-unlink
+check_PROGRAMS += test-unlink
+EXTRA_DIST += test-unlink.h test-unlink.c signature.h macros.h
+
+## end   gnulib module unlink-tests
+
+## begin gnulib module unlinkat
+
+
+EXTRA_DIST += at-func.c unlinkat.c
+
+EXTRA_libtests_a_SOURCES += at-func.c unlinkat.c
+
+## end   gnulib module unlinkat
+
+## begin gnulib module unlinkat-tests
+
+TESTS += test-unlinkat
+check_PROGRAMS += test-unlinkat
+test_unlinkat_LDADD = $(LDADD) @LIBINTL@
+EXTRA_DIST += test-unlinkat.c test-rmdir.h test-unlink.h signature.h macros.h
+
+## end   gnulib module unlinkat-tests
+
+## begin gnulib module unlinkdir
+
+libtests_a_SOURCES += unlinkdir.c
+
+EXTRA_DIST += unlinkdir.h
+
+## end   gnulib module unlinkdir
+
 ## begin gnulib module unsetenv
 
 
@@ -1483,7 +1614,7 @@ EXTRA_DIST += utimecmp.h
 
 TESTS += test-utimens
 check_PROGRAMS += test-utimens
-test_utimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME)
+test_utimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
 EXTRA_DIST += nap.h test-futimens.h test-lutimens.h test-utimens.h test-utimens-common.h test-utimens.c macros.h
 
 ## end   gnulib module utimens-tests

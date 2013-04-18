@@ -37,6 +37,7 @@ generator_built = \
 	errnostring-gperf.gperf \
 	errnostring.c \
 	errnostring.h \
+	event-string.c \
 	free-structs.c \
 	guestfs-actions.pod \
 	guestfs-availability.pod \
@@ -84,9 +85,11 @@ libguestfs_la_SOURCES = \
 	bindtests.c \
 	command.c \
 	canonical-name.c \
+	conn-socket.c \
 	dbdump.c \
 	drives.c \
 	errors.c \
+	event-string.c \
 	events.c \
 	file.c \
 	filearch.c \
@@ -102,7 +105,7 @@ libguestfs_la_SOURCES = \
 	inspect-fs-windows.c \
 	inspect-icon.c \
 	launch.c \
-	launch-appliance.c \
+	launch-direct.c \
 	launch-libvirt.c \
 	launch-unix.c \
 	libvirt-auth.c \
@@ -129,7 +132,8 @@ libguestfs_la_CFLAGS = \
 	$(GCC_VISIBILITY_HIDDEN) \
 	$(PCRE_CFLAGS) \
 	$(LIBVIRT_CFLAGS) \
-	$(LIBXML2_CFLAGS)
+	$(LIBXML2_CFLAGS) \
+	$(YAJL_CFLAGS)
 
 libguestfs_la_LIBADD = \
 	liberrnostring.la \
@@ -137,6 +141,7 @@ libguestfs_la_LIBADD = \
 	libutils.la \
 	$(PCRE_LIBS) $(MAGIC_LIBS) \
 	$(LIBVIRT_LIBS) $(LIBXML2_LIBS) \
+	$(YAJL_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(GETADDRINFO_LIB) \
 	$(HOSTENT_LIB) \
@@ -209,7 +214,6 @@ endif
 libutils_la_SOURCES = \
 	cleanup.c \
 	cleanup-structs.c \
-	for-each-disk.c \
 	utils.c
 libutils_la_CPPFLAGS = $(libguestfs_la_CPPFLAGS)
 libutils_la_CFLAGS = $(libguestfs_la_CFLAGS)

@@ -46,7 +46,17 @@ GuestfsAddDrive
 
 </para>
 
+<!-- ##### ARG GuestfsAddDrive:protocol ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsAddDrive:readonly ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDrive:username ##### -->
 <para>
 
 </para>

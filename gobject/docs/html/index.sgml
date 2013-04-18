@@ -114,8 +114,10 @@
 <ANCHOR id="guestfs-session-egrepi" href="guestfs/GuestfsSession.html#guestfs-session-egrepi">
 <ANCHOR id="guestfs-session-equal" href="guestfs/GuestfsSession.html#guestfs-session-equal">
 <ANCHOR id="guestfs-session-exists" href="guestfs/GuestfsSession.html#guestfs-session-exists">
+<ANCHOR id="guestfs-session-extlinux" href="guestfs/GuestfsSession.html#guestfs-session-extlinux">
 <ANCHOR id="guestfs-session-fallocate" href="guestfs/GuestfsSession.html#guestfs-session-fallocate">
 <ANCHOR id="guestfs-session-fallocate64" href="guestfs/GuestfsSession.html#guestfs-session-fallocate64">
+<ANCHOR id="guestfs-session-feature-available" href="guestfs/GuestfsSession.html#guestfs-session-feature-available">
 <ANCHOR id="guestfs-session-fgrep" href="guestfs/GuestfsSession.html#guestfs-session-fgrep">
 <ANCHOR id="guestfs-session-fgrepi" href="guestfs/GuestfsSession.html#guestfs-session-fgrepi">
 <ANCHOR id="guestfs-session-file" href="guestfs/GuestfsSession.html#guestfs-session-file">
@@ -134,6 +136,7 @@
 <ANCHOR id="guestfs-session-get-append" href="guestfs/GuestfsSession.html#guestfs-session-get-append">
 <ANCHOR id="guestfs-session-get-attach-method" href="guestfs/GuestfsSession.html#guestfs-session-get-attach-method">
 <ANCHOR id="guestfs-session-get-autosync" href="guestfs/GuestfsSession.html#guestfs-session-get-autosync">
+<ANCHOR id="guestfs-session-get-backend" href="guestfs/GuestfsSession.html#guestfs-session-get-backend">
 <ANCHOR id="guestfs-session-get-cachedir" href="guestfs/GuestfsSession.html#guestfs-session-get-cachedir">
 <ANCHOR id="guestfs-session-get-direct" href="guestfs/GuestfsSession.html#guestfs-session-get-direct">
 <ANCHOR id="guestfs-session-get-e2attrs" href="guestfs/GuestfsSession.html#guestfs-session-get-e2attrs">
@@ -149,6 +152,7 @@
 <ANCHOR id="guestfs-session-get-path" href="guestfs/GuestfsSession.html#guestfs-session-get-path">
 <ANCHOR id="guestfs-session-get-pgroup" href="guestfs/GuestfsSession.html#guestfs-session-get-pgroup">
 <ANCHOR id="guestfs-session-get-pid" href="guestfs/GuestfsSession.html#guestfs-session-get-pid">
+<ANCHOR id="guestfs-session-get-program" href="guestfs/GuestfsSession.html#guestfs-session-get-program">
 <ANCHOR id="guestfs-session-get-qemu" href="guestfs/GuestfsSession.html#guestfs-session-get-qemu">
 <ANCHOR id="guestfs-session-get-recovery-proc" href="guestfs/GuestfsSession.html#guestfs-session-get-recovery-proc">
 <ANCHOR id="guestfs-session-get-selinux" href="guestfs/GuestfsSession.html#guestfs-session-get-selinux">
@@ -255,6 +259,7 @@
 <ANCHOR id="guestfs-session-is-ready" href="guestfs/GuestfsSession.html#guestfs-session-is-ready">
 <ANCHOR id="guestfs-session-is-socket" href="guestfs/GuestfsSession.html#guestfs-session-is-socket">
 <ANCHOR id="guestfs-session-is-symlink" href="guestfs/GuestfsSession.html#guestfs-session-is-symlink">
+<ANCHOR id="guestfs-session-is-whole-device" href="guestfs/GuestfsSession.html#guestfs-session-is-whole-device">
 <ANCHOR id="guestfs-session-is-zero" href="guestfs/GuestfsSession.html#guestfs-session-is-zero">
 <ANCHOR id="guestfs-session-is-zero-device" href="guestfs/GuestfsSession.html#guestfs-session-is-zero-device">
 <ANCHOR id="guestfs-session-isoinfo" href="guestfs/GuestfsSession.html#guestfs-session-isoinfo">
@@ -372,11 +377,13 @@
 <ANCHOR id="guestfs-session-part-del" href="guestfs/GuestfsSession.html#guestfs-session-part-del">
 <ANCHOR id="guestfs-session-part-disk" href="guestfs/GuestfsSession.html#guestfs-session-part-disk">
 <ANCHOR id="guestfs-session-part-get-bootable" href="guestfs/GuestfsSession.html#guestfs-session-part-get-bootable">
+<ANCHOR id="guestfs-session-part-get-gpt-type" href="guestfs/GuestfsSession.html#guestfs-session-part-get-gpt-type">
 <ANCHOR id="guestfs-session-part-get-mbr-id" href="guestfs/GuestfsSession.html#guestfs-session-part-get-mbr-id">
 <ANCHOR id="guestfs-session-part-get-parttype" href="guestfs/GuestfsSession.html#guestfs-session-part-get-parttype">
 <ANCHOR id="guestfs-session-part-init" href="guestfs/GuestfsSession.html#guestfs-session-part-init">
 <ANCHOR id="guestfs-session-part-list" href="guestfs/GuestfsSession.html#guestfs-session-part-list">
 <ANCHOR id="guestfs-session-part-set-bootable" href="guestfs/GuestfsSession.html#guestfs-session-part-set-bootable">
+<ANCHOR id="guestfs-session-part-set-gpt-type" href="guestfs/GuestfsSession.html#guestfs-session-part-set-gpt-type">
 <ANCHOR id="guestfs-session-part-set-mbr-id" href="guestfs/GuestfsSession.html#guestfs-session-part-set-mbr-id">
 <ANCHOR id="guestfs-session-part-set-name" href="guestfs/GuestfsSession.html#guestfs-session-part-set-name">
 <ANCHOR id="guestfs-session-part-to-dev" href="guestfs/GuestfsSession.html#guestfs-session-part-to-dev">
@@ -421,6 +428,7 @@
 <ANCHOR id="guestfs-session-set-append" href="guestfs/GuestfsSession.html#guestfs-session-set-append">
 <ANCHOR id="guestfs-session-set-attach-method" href="guestfs/GuestfsSession.html#guestfs-session-set-attach-method">
 <ANCHOR id="guestfs-session-set-autosync" href="guestfs/GuestfsSession.html#guestfs-session-set-autosync">
+<ANCHOR id="guestfs-session-set-backend" href="guestfs/GuestfsSession.html#guestfs-session-set-backend">
 <ANCHOR id="guestfs-session-set-cachedir" href="guestfs/GuestfsSession.html#guestfs-session-set-cachedir">
 <ANCHOR id="guestfs-session-set-direct" href="guestfs/GuestfsSession.html#guestfs-session-set-direct">
 <ANCHOR id="guestfs-session-set-e2attrs" href="guestfs/GuestfsSession.html#guestfs-session-set-e2attrs">
@@ -434,6 +442,7 @@
 <ANCHOR id="guestfs-session-set-network" href="guestfs/GuestfsSession.html#guestfs-session-set-network">
 <ANCHOR id="guestfs-session-set-path" href="guestfs/GuestfsSession.html#guestfs-session-set-path">
 <ANCHOR id="guestfs-session-set-pgroup" href="guestfs/GuestfsSession.html#guestfs-session-set-pgroup">
+<ANCHOR id="guestfs-session-set-program" href="guestfs/GuestfsSession.html#guestfs-session-set-program">
 <ANCHOR id="guestfs-session-set-qemu" href="guestfs/GuestfsSession.html#guestfs-session-set-qemu">
 <ANCHOR id="guestfs-session-set-recovery-proc" href="guestfs/GuestfsSession.html#guestfs-session-set-recovery-proc">
 <ANCHOR id="guestfs-session-set-selinux" href="guestfs/GuestfsSession.html#guestfs-session-set-selinux">
@@ -466,6 +475,7 @@
 <ANCHOR id="guestfs-session-swapon-label" href="guestfs/GuestfsSession.html#guestfs-session-swapon-label">
 <ANCHOR id="guestfs-session-swapon-uuid" href="guestfs/GuestfsSession.html#guestfs-session-swapon-uuid">
 <ANCHOR id="guestfs-session-sync" href="guestfs/GuestfsSession.html#guestfs-session-sync">
+<ANCHOR id="guestfs-session-syslinux" href="guestfs/GuestfsSession.html#guestfs-session-syslinux">
 <ANCHOR id="guestfs-session-tail" href="guestfs/GuestfsSession.html#guestfs-session-tail">
 <ANCHOR id="guestfs-session-tail-n" href="guestfs/GuestfsSession.html#guestfs-session-tail-n">
 <ANCHOR id="guestfs-session-tar-in" href="guestfs/GuestfsSession.html#guestfs-session-tar-in">
@@ -485,6 +495,7 @@
 <ANCHOR id="guestfs-session-umount-local" href="guestfs/GuestfsSession.html#guestfs-session-umount-local">
 <ANCHOR id="guestfs-session-upload" href="guestfs/GuestfsSession.html#guestfs-session-upload">
 <ANCHOR id="guestfs-session-upload-offset" href="guestfs/GuestfsSession.html#guestfs-session-upload-offset">
+<ANCHOR id="guestfs-session-user-cancel" href="guestfs/GuestfsSession.html#guestfs-session-user-cancel">
 <ANCHOR id="guestfs-session-utimens" href="guestfs/GuestfsSession.html#guestfs-session-utimens">
 <ANCHOR id="guestfs-session-utsname" href="guestfs/GuestfsSession.html#guestfs-session-utsname">
 <ANCHOR id="guestfs-session-version" href="guestfs/GuestfsSession.html#guestfs-session-version">
@@ -779,7 +790,9 @@
 <ANCHOR id="GuestfsAddDrive--iface" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--iface">
 <ANCHOR id="GuestfsAddDrive--label" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--label">
 <ANCHOR id="GuestfsAddDrive--name" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--name">
+<ANCHOR id="GuestfsAddDrive--protocol" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--protocol">
 <ANCHOR id="GuestfsAddDrive--readonly" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--readonly">
+<ANCHOR id="GuestfsAddDrive--username" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--username">
 <ANCHOR id="GuestfsAddDomain" href="guestfs/GuestfsAddDomain.html">
 <ANCHOR id="GuestfsAddDomain.synopsis" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.synopsis">
 <ANCHOR id="GuestfsAddDomain.object-hierarchy" href="guestfs/GuestfsAddDomain.html#GuestfsAddDomain.object-hierarchy">
@@ -977,6 +990,7 @@
 <ANCHOR id="GuestfsCopyDeviceToDevice.property-details" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice.property-details">
 <ANCHOR id="GuestfsCopyDeviceToDevice--destoffset" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--destoffset">
 <ANCHOR id="GuestfsCopyDeviceToDevice--size" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--size">
+<ANCHOR id="GuestfsCopyDeviceToDevice--sparse" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--sparse">
 <ANCHOR id="GuestfsCopyDeviceToDevice--srcoffset" href="guestfs/GuestfsCopyDeviceToDevice.html#GuestfsCopyDeviceToDevice--srcoffset">
 <ANCHOR id="GuestfsCopyDeviceToFile" href="guestfs/GuestfsCopyDeviceToFile.html">
 <ANCHOR id="GuestfsCopyDeviceToFile.synopsis" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile.synopsis">
@@ -990,6 +1004,7 @@
 <ANCHOR id="GuestfsCopyDeviceToFile.property-details" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile.property-details">
 <ANCHOR id="GuestfsCopyDeviceToFile--destoffset" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--destoffset">
 <ANCHOR id="GuestfsCopyDeviceToFile--size" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--size">
+<ANCHOR id="GuestfsCopyDeviceToFile--sparse" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--sparse">
 <ANCHOR id="GuestfsCopyDeviceToFile--srcoffset" href="guestfs/GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--srcoffset">
 <ANCHOR id="GuestfsCopyFileToDevice" href="guestfs/GuestfsCopyFileToDevice.html">
 <ANCHOR id="GuestfsCopyFileToDevice.synopsis" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice.synopsis">
@@ -1003,6 +1018,7 @@
 <ANCHOR id="GuestfsCopyFileToDevice.property-details" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice.property-details">
 <ANCHOR id="GuestfsCopyFileToDevice--destoffset" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--destoffset">
 <ANCHOR id="GuestfsCopyFileToDevice--size" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--size">
+<ANCHOR id="GuestfsCopyFileToDevice--sparse" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--sparse">
 <ANCHOR id="GuestfsCopyFileToDevice--srcoffset" href="guestfs/GuestfsCopyFileToDevice.html#GuestfsCopyFileToDevice--srcoffset">
 <ANCHOR id="GuestfsCopyFileToFile" href="guestfs/GuestfsCopyFileToFile.html">
 <ANCHOR id="GuestfsCopyFileToFile.synopsis" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile.synopsis">
@@ -1016,6 +1032,7 @@
 <ANCHOR id="GuestfsCopyFileToFile.property-details" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile.property-details">
 <ANCHOR id="GuestfsCopyFileToFile--destoffset" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--destoffset">
 <ANCHOR id="GuestfsCopyFileToFile--size" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--size">
+<ANCHOR id="GuestfsCopyFileToFile--sparse" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--sparse">
 <ANCHOR id="GuestfsCopyFileToFile--srcoffset" href="guestfs/GuestfsCopyFileToFile.html#GuestfsCopyFileToFile--srcoffset">
 <ANCHOR id="GuestfsTune2FS" href="guestfs/GuestfsTune2FS.html">
 <ANCHOR id="GuestfsTune2FS.synopsis" href="guestfs/GuestfsTune2FS.html#GuestfsTune2FS.synopsis">
@@ -1307,6 +1324,17 @@
 <ANCHOR id="guestfs-mktemp-new" href="guestfs/GuestfsMktemp.html#guestfs-mktemp-new">
 <ANCHOR id="GuestfsMktemp.property-details" href="guestfs/GuestfsMktemp.html#GuestfsMktemp.property-details">
 <ANCHOR id="GuestfsMktemp--suffix" href="guestfs/GuestfsMktemp.html#GuestfsMktemp--suffix">
+<ANCHOR id="GuestfsSyslinux" href="guestfs/GuestfsSyslinux.html">
+<ANCHOR id="GuestfsSyslinux.synopsis" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.synopsis">
+<ANCHOR id="GuestfsSyslinux.object-hierarchy" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.object-hierarchy">
+<ANCHOR id="GuestfsSyslinux.properties" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.properties">
+<ANCHOR id="GuestfsSyslinux.description" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.description">
+<ANCHOR id="GuestfsSyslinux.details" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.details">
+<ANCHOR id="GuestfsSyslinux-struct" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux-struct">
+<ANCHOR id="GuestfsSyslinuxClass" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinuxClass">
+<ANCHOR id="guestfs-syslinux-new" href="guestfs/GuestfsSyslinux.html#guestfs-syslinux-new">
+<ANCHOR id="GuestfsSyslinux.property-details" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.property-details">
+<ANCHOR id="GuestfsSyslinux--directory" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux--directory">
 <ANCHOR id="annotation-glossterm-array" href="guestfs/annotation-glossary.html#annotation-glossterm-array">
 <ANCHOR id="annotation-glossterm-allow-none" href="guestfs/annotation-glossary.html#annotation-glossterm-allow-none">
 <ANCHOR id="annotation-glossterm-element-type" href="guestfs/annotation-glossary.html#annotation-glossterm-element-type">

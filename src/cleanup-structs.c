@@ -272,3 +272,15 @@ guestfs___cleanup_free_hivex_value_list (void *ptr)
   guestfs_free_hivex_value_list (* (struct guestfs_hivex_value_list **) ptr);
 }
 
+void
+guestfs___cleanup_free_internal_mountable (void *ptr)
+{
+  guestfs_free_internal_mountable (* (struct guestfs_internal_mountable **) ptr);
+}
+
+void
+guestfs___cleanup_free_internal_mountable_list (void *ptr)
+{
+  guestfs_free_internal_mountable_list (* (struct guestfs_internal_mountable_list **) ptr);
+}
+

@@ -3007,7 +3007,8 @@ guestfs_session_get_pid(GuestfsSession *session, GError **err)
  * *Note:* Don't use this call to test for availability of features. In
  * enterprise distributions we backport features from later versions into
  * earlier versions, making this an unreliable way to test for features.
- * Use guestfs_session_available() instead.
+ * Use guestfs_session_available() or guestfs_session_feature_available()
+ * instead.
  * 
  * Returns: (transfer full): a Version object, or NULL on error
  */
@@ -4062,7 +4063,7 @@ guestfs_session_get_network(GuestfsSession *session, GError **err)
  * list filesystems
  *
  * This inspection command looks for filesystems on partitions, block
- * devices and logical volumes, returning a list of devices containing
+ * devices and logical volumes, returning a list of @mountables containing
  * filesystems and their type.
  * 
  * The return value is a hash, where the keys are the devices containing
@@ -4075,6 +4076,9 @@ guestfs_session_get_network(GuestfsSession *session, GError **err)
  * <![CDATA["/dev/vg_guest/lv_root" => "ext4"]]>
  * 
  * <![CDATA["/dev/vg_guest/lv_swap" => "swap"]]>
+ * 
+ * The key is not necessarily a block device. It may also be an opaque
+ * 'mountable' string which can be passed to guestfs_session_mount().
  * 
  * The value can have the special value "unknown", meaning the content of
  * the device is undetermined or empty. "swap" means a Linux swap
@@ -4189,6 +4193,93 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * See "DISK LABELS" in guestfs(3).
  * 
+ * @protocol
+ * The optional protocol argument can be used to select an alternate
+ * source protocol.
+ * 
+ * See also: "REMOTE STORAGE" in guestfs(3).
+ * 
+ * "protocol = "file""
+ * @filename is interpreted as a local file or device. This is the
+ * default if the optional protocol parameter is omitted.
+ * 
+ * "protocol = "gluster""
+ * Connect to the GlusterFS server. The @server parameter must also
+ * be supplied - see below.
+ * 
+ * See also: "GLUSTER" in guestfs(3)
+ * 
+ * "protocol = "nbd""
+ * Connect to the Network Block Device server. The @server
+ * parameter must also be supplied - see below.
+ * 
+ * See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+ * 
+ * "protocol = "rbd""
+ * Connect to the Ceph (librbd/RBD) server. The @server parameter
+ * must also be supplied - see below.
+ * 
+ * See also: "CEPH" in guestfs(3).
+ * 
+ * "protocol = "sheepdog""
+ * Connect to the Sheepdog server. The @server parameter may also
+ * be supplied - see below.
+ * 
+ * See also: "SHEEPDOG" in guestfs(3).
+ * 
+ * "protocol = "ssh""
+ * Connect to the Secure Shell (ssh) server.
+ * 
+ * The @server parameter must be supplied. The @username parameter
+ * may be supplied. See below.
+ * 
+ * See also: "SSH" in guestfs(3).
+ * 
+ * @server
+ * For protocols which require access to a remote server, this is a
+ * list of server(s).
+ * 
+ * <![CDATA[Protocol       Number of servers required]]>
+ * 
+ * <![CDATA[--------       --------------------------]]>
+ * 
+ * <![CDATA[file           List must be empty or param not used at all]]>
+ * 
+ * <![CDATA[gluster        Exactly one]]>
+ * 
+ * <![CDATA[nbd            Exactly one]]>
+ * 
+ * <![CDATA[rbd            One or more]]>
+ * 
+ * <![CDATA[sheepdog       Zero or more]]>
+ * 
+ * <![CDATA[ssh            Exactly one]]>
+ * 
+ * Each list element is a string specifying a server. The string must
+ * be in one of the following formats:
+ * 
+ * <![CDATA[hostname]]>
+ * 
+ * <![CDATA[hostname:port]]>
+ * 
+ * <![CDATA[tcp:hostname]]>
+ * 
+ * <![CDATA[tcp:hostname:port]]>
+ * 
+ * <![CDATA[unix:/path/to/socket]]>
+ * 
+ * If the port number is omitted, then the standard port number for the
+ * protocol is used (see "/etc/services").
+ * 
+ * @username
+ * For the @ssh protocol only, this specifies the remote username.
+ * 
+ * If not given, then the local username is used. But note this
+ * sometimes may give unexpected results, for example if using the
+ * libvirt backend and if the libvirt backend is configured to start
+ * the qemu appliance as a special user such as "qemu.qemu". If in
+ * doubt, specify the remote username you want.
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -4247,6 +4338,22 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, Guestf
     if (label != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
       argv.label = label;
+    }
+    GValue protocol_v = {0, };
+    g_value_init(&protocol_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "protocol", &protocol_v);
+    const gchar *protocol = g_value_get_string(&protocol_v);
+    if (protocol != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+      argv.protocol = protocol;
+    }
+    GValue username_v = {0, };
+    g_value_init(&username_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "username", &username_v);
+    const gchar *username = g_value_get_string(&username_v);
+    if (username != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+      argv.username = username;
     }
     argvp = &argv;
   }
@@ -5074,20 +5181,20 @@ guestfs_session_inspect_is_multipart(GuestfsSession *session, const gchar *root,
 /**
  * guestfs_session_set_attach_method:
  * @session: (transfer none): A GuestfsSession object
- * @attachmethod: (transfer none) (type utf8):
+ * @backend: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
- * set the attach method
+ * set the backend
  *
- * Set the method that libguestfs uses to connect to the back end guestfsd
+ * Set the method that libguestfs uses to connect to the backend guestfsd
  * daemon.
  * 
- * See "ATTACH METHOD" in guestfs(3).
+ * See "BACKEND" in guestfs(3).
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachmethod, GError **err)
+guestfs_session_set_attach_method(GuestfsSession *session, const gchar *backend, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -5097,7 +5204,7 @@ guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachme
     return FALSE;
   }
 
-  int ret = guestfs_set_attach_method (g, attachmethod);
+  int ret = guestfs_set_attach_method (g, backend);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -5111,12 +5218,11 @@ guestfs_session_set_attach_method(GuestfsSession *session, const gchar *attachme
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * get the attach method
+ * get the backend
  *
- * Return the current attach method.
+ * Return the current backend.
  * 
- * See guestfs_session_set_attach_method() and "ATTACH METHOD" in
- * guestfs(3).
+ * See guestfs_session_set_backend() and "BACKEND" in guestfs(3).
  * 
  * Returns: (transfer full): the returned string, or NULL on error
  */
@@ -5132,6 +5238,78 @@ guestfs_session_get_attach_method(GuestfsSession *session, GError **err)
   }
 
   char *ret = guestfs_get_attach_method (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_set_backend:
+ * @session: (transfer none): A GuestfsSession object
+ * @backend: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the backend
+ *
+ * Set the method that libguestfs uses to connect to the backend guestfsd
+ * daemon.
+ * 
+ * This handle property was previously called the "attach method".
+ * 
+ * See "BACKEND" in guestfs(3).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_backend(GuestfsSession *session, const gchar *backend, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_backend");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_backend (g, backend);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_backend:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the backend
+ *
+ * Return the current backend.
+ * 
+ * This handle property was previously called the "attach method".
+ * 
+ * See guestfs_session_set_backend() and "BACKEND" in guestfs(3).
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_backend(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_backend");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_backend (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -6489,10 +6667,10 @@ guestfs_session_disk_has_backing_file(GuestfsSession *session, const gchar *file
  * If you didn't use a label, then they cannot be removed.
  * 
  * You can call this function before or after launching the handle. If
- * called after launch, if the attach-method supports it, we try to hot
- * unplug the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be
- * in use (eg. mounted) when you do this. We try to detect if the disk is
- * in use and stop you from doing this.
+ * called after launch, if the backend supports it, we try to hot unplug
+ * the drive: see "HOTPLUGGING" in guestfs(3). The disk must not be in use
+ * (eg. mounted) when you do this. We try to detect if the disk is in use
+ * and stop you from doing this.
  * 
  * Returns: true on success, false on error
  */
@@ -6973,9 +7151,133 @@ guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
 }
 
 /**
+ * guestfs_session_user_cancel:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * cancel the current upload or download operation
+ *
+ * This function cancels the current upload or download operation.
+ * 
+ * Unlike most other libguestfs calls, this function is signal safe and
+ * thread safe. You can call it from a signal handler or from another
+ * thread, without needing to do any locking.
+ * 
+ * The transfer that was in progress (if there is one) will stop shortly
+ * afterwards, and will return an error. The errno (see
+ * "guestfs_last_errno") is set to @EINTR, so you can test for this to find
+ * out if the operation was cancelled or failed because of another error.
+ * 
+ * No cleanup is performed: for example, if a file was being uploaded then
+ * after cancellation there may be a partially uploaded file. It is the
+ * caller's responsibility to clean up if necessary.
+ * 
+ * There are two common places that you might call
+ * guestfs_session_user_cancel():
+ * 
+ * In an interactive text-based program, you might call it from a @SIGINT
+ * signal handler so that pressing "^C" cancels the current operation. (You
+ * also need to call "guestfs_set_pgroup" so that child processes don't
+ * receive the "^C" signal).
+ * 
+ * In a graphical program, when the main thread is displaying a progress
+ * bar with a cancel button, wire up the cancel button to call this
+ * function.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_user_cancel(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "user_cancel");
+    return FALSE;
+  }
+
+  int ret = guestfs_user_cancel (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_set_program:
+ * @session: (transfer none): A GuestfsSession object
+ * @program: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the program name
+ *
+ * Set the program name. This is an informative string which the main
+ * program may optionally set in the handle.
+ * 
+ * When the handle is created, the program name in the handle is set to the
+ * basename from "argv[0]". If that was not possible, it is set to the
+ * empty string (but never @NULL).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_program(GuestfsSession *session, const gchar *program, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_program");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_program (g, program);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_program:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the program name
+ *
+ * Get the program name. See guestfs_session_set_program().
+ * 
+ * Returns: (transfer none): the returned string, or NULL on error
+ */
+const gchar *
+guestfs_session_get_program(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_program");
+    return NULL;
+  }
+
+  const char *ret = guestfs_get_program (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -6984,7 +7286,9 @@ guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
  * Mount a guest disk at a position in the filesystem. Block devices are
  * named "/dev/sda", "/dev/sdb" and so on, as they were added to the guest.
  * If those block devices contain partitions, they will have the usual
- * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style names can be used.
+ * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style names can be used,
+ * or 'mountable' strings returned by guestfs_session_list_filesystems() or
+ * guestfs_session_inspect_get_mountpoints().
  * 
  * The rules are the same as for mount(2): A filesystem must first be
  * mounted on "/" before others can be mounted. Other filesystems can only
@@ -7003,7 +7307,7 @@ guestfs_session_get_cachedir(GuestfsSession *session, GError **err)
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -7013,7 +7317,7 @@ guestfs_session_mount(GuestfsSession *session, const gchar *device, const gchar 
     return FALSE;
   }
 
-  int ret = guestfs_mount (g, device, mountpoint);
+  int ret = guestfs_mount (g, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9799,7 +10103,7 @@ guestfs_session_tgz_out(GuestfsSession *session, const gchar *directory, const g
 /**
  * guestfs_session_mount_ro:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -9811,7 +10115,7 @@ guestfs_session_tgz_out(GuestfsSession *session, const gchar *directory, const g
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount_ro(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -9821,7 +10125,7 @@ guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gch
     return FALSE;
   }
 
-  int ret = guestfs_mount_ro (g, device, mountpoint);
+  int ret = guestfs_mount_ro (g, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9834,7 +10138,7 @@ guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gch
  * guestfs_session_mount_options:
  * @session: (transfer none): A GuestfsSession object
  * @options: (transfer none) (type utf8):
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -9849,7 +10153,7 @@ guestfs_session_mount_ro(GuestfsSession *session, const gchar *device, const gch
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount_options(GuestfsSession *session, const gchar *options, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount_options(GuestfsSession *session, const gchar *options, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -9859,7 +10163,7 @@ guestfs_session_mount_options(GuestfsSession *session, const gchar *options, con
     return FALSE;
   }
 
-  int ret = guestfs_mount_options (g, options, device, mountpoint);
+  int ret = guestfs_mount_options (g, options, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -9873,7 +10177,7 @@ guestfs_session_mount_options(GuestfsSession *session, const gchar *options, con
  * @session: (transfer none): A GuestfsSession object
  * @options: (transfer none) (type utf8):
  * @vfstype: (transfer none) (type utf8):
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @mountpoint: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
@@ -9886,7 +10190,7 @@ guestfs_session_mount_options(GuestfsSession *session, const gchar *options, con
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *device, const gchar *mountpoint, GError **err)
+guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const gchar *vfstype, const gchar *mountable, const gchar *mountpoint, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -9896,7 +10200,7 @@ guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const g
     return FALSE;
   }
 
-  int ret = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  int ret = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -14540,13 +14844,13 @@ guestfs_session_case_sensitive_path(GuestfsSession *session, const gchar *path, 
 /**
  * guestfs_session_vfs_type:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
  * get the Linux VFS type corresponding to a mounted device
  *
  * This command gets the filesystem type corresponding to the filesystem on
- * @device.
+ * @mountable.
  * 
  * For most filesystems, the result is the name of the Linux VFS module
  * which would be used to mount this filesystem if you mounted it without
@@ -14556,7 +14860,7 @@ guestfs_session_case_sensitive_path(GuestfsSession *session, const gchar *path, 
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_vfs_type(GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_vfs_type(GuestfsSession *session, const gchar *mountable, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -14566,7 +14870,7 @@ guestfs_session_vfs_type(GuestfsSession *session, const gchar *device, GError **
     return NULL;
   }
 
-  char *ret = guestfs_vfs_type (g, device);
+  char *ret = guestfs_vfs_type (g, mountable);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -15220,6 +15524,10 @@ guestfs_session_fill(GuestfsSession *session, gint32 c, gint32 len, const gchar 
  * is always returned.
  * 
  * *Notes:*
+ * 
+ * *   guestfs_session_feature_available() is the same as this call, but
+ * with a slightly simpler to use API: that call returns a boolean
+ * true/false instead of throwing an error.
  * 
  * *   You must call guestfs_session_launch() before calling this function.
  * 
@@ -16508,9 +16816,11 @@ guestfs_session_ntfsresize_size(GuestfsSession *session, const gchar *device, gi
  * This command returns a list of all optional groups that this daemon
  * knows about. Note this returns both supported and unsupported groups. To
  * find out which ones the daemon can actually support you have to call
- * guestfs_session_available() on each member of the returned list.
+ * guestfs_session_available() / guestfs_session_feature_available() on
+ * each member of the returned list.
  * 
- * See also guestfs_session_available() and "AVAILABILITY" in guestfs(3).
+ * See also guestfs_session_available(),
+ * guestfs_session_feature_available() and "AVAILABILITY" in guestfs(3).
  * 
  * Returns: (transfer full) (array zero-terminated=1) (element-type utf8): an array of returned strings, or NULL on error
  */
@@ -16582,12 +16892,12 @@ guestfs_session_fallocate64(GuestfsSession *session, const gchar *path, gint64 l
 /**
  * guestfs_session_vfs_label:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
  * get the filesystem label
  *
- * This returns the filesystem label of the filesystem on @device.
+ * This returns the label of the filesystem on @mountable.
  * 
  * If the filesystem is unlabeled, this returns the empty string.
  * 
@@ -16596,7 +16906,7 @@ guestfs_session_fallocate64(GuestfsSession *session, const gchar *path, gint64 l
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_vfs_label(GuestfsSession *session, const gchar *mountable, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -16606,7 +16916,7 @@ guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError *
     return NULL;
   }
 
-  char *ret = guestfs_vfs_label (g, device);
+  char *ret = guestfs_vfs_label (g, mountable);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -16618,12 +16928,12 @@ guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError *
 /**
  * guestfs_session_vfs_uuid:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @err: A GError object to receive any generated errors
  *
  * get the filesystem UUID
  *
- * This returns the filesystem UUID of the filesystem on @device.
+ * This returns the filesystem UUID of the filesystem on @mountable.
  * 
  * If the filesystem does not have a UUID, this returns the empty string.
  * 
@@ -16632,7 +16942,7 @@ guestfs_session_vfs_label(GuestfsSession *session, const gchar *device, GError *
  * Returns: (transfer full): the returned string, or NULL on error
  */
 gchar *
-guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *device, GError **err)
+guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *mountable, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -16642,7 +16952,7 @@ guestfs_session_vfs_uuid(GuestfsSession *session, const gchar *device, GError **
     return NULL;
   }
 
-  char *ret = guestfs_vfs_uuid (g, device);
+  char *ret = guestfs_vfs_uuid (g, mountable);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -18344,6 +18654,11 @@ guestfs_session_part_to_partnum(GuestfsSession *session, const gchar *partition,
  * If the destination is a file, it is created if required. If the
  * destination file is not large enough, it is extended.
  * 
+ * If the @sparse flag is true then the call avoids writing blocks that
+ * contain only zeroes, which can help in some situations where the backing
+ * disk is thin-provisioned. Note that unless the target is already zeroed,
+ * using this option will result in incorrect copying.
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -18386,6 +18701,14 @@ guestfs_session_copy_device_to_device(GuestfsSession *session, const gchar *src,
     if (size != -1) {
       argv.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
       argv.size = size;
+    }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
+      argv.sparse = sparse;
     }
     argvp = &argv;
   }
@@ -18454,6 +18777,14 @@ guestfs_session_copy_device_to_file(GuestfsSession *session, const gchar *src, c
       argv.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
       argv.size = size;
     }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+      argv.sparse = sparse;
+    }
     argvp = &argv;
   }
   int ret = guestfs_copy_device_to_file_argv (g, src, dest, argvp);
@@ -18520,6 +18851,14 @@ guestfs_session_copy_file_to_device(GuestfsSession *session, const gchar *src, c
     if (size != -1) {
       argv.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
       argv.size = size;
+    }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
+      argv.sparse = sparse;
     }
     argvp = &argv;
   }
@@ -18592,6 +18931,14 @@ guestfs_session_copy_file_to_file(GuestfsSession *session, const gchar *src, con
     if (size != -1) {
       argv.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
       argv.size = size;
+    }
+    GValue sparse_v = {0, };
+    g_value_init(&sparse_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "sparse", &sparse_v);
+    GuestfsTristate sparse = g_value_get_enum(&sparse_v);
+    if (sparse != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
+      argv.sparse = sparse;
     }
     argvp = &argv;
   }
@@ -19445,13 +19792,13 @@ guestfs_session_ntfsclone_in(GuestfsSession *session, const gchar *backupfile, c
 /**
  * guestfs_session_set_label:
  * @session: (transfer none): A GuestfsSession object
- * @device: (transfer none) (type filename):
+ * @mountable: (transfer none) (type filename):
  * @label: (transfer none) (type utf8):
  * @err: A GError object to receive any generated errors
  *
  * set filesystem label
  *
- * Set the filesystem label on @device to @label.
+ * Set the filesystem label on @mountable to @label.
  * 
  * Only some filesystem types support labels, and libguestfs supports
  * setting labels on only a subset of these.
@@ -19460,12 +19807,15 @@ guestfs_session_ntfsclone_in(GuestfsSession *session, const gchar *backupfile, c
  * 
  * On NTFS filesystems, labels are limited to 128 unicode characters.
  * 
+ * Setting the label on a btrfs subvolume will set the label on its parent
+ * filesystem.
+ * 
  * To read the label on a filesystem, call guestfs_session_vfs_label().
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_set_label(GuestfsSession *session, const gchar *device, const gchar *label, GError **err)
+guestfs_session_set_label(GuestfsSession *session, const gchar *mountable, const gchar *label, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -19475,7 +19825,7 @@ guestfs_session_set_label(GuestfsSession *session, const gchar *device, const gc
     return FALSE;
   }
 
-  int ret = guestfs_set_label (g, device, label);
+  int ret = guestfs_set_label (g, mountable, label);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -20552,7 +20902,8 @@ guestfs_session_btrfs_fsck(GuestfsSession *session, const gchar *device, Guestfs
  * filesystems can fail for other reasons such as it being a later version
  * of the filesystem, or having incompatible features.
  * 
- * See also guestfs_session_available(), "AVAILABILITY" in guestfs(3).
+ * See also guestfs_session_available(),
+ * guestfs_session_feature_available(), "AVAILABILITY" in guestfs(3).
  * 
  * Returns: the returned value, or -1 on error
  */
@@ -23350,6 +23701,83 @@ guestfs_session_ldmtool_volume_partitions(GuestfsSession *session, const gchar *
 }
 
 /**
+ * guestfs_session_part_set_gpt_type:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @guid: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the type GUID of a GPT partition
+ *
+ * Set the type GUID of numbered GPT partition @partnum to @guid. Return an
+ * error if the partition table of @device isn't GPT, or if @guid is not a
+ * valid GUID.
+ * 
+ * See <ulink
+ * url='http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GU
+ * IDs'>
+ * http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
+ * </ulink> for a useful list of type GUIDs.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_part_set_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, const gchar *guid, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_set_gpt_type");
+    return FALSE;
+  }
+
+  int ret = guestfs_part_set_gpt_type (g, device, partnum, guid);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_part_get_gpt_type:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @partnum: (type gint32):
+ * @err: A GError object to receive any generated errors
+ *
+ * get the type GUID of a GPT partition
+ *
+ * Return the type GUID of numbered GPT partition @partnum. For MBR
+ * partitions, return an appropriate GUID corresponding to the MBR type.
+ * Behaviour is undefined for other partition types.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_part_get_gpt_type(GuestfsSession *session, const gchar *device, gint32 partnum, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "part_get_gpt_type");
+    return NULL;
+  }
+
+  char *ret = guestfs_part_get_gpt_type (g, device, partnum);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
  * guestfs_session_rename:
  * @session: (transfer none): A GuestfsSession object
  * @oldpath: (transfer none) (type filename):
@@ -23376,6 +23804,196 @@ guestfs_session_rename(GuestfsSession *session, const gchar *oldpath, const gcha
   }
 
   int ret = guestfs_rename (g, oldpath, newpath);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_is_whole_device:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * test if a device is a whole device
+ *
+ * This returns @true if and only if @device refers to a whole block
+ * device. That is, not a partition or a logical device.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_is_whole_device(GuestfsSession *session, const gchar *device, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "is_whole_device");
+    return -1;
+  }
+
+  int ret = guestfs_is_whole_device (g, device);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_feature_available:
+ * @session: (transfer none): A GuestfsSession object
+ * @groups: (transfer none) (array zero-terminated=1) (element-type utf8): an array of strings
+ * @err: A GError object to receive any generated errors
+ *
+ * test availability of some parts of the API
+ *
+ * This is the same as guestfs_session_available(), but unlike that call it
+ * returns a simple true/false boolean result, instead of throwing an
+ * exception if a feature is not found. For other documentation see
+ * guestfs_session_available().
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_feature_available(GuestfsSession *session, gchar *const *groups, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "feature_available");
+    return -1;
+  }
+
+  int ret = guestfs_feature_available (g, groups);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_syslinux:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsSyslinux containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * install the SYSLINUX bootloader
+ *
+ * Install the SYSLINUX bootloader on @device.
+ * 
+ * The device parameter must be either a whole disk formatted as a FAT
+ * filesystem, or a partition formatted as a FAT filesystem. In the latter
+ * case, the partition should be marked as "active"
+ * (guestfs_session_part_set_bootable()) and a Master Boot Record must be
+ * installed (eg. using guestfs_session_pwrite_device()) on the first
+ * sector of the whole disk. The SYSLINUX package comes with some suitable
+ * Master Boot Records. See the syslinux(1) man page for further
+ * information.
+ * 
+ * The optional arguments are:
+ * 
+ * @directory
+ * Install SYSLINUX in the named subdirectory, instead of in the root
+ * directory of the FAT filesystem.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by placing a file
+ * called "syslinux.cfg" on the FAT filesystem, either in the root
+ * directory, or under @directory if that optional argument is being used.
+ * For further information about the contents of this file, see
+ * syslinux(1).
+ * 
+ * See also guestfs_session_extlinux().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_syslinux(GuestfsSession *session, const gchar *device, GuestfsSyslinux *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "syslinux");
+    return FALSE;
+  }
+
+  struct guestfs_syslinux_argv argv;
+  struct guestfs_syslinux_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue directory_v = {0, };
+    g_value_init(&directory_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "directory", &directory_v);
+    const gchar *directory = g_value_get_string(&directory_v);
+    if (directory != NULL) {
+      argv.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+      argv.directory = directory;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_syslinux_argv (g, device, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_extlinux:
+ * @session: (transfer none): A GuestfsSession object
+ * @directory: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+ *
+ * Install the SYSLINUX bootloader on the device mounted at @directory.
+ * Unlike guestfs_session_syslinux() which requires a FAT filesystem, this
+ * can be used on an ext2/3/4 or btrfs filesystem.
+ * 
+ * The @directory parameter can be either a mountpoint, or a directory
+ * within the mountpoint.
+ * 
+ * You also have to mark the partition as "active"
+ * (guestfs_session_part_set_bootable()) and a Master Boot Record must be
+ * installed (eg. using guestfs_session_pwrite_device()) on the first
+ * sector of the whole disk. The SYSLINUX package comes with some suitable
+ * Master Boot Records. See the extlinux(1) man page for further
+ * information.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by placing a file
+ * called "extlinux.conf" on the filesystem under @directory. For further
+ * information about the contents of this file, see extlinux(1).
+ * 
+ * See also guestfs_session_syslinux().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "extlinux");
+    return FALSE;
+  }
+
+  int ret = guestfs_extlinux (g, directory);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;

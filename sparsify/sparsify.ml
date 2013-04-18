@@ -1,5 +1,5 @@
 (* virt-sparsify
- * Copyright (C) 2011-2012 Red Hat Inc.
+ * Copyright (C) 2011-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@ let indisk, outdisk, compress, convert, debug_gc,
     "--debug-gc", Arg.Set debug_gc,         " " ^ s_"Debug GC and memory allocations";
     "--format",  Arg.Set_string format,     s_"format" ^ " " ^ s_"Format of input disk";
     "--ignore",  Arg.String (add ignores),  s_"fs" ^ " " ^ s_"Ignore filesystem";
+    "--long-options", Arg.Unit display_long_options, " " ^ s_"List long options";
     "--machine-readable", Arg.Set machine_readable, " " ^ s_"Make output machine readable";
     "-o",        Arg.Set_string option,     s_"option" ^ " " ^ s_"Add qemu-img options";
     "-q",        Arg.Set quiet,             " " ^ s_"Quiet output";
@@ -73,6 +74,7 @@ let indisk, outdisk, compress, convert, debug_gc,
     "-x",        Arg.Set trace,             " " ^ s_"Enable tracing of libguestfs calls";
     "--zero",    Arg.String (add zeroes),   s_"fs" ^ " " ^ s_"Zero filesystem";
   ] in
+  long_options := argspec;
   let disks = ref [] in
   let anon_fun s = disks := s :: !disks in
   let usage_msg =
@@ -110,9 +112,9 @@ read the man page virt-sparsify(1).
     let g = new G.guestfs () in
     g#add_drive "/dev/null";
     g#launch ();
-    if feature_available g [| "ntfsprogs"; "ntfs3g" |] then
+    if g#feature_available [| "ntfsprogs"; "ntfs3g" |] then
       printf "ntfs\n";
-    if feature_available g [| "btrfs" |] then
+    if g#feature_available [| "btrfs" |] then
       printf "btrfs\n";
     exit 0
   );

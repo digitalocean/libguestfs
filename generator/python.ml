@@ -35,6 +35,12 @@ let rec generate_python_c () =
   generate_header CStyle LGPLv2plus;
 
   pr "\
+/* This has to be included first, else definitions conflict with
+ * glibc header files.  Python is broken.
+ */
+#define PY_SSIZE_T_CLEAN 1
+#include <Python.h>
+
 #include <config.h>
 
 #include <stdio.h>
@@ -273,7 +279,8 @@ put_table (char * const * const argv)
 
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | Key n
+        | Pathname n | Device n | Mountable n
+        | Dev_or_Path n | Mountable_or_Path n | String n | Key n
         | FileIn n | FileOut n ->
             pr "  const char *%s;\n" n
         | OptString n -> pr "  const char *%s;\n" n
@@ -310,7 +317,8 @@ put_table (char * const * const argv)
       pr "  if (!PyArg_ParseTuple (args, (char *) \"O";
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ -> pr "s"
         | OptString _ -> pr "z"
         | StringList _ | DeviceList _ -> pr "O"
@@ -331,7 +339,8 @@ put_table (char * const * const argv)
       pr "                         &py_g";
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | Key n
+        | Pathname n | Device n | Mountable n
+        | Dev_or_Path n | Mountable_or_Path n | String n | Key n
         | FileIn n | FileOut n -> pr ", &%s" n
         | OptString n -> pr ", &%s" n
         | StringList n | DeviceList n -> pr ", &py_%s" n
@@ -353,7 +362,8 @@ put_table (char * const * const argv)
       pr "  g = get_handle (py_g);\n";
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ -> ()
         | StringList n | DeviceList n ->
@@ -489,7 +499,8 @@ put_table (char * const * const argv)
 
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ | Pointer _ -> ()
         | StringList n | DeviceList n ->
@@ -517,6 +528,8 @@ put_table (char * const * const argv)
   pr "    py_guestfs_set_event_callback, METH_VARARGS, NULL },\n";
   pr "  { (char *) \"delete_event_callback\",\n";
   pr "    py_guestfs_delete_event_callback, METH_VARARGS, NULL },\n";
+  pr "  { (char *) \"event_to_string\",\n";
+  pr "    py_guestfs_event_to_string, METH_VARARGS, NULL },\n";
   List.iter (
     fun { name = name } ->
       pr "  { (char *) \"%s\", py_guestfs_%s, METH_VARARGS, NULL },\n"
@@ -557,12 +570,16 @@ moduleinit (void)
 }
 
 #if PY_MAJOR_VERSION >= 3
+extern PyMODINIT_FUNC PyInit_libguestfsmod (void);
+
 PyMODINIT_FUNC
 PyInit_libguestfsmod (void)
 {
   return moduleinit ();
 }
 #else
+extern void initlibguestfsmod (void);
+
 void
 initlibguestfsmod (void)
 {
@@ -638,8 +655,12 @@ import libguestfsmod
   ) events;
   pr "EVENT_ALL = 0x%x\n" all_events_bitmask;
   pr "\n";
-
   pr "\
+
+def event_to_string (events):
+    \"\"\"Return a printable string from an event or event bitmask\"\"\"
+    return libguestfsmod.event_to_string (events)
+
 class ClosedHandle(ValueError):
     pass
 
@@ -772,7 +793,8 @@ class GuestFS(object):
        *)
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ | Pointer _ -> ()
         | StringList n | DeviceList n ->

@@ -2,11 +2,11 @@
 
 =head1 НАЗВА
 
-guestfs-faq - libguestfs Frequently Asked Questions (FAQ)
+guestfs-faq — поширені питання щодо libguestfs на відповіді на них (FAQ)
 
-=head1 ABOUT LIBGUESTFS
+=head1 ПРО LIBGUESTFS
 
-=head2 What is libguestfs?
+=head2 Для чого призначено libguestfs?
 
 libguestfs is a way to create, access and modify disk images.  You can look
 inside disk images, modify the files they contain, create them from scratch,
@@ -143,6 +143,9 @@ L<https://bugzilla.redhat.com/show_bug.cgi?id=806106>.
 
 =head2 "child process died unexpectedly"
 
+[This error message was changed in libguestfs 1.21.18 to something more
+explanatory.]
+
 This error indicates that qemu failed or the host kernel could not boot.  To
 get further information about the failure, you have to run:
 
@@ -185,7 +188,7 @@ you mount the filesystem.  The two methods are the C<iocharset> parameter
 So to use a VFAT filesystem you must add the C<utf8> flag when mounting.
 From guestfish, use:
 
- ><fs> mount-options utf8 /dev/sda1 /
+ ><fs> параметри_монтування utf8 /dev/sda1 /
 
 or on the guestfish command line:
 
@@ -380,7 +383,7 @@ network.  Put the following line into a file called C<$HOME/.rpmmacros>:
 
 If you are using mock, do:
 
- mock -D '%libguestfs_buildnet 1' [etc]
+ mock -D '%libguestfs_buildnet 1' [тощо]
 
 =head2 How can I add support for sVirt?
 
@@ -402,7 +405,8 @@ to your SELinux policy - contact us on the mailing list.
 
 Once you have the requirements, do:
 
- ./configure --with-default-attach-method=libvirt
+ ./configure --with-default-backend=libvirt       # libguestfs >= 1.22
+ ./configure --with-default-attach-method=libvirt # libguestfs <= 1.20
  make
 
 Set SELinux to Enforcing mode, and sVirt should be used automatically.
@@ -577,6 +581,25 @@ the library and bindings) and C<COPYING> (GPLv2+ for the standalone
 programs).
 
 =head1 ДІАГНОСТИКА LIBGUESTFS
+
+B<In summary:> enable debugging by setting these two environment variables
+before running the program:
+
+ export LIBGUESTFS_DEBUG=1
+ export LIBGUESTFS_TRACE=1
+
+This will produce a lot of output.  Put the B<complete> output in an email
+message or pastebin and send it L<to the mailing list|/What mailing lists or
+chat rooms are available?>.  B<Do not edit the output.>
+
+Include the version of libguestfs, the operating system version, and how you
+installed libguestfs (eg. from source, C<yum install>, etc.)
+
+If no libguestfs program works, run the program below and paste the
+B<complete, unedited> output into an email or pastebin and send it to the
+mailing list:
+
+ libguestfs-test-tool
 
 =head2 How do I debug when using any libguestfs program or tool (eg. virt-v2v or
 virt-df)?

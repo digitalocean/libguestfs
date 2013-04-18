@@ -104,12 +104,14 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @ENABLE_APPLIANCE_TRUE@am__append_2 = tests/qemu tests/guests \
 @ENABLE_APPLIANCE_TRUE@	tests/c-api tests/tmpdirs \
 @ENABLE_APPLIANCE_TRUE@	tests/protocol tests/parallel \
-@ENABLE_APPLIANCE_TRUE@	tests/disks tests/lvm tests/luks \
-@ENABLE_APPLIANCE_TRUE@	tests/md tests/selinux tests/ntfsclone \
-@ENABLE_APPLIANCE_TRUE@	tests/btrfs tests/charsets tests/xml \
+@ENABLE_APPLIANCE_TRUE@	tests/disks tests/mountable tests/lvm \
+@ENABLE_APPLIANCE_TRUE@	tests/luks tests/md tests/selinux \
+@ENABLE_APPLIANCE_TRUE@	tests/ntfsclone tests/btrfs \
+@ENABLE_APPLIANCE_TRUE@	tests/charsets tests/xml \
 @ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
-@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/regressions
+@ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/syslinux \
+@ENABLE_APPLIANCE_TRUE@	tests/regressions
 
 # Language bindings.
 @HAVE_PERL_TRUE@am__append_3 = perl perl/examples
@@ -168,9 +170,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
@@ -196,8 +199,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
 	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
 	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -205,32 +209,35 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
 	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
 	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/putenv.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/putenv.m4 \
 	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
 	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
 	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/signal_h.m4 $(top_srcdir)/m4/size_max.m4 \
-	$(top_srcdir)/m4/sleep.m4 $(top_srcdir)/m4/snprintf.m4 \
-	$(top_srcdir)/m4/socketlib.m4 $(top_srcdir)/m4/sockets.m4 \
-	$(top_srcdir)/m4/socklen.m4 $(top_srcdir)/m4/sockpfaf.m4 \
-	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
-	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
-	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
-	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
-	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
-	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
-	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
-	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
-	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
-	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
-	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
-	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
+	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
+	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
+	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
+	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
+	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
+	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
+	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
+	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
+	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
+	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
+	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
+	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
+	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
+	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
+	$(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -239,18 +246,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
 	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
-	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utimbuf.m4 $(top_srcdir)/m4/utimecmp.m4 \
-	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
-	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utimbuf.m4 \
+	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
+	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
+	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -329,15 +338,15 @@ CSCOPE = cscope
 DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	examples po daemon appliance tests/qemu tests/guests \
 	tests/c-api tests/tmpdirs tests/protocol tests/parallel \
-	tests/disks tests/lvm tests/luks tests/md tests/selinux \
-	tests/ntfsclone tests/btrfs tests/charsets tests/xml \
-	tests/mount-local tests/9p tests/rsync tests/bigdirs \
-	tests/disk-labels tests/hotplug tests/regressions test-tool \
-	fish align cat df edit format inspector rescue perl \
-	perl/examples ocaml ocaml/examples python python/examples ruby \
-	ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject csharp resize \
-	sparsify sysprep tools fuse po-docs
+	tests/disks tests/mountable tests/lvm tests/luks tests/md \
+	tests/selinux tests/ntfsclone tests/btrfs tests/charsets \
+	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
+	tests/disk-labels tests/hotplug tests/nbd tests/syslinux \
+	tests/regressions test-tool fish align cat df edit format \
+	inspector rescue bash perl perl/examples ocaml ocaml/examples \
+	python python/examples ruby ruby/examples java java/examples \
+	haskell php erlang erlang/examples lua lua/examples gobject \
+	csharp resize sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -396,6 +405,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASH_COMPLETIONS_DIR = @BASH_COMPLETIONS_DIR@
+BASH_COMPLETION_CFLAGS = @BASH_COMPLETION_CFLAGS@
+BASH_COMPLETION_LIBS = @BASH_COMPLETION_LIBS@
 BITSIZEOF_PTRDIFF_T = @BITSIZEOF_PTRDIFF_T@
 BITSIZEOF_SIG_ATOMIC_T = @BITSIZEOF_SIG_ATOMIC_T@
 BITSIZEOF_SIZE_T = @BITSIZEOF_SIZE_T@
@@ -444,6 +456,7 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
+EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -634,6 +647,7 @@ GNULIB_RMDIR = @GNULIB_RMDIR@
 GNULIB_RPMATCH = @GNULIB_RPMATCH@
 GNULIB_SCANDIR = @GNULIB_SCANDIR@
 GNULIB_SCANF = @GNULIB_SCANF@
+GNULIB_SECURE_GETENV = @GNULIB_SECURE_GETENV@
 GNULIB_SELECT = @GNULIB_SELECT@
 GNULIB_SEND = @GNULIB_SEND@
 GNULIB_SENDTO = @GNULIB_SENDTO@
@@ -892,6 +906,7 @@ HAVE_REWINDDIR = @HAVE_REWINDDIR@
 HAVE_RPMATCH = @HAVE_RPMATCH@
 HAVE_SA_FAMILY_T = @HAVE_SA_FAMILY_T@
 HAVE_SCANDIR = @HAVE_SCANDIR@
+HAVE_SECURE_GETENV = @HAVE_SECURE_GETENV@
 HAVE_SETENV = @HAVE_SETENV@
 HAVE_SETHOSTNAME = @HAVE_SETHOSTNAME@
 HAVE_SIGACTION = @HAVE_SIGACTION@
@@ -1340,6 +1355,7 @@ STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
 SUPERMIN = @SUPERMIN@
+SUPERMIN_EXTRA_OPTIONS = @SUPERMIN_EXTRA_OPTIONS@
 SUPERMIN_HELPER = @SUPERMIN_HELPER@
 SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
@@ -1440,10 +1456,12 @@ ACLOCAL_AMFLAGS = -I m4
 
 # virt-tools in C.
 
+# bash-completion
+
 # Unconditional because nothing is built yet.
 SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
 	$(am__append_1) appliance $(am__append_2) test-tool fish align \
-	cat df edit format inspector rescue $(am__append_3) \
+	cat df edit format inspector rescue bash $(am__append_3) \
 	$(am__append_4) $(am__append_5) $(am__append_6) \
 	$(am__append_7) $(am__append_8) $(am__append_9) \
 	$(am__append_10) $(am__append_11) $(am__append_12) csharp \
@@ -1517,6 +1535,7 @@ HTMLFILES = \
 	html/guestfsd.8.html \
 	html/guestfish.1.html \
 	html/guestmount.1.html \
+	html/guestunmount.1.html \
 	html/libguestfs-make-fixed-appliance.1.html \
 	html/libguestfs-test-tool.1.html \
 	html/virt-alignment-scan.1.html \
@@ -2253,8 +2272,8 @@ extra-tests:
 	$(MAKE) -j1 \
 	  check-valgrind \
 	  check-valgrind-local-guests \
-	  check-with-appliance \
-	  check-valgrind-with-appliance \
+	  check-direct \
+	  check-valgrind-direct \
 	  check-with-upstream-qemu \
 	  check-with-upstream-libvirt \
 	  check-slow
@@ -2276,17 +2295,21 @@ check-valgrind-local-guests:
 	done; \
 	exit $$(( $$errors ? 1 : 0 ))
 
-check-with-appliance:
-	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
-	if [ "$$method" != "appliance" ]; then \
-	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check || exit $$?; \
+check-direct:
+	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
+	if [ "$$backend" != "direct" ]; then \
+	  $(MAKE) LIBGUESTFS_BACKEND=direct check || exit $$?; \
 	fi
 
-check-valgrind-with-appliance:
-	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
-	if [ "$$method" != "appliance" ]; then \
-	  $(MAKE) LIBGUESTFS_ATTACH_METHOD=appliance check-valgrind || exit $$?; \
+check-with-appliance: check-direct
+
+check-valgrind-direct:
+	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
+	if [ "$$backend" != "direct" ]; then \
+	  $(MAKE) LIBGUESTFS_BACKEND=direct check-valgrind || exit $$?; \
 	fi
+
+check-valgrind-with-appliance: check-valgrind-direct
 
 check-with-upstream-qemu:
 	rm -f $(top_builddir)/qemu-wrapper.sh
@@ -2303,8 +2326,8 @@ $(top_builddir)/qemu-wrapper.sh: Makefile
 	mv $@-t $@
 
 check-with-upstream-libvirt:
-	@method=`$(top_builddir)/run ./fish/guestfish get-attach-method`; \
-	if [ "$$method" = "libvirt" ] && [ -x "$(LIBVIRTDIR)/run" ]; then \
+	@backend=`$(top_builddir)/run ./fish/guestfish get-backend`; \
+	if [ "$$backend" = "libvirt" ] && [ -x "$(LIBVIRTDIR)/run" ]; then \
 	  $(LIBVIRTDIR)/run $(MAKE) check || exit $$?; \
 	fi
 
@@ -2346,8 +2369,8 @@ help:
 	@echo "make extra-tests                  Runs all of the following tests:"
 	@echo "  make check-valgrind                Run a subset of the tests under valgrind."
 	@echo "  make check-valgrind-local-guests   Test under valgrind using local guests."
-	@echo "  make check-with-appliance          Test using appliance attach-method."
-	@echo "  make check-valgrind-with-appliance Test valgrind + appliance attach-method."
+	@echo "  make check-direct                  Test using direct backend."
+	@echo "  make check-valgrind-direct         Test valgrind + direct backend."
 	@echo "  make check-with-upstream-qemu      Test using upstream qemu."
 	@echo "  make check-with-upstream-libvirt   Test using upstream libvirt."
 	@echo "  make check-slow                    Slow/long-running tests."

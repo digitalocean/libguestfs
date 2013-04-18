@@ -25,8 +25,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+#include <errno.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 #include <ruby.h>
+#pragma GCC diagnostic pop
 
 /* ruby/defines.h defines '_'. */
 #ifdef _
@@ -247,6 +252,31 @@ ruby_delete_event_callback (VALUE gv, VALUE event_handlev)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   Guestfs::Guestfs.event_to_string(events) -> string
+ *
+ * Call
+ * +guestfs_event_to_string+[http://libguestfs.org/guestfs.3.html#guestfs_event_to_string]
+ * to convert an event or event bitmask into a printable string.
+ */
+static VALUE
+ruby_event_to_string (VALUE modulev, VALUE eventsv)
+{
+  uint64_t events;
+  char *str;
+
+  events = NUM2ULL (eventsv);
+  str = guestfs_event_to_string (events);
+  if (str == NULL)
+    rb_raise (e_Error, "%s", strerror (errno));
+
+  volatile VALUE rv = rb_str_new2 (str);
+  free (str);
+
+  return rv;
+}
+
 static void
 ruby_event_callback_wrapper (guestfs_h *g,
                              void *data,
@@ -356,26 +386,6 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   }
 
   return r;
-}
-
-/*
- * call-seq:
- *   g.user_cancel() -> nil
- *
- * Call
- * +guestfs_user_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel]
- * to cancel the current transfer.  This is safe to call from Ruby
- * signal handlers and threads.
- */
-static VALUE
-ruby_user_cancel (VALUE gv)
-{
-  guestfs_h *g;
-
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (g)
-    guestfs_user_cancel (g);
-  return Qnil;
 }
 
 static VALUE
@@ -2332,7 +2342,7 @@ ruby_guestfs_get_pid (VALUE gv)
  * features. In enterprise distributions we backport
  * features from later versions into earlier versions,
  * making this an unreliable way to test for features. Use
- * "g.available" instead.
+ * "g.available" or "g.feature_available" instead.
  *
  *
  * (For the C API documentation for this function, see
@@ -3441,7 +3451,8 @@ ruby_guestfs_get_network (VALUE gv)
  *
  * This inspection command looks for filesystems on
  * partitions, block devices and logical volumes, returning
- * a list of devices containing filesystems and their type.
+ * a list of "mountables" containing filesystems and their
+ * type.
  * 
  * The return value is a hash, where the keys are the
  * devices containing filesystems, and the values are the
@@ -3451,6 +3462,10 @@ ruby_guestfs_get_network (VALUE gv)
  * "/dev/sda2" => "ext2"
  * "/dev/vg_guest/lv_root" => "ext4"
  * "/dev/vg_guest/lv_swap" => "swap"
+ * 
+ * The key is not necessarily a block device. It may also
+ * be an opaque 'mountable' string which can be passed to
+ * "g.mount".
  * 
  * The value can have the special value "unknown", meaning
  * the content of the device is undetermined or empty.
@@ -3571,6 +3586,88 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * 
  * See "DISK LABELS" in guestfs(3).
  * 
+ * "protocol"
+ * The optional protocol argument can be used to select
+ * an alternate source protocol.
+ * 
+ * See also: "REMOTE STORAGE" in guestfs(3).
+ * 
+ * "protocol = "file""
+ * "filename" is interpreted as a local file or
+ * device. This is the default if the optional
+ * protocol parameter is omitted.
+ * 
+ * "protocol = "gluster""
+ * Connect to the GlusterFS server. The "server"
+ * parameter must also be supplied - see below.
+ * 
+ * See also: "GLUSTER" in guestfs(3)
+ * 
+ * "protocol = "nbd""
+ * Connect to the Network Block Device server. The
+ * "server" parameter must also be supplied - see
+ * below.
+ * 
+ * See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+ * 
+ * "protocol = "rbd""
+ * Connect to the Ceph (librbd/RBD) server. The
+ * "server" parameter must also be supplied - see
+ * below.
+ * 
+ * See also: "CEPH" in guestfs(3).
+ * 
+ * "protocol = "sheepdog""
+ * Connect to the Sheepdog server. The "server"
+ * parameter may also be supplied - see below.
+ * 
+ * See also: "SHEEPDOG" in guestfs(3).
+ * 
+ * "protocol = "ssh""
+ * Connect to the Secure Shell (ssh) server.
+ * 
+ * The "server" parameter must be supplied. The
+ * "username" parameter may be supplied. See below.
+ * 
+ * See also: "SSH" in guestfs(3).
+ * 
+ * "server"
+ * For protocols which require access to a remote
+ * server, this is a list of server(s).
+ * 
+ * Protocol       Number of servers required
+ * --------       --------------------------
+ * file           List must be empty or param not used at all
+ * gluster        Exactly one
+ * nbd            Exactly one
+ * rbd            One or more
+ * sheepdog       Zero or more
+ * ssh            Exactly one
+ * 
+ * Each list element is a string specifying a server.
+ * The string must be in one of the following formats:
+ * 
+ * hostname
+ * hostname:port
+ * tcp:hostname
+ * tcp:hostname:port
+ * unix:/path/to/socket
+ * 
+ * If the port number is omitted, then the standard
+ * port number for the protocol is used (see
+ * "/etc/services").
+ * 
+ * "username"
+ * For the "ssh" protocol only, this specifies the
+ * remote username.
+ * 
+ * If not given, then the local username is used. But
+ * note this sometimes may give unexpected results, for
+ * example if using the libvirt backend and if the
+ * libvirt backend is configured to start the qemu
+ * appliance as a special user such as "qemu.qemu". If
+ * in doubt, specify the remote username you want.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -3623,6 +3720,34 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.label = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("protocol")));
+  if (v != Qnil) {
+    optargs_s.protocol = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("server")));
+  if (v != Qnil) {
+  Check_Type (v, T_ARRAY);
+  {
+    size_t i, len;
+    char **r;
+
+    len = RARRAY_LEN (v);
+    r = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE sv = rb_ary_entry (v, i);
+      r[i] = StringValueCStr (sv);
+    }
+    r[len] = NULL;
+    optargs_s.server = r;
+  }
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("username")));
+  if (v != Qnil) {
+    optargs_s.username = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
   }
 
   int r;
@@ -4490,32 +4615,39 @@ ruby_guestfs_inspect_is_multipart (VALUE gv, VALUE rootv)
 
 /*
  * call-seq:
- *   g.set_attach_method(attachmethod) -> nil
+ *   g.set_attach_method(backend) -> nil
  *
- * set the attach method
+ * set the backend
  *
  * Set the method that libguestfs uses to connect to the
- * back end guestfsd daemon.
+ * backend guestfsd daemon.
  * 
- * See "ATTACH METHOD" in guestfs(3).
+ * See "BACKEND" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "set_backend" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_set_attach_method+[http://libguestfs.org/guestfs.3.html#guestfs_set_attach_method]).
  */
 static VALUE
-ruby_guestfs_set_attach_method (VALUE gv, VALUE attachmethodv)
+ruby_guestfs_set_attach_method (VALUE gv, VALUE backendv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "set_attach_method");
 
-  const char *attachmethod = StringValueCStr (attachmethodv);
+  const char *backend = StringValueCStr (backendv);
 
   int r;
 
-  r = guestfs_set_attach_method (g, attachmethod);
+  r = guestfs_set_attach_method (g, backend);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -4526,12 +4658,18 @@ ruby_guestfs_set_attach_method (VALUE gv, VALUE attachmethodv)
  * call-seq:
  *   g.get_attach_method() -> string
  *
- * get the attach method
+ * get the backend
  *
- * Return the current attach method.
+ * Return the current backend.
  * 
- * See "g.set_attach_method" and "ATTACH METHOD" in
- * guestfs(3).
+ * See "g.set_backend" and "BACKEND" in guestfs(3).
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "get_backend" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -4549,6 +4687,80 @@ ruby_guestfs_get_attach_method (VALUE gv)
   char *r;
 
   r = guestfs_get_attach_method (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
+ *   g.set_backend(backend) -> nil
+ *
+ * set the backend
+ *
+ * Set the method that libguestfs uses to connect to the
+ * backend guestfsd daemon.
+ * 
+ * This handle property was previously called the "attach
+ * method".
+ * 
+ * See "BACKEND" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_backend+[http://libguestfs.org/guestfs.3.html#guestfs_set_backend]).
+ */
+static VALUE
+ruby_guestfs_set_backend (VALUE gv, VALUE backendv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_backend");
+
+  const char *backend = StringValueCStr (backendv);
+
+  int r;
+
+  r = guestfs_set_backend (g, backend);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_backend() -> string
+ *
+ * get the backend
+ *
+ * Return the current backend.
+ * 
+ * This handle property was previously called the "attach
+ * method".
+ * 
+ * See "g.set_backend" and "BACKEND" in guestfs(3).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_backend+[http://libguestfs.org/guestfs.3.html#guestfs_get_backend]).
+ */
+static VALUE
+ruby_guestfs_get_backend (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_backend");
+
+
+  char *r;
+
+  r = guestfs_get_backend (g);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -5990,11 +6202,11 @@ ruby_guestfs_disk_has_backing_file (VALUE gv, VALUE filenamev)
  * they cannot be removed.
  * 
  * You can call this function before or after launching the
- * handle. If called after launch, if the attach-method
- * supports it, we try to hot unplug the drive: see
- * "HOTPLUGGING" in guestfs(3). The disk must not be in use
- * (eg. mounted) when you do this. We try to detect if the
- * disk is in use and stop you from doing this.
+ * handle. If called after launch, if the backend supports
+ * it, we try to hot unplug the drive: see "HOTPLUGGING" in
+ * guestfs(3). The disk must not be in use (eg. mounted)
+ * when you do this. We try to detect if the disk is in use
+ * and stop you from doing this.
  *
  *
  * (For the C API documentation for this function, see
@@ -6522,7 +6734,134 @@ ruby_guestfs_get_cachedir (VALUE gv)
 
 /*
  * call-seq:
- *   g.mount(device, mountpoint) -> nil
+ *   g.user_cancel() -> nil
+ *
+ * cancel the current upload or download operation
+ *
+ * This function cancels the current upload or download
+ * operation.
+ * 
+ * Unlike most other libguestfs calls, this function is
+ * signal safe and thread safe. You can call it from a
+ * signal handler or from another thread, without needing
+ * to do any locking.
+ * 
+ * The transfer that was in progress (if there is one) will
+ * stop shortly afterwards, and will return an error. The
+ * errno (see "guestfs_last_errno") is set to "EINTR", so
+ * you can test for this to find out if the operation was
+ * cancelled or failed because of another error.
+ * 
+ * No cleanup is performed: for example, if a file was
+ * being uploaded then after cancellation there may be a
+ * partially uploaded file. It is the caller's
+ * responsibility to clean up if necessary.
+ * 
+ * There are two common places that you might call
+ * "g.user_cancel":
+ * 
+ * In an interactive text-based program, you might call it
+ * from a "SIGINT" signal handler so that pressing "^C"
+ * cancels the current operation. (You also need to call
+ * "guestfs_set_pgroup" so that child processes don't
+ * receive the "^C" signal).
+ * 
+ * In a graphical program, when the main thread is
+ * displaying a progress bar with a cancel button, wire up
+ * the cancel button to call this function.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_user_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel]).
+ */
+static VALUE
+ruby_guestfs_user_cancel (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "user_cancel");
+
+
+  int r;
+
+  r = guestfs_user_cancel (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.set_program(program) -> nil
+ *
+ * set the program name
+ *
+ * Set the program name. This is an informative string
+ * which the main program may optionally set in the handle.
+ * 
+ * When the handle is created, the program name in the
+ * handle is set to the basename from "argv[0]". If that
+ * was not possible, it is set to the empty string (but
+ * never "NULL").
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_program+[http://libguestfs.org/guestfs.3.html#guestfs_set_program]).
+ */
+static VALUE
+ruby_guestfs_set_program (VALUE gv, VALUE programv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_program");
+
+  const char *program = StringValueCStr (programv);
+
+  int r;
+
+  r = guestfs_set_program (g, program);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_program() -> string
+ *
+ * get the program name
+ *
+ * Get the program name. See "g.set_program".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_program+[http://libguestfs.org/guestfs.3.html#guestfs_get_program]).
+ */
+static VALUE
+ruby_guestfs_get_program (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_program");
+
+
+  const char *r;
+
+  r = guestfs_get_program (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return rb_str_new2 (r);
+}
+
+/*
+ * call-seq:
+ *   g.mount(mountable, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
  *
@@ -6531,7 +6870,8 @@ ruby_guestfs_get_cachedir (VALUE gv)
  * on, as they were added to the guest. If those block
  * devices contain partitions, they will have the usual
  * names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
- * names can be used.
+ * names can be used, or 'mountable' strings returned by
+ * "g.list_filesystems" or "g.inspect_get_mountpoints".
  * 
  * The rules are the same as for mount(2): A filesystem
  * must first be mounted on "/" before others can be
@@ -6554,19 +6894,19 @@ ruby_guestfs_get_cachedir (VALUE gv)
  * +guestfs_mount+[http://libguestfs.org/guestfs.3.html#guestfs_mount]).
  */
 static VALUE
-ruby_guestfs_mount (VALUE gv, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount (VALUE gv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount (g, device, mountpoint);
+  r = guestfs_mount (g, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -9450,7 +9790,7 @@ ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
 
 /*
  * call-seq:
- *   g.mount_ro(device, mountpoint) -> nil
+ *   g.mount_ro(mountable, mountpoint) -> nil
  *
  * mount a guest disk, read-only
  *
@@ -9462,19 +9802,19 @@ ruby_guestfs_tgz_out (VALUE gv, VALUE directoryv, VALUE tarballv)
  * +guestfs_mount_ro+[http://libguestfs.org/guestfs.3.html#guestfs_mount_ro]).
  */
 static VALUE
-ruby_guestfs_mount_ro (VALUE gv, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount_ro (VALUE gv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_ro");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount_ro (g, device, mountpoint);
+  r = guestfs_mount_ro (g, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -9483,7 +9823,7 @@ ruby_guestfs_mount_ro (VALUE gv, VALUE devicev, VALUE mountpointv)
 
 /*
  * call-seq:
- *   g.mount_options(options, device, mountpoint) -> nil
+ *   g.mount_options(options, mountable, mountpoint) -> nil
  *
  * mount a guest disk with mount options
  *
@@ -9500,7 +9840,7 @@ ruby_guestfs_mount_ro (VALUE gv, VALUE devicev, VALUE mountpointv)
  * +guestfs_mount_options+[http://libguestfs.org/guestfs.3.html#guestfs_mount_options]).
  */
 static VALUE
-ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9508,12 +9848,12 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mount
     rb_raise (rb_eArgError, "%s: used handle after closing it", "mount_options");
 
   const char *options = StringValueCStr (optionsv);
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount_options (g, options, device, mountpoint);
+  r = guestfs_mount_options (g, options, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -9522,7 +9862,7 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mount
 
 /*
  * call-seq:
- *   g.mount_vfs(options, vfstype, device, mountpoint) -> nil
+ *   g.mount_vfs(options, vfstype, mountable, mountpoint) -> nil
  *
  * mount a guest disk with mount options and vfstype
  *
@@ -9535,7 +9875,7 @@ ruby_guestfs_mount_options (VALUE gv, VALUE optionsv, VALUE devicev, VALUE mount
  * +guestfs_mount_vfs+[http://libguestfs.org/guestfs.3.html#guestfs_mount_vfs]).
  */
 static VALUE
-ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE devicev, VALUE mountpointv)
+ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE mountablev, VALUE mountpointv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
@@ -9544,12 +9884,12 @@ ruby_guestfs_mount_vfs (VALUE gv, VALUE optionsv, VALUE vfstypev, VALUE devicev,
 
   const char *options = StringValueCStr (optionsv);
   const char *vfstype = StringValueCStr (vfstypev);
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *mountpoint = StringValueCStr (mountpointv);
 
   int r;
 
-  r = guestfs_mount_vfs (g, options, vfstype, device, mountpoint);
+  r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -14663,12 +15003,12 @@ ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.vfs_type(device) -> string
+ *   g.vfs_type(mountable) -> string
  *
  * get the Linux VFS type corresponding to a mounted device
  *
  * This command gets the filesystem type corresponding to
- * the filesystem on "device".
+ * the filesystem on "mountable".
  * 
  * For most filesystems, the result is the name of the
  * Linux VFS module which would be used to mount this
@@ -14681,18 +15021,18 @@ ruby_guestfs_case_sensitive_path (VALUE gv, VALUE pathv)
  * +guestfs_vfs_type+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_type]).
  */
 static VALUE
-ruby_guestfs_vfs_type (VALUE gv, VALUE devicev)
+ruby_guestfs_vfs_type (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "vfs_type");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
 
   char *r;
 
-  r = guestfs_vfs_type (g, device);
+  r = guestfs_vfs_type (g, mountable);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -15360,6 +15700,11 @@ ruby_guestfs_fill (VALUE gv, VALUE cv, VALUE lenv, VALUE pathv)
  * groups then an error is always returned.
  * 
  * *Notes:*
+ * 
+ * *   "g.feature_available" is the same as this call, but
+ * with a slightly simpler to use API: that call
+ * returns a boolean true/false instead of throwing an
+ * error.
  * 
  * *   You must call "g.launch" before calling this
  * function.
@@ -16630,9 +16975,11 @@ ruby_guestfs_ntfsresize_size (VALUE gv, VALUE devicev, VALUE sizev)
  * this daemon knows about. Note this returns both
  * supported and unsupported groups. To find out which ones
  * the daemon can actually support you have to call
- * "g.available" on each member of the returned list.
+ * "g.available" / "g.feature_available" on each member of
+ * the returned list.
  * 
- * See also "g.available" and "AVAILABILITY" in guestfs(3).
+ * See also "g.available", "g.feature_available" and
+ * "AVAILABILITY" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -16712,12 +17059,11 @@ ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
 
 /*
  * call-seq:
- *   g.vfs_label(device) -> string
+ *   g.vfs_label(mountable) -> string
  *
  * get the filesystem label
  *
- * This returns the filesystem label of the filesystem on
- * "device".
+ * This returns the label of the filesystem on "mountable".
  * 
  * If the filesystem is unlabeled, this returns the empty
  * string.
@@ -16730,18 +17076,18 @@ ruby_guestfs_fallocate64 (VALUE gv, VALUE pathv, VALUE lenv)
  * +guestfs_vfs_label+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_label]).
  */
 static VALUE
-ruby_guestfs_vfs_label (VALUE gv, VALUE devicev)
+ruby_guestfs_vfs_label (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "vfs_label");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
 
   char *r;
 
-  r = guestfs_vfs_label (g, device);
+  r = guestfs_vfs_label (g, mountable);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -16752,12 +17098,12 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE devicev)
 
 /*
  * call-seq:
- *   g.vfs_uuid(device) -> string
+ *   g.vfs_uuid(mountable) -> string
  *
  * get the filesystem UUID
  *
  * This returns the filesystem UUID of the filesystem on
- * "device".
+ * "mountable".
  * 
  * If the filesystem does not have a UUID, this returns the
  * empty string.
@@ -16769,18 +17115,18 @@ ruby_guestfs_vfs_label (VALUE gv, VALUE devicev)
  * +guestfs_vfs_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_vfs_uuid]).
  */
 static VALUE
-ruby_guestfs_vfs_uuid (VALUE gv, VALUE devicev)
+ruby_guestfs_vfs_uuid (VALUE gv, VALUE mountablev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "vfs_uuid");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
 
   char *r;
 
-  r = guestfs_vfs_uuid (g, device);
+  r = guestfs_vfs_uuid (g, mountable);
   if (r == NULL)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -18491,6 +18837,13 @@ ruby_guestfs_part_to_partnum (VALUE gv, VALUE partitionv)
  * If the destination file is not large enough, it is
  * extended.
  * 
+ * If the "sparse" flag is true then the call avoids
+ * writing blocks that contain only zeroes, which can help
+ * in some situations where the backing disk is
+ * thin-provisioned. Note that unless the target is already
+ * zeroed, using this option will result in incorrect
+ * copying.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -18535,6 +18888,11 @@ ruby_guestfs_copy_device_to_device (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK;
   }
 
   int r;
@@ -18600,6 +18958,11 @@ ruby_guestfs_copy_device_to_file (int argc, VALUE *argv, VALUE gv)
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK;
   }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK;
+  }
 
   int r;
 
@@ -18663,6 +19026,11 @@ ruby_guestfs_copy_file_to_device (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK;
   }
 
   int r;
@@ -18732,6 +19100,11 @@ ruby_guestfs_copy_file_to_file (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.size = NUM2LL (v);
     optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("sparse")));
+  if (v != Qnil) {
+    optargs_s.sparse = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK;
   }
 
   int r;
@@ -19549,11 +19922,11 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
 
 /*
  * call-seq:
- *   g.set_label(device, label) -> nil
+ *   g.set_label(mountable, label) -> nil
  *
  * set filesystem label
  *
- * Set the filesystem label on "device" to "label".
+ * Set the filesystem label on "mountable" to "label".
  * 
  * Only some filesystem types support labels, and
  * libguestfs supports setting labels on only a subset of
@@ -19564,6 +19937,9 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * On NTFS filesystems, labels are limited to 128 unicode
  * characters.
  * 
+ * Setting the label on a btrfs subvolume will set the
+ * label on its parent filesystem.
+ * 
  * To read the label on a filesystem, call "g.vfs_label".
  *
  *
@@ -19571,19 +19947,19 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * +guestfs_set_label+[http://libguestfs.org/guestfs.3.html#guestfs_set_label]).
  */
 static VALUE
-ruby_guestfs_set_label (VALUE gv, VALUE devicev, VALUE labelv)
+ruby_guestfs_set_label (VALUE gv, VALUE mountablev, VALUE labelv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "set_label");
 
-  const char *device = StringValueCStr (devicev);
+  const char *mountable = StringValueCStr (mountablev);
   const char *label = StringValueCStr (labelv);
 
   int r;
 
-  r = guestfs_set_label (g, device, label);
+  r = guestfs_set_label (g, mountable, label);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -20684,7 +21060,8 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
  * for other reasons such as it being a later version of
  * the filesystem, or having incompatible features.
  * 
- * See also "g.available", "AVAILABILITY" in guestfs(3).
+ * See also "g.available", "g.feature_available",
+ * "AVAILABILITY" in guestfs(3).
  *
  *
  * (For the C API documentation for this function, see
@@ -23423,6 +23800,82 @@ ruby_guestfs_ldmtool_volume_partitions (VALUE gv, VALUE diskgroupv, VALUE volume
 
 /*
  * call-seq:
+ *   g.part_set_gpt_type(device, partnum, guid) -> nil
+ *
+ * set the type GUID of a GPT partition
+ *
+ * Set the type GUID of numbered GPT partition "partnum" to
+ * "guid". Return an error if the partition table of
+ * "device" isn't GPT, or if "guid" is not a valid GUID.
+ * 
+ * See
+ * <http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
+ * tion_type_GUIDs> for a useful list of type GUIDs.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_set_gpt_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_set_gpt_type]).
+ */
+static VALUE
+ruby_guestfs_part_set_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv, VALUE guidv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_set_gpt_type");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+  const char *guid = StringValueCStr (guidv);
+
+  int r;
+
+  r = guestfs_part_set_gpt_type (g, device, partnum, guid);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.part_get_gpt_type(device, partnum) -> string
+ *
+ * get the type GUID of a GPT partition
+ *
+ * Return the type GUID of numbered GPT partition
+ * "partnum". For MBR partitions, return an appropriate
+ * GUID corresponding to the MBR type. Behaviour is
+ * undefined for other partition types.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_part_get_gpt_type+[http://libguestfs.org/guestfs.3.html#guestfs_part_get_gpt_type]).
+ */
+static VALUE
+ruby_guestfs_part_get_gpt_type (VALUE gv, VALUE devicev, VALUE partnumv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "part_get_gpt_type");
+
+  const char *device = StringValueCStr (devicev);
+  int partnum = NUM2INT (partnumv);
+
+  char *r;
+
+  r = guestfs_part_get_gpt_type (g, device, partnum);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.rename(oldpath, newpath) -> nil
  *
  * rename a file on the same filesystem
@@ -23455,6 +23908,212 @@ ruby_guestfs_rename (VALUE gv, VALUE oldpathv, VALUE newpathv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.is_whole_device(device) -> [True|False]
+ *
+ * test if a device is a whole device
+ *
+ * This returns "true" if and only if "device" refers to a
+ * whole block device. That is, not a partition or a
+ * logical device.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_is_whole_device+[http://libguestfs.org/guestfs.3.html#guestfs_is_whole_device]).
+ */
+static VALUE
+ruby_guestfs_is_whole_device (VALUE gv, VALUE devicev)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "is_whole_device");
+
+  const char *device = StringValueCStr (devicev);
+
+  int r;
+
+  r = guestfs_is_whole_device (g, device);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.feature_available(groups) -> [True|False]
+ *
+ * test availability of some parts of the API
+ *
+ * This is the same as "g.available", but unlike that call
+ * it returns a simple true/false boolean result, instead
+ * of throwing an exception if a feature is not found. For
+ * other documentation see "g.available".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_feature_available+[http://libguestfs.org/guestfs.3.html#guestfs_feature_available]).
+ */
+static VALUE
+ruby_guestfs_feature_available (VALUE gv, VALUE groupsv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "feature_available");
+
+  char **groups;
+  Check_Type (groupsv, T_ARRAY);
+  {
+    size_t i, len;
+    len = RARRAY_LEN (groupsv);
+    groups = ALLOC_N (char *, len+1);
+    for (i = 0; i < len; ++i) {
+      volatile VALUE v = rb_ary_entry (groupsv, i);
+      groups[i] = StringValueCStr (v);
+    }
+    groups[len] = NULL;
+  }
+
+  int r;
+
+  r = guestfs_feature_available (g, groups);
+  free (groups);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.syslinux(device, {optargs...}) -> nil
+ *
+ * install the SYSLINUX bootloader
+ *
+ * Install the SYSLINUX bootloader on "device".
+ * 
+ * The device parameter must be either a whole disk
+ * formatted as a FAT filesystem, or a partition formatted
+ * as a FAT filesystem. In the latter case, the partition
+ * should be marked as "active" ("g.part_set_bootable") and
+ * a Master Boot Record must be installed (eg. using
+ * "g.pwrite_device") on the first sector of the whole
+ * disk. The SYSLINUX package comes with some suitable
+ * Master Boot Records. See the syslinux(1) man page for
+ * further information.
+ * 
+ * The optional arguments are:
+ * 
+ * "directory"
+ * Install SYSLINUX in the named subdirectory, instead
+ * of in the root directory of the FAT filesystem.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by
+ * placing a file called "syslinux.cfg" on the FAT
+ * filesystem, either in the root directory, or under
+ * "directory" if that optional argument is being used. For
+ * further information about the contents of this file, see
+ * syslinux(1).
+ * 
+ * See also "g.extlinux".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_syslinux+[http://libguestfs.org/guestfs.3.html#guestfs_syslinux]).
+ */
+static VALUE
+ruby_guestfs_syslinux (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "syslinux");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE devicev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *device = StringValueCStr (devicev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_syslinux_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("directory")));
+  if (v != Qnil) {
+    optargs_s.directory = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_SYSLINUX_DIRECTORY_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_syslinux_argv (g, device, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.extlinux(directory) -> nil
+ *
+ * install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem
+ *
+ * Install the SYSLINUX bootloader on the device mounted at
+ * "directory". Unlike "g.syslinux" which requires a FAT
+ * filesystem, this can be used on an ext2/3/4 or btrfs
+ * filesystem.
+ * 
+ * The "directory" parameter can be either a mountpoint, or
+ * a directory within the mountpoint.
+ * 
+ * You also have to mark the partition as "active"
+ * ("g.part_set_bootable") and a Master Boot Record must be
+ * installed (eg. using "g.pwrite_device") on the first
+ * sector of the whole disk. The SYSLINUX package comes
+ * with some suitable Master Boot Records. See the
+ * extlinux(1) man page for further information.
+ * 
+ * Additional configuration can be supplied to SYSLINUX by
+ * placing a file called "extlinux.conf" on the filesystem
+ * under "directory". For further information about the
+ * contents of this file, see extlinux(1).
+ * 
+ * See also "g.syslinux".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_extlinux+[http://libguestfs.org/guestfs.3.html#guestfs_extlinux]).
+ */
+static VALUE
+ruby_guestfs_extlinux (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "extlinux");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  int r;
+
+  r = guestfs_extlinux (g, directory);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -23478,8 +24137,8 @@ Init__guestfs (void)
                     ruby_set_event_callback, 2);
   rb_define_method (c_guestfs, "delete_event_callback",
                     ruby_delete_event_callback, 1);
-  rb_define_method (c_guestfs, "user_cancel",
-                    ruby_user_cancel, 0);
+  rb_define_module_function (m_guestfs, "event_to_string",
+                    ruby_event_to_string, 1);
 
   rb_define_const (m_guestfs, "EVENT_CLOSE",
                    ULL2NUM (UINT64_C (0x1)));
@@ -23686,6 +24345,10 @@ Init__guestfs (void)
         ruby_guestfs_set_attach_method, 1);
   rb_define_method (c_guestfs, "get_attach_method",
         ruby_guestfs_get_attach_method, 0);
+  rb_define_method (c_guestfs, "set_backend",
+        ruby_guestfs_set_backend, 1);
+  rb_define_method (c_guestfs, "get_backend",
+        ruby_guestfs_get_backend, 0);
   rb_define_method (c_guestfs, "inspect_get_product_variant",
         ruby_guestfs_inspect_get_product_variant, 1);
   rb_define_method (c_guestfs, "inspect_get_windows_current_control_set",
@@ -23768,6 +24431,12 @@ Init__guestfs (void)
         ruby_guestfs_set_cachedir, 1);
   rb_define_method (c_guestfs, "get_cachedir",
         ruby_guestfs_get_cachedir, 0);
+  rb_define_method (c_guestfs, "user_cancel",
+        ruby_guestfs_user_cancel, 0);
+  rb_define_method (c_guestfs, "set_program",
+        ruby_guestfs_set_program, 1);
+  rb_define_method (c_guestfs, "get_program",
+        ruby_guestfs_get_program, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -24532,6 +25201,18 @@ Init__guestfs (void)
         ruby_guestfs_ldmtool_volume_hint, 2);
   rb_define_method (c_guestfs, "ldmtool_volume_partitions",
         ruby_guestfs_ldmtool_volume_partitions, 2);
+  rb_define_method (c_guestfs, "part_set_gpt_type",
+        ruby_guestfs_part_set_gpt_type, 3);
+  rb_define_method (c_guestfs, "part_get_gpt_type",
+        ruby_guestfs_part_get_gpt_type, 2);
   rb_define_method (c_guestfs, "rename",
         ruby_guestfs_rename, 2);
+  rb_define_method (c_guestfs, "is_whole_device",
+        ruby_guestfs_is_whole_device, 1);
+  rb_define_method (c_guestfs, "feature_available",
+        ruby_guestfs_feature_available, 1);
+  rb_define_method (c_guestfs, "syslinux",
+        ruby_guestfs_syslinux, -1);
+  rb_define_method (c_guestfs, "extlinux",
+        ruby_guestfs_extlinux, 1);
 }

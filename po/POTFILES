@@ -1,4 +1,3 @@
-align/domains.c
 align/scan.c
 cat/virt-cat.c
 cat/virt-filesystems.c
@@ -64,6 +63,7 @@ daemon/mknod.c
 daemon/mktemp.c
 daemon/modprobe.c
 daemon/mount.c
+daemon/mountable.c
 daemon/names.c
 daemon/ntfs.c
 daemon/ntfsclone.c
@@ -85,6 +85,7 @@ daemon/strings.c
 daemon/stubs.c
 daemon/swap.c
 daemon/sync.c
+daemon/syslinux.c
 daemon/tar.c
 daemon/truncate.c
 daemon/umask.c
@@ -98,8 +99,10 @@ daemon/zero.c
 daemon/zerofree.c
 df/df.c
 df/domains.c
+df/estimate-max-threads.c
 df/main.c
 df/output.c
+df/parallel.c
 edit/virt-edit.c
 erlang/erl-guestfs-proto.c
 erlang/erl-guestfs.c
@@ -142,6 +145,8 @@ fish/tilde.c
 fish/time.c
 format/format.c
 fuse/guestmount.c
+fuse/guestunmount.c
+fuse/test-guestunmount-fd.c
 gobject/src/optargs-add_domain.c
 gobject/src/optargs-add_drive.c
 gobject/src/optargs-btrfs_filesystem_resize.c
@@ -175,6 +180,7 @@ gobject/src/optargs-rsync.c
 gobject/src/optargs-rsync_in.c
 gobject/src/optargs-rsync_out.c
 gobject/src/optargs-set_e2attrs.c
+gobject/src/optargs-syslinux.c
 gobject/src/optargs-tar_in.c
 gobject/src/optargs-tar_out.c
 gobject/src/optargs-tune2fs.c
@@ -213,7 +219,6 @@ ocaml/guestfs-c.c
 perl/Guestfs.c
 perl/bindtests.pl
 perl/lib/Sys/Guestfs.pm
-perl/lib/Sys/Guestfs/Lib.pm
 php/extension/guestfs_php.c
 python/guestfs-py-byhand.c
 python/guestfs-py.c
@@ -237,15 +242,16 @@ src/canonical-name.c
 src/cleanup-structs.c
 src/cleanup.c
 src/command.c
+src/conn-socket.c
 src/dbdump.c
 src/drives.c
 src/errnostring-gperf.c
 src/errnostring.c
 src/errors.c
+src/event-string.c
 src/events.c
 src/file.c
 src/filearch.c
-src/for-each-disk.c
 src/free-structs.c
 src/fuse.c
 src/handle.c
@@ -257,7 +263,7 @@ src/inspect-fs-windows.c
 src/inspect-fs.c
 src/inspect-icon.c
 src/inspect.c
-src/launch-appliance.c
+src/launch-direct.c
 src/launch-libvirt.c
 src/launch-unix.c
 src/launch.c

@@ -1,5 +1,5 @@
 /* virt-df
- * Copyright (C) 2010 Red Hat Inc.
+ * Copyright (C) 2010-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,27 +16,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GUESTFS_VIRT_DF_
-#define GUESTFS_VIRT_DF_
+#ifndef GUESTFS_VIRT_DF_H_
+#define GUESTFS_VIRT_DF_H_
 
-extern guestfs_h *g;
-extern const char *libvirt_uri; /* --connect */
 extern int csv;                 /* --csv */
 extern int human;               /* --human-readable|-h */
 extern int inodes;              /* --inodes */
-extern int one_per_guest;       /* --one-per-guest */
 extern int uuid;                /* --uuid */
 
 /* df.c */
-extern int df_on_handle (const char *name, const char *uuid, char **devices, int offset);
-
-/* domains.c */
-#if defined(HAVE_LIBVIRT) && defined(HAVE_LIBXML2)
-extern void get_domains_from_libvirt (void);
+extern int df_on_handle (guestfs_h *g, const char *name, const char *uuid, FILE *fp);
+#if defined(HAVE_LIBVIRT)
+extern int df_work (guestfs_h *g, size_t i, FILE *fp);
 #endif
 
 /* output.c */
 extern void print_title (void);
-extern void print_stat (const char *name, const char *uuid, const char *dev, int offset, const struct guestfs_statvfs *stat);
+extern void print_stat (FILE *fp, const char *name, const char *uuid, const char *dev, const struct guestfs_statvfs *stat);
 
-#endif /* GUESTFS_VIRT_DF_ */
+#endif /* GUESTFS_VIRT_DF_H_ */

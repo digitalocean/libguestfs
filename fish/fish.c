@@ -1,4 +1,4 @@
-/* guestfish - the filesystem interactive shell
+/* guestfish - guest filesystem shell
  * Copyright (C) 2009-2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <signal.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <locale.h>
@@ -45,7 +46,6 @@
 
 #include "c-ctype.h"
 #include "closeout.h"
-#include "progname.h"
 
 /* Return from parse_command_line.  See description below. */
 struct parsed_command {
@@ -159,9 +159,6 @@ usage (int status)
 int
 main (int argc, char *argv[])
 {
-  /* Set global program name that is not polluted with libtool artifacts.  */
-  set_program_name (argv[0]);
-
   /* Initialize gnulib closeout module. */
   atexit (close_stdout);
 
@@ -191,6 +188,7 @@ main (int argc, char *argv[])
     { "keys-from-stdin", 0, 0, 0 },
     { "listen", 0, 0, 0 },
     { "live", 0, 0, 0 },
+    { "long-options", 0, 0, 0 },
     { "mount", 1, 0, 'm' },
     { "network", 0, 0, 0 },
     { "new", 1, 0, 'N' },
@@ -235,22 +233,15 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  /* CAUTION: we are careful to modify argv[0] here, only after
-   * using it just above.
-   *
-   * getopt_long uses argv[0], so give it the sanitized name.  Save a copy
-   * of the original, in case it's needed below.
-   */
-  //char *real_argv0 = argv[0];
-  argv[0] = (char *) program_name;
-
   for (;;) {
     c = getopt_long (argc, argv, options, long_options, &option_index);
     if (c == -1) break;
 
     switch (c) {
     case 0:			/* options which are long only */
-      if (STREQ (long_options[option_index].name, "listen"))
+      if (STREQ (long_options[option_index].name, "long-options"))
+        display_long_options (long_options);
+      else if (STREQ (long_options[option_index].name, "listen"))
         remote_control_listen = 1;
       else if (STREQ (long_options[option_index].name, "remote")) {
         if (optarg) {
@@ -667,8 +658,8 @@ script (int prompt)
 
   if (prompt) {
     printf (_("\n"
-              "Welcome to guestfish, the libguestfs filesystem interactive shell for\n"
-              "editing virtual machine filesystems.\n"
+              "Welcome to guestfish, the guest filesystem shell for\n"
+              "editing virtual machine filesystems and disk images.\n"
               "\n"
               "Type: 'help' for help on commands\n"
               "      'man' to read the manual\n"
@@ -1255,12 +1246,27 @@ print_table (char *const *argv)
 int
 is_true (const char *str)
 {
-  return
-    STRCASENEQ (str, "0") &&
-    STRCASENEQ (str, "f") &&
-    STRCASENEQ (str, "false") &&
-    STRCASENEQ (str, "n") &&
-    STRCASENEQ (str, "no");
+  /* Similar to Tcl_GetBoolean. */
+
+  if (STREQ (str, "1") ||
+      STRCASEEQ (str, "true") ||
+      STRCASEEQ (str, "t") ||
+      STRCASEEQ (str, "yes") ||
+      STRCASEEQ (str, "y") ||
+      STRCASEEQ (str, "on"))
+    return 1;
+
+  if (STREQ (str, "0") ||
+      STRCASEEQ (str, "false") ||
+      STRCASEEQ (str, "f") ||
+      STRCASEEQ (str, "no") ||
+      STRCASEEQ (str, "n") ||
+      STRCASEEQ (str, "off"))
+    return 0;
+
+  fprintf (stderr, _("%s: '%s': invalid boolean value, use 'true' or 'false'\n"),
+           program_name, str);
+  return -1;
 }
 
 /* Free strings from a non-NULL terminated char** */
@@ -1902,20 +1908,4 @@ progress_callback (guestfs_h *g, void *data,
   uint64_t total = array[3];
 
   progress_bar_set (bar, position, total);
-}
-
-int
-feature_available (guestfs_h *g, const char *feature)
-{
-  /* If there's an error we should ignore it, so to do that we have to
-   * temporarily replace the error handler with a null one.
-   */
-  guestfs_push_error_handler (g, NULL, NULL);
-
-  const char *groups[] = { feature, NULL };
-  int r = guestfs_available (g, (char * const *) groups);
-
-  guestfs_pop_error_handler (g);
-
-  return r == 0 ? 1 : 0;
 }

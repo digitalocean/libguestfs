@@ -112,8 +112,10 @@ extern char *guestfs__inspect_get_format (guestfs_h *g, const char *root);
 extern int guestfs__inspect_is_live (guestfs_h *g, const char *root);
 extern int guestfs__inspect_is_netinst (guestfs_h *g, const char *root);
 extern int guestfs__inspect_is_multipart (guestfs_h *g, const char *root);
-extern int guestfs__set_attach_method (guestfs_h *g, const char *attachmethod);
+extern int guestfs__set_attach_method (guestfs_h *g, const char *backend);
 extern char *guestfs__get_attach_method (guestfs_h *g);
+extern int guestfs__set_backend (guestfs_h *g, const char *backend);
+extern char *guestfs__get_backend (guestfs_h *g);
 extern char *guestfs__inspect_get_product_variant (guestfs_h *g, const char *root);
 extern char *guestfs__inspect_get_windows_current_control_set (guestfs_h *g, const char *root);
 extern char **guestfs__inspect_get_drive_mappings (guestfs_h *g, const char *root);
@@ -155,5 +157,10 @@ extern int guestfs__set_tmpdir (guestfs_h *g, const char *tmpdir);
 extern char *guestfs__get_tmpdir (guestfs_h *g);
 extern int guestfs__set_cachedir (guestfs_h *g, const char *cachedir);
 extern char *guestfs__get_cachedir (guestfs_h *g);
+extern int guestfs__internal_set_libvirt_selinux_label (guestfs_h *g, const char *label, const char *imagelabel);
+extern int guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, int norelabeldisks);
+extern int guestfs__user_cancel (guestfs_h *g);
+extern int guestfs__set_program (guestfs_h *g, const char *program);
+extern const char *guestfs__get_program (guestfs_h *g);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */

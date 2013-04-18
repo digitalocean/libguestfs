@@ -57,27 +57,27 @@ main (int argc, char *argv[])
   int data[NR_THREADS];
   int i, r, errors;
   guestfs_h *g;
-  char *attach_method;
+  char *backend;
 
-  /* Test is only meaningful if the attach-method "appliance" is used. */
+  /* Test is only meaningful if the backend "direct" is used. */
   g = guestfs_create ();
   if (!g) {
     perror ("guestfs_create");
     exit (EXIT_FAILURE);
   }
-  attach_method = guestfs_get_attach_method (g);
-  if (attach_method == NULL) {
+  backend = guestfs_get_backend (g);
+  if (backend == NULL) {
     guestfs_close (g);
     exit (EXIT_FAILURE);
   }
-  if (STRNEQ (attach_method, "appliance")) {
-    fprintf (stderr, "%s: test skipped because attach method isn't 'appliance'.\n",
-             argv[0]);
-    free (attach_method);
+  if (STRNEQ (backend, "direct")) {
+    fprintf (stderr, "%s: test skipped because backend isn't 'direct'.\n",
+             program_name);
+    free (backend);
     guestfs_close (g);
     exit (77);
   }
-  free (attach_method);
+  free (backend);
   guestfs_close (g);
 
   /* Ensure error messages are not translated. */
@@ -176,11 +176,12 @@ start_thread (void *vi)
     pthread_exit (vi);
   }
 
-  /* If this happens, it indicates a bug/race in the appliance
-   * building code which is what this regression test is designed to
-   * spot.
+  /* The error message should match the one printed by
+   * guestfs___launch_failed_error.  If not, it indicates a bug/race
+   * in the appliance building code which is what this regression test
+   * is designed to spot.
    */
-  if (STRNEQ (error, "child process died unexpectedly")) {
+  if (strstr (error, "guestfs_launch failed") == NULL) {
     fprintf (stderr, "rhbz790721: [thread %d]: error: %s\n", thread_id, error);
     *(int *)vi = -1;
     pthread_exit (vi);

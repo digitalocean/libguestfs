@@ -112,11 +112,10 @@ the format is always specified.
 
 =item B<--upload>
 
-Use I<-x> to extract (download) a directory from a virtual machine to a
-local tarball.
+仮想マシンからローカル tar ファイルにディレクトリを展開 (ダウンロード) するには I<-x> を使用します。
 
-Use I<-u> to upload and unpack from a local tarball into a virtual machine.
-Please read the L</WARNING> section above before using this option.
+ローカル tar ファイルから仮想マシンの中にアップロードおよび展開するには I<-u> を使用します。このオプションを使用する前に L</警告>
+セクションを参照してください。
 
 これらのオプションのいずれかを正確に指定する必要があります。
 
@@ -124,7 +123,7 @@ Please read the L</WARNING> section above before using this option.
 
 =item B<--gzip>
 
-Specify that the input or output tarball is gzip-compressed.
+入力または出力 tar ファイルを gzip 圧縮するよう指定します。
 
 =back
 
@@ -139,8 +138,8 @@ L<sh(1)> for details.
 
 L<guestfs(3)>, L<guestfish(1)>, L<virt-cat(1)>, L<virt-edit(1)>,
 L<virt-copy-in(1)>, L<virt-copy-out(1)>, L<virt-tar-in(1)>,
-L<virt-tar-out(1)>, L<Sys::Guestfs(3)>, L<Sys::Guestfs::Lib(3)>,
-L<Sys::Virt(3)>, L<http://libguestfs.org/>.
+L<virt-tar-out(1)>, L<Sys::Guestfs(3)>, L<Sys::Virt(3)>,
+L<http://libguestfs.org/>.
 
 =head1 著者
 

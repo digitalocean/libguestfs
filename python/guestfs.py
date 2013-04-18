@@ -80,6 +80,11 @@ EVENT_ENTER = 0x80
 EVENT_LIBVIRT_AUTH = 0x100
 EVENT_ALL = 0x1ff
 
+
+def event_to_string (events):
+    """Return a printable string from an event or event bitmask"""
+    return libguestfsmod.event_to_string (events)
+
 class ClosedHandle(ValueError):
     pass
 
@@ -650,7 +655,7 @@ class GuestFS(object):
         features. In enterprise distributions we backport
         features from later versions into earlier versions,
         making this an unreliable way to test for features. Use
-        "g.available" instead.
+        "g.available" or "g.feature_available" instead.
         
         This function returns a dictionary, with keys matching
         the various fields in the guestfs_version structure.
@@ -1186,7 +1191,8 @@ class GuestFS(object):
     def list_filesystems (self):
         """This inspection command looks for filesystems on
         partitions, block devices and logical volumes, returning
-        a list of devices containing filesystems and their type.
+        a list of "mountables" containing filesystems and their
+        type.
         
         The return value is a hash, where the keys are the
         devices containing filesystems, and the values are the
@@ -1196,6 +1202,10 @@ class GuestFS(object):
         "/dev/sda2" => "ext2"
         "/dev/vg_guest/lv_root" => "ext4"
         "/dev/vg_guest/lv_swap" => "swap"
+        
+        The key is not necessarily a block device. It may also
+        be an opaque 'mountable' string which can be passed to
+        "g.mount".
         
         The value can have the special value "unknown", meaning
         the content of the device is undetermined or empty.
@@ -1225,7 +1235,7 @@ class GuestFS(object):
         r = self._maybe_convert_to_dict (r)
         return r
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -1291,9 +1301,91 @@ class GuestFS(object):
         "/dev/disk/guestfs/*label*".
         
         See "DISK LABELS" in guestfs(3).
+        
+        "protocol"
+        The optional protocol argument can be used to select
+        an alternate source protocol.
+        
+        See also: "REMOTE STORAGE" in guestfs(3).
+        
+        "protocol = "file""
+        "filename" is interpreted as a local file or
+        device. This is the default if the optional
+        protocol parameter is omitted.
+        
+        "protocol = "gluster""
+        Connect to the GlusterFS server. The "server"
+        parameter must also be supplied - see below.
+        
+        See also: "GLUSTER" in guestfs(3)
+        
+        "protocol = "nbd""
+        Connect to the Network Block Device server. The
+        "server" parameter must also be supplied - see
+        below.
+        
+        See also: "NETWORK BLOCK DEVICE" in guestfs(3).
+        
+        "protocol = "rbd""
+        Connect to the Ceph (librbd/RBD) server. The
+        "server" parameter must also be supplied - see
+        below.
+        
+        See also: "CEPH" in guestfs(3).
+        
+        "protocol = "sheepdog""
+        Connect to the Sheepdog server. The "server"
+        parameter may also be supplied - see below.
+        
+        See also: "SHEEPDOG" in guestfs(3).
+        
+        "protocol = "ssh""
+        Connect to the Secure Shell (ssh) server.
+        
+        The "server" parameter must be supplied. The
+        "username" parameter may be supplied. See below.
+        
+        See also: "SSH" in guestfs(3).
+        
+        "server"
+        For protocols which require access to a remote
+        server, this is a list of server(s).
+        
+        Protocol       Number of servers required
+        --------       --------------------------
+        file           List must be empty or param not used at all
+        gluster        Exactly one
+        nbd            Exactly one
+        rbd            One or more
+        sheepdog       Zero or more
+        ssh            Exactly one
+        
+        Each list element is a string specifying a server.
+        The string must be in one of the following formats:
+        
+        hostname
+        hostname:port
+        tcp:hostname
+        tcp:hostname:port
+        unix:/path/to/socket
+        
+        If the port number is omitted, then the standard
+        port number for the protocol is used (see
+        "/etc/services").
+        
+        "username"
+        For the "ssh" protocol only, this specifies the
+        remote username.
+        
+        If not given, then the local username is used. But
+        note this sometimes may give unexpected results, for
+        example if using the libvirt backend and if the
+        libvirt backend is configured to start the qemu
+        appliance as a special user such as "qemu.qemu". If
+        in doubt, specify the remote username you want.
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label)
+        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username)
         return r
 
     add_drive_opts = add_drive
@@ -1746,24 +1838,62 @@ class GuestFS(object):
         r = libguestfsmod.inspect_is_multipart (self._o, root)
         return r
 
-    def set_attach_method (self, attachmethod):
+    def set_attach_method (self, backend):
         """Set the method that libguestfs uses to connect to the
-        back end guestfsd daemon.
+        backend guestfsd daemon.
         
-        See "ATTACH METHOD" in guestfs(3).
+        See "BACKEND" in guestfs(3).
+        
+        *This function is deprecated.* In new code, use the
+        "set_backend" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
-        r = libguestfsmod.set_attach_method (self._o, attachmethod)
+        r = libguestfsmod.set_attach_method (self._o, backend)
         return r
 
     def get_attach_method (self):
-        """Return the current attach method.
+        """Return the current backend.
         
-        See "g.set_attach_method" and "ATTACH METHOD" in
-        guestfs(3).
+        See "g.set_backend" and "BACKEND" in guestfs(3).
+        
+        *This function is deprecated.* In new code, use the
+        "get_backend" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         r = libguestfsmod.get_attach_method (self._o)
+        return r
+
+    def set_backend (self, backend):
+        """Set the method that libguestfs uses to connect to the
+        backend guestfsd daemon.
+        
+        This handle property was previously called the "attach
+        method".
+        
+        See "BACKEND" in guestfs(3).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_backend (self._o, backend)
+        return r
+
+    def get_backend (self):
+        """Return the current backend.
+        
+        This handle property was previously called the "attach
+        method".
+        
+        See "g.set_backend" and "BACKEND" in guestfs(3).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_backend (self._o)
         return r
 
     def inspect_get_product_variant (self, root):
@@ -2335,11 +2465,11 @@ class GuestFS(object):
         they cannot be removed.
         
         You can call this function before or after launching the
-        handle. If called after launch, if the attach-method
-        supports it, we try to hot unplug the drive: see
-        "HOTPLUGGING" in guestfs(3). The disk must not be in use
-        (eg. mounted) when you do this. We try to detect if the
-        disk is in use and stop you from doing this.
+        handle. If called after launch, if the backend supports
+        it, we try to hot unplug the drive: see "HOTPLUGGING" in
+        guestfs(3). The disk must not be in use (eg. mounted)
+        when you do this. We try to detect if the disk is in use
+        and stop you from doing this.
         """
         self._check_not_closed ()
         r = libguestfsmod.remove_drive (self._o, label)
@@ -2518,13 +2648,71 @@ class GuestFS(object):
         r = libguestfsmod.get_cachedir (self._o)
         return r
 
-    def mount (self, device, mountpoint):
+    def user_cancel (self):
+        """This function cancels the current upload or download
+        operation.
+        
+        Unlike most other libguestfs calls, this function is
+        signal safe and thread safe. You can call it from a
+        signal handler or from another thread, without needing
+        to do any locking.
+        
+        The transfer that was in progress (if there is one) will
+        stop shortly afterwards, and will return an error. The
+        errno (see "guestfs_last_errno") is set to "EINTR", so
+        you can test for this to find out if the operation was
+        cancelled or failed because of another error.
+        
+        No cleanup is performed: for example, if a file was
+        being uploaded then after cancellation there may be a
+        partially uploaded file. It is the caller's
+        responsibility to clean up if necessary.
+        
+        There are two common places that you might call
+        "g.user_cancel":
+        
+        In an interactive text-based program, you might call it
+        from a "SIGINT" signal handler so that pressing "^C"
+        cancels the current operation. (You also need to call
+        "guestfs_set_pgroup" so that child processes don't
+        receive the "^C" signal).
+        
+        In a graphical program, when the main thread is
+        displaying a progress bar with a cancel button, wire up
+        the cancel button to call this function.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.user_cancel (self._o)
+        return r
+
+    def set_program (self, program):
+        """Set the program name. This is an informative string
+        which the main program may optionally set in the handle.
+        
+        When the handle is created, the program name in the
+        handle is set to the basename from "argv[0]". If that
+        was not possible, it is set to the empty string (but
+        never "NULL").
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_program (self._o, program)
+        return r
+
+    def get_program (self):
+        """Get the program name. See "g.set_program".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_program (self._o)
+        return r
+
+    def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
         on, as they were added to the guest. If those block
         devices contain partitions, they will have the usual
         names (eg. "/dev/sda1"). Also LVM "/dev/VG/LV"-style
-        names can be used.
+        names can be used, or 'mountable' strings returned by
+        "g.list_filesystems" or "g.inspect_get_mountpoints".
         
         The rules are the same as for mount(2): A filesystem
         must first be mounted on "/" before others can be
@@ -2543,7 +2731,7 @@ class GuestFS(object):
         don't want any options).
         """
         self._check_not_closed ()
-        r = libguestfsmod.mount (self._o, device, mountpoint)
+        r = libguestfsmod.mount (self._o, mountable, mountpoint)
         return r
 
     def sync (self):
@@ -3511,15 +3699,15 @@ class GuestFS(object):
         r = libguestfsmod.tgz_out (self._o, directory, tarball)
         return r
 
-    def mount_ro (self, device, mountpoint):
+    def mount_ro (self, mountable, mountpoint):
         """This is the same as the "g.mount" command, but it mounts
         the filesystem with the read-only (*-o ro*) flag.
         """
         self._check_not_closed ()
-        r = libguestfsmod.mount_ro (self._o, device, mountpoint)
+        r = libguestfsmod.mount_ro (self._o, mountable, mountpoint)
         return r
 
-    def mount_options (self, options, device, mountpoint):
+    def mount_options (self, options, mountable, mountpoint):
         """This is the same as the "g.mount" command, but it allows
         you to set the mount options as for the mount(8) *-o*
         flag.
@@ -3529,16 +3717,16 @@ class GuestFS(object):
         filesystem uses).
         """
         self._check_not_closed ()
-        r = libguestfsmod.mount_options (self._o, options, device, mountpoint)
+        r = libguestfsmod.mount_options (self._o, options, mountable, mountpoint)
         return r
 
-    def mount_vfs (self, options, vfstype, device, mountpoint):
+    def mount_vfs (self, options, vfstype, mountable, mountpoint):
         """This is the same as the "g.mount" command, but it allows
         you to set both the mount options and the vfstype as for
         the mount(8) *-o* and *-t* flags.
         """
         self._check_not_closed ()
-        r = libguestfsmod.mount_vfs (self._o, options, vfstype, device, mountpoint)
+        r = libguestfsmod.mount_vfs (self._o, options, vfstype, mountable, mountpoint)
         return r
 
     def debug (self, subcmd, extraargs):
@@ -5410,9 +5598,9 @@ class GuestFS(object):
         r = libguestfsmod.case_sensitive_path (self._o, path)
         return r
 
-    def vfs_type (self, device):
+    def vfs_type (self, mountable):
         """This command gets the filesystem type corresponding to
-        the filesystem on "device".
+        the filesystem on "mountable".
         
         For most filesystems, the result is the name of the
         Linux VFS module which would be used to mount this
@@ -5421,7 +5609,7 @@ class GuestFS(object):
         "ntfs".
         """
         self._check_not_closed ()
-        r = libguestfsmod.vfs_type (self._o, device)
+        r = libguestfsmod.vfs_type (self._o, mountable)
         return r
 
     def truncate (self, path):
@@ -5708,6 +5896,11 @@ class GuestFS(object):
         groups then an error is always returned.
         
         *Notes:*
+        
+        *   "g.feature_available" is the same as this call, but
+        with a slightly simpler to use API: that call
+        returns a boolean true/false instead of throwing an
+        error.
         
         *   You must call "g.launch" before calling this
         function.
@@ -6131,9 +6324,11 @@ class GuestFS(object):
         this daemon knows about. Note this returns both
         supported and unsupported groups. To find out which ones
         the daemon can actually support you have to call
-        "g.available" on each member of the returned list.
+        "g.available" / "g.feature_available" on each member of
+        the returned list.
         
-        See also "g.available" and "AVAILABILITY" in guestfs(3).
+        See also "g.available", "g.feature_available" and
+        "AVAILABILITY" in guestfs(3).
         
         This function returns a list of strings.
         """
@@ -6162,9 +6357,8 @@ class GuestFS(object):
         r = libguestfsmod.fallocate64 (self._o, path, len)
         return r
 
-    def vfs_label (self, device):
-        """This returns the filesystem label of the filesystem on
-        "device".
+    def vfs_label (self, mountable):
+        """This returns the label of the filesystem on "mountable".
         
         If the filesystem is unlabeled, this returns the empty
         string.
@@ -6173,12 +6367,12 @@ class GuestFS(object):
         "g.findfs_label".
         """
         self._check_not_closed ()
-        r = libguestfsmod.vfs_label (self._o, device)
+        r = libguestfsmod.vfs_label (self._o, mountable)
         return r
 
-    def vfs_uuid (self, device):
+    def vfs_uuid (self, mountable):
         """This returns the filesystem UUID of the filesystem on
-        "device".
+        "mountable".
         
         If the filesystem does not have a UUID, this returns the
         empty string.
@@ -6186,7 +6380,7 @@ class GuestFS(object):
         To find a filesystem from the UUID, use "g.findfs_uuid".
         """
         self._check_not_closed ()
-        r = libguestfsmod.vfs_uuid (self._o, device)
+        r = libguestfsmod.vfs_uuid (self._o, mountable)
         return r
 
     def lvm_set_filter (self, devices):
@@ -6763,7 +6957,7 @@ class GuestFS(object):
         r = libguestfsmod.part_to_partnum (self._o, partition)
         return r
 
-    def copy_device_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None):
+    def copy_device_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
         """The four calls "g.copy_device_to_device",
         "g.copy_device_to_file", "g.copy_file_to_device", and
         "g.copy_file_to_file" let you copy from a source
@@ -6782,28 +6976,35 @@ class GuestFS(object):
         If the destination is a file, it is created if required.
         If the destination file is not large enough, it is
         extended.
+        
+        If the "sparse" flag is true then the call avoids
+        writing blocks that contain only zeroes, which can help
+        in some situations where the backing disk is
+        thin-provisioned. Note that unless the target is already
+        zeroed, using this option will result in incorrect
+        copying.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_device_to_device (self._o, src, dest, srcoffset, destoffset, size)
+        r = libguestfsmod.copy_device_to_device (self._o, src, dest, srcoffset, destoffset, size, sparse)
         return r
 
-    def copy_device_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None):
+    def copy_device_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
         """See "g.copy_device_to_device" for a general overview of
         this call.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_device_to_file (self._o, src, dest, srcoffset, destoffset, size)
+        r = libguestfsmod.copy_device_to_file (self._o, src, dest, srcoffset, destoffset, size, sparse)
         return r
 
-    def copy_file_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None):
+    def copy_file_to_device (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
         """See "g.copy_device_to_device" for a general overview of
         this call.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_file_to_device (self._o, src, dest, srcoffset, destoffset, size)
+        r = libguestfsmod.copy_file_to_device (self._o, src, dest, srcoffset, destoffset, size, sparse)
         return r
 
-    def copy_file_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None):
+    def copy_file_to_file (self, src, dest, srcoffset=None, destoffset=None, size=None, sparse=None):
         """See "g.copy_device_to_device" for a general overview of
         this call.
         
@@ -6813,7 +7014,7 @@ class GuestFS(object):
         moving functions.
         """
         self._check_not_closed ()
-        r = libguestfsmod.copy_file_to_file (self._o, src, dest, srcoffset, destoffset, size)
+        r = libguestfsmod.copy_file_to_file (self._o, src, dest, srcoffset, destoffset, size, sparse)
         return r
 
     def tune2fs (self, device, force=None, maxmountcount=None, mountcount=None, errorbehavior=None, group=None, intervalbetweenchecks=None, reservedblockspercentage=None, lastmounteddirectory=None, reservedblockscount=None, user=None):
@@ -7117,8 +7318,8 @@ class GuestFS(object):
         r = libguestfsmod.ntfsclone_in (self._o, backupfile, device)
         return r
 
-    def set_label (self, device, label):
-        """Set the filesystem label on "device" to "label".
+    def set_label (self, mountable, label):
+        """Set the filesystem label on "mountable" to "label".
         
         Only some filesystem types support labels, and
         libguestfs supports setting labels on only a subset of
@@ -7129,10 +7330,13 @@ class GuestFS(object):
         On NTFS filesystems, labels are limited to 128 unicode
         characters.
         
+        Setting the label on a btrfs subvolume will set the
+        label on its parent filesystem.
+        
         To read the label on a filesystem, call "g.vfs_label".
         """
         self._check_not_closed ()
-        r = libguestfsmod.set_label (self._o, device, label)
+        r = libguestfsmod.set_label (self._o, mountable, label)
         return r
 
     def zero_free_space (self, directory):
@@ -7502,7 +7706,8 @@ class GuestFS(object):
         for other reasons such as it being a later version of
         the filesystem, or having incompatible features.
         
-        See also "g.available", "AVAILABILITY" in guestfs(3).
+        See also "g.available", "g.feature_available",
+        "AVAILABILITY" in guestfs(3).
         """
         self._check_not_closed ()
         r = libguestfsmod.filesystem_available (self._o, filesystem)
@@ -8246,6 +8451,29 @@ class GuestFS(object):
         r = libguestfsmod.ldmtool_volume_partitions (self._o, diskgroup, volume)
         return r
 
+    def part_set_gpt_type (self, device, partnum, guid):
+        """Set the type GUID of numbered GPT partition "partnum" to
+        "guid". Return an error if the partition table of
+        "device" isn't GPT, or if "guid" is not a valid GUID.
+        
+        See
+        <http://en.wikipedia.org/wiki/GUID_Partition_Table#Parti
+        tion_type_GUIDs> for a useful list of type GUIDs.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.part_set_gpt_type (self._o, device, partnum, guid)
+        return r
+
+    def part_get_gpt_type (self, device, partnum):
+        """Return the type GUID of numbered GPT partition
+        "partnum". For MBR partitions, return an appropriate
+        GUID corresponding to the MBR type. Behaviour is
+        undefined for other partition types.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.part_get_gpt_type (self._o, device, partnum)
+        return r
+
     def rename (self, oldpath, newpath):
         """Rename a file to a new place on the same filesystem.
         This is the same as the Linux rename(2) system call. In
@@ -8253,5 +8481,84 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.rename (self._o, oldpath, newpath)
+        return r
+
+    def is_whole_device (self, device):
+        """This returns "true" if and only if "device" refers to a
+        whole block device. That is, not a partition or a
+        logical device.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.is_whole_device (self._o, device)
+        return r
+
+    def feature_available (self, groups):
+        """This is the same as "g.available", but unlike that call
+        it returns a simple true/false boolean result, instead
+        of throwing an exception if a feature is not found. For
+        other documentation see "g.available".
+        """
+        groups = list (groups)
+        self._check_not_closed ()
+        r = libguestfsmod.feature_available (self._o, groups)
+        return r
+
+    def syslinux (self, device, directory=None):
+        """Install the SYSLINUX bootloader on "device".
+        
+        The device parameter must be either a whole disk
+        formatted as a FAT filesystem, or a partition formatted
+        as a FAT filesystem. In the latter case, the partition
+        should be marked as "active" ("g.part_set_bootable") and
+        a Master Boot Record must be installed (eg. using
+        "g.pwrite_device") on the first sector of the whole
+        disk. The SYSLINUX package comes with some suitable
+        Master Boot Records. See the syslinux(1) man page for
+        further information.
+        
+        The optional arguments are:
+        
+        "directory"
+        Install SYSLINUX in the named subdirectory, instead
+        of in the root directory of the FAT filesystem.
+        
+        Additional configuration can be supplied to SYSLINUX by
+        placing a file called "syslinux.cfg" on the FAT
+        filesystem, either in the root directory, or under
+        "directory" if that optional argument is being used. For
+        further information about the contents of this file, see
+        syslinux(1).
+        
+        See also "g.extlinux".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.syslinux (self._o, device, directory)
+        return r
+
+    def extlinux (self, directory):
+        """Install the SYSLINUX bootloader on the device mounted at
+        "directory". Unlike "g.syslinux" which requires a FAT
+        filesystem, this can be used on an ext2/3/4 or btrfs
+        filesystem.
+        
+        The "directory" parameter can be either a mountpoint, or
+        a directory within the mountpoint.
+        
+        You also have to mark the partition as "active"
+        ("g.part_set_bootable") and a Master Boot Record must be
+        installed (eg. using "g.pwrite_device") on the first
+        sector of the whole disk. The SYSLINUX package comes
+        with some suitable Master Boot Records. See the
+        extlinux(1) man page for further information.
+        
+        Additional configuration can be supplied to SYSLINUX by
+        placing a file called "extlinux.conf" on the filesystem
+        under "directory". For further information about the
+        contents of this file, see extlinux(1).
+        
+        See also "g.syslinux".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.extlinux (self._o, directory)
         return r
 

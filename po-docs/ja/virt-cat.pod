@@ -18,8 +18,8 @@ virt-cat - 仮想マシンにあるファイルの表示
 
 =head1 説明
 
-C<virt-cat> is a command line tool to display the contents of C<file> where
-C<file> exists in the named virtual machine (or disk image).
+C<virt-cat> は C<file> の内容を表示するためにコマンドラインツールです。ここで C<file> は仮想マシン
+(またはディスクイメージ) の中に存在します。
 
 Multiple filenames can be given, in which case they are concatenated
 together.  Each filename must be a full path, starting at the root directory
@@ -75,6 +75,12 @@ virtual machine has multiple block devices, you must supply all of them with
 separate I<-a> options.
 
 ディスクイメージの形式は自動検知されます。これを上書きして強制的に特定の形式を使用するには、I<--format=..> オプションを使用します。
+
+=item B<-a URI>
+
+=item B<--add URI>
+
+Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
 
 =item B<-c> URI
 

@@ -221,7 +221,7 @@ Windows-style (CRLF) line endings, like this:
 
 This file would need conversion before you could I<--merge> it.
 
-=head1 CurrentControlSet etc.
+=head1 CurrentControlSet など。
 
 Registry keys like C<CurrentControlSet> don't really exist in the Windows
 Registry at the level of the hive file, and therefore you cannot modify
@@ -345,9 +345,9 @@ L<http://support.microsoft.com/kb/103000>.
 
 =head1 SHELL QUOTING
 
-Be careful when passing parameters containing C<\> (backslash) in the
-shell.  Usually you will have to use 'single quotes' or double backslashes
-(but not both) to protect them from the shell.
+シェルにおいて C<\> (backslash)
+を含むパラメーターを渡すとき、注意する必要があります。通常シェルからそれらを保護するには、'単一引用符' または二つのバックスラッシュ
+(しかし、両方ではない) を使用する必要があります。
 
 パスおよび値の名前は大文字小文字を区別します。
 
@@ -359,9 +359,8 @@ L<sh(1)> for details.
 =head1 関連項目
 
 L<hivex(3)>, L<hivexsh(1)>, L<hivexregedit(1)>, L<guestfs(3)>,
-L<guestfish(1)>, L<virt-cat(1)>, L<Sys::Guestfs(3)>,
-L<Sys::Guestfs::Lib(3)>, L<Win::Hivex(3)>, L<Win::Hivex::Regedit(3)>,
-L<Sys::Virt(3)>, L<http://libguestfs.org/>.
+L<guestfish(1)>, L<virt-cat(1)>, L<Sys::Guestfs(3)>, L<Win::Hivex(3)>,
+L<Win::Hivex::Regedit(3)>, L<Sys::Virt(3)>, L<http://libguestfs.org/>.
 
 =head1 著者
 

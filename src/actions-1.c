@@ -878,7 +878,7 @@ guestfs_get_libvirt_requested_credential_prompt (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC int
 guestfs_mount (guestfs_h *g,
-               const char *device,
+               const char *mountable,
                const char *mountpoint)
 {
   struct guestfs_mount_args args;
@@ -893,9 +893,9 @@ guestfs_mount (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "mount", 5);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mount", "device");
+           "mount", "mountable");
     return -1;
   }
   if (mountpoint == NULL) {
@@ -907,7 +907,7 @@ guestfs_mount (guestfs_h *g,
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "mount");
-    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", mountable);
     fprintf (trace_buffer.fp, " \"%s\"", mountpoint);
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -919,7 +919,7 @@ guestfs_mount (guestfs_h *g,
     return -1;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.mountpoint = (char *) mountpoint;
   serial = guestfs___send (g, GUESTFS_PROC_MOUNT,
                            progress_hint, 0,
@@ -1969,7 +1969,7 @@ guestfs_tune2fs_l (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC int
 guestfs_mount_ro (guestfs_h *g,
-                  const char *device,
+                  const char *mountable,
                   const char *mountpoint)
 {
   struct guestfs_mount_ro_args args;
@@ -1984,9 +1984,9 @@ guestfs_mount_ro (guestfs_h *g,
 
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "mount_ro", 8);
-  if (device == NULL) {
+  if (mountable == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "mount_ro", "device");
+           "mount_ro", "mountable");
     return -1;
   }
   if (mountpoint == NULL) {
@@ -1998,7 +1998,7 @@ guestfs_mount_ro (guestfs_h *g,
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "mount_ro");
-    fprintf (trace_buffer.fp, " \"%s\"", device);
+    fprintf (trace_buffer.fp, " \"%s\"", mountable);
     fprintf (trace_buffer.fp, " \"%s\"", mountpoint);
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -2010,7 +2010,7 @@ guestfs_mount_ro (guestfs_h *g,
     return -1;
   }
 
-  args.device = (char *) device;
+  args.mountable = (char *) mountable;
   args.mountpoint = (char *) mountpoint;
   serial = guestfs___send (g, GUESTFS_PROC_MOUNT_RO,
                            progress_hint, 0,
@@ -5221,7 +5221,7 @@ guestfs_copy_device_to_device_argv (guestfs_h *g,
     return -1;
   }
 
-  if (optargs->bitmask & UINT64_C(0xfffffffffffffff8)) {
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffff0)) {
     error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
            "copy_device_to_device", "copy_device_to_device");
     return -1;
@@ -5240,6 +5240,9 @@ guestfs_copy_device_to_device_argv (guestfs_h *g,
     }
     if (optargs->bitmask & GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK) {
       fprintf (trace_buffer.fp, " \"%s:%" PRIi64 "\"", "size", optargs->size);
+    }
+    if (optargs->bitmask & GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "sparse", optargs->sparse ? "true" : "false");
     }
     guestfs___trace_send_line (g, &trace_buffer);
   }
@@ -5267,6 +5270,11 @@ guestfs_copy_device_to_device_argv (guestfs_h *g,
     args.size = optargs->size;
   } else {
     args.size = 0;
+  }
+  if (optargs->bitmask & GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK) {
+    args.sparse = optargs->sparse;
+  } else {
+    args.sparse = 0;
   }
   serial = guestfs___send (g, GUESTFS_PROC_COPY_DEVICE_TO_DEVICE,
                            progress_hint, optargs->bitmask,
@@ -6709,6 +6717,127 @@ guestfs_ldmtool_diskgroup_disks (guestfs_h *g,
       fputs ("\"", trace_buffer.fp);
     }
     fputs ("]", trace_buffer.fp);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_syslinux_argv (guestfs_h *g,
+                       const char *device,
+                       const struct guestfs_syslinux_argv *optargs)
+{
+  struct guestfs_syslinux_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  struct guestfs_syslinux_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "syslinux", 8);
+  if (device == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "syslinux", "device");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_SYSLINUX_DIRECTORY_BITMASK) &&
+      optargs->directory == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "syslinux", "directory");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "syslinux", "syslinux");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "syslinux");
+    fprintf (trace_buffer.fp, " \"%s\"", device);
+    if (optargs->bitmask & GUESTFS_SYSLINUX_DIRECTORY_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "directory", optargs->directory);
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "syslinux") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "syslinux", "-1");
+    return -1;
+  }
+
+  args.device = (char *) device;
+  if (optargs->bitmask & GUESTFS_SYSLINUX_DIRECTORY_BITMASK) {
+    args.directory = (char *) optargs->directory;
+  } else {
+    args.directory = (char *) "";
+  }
+  serial = guestfs___send (g, GUESTFS_PROC_SYSLINUX,
+                           progress_hint, optargs->bitmask,
+                           (xdrproc_t) xdr_guestfs_syslinux_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "syslinux", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "syslinux", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "syslinux", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_SYSLINUX, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "syslinux", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "syslinux", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "syslinux", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "syslinux",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "syslinux");
+    fprintf (trace_buffer.fp, "%d", ret_v);
     guestfs___trace_send_line (g, &trace_buffer);
   }
 

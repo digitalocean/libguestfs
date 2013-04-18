@@ -93,6 +93,7 @@ Run it from the top source directory using the command
   output_to "src/errnostring-gperf.gperf" generate_errnostring_gperf;
   output_to "src/errnostring.c" generate_errnostring_c;
   output_to "src/errnostring.h" generate_errnostring_h;
+  output_to "src/event-string.c" generate_event_string_c;
   output_to "src/MAX_PROC_NR" generate_max_proc_nr;
   output_to "src/libguestfs.syms" generate_linker_script;
 
@@ -120,6 +121,7 @@ Run it from the top source directory using the command
   output_to "fish/guestfish-actions.pod" generate_fish_actions_pod;
   output_to "fish/prepopts.c" generate_fish_prep_options_c;
   output_to "fish/prepopts.h" generate_fish_prep_options_h;
+  output_to "fish/guestfish-prepopts.pod" generate_fish_prep_options_pod;
   output_to "ocaml/guestfs.mli" generate_ocaml_mli;
   output_to "ocaml/guestfs.ml" generate_ocaml_ml;
   output_to "ocaml/guestfs-c-actions.c" generate_ocaml_c;

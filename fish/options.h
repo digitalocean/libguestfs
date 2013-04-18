@@ -19,6 +19,10 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+#include <getopt.h>
+
+#include <libxml/uri.h>
+
 #include "guestfs-internal-frontend.h"
 
 /* Provided by guestfish or guestmount. */
@@ -30,7 +34,6 @@ extern int inspector;
 extern int keys_from_stdin;
 extern int echo_keys;
 extern const char *libvirt_uri;
-extern const char *program_name;
 
 /* List of drives added via -a, -d or -N options.  NB: Unused fields
  * in this struct MUST be zeroed, ie. use calloc, not malloc.
@@ -48,7 +51,8 @@ struct drv {
   int nr_drives;   /* number of drives for this guest */
 
   enum {
-    drv_a,                      /* -a option */
+    drv_a,                      /* -a option (without URI) */
+    drv_uri,                    /* -a option (with URI) */
     drv_d,                      /* -d option */
 #if COMPILING_GUESTFISH
     drv_N,                      /* -N option (guestfish only) */
@@ -59,6 +63,11 @@ struct drv {
       char *filename;       /* disk filename */
       const char *format;   /* format (NULL == autodetect) */
     } a;
+    struct {
+      xmlURIPtr uri;        /* URI */
+      char *socket;         /* ?socket parameter from URI. */
+      const char *format;   /* format (NULL == autodetect) */
+    } uri;
     struct {
       char *guest;          /* guest name */
     } d;
@@ -96,30 +105,18 @@ extern void inspect_mount_root (const char *root);
 extern char *read_key (const char *param);
 
 /* in options.c */
+extern void option_a (const char *arg, const char *format, struct drv **drvsp);
 extern char add_drives (struct drv *drv, char next_drive);
 extern void mount_mps (struct mp *mp);
 extern void free_drives (struct drv *drv);
 extern void free_mps (struct mp *mp);
+extern void display_long_options (const struct option *) __attribute__((noreturn));
 
 /* in virt.c */
 extern int add_libvirt_drives (const char *guest);
 
 #define OPTION_a                                \
-  if (access (optarg, R_OK) != 0) {             \
-    perror (optarg);                            \
-    exit (EXIT_FAILURE);                        \
-  }                                             \
-  drv = calloc (1, sizeof (struct drv));        \
-  if (!drv) {                                   \
-    perror ("malloc");                          \
-    exit (EXIT_FAILURE);                        \
-  }                                             \
-  drv->type = drv_a;                            \
-  drv->nr_drives = -1;                          \
-  drv->a.filename = optarg;                     \
-  drv->a.format = format;                       \
-  drv->next = drvs;                             \
-  drvs = drv
+  option_a (optarg, format, &drvs)
 
 #define OPTION_c                                \
   libvirt_uri = optarg

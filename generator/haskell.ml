@@ -31,27 +31,26 @@ open Structs
 let rec generate_haskell_hs () =
   generate_header HaskellStyle LGPLv2plus;
 
-  (* XXX We only know how to generate partial FFI for Haskell
-   * at the moment.  Please help out!
+  (* See guestfs(3)/Haskell for limitations of the current Haskell
+   * bindings.  Please help out! XXX
    *)
-  let can_generate style =
-    match style with
+  let can_generate = function
     | _, _, (_::_) -> false (* no optional args yet *)
     | RErr, _, []
     | RInt _, _, []
-    | RInt64 _, _, [] -> true
+    | RInt64 _, _, []
     | RBool _, _, []
     | RConstString _, _, []
-    | RConstOptString _, _, []
     | RString _, _, []
     | RStringList _, _, []
+    | RHashtable _, _, [] -> true
     | RStruct _, _, []
     | RStructList _, _, []
-    | RHashtable _, _, []
-    | RBufferOut _, _, [] -> false in
+    | RBufferOut _, _, []
+    | RConstOptString _, _, [] -> false
+  in
 
   pr "\
-{-# INCLUDE <guestfs.h> #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 
 module Guestfs (
@@ -69,7 +68,7 @@ module Guestfs (
 -- Unfortunately some symbols duplicate ones already present
 -- in Prelude.  We don't know which, so we hard-code a list
 -- here.
-import Prelude hiding (truncate)
+import Prelude hiding (head, tail, truncate)
 
 import Foreign
 import Foreign.C
@@ -82,20 +81,11 @@ data GuestfsS = GuestfsS            -- represents the opaque C struct
 type GuestfsP = Ptr GuestfsS        -- guestfs_h *
 type GuestfsH = ForeignPtr GuestfsS -- guestfs_h * with attached finalizer
 
--- XXX define properly later XXX
-data PV = PV
-data VG = VG
-data LV = LV
-data IntBool = IntBool
-data Stat = Stat
-data StatVFS = StatVFS
-data Hashtable = Hashtable
-
-foreign import ccall unsafe \"guestfs_create\" c_create
+foreign import ccall unsafe \"guestfs.h guestfs_create\" c_create
   :: IO GuestfsP
-foreign import ccall unsafe \"&guestfs_close\" c_close
+foreign import ccall unsafe \"guestfs.h &guestfs_close\" c_close
   :: FunPtr (GuestfsP -> IO ())
-foreign import ccall unsafe \"guestfs_set_error_handler\" c_set_error_handler
+foreign import ccall unsafe \"guestfs.h guestfs_set_error_handler\" c_set_error_handler
   :: GuestfsP -> Ptr CInt -> Ptr CInt -> IO ()
 
 create :: IO GuestfsH
@@ -105,7 +95,7 @@ create = do
   h <- newForeignPtr c_close p
   return h
 
-foreign import ccall unsafe \"guestfs_last_error\" c_last_error
+foreign import ccall unsafe \"guestfs.h guestfs_last_error\" c_last_error
   :: GuestfsP -> IO CString
 
 -- last_error :: GuestfsH -> IO (Maybe String)
@@ -113,12 +103,18 @@ foreign import ccall unsafe \"guestfs_last_error\" c_last_error
 --   str <- withForeignPtr h (\\p -> c_last_error p)
 --   maybePeek peekCString str
 
-last_error :: GuestfsH -> IO (String)
+last_error :: GuestfsH -> IO String
 last_error h = do
   str <- withForeignPtr h (\\p -> c_last_error p)
   if (str == nullPtr)
     then return \"no error\"
     else peekCString str
+
+assocListOfHashtable :: Eq a => [a] -> [(a,a)]
+assocListOfHashtable [] = []
+assocListOfHashtable [a] =
+  fail \"RHashtable returned an odd number of elements\"
+assocListOfHashtable (a:b:rest) = (a,b) : assocListOfHashtable rest
 
 ";
 
@@ -127,7 +123,8 @@ last_error h = do
     fun { name = name; style = (ret, args, optargs as style);
           c_function = c_function } ->
       if can_generate style then (
-        pr "foreign import ccall unsafe \"%s\" c_%s\n" c_function name;
+        pr "foreign import ccall unsafe \"guestfs.h %s\" c_%s\n"
+          c_function name;
         pr "  :: ";
         generate_haskell_prototype ~handle:"GuestfsP" style;
         pr "\n";
@@ -143,7 +140,9 @@ last_error h = do
           function
           | FileIn n
           | FileOut n
-          | Pathname n | Device n | Dev_or_Path n | String n | Key n ->
+          | Pathname n | Device n | Mountable n
+          | Dev_or_Path n | Mountable_or_Path n | String n
+          | Key n ->
               pr "withCString %s $ \\%s -> " n n
           | BufferIn n ->
               pr "withCStringLen %s $ \\(%s, %s_size) -> " n n n
@@ -159,7 +158,8 @@ last_error h = do
             | Int n -> sprintf "(fromIntegral %s)" n
             | Int64 n | Pointer (_, n) -> sprintf "(fromIntegral %s)" n
             | FileIn n | FileOut n
-            | Pathname n | Device n | Dev_or_Path n
+            | Pathname n | Device n | Mountable n
+            | Dev_or_Path n | Mountable_or_Path n
             | String n | OptString n
             | StringList n | DeviceList n
             | Key n -> n
@@ -191,13 +191,19 @@ last_error h = do
          | RBool _ ->
              pr "    else return (toBool r)\n"
          | RConstString _
-         | RConstOptString _
-         | RString _
-         | RStringList _
+         | RString _ ->
+             pr "    else peekCString r\n"
+         | RStringList _ ->
+             pr "    else peekArray0 nullPtr r >>= mapM peekCString\n"
+         | RHashtable _ ->
+             pr "    else do\n";
+             pr "      arr <- peekArray0 nullPtr r\n";
+             pr "      arr <- mapM peekCString arr\n";
+             pr "      return (assocListOfHashtable arr)\n"
          | RStruct _
          | RStructList _
-         | RHashtable _
-         | RBufferOut _ ->
+         | RBufferOut _
+         | RConstOptString _ ->
              pr "    else return ()\n" (* XXXXXXXXXXXXXXXXXXXX *)
         );
         pr "\n";
@@ -206,46 +212,89 @@ last_error h = do
 
 and generate_haskell_prototype ~handle ?(hs = false) (ret, args, optargs) =
   pr "%s -> " handle;
-  let string = if hs then "String" else "CString" in
-  let int = if hs then "Int" else "CInt" in
-  let bool = if hs then "Bool" else "CInt" in
-  let int64 = if hs then "Integer" else "Int64" in
-  List.iter (
-    fun arg ->
-      (match arg with
-       | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _ ->
-           pr "%s" string
-       | BufferIn _ ->
-           if hs then pr "String"
-           else pr "CString -> CInt"
-       | OptString _ -> if hs then pr "Maybe String" else pr "CString"
-       | StringList _ | DeviceList _ -> if hs then pr "[String]" else pr "Ptr CString"
-       | Bool _ -> pr "%s" bool
-       | Int _ -> pr "%s" int
-       | Int64 _ -> pr "%s" int
-       | Pointer _ -> pr "%s" int
-       | FileIn _ -> pr "%s" string
-       | FileOut _ -> pr "%s" string
-      );
-      pr " -> ";
-  ) args;
-  pr "IO (";
-  (match ret with
-   | RErr -> if not hs then pr "CInt"
-   | RInt _ -> pr "%s" int
-   | RInt64 _ -> pr "%s" int64
-   | RBool _ -> pr "%s" bool
-   | RConstString _ -> pr "%s" string
-   | RConstOptString _ -> pr "Maybe %s" string
-   | RString _ -> pr "%s" string
-   | RStringList _ -> pr "[%s]" string
-   | RStruct (_, typ) ->
-       let name = camel_name_of_struct typ in
-       pr "%s" name
-   | RStructList (_, typ) ->
-       let name = camel_name_of_struct typ in
-       pr "[%s]" name
-   | RHashtable _ -> pr "Hashtable"
-   | RBufferOut _ -> pr "%s" string
-  );
-  pr ")"
+  if not hs then (
+    List.iter (
+      fun arg ->
+        (match arg with
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _
+        | Key _ ->
+          pr "CString"
+        | BufferIn _ ->
+          pr "CString -> CInt"
+        | OptString _ ->
+          pr "CString"
+        | StringList _ | DeviceList _ ->
+          pr "Ptr CString"
+        | Bool _ -> pr "CInt"
+        | Int _ -> pr "CInt"
+        | Int64 _ -> pr "Int64"
+        | Pointer _ -> pr "CInt"
+        | FileIn _ -> pr "CString"
+        | FileOut _ -> pr "CString"
+        );
+        pr " -> ";
+    ) args;
+    pr "IO ";
+    (match ret with
+    | RErr -> pr "CInt"
+    | RInt _ -> pr "CInt"
+    | RInt64 _ -> pr "Int64"
+    | RBool _ -> pr "CInt"
+    | RConstString _ -> pr "CString"
+    | RConstOptString _ -> pr "(Maybe CString)"
+    | RString _ -> pr "CString"
+    | RStringList _ -> pr "(Ptr CString)"
+    | RStruct (_, typ) ->
+      let name = camel_name_of_struct typ in
+      pr "%s" name
+    | RStructList (_, typ) ->
+      let name = camel_name_of_struct typ in
+      pr "[%s]" name
+    | RHashtable _ -> pr "(Ptr CString)"
+    | RBufferOut _ -> pr "CString"
+    )
+  )
+  else (* hs *) (
+    List.iter (
+      fun arg ->
+        (match arg with
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _
+        | Key _ ->
+          pr "String"
+        | BufferIn _ ->
+          pr "String"
+        | OptString _ ->
+          pr "Maybe String"
+        | StringList _ | DeviceList _ ->
+          pr "[String]"
+        | Bool _ -> pr "Bool"
+        | Int _ -> pr "Int"
+        | Int64 _ -> pr "Integer"
+        | Pointer _ -> pr "Int"
+        | FileIn _ -> pr "String"
+        | FileOut _ -> pr "String"
+        );
+        pr " -> ";
+    ) args;
+    pr "IO ";
+    (match ret with
+    | RErr -> pr "()"
+    | RInt _ -> pr "Int"
+    | RInt64 _ -> pr "Int64"
+    | RBool _ -> pr "Bool"
+    | RConstString _ -> pr "String"
+    | RConstOptString _ -> pr "(Maybe String)"
+    | RString _ -> pr "String"
+    | RStringList _ -> pr "[String]"
+    | RStruct (_, typ) ->
+      let name = camel_name_of_struct typ in
+      pr "%s" name
+    | RStructList (_, typ) ->
+      let name = camel_name_of_struct typ in
+      pr "[%s]" name
+    | RHashtable _ -> pr "[(String, String)]"
+    | RBufferOut _ -> pr "String"
+    )
+  )

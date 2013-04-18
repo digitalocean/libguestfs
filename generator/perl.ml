@@ -39,7 +39,9 @@ let rec generate_perl_xs () =
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
+#include <errno.h>
 
 #include \"EXTERN.h\"
 #include \"perl.h\"
@@ -295,6 +297,20 @@ PREINIT:
       }
 
 SV *
+event_to_string (event_bitmask)
+      int event_bitmask;
+PREINIT:
+      char *str;
+   CODE:
+      str = guestfs_event_to_string (event_bitmask);
+      if (str == NULL)
+        croak (\"%%s\", strerror (errno));
+      RETVAL = newSVpv (str, 0);
+      free (str);
+ OUTPUT:
+      RETVAL
+
+SV *
 last_errno (g)
       guestfs_h *g;
 PREINIT:
@@ -304,12 +320,6 @@ PREINIT:
       RETVAL = newSViv (errnum);
  OUTPUT:
       RETVAL
-
-void
-user_cancel (g)
-      guestfs_h *g;
- PPCODE:
-      guestfs_user_cancel (g);
 
 ";
 
@@ -342,7 +352,8 @@ user_cancel (g)
       iteri (
         fun i ->
           function
-          | Pathname n | Device n | Dev_or_Path n | String n
+          | Pathname n | Device n | Mountable n
+          | Dev_or_Path n | Mountable_or_Path n | String n
           | FileIn n | FileOut n | Key n ->
               pr "      char *%s;\n" n
           | BufferIn n ->
@@ -491,8 +502,9 @@ user_cancel (g)
       (* Cleanup any arguments. *)
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | OptString _
-        | Bool _ | Int _ | Int64 _
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _
+        | OptString _ | Bool _ | Int _ | Int64 _
         | FileIn _ | FileOut _
         | BufferIn _ | Key _ | Pointer _ -> ()
         | StringList n | DeviceList n -> pr "      free (%s);\n" n
@@ -683,10 +695,6 @@ LVs, what filesystem is in each LV, etc.).  It can also run commands
 in the context of the guest.  Also you can access filesystems over
 FUSE.
 
-See also L<Sys::Guestfs::Lib(3)> for a set of useful library
-functions for using libguestfs from Perl, including integration
-with libvirt.
-
 =head1 ERRORS
 
 All errors turn into calls to C<croak> (see L<Carp(3)>).
@@ -827,6 +835,13 @@ this function.
 This removes the callback which was previously registered using
 C<set_event_callback>.
 
+=item $str = Sys::Guestfs::event_to_string ($events);
+
+C<$events> is either a single event or a bitmask of events.
+This returns a printable string, useful for debugging.
+
+Note that this is a class function, not a method.
+
 =item $errnum = $g->last_errno ();
 
 This returns the last error number (errno) that happened on the
@@ -846,11 +861,6 @@ errnos:
  if ($g->last_errno() == Errno::EEXIST()) {
    # mkdir failed because the directory exists already.
  }
-
-=item $g->user_cancel ();
-
-Cancel current transfer.  This is safe to call from Perl signal
-handlers and threads.
 
 =cut
 
@@ -920,7 +930,10 @@ handlers and threads.
       let pr_type i = function
         | Pathname n -> pr "[ '%s', 'string(path)', %d ]" n i
         | Device n -> pr "[ '%s', 'string(device)', %d ]" n i
+        | Mountable n -> pr "[ '%s', 'string(mountable)', %d ]" n i
         | Dev_or_Path n -> pr "[ '%s', 'string(dev_or_path)', %d ]" n i
+        | Mountable_or_Path n ->
+          pr "[ '%s', 'string(mountable_or_path)', %d ]" n i
         | String n -> pr "[ '%s', 'string', %d ]" n i
         | FileIn n -> pr "[ '%s', 'string(filename)', %d ]" n i
         | FileOut n -> pr "[ '%s', 'string(filename)', %d ]" n i
@@ -1020,15 +1033,10 @@ containing useful introspection information about the method
   }
 
 To test if particular features are supported by the current
-build, use the L</available> method like the example below.  Note
+build, use the L</feature_available> method like the example below.  Note
 that the appliance must be launched first.
 
- $g->available ( [\"augeas\"] );
-
-Since the L</available> method croaks if the feature is not supported,
-you might also want to wrap this in an eval and return a boolean.
-In fact this has already been done for you: use
-L<Sys::Guestfs::Lib(3)/feature_available>.
+ $g->feature_available ( [\"augeas\"] );
 
 For further discussion on this topic, refer to
 L<guestfs(3)/AVAILABILITY>.
@@ -1064,8 +1072,7 @@ Please see the file COPYING.LIB for the full license.
 
 L<guestfs(3)>,
 L<guestfish(1)>,
-L<http://libguestfs.org>,
-L<Sys::Guestfs::Lib(3)>.
+L<http://libguestfs.org>.
 
 =cut
 " copyright_years
@@ -1092,7 +1099,8 @@ and generate_perl_prototype name (ret, args, optargs) =
       if !comma then pr ", ";
       comma := true;
       match arg with
-      | Pathname n | Device n | Dev_or_Path n | String n
+      | Pathname n | Device n | Mountable n
+      | Dev_or_Path n | Mountable_or_Path n | String n
       | OptString n | Bool n | Int n | Int64 n | FileIn n | FileOut n
       | BufferIn n | Key n | Pointer (_, n) ->
           pr "$%s" n

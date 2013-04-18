@@ -22,15 +22,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 #ifdef HAVE_LIBVIRT
 #include <libvirt/libvirt.h>
 #endif
 
-#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #include <libxml/xmlversion.h>
-#endif
 
 #include "glthread/lock.h"
 #include "ignore-value.h"
@@ -40,7 +39,7 @@
 #include "guestfs-internal-actions.h"
 #include "guestfs_protocol.h"
 
-static int parse_attach_method (guestfs_h *g, const char *method);
+static int parse_backend (guestfs_h *g, const char *method);
 static int shutdown_backend (guestfs_h *g, int check_for_errors);
 static void close_handles (void);
 
@@ -60,19 +59,16 @@ static void init_libguestfs (void) __attribute__((constructor));
 static void
 init_libguestfs (void)
 {
-#if defined(HAVE_LIBVIRT) || defined(HAVE_LIBXML2)
   gl_lock_lock (init_lock);
-#endif
+
 #ifdef HAVE_LIBVIRT
   virInitialize ();
 #endif
-#ifdef HAVE_LIBXML2
+
   xmlInitParser ();
   LIBXML_TEST_VERSION;
-#endif
-#if defined(HAVE_LIBVIRT) || defined(HAVE_LIBXML2)
+
   gl_lock_unlock (init_lock);
-#endif
 }
 
 guestfs_h *
@@ -91,9 +87,7 @@ guestfs_create_flags (unsigned flags, ...)
 
   g->state = CONFIG;
 
-  g->fd[0] = -1;
-  g->fd[1] = -1;
-  g->sock = -1;
+  g->conn = NULL;
 
   guestfs___init_error_handler (g);
   g->abort_cb = abort;
@@ -117,9 +111,22 @@ guestfs_create_flags (unsigned flags, ...)
   g->qemu = strdup (QEMU);
   if (!g->qemu) goto error;
 
-  if (parse_attach_method (g, DEFAULT_ATTACH_METHOD) == -1) {
-    warning (g, _("libguestfs was built with an invalid default attach-method, using 'appliance' instead"));
-    g->attach_method = ATTACH_METHOD_APPLIANCE;
+  /* Get program name. */
+#if defined(HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME) && \
+    HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME == 1
+  if (STRPREFIX (program_invocation_short_name, "lt-"))
+    /* Remove libtool (lt-*) prefix from short name. */
+    g->program = strdup (program_invocation_short_name + 3);
+  else
+    g->program = strdup (program_invocation_short_name);
+#else
+  g->program = strdup ("");
+#endif
+  if (!g->program) goto error;
+
+  if (parse_backend (g, DEFAULT_BACKEND) == -1) {
+    warning (g, _("libguestfs was built with an invalid default backend, using 'direct' instead"));
+    g->backend = BACKEND_DIRECT;
   }
 
   if (!(flags & GUESTFS_CREATE_NO_ENVIRONMENT))
@@ -139,12 +146,14 @@ guestfs_create_flags (unsigned flags, ...)
     gl_lock_unlock (handles_lock);
   }
 
-  debug (g, "create: flags = %u, handle = %p", flags, g);
+  debug (g, "create: flags = %u, handle = %p, program = %s",
+         flags, g, g->program);
 
   return g;
 
  error:
-  free (g->attach_method_arg);
+  free (g->backend_arg);
+  free (g->program);
   free (g->path);
   free (g->qemu);
   free (g->append);
@@ -209,10 +218,17 @@ parse_environment (guestfs_h *g,
     guestfs_set_memsize (g, memsize);
   }
 
-  str = do_getenv (data, "LIBGUESTFS_ATTACH_METHOD");
+  str = do_getenv (data, "LIBGUESTFS_BACKEND");
   if (str) {
-    if (guestfs_set_attach_method (g, str) == -1)
+    if (guestfs_set_backend (g, str) == -1)
       return -1;
+  }
+  else {
+    str = do_getenv (data, "LIBGUESTFS_ATTACH_METHOD");
+    if (str) {
+      if (guestfs_set_backend (g, str) == -1)
+        return -1;
+    }
   }
 
   return 0;
@@ -326,11 +342,14 @@ guestfs_close (guestfs_h *g)
 
   if (g->pda)
     hash_free (g->pda);
+  free (g->virt_selinux_label);
+  free (g->virt_selinux_imagelabel);
   free (g->tmpdir);
   free (g->env_tmpdir);
   free (g->int_tmpdir);
   free (g->int_cachedir);
   free (g->last_error);
+  free (g->program);
   free (g->path);
   free (g->qemu);
   free (g->append);
@@ -365,17 +384,12 @@ shutdown_backend (guestfs_h *g, int check_for_errors)
   }
 
   /* Close sockets. */
-  if (g->fd[0] >= 0)
-    close (g->fd[0]);
-  if (g->fd[1] >= 0)
-    close (g->fd[1]);
-  if (g->sock >= 0)
-    close (g->sock);
-  g->fd[0] = -1;
-  g->fd[1] = -1;
-  g->sock = -1;
+  if (g->conn) {
+    g->conn->ops->free_connection (g, g->conn);
+    g->conn = NULL;
+  }
 
-  if (g->attach_ops->shutdown (g, check_for_errors) == -1)
+  if (g->backend_ops->shutdown (g, check_for_errors) == -1)
     ret = -1;
 
   guestfs___free_drives (g);
@@ -390,12 +404,6 @@ static void
 close_handles (void)
 {
   while (handles) guestfs_close (handles);
-}
-
-void
-guestfs_user_cancel (guestfs_h *g)
-{
-  g->user_cancel = 1;
 }
 
 int
@@ -529,14 +537,14 @@ guestfs__get_trace (guestfs_h *g)
 int
 guestfs__set_direct (guestfs_h *g, int d)
 {
-  g->direct = !!d;
+  g->direct_mode = !!d;
   return 0;
 }
 
 int
 guestfs__get_direct (guestfs_h *g)
 {
-  return g->direct;
+  return g->direct_mode;
 }
 
 int
@@ -565,34 +573,49 @@ guestfs__get_network (guestfs_h *g)
   return g->enable_network;
 }
 
-static int
-parse_attach_method (guestfs_h *g, const char *method)
+int
+guestfs__set_program (guestfs_h *g, const char *program)
 {
-  if (STREQ (method, "appliance")) {
-    g->attach_method = ATTACH_METHOD_APPLIANCE;
-    free (g->attach_method_arg);
-    g->attach_method_arg = NULL;
+  free (g->program);
+  g->program = safe_strdup (g, program);
+
+  return 0;
+}
+
+const char *
+guestfs__get_program (guestfs_h *g)
+{
+  return g->program;
+}
+
+static int
+parse_backend (guestfs_h *g, const char *method)
+{
+  if (STREQ (method, "direct") || STREQ (method, "appliance")) {
+    g->backend = BACKEND_DIRECT;
+    free (g->backend_arg);
+    g->backend_arg = NULL;
     return 0;
   }
 
   if (STREQ (method, "libvirt")) {
-    g->attach_method = ATTACH_METHOD_LIBVIRT;
-    free (g->attach_method_arg);
-    g->attach_method_arg = NULL;
+    g->backend = BACKEND_LIBVIRT;
+    free (g->backend_arg);
+    g->backend_arg = NULL;
     return 0;
   }
 
   if (STRPREFIX (method, "libvirt:") && strlen (method) > 8) {
-    g->attach_method = ATTACH_METHOD_LIBVIRT;
-    free (g->attach_method_arg);
-    g->attach_method_arg = safe_strdup (g, method + 8);
+    g->backend = BACKEND_LIBVIRT;
+    free (g->backend_arg);
+    g->backend_arg = safe_strdup (g, method + 8);
     return 0;
   }
 
   if (STRPREFIX (method, "unix:") && strlen (method) > 5) {
-    g->attach_method = ATTACH_METHOD_UNIX;
-    free (g->attach_method_arg);
-    g->attach_method_arg = safe_strdup (g, method + 5);
+    g->backend = BACKEND_UNIX;
+    free (g->backend_arg);
+    g->backend_arg = safe_strdup (g, method + 5);
     /* Note that we don't check the path exists until launch is called. */
     return 0;
   }
@@ -601,42 +624,61 @@ parse_attach_method (guestfs_h *g, const char *method)
 }
 
 int
-guestfs__set_attach_method (guestfs_h *g, const char *method)
+guestfs__set_backend (guestfs_h *g, const char *method)
 {
-  if (parse_attach_method (g, method) == -1) {
-    error (g, "invalid attach method: %s", method);
+  if (parse_backend (g, method) == -1) {
+    error (g, "invalid backend: %s", method);
     return -1;
   }
 
   return 0;
 }
 
+int
+guestfs__set_attach_method (guestfs_h *g, const char *method)
+{
+  return guestfs__set_backend (g, method);
+}
+
+char *
+guestfs__get_backend (guestfs_h *g)
+{
+  char *ret = NULL;
+
+  switch (g->backend) {
+  case BACKEND_DIRECT:
+    ret = safe_strdup (g, "direct");
+    break;
+
+  case BACKEND_LIBVIRT:
+    if (g->backend_arg == NULL)
+      ret = safe_strdup (g, "libvirt");
+    else
+      ret = safe_asprintf (g, "libvirt:%s", g->backend_arg);
+    break;
+
+  case BACKEND_UNIX:
+    ret = safe_asprintf (g, "unix:%s", g->backend_arg);
+    break;
+  }
+
+  if (ret == NULL)
+    abort ();
+
+  return ret;
+}
+
 char *
 guestfs__get_attach_method (guestfs_h *g)
 {
-  char *ret;
+  switch (g->backend) {
+  case BACKEND_DIRECT:
+    /* Return 'appliance' here for backwards compatibility. */
+    return safe_strdup (g, "appliance");
 
-  switch (g->attach_method) {
-  case ATTACH_METHOD_APPLIANCE:
-    ret = safe_strdup (g, "appliance");
-    break;
-
-  case ATTACH_METHOD_LIBVIRT:
-    if (g->attach_method_arg == NULL)
-      ret = safe_strdup (g, "libvirt");
-    else
-      ret = safe_asprintf (g, "libvirt:%s", g->attach_method_arg);
-    break;
-
-  case ATTACH_METHOD_UNIX:
-    ret = safe_asprintf (g, "unix:%s", g->attach_method_arg);
-    break;
-
-  default: /* keep GCC happy - this is not reached */
-    abort ();
+  default:
+    return guestfs__get_backend (g);
   }
-
-  return ret;
 }
 
 int

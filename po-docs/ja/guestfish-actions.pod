@@ -4,8 +4,8 @@
 
  acl-delete-def-file dir
 
-This function deletes the default POSIX Access Control List (ACL)  attached
-to directory C<dir>.
+この関数はディレクトリー C<dir> に設定されている標準の POSIX アクセス制御リスト (ACL: Access Control List)
+を削除します。
 
 =head2 acl-get-file
 
@@ -60,11 +60,10 @@ directory.
 
 この関数は仮想 CD-ROM ディスクイメージを仮想マシンに追加します。
 
-B<Do not use this function!> ISO files are just ordinary read-only disk
-images.  Use L</add-drive-ro> instead.
+B<この関数を使用しないでください!> ISO ファイルは通常読み込み専用のディスクイメージです。代わりに L</add-drive-ro>
+を使用してください。
 
-I<This function is deprecated.> In new code, use the L</add-drive> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</add-drive> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -121,28 +120,27 @@ E<lt>readonly/E<gt> flag is found.
 
 C<readonly> が真ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。
 
 =item readonlydisk = "read"
 
 C<readonly> が偽ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.  Other disks
-are added read/write.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。他のディスクは読み書き用で追加されます。
 
 C<readonly> が真ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。
 
 =item readonlydisk = "write" (デフォルト)
 
 C<readonly> が偽ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read/write.
+E<lt>readonly/E<gt> フラグを持つディスクは読み書き用で追加されます。
 
 C<readonly> が真ならば:
 
-Disks with the E<lt>readonly/E<gt> flag are added read-only.
+E<lt>readonly/E<gt> フラグを持つディスクは読み込み専用で追加されます。
 
 =item readonlydisk = "ignore"
 
@@ -152,11 +150,9 @@ E<lt>readonly/E<gt> フラグのあるディスクはスキップされます
 
 =back
 
-The other optional parameters are passed directly through to
-L</add-drive-opts>.
+他のオプション引数は直接 L</add-drive-opts> に渡されます。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 add-drive
 
@@ -164,7 +160,7 @@ ARGUMENTS>.
 
 =head2 add-drive-opts
 
- add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..]
+ add-drive filename [readonly:true|false] [format:..] [iface:..] [name:..] [label:..] [protocol:..] [server:..] [username:..]
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -227,10 +223,97 @@ C</dev/disk/guestfs/I<label>>.
 
 L<guestfs(3)/ディスクラベル>を参照してください。
 
+=item C<protocol>
+
+The optional protocol argument can be used to select an alternate source
+protocol.
+
+See also: L<guestfs(3)/REMOTE STORAGE>.
+
+=over 4
+
+=item C<protocol = "file">
+
+C<filename> is interpreted as a local file or device.  This is the default
+if the optional protocol parameter is omitted.
+
+=item C<protocol = "gluster">
+
+Connect to the GlusterFS server.  The C<server> parameter must also be
+supplied - see below.
+
+See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = "nbd">
+
+Connect to the Network Block Device server.  The C<server> parameter must
+also be supplied - see below.
+
+See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
+
+=item C<protocol = "rbd">
+
+Connect to the Ceph (librbd/RBD) server.  The C<server> parameter must also
+be supplied - see below.
+
+See also: L<guestfs(3)/CEPH>.
+
+=item C<protocol = "sheepdog">
+
+Connect to the Sheepdog server.  The C<server> parameter may also be
+supplied - see below.
+
+See also: L<guestfs(3)/SHEEPDOG>.
+
+=item C<protocol = "ssh">
+
+Connect to the Secure Shell (ssh) server.
+
+The C<server> parameter must be supplied.  The C<username> parameter may be
+supplied.  See below.
+
+See also: L<guestfs(3)/SSH>.
+
 =back
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+=item C<server>
+
+For protocols which require access to a remote server, this is a list of
+server(s).
+
+ Protocol       Number of servers required
+ --------       --------------------------
+ file           List must be empty or param not used at all
+ gluster        Exactly one
+ nbd            Exactly one
+ rbd            One or more
+ sheepdog       Zero or more
+ ssh            Exactly one
+
+Each list element is a string specifying a server.  The string must be in
+one of the following formats:
+
+ hostname
+ hostname:port
+ tcp:hostname
+ tcp:hostname:port
+ unix:/path/to/socket
+
+If the port number is omitted, then the standard port number for the
+protocol is used (see C</etc/services>).
+
+=item C<username>
+
+For the C<ssh> protocol only, this specifies the remote username.
+
+If not given, then the local username is used.  But note this sometimes may
+give unexpected results, for example if using the libvirt backend and if the
+libvirt backend is configured to start the qemu appliance as a special user
+such as C<qemu.qemu>.  If in doubt, specify the remote username you want.
+
+=back
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 add-drive-ro
 
@@ -249,8 +332,7 @@ is added read-only, with the format being detected automatically.
 This is the same as L</add-drive-ro> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add-drive> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</add-drive> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -263,8 +345,7 @@ these functions.
 This is the same as L</add-drive> but it allows you to specify the QEMU
 interface emulation to use at run time.
 
-I<This function is deprecated.> In new code, use the L</add-drive> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</add-drive> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -463,6 +544,12 @@ I<注記:>
 
 =item *
 
+L</feature-available> is the same as this call, but with a slightly simpler
+to use API: that call returns a boolean true/false instead of throwing an
+error.
+
+=item *
+
 You must call L</launch> before calling this function.
 
 The reason is because we don't know what groups are supported by the
@@ -497,17 +584,18 @@ L</filesystem-available> 参照。
 This command returns a list of all optional groups that this daemon knows
 about.  Note this returns both supported and unsupported groups.  To find
 out which ones the daemon can actually support you have to call
-L</available> on each member of the returned list.
+L</available> / L</feature-available> on each member of the returned list.
 
-L</available> および L<guestfs(3)/AVAILABILITY> 参照。
+See also L</available>, L</feature-available> and
+L<guestfs(3)/AVAILABILITY>.
 
 =head2 base64-in
 
  base64-in (base64file|-) filename
 
-This command uploads base64-encoded data from C<base64file> to C<filename>.
+このコマンドは Base64 エンコードしたデータを C<base64file> から C<filename> にアップロードします。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 base64-out
 
@@ -516,7 +604,7 @@ Use C<-> instead of a filename to read/write from stdin/stdout.
 This command downloads the contents of C<filename>, writing it out to local
 file C<base64file> encoded as base64.
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 blkid
 
@@ -685,8 +773,7 @@ btrfs itself).
 
 L<btrfs(8)> 参照。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 btrfs-filesystem-sync
 
@@ -700,8 +787,7 @@ C<fs> にマウントされた btrfs ファイルシステムにおいて強制�
 
 btrfs ファイルシステムをチェックするために使用されると、C<device> はファイルシステムが保存されているデバイスファイルです。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 btrfs-set-seeding
 
@@ -895,7 +981,7 @@ command (it uses the ones from GNU coreutils).  In particular when the
 filename is not printable, coreutils uses a special backslash syntax.  For
 more information, see the GNU coreutils info file.
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 chmod
 
@@ -972,10 +1058,9 @@ C<zdevice>.
 The C<ctype> and optional C<level> parameters have the same meaning as in
 L</compress-out>.
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 compress-out
 
@@ -993,10 +1078,9 @@ libguestfs, in which case you will get an error containing the substring
 The optional C<level> parameter controls compression level.  The meaning and
 default for this parameter depends on the compression program being used.
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 config
 
@@ -1012,7 +1096,7 @@ C<qemuvalue> は NULL の可能性があります。
 
 =head2 copy-device-to-device
 
- copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-device-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 The four calls L</copy-device-to-device>, L</copy-device-to-file>,
 L</copy-file-to-device>, and L</copy-file-to-file> let you copy from a
@@ -1027,30 +1111,32 @@ defaults to copying as much as possible until we hit the end of the source.
 
 宛先がファイルならば、必要に応じて作成されます。宛先ファイルが十分に大きくなければ、拡張されます。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+If the C<sparse> flag is true then the call avoids writing blocks that
+contain only zeroes, which can help in some situations where the backing
+disk is thin-provisioned.  Note that unless the target is already zeroed,
+using this option will result in incorrect copying.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 copy-device-to-file
 
- copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-device-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 この呼び出しの一般的な概要は L</copy-device-to-device> を参照してください。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 copy-file-to-device
 
- copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-file-to-device src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 この呼び出しの一般的な概要は L</copy-device-to-device> を参照してください。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 copy-file-to-file
 
- copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N]
+ copy-file-to-file src dest [srcoffset:N] [destoffset:N] [size:N] [sparse:true|false]
 
 この呼び出しの一般的な概要は L</copy-device-to-device> を参照してください。
 
@@ -1058,8 +1144,7 @@ This is B<not> the function you want for copying files.  This is for copying
 blocks within existing files.  See L</cp>, L</cp-a> and L</mv> for general
 file copying and moving functions.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 copy-size
 
@@ -1113,8 +1198,7 @@ these functions.
 
  device-index device
 
-This function takes a device name (eg. "/dev/sdb") and returns the index of
-the device in the list of devices.
+この関数はデバイス名 (例: "/dev/sdb") を取得し、デバイスの一覧にあるデバイスのインデックスを返します。
 
 Index numbers start from 0.  The named device must exist, for example as a
 string returned from L</list-devices>.
@@ -1193,7 +1277,7 @@ C<filename> は名前付きパイプを使えます。
 
 L</upload>, L</cat> 参照。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 download-offset
 
@@ -1210,7 +1294,7 @@ amount unless an error occurs.
 
 L</download>, L</pread> 参照。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 drop-caches
 
@@ -1262,8 +1346,7 @@ This option may not be specified at the same time as the C<forceall> option.
 
 =back
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 e2fsck-f
 
@@ -1337,6 +1420,29 @@ with the given C<path> name.
 
 L</is-file>, L</is-dir>, L</stat> 参照。
 
+=head2 extlinux
+
+ extlinux directory
+
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike L</syslinux> which requires a FAT filesystem, this can be used on an
+ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a directory within
+the mountpoint.
+
+You also have to mark the partition as "active" (L</part-set-bootable>) and
+a Master Boot Record must be installed (eg. using L</pwrite-device>) on the
+first sector of the whole disk.  The SYSLINUX package comes with some
+suitable Master Boot Records.  See the L<extlinux(1)> man page for further
+information.
+
+Additional configuration can be supplied to SYSLINUX by placing a file
+called C<extlinux.conf> on the filesystem under C<directory>.  For further
+information about the contents of this file, see L<extlinux(1)>.
+
+See also L</syslinux>.
+
 =head2 fallocate
 
  fallocate path len
@@ -1369,6 +1475,14 @@ maximum size of files created through that call to 1GB.
 
 Do not confuse this with the guestfish-specific C<alloc> and C<sparse>
 commands which create a file in the host and attach it as a device.
+
+=head2 feature-available
+
+ feature-available 'groups ...'
+
+This is the same as L</available>, but unlike that call it returns a simple
+true/false boolean result, instead of throwing an exception if a feature is
+not found.  For other documentation see L</available>.
 
 =head2 fgrep
 
@@ -1463,7 +1577,7 @@ Intel Itanium.
 
 libguestfs は将来他のアーキテクチャー文字列を返すかもしれません。
 
-The function works on at least the following types of files:
+この関数は少なくとも以下の種類のファイルにおいて機能します:
 
 =over 4
 
@@ -1547,7 +1661,7 @@ mean that a particular filesystem can be mounted, since filesystems can fail
 for other reasons such as it being a later version of the filesystem, or
 having incompatible features.
 
-L</available>, L<guestfs(3)/AVAILABILITY> 参照。
+See also L</available>, L</feature-available>, L<guestfs(3)/AVAILABILITY>.
 
 =head2 fill
 
@@ -1631,7 +1745,7 @@ L<find(1)> option I<-print0>.
 
 =back
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 findfs-label
 
@@ -1701,8 +1815,7 @@ See also L</zero-free-space>.  That is a slightly different operation that
 turns free space in the filesystem into zeroes.  It is valid to call
 L</fstrim> either instead of, or after calling L</zero-free-space>.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 get-append
 
@@ -1711,21 +1824,38 @@ ARGUMENTS>.
 Return the additional kernel options which are added to the guest kernel
 command line.
 
-If C<NULL> then no options are added.
+C<NULL> ならば、オプションが追加されません。
 
 =head2 get-attach-method
 
  get-attach-method
 
-Return the current attach method.
+Return the current backend.
 
-See L</set-attach-method> and L<guestfs(3)/ATTACH METHOD>.
+See L</set-backend> and L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.> In new code, use the L</get-backend> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 get-autosync
 
  get-autosync
 
 autosync フラグを取得します。
+
+=head2 get-backend
+
+ get-backend
+
+Return the current backend.
+
+This handle property was previously called the "attach method".
+
+See L</set-backend> and L<guestfs(3)/BACKEND>.
 
 =head2 get-cachedir
 
@@ -1945,7 +2075,7 @@ libguestfs のアーキテクチャーの詳細は L<guestfs(3)> を参照して
 
  get-network
 
-This returns the enable network flag.
+これは有効化されているネットワークフラグを返します。
 
 =head2 get-path
 
@@ -1960,7 +2090,7 @@ the default path.
 
  get-pgroup
 
-This returns the process group flag.
+これはプロセスグループフラグを返します。
 
 =head2 get-pid
 
@@ -1972,6 +2102,12 @@ Return the process ID of the qemu subprocess.  If there is no qemu
 subprocess, then this will return an error.
 
 This is an internal call used for debugging and testing.
+
+=head2 get-program
+
+ get-program
+
+Get the program name.  See L</set-program>.
 
 =head2 get-qemu
 
@@ -2034,7 +2170,7 @@ set by calling L</umask>.
 
 これはデーモンの SELinux セキュリティコンテキストを取得します。
 
-See the documentation about SELINUX in L<guestfs(3)>, and L</setcon>
+L<guestfs(3)> の SELINUX および L</setcon> に関するドキュメントを参照してください
 
 =head2 getxattr
 
@@ -2090,7 +2226,7 @@ instead.
 
 This calls the external C<grep> program and returns the matching lines.
 
-The optional flags are:
+オプションのフラグは次のとおりです:
 
 =over 4
 
@@ -2114,8 +2250,7 @@ gzip-compressed.
 
 =back
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -2308,8 +2443,7 @@ closed.
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 hivex-root
 
@@ -2323,7 +2457,7 @@ ARGUMENTS>.
 
  hivex-value-key valueh
 
-Return the key (name) field of a (key, datatype, data) tuple.
+(key, datatype, data) 組のキー (name) 項目を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
@@ -2331,7 +2465,7 @@ Return the key (name) field of a (key, datatype, data) tuple.
 
  hivex-value-type valueh
 
-Return the data type field from a (key, datatype, data) tuple.
+(key, datatype, data) 組の datatype 項目を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
@@ -2352,11 +2486,11 @@ contain arbitrary or unexpected data.
 
  hivex-value-value valueh
 
-Return the data field of a (key, datatype, data) tuple.
+(key, datatype, data) 組のデータ項目を返します。
 
 これは同じ名前の L<hivex(3)> のラッパーです。
 
-See also: L</hivex-value-utf8>.
+関連項目: L</hivex-value-utf8>
 
 =head2 initrd-cat
 
@@ -2566,11 +2700,11 @@ Slackware.
 
 =item "sles"
 
-SuSE Linux Enterprise Server or Desktop.
+SuSE Linux Enterprise Server または Desktop.
 
 =item "suse-based"
 
-Some openSuSE-derived distro.
+いくつかの openSuSE 派生ディストリビューション.
 
 =item "ttylinux"
 
@@ -2645,7 +2779,7 @@ to be shared between operating systems.
 This returns the format of the inspected operating system.  You can use it
 to detect install images, live CDs and similar.
 
-Currently defined formats are:
+今のところ定義されている形式は次のとおりです:
 
 =over 4
 
@@ -2655,8 +2789,8 @@ Currently defined formats are:
 
 =item "installer"
 
-The disk image being inspected is not an installed operating system, but a
-I<bootable> install disk, live CD, or similar.
+検査されるディスクイメージが、インストールされたオペレーティング・システムではなく、I<ブート可能な> インストールディスク、ライブ
+CD、または似たようなものです。
 
 =item "unknown"
 
@@ -2741,8 +2875,7 @@ using trademarks in applications.
 
 =back
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 inspect-get-major-version
 
@@ -2807,8 +2940,8 @@ This returns the string C<unknown> if we could not determine the package
 format I<or> if the operating system does not have a real packaging system
 (eg. Windows).
 
-Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
-C<pkgsrc>.  Future versions of libguestfs may return other strings.
+利用可能な文字列: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>, C<pkgsrc>。将来のバージョン
+libguestfs は他の文字列を返す可能性があります。
 
 詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
@@ -2920,7 +3053,7 @@ MS-DOS, FreeDOS およびその他.
 
 =item "unknown"
 
-The operating system type could not be determined.
+オペレーティング・システムの種類がわかりませんでした。
 
 =back
 
@@ -2955,8 +3088,8 @@ returned.
 
  inspect-is-live root
 
-If L</inspect-get-format> returns C<installer> (this is an install disk),
-then this returns true if a live image was detected on the disk.
+L</inspect-get-format> が C<installer> (つまり、インストールディスク)
+を返した場合、ライブイメージがディスクにおいて検知されると、これが真を返します。
 
 詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
@@ -2964,8 +3097,8 @@ then this returns true if a live image was detected on the disk.
 
  inspect-is-multipart root
 
-If L</inspect-get-format> returns C<installer> (this is an install disk),
-then this returns true if the disk is part of a set.
+L</inspect-get-format> が C<installer> (つまり、インストールディスク)
+を返した場合、ディスクがあるセットの一部であると、これが真を返します。
 
 詳細は L<guestfs(3)/INSPECTION> を参照してください。
 
@@ -3284,6 +3417,13 @@ C<path> name.
 
 L</stat> 参照。
 
+=head2 is-whole-device
+
+ is-whole-device device
+
+This returns C<true> if and only if C<device> refers to a whole block
+device. That is, not a partition or a logical device.
+
 =head2 is-zero
 
  is-zero path
@@ -3531,8 +3671,8 @@ returned in this list.  Call L</lvs> if you want to list logical volumes.
  list-filesystems
 
 This inspection command looks for filesystems on partitions, block devices
-and logical volumes, returning a list of devices containing filesystems and
-their type.
+and logical volumes, returning a list of C<mountables> containing
+filesystems and their type.
 
 The return value is a hash, where the keys are the devices containing
 filesystems, and the values are the filesystem types.  For example:
@@ -3541,6 +3681,9 @@ filesystems, and the values are the filesystem types.  For example:
  "/dev/sda2" => "ext2"
  "/dev/vg_guest/lv_root" => "ext4"
  "/dev/vg_guest/lv_swap" => "swap"
+
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to L</mount>.
 
 The value can have the special value "unknown", meaning the content of the
 device is undetermined or empty.  "swap" means a Linux swap partition.
@@ -3653,11 +3796,11 @@ This specialized command is used to get a listing of the filenames in the
 directory C<dir>.  The list of filenames is written to the local file
 C<filenames> (on the host).
 
-In the output file, the filenames are separated by C<\0> characters.
+出力ファイルにおいて、ファイル名が C<\0> 文字により区切られます。
 
-C<.> and C<..> are not returned.  The filenames are not sorted.
+C<.> および C<..> は返されません。ファイル名は並べ替えられません。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 lsetxattr
 
@@ -3990,8 +4133,7 @@ I<10>。これらのいくつかは同じものを意味しています。将来
 
 =back
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 md-detail
 
@@ -4131,8 +4273,7 @@ contents after use.
 C<mke2fs> は C<device> に ext2, ext3, または ext4 ファイルシステムを作成するために使用されます。オプションの
 C<blockscount> はブロックにおけるファイルシステムの容量です。これが省略されると、C<device> の容量が初期値となります。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 mke2fs-J
 
@@ -4144,8 +4285,7 @@ ARGUMENTS>.
 
 L</mke2journal> 参照。
 
-I<This function is deprecated.> In new code, use the L</mke2fs> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mke2fs> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4159,8 +4299,7 @@ these functions.
 
 L</mke2journal-L> 参照。
 
-I<This function is deprecated.> In new code, use the L</mke2fs> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mke2fs> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4174,8 +4313,7 @@ these functions.
 
 L</mke2journal-U> 参照。
 
-I<This function is deprecated.> In new code, use the L</mke2fs> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mke2fs> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4189,8 +4327,7 @@ these functions.
 
  mke2fs -O journal_dev -b blocksize device
 
-I<This function is deprecated.> In new code, use the L</mke2fs> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mke2fs> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4202,8 +4339,7 @@ these functions.
 
 これはラベル C<label> を持つ C<device> に ext2 外部ジャーナルを作成します。
 
-I<This function is deprecated.> In new code, use the L</mke2fs> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mke2fs> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4215,8 +4351,7 @@ these functions.
 
 This creates an ext2 external journal on C<device> with UUID C<uuid>.
 
-I<This function is deprecated.> In new code, use the L</mke2fs> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mke2fs> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4275,8 +4410,7 @@ sets sector size for ufs filesystem.
 
 =back
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 mkfs-b
 
@@ -4306,8 +4440,7 @@ btrfs ファイルシステムは複数のデバイスを結合できるので�
 
 To create general filesystems, use L</mkfs>.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 mklost-and-found
 
@@ -4403,13 +4536,12 @@ wrapper around L</mknod>.
 
  mkswap device [label:..] [uuid:..]
 
-Create a Linux swap partition on C<device>.
+Linux swap パーティションを C<device> に作成します。
 
 The option arguments C<label> and C<uuid> allow you to set the label and/or
 UUID of the new swap partition.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 mkswap-L
 
@@ -4421,8 +4553,7 @@ Note that you cannot attach a swap label to a block device
 (eg. C</dev/sda>), just to a partition.  This appears to be a limitation of
 the kernel or swap tools.
 
-I<This function is deprecated.> In new code, use the L</mkswap> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mkswap> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4434,8 +4565,7 @@ these functions.
 
 UUID C<uuid> の C<device> に swap パーティションを作成します。
 
-I<This function is deprecated.> In new code, use the L</mkswap> call
-instead.
+I<この関数は推奨されません。> 新しいコードでは、代わりに L</mkswap> を使用してください。
 
 Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
@@ -4470,10 +4600,9 @@ The caller is responsible for deleting the temporary file after use.
 If the optional C<suffix> parameter is given, then the suffix (eg. C<.txt>)
 is appended to the temporary name.
 
-See also: L</mkdtemp>.
+関連項目: L</mkdtemp>
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 modprobe
 
@@ -4486,12 +4615,14 @@ C<appliance/kmod.whitelist.in> in the source).
 
 =head2 mount
 
- mount device mountpoint
+ mount mountable mountpoint
 
 Mount a guest disk at a position in the filesystem.  Block devices are named
 C</dev/sda>, C</dev/sdb> and so on, as they were added to the guest.  If
 those block devices contain partitions, they will have the usual names
-(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used.
+(eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style names can be used, or
+'mountable' strings returned by L</list-filesystems> or
+L</inspect-get-mountpoints>.
 
 The rules are the same as for L<mount(2)>: A filesystem must first be
 mounted on C</> before others can be mounted.  Other filesystems can only be
@@ -4516,8 +4647,7 @@ If required, C<trans=virtio> will be automatically added to the options.
 Any other options required can be passed in the optional C<options>
 parameter.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 ローカルマウント
 
@@ -4545,8 +4675,7 @@ run the main loop.
 
 完全なドキュメントは L<guestfs(3)/MOUNT LOCAL> を参照してください。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 mount-local-run
 
@@ -4576,7 +4705,7 @@ mountpoint>.
 
 =head2 mount-options
 
- mount-options options device mountpoint
+ mount-options options mountable mountpoint
 
 This is the same as the L</mount> command, but it allows you to set the
 mount options as for the L<mount(8)> I<-o> flag.
@@ -4586,14 +4715,14 @@ If the C<options> parameter is an empty string, then no options are passed
 
 =head2 mount-ro
 
- mount-ro device mountpoint
+ mount-ro mountable mountpoint
 
 This is the same as the L</mount> command, but it mounts the filesystem with
 the read-only (I<-o ro>) flag.
 
 =head2 mount-vfs
 
- mount-vfs options vfstype device mountpoint
+ mount-vfs options vfstype mountable mountpoint
 
 This is the same as the L</mount> command, but it allows you to set both the
 mount options and the vfstype as for the L<mount(8)> I<-o> and I<-t> flags.
@@ -4656,7 +4785,7 @@ some non-zero value documented in the L<ntfs-3g.probe(8)> manual page.
 C<backupfile> を(前に C</ntfsclone-out> を呼び出したところから)  C<device>
 に復元します。このデバイスの既存の内容はすべて上書きされます。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 ntfsclone-out
 
@@ -4675,10 +4804,9 @@ L<ntfsclone(8)> マニュアルページに詳細な意味が説明されてい�
 
 ファイルを libguestfs デバイスに復元するには L</ntfsclone-in> を使用します。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 ntfsfix
 
@@ -4692,8 +4820,7 @@ ARGUMENTS>.
 オプションの C<clearbadsectors>
 フラグは不良セクターの一覧をクリアします。不良セクターを持つディスクを新しいディスクにクローンした後に有用です。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 ntfsresize
 
@@ -4726,8 +4853,7 @@ single filesystem without booting into Windows between each resize.
 
 L<ntfsresize(8)> 参照。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 ntfsresize-size
 
@@ -4813,6 +4939,14 @@ possible values are described in L</part-init>.
 C<device> にあるパーティション C<partnum> にブート可能フラグが設定されていると、このコマンドは真を返します。
 
 L</part-set-bootable> 参照。
+
+=head2 part-get-gpt-type
+
+ part-get-gpt-type device partnum
+
+Return the type GUID of numbered GPT partition C<partnum>. For MBR
+partitions, return an appropriate GUID corresponding to the MBR
+type. Behaviour is undefined for other partition types.
 
 =head2 part-get-mbr-id
 
@@ -4951,6 +5085,18 @@ L</blockdev-getss> 参照。
 The bootable flag is used by some operating systems (notably Windows) to
 determine which partition to boot from.  It is by no means universally
 recognized.
+
+=head2 part-set-gpt-type
+
+ part-set-gpt-type device partnum guid
+
+Set the type GUID of numbered GPT partition C<partnum> to C<guid>. Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
+
+See
+L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
+for a useful list of type GUIDs.
 
 =head2 part-set-mbr-id
 
@@ -5269,10 +5415,10 @@ the optional C<label> argument to L</add-drive-opts>).  If you didn't use a
 label, then they cannot be removed.
 
 You can call this function before or after launching the handle.  If called
-after launch, if the attach-method supports it, we try to hot unplug the
-drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use
-(eg. mounted) when you do this.  We try to detect if the disk is in use and
-stop you from doing this.
+after launch, if the backend supports it, we try to hot unplug the drive:
+see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not> be in use (eg. mounted)
+when you do this.  We try to detect if the disk is in use and stop you from
+doing this.
 
 =head2 removexattr
 
@@ -5386,8 +5532,7 @@ Delete files at the destination that do not exist at the source.
 
 =back
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 rsync-in
 
@@ -5410,8 +5555,7 @@ up not to require one.
 
 The optional arguments are the same as those of L</rsync>.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 rsync-out
 
@@ -5434,8 +5578,7 @@ up not to require one.
 
 The optional arguments are the same as those of L</rsync>.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 scrub-device
 
@@ -5488,12 +5631,19 @@ C<append> を C<NULL> に設定することは、追加のオプションが渡�
 
 =head2 attach-method
 
- set-attach-method attachmethod
+ set-attach-method backend
 
-Set the method that libguestfs uses to connect to the back end guestfsd
+Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 
-See L<guestfs(3)/ATTACH METHOD>.
+See L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.> In new code, use the L</set-backend> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 set-autosync
 
@@ -5506,6 +5656,19 @@ effort attempt to make filesystems consistent and synchronized when the
 handle is closed (also if the program exits without closing handles).
 
 デフォルトで有効です（libguestfs 1.5.24 以降、以前は デフォルトで無効でした）。
+
+=head2 set-backend
+
+=head2 backend
+
+ set-backend backend
+
+Set the method that libguestfs uses to connect to the backend guestfsd
+daemon.
+
+This handle property was previously called the "attach method".
+
+See L<guestfs(3)/BACKEND>.
 
 =head2 set-cachedir
 
@@ -5561,8 +5724,7 @@ These attributes are only present when the file is located on an ext2/3/4
 filesystem.  Using this call on other filesystem types will result in an
 error.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 set-e2generation
 
@@ -5602,15 +5764,18 @@ UUID of a filesystem.
 
 =head2 set-label
 
- set-label device label
+ set-label mountable label
 
-C<device> のファイルシステムのラベルを C<label> に設定します。
+Set the filesystem label on C<mountable> to C<label>.
 
 いくつかのファイルシステム形式のみがラベルをサポートします。そして libguestfs はこれらのサブセットのみにおいてラベルの設定をサポートします。
 
 ext2/3/4 ファイルシステムでは、ラベルは 16 バイトに制限されます。
 
 NTFS ファイルシステムでは、ラベルは 128 Unicode 文字に制限されます。
+
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 
 ファイルシステムのラベルを読み込むには L</vfs-label> を呼び出します。
 
@@ -5631,8 +5796,7 @@ Call this function before setting an event handler for
 C<GUESTFS_EVENT_LIBVIRT_AUTH>, to supply the list of credential types that
 the program knows how to process.
 
-The C<creds> list must be a non-empty list of strings.  Possible strings
-are:
+C<creds> 一覧は文字列の空ではない一覧にする必要があります。利用可能な文字列は次のとおりです:
 
 =over 4
 
@@ -5656,7 +5820,7 @@ are:
 
 =back
 
-See libvirt documentation for the meaning of these credential types.
+これらのクレデンシャル種別の意味は libvirt ドキュメントを参照してください。
 
 See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
@@ -5713,6 +5877,19 @@ The default for this flag is false, because usually you want C<^C> to kill
 the subprocess.  Guestfish sets this flag to true when used interactively,
 so that C<^C> can cancel long-running commands gracefully (see
 L</user-cancel>).
+
+=head2 set-program
+
+=head2 program
+
+ set-program program
+
+Set the program name.  This is an informative string which the main program
+may optionally set in the handle.
+
+When the handle is created, the program name in the handle is set to the
+basename from C<argv[0]>.  If that was not possible, it is set to the empty
+string (but never C<NULL>).
 
 =head2 set-qemu
 
@@ -6135,6 +6312,40 @@ underlying disk image.
 You should always call this if you have modified a disk image, before
 closing the handle.
 
+=head2 syslinux
+
+ syslinux device [directory:..]
+
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted as a FAT
+filesystem, or a partition formatted as a FAT filesystem.  In the latter
+case, the partition should be marked as "active" (L</part-set-bootable>) and
+a Master Boot Record must be installed (eg. using L</pwrite-device>) on the
+first sector of the whole disk.  The SYSLINUX package comes with some
+suitable Master Boot Records.  See the L<syslinux(1)> man page for further
+information.
+
+オプション引数は次のとおりです:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the root directory
+of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by placing a file
+called C<syslinux.cfg> on the FAT filesystem, either in the root directory,
+or under C<directory> if that optional argument is being used.  For further
+information about the contents of this file, see L<syslinux(1)>.
+
+See also L</extlinux>.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
 =head2 tail
 
  tail path
@@ -6173,10 +6384,9 @@ strings may be given to select the compression type of the input file:
 C<compress>, C<gzip>, C<bzip2>, C<xz>, C<lzop>.  (Note that not all builds
 of libguestfs will support all of these compression types).
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 tar-out
 
@@ -6208,10 +6418,9 @@ user/group names.
 
 =back
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 tgz-in
 
@@ -6220,7 +6429,7 @@ ARGUMENTS>.
 This command uploads and unpacks local file C<tarball> (a I<gzip compressed>
 tar file) into C<directory>.
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 I<This function is deprecated.> In new code, use the L</tar-in> call
 instead.
@@ -6236,7 +6445,7 @@ these functions.
 This command packs the contents of C<directory> and downloads it to local
 file C<tarball>.
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 I<This function is deprecated.> In new code, use the L</tar-out> call
 instead.
@@ -6346,8 +6555,7 @@ number.
 To get the current values of filesystem parameters, see L</tune2fs-l>.  For
 precise details of how tune2fs works, see the L<tune2fs(8)> man page.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 tune2fs-l
 
@@ -6368,7 +6576,7 @@ and the filesystem itself.
 This command uploads and unpacks local file C<tarball> (an I<xz compressed>
 tar file) into C<directory>.
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 I<This function is deprecated.> In new code, use the L</tar-in> call
 instead.
@@ -6384,7 +6592,7 @@ these functions.
 This command packs the contents of C<directory> and downloads it to local
 file C<tarball> (as an xz compressed tar archive).
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 I<This function is deprecated.> In new code, use the L</tar-out> call
 instead.
@@ -6423,8 +6631,7 @@ L</get-umask>, L<umask(2)>, L</mknod>, L</mkdir> 参照。
 これは与えられたファイルシステムをアンマウントします。ファイルシステムは、そのマウントポイント
 (path)、またはファイルシステムを含むデバイスにより指定されます。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 umount-all
 
@@ -6444,8 +6651,7 @@ libguestfs がローカルマウントポイントにあるファイルシステ
 
 完全なドキュメントは L<guestfs(3)/MOUNT LOCAL> を参照してください。
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 upload
 
@@ -6457,7 +6663,7 @@ C<filename> は名前付きパイプを使えます。
 
 L</download> 参照。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
 
 =head2 upload-offset
 
@@ -6477,7 +6683,36 @@ amount unless an error occurs.
 
 L</upload>, L</pwrite> 参照。
 
-Use C<-> instead of a filename to read/write from stdin/stdout.
+標準入力/標準出力から読み込み/書き込みするには、ファイル名の代わりに C<-> を使用します。
+
+=head2 user-cancel
+
+ user-cancel
+
+This function cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and thread
+safe.  You can call it from a signal handler or from another thread, without
+needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this to find
+out if the operation was cancelled or failed because of another error.
+
+No cleanup is performed: for example, if a file was being uploaded then
+after cancellation there may be a partially uploaded file.  It is the
+caller's responsibility to clean up if necessary.
+
+There are two common places that you might call L</user-cancel>:
+
+In an interactive text-based program, you might call it from a C<SIGINT>
+signal handler so that pressing C<^C> cancels the current operation.  (You
+also need to call L</guestfs_set_pgroup> so that child processes don't
+receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress bar
+with a cancel button, wire up the cancel button to call this function.
 
 =head2 utimens
 
@@ -6511,7 +6746,7 @@ structure is defined by the API.
 
  version
 
-Return the libguestfs version number that the program is linked against.
+プログラムがリンクしている libguestfs バージョン番号を返します。
 
 Note that because of dynamic linking this is not necessarily the version of
 libguestfs that you compiled against.  You can compile the program, and then
@@ -6535,13 +6770,13 @@ To construct the original version string: C<$major.$minor.$release$extra>
 I<Note:> Don't use this call to test for availability of features.  In
 enterprise distributions we backport features from later versions into
 earlier versions, making this an unreliable way to test for features.  Use
-L</available> instead.
+L</available> or L</feature-available> instead.
 
 =head2 vfs-label
 
- vfs-label device
+ vfs-label mountable
 
-This returns the filesystem label of the filesystem on C<device>.
+This returns the label of the filesystem on C<mountable>.
 
 ファイルシステムにラベルが付いていないと、空の文字列が返されます。
 
@@ -6549,10 +6784,10 @@ This returns the filesystem label of the filesystem on C<device>.
 
 =head2 vfs-type
 
- vfs-type device
+ vfs-type mountable
 
 This command gets the filesystem type corresponding to the filesystem on
-C<device>.
+C<mountable>.
 
 For most filesystems, the result is the name of the Linux VFS module which
 would be used to mount this filesystem if you mounted it without specifying
@@ -6560,9 +6795,9 @@ the filesystem type.  For example a string such as C<ext3> or C<ntfs>.
 
 =head2 vfs-uuid
 
- vfs-uuid device
+ vfs-uuid mountable
 
-This returns the filesystem UUID of the filesystem on C<device>.
+This returns the filesystem UUID of the filesystem on C<mountable>.
 
 ファイルシステムが UUID を持っていないと、空の文字列を返します。
 
@@ -6593,7 +6828,7 @@ This command is the same as running C<vgchange -a y|n>
 
  vgchange-uuid vg
 
-Generate a new random UUID for the volume group C<vg>.
+ランダムな新しい UUID をボリュームグループ C<vg> に対して生成します。
 
 =head2 vgchange-uuid-all
 
@@ -6650,7 +6885,7 @@ This also forcibly removes all logical volumes in the volume group (if any).
 
  vgrename volgroup newvolgroup
 
-Rename a volume group C<volgroup> with the new name C<newvolgroup>.
+ボリュームグループ C<volgroup> の名前を新しい名前 C<newvolgroup> に変更します。
 
 =head2 vgs
 
@@ -6682,7 +6917,7 @@ volumes, volume groups and logical volumes.
 
  vguuid vgname
 
-This command returns the UUID of the LVM VG named C<vgname>.
+このコマンドは C<vgname> という名前の LVM ボリュームグループの UUID を返します。
 
 =head2 wc-c
 
@@ -6726,8 +6961,7 @@ L</write-append> 参照。
 
  write-append path content
 
-This call appends C<content> to the end of file C<path>.  If C<path> does
-not exist, then a new file is created.
+この関数は C<content> を C<path> ファイルの最後に追加します。もし C<path> が存在しなければ、新しいファイルが作成されます。
 
 L</write> 参照。
 
@@ -6757,7 +6991,7 @@ these functions.
 
  xfs-admin device [extunwritten:true|false] [imgfile:true|false] [v2log:true|false] [projid32bit:true|false] [lazycounter:true|false] [label:..] [uuid:..]
 
-Change the parameters of the XFS filesystem on C<device>.
+C<device> において XFS ファイルシステムのパラメーターを変更します。
 
 Devices that are mounted cannot be modified.  Administrators must unmount
 filesystems before this call can modify parameters.
@@ -6765,8 +6999,7 @@ filesystems before this call can modify parameters.
 Some of the parameters of a mounted filesystem can be examined and modified
 using the L</xfs-info> and L</xfs-growfs> calls.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 xfs-growfs
 
@@ -6777,8 +7010,7 @@ C<path> にマウントされた XFS ファイルシステムを拡大します�
 The returned struct contains geometry information.  Missing fields are
 returned as C<-1> (for numeric fields) or empty string.
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 xfs-info
 
@@ -6808,8 +7040,7 @@ resulting filesystem may be inconsistent or corrupt.
 The returned status indicates whether filesystem corruption was detected
 (returns C<1>) or was not detected (returns C<0>).
 
-This command has one or more optional arguments.  See L</OPTIONAL
-ARGUMENTS>.
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
 
 =head2 zegrep
 
@@ -6895,7 +7126,7 @@ the filesystem.
 
  zfgrep pattern path
 
-This calls the external C<zfgrep> program and returns the matching lines.
+これは外部の C<zfgrep> プログラムを呼び出し、一致する行を返します。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.
@@ -6910,7 +7141,7 @@ these functions.
 
  zfgrepi pattern path
 
-This calls the external C<zfgrep -i> program and returns the matching lines.
+これは外部の C<zfgrep -i> プログラムを呼び出し、一致する行を返します。
 
 Because of the message protocol, there is a transfer limit of somewhere
 between 2MB and 4MB.  See L<guestfs(3)/PROTOCOL LIMITS>.

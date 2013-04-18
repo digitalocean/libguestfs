@@ -19,7 +19,6 @@ use strict;
 use warnings;
 
 use Sys::Guestfs;
-use Sys::Guestfs::Lib qw(feature_available);
 
 # These are two SELinux labels that we assume everyone is allowed to
 # set under any policy.
@@ -111,7 +110,7 @@ close FILE or die "$testimg: $!";
 $g->add_drive ($testimg, format => "raw");
 $g->launch ();
 
-unless (feature_available ($g, "linuxxattrs")) {
+unless ($g->feature_available (["linuxxattrs"])) {
     print "$prog $test_type $test_via: test skipped because 'linuxxattrs' feature not available.\n";
     $g->close ();
     unlink $testimg;
@@ -175,28 +174,11 @@ sub run_fuse_tests
     }
 
     # Unmount the test directory.
-    unmount ($mpdir);
-
-    exit ($errors == 0 ? 0 : 1);
-}
-
-# Unmount the FUSE directory.  We may need to retry this a few times.
-sub unmount
-{
-    my $mpdir = shift;
-    my $retries = 5;
-
-    while ($retries > 0) {
-        if (system ("fusermount", "-u", $mpdir) == 0) {
-            last;
-        }
-        sleep 1;
-        $retries--;
-    }
-
-    if ($retries == 0) {
+    if (system ("../../fuse/guestunmount", $mpdir) != 0) {
         die "failed to unmount FUSE directory\n";
     }
+
+    exit ($errors == 0 ? 0 : 1);
 }
 
 # Test extended attributes, using the libguestfs API directly.

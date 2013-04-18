@@ -273,6 +273,12 @@ separate I<-a> options.
 примусово використати певний формат, скористайтеся параметром
 I<--format=..>.
 
+=item B<-a URI>
+
+=item B<--add URI>
+
+Add a remote disk.  See L<guestfish(1)/ADDING REMOTE STORAGE>.
+
 =item B<--checksum>
 
 =item B<--checksum=crc|md5|sha1|sha224|sha256|sha384|sha512>
@@ -500,5 +506,5 @@ Richard W.M. Jones L<http://people.redhat.com/~rjones/>
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2009–2012
+Copyright (C) 2009-2013 Red Hat Inc.
 

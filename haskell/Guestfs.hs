@@ -20,7 +20,6 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 -}
 
-{-# INCLUDE <guestfs.h> #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 
 module Guestfs (
@@ -29,6 +28,16 @@ module Guestfs (
   internal_test_rinterr,
   internal_test_rint64,
   internal_test_rint64err,
+  internal_test_rbool,
+  internal_test_rboolerr,
+  internal_test_rconststring,
+  internal_test_rconststringerr,
+  internal_test_rstring,
+  internal_test_rstringerr,
+  internal_test_rstringlist,
+  internal_test_rstringlisterr,
+  internal_test_rhashtable,
+  internal_test_rhashtableerr,
   internal_test_set_output,
   internal_test_close_output,
   launch,
@@ -38,52 +47,118 @@ module Guestfs (
   add_drive_ro,
   config,
   set_qemu,
+  get_qemu,
   set_path,
+  get_path,
   set_append,
   set_autosync,
+  get_autosync,
   set_verbose,
+  get_verbose,
+  is_ready,
+  is_config,
+  is_launching,
+  is_busy,
   get_state,
   set_memsize,
   get_memsize,
   get_pid,
   set_selinux,
+  get_selinux,
   set_trace,
+  get_trace,
   set_direct,
+  get_direct,
   set_recovery_proc,
+  get_recovery_proc,
   add_drive_with_if,
   add_drive_ro_with_if,
+  file_architecture,
+  inspect_os,
+  inspect_get_type,
+  inspect_get_arch,
+  inspect_get_distro,
   inspect_get_major_version,
   inspect_get_minor_version,
+  inspect_get_product_name,
+  inspect_get_mountpoints,
+  inspect_get_filesystems,
   set_network,
+  get_network,
+  list_filesystems,
+  inspect_get_windows_systemroot,
+  inspect_get_roots,
+  debug_drives,
+  inspect_get_package_format,
+  inspect_get_package_management,
+  inspect_get_hostname,
+  inspect_get_format,
+  inspect_is_live,
+  inspect_is_netinst,
+  inspect_is_multipart,
   set_attach_method,
+  get_attach_method,
+  set_backend,
+  get_backend,
+  inspect_get_product_variant,
+  inspect_get_windows_current_control_set,
+  inspect_get_drive_mappings,
   set_pgroup,
+  get_pgroup,
   set_smp,
   get_smp,
   mount_local_run,
   max_disks,
+  canonical_device_name,
   shutdown,
+  cat,
+  find,
+  read_lines,
   write,
   write_append,
+  readlinklist,
+  ls,
+  hivex_value_utf8,
+  disk_format,
   disk_virtual_size,
+  disk_has_backing_file,
   remove_drive,
   set_libvirt_supported_credentials,
+  get_libvirt_requested_credentials,
+  get_libvirt_requested_credential_prompt,
+  get_libvirt_requested_credential_challenge,
+  get_libvirt_requested_credential_defresult,
   set_libvirt_requested_credential,
   parse_environment,
   parse_environment_list,
   set_tmpdir,
+  get_tmpdir,
   set_cachedir,
+  get_cachedir,
+  user_cancel,
+  set_program,
+  get_program,
   mount,
   sync,
   touch,
+  ll,
+  list_devices,
+  list_partitions,
+  pvs,
+  vgs,
+  lvs,
   aug_init,
   aug_close,
   aug_defvar,
+  aug_get,
   aug_set,
   aug_insert,
   aug_rm,
   aug_mv,
+  aug_match,
   aug_save,
   aug_load,
+  aug_ls,
   rm,
   rmdir,
   rm_rf,
@@ -91,15 +166,24 @@ module Guestfs (
   mkdir_p,
   chmod,
   chown,
+  exists,
+  is_file,
+  is_dir,
   pvcreate,
   vgcreate,
   lvcreate,
   sfdisk,
   write_file,
+  mounts,
   umount_all,
   lvm_remove_all,
+  file,
+  command,
+  command_lines,
+  tune2fs_l,
   blockdev_setro,
   blockdev_setrw,
+  blockdev_getro,
   blockdev_getss,
   blockdev_getbsz,
   blockdev_setbsz,
@@ -109,16 +193,20 @@ module Guestfs (
   blockdev_rereadpt,
   upload,
   download,
+  checksum,
   tgz_in,
   tgz_out,
   mount_ro,
   mount_options,
   mount_vfs,
+  debug,
   lvremove,
   vgremove,
   pvremove,
   set_e2label,
+  get_e2label,
   set_e2uuid,
+  get_e2uuid,
   fsck,
   zero,
   grub_install,
@@ -126,10 +214,18 @@ module Guestfs (
   cp_a,
   mv,
   drop_caches,
+  dmesg,
   ping_daemon,
+  equal,
+  strings,
+  strings_e,
+  hexdump,
   zerofree,
   pvresize,
   sfdisk_N,
+  sfdisk_l,
+  sfdisk_kernel_geometry,
+  sfdisk_disk_geometry,
   vg_activate_all,
   vg_activate,
   lvresize,
@@ -137,13 +233,24 @@ module Guestfs (
   e2fsck_f,
   sleep,
   ntfs_3g_probe,
+  sh,
+  sh_lines,
+  glob_expand,
   scrub_device,
   scrub_file,
   scrub_freespace,
+  mkdtemp,
   wc_l,
   wc_w,
   wc_c,
+  head,
+  head_n,
+  tail,
+  tail_n,
+  df,
+  df_h,
   du,
+  initrd_list,
   mount_loop,
   mkswap_L,
   mkswap_U,
@@ -153,16 +260,31 @@ module Guestfs (
   mknod_c,
   umask,
   sfdiskM,
+  zfile,
   setxattr,
   lsetxattr,
   removexattr,
   lremovexattr,
+  mountpoints,
   mkmountpoint,
   rmmountpoint,
+  egrep,
+  fgrep,
+  grepi,
+  egrepi,
+  fgrepi,
+  zgrep,
+  zegrep,
+  zfgrep,
+  zgrepi,
+  zegrepi,
+  zfgrepi,
+  realpath,
   ln,
   ln_f,
   ln_s,
   ln_sf,
+  readlink,
   fallocate,
   swapon_device,
   swapoff_device,
@@ -176,8 +298,10 @@ module Guestfs (
   inotify_init,
   inotify_add_watch,
   inotify_rm_watch,
+  inotify_files,
   inotify_close,
   setcon,
+  getcon,
   mkfs_b,
   mke2journal,
   mke2journal_L,
@@ -186,7 +310,10 @@ module Guestfs (
   mke2fs_JL,
   mke2fs_JU,
   modprobe,
+  echo_daemon,
   find0,
+  case_sensitive_path,
+  vfs_type,
   truncate,
   truncate_size,
   utimens,
@@ -197,20 +324,28 @@ module Guestfs (
   part_disk,
   part_set_bootable,
   part_set_name,
+  part_get_parttype,
   fill,
   available,
   dd,
   filesize,
   lvrename,
   vgrename,
+  pvuuid,
+  vguuid,
+  lvuuid,
+  vgpvuuids,
+  vglvuuids,
   copy_size,
   zero_device,
   txz_in,
   txz_out,
   vgscan,
   part_del,
+  part_get_bootable,
   part_get_mbr_id,
   part_set_mbr_id,
+  checksum_device,
   lvresize_free,
   aug_clear,
   get_umask,
@@ -223,7 +358,10 @@ module Guestfs (
   resize2fs_size,
   pvresize_size,
   ntfsresize_size,
+  available_all_groups,
   fallocate64,
+  vfs_label,
+  vfs_uuid,
   lvm_set_filter,
   lvm_clear_filter,
   luks_open,
@@ -233,17 +371,36 @@ module Guestfs (
   luks_format_cipher,
   luks_add_key,
   luks_kill_slot,
+  is_lv,
+  findfs_uuid,
+  findfs_label,
+  is_chardev,
+  is_blockdev,
+  is_fifo,
+  is_symlink,
+  is_socket,
+  part_to_dev,
   upload_offset,
   download_offset,
   pwrite_device,
+  lvm_canonical_lv_name,
   resize2fs_M,
+  is_zero,
+  is_zero_device,
+  list_9p,
+  list_dm_devices,
   part_to_partnum,
+  list_md_devices,
+  md_detail,
   md_stop,
+  blkid,
+  llz,
   wipefs,
   ntfsclone_in,
   set_label,
   zero_free_space,
   lvcreate_free,
+  get_e2attrs,
   get_e2generation,
   set_e2generation,
   btrfs_subvolume_snapshot,
@@ -255,6 +412,7 @@ module Guestfs (
   btrfs_device_add,
   btrfs_device_delete,
   btrfs_set_seeding,
+  filesystem_available,
   device_index,
   nr_devices,
   pvchange_uuid,
@@ -265,28 +423,48 @@ module Guestfs (
   fill_dir,
   hivex_close,
   hivex_root,
+  hivex_node_name,
   hivex_node_get_child,
   hivex_node_parent,
   hivex_node_get_value,
+  hivex_value_key,
   hivex_value_type,
   hivex_commit,
   hivex_node_add_child,
   hivex_node_delete_child,
   hivex_node_set_value,
   rm_f,
+  list_disk_labels,
   mklost_and_found,
+  acl_get_file,
   acl_set_file,
   acl_delete_def_file,
+  cap_get_file,
   cap_set_file,
+  list_ldm_volumes,
+  list_ldm_partitions,
   ldmtool_create_all,
   ldmtool_remove_all,
-  rename
+  ldmtool_scan,
+  ldmtool_scan_devices,
+  ldmtool_diskgroup_name,
+  ldmtool_diskgroup_volumes,
+  ldmtool_diskgroup_disks,
+  ldmtool_volume_type,
+  ldmtool_volume_hint,
+  ldmtool_volume_partitions,
+  part_set_gpt_type,
+  part_get_gpt_type,
+  rename,
+  is_whole_device,
+  feature_available,
+  extlinux
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
 -- in Prelude.  We don't know which, so we hard-code a list
 -- here.
-import Prelude hiding (truncate)
+import Prelude hiding (head, tail, truncate)
 
 import Foreign
 import Foreign.C
@@ -299,20 +477,11 @@ data GuestfsS = GuestfsS            -- represents the opaque C struct
 type GuestfsP = Ptr GuestfsS        -- guestfs_h *
 type GuestfsH = ForeignPtr GuestfsS -- guestfs_h * with attached finalizer
 
--- XXX define properly later XXX
-data PV = PV
-data VG = VG
-data LV = LV
-data IntBool = IntBool
-data Stat = Stat
-data StatVFS = StatVFS
-data Hashtable = Hashtable
-
-foreign import ccall unsafe "guestfs_create" c_create
+foreign import ccall unsafe "guestfs.h guestfs_create" c_create
   :: IO GuestfsP
-foreign import ccall unsafe "&guestfs_close" c_close
+foreign import ccall unsafe "guestfs.h &guestfs_close" c_close
   :: FunPtr (GuestfsP -> IO ())
-foreign import ccall unsafe "guestfs_set_error_handler" c_set_error_handler
+foreign import ccall unsafe "guestfs.h guestfs_set_error_handler" c_set_error_handler
   :: GuestfsP -> Ptr CInt -> Ptr CInt -> IO ()
 
 create :: IO GuestfsH
@@ -322,7 +491,7 @@ create = do
   h <- newForeignPtr c_close p
   return h
 
-foreign import ccall unsafe "guestfs_last_error" c_last_error
+foreign import ccall unsafe "guestfs.h guestfs_last_error" c_last_error
   :: GuestfsP -> IO CString
 
 -- last_error :: GuestfsH -> IO (Maybe String)
@@ -330,17 +499,23 @@ foreign import ccall unsafe "guestfs_last_error" c_last_error
 --   str <- withForeignPtr h (\p -> c_last_error p)
 --   maybePeek peekCString str
 
-last_error :: GuestfsH -> IO (String)
+last_error :: GuestfsH -> IO String
 last_error h = do
   str <- withForeignPtr h (\p -> c_last_error p)
   if (str == nullPtr)
     then return "no error"
     else peekCString str
 
-foreign import ccall unsafe "guestfs_internal_test_rint" c_internal_test_rint
-  :: GuestfsP -> CString -> IO (CInt)
+assocListOfHashtable :: Eq a => [a] -> [(a,a)]
+assocListOfHashtable [] = []
+assocListOfHashtable [a] =
+  fail "RHashtable returned an odd number of elements"
+assocListOfHashtable (a:b:rest) = (a,b) : assocListOfHashtable rest
 
-internal_test_rint :: GuestfsH -> String -> IO (Int)
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rint" c_internal_test_rint
+  :: GuestfsP -> CString -> IO CInt
+
+internal_test_rint :: GuestfsH -> String -> IO Int
 internal_test_rint h val = do
   r <- withCString val $ \val -> withForeignPtr h (\p -> c_internal_test_rint p val)
   if (r == -1)
@@ -349,10 +524,10 @@ internal_test_rint h val = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_internal_test_rinterr" c_internal_test_rinterr
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rinterr" c_internal_test_rinterr
+  :: GuestfsP -> IO CInt
 
-internal_test_rinterr :: GuestfsH -> IO (Int)
+internal_test_rinterr :: GuestfsH -> IO Int
 internal_test_rinterr h = do
   r <- withForeignPtr h (\p -> c_internal_test_rinterr p)
   if (r == -1)
@@ -361,10 +536,10 @@ internal_test_rinterr h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_internal_test_rint64" c_internal_test_rint64
-  :: GuestfsP -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rint64" c_internal_test_rint64
+  :: GuestfsP -> CString -> IO Int64
 
-internal_test_rint64 :: GuestfsH -> String -> IO (Integer)
+internal_test_rint64 :: GuestfsH -> String -> IO Int64
 internal_test_rint64 h val = do
   r <- withCString val $ \val -> withForeignPtr h (\p -> c_internal_test_rint64 p val)
   if (r == -1)
@@ -373,10 +548,10 @@ internal_test_rint64 h val = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_internal_test_rint64err" c_internal_test_rint64err
-  :: GuestfsP -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rint64err" c_internal_test_rint64err
+  :: GuestfsP -> IO Int64
 
-internal_test_rint64err :: GuestfsH -> IO (Integer)
+internal_test_rint64err :: GuestfsH -> IO Int64
 internal_test_rint64err h = do
   r <- withForeignPtr h (\p -> c_internal_test_rint64err p)
   if (r == -1)
@@ -385,8 +560,134 @@ internal_test_rint64err h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_internal_test_set_output" c_internal_test_set_output
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rbool" c_internal_test_rbool
+  :: GuestfsP -> CString -> IO CInt
+
+internal_test_rbool :: GuestfsH -> String -> IO Bool
+internal_test_rbool h val = do
+  r <- withCString val $ \val -> withForeignPtr h (\p -> c_internal_test_rbool p val)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rboolerr" c_internal_test_rboolerr
+  :: GuestfsP -> IO CInt
+
+internal_test_rboolerr :: GuestfsH -> IO Bool
+internal_test_rboolerr h = do
+  r <- withForeignPtr h (\p -> c_internal_test_rboolerr p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rconststring" c_internal_test_rconststring
+  :: GuestfsP -> CString -> IO CString
+
+internal_test_rconststring :: GuestfsH -> String -> IO String
+internal_test_rconststring h val = do
+  r <- withCString val $ \val -> withForeignPtr h (\p -> c_internal_test_rconststring p val)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rconststringerr" c_internal_test_rconststringerr
+  :: GuestfsP -> IO CString
+
+internal_test_rconststringerr :: GuestfsH -> IO String
+internal_test_rconststringerr h = do
+  r <- withForeignPtr h (\p -> c_internal_test_rconststringerr p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rstring" c_internal_test_rstring
+  :: GuestfsP -> CString -> IO CString
+
+internal_test_rstring :: GuestfsH -> String -> IO String
+internal_test_rstring h val = do
+  r <- withCString val $ \val -> withForeignPtr h (\p -> c_internal_test_rstring p val)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rstringerr" c_internal_test_rstringerr
+  :: GuestfsP -> IO CString
+
+internal_test_rstringerr :: GuestfsH -> IO String
+internal_test_rstringerr h = do
+  r <- withForeignPtr h (\p -> c_internal_test_rstringerr p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rstringlist" c_internal_test_rstringlist
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+internal_test_rstringlist :: GuestfsH -> String -> IO [String]
+internal_test_rstringlist h val = do
+  r <- withCString val $ \val -> withForeignPtr h (\p -> c_internal_test_rstringlist p val)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rstringlisterr" c_internal_test_rstringlisterr
+  :: GuestfsP -> IO (Ptr CString)
+
+internal_test_rstringlisterr :: GuestfsH -> IO [String]
+internal_test_rstringlisterr h = do
+  r <- withForeignPtr h (\p -> c_internal_test_rstringlisterr p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rhashtable" c_internal_test_rhashtable
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+internal_test_rhashtable :: GuestfsH -> String -> IO [(String, String)]
+internal_test_rhashtable h val = do
+  r <- withCString val $ \val -> withForeignPtr h (\p -> c_internal_test_rhashtable p val)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_rhashtableerr" c_internal_test_rhashtableerr
+  :: GuestfsP -> IO (Ptr CString)
+
+internal_test_rhashtableerr :: GuestfsH -> IO [(String, String)]
+internal_test_rhashtableerr h = do
+  r <- withForeignPtr h (\p -> c_internal_test_rhashtableerr p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_set_output" c_internal_test_set_output
+  :: GuestfsP -> CString -> IO CInt
 
 internal_test_set_output :: GuestfsH -> String -> IO ()
 internal_test_set_output h filename = do
@@ -397,8 +698,8 @@ internal_test_set_output h filename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_internal_test_close_output" c_internal_test_close_output
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_internal_test_close_output" c_internal_test_close_output
+  :: GuestfsP -> IO CInt
 
 internal_test_close_output :: GuestfsH -> IO ()
 internal_test_close_output h = do
@@ -409,8 +710,8 @@ internal_test_close_output h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_launch" c_launch
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_launch" c_launch
+  :: GuestfsP -> IO CInt
 
 launch :: GuestfsH -> IO ()
 launch h = do
@@ -421,8 +722,8 @@ launch h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_wait_ready" c_wait_ready
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_wait_ready" c_wait_ready
+  :: GuestfsP -> IO CInt
 
 wait_ready :: GuestfsH -> IO ()
 wait_ready h = do
@@ -433,8 +734,8 @@ wait_ready h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_kill_subprocess" c_kill_subprocess
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_kill_subprocess" c_kill_subprocess
+  :: GuestfsP -> IO CInt
 
 kill_subprocess :: GuestfsH -> IO ()
 kill_subprocess h = do
@@ -445,8 +746,8 @@ kill_subprocess h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_add_cdrom" c_add_cdrom
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_add_cdrom" c_add_cdrom
+  :: GuestfsP -> CString -> IO CInt
 
 add_cdrom :: GuestfsH -> String -> IO ()
 add_cdrom h filename = do
@@ -457,8 +758,8 @@ add_cdrom h filename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_add_drive_ro" c_add_drive_ro
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_add_drive_ro" c_add_drive_ro
+  :: GuestfsP -> CString -> IO CInt
 
 add_drive_ro :: GuestfsH -> String -> IO ()
 add_drive_ro h filename = do
@@ -469,8 +770,8 @@ add_drive_ro h filename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_config" c_config
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_config" c_config
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 config :: GuestfsH -> String -> Maybe String -> IO ()
 config h qemuparam qemuvalue = do
@@ -481,8 +782,8 @@ config h qemuparam qemuvalue = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_qemu" c_set_qemu
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_qemu" c_set_qemu
+  :: GuestfsP -> CString -> IO CInt
 
 set_qemu :: GuestfsH -> Maybe String -> IO ()
 set_qemu h qemu = do
@@ -493,8 +794,20 @@ set_qemu h qemu = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_path" c_set_path
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_qemu" c_get_qemu
+  :: GuestfsP -> IO CString
+
+get_qemu :: GuestfsH -> IO String
+get_qemu h = do
+  r <- withForeignPtr h (\p -> c_get_qemu p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_path" c_set_path
+  :: GuestfsP -> CString -> IO CInt
 
 set_path :: GuestfsH -> Maybe String -> IO ()
 set_path h searchpath = do
@@ -505,8 +818,20 @@ set_path h searchpath = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_append" c_set_append
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_path" c_get_path
+  :: GuestfsP -> IO CString
+
+get_path :: GuestfsH -> IO String
+get_path h = do
+  r <- withForeignPtr h (\p -> c_get_path p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_append" c_set_append
+  :: GuestfsP -> CString -> IO CInt
 
 set_append :: GuestfsH -> Maybe String -> IO ()
 set_append h append = do
@@ -517,8 +842,8 @@ set_append h append = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_autosync" c_set_autosync
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_autosync" c_set_autosync
+  :: GuestfsP -> CInt -> IO CInt
 
 set_autosync :: GuestfsH -> Bool -> IO ()
 set_autosync h autosync = do
@@ -529,8 +854,20 @@ set_autosync h autosync = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_verbose" c_set_verbose
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_autosync" c_get_autosync
+  :: GuestfsP -> IO CInt
+
+get_autosync :: GuestfsH -> IO Bool
+get_autosync h = do
+  r <- withForeignPtr h (\p -> c_get_autosync p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_set_verbose" c_set_verbose
+  :: GuestfsP -> CInt -> IO CInt
 
 set_verbose :: GuestfsH -> Bool -> IO ()
 set_verbose h verbose = do
@@ -541,10 +878,70 @@ set_verbose h verbose = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_get_state" c_get_state
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_verbose" c_get_verbose
+  :: GuestfsP -> IO CInt
 
-get_state :: GuestfsH -> IO (Int)
+get_verbose :: GuestfsH -> IO Bool
+get_verbose h = do
+  r <- withForeignPtr h (\p -> c_get_verbose p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_ready" c_is_ready
+  :: GuestfsP -> IO CInt
+
+is_ready :: GuestfsH -> IO Bool
+is_ready h = do
+  r <- withForeignPtr h (\p -> c_is_ready p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_config" c_is_config
+  :: GuestfsP -> IO CInt
+
+is_config :: GuestfsH -> IO Bool
+is_config h = do
+  r <- withForeignPtr h (\p -> c_is_config p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_launching" c_is_launching
+  :: GuestfsP -> IO CInt
+
+is_launching :: GuestfsH -> IO Bool
+is_launching h = do
+  r <- withForeignPtr h (\p -> c_is_launching p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_busy" c_is_busy
+  :: GuestfsP -> IO CInt
+
+is_busy :: GuestfsH -> IO Bool
+is_busy h = do
+  r <- withForeignPtr h (\p -> c_is_busy p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_get_state" c_get_state
+  :: GuestfsP -> IO CInt
+
+get_state :: GuestfsH -> IO Int
 get_state h = do
   r <- withForeignPtr h (\p -> c_get_state p)
   if (r == -1)
@@ -553,8 +950,8 @@ get_state h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_set_memsize" c_set_memsize
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_memsize" c_set_memsize
+  :: GuestfsP -> CInt -> IO CInt
 
 set_memsize :: GuestfsH -> Int -> IO ()
 set_memsize h memsize = do
@@ -565,10 +962,10 @@ set_memsize h memsize = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_get_memsize" c_get_memsize
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_memsize" c_get_memsize
+  :: GuestfsP -> IO CInt
 
-get_memsize :: GuestfsH -> IO (Int)
+get_memsize :: GuestfsH -> IO Int
 get_memsize h = do
   r <- withForeignPtr h (\p -> c_get_memsize p)
   if (r == -1)
@@ -577,10 +974,10 @@ get_memsize h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_get_pid" c_get_pid
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_pid" c_get_pid
+  :: GuestfsP -> IO CInt
 
-get_pid :: GuestfsH -> IO (Int)
+get_pid :: GuestfsH -> IO Int
 get_pid h = do
   r <- withForeignPtr h (\p -> c_get_pid p)
   if (r == -1)
@@ -589,8 +986,8 @@ get_pid h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_set_selinux" c_set_selinux
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_selinux" c_set_selinux
+  :: GuestfsP -> CInt -> IO CInt
 
 set_selinux :: GuestfsH -> Bool -> IO ()
 set_selinux h selinux = do
@@ -601,8 +998,20 @@ set_selinux h selinux = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_trace" c_set_trace
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_selinux" c_get_selinux
+  :: GuestfsP -> IO CInt
+
+get_selinux :: GuestfsH -> IO Bool
+get_selinux h = do
+  r <- withForeignPtr h (\p -> c_get_selinux p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_set_trace" c_set_trace
+  :: GuestfsP -> CInt -> IO CInt
 
 set_trace :: GuestfsH -> Bool -> IO ()
 set_trace h trace = do
@@ -613,8 +1022,20 @@ set_trace h trace = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_direct" c_set_direct
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_trace" c_get_trace
+  :: GuestfsP -> IO CInt
+
+get_trace :: GuestfsH -> IO Bool
+get_trace h = do
+  r <- withForeignPtr h (\p -> c_get_trace p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_set_direct" c_set_direct
+  :: GuestfsP -> CInt -> IO CInt
 
 set_direct :: GuestfsH -> Bool -> IO ()
 set_direct h direct = do
@@ -625,8 +1046,20 @@ set_direct h direct = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_recovery_proc" c_set_recovery_proc
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_direct" c_get_direct
+  :: GuestfsP -> IO CInt
+
+get_direct :: GuestfsH -> IO Bool
+get_direct h = do
+  r <- withForeignPtr h (\p -> c_get_direct p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_set_recovery_proc" c_set_recovery_proc
+  :: GuestfsP -> CInt -> IO CInt
 
 set_recovery_proc :: GuestfsH -> Bool -> IO ()
 set_recovery_proc h recoveryproc = do
@@ -637,8 +1070,20 @@ set_recovery_proc h recoveryproc = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_add_drive_with_if" c_add_drive_with_if
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_recovery_proc" c_get_recovery_proc
+  :: GuestfsP -> IO CInt
+
+get_recovery_proc :: GuestfsH -> IO Bool
+get_recovery_proc h = do
+  r <- withForeignPtr h (\p -> c_get_recovery_proc p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_add_drive_with_if" c_add_drive_with_if
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 add_drive_with_if :: GuestfsH -> String -> String -> IO ()
 add_drive_with_if h filename iface = do
@@ -649,8 +1094,8 @@ add_drive_with_if h filename iface = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_add_drive_ro_with_if" c_add_drive_ro_with_if
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_add_drive_ro_with_if" c_add_drive_ro_with_if
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 add_drive_ro_with_if :: GuestfsH -> String -> String -> IO ()
 add_drive_ro_with_if h filename iface = do
@@ -661,10 +1106,70 @@ add_drive_ro_with_if h filename iface = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_inspect_get_major_version" c_inspect_get_major_version
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_file_architecture" c_file_architecture
+  :: GuestfsP -> CString -> IO CString
 
-inspect_get_major_version :: GuestfsH -> String -> IO (Int)
+file_architecture :: GuestfsH -> String -> IO String
+file_architecture h filename = do
+  r <- withCString filename $ \filename -> withForeignPtr h (\p -> c_file_architecture p filename)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_os" c_inspect_os
+  :: GuestfsP -> IO (Ptr CString)
+
+inspect_os :: GuestfsH -> IO [String]
+inspect_os h = do
+  r <- withForeignPtr h (\p -> c_inspect_os p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_type" c_inspect_get_type
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_type :: GuestfsH -> String -> IO String
+inspect_get_type h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_type p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_arch" c_inspect_get_arch
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_arch :: GuestfsH -> String -> IO String
+inspect_get_arch h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_arch p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_distro" c_inspect_get_distro
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_distro :: GuestfsH -> String -> IO String
+inspect_get_distro h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_distro p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_major_version" c_inspect_get_major_version
+  :: GuestfsP -> CString -> IO CInt
+
+inspect_get_major_version :: GuestfsH -> String -> IO Int
 inspect_get_major_version h root = do
   r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_major_version p root)
   if (r == -1)
@@ -673,10 +1178,10 @@ inspect_get_major_version h root = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_inspect_get_minor_version" c_inspect_get_minor_version
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_minor_version" c_inspect_get_minor_version
+  :: GuestfsP -> CString -> IO CInt
 
-inspect_get_minor_version :: GuestfsH -> String -> IO (Int)
+inspect_get_minor_version :: GuestfsH -> String -> IO Int
 inspect_get_minor_version h root = do
   r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_minor_version p root)
   if (r == -1)
@@ -685,8 +1190,47 @@ inspect_get_minor_version h root = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_set_network" c_set_network
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_product_name" c_inspect_get_product_name
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_product_name :: GuestfsH -> String -> IO String
+inspect_get_product_name h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_product_name p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_mountpoints" c_inspect_get_mountpoints
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+inspect_get_mountpoints :: GuestfsH -> String -> IO [(String, String)]
+inspect_get_mountpoints h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_mountpoints p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_filesystems" c_inspect_get_filesystems
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+inspect_get_filesystems :: GuestfsH -> String -> IO [String]
+inspect_get_filesystems h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_filesystems p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_set_network" c_set_network
+  :: GuestfsP -> CInt -> IO CInt
 
 set_network :: GuestfsH -> Bool -> IO ()
 set_network h network = do
@@ -697,20 +1241,242 @@ set_network h network = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_attach_method" c_set_attach_method
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_network" c_get_network
+  :: GuestfsP -> IO CInt
+
+get_network :: GuestfsH -> IO Bool
+get_network h = do
+  r <- withForeignPtr h (\p -> c_get_network p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_list_filesystems" c_list_filesystems
+  :: GuestfsP -> IO (Ptr CString)
+
+list_filesystems :: GuestfsH -> IO [(String, String)]
+list_filesystems h = do
+  r <- withForeignPtr h (\p -> c_list_filesystems p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_windows_systemroot" c_inspect_get_windows_systemroot
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_windows_systemroot :: GuestfsH -> String -> IO String
+inspect_get_windows_systemroot h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_windows_systemroot p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_roots" c_inspect_get_roots
+  :: GuestfsP -> IO (Ptr CString)
+
+inspect_get_roots :: GuestfsH -> IO [String]
+inspect_get_roots h = do
+  r <- withForeignPtr h (\p -> c_inspect_get_roots p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_debug_drives" c_debug_drives
+  :: GuestfsP -> IO (Ptr CString)
+
+debug_drives :: GuestfsH -> IO [String]
+debug_drives h = do
+  r <- withForeignPtr h (\p -> c_debug_drives p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_package_format" c_inspect_get_package_format
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_package_format :: GuestfsH -> String -> IO String
+inspect_get_package_format h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_package_format p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_package_management" c_inspect_get_package_management
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_package_management :: GuestfsH -> String -> IO String
+inspect_get_package_management h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_package_management p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_hostname" c_inspect_get_hostname
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_hostname :: GuestfsH -> String -> IO String
+inspect_get_hostname h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_hostname p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_format" c_inspect_get_format
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_format :: GuestfsH -> String -> IO String
+inspect_get_format h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_format p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_is_live" c_inspect_is_live
+  :: GuestfsP -> CString -> IO CInt
+
+inspect_is_live :: GuestfsH -> String -> IO Bool
+inspect_is_live h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_is_live p root)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_is_netinst" c_inspect_is_netinst
+  :: GuestfsP -> CString -> IO CInt
+
+inspect_is_netinst :: GuestfsH -> String -> IO Bool
+inspect_is_netinst h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_is_netinst p root)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_is_multipart" c_inspect_is_multipart
+  :: GuestfsP -> CString -> IO CInt
+
+inspect_is_multipart :: GuestfsH -> String -> IO Bool
+inspect_is_multipart h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_is_multipart p root)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_set_attach_method" c_set_attach_method
+  :: GuestfsP -> CString -> IO CInt
 
 set_attach_method :: GuestfsH -> String -> IO ()
-set_attach_method h attachmethod = do
-  r <- withCString attachmethod $ \attachmethod -> withForeignPtr h (\p -> c_set_attach_method p attachmethod)
+set_attach_method h backend = do
+  r <- withCString backend $ \backend -> withForeignPtr h (\p -> c_set_attach_method p backend)
   if (r == -1)
     then do
       err <- last_error h
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_pgroup" c_set_pgroup
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_attach_method" c_get_attach_method
+  :: GuestfsP -> IO CString
+
+get_attach_method :: GuestfsH -> IO String
+get_attach_method h = do
+  r <- withForeignPtr h (\p -> c_get_attach_method p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_backend" c_set_backend
+  :: GuestfsP -> CString -> IO CInt
+
+set_backend :: GuestfsH -> String -> IO ()
+set_backend h backend = do
+  r <- withCString backend $ \backend -> withForeignPtr h (\p -> c_set_backend p backend)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_get_backend" c_get_backend
+  :: GuestfsP -> IO CString
+
+get_backend :: GuestfsH -> IO String
+get_backend h = do
+  r <- withForeignPtr h (\p -> c_get_backend p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_product_variant" c_inspect_get_product_variant
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_product_variant :: GuestfsH -> String -> IO String
+inspect_get_product_variant h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_product_variant p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_windows_current_control_set" c_inspect_get_windows_current_control_set
+  :: GuestfsP -> CString -> IO CString
+
+inspect_get_windows_current_control_set :: GuestfsH -> String -> IO String
+inspect_get_windows_current_control_set h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_windows_current_control_set p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_inspect_get_drive_mappings" c_inspect_get_drive_mappings
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+inspect_get_drive_mappings :: GuestfsH -> String -> IO [(String, String)]
+inspect_get_drive_mappings h root = do
+  r <- withCString root $ \root -> withForeignPtr h (\p -> c_inspect_get_drive_mappings p root)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_set_pgroup" c_set_pgroup
+  :: GuestfsP -> CInt -> IO CInt
 
 set_pgroup :: GuestfsH -> Bool -> IO ()
 set_pgroup h pgroup = do
@@ -721,8 +1487,20 @@ set_pgroup h pgroup = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_smp" c_set_smp
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_pgroup" c_get_pgroup
+  :: GuestfsP -> IO CInt
+
+get_pgroup :: GuestfsH -> IO Bool
+get_pgroup h = do
+  r <- withForeignPtr h (\p -> c_get_pgroup p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_set_smp" c_set_smp
+  :: GuestfsP -> CInt -> IO CInt
 
 set_smp :: GuestfsH -> Int -> IO ()
 set_smp h smp = do
@@ -733,10 +1511,10 @@ set_smp h smp = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_get_smp" c_get_smp
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_smp" c_get_smp
+  :: GuestfsP -> IO CInt
 
-get_smp :: GuestfsH -> IO (Int)
+get_smp :: GuestfsH -> IO Int
 get_smp h = do
   r <- withForeignPtr h (\p -> c_get_smp p)
   if (r == -1)
@@ -745,8 +1523,8 @@ get_smp h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_mount_local_run" c_mount_local_run
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mount_local_run" c_mount_local_run
+  :: GuestfsP -> IO CInt
 
 mount_local_run :: GuestfsH -> IO ()
 mount_local_run h = do
@@ -757,10 +1535,10 @@ mount_local_run h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_max_disks" c_max_disks
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_max_disks" c_max_disks
+  :: GuestfsP -> IO CInt
 
-max_disks :: GuestfsH -> IO (Int)
+max_disks :: GuestfsH -> IO Int
 max_disks h = do
   r <- withForeignPtr h (\p -> c_max_disks p)
   if (r == -1)
@@ -769,8 +1547,20 @@ max_disks h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_shutdown" c_shutdown
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_canonical_device_name" c_canonical_device_name
+  :: GuestfsP -> CString -> IO CString
+
+canonical_device_name :: GuestfsH -> String -> IO String
+canonical_device_name h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_canonical_device_name p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_shutdown" c_shutdown
+  :: GuestfsP -> IO CInt
 
 shutdown :: GuestfsH -> IO ()
 shutdown h = do
@@ -781,8 +1571,44 @@ shutdown h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_write" c_write
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_cat" c_cat
+  :: GuestfsP -> CString -> IO CString
+
+cat :: GuestfsH -> String -> IO String
+cat h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_cat p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_find" c_find
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+find :: GuestfsH -> String -> IO [String]
+find h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_find p directory)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_read_lines" c_read_lines
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+read_lines :: GuestfsH -> String -> IO [String]
+read_lines h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_read_lines p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_write" c_write
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 write :: GuestfsH -> String -> String -> IO ()
 write h path content = do
@@ -793,8 +1619,8 @@ write h path content = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_write_append" c_write_append
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_write_append" c_write_append
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 write_append :: GuestfsH -> String -> String -> IO ()
 write_append h path content = do
@@ -805,10 +1631,58 @@ write_append h path content = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_disk_virtual_size" c_disk_virtual_size
-  :: GuestfsP -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_readlinklist" c_readlinklist
+  :: GuestfsP -> CString -> Ptr CString -> IO (Ptr CString)
 
-disk_virtual_size :: GuestfsH -> String -> IO (Integer)
+readlinklist :: GuestfsH -> String -> [String] -> IO [String]
+readlinklist h path names = do
+  r <- withCString path $ \path -> withMany withCString names $ \names -> withArray0 nullPtr names $ \names -> withForeignPtr h (\p -> c_readlinklist p path names)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_ls" c_ls
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+ls :: GuestfsH -> String -> IO [String]
+ls h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_ls p directory)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_hivex_value_utf8" c_hivex_value_utf8
+  :: GuestfsP -> Int64 -> IO CString
+
+hivex_value_utf8 :: GuestfsH -> Integer -> IO String
+hivex_value_utf8 h valueh = do
+  r <- withForeignPtr h (\p -> c_hivex_value_utf8 p (fromIntegral valueh))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_disk_format" c_disk_format
+  :: GuestfsP -> CString -> IO CString
+
+disk_format :: GuestfsH -> String -> IO String
+disk_format h filename = do
+  r <- withCString filename $ \filename -> withForeignPtr h (\p -> c_disk_format p filename)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_disk_virtual_size" c_disk_virtual_size
+  :: GuestfsP -> CString -> IO Int64
+
+disk_virtual_size :: GuestfsH -> String -> IO Int64
 disk_virtual_size h filename = do
   r <- withCString filename $ \filename -> withForeignPtr h (\p -> c_disk_virtual_size p filename)
   if (r == -1)
@@ -817,8 +1691,20 @@ disk_virtual_size h filename = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_remove_drive" c_remove_drive
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_disk_has_backing_file" c_disk_has_backing_file
+  :: GuestfsP -> CString -> IO CInt
+
+disk_has_backing_file :: GuestfsH -> String -> IO Bool
+disk_has_backing_file h filename = do
+  r <- withCString filename $ \filename -> withForeignPtr h (\p -> c_disk_has_backing_file p filename)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_remove_drive" c_remove_drive
+  :: GuestfsP -> CString -> IO CInt
 
 remove_drive :: GuestfsH -> String -> IO ()
 remove_drive h label = do
@@ -829,8 +1715,8 @@ remove_drive h label = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_libvirt_supported_credentials" c_set_libvirt_supported_credentials
-  :: GuestfsP -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_libvirt_supported_credentials" c_set_libvirt_supported_credentials
+  :: GuestfsP -> Ptr CString -> IO CInt
 
 set_libvirt_supported_credentials :: GuestfsH -> [String] -> IO ()
 set_libvirt_supported_credentials h creds = do
@@ -841,8 +1727,56 @@ set_libvirt_supported_credentials h creds = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_libvirt_requested_credential" c_set_libvirt_requested_credential
-  :: GuestfsP -> CInt -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_libvirt_requested_credentials" c_get_libvirt_requested_credentials
+  :: GuestfsP -> IO (Ptr CString)
+
+get_libvirt_requested_credentials :: GuestfsH -> IO [String]
+get_libvirt_requested_credentials h = do
+  r <- withForeignPtr h (\p -> c_get_libvirt_requested_credentials p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_get_libvirt_requested_credential_prompt" c_get_libvirt_requested_credential_prompt
+  :: GuestfsP -> CInt -> IO CString
+
+get_libvirt_requested_credential_prompt :: GuestfsH -> Int -> IO String
+get_libvirt_requested_credential_prompt h index = do
+  r <- withForeignPtr h (\p -> c_get_libvirt_requested_credential_prompt p (fromIntegral index))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_get_libvirt_requested_credential_challenge" c_get_libvirt_requested_credential_challenge
+  :: GuestfsP -> CInt -> IO CString
+
+get_libvirt_requested_credential_challenge :: GuestfsH -> Int -> IO String
+get_libvirt_requested_credential_challenge h index = do
+  r <- withForeignPtr h (\p -> c_get_libvirt_requested_credential_challenge p (fromIntegral index))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_get_libvirt_requested_credential_defresult" c_get_libvirt_requested_credential_defresult
+  :: GuestfsP -> CInt -> IO CString
+
+get_libvirt_requested_credential_defresult :: GuestfsH -> Int -> IO String
+get_libvirt_requested_credential_defresult h index = do
+  r <- withForeignPtr h (\p -> c_get_libvirt_requested_credential_defresult p (fromIntegral index))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_libvirt_requested_credential" c_set_libvirt_requested_credential
+  :: GuestfsP -> CInt -> CString -> CInt -> IO CInt
 
 set_libvirt_requested_credential :: GuestfsH -> Int -> String -> IO ()
 set_libvirt_requested_credential h index cred = do
@@ -853,8 +1787,8 @@ set_libvirt_requested_credential h index cred = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_parse_environment" c_parse_environment
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_parse_environment" c_parse_environment
+  :: GuestfsP -> IO CInt
 
 parse_environment :: GuestfsH -> IO ()
 parse_environment h = do
@@ -865,8 +1799,8 @@ parse_environment h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_parse_environment_list" c_parse_environment_list
-  :: GuestfsP -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_parse_environment_list" c_parse_environment_list
+  :: GuestfsP -> Ptr CString -> IO CInt
 
 parse_environment_list :: GuestfsH -> [String] -> IO ()
 parse_environment_list h environment = do
@@ -877,8 +1811,8 @@ parse_environment_list h environment = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_tmpdir" c_set_tmpdir
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_tmpdir" c_set_tmpdir
+  :: GuestfsP -> CString -> IO CInt
 
 set_tmpdir :: GuestfsH -> Maybe String -> IO ()
 set_tmpdir h tmpdir = do
@@ -889,8 +1823,20 @@ set_tmpdir h tmpdir = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_cachedir" c_set_cachedir
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_tmpdir" c_get_tmpdir
+  :: GuestfsP -> IO CString
+
+get_tmpdir :: GuestfsH -> IO String
+get_tmpdir h = do
+  r <- withForeignPtr h (\p -> c_get_tmpdir p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_cachedir" c_set_cachedir
+  :: GuestfsP -> CString -> IO CInt
 
 set_cachedir :: GuestfsH -> Maybe String -> IO ()
 set_cachedir h cachedir = do
@@ -901,20 +1847,68 @@ set_cachedir h cachedir = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mount" c_mount
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_cachedir" c_get_cachedir
+  :: GuestfsP -> IO CString
 
-mount :: GuestfsH -> String -> String -> IO ()
-mount h device mountpoint = do
-  r <- withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount p device mountpoint)
+get_cachedir :: GuestfsH -> IO String
+get_cachedir h = do
+  r <- withForeignPtr h (\p -> c_get_cachedir p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_user_cancel" c_user_cancel
+  :: GuestfsP -> IO CInt
+
+user_cancel :: GuestfsH -> IO ()
+user_cancel h = do
+  r <- withForeignPtr h (\p -> c_user_cancel p)
   if (r == -1)
     then do
       err <- last_error h
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_sync" c_sync
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_program" c_set_program
+  :: GuestfsP -> CString -> IO CInt
+
+set_program :: GuestfsH -> String -> IO ()
+set_program h program = do
+  r <- withCString program $ \program -> withForeignPtr h (\p -> c_set_program p program)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_get_program" c_get_program
+  :: GuestfsP -> IO CString
+
+get_program :: GuestfsH -> IO String
+get_program h = do
+  r <- withForeignPtr h (\p -> c_get_program p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_mount" c_mount
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+mount :: GuestfsH -> String -> String -> IO ()
+mount h mountable mountpoint = do
+  r <- withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount p mountable mountpoint)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_sync" c_sync
+  :: GuestfsP -> IO CInt
 
 sync :: GuestfsH -> IO ()
 sync h = do
@@ -925,8 +1919,8 @@ sync h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_touch" c_touch
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_touch" c_touch
+  :: GuestfsP -> CString -> IO CInt
 
 touch :: GuestfsH -> String -> IO ()
 touch h path = do
@@ -937,8 +1931,80 @@ touch h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_init" c_aug_init
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ll" c_ll
+  :: GuestfsP -> CString -> IO CString
+
+ll :: GuestfsH -> String -> IO String
+ll h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_ll p directory)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_list_devices" c_list_devices
+  :: GuestfsP -> IO (Ptr CString)
+
+list_devices :: GuestfsH -> IO [String]
+list_devices h = do
+  r <- withForeignPtr h (\p -> c_list_devices p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_list_partitions" c_list_partitions
+  :: GuestfsP -> IO (Ptr CString)
+
+list_partitions :: GuestfsH -> IO [String]
+list_partitions h = do
+  r <- withForeignPtr h (\p -> c_list_partitions p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_pvs" c_pvs
+  :: GuestfsP -> IO (Ptr CString)
+
+pvs :: GuestfsH -> IO [String]
+pvs h = do
+  r <- withForeignPtr h (\p -> c_pvs p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_vgs" c_vgs
+  :: GuestfsP -> IO (Ptr CString)
+
+vgs :: GuestfsH -> IO [String]
+vgs h = do
+  r <- withForeignPtr h (\p -> c_vgs p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_lvs" c_lvs
+  :: GuestfsP -> IO (Ptr CString)
+
+lvs :: GuestfsH -> IO [String]
+lvs h = do
+  r <- withForeignPtr h (\p -> c_lvs p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_aug_init" c_aug_init
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 aug_init :: GuestfsH -> String -> Int -> IO ()
 aug_init h root flags = do
@@ -949,8 +2015,8 @@ aug_init h root flags = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_close" c_aug_close
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_close" c_aug_close
+  :: GuestfsP -> IO CInt
 
 aug_close :: GuestfsH -> IO ()
 aug_close h = do
@@ -961,10 +2027,10 @@ aug_close h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_defvar" c_aug_defvar
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_defvar" c_aug_defvar
+  :: GuestfsP -> CString -> CString -> IO CInt
 
-aug_defvar :: GuestfsH -> String -> Maybe String -> IO (Int)
+aug_defvar :: GuestfsH -> String -> Maybe String -> IO Int
 aug_defvar h name expr = do
   r <- withCString name $ \name -> maybeWith withCString expr $ \expr -> withForeignPtr h (\p -> c_aug_defvar p name expr)
   if (r == -1)
@@ -973,8 +2039,20 @@ aug_defvar h name expr = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_aug_set" c_aug_set
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_get" c_aug_get
+  :: GuestfsP -> CString -> IO CString
+
+aug_get :: GuestfsH -> String -> IO String
+aug_get h augpath = do
+  r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_get p augpath)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_aug_set" c_aug_set
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 aug_set :: GuestfsH -> String -> String -> IO ()
 aug_set h augpath val = do
@@ -985,8 +2063,8 @@ aug_set h augpath val = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_insert" c_aug_insert
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_insert" c_aug_insert
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 aug_insert :: GuestfsH -> String -> String -> Bool -> IO ()
 aug_insert h augpath label before = do
@@ -997,10 +2075,10 @@ aug_insert h augpath label before = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_rm" c_aug_rm
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_rm" c_aug_rm
+  :: GuestfsP -> CString -> IO CInt
 
-aug_rm :: GuestfsH -> String -> IO (Int)
+aug_rm :: GuestfsH -> String -> IO Int
 aug_rm h augpath = do
   r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_rm p augpath)
   if (r == -1)
@@ -1009,8 +2087,8 @@ aug_rm h augpath = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_aug_mv" c_aug_mv
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_mv" c_aug_mv
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 aug_mv :: GuestfsH -> String -> String -> IO ()
 aug_mv h src dest = do
@@ -1021,8 +2099,20 @@ aug_mv h src dest = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_save" c_aug_save
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_match" c_aug_match
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+aug_match :: GuestfsH -> String -> IO [String]
+aug_match h augpath = do
+  r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_match p augpath)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_aug_save" c_aug_save
+  :: GuestfsP -> IO CInt
 
 aug_save :: GuestfsH -> IO ()
 aug_save h = do
@@ -1033,8 +2123,8 @@ aug_save h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_load" c_aug_load
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_load" c_aug_load
+  :: GuestfsP -> IO CInt
 
 aug_load :: GuestfsH -> IO ()
 aug_load h = do
@@ -1045,8 +2135,20 @@ aug_load h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_rm" c_rm
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_ls" c_aug_ls
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+aug_ls :: GuestfsH -> String -> IO [String]
+aug_ls h augpath = do
+  r <- withCString augpath $ \augpath -> withForeignPtr h (\p -> c_aug_ls p augpath)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_rm" c_rm
+  :: GuestfsP -> CString -> IO CInt
 
 rm :: GuestfsH -> String -> IO ()
 rm h path = do
@@ -1057,8 +2159,8 @@ rm h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_rmdir" c_rmdir
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_rmdir" c_rmdir
+  :: GuestfsP -> CString -> IO CInt
 
 rmdir :: GuestfsH -> String -> IO ()
 rmdir h path = do
@@ -1069,8 +2171,8 @@ rmdir h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_rm_rf" c_rm_rf
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_rm_rf" c_rm_rf
+  :: GuestfsP -> CString -> IO CInt
 
 rm_rf :: GuestfsH -> String -> IO ()
 rm_rf h path = do
@@ -1081,8 +2183,8 @@ rm_rf h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkdir" c_mkdir
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkdir" c_mkdir
+  :: GuestfsP -> CString -> IO CInt
 
 mkdir :: GuestfsH -> String -> IO ()
 mkdir h path = do
@@ -1093,8 +2195,8 @@ mkdir h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkdir_p" c_mkdir_p
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkdir_p" c_mkdir_p
+  :: GuestfsP -> CString -> IO CInt
 
 mkdir_p :: GuestfsH -> String -> IO ()
 mkdir_p h path = do
@@ -1105,8 +2207,8 @@ mkdir_p h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_chmod" c_chmod
-  :: GuestfsP -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_chmod" c_chmod
+  :: GuestfsP -> CInt -> CString -> IO CInt
 
 chmod :: GuestfsH -> Int -> String -> IO ()
 chmod h mode path = do
@@ -1117,8 +2219,8 @@ chmod h mode path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_chown" c_chown
-  :: GuestfsP -> CInt -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_chown" c_chown
+  :: GuestfsP -> CInt -> CInt -> CString -> IO CInt
 
 chown :: GuestfsH -> Int -> Int -> String -> IO ()
 chown h owner group path = do
@@ -1129,8 +2231,44 @@ chown h owner group path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_pvcreate" c_pvcreate
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_exists" c_exists
+  :: GuestfsP -> CString -> IO CInt
+
+exists :: GuestfsH -> String -> IO Bool
+exists h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_exists p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_file" c_is_file
+  :: GuestfsP -> CString -> IO CInt
+
+is_file :: GuestfsH -> String -> IO Bool
+is_file h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_file p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_dir" c_is_dir
+  :: GuestfsP -> CString -> IO CInt
+
+is_dir :: GuestfsH -> String -> IO Bool
+is_dir h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_dir p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_pvcreate" c_pvcreate
+  :: GuestfsP -> CString -> IO CInt
 
 pvcreate :: GuestfsH -> String -> IO ()
 pvcreate h device = do
@@ -1141,8 +2279,8 @@ pvcreate h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vgcreate" c_vgcreate
-  :: GuestfsP -> CString -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vgcreate" c_vgcreate
+  :: GuestfsP -> CString -> Ptr CString -> IO CInt
 
 vgcreate :: GuestfsH -> String -> [String] -> IO ()
 vgcreate h volgroup physvols = do
@@ -1153,8 +2291,8 @@ vgcreate h volgroup physvols = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvcreate" c_lvcreate
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lvcreate" c_lvcreate
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 lvcreate :: GuestfsH -> String -> String -> Int -> IO ()
 lvcreate h logvol volgroup mbytes = do
@@ -1165,8 +2303,8 @@ lvcreate h logvol volgroup mbytes = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_sfdisk" c_sfdisk
-  :: GuestfsP -> CString -> CInt -> CInt -> CInt -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_sfdisk" c_sfdisk
+  :: GuestfsP -> CString -> CInt -> CInt -> CInt -> Ptr CString -> IO CInt
 
 sfdisk :: GuestfsH -> String -> Int -> Int -> Int -> [String] -> IO ()
 sfdisk h device cyls heads sectors lines = do
@@ -1177,8 +2315,8 @@ sfdisk h device cyls heads sectors lines = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_write_file" c_write_file
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_write_file" c_write_file
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 write_file :: GuestfsH -> String -> String -> Int -> IO ()
 write_file h path content size = do
@@ -1189,8 +2327,20 @@ write_file h path content size = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_umount_all" c_umount_all
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mounts" c_mounts
+  :: GuestfsP -> IO (Ptr CString)
+
+mounts :: GuestfsH -> IO [String]
+mounts h = do
+  r <- withForeignPtr h (\p -> c_mounts p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_umount_all" c_umount_all
+  :: GuestfsP -> IO CInt
 
 umount_all :: GuestfsH -> IO ()
 umount_all h = do
@@ -1201,8 +2351,8 @@ umount_all h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvm_remove_all" c_lvm_remove_all
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lvm_remove_all" c_lvm_remove_all
+  :: GuestfsP -> IO CInt
 
 lvm_remove_all :: GuestfsH -> IO ()
 lvm_remove_all h = do
@@ -1213,8 +2363,59 @@ lvm_remove_all h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_blockdev_setro" c_blockdev_setro
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_file" c_file
+  :: GuestfsP -> CString -> IO CString
+
+file :: GuestfsH -> String -> IO String
+file h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_file p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_command" c_command
+  :: GuestfsP -> Ptr CString -> IO CString
+
+command :: GuestfsH -> [String] -> IO String
+command h arguments = do
+  r <- withMany withCString arguments $ \arguments -> withArray0 nullPtr arguments $ \arguments -> withForeignPtr h (\p -> c_command p arguments)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_command_lines" c_command_lines
+  :: GuestfsP -> Ptr CString -> IO (Ptr CString)
+
+command_lines :: GuestfsH -> [String] -> IO [String]
+command_lines h arguments = do
+  r <- withMany withCString arguments $ \arguments -> withArray0 nullPtr arguments $ \arguments -> withForeignPtr h (\p -> c_command_lines p arguments)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_tune2fs_l" c_tune2fs_l
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+tune2fs_l :: GuestfsH -> String -> IO [(String, String)]
+tune2fs_l h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_tune2fs_l p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_setro" c_blockdev_setro
+  :: GuestfsP -> CString -> IO CInt
 
 blockdev_setro :: GuestfsH -> String -> IO ()
 blockdev_setro h device = do
@@ -1225,8 +2426,8 @@ blockdev_setro h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_blockdev_setrw" c_blockdev_setrw
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_setrw" c_blockdev_setrw
+  :: GuestfsP -> CString -> IO CInt
 
 blockdev_setrw :: GuestfsH -> String -> IO ()
 blockdev_setrw h device = do
@@ -1237,10 +2438,22 @@ blockdev_setrw h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_blockdev_getss" c_blockdev_getss
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_getro" c_blockdev_getro
+  :: GuestfsP -> CString -> IO CInt
 
-blockdev_getss :: GuestfsH -> String -> IO (Int)
+blockdev_getro :: GuestfsH -> String -> IO Bool
+blockdev_getro h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_blockdev_getro p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_getss" c_blockdev_getss
+  :: GuestfsP -> CString -> IO CInt
+
+blockdev_getss :: GuestfsH -> String -> IO Int
 blockdev_getss h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_blockdev_getss p device)
   if (r == -1)
@@ -1249,10 +2462,10 @@ blockdev_getss h device = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_blockdev_getbsz" c_blockdev_getbsz
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_getbsz" c_blockdev_getbsz
+  :: GuestfsP -> CString -> IO CInt
 
-blockdev_getbsz :: GuestfsH -> String -> IO (Int)
+blockdev_getbsz :: GuestfsH -> String -> IO Int
 blockdev_getbsz h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_blockdev_getbsz p device)
   if (r == -1)
@@ -1261,8 +2474,8 @@ blockdev_getbsz h device = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_blockdev_setbsz" c_blockdev_setbsz
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_setbsz" c_blockdev_setbsz
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 blockdev_setbsz :: GuestfsH -> String -> Int -> IO ()
 blockdev_setbsz h device blocksize = do
@@ -1273,10 +2486,10 @@ blockdev_setbsz h device blocksize = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_blockdev_getsz" c_blockdev_getsz
-  :: GuestfsP -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_getsz" c_blockdev_getsz
+  :: GuestfsP -> CString -> IO Int64
 
-blockdev_getsz :: GuestfsH -> String -> IO (Integer)
+blockdev_getsz :: GuestfsH -> String -> IO Int64
 blockdev_getsz h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_blockdev_getsz p device)
   if (r == -1)
@@ -1285,10 +2498,10 @@ blockdev_getsz h device = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_blockdev_getsize64" c_blockdev_getsize64
-  :: GuestfsP -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_getsize64" c_blockdev_getsize64
+  :: GuestfsP -> CString -> IO Int64
 
-blockdev_getsize64 :: GuestfsH -> String -> IO (Integer)
+blockdev_getsize64 :: GuestfsH -> String -> IO Int64
 blockdev_getsize64 h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_blockdev_getsize64 p device)
   if (r == -1)
@@ -1297,8 +2510,8 @@ blockdev_getsize64 h device = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_blockdev_flushbufs" c_blockdev_flushbufs
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_flushbufs" c_blockdev_flushbufs
+  :: GuestfsP -> CString -> IO CInt
 
 blockdev_flushbufs :: GuestfsH -> String -> IO ()
 blockdev_flushbufs h device = do
@@ -1309,8 +2522,8 @@ blockdev_flushbufs h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_blockdev_rereadpt" c_blockdev_rereadpt
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_blockdev_rereadpt" c_blockdev_rereadpt
+  :: GuestfsP -> CString -> IO CInt
 
 blockdev_rereadpt :: GuestfsH -> String -> IO ()
 blockdev_rereadpt h device = do
@@ -1321,8 +2534,8 @@ blockdev_rereadpt h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_upload" c_upload
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_upload" c_upload
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 upload :: GuestfsH -> String -> String -> IO ()
 upload h filename remotefilename = do
@@ -1333,8 +2546,8 @@ upload h filename remotefilename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_download" c_download
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_download" c_download
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 download :: GuestfsH -> String -> String -> IO ()
 download h remotefilename filename = do
@@ -1345,8 +2558,20 @@ download h remotefilename filename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_tgz_in" c_tgz_in
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_checksum" c_checksum
+  :: GuestfsP -> CString -> CString -> IO CString
+
+checksum :: GuestfsH -> String -> String -> IO String
+checksum h csumtype path = do
+  r <- withCString csumtype $ \csumtype -> withCString path $ \path -> withForeignPtr h (\p -> c_checksum p csumtype path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_tgz_in" c_tgz_in
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 tgz_in :: GuestfsH -> String -> String -> IO ()
 tgz_in h tarball directory = do
@@ -1357,8 +2582,8 @@ tgz_in h tarball directory = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_tgz_out" c_tgz_out
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_tgz_out" c_tgz_out
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 tgz_out :: GuestfsH -> String -> String -> IO ()
 tgz_out h directory tarball = do
@@ -1369,44 +2594,56 @@ tgz_out h directory tarball = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mount_ro" c_mount_ro
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mount_ro" c_mount_ro
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 mount_ro :: GuestfsH -> String -> String -> IO ()
-mount_ro h device mountpoint = do
-  r <- withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_ro p device mountpoint)
+mount_ro h mountable mountpoint = do
+  r <- withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_ro p mountable mountpoint)
   if (r == -1)
     then do
       err <- last_error h
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mount_options" c_mount_options
-  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mount_options" c_mount_options
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
 
 mount_options :: GuestfsH -> String -> String -> String -> IO ()
-mount_options h options device mountpoint = do
-  r <- withCString options $ \options -> withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_options p options device mountpoint)
+mount_options h options mountable mountpoint = do
+  r <- withCString options $ \options -> withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_options p options mountable mountpoint)
   if (r == -1)
     then do
       err <- last_error h
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mount_vfs" c_mount_vfs
-  :: GuestfsP -> CString -> CString -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mount_vfs" c_mount_vfs
+  :: GuestfsP -> CString -> CString -> CString -> CString -> IO CInt
 
 mount_vfs :: GuestfsH -> String -> String -> String -> String -> IO ()
-mount_vfs h options vfstype device mountpoint = do
-  r <- withCString options $ \options -> withCString vfstype $ \vfstype -> withCString device $ \device -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_vfs p options vfstype device mountpoint)
+mount_vfs h options vfstype mountable mountpoint = do
+  r <- withCString options $ \options -> withCString vfstype $ \vfstype -> withCString mountable $ \mountable -> withCString mountpoint $ \mountpoint -> withForeignPtr h (\p -> c_mount_vfs p options vfstype mountable mountpoint)
   if (r == -1)
     then do
       err <- last_error h
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvremove" c_lvremove
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_debug" c_debug
+  :: GuestfsP -> CString -> Ptr CString -> IO CString
+
+debug :: GuestfsH -> String -> [String] -> IO String
+debug h subcmd extraargs = do
+  r <- withCString subcmd $ \subcmd -> withMany withCString extraargs $ \extraargs -> withArray0 nullPtr extraargs $ \extraargs -> withForeignPtr h (\p -> c_debug p subcmd extraargs)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_lvremove" c_lvremove
+  :: GuestfsP -> CString -> IO CInt
 
 lvremove :: GuestfsH -> String -> IO ()
 lvremove h device = do
@@ -1417,8 +2654,8 @@ lvremove h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vgremove" c_vgremove
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vgremove" c_vgremove
+  :: GuestfsP -> CString -> IO CInt
 
 vgremove :: GuestfsH -> String -> IO ()
 vgremove h vgname = do
@@ -1429,8 +2666,8 @@ vgremove h vgname = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_pvremove" c_pvremove
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pvremove" c_pvremove
+  :: GuestfsP -> CString -> IO CInt
 
 pvremove :: GuestfsH -> String -> IO ()
 pvremove h device = do
@@ -1441,8 +2678,8 @@ pvremove h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_e2label" c_set_e2label
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_e2label" c_set_e2label
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 set_e2label :: GuestfsH -> String -> String -> IO ()
 set_e2label h device label = do
@@ -1453,8 +2690,20 @@ set_e2label h device label = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_e2uuid" c_set_e2uuid
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_e2label" c_get_e2label
+  :: GuestfsP -> CString -> IO CString
+
+get_e2label :: GuestfsH -> String -> IO String
+get_e2label h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_get_e2label p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_e2uuid" c_set_e2uuid
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 set_e2uuid :: GuestfsH -> String -> String -> IO ()
 set_e2uuid h device uuid = do
@@ -1465,10 +2714,22 @@ set_e2uuid h device uuid = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_fsck" c_fsck
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_e2uuid" c_get_e2uuid
+  :: GuestfsP -> CString -> IO CString
 
-fsck :: GuestfsH -> String -> String -> IO (Int)
+get_e2uuid :: GuestfsH -> String -> IO String
+get_e2uuid h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_get_e2uuid p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_fsck" c_fsck
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+fsck :: GuestfsH -> String -> String -> IO Int
 fsck h fstype device = do
   r <- withCString fstype $ \fstype -> withCString device $ \device -> withForeignPtr h (\p -> c_fsck p fstype device)
   if (r == -1)
@@ -1477,8 +2738,8 @@ fsck h fstype device = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_zero" c_zero
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_zero" c_zero
+  :: GuestfsP -> CString -> IO CInt
 
 zero :: GuestfsH -> String -> IO ()
 zero h device = do
@@ -1489,8 +2750,8 @@ zero h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_grub_install" c_grub_install
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_grub_install" c_grub_install
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 grub_install :: GuestfsH -> String -> String -> IO ()
 grub_install h root device = do
@@ -1501,8 +2762,8 @@ grub_install h root device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_cp" c_cp
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_cp" c_cp
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 cp :: GuestfsH -> String -> String -> IO ()
 cp h src dest = do
@@ -1513,8 +2774,8 @@ cp h src dest = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_cp_a" c_cp_a
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_cp_a" c_cp_a
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 cp_a :: GuestfsH -> String -> String -> IO ()
 cp_a h src dest = do
@@ -1525,8 +2786,8 @@ cp_a h src dest = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mv" c_mv
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mv" c_mv
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 mv :: GuestfsH -> String -> String -> IO ()
 mv h src dest = do
@@ -1537,8 +2798,8 @@ mv h src dest = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_drop_caches" c_drop_caches
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_drop_caches" c_drop_caches
+  :: GuestfsP -> CInt -> IO CInt
 
 drop_caches :: GuestfsH -> Int -> IO ()
 drop_caches h whattodrop = do
@@ -1549,8 +2810,20 @@ drop_caches h whattodrop = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ping_daemon" c_ping_daemon
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_dmesg" c_dmesg
+  :: GuestfsP -> IO CString
+
+dmesg :: GuestfsH -> IO String
+dmesg h = do
+  r <- withForeignPtr h (\p -> c_dmesg p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_ping_daemon" c_ping_daemon
+  :: GuestfsP -> IO CInt
 
 ping_daemon :: GuestfsH -> IO ()
 ping_daemon h = do
@@ -1561,8 +2834,56 @@ ping_daemon h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_zerofree" c_zerofree
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_equal" c_equal
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+equal :: GuestfsH -> String -> String -> IO Bool
+equal h file1 file2 = do
+  r <- withCString file1 $ \file1 -> withCString file2 $ \file2 -> withForeignPtr h (\p -> c_equal p file1 file2)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_strings" c_strings
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+strings :: GuestfsH -> String -> IO [String]
+strings h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_strings p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_strings_e" c_strings_e
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+strings_e :: GuestfsH -> String -> String -> IO [String]
+strings_e h encoding path = do
+  r <- withCString encoding $ \encoding -> withCString path $ \path -> withForeignPtr h (\p -> c_strings_e p encoding path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_hexdump" c_hexdump
+  :: GuestfsP -> CString -> IO CString
+
+hexdump :: GuestfsH -> String -> IO String
+hexdump h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_hexdump p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_zerofree" c_zerofree
+  :: GuestfsP -> CString -> IO CInt
 
 zerofree :: GuestfsH -> String -> IO ()
 zerofree h device = do
@@ -1573,8 +2894,8 @@ zerofree h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_pvresize" c_pvresize
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pvresize" c_pvresize
+  :: GuestfsP -> CString -> IO CInt
 
 pvresize :: GuestfsH -> String -> IO ()
 pvresize h device = do
@@ -1585,8 +2906,8 @@ pvresize h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_sfdisk_N" c_sfdisk_N
-  :: GuestfsP -> CString -> CInt -> CInt -> CInt -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_sfdisk_N" c_sfdisk_N
+  :: GuestfsP -> CString -> CInt -> CInt -> CInt -> CInt -> CString -> IO CInt
 
 sfdisk_N :: GuestfsH -> String -> Int -> Int -> Int -> Int -> String -> IO ()
 sfdisk_N h device partnum cyls heads sectors line = do
@@ -1597,8 +2918,44 @@ sfdisk_N h device partnum cyls heads sectors line = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vg_activate_all" c_vg_activate_all
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_sfdisk_l" c_sfdisk_l
+  :: GuestfsP -> CString -> IO CString
+
+sfdisk_l :: GuestfsH -> String -> IO String
+sfdisk_l h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_sfdisk_l p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_sfdisk_kernel_geometry" c_sfdisk_kernel_geometry
+  :: GuestfsP -> CString -> IO CString
+
+sfdisk_kernel_geometry :: GuestfsH -> String -> IO String
+sfdisk_kernel_geometry h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_sfdisk_kernel_geometry p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_sfdisk_disk_geometry" c_sfdisk_disk_geometry
+  :: GuestfsP -> CString -> IO CString
+
+sfdisk_disk_geometry :: GuestfsH -> String -> IO String
+sfdisk_disk_geometry h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_sfdisk_disk_geometry p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_vg_activate_all" c_vg_activate_all
+  :: GuestfsP -> CInt -> IO CInt
 
 vg_activate_all :: GuestfsH -> Bool -> IO ()
 vg_activate_all h activate = do
@@ -1609,8 +2966,8 @@ vg_activate_all h activate = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vg_activate" c_vg_activate
-  :: GuestfsP -> CInt -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vg_activate" c_vg_activate
+  :: GuestfsP -> CInt -> Ptr CString -> IO CInt
 
 vg_activate :: GuestfsH -> Bool -> [String] -> IO ()
 vg_activate h activate volgroups = do
@@ -1621,8 +2978,8 @@ vg_activate h activate volgroups = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvresize" c_lvresize
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lvresize" c_lvresize
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 lvresize :: GuestfsH -> String -> Int -> IO ()
 lvresize h device mbytes = do
@@ -1633,8 +2990,8 @@ lvresize h device mbytes = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_resize2fs" c_resize2fs
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_resize2fs" c_resize2fs
+  :: GuestfsP -> CString -> IO CInt
 
 resize2fs :: GuestfsH -> String -> IO ()
 resize2fs h device = do
@@ -1645,8 +3002,8 @@ resize2fs h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_e2fsck_f" c_e2fsck_f
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_e2fsck_f" c_e2fsck_f
+  :: GuestfsP -> CString -> IO CInt
 
 e2fsck_f :: GuestfsH -> String -> IO ()
 e2fsck_f h device = do
@@ -1657,8 +3014,8 @@ e2fsck_f h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_sleep" c_sleep
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_sleep" c_sleep
+  :: GuestfsP -> CInt -> IO CInt
 
 sleep :: GuestfsH -> Int -> IO ()
 sleep h secs = do
@@ -1669,10 +3026,10 @@ sleep h secs = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ntfs_3g_probe" c_ntfs_3g_probe
-  :: GuestfsP -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ntfs_3g_probe" c_ntfs_3g_probe
+  :: GuestfsP -> CInt -> CString -> IO CInt
 
-ntfs_3g_probe :: GuestfsH -> Bool -> String -> IO (Int)
+ntfs_3g_probe :: GuestfsH -> Bool -> String -> IO Int
 ntfs_3g_probe h rw device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_ntfs_3g_probe p (fromBool rw) device)
   if (r == -1)
@@ -1681,8 +3038,44 @@ ntfs_3g_probe h rw device = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_scrub_device" c_scrub_device
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_sh" c_sh
+  :: GuestfsP -> CString -> IO CString
+
+sh :: GuestfsH -> String -> IO String
+sh h command = do
+  r <- withCString command $ \command -> withForeignPtr h (\p -> c_sh p command)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_sh_lines" c_sh_lines
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+sh_lines :: GuestfsH -> String -> IO [String]
+sh_lines h command = do
+  r <- withCString command $ \command -> withForeignPtr h (\p -> c_sh_lines p command)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_glob_expand" c_glob_expand
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+glob_expand :: GuestfsH -> String -> IO [String]
+glob_expand h pattern = do
+  r <- withCString pattern $ \pattern -> withForeignPtr h (\p -> c_glob_expand p pattern)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_scrub_device" c_scrub_device
+  :: GuestfsP -> CString -> IO CInt
 
 scrub_device :: GuestfsH -> String -> IO ()
 scrub_device h device = do
@@ -1693,8 +3086,8 @@ scrub_device h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_scrub_file" c_scrub_file
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_scrub_file" c_scrub_file
+  :: GuestfsP -> CString -> IO CInt
 
 scrub_file :: GuestfsH -> String -> IO ()
 scrub_file h file = do
@@ -1705,8 +3098,8 @@ scrub_file h file = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_scrub_freespace" c_scrub_freespace
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_scrub_freespace" c_scrub_freespace
+  :: GuestfsP -> CString -> IO CInt
 
 scrub_freespace :: GuestfsH -> String -> IO ()
 scrub_freespace h dir = do
@@ -1717,10 +3110,22 @@ scrub_freespace h dir = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_wc_l" c_wc_l
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkdtemp" c_mkdtemp
+  :: GuestfsP -> CString -> IO CString
 
-wc_l :: GuestfsH -> String -> IO (Int)
+mkdtemp :: GuestfsH -> String -> IO String
+mkdtemp h tmpl = do
+  r <- withCString tmpl $ \tmpl -> withForeignPtr h (\p -> c_mkdtemp p tmpl)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_wc_l" c_wc_l
+  :: GuestfsP -> CString -> IO CInt
+
+wc_l :: GuestfsH -> String -> IO Int
 wc_l h path = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_wc_l p path)
   if (r == -1)
@@ -1729,10 +3134,10 @@ wc_l h path = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_wc_w" c_wc_w
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_wc_w" c_wc_w
+  :: GuestfsP -> CString -> IO CInt
 
-wc_w :: GuestfsH -> String -> IO (Int)
+wc_w :: GuestfsH -> String -> IO Int
 wc_w h path = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_wc_w p path)
   if (r == -1)
@@ -1741,10 +3146,10 @@ wc_w h path = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_wc_c" c_wc_c
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_wc_c" c_wc_c
+  :: GuestfsP -> CString -> IO CInt
 
-wc_c :: GuestfsH -> String -> IO (Int)
+wc_c :: GuestfsH -> String -> IO Int
 wc_c h path = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_wc_c p path)
   if (r == -1)
@@ -1753,10 +3158,82 @@ wc_c h path = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_du" c_du
-  :: GuestfsP -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_head" c_head
+  :: GuestfsP -> CString -> IO (Ptr CString)
 
-du :: GuestfsH -> String -> IO (Integer)
+head :: GuestfsH -> String -> IO [String]
+head h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_head p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_head_n" c_head_n
+  :: GuestfsP -> CInt -> CString -> IO (Ptr CString)
+
+head_n :: GuestfsH -> Int -> String -> IO [String]
+head_n h nrlines path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_head_n p (fromIntegral nrlines) path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_tail" c_tail
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+tail :: GuestfsH -> String -> IO [String]
+tail h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_tail p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_tail_n" c_tail_n
+  :: GuestfsP -> CInt -> CString -> IO (Ptr CString)
+
+tail_n :: GuestfsH -> Int -> String -> IO [String]
+tail_n h nrlines path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_tail_n p (fromIntegral nrlines) path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_df" c_df
+  :: GuestfsP -> IO CString
+
+df :: GuestfsH -> IO String
+df h = do
+  r <- withForeignPtr h (\p -> c_df p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_df_h" c_df_h
+  :: GuestfsP -> IO CString
+
+df_h :: GuestfsH -> IO String
+df_h h = do
+  r <- withForeignPtr h (\p -> c_df_h p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_du" c_du
+  :: GuestfsP -> CString -> IO Int64
+
+du :: GuestfsH -> String -> IO Int64
 du h path = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_du p path)
   if (r == -1)
@@ -1765,8 +3242,20 @@ du h path = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_mount_loop" c_mount_loop
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_initrd_list" c_initrd_list
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+initrd_list :: GuestfsH -> String -> IO [String]
+initrd_list h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_initrd_list p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_mount_loop" c_mount_loop
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 mount_loop :: GuestfsH -> String -> String -> IO ()
 mount_loop h file mountpoint = do
@@ -1777,8 +3266,8 @@ mount_loop h file mountpoint = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkswap_L" c_mkswap_L
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkswap_L" c_mkswap_L
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 mkswap_L :: GuestfsH -> String -> String -> IO ()
 mkswap_L h label device = do
@@ -1789,8 +3278,8 @@ mkswap_L h label device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkswap_U" c_mkswap_U
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkswap_U" c_mkswap_U
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 mkswap_U :: GuestfsH -> String -> String -> IO ()
 mkswap_U h uuid device = do
@@ -1801,8 +3290,8 @@ mkswap_U h uuid device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mknod" c_mknod
-  :: GuestfsP -> CInt -> CInt -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mknod" c_mknod
+  :: GuestfsP -> CInt -> CInt -> CInt -> CString -> IO CInt
 
 mknod :: GuestfsH -> Int -> Int -> Int -> String -> IO ()
 mknod h mode devmajor devminor path = do
@@ -1813,8 +3302,8 @@ mknod h mode devmajor devminor path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkfifo" c_mkfifo
-  :: GuestfsP -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkfifo" c_mkfifo
+  :: GuestfsP -> CInt -> CString -> IO CInt
 
 mkfifo :: GuestfsH -> Int -> String -> IO ()
 mkfifo h mode path = do
@@ -1825,8 +3314,8 @@ mkfifo h mode path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mknod_b" c_mknod_b
-  :: GuestfsP -> CInt -> CInt -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mknod_b" c_mknod_b
+  :: GuestfsP -> CInt -> CInt -> CInt -> CString -> IO CInt
 
 mknod_b :: GuestfsH -> Int -> Int -> Int -> String -> IO ()
 mknod_b h mode devmajor devminor path = do
@@ -1837,8 +3326,8 @@ mknod_b h mode devmajor devminor path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mknod_c" c_mknod_c
-  :: GuestfsP -> CInt -> CInt -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mknod_c" c_mknod_c
+  :: GuestfsP -> CInt -> CInt -> CInt -> CString -> IO CInt
 
 mknod_c :: GuestfsH -> Int -> Int -> Int -> String -> IO ()
 mknod_c h mode devmajor devminor path = do
@@ -1849,10 +3338,10 @@ mknod_c h mode devmajor devminor path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_umask" c_umask
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_umask" c_umask
+  :: GuestfsP -> CInt -> IO CInt
 
-umask :: GuestfsH -> Int -> IO (Int)
+umask :: GuestfsH -> Int -> IO Int
 umask h mask = do
   r <- withForeignPtr h (\p -> c_umask p (fromIntegral mask))
   if (r == -1)
@@ -1861,8 +3350,8 @@ umask h mask = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_sfdiskM" c_sfdiskM
-  :: GuestfsP -> CString -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_sfdiskM" c_sfdiskM
+  :: GuestfsP -> CString -> Ptr CString -> IO CInt
 
 sfdiskM :: GuestfsH -> String -> [String] -> IO ()
 sfdiskM h device lines = do
@@ -1873,8 +3362,20 @@ sfdiskM h device lines = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_setxattr" c_setxattr
-  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_zfile" c_zfile
+  :: GuestfsP -> CString -> CString -> IO CString
+
+zfile :: GuestfsH -> String -> String -> IO String
+zfile h meth path = do
+  r <- withCString meth $ \meth -> withCString path $ \path -> withForeignPtr h (\p -> c_zfile p meth path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_setxattr" c_setxattr
+  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO CInt
 
 setxattr :: GuestfsH -> String -> String -> Int -> String -> IO ()
 setxattr h xattr val vallen path = do
@@ -1885,8 +3386,8 @@ setxattr h xattr val vallen path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lsetxattr" c_lsetxattr
-  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lsetxattr" c_lsetxattr
+  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO CInt
 
 lsetxattr :: GuestfsH -> String -> String -> Int -> String -> IO ()
 lsetxattr h xattr val vallen path = do
@@ -1897,8 +3398,8 @@ lsetxattr h xattr val vallen path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_removexattr" c_removexattr
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_removexattr" c_removexattr
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 removexattr :: GuestfsH -> String -> String -> IO ()
 removexattr h xattr path = do
@@ -1909,8 +3410,8 @@ removexattr h xattr path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lremovexattr" c_lremovexattr
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lremovexattr" c_lremovexattr
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 lremovexattr :: GuestfsH -> String -> String -> IO ()
 lremovexattr h xattr path = do
@@ -1921,8 +3422,23 @@ lremovexattr h xattr path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkmountpoint" c_mkmountpoint
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mountpoints" c_mountpoints
+  :: GuestfsP -> IO (Ptr CString)
+
+mountpoints :: GuestfsH -> IO [(String, String)]
+mountpoints h = do
+  r <- withForeignPtr h (\p -> c_mountpoints p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_mkmountpoint" c_mkmountpoint
+  :: GuestfsP -> CString -> IO CInt
 
 mkmountpoint :: GuestfsH -> String -> IO ()
 mkmountpoint h exemptpath = do
@@ -1933,8 +3449,8 @@ mkmountpoint h exemptpath = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_rmmountpoint" c_rmmountpoint
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_rmmountpoint" c_rmmountpoint
+  :: GuestfsP -> CString -> IO CInt
 
 rmmountpoint :: GuestfsH -> String -> IO ()
 rmmountpoint h exemptpath = do
@@ -1945,8 +3461,152 @@ rmmountpoint h exemptpath = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ln" c_ln
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_egrep" c_egrep
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+egrep :: GuestfsH -> String -> String -> IO [String]
+egrep h regex path = do
+  r <- withCString regex $ \regex -> withCString path $ \path -> withForeignPtr h (\p -> c_egrep p regex path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_fgrep" c_fgrep
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+fgrep :: GuestfsH -> String -> String -> IO [String]
+fgrep h pattern path = do
+  r <- withCString pattern $ \pattern -> withCString path $ \path -> withForeignPtr h (\p -> c_fgrep p pattern path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_grepi" c_grepi
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+grepi :: GuestfsH -> String -> String -> IO [String]
+grepi h regex path = do
+  r <- withCString regex $ \regex -> withCString path $ \path -> withForeignPtr h (\p -> c_grepi p regex path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_egrepi" c_egrepi
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+egrepi :: GuestfsH -> String -> String -> IO [String]
+egrepi h regex path = do
+  r <- withCString regex $ \regex -> withCString path $ \path -> withForeignPtr h (\p -> c_egrepi p regex path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_fgrepi" c_fgrepi
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+fgrepi :: GuestfsH -> String -> String -> IO [String]
+fgrepi h pattern path = do
+  r <- withCString pattern $ \pattern -> withCString path $ \path -> withForeignPtr h (\p -> c_fgrepi p pattern path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_zgrep" c_zgrep
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+zgrep :: GuestfsH -> String -> String -> IO [String]
+zgrep h regex path = do
+  r <- withCString regex $ \regex -> withCString path $ \path -> withForeignPtr h (\p -> c_zgrep p regex path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_zegrep" c_zegrep
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+zegrep :: GuestfsH -> String -> String -> IO [String]
+zegrep h regex path = do
+  r <- withCString regex $ \regex -> withCString path $ \path -> withForeignPtr h (\p -> c_zegrep p regex path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_zfgrep" c_zfgrep
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+zfgrep :: GuestfsH -> String -> String -> IO [String]
+zfgrep h pattern path = do
+  r <- withCString pattern $ \pattern -> withCString path $ \path -> withForeignPtr h (\p -> c_zfgrep p pattern path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_zgrepi" c_zgrepi
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+zgrepi :: GuestfsH -> String -> String -> IO [String]
+zgrepi h regex path = do
+  r <- withCString regex $ \regex -> withCString path $ \path -> withForeignPtr h (\p -> c_zgrepi p regex path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_zegrepi" c_zegrepi
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+zegrepi :: GuestfsH -> String -> String -> IO [String]
+zegrepi h regex path = do
+  r <- withCString regex $ \regex -> withCString path $ \path -> withForeignPtr h (\p -> c_zegrepi p regex path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_zfgrepi" c_zfgrepi
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+zfgrepi :: GuestfsH -> String -> String -> IO [String]
+zfgrepi h pattern path = do
+  r <- withCString pattern $ \pattern -> withCString path $ \path -> withForeignPtr h (\p -> c_zfgrepi p pattern path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_realpath" c_realpath
+  :: GuestfsP -> CString -> IO CString
+
+realpath :: GuestfsH -> String -> IO String
+realpath h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_realpath p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_ln" c_ln
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 ln :: GuestfsH -> String -> String -> IO ()
 ln h target linkname = do
@@ -1957,8 +3617,8 @@ ln h target linkname = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ln_f" c_ln_f
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ln_f" c_ln_f
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 ln_f :: GuestfsH -> String -> String -> IO ()
 ln_f h target linkname = do
@@ -1969,8 +3629,8 @@ ln_f h target linkname = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ln_s" c_ln_s
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ln_s" c_ln_s
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 ln_s :: GuestfsH -> String -> String -> IO ()
 ln_s h target linkname = do
@@ -1981,8 +3641,8 @@ ln_s h target linkname = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ln_sf" c_ln_sf
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ln_sf" c_ln_sf
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 ln_sf :: GuestfsH -> String -> String -> IO ()
 ln_sf h target linkname = do
@@ -1993,8 +3653,20 @@ ln_sf h target linkname = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_fallocate" c_fallocate
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_readlink" c_readlink
+  :: GuestfsP -> CString -> IO CString
+
+readlink :: GuestfsH -> String -> IO String
+readlink h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_readlink p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_fallocate" c_fallocate
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 fallocate :: GuestfsH -> String -> Int -> IO ()
 fallocate h path len = do
@@ -2005,8 +3677,8 @@ fallocate h path len = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapon_device" c_swapon_device
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapon_device" c_swapon_device
+  :: GuestfsP -> CString -> IO CInt
 
 swapon_device :: GuestfsH -> String -> IO ()
 swapon_device h device = do
@@ -2017,8 +3689,8 @@ swapon_device h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapoff_device" c_swapoff_device
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapoff_device" c_swapoff_device
+  :: GuestfsP -> CString -> IO CInt
 
 swapoff_device :: GuestfsH -> String -> IO ()
 swapoff_device h device = do
@@ -2029,8 +3701,8 @@ swapoff_device h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapon_file" c_swapon_file
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapon_file" c_swapon_file
+  :: GuestfsP -> CString -> IO CInt
 
 swapon_file :: GuestfsH -> String -> IO ()
 swapon_file h file = do
@@ -2041,8 +3713,8 @@ swapon_file h file = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapoff_file" c_swapoff_file
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapoff_file" c_swapoff_file
+  :: GuestfsP -> CString -> IO CInt
 
 swapoff_file :: GuestfsH -> String -> IO ()
 swapoff_file h file = do
@@ -2053,8 +3725,8 @@ swapoff_file h file = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapon_label" c_swapon_label
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapon_label" c_swapon_label
+  :: GuestfsP -> CString -> IO CInt
 
 swapon_label :: GuestfsH -> String -> IO ()
 swapon_label h label = do
@@ -2065,8 +3737,8 @@ swapon_label h label = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapoff_label" c_swapoff_label
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapoff_label" c_swapoff_label
+  :: GuestfsP -> CString -> IO CInt
 
 swapoff_label :: GuestfsH -> String -> IO ()
 swapoff_label h label = do
@@ -2077,8 +3749,8 @@ swapoff_label h label = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapon_uuid" c_swapon_uuid
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapon_uuid" c_swapon_uuid
+  :: GuestfsP -> CString -> IO CInt
 
 swapon_uuid :: GuestfsH -> String -> IO ()
 swapon_uuid h uuid = do
@@ -2089,8 +3761,8 @@ swapon_uuid h uuid = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_swapoff_uuid" c_swapoff_uuid
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_swapoff_uuid" c_swapoff_uuid
+  :: GuestfsP -> CString -> IO CInt
 
 swapoff_uuid :: GuestfsH -> String -> IO ()
 swapoff_uuid h uuid = do
@@ -2101,8 +3773,8 @@ swapoff_uuid h uuid = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkswap_file" c_mkswap_file
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkswap_file" c_mkswap_file
+  :: GuestfsP -> CString -> IO CInt
 
 mkswap_file :: GuestfsH -> String -> IO ()
 mkswap_file h path = do
@@ -2113,8 +3785,8 @@ mkswap_file h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_inotify_init" c_inotify_init
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_inotify_init" c_inotify_init
+  :: GuestfsP -> CInt -> IO CInt
 
 inotify_init :: GuestfsH -> Int -> IO ()
 inotify_init h maxevents = do
@@ -2125,10 +3797,10 @@ inotify_init h maxevents = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_inotify_add_watch" c_inotify_add_watch
-  :: GuestfsP -> CString -> CInt -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_inotify_add_watch" c_inotify_add_watch
+  :: GuestfsP -> CString -> CInt -> IO Int64
 
-inotify_add_watch :: GuestfsH -> String -> Int -> IO (Integer)
+inotify_add_watch :: GuestfsH -> String -> Int -> IO Int64
 inotify_add_watch h path mask = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_inotify_add_watch p path (fromIntegral mask))
   if (r == -1)
@@ -2137,8 +3809,8 @@ inotify_add_watch h path mask = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_inotify_rm_watch" c_inotify_rm_watch
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_inotify_rm_watch" c_inotify_rm_watch
+  :: GuestfsP -> CInt -> IO CInt
 
 inotify_rm_watch :: GuestfsH -> Int -> IO ()
 inotify_rm_watch h wd = do
@@ -2149,8 +3821,20 @@ inotify_rm_watch h wd = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_inotify_close" c_inotify_close
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_inotify_files" c_inotify_files
+  :: GuestfsP -> IO (Ptr CString)
+
+inotify_files :: GuestfsH -> IO [String]
+inotify_files h = do
+  r <- withForeignPtr h (\p -> c_inotify_files p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_inotify_close" c_inotify_close
+  :: GuestfsP -> IO CInt
 
 inotify_close :: GuestfsH -> IO ()
 inotify_close h = do
@@ -2161,8 +3845,8 @@ inotify_close h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_setcon" c_setcon
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_setcon" c_setcon
+  :: GuestfsP -> CString -> IO CInt
 
 setcon :: GuestfsH -> String -> IO ()
 setcon h context = do
@@ -2173,8 +3857,20 @@ setcon h context = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkfs_b" c_mkfs_b
-  :: GuestfsP -> CString -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_getcon" c_getcon
+  :: GuestfsP -> IO CString
+
+getcon :: GuestfsH -> IO String
+getcon h = do
+  r <- withForeignPtr h (\p -> c_getcon p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_mkfs_b" c_mkfs_b
+  :: GuestfsP -> CString -> CInt -> CString -> IO CInt
 
 mkfs_b :: GuestfsH -> String -> Int -> String -> IO ()
 mkfs_b h fstype blocksize device = do
@@ -2185,8 +3881,8 @@ mkfs_b h fstype blocksize device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mke2journal" c_mke2journal
-  :: GuestfsP -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mke2journal" c_mke2journal
+  :: GuestfsP -> CInt -> CString -> IO CInt
 
 mke2journal :: GuestfsH -> Int -> String -> IO ()
 mke2journal h blocksize device = do
@@ -2197,8 +3893,8 @@ mke2journal h blocksize device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mke2journal_L" c_mke2journal_L
-  :: GuestfsP -> CInt -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mke2journal_L" c_mke2journal_L
+  :: GuestfsP -> CInt -> CString -> CString -> IO CInt
 
 mke2journal_L :: GuestfsH -> Int -> String -> String -> IO ()
 mke2journal_L h blocksize label device = do
@@ -2209,8 +3905,8 @@ mke2journal_L h blocksize label device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mke2journal_U" c_mke2journal_U
-  :: GuestfsP -> CInt -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mke2journal_U" c_mke2journal_U
+  :: GuestfsP -> CInt -> CString -> CString -> IO CInt
 
 mke2journal_U :: GuestfsH -> Int -> String -> String -> IO ()
 mke2journal_U h blocksize uuid device = do
@@ -2221,8 +3917,8 @@ mke2journal_U h blocksize uuid device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mke2fs_J" c_mke2fs_J
-  :: GuestfsP -> CString -> CInt -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mke2fs_J" c_mke2fs_J
+  :: GuestfsP -> CString -> CInt -> CString -> CString -> IO CInt
 
 mke2fs_J :: GuestfsH -> String -> Int -> String -> String -> IO ()
 mke2fs_J h fstype blocksize device journal = do
@@ -2233,8 +3929,8 @@ mke2fs_J h fstype blocksize device journal = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mke2fs_JL" c_mke2fs_JL
-  :: GuestfsP -> CString -> CInt -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mke2fs_JL" c_mke2fs_JL
+  :: GuestfsP -> CString -> CInt -> CString -> CString -> IO CInt
 
 mke2fs_JL :: GuestfsH -> String -> Int -> String -> String -> IO ()
 mke2fs_JL h fstype blocksize device label = do
@@ -2245,8 +3941,8 @@ mke2fs_JL h fstype blocksize device label = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mke2fs_JU" c_mke2fs_JU
-  :: GuestfsP -> CString -> CInt -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mke2fs_JU" c_mke2fs_JU
+  :: GuestfsP -> CString -> CInt -> CString -> CString -> IO CInt
 
 mke2fs_JU :: GuestfsH -> String -> Int -> String -> String -> IO ()
 mke2fs_JU h fstype blocksize device uuid = do
@@ -2257,8 +3953,8 @@ mke2fs_JU h fstype blocksize device uuid = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_modprobe" c_modprobe
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_modprobe" c_modprobe
+  :: GuestfsP -> CString -> IO CInt
 
 modprobe :: GuestfsH -> String -> IO ()
 modprobe h modulename = do
@@ -2269,8 +3965,20 @@ modprobe h modulename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_find0" c_find0
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_echo_daemon" c_echo_daemon
+  :: GuestfsP -> Ptr CString -> IO CString
+
+echo_daemon :: GuestfsH -> [String] -> IO String
+echo_daemon h words = do
+  r <- withMany withCString words $ \words -> withArray0 nullPtr words $ \words -> withForeignPtr h (\p -> c_echo_daemon p words)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_find0" c_find0
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 find0 :: GuestfsH -> String -> String -> IO ()
 find0 h directory files = do
@@ -2281,8 +3989,32 @@ find0 h directory files = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_truncate" c_truncate
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_case_sensitive_path" c_case_sensitive_path
+  :: GuestfsP -> CString -> IO CString
+
+case_sensitive_path :: GuestfsH -> String -> IO String
+case_sensitive_path h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_case_sensitive_path p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_vfs_type" c_vfs_type
+  :: GuestfsP -> CString -> IO CString
+
+vfs_type :: GuestfsH -> String -> IO String
+vfs_type h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_vfs_type p mountable)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_truncate" c_truncate
+  :: GuestfsP -> CString -> IO CInt
 
 truncate :: GuestfsH -> String -> IO ()
 truncate h path = do
@@ -2293,10 +4025,10 @@ truncate h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_truncate_size" c_truncate_size
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_truncate_size" c_truncate_size
+  :: GuestfsP -> CString -> Int64 -> IO CInt
 
-truncate_size :: GuestfsH -> String -> Int -> IO ()
+truncate_size :: GuestfsH -> String -> Integer -> IO ()
 truncate_size h path size = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_truncate_size p path (fromIntegral size))
   if (r == -1)
@@ -2305,10 +4037,10 @@ truncate_size h path size = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_utimens" c_utimens
-  :: GuestfsP -> CString -> CInt -> CInt -> CInt -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_utimens" c_utimens
+  :: GuestfsP -> CString -> Int64 -> Int64 -> Int64 -> Int64 -> IO CInt
 
-utimens :: GuestfsH -> String -> Int -> Int -> Int -> Int -> IO ()
+utimens :: GuestfsH -> String -> Integer -> Integer -> Integer -> Integer -> IO ()
 utimens h path atsecs atnsecs mtsecs mtnsecs = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_utimens p path (fromIntegral atsecs) (fromIntegral atnsecs) (fromIntegral mtsecs) (fromIntegral mtnsecs))
   if (r == -1)
@@ -2317,8 +4049,8 @@ utimens h path atsecs atnsecs mtsecs mtnsecs = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mkdir_mode" c_mkdir_mode
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_mkdir_mode" c_mkdir_mode
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 mkdir_mode :: GuestfsH -> String -> Int -> IO ()
 mkdir_mode h path mode = do
@@ -2329,8 +4061,8 @@ mkdir_mode h path mode = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lchown" c_lchown
-  :: GuestfsP -> CInt -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lchown" c_lchown
+  :: GuestfsP -> CInt -> CInt -> CString -> IO CInt
 
 lchown :: GuestfsH -> Int -> Int -> String -> IO ()
 lchown h owner group path = do
@@ -2341,8 +4073,8 @@ lchown h owner group path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_init" c_part_init
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_init" c_part_init
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 part_init :: GuestfsH -> String -> String -> IO ()
 part_init h device parttype = do
@@ -2353,10 +4085,10 @@ part_init h device parttype = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_add" c_part_add
-  :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_add" c_part_add
+  :: GuestfsP -> CString -> CString -> Int64 -> Int64 -> IO CInt
 
-part_add :: GuestfsH -> String -> String -> Int -> Int -> IO ()
+part_add :: GuestfsH -> String -> String -> Integer -> Integer -> IO ()
 part_add h device prlogex startsect endsect = do
   r <- withCString device $ \device -> withCString prlogex $ \prlogex -> withForeignPtr h (\p -> c_part_add p device prlogex (fromIntegral startsect) (fromIntegral endsect))
   if (r == -1)
@@ -2365,8 +4097,8 @@ part_add h device prlogex startsect endsect = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_disk" c_part_disk
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_disk" c_part_disk
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 part_disk :: GuestfsH -> String -> String -> IO ()
 part_disk h device parttype = do
@@ -2377,8 +4109,8 @@ part_disk h device parttype = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_set_bootable" c_part_set_bootable
-  :: GuestfsP -> CString -> CInt -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_set_bootable" c_part_set_bootable
+  :: GuestfsP -> CString -> CInt -> CInt -> IO CInt
 
 part_set_bootable :: GuestfsH -> String -> Int -> Bool -> IO ()
 part_set_bootable h device partnum bootable = do
@@ -2389,8 +4121,8 @@ part_set_bootable h device partnum bootable = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_set_name" c_part_set_name
-  :: GuestfsP -> CString -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_set_name" c_part_set_name
+  :: GuestfsP -> CString -> CInt -> CString -> IO CInt
 
 part_set_name :: GuestfsH -> String -> Int -> String -> IO ()
 part_set_name h device partnum name = do
@@ -2401,8 +4133,20 @@ part_set_name h device partnum name = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_fill" c_fill
-  :: GuestfsP -> CInt -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_get_parttype" c_part_get_parttype
+  :: GuestfsP -> CString -> IO CString
+
+part_get_parttype :: GuestfsH -> String -> IO String
+part_get_parttype h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_parttype p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_fill" c_fill
+  :: GuestfsP -> CInt -> CInt -> CString -> IO CInt
 
 fill :: GuestfsH -> Int -> Int -> String -> IO ()
 fill h c len path = do
@@ -2413,8 +4157,8 @@ fill h c len path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_available" c_available
-  :: GuestfsP -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_available" c_available
+  :: GuestfsP -> Ptr CString -> IO CInt
 
 available :: GuestfsH -> [String] -> IO ()
 available h groups = do
@@ -2425,8 +4169,8 @@ available h groups = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_dd" c_dd
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_dd" c_dd
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 dd :: GuestfsH -> String -> String -> IO ()
 dd h src dest = do
@@ -2437,10 +4181,10 @@ dd h src dest = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_filesize" c_filesize
-  :: GuestfsP -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_filesize" c_filesize
+  :: GuestfsP -> CString -> IO Int64
 
-filesize :: GuestfsH -> String -> IO (Integer)
+filesize :: GuestfsH -> String -> IO Int64
 filesize h file = do
   r <- withCString file $ \file -> withForeignPtr h (\p -> c_filesize p file)
   if (r == -1)
@@ -2449,8 +4193,8 @@ filesize h file = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_lvrename" c_lvrename
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lvrename" c_lvrename
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 lvrename :: GuestfsH -> String -> String -> IO ()
 lvrename h logvol newlogvol = do
@@ -2461,8 +4205,8 @@ lvrename h logvol newlogvol = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vgrename" c_vgrename
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vgrename" c_vgrename
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 vgrename :: GuestfsH -> String -> String -> IO ()
 vgrename h volgroup newvolgroup = do
@@ -2473,10 +4217,70 @@ vgrename h volgroup newvolgroup = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_copy_size" c_copy_size
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pvuuid" c_pvuuid
+  :: GuestfsP -> CString -> IO CString
 
-copy_size :: GuestfsH -> String -> String -> Int -> IO ()
+pvuuid :: GuestfsH -> String -> IO String
+pvuuid h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_pvuuid p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_vguuid" c_vguuid
+  :: GuestfsP -> CString -> IO CString
+
+vguuid :: GuestfsH -> String -> IO String
+vguuid h vgname = do
+  r <- withCString vgname $ \vgname -> withForeignPtr h (\p -> c_vguuid p vgname)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_lvuuid" c_lvuuid
+  :: GuestfsP -> CString -> IO CString
+
+lvuuid :: GuestfsH -> String -> IO String
+lvuuid h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_lvuuid p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_vgpvuuids" c_vgpvuuids
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+vgpvuuids :: GuestfsH -> String -> IO [String]
+vgpvuuids h vgname = do
+  r <- withCString vgname $ \vgname -> withForeignPtr h (\p -> c_vgpvuuids p vgname)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_vglvuuids" c_vglvuuids
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+vglvuuids :: GuestfsH -> String -> IO [String]
+vglvuuids h vgname = do
+  r <- withCString vgname $ \vgname -> withForeignPtr h (\p -> c_vglvuuids p vgname)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_copy_size" c_copy_size
+  :: GuestfsP -> CString -> CString -> Int64 -> IO CInt
+
+copy_size :: GuestfsH -> String -> String -> Integer -> IO ()
 copy_size h src dest size = do
   r <- withCString src $ \src -> withCString dest $ \dest -> withForeignPtr h (\p -> c_copy_size p src dest (fromIntegral size))
   if (r == -1)
@@ -2485,8 +4289,8 @@ copy_size h src dest size = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_zero_device" c_zero_device
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_zero_device" c_zero_device
+  :: GuestfsP -> CString -> IO CInt
 
 zero_device :: GuestfsH -> String -> IO ()
 zero_device h device = do
@@ -2497,8 +4301,8 @@ zero_device h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_txz_in" c_txz_in
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_txz_in" c_txz_in
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 txz_in :: GuestfsH -> String -> String -> IO ()
 txz_in h tarball directory = do
@@ -2509,8 +4313,8 @@ txz_in h tarball directory = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_txz_out" c_txz_out
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_txz_out" c_txz_out
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 txz_out :: GuestfsH -> String -> String -> IO ()
 txz_out h directory tarball = do
@@ -2521,8 +4325,8 @@ txz_out h directory tarball = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vgscan" c_vgscan
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vgscan" c_vgscan
+  :: GuestfsP -> IO CInt
 
 vgscan :: GuestfsH -> IO ()
 vgscan h = do
@@ -2533,8 +4337,8 @@ vgscan h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_del" c_part_del
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_del" c_part_del
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 part_del :: GuestfsH -> String -> Int -> IO ()
 part_del h device partnum = do
@@ -2545,10 +4349,22 @@ part_del h device partnum = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_get_mbr_id" c_part_get_mbr_id
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_get_bootable" c_part_get_bootable
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
-part_get_mbr_id :: GuestfsH -> String -> Int -> IO (Int)
+part_get_bootable :: GuestfsH -> String -> Int -> IO Bool
+part_get_bootable h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_bootable p device (fromIntegral partnum))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_part_get_mbr_id" c_part_get_mbr_id
+  :: GuestfsP -> CString -> CInt -> IO CInt
+
+part_get_mbr_id :: GuestfsH -> String -> Int -> IO Int
 part_get_mbr_id h device partnum = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_mbr_id p device (fromIntegral partnum))
   if (r == -1)
@@ -2557,8 +4373,8 @@ part_get_mbr_id h device partnum = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_part_set_mbr_id" c_part_set_mbr_id
-  :: GuestfsP -> CString -> CInt -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_part_set_mbr_id" c_part_set_mbr_id
+  :: GuestfsP -> CString -> CInt -> CInt -> IO CInt
 
 part_set_mbr_id :: GuestfsH -> String -> Int -> Int -> IO ()
 part_set_mbr_id h device partnum idbyte = do
@@ -2569,8 +4385,20 @@ part_set_mbr_id h device partnum idbyte = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvresize_free" c_lvresize_free
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_checksum_device" c_checksum_device
+  :: GuestfsP -> CString -> CString -> IO CString
+
+checksum_device :: GuestfsH -> String -> String -> IO String
+checksum_device h csumtype device = do
+  r <- withCString csumtype $ \csumtype -> withCString device $ \device -> withForeignPtr h (\p -> c_checksum_device p csumtype device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_lvresize_free" c_lvresize_free
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 lvresize_free :: GuestfsH -> String -> Int -> IO ()
 lvresize_free h lv percent = do
@@ -2581,8 +4409,8 @@ lvresize_free h lv percent = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_aug_clear" c_aug_clear
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_aug_clear" c_aug_clear
+  :: GuestfsP -> CString -> IO CInt
 
 aug_clear :: GuestfsH -> String -> IO ()
 aug_clear h augpath = do
@@ -2593,10 +4421,10 @@ aug_clear h augpath = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_get_umask" c_get_umask
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_get_umask" c_get_umask
+  :: GuestfsP -> IO CInt
 
-get_umask :: GuestfsH -> IO (Int)
+get_umask :: GuestfsH -> IO Int
 get_umask h = do
   r <- withForeignPtr h (\p -> c_get_umask p)
   if (r == -1)
@@ -2605,8 +4433,8 @@ get_umask h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_debug_upload" c_debug_upload
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_debug_upload" c_debug_upload
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 debug_upload :: GuestfsH -> String -> String -> Int -> IO ()
 debug_upload h filename tmpname mode = do
@@ -2617,8 +4445,8 @@ debug_upload h filename tmpname mode = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_base64_in" c_base64_in
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_base64_in" c_base64_in
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 base64_in :: GuestfsH -> String -> String -> IO ()
 base64_in h base64file filename = do
@@ -2629,8 +4457,8 @@ base64_in h base64file filename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_base64_out" c_base64_out
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_base64_out" c_base64_out
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 base64_out :: GuestfsH -> String -> String -> IO ()
 base64_out h filename base64file = do
@@ -2641,8 +4469,8 @@ base64_out h filename base64file = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_checksums_out" c_checksums_out
-  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_checksums_out" c_checksums_out
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
 
 checksums_out :: GuestfsH -> String -> String -> String -> IO ()
 checksums_out h csumtype directory sumsfile = do
@@ -2653,8 +4481,8 @@ checksums_out h csumtype directory sumsfile = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_fill_pattern" c_fill_pattern
-  :: GuestfsP -> CString -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_fill_pattern" c_fill_pattern
+  :: GuestfsP -> CString -> CInt -> CString -> IO CInt
 
 fill_pattern :: GuestfsH -> String -> Int -> String -> IO ()
 fill_pattern h pattern len path = do
@@ -2665,10 +4493,10 @@ fill_pattern h pattern len path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_pwrite" c_pwrite
-  :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pwrite" c_pwrite
+  :: GuestfsP -> CString -> CString -> CInt -> Int64 -> IO CInt
 
-pwrite :: GuestfsH -> String -> String -> Int -> IO (Int)
+pwrite :: GuestfsH -> String -> String -> Integer -> IO Int
 pwrite h path content offset = do
   r <- withCString path $ \path -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_pwrite p path content (fromIntegral content_size) (fromIntegral offset))
   if (r == -1)
@@ -2677,10 +4505,10 @@ pwrite h path content offset = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_resize2fs_size" c_resize2fs_size
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_resize2fs_size" c_resize2fs_size
+  :: GuestfsP -> CString -> Int64 -> IO CInt
 
-resize2fs_size :: GuestfsH -> String -> Int -> IO ()
+resize2fs_size :: GuestfsH -> String -> Integer -> IO ()
 resize2fs_size h device size = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_resize2fs_size p device (fromIntegral size))
   if (r == -1)
@@ -2689,10 +4517,10 @@ resize2fs_size h device size = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_pvresize_size" c_pvresize_size
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pvresize_size" c_pvresize_size
+  :: GuestfsP -> CString -> Int64 -> IO CInt
 
-pvresize_size :: GuestfsH -> String -> Int -> IO ()
+pvresize_size :: GuestfsH -> String -> Integer -> IO ()
 pvresize_size h device size = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_pvresize_size p device (fromIntegral size))
   if (r == -1)
@@ -2701,10 +4529,10 @@ pvresize_size h device size = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ntfsresize_size" c_ntfsresize_size
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ntfsresize_size" c_ntfsresize_size
+  :: GuestfsP -> CString -> Int64 -> IO CInt
 
-ntfsresize_size :: GuestfsH -> String -> Int -> IO ()
+ntfsresize_size :: GuestfsH -> String -> Integer -> IO ()
 ntfsresize_size h device size = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_ntfsresize_size p device (fromIntegral size))
   if (r == -1)
@@ -2713,10 +4541,22 @@ ntfsresize_size h device size = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_fallocate64" c_fallocate64
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_available_all_groups" c_available_all_groups
+  :: GuestfsP -> IO (Ptr CString)
 
-fallocate64 :: GuestfsH -> String -> Int -> IO ()
+available_all_groups :: GuestfsH -> IO [String]
+available_all_groups h = do
+  r <- withForeignPtr h (\p -> c_available_all_groups p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_fallocate64" c_fallocate64
+  :: GuestfsP -> CString -> Int64 -> IO CInt
+
+fallocate64 :: GuestfsH -> String -> Integer -> IO ()
 fallocate64 h path len = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_fallocate64 p path (fromIntegral len))
   if (r == -1)
@@ -2725,8 +4565,32 @@ fallocate64 h path len = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvm_set_filter" c_lvm_set_filter
-  :: GuestfsP -> Ptr CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vfs_label" c_vfs_label
+  :: GuestfsP -> CString -> IO CString
+
+vfs_label :: GuestfsH -> String -> IO String
+vfs_label h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_vfs_label p mountable)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_vfs_uuid" c_vfs_uuid
+  :: GuestfsP -> CString -> IO CString
+
+vfs_uuid :: GuestfsH -> String -> IO String
+vfs_uuid h mountable = do
+  r <- withCString mountable $ \mountable -> withForeignPtr h (\p -> c_vfs_uuid p mountable)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_lvm_set_filter" c_lvm_set_filter
+  :: GuestfsP -> Ptr CString -> IO CInt
 
 lvm_set_filter :: GuestfsH -> [String] -> IO ()
 lvm_set_filter h devices = do
@@ -2737,8 +4601,8 @@ lvm_set_filter h devices = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvm_clear_filter" c_lvm_clear_filter
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lvm_clear_filter" c_lvm_clear_filter
+  :: GuestfsP -> IO CInt
 
 lvm_clear_filter :: GuestfsH -> IO ()
 lvm_clear_filter h = do
@@ -2749,8 +4613,8 @@ lvm_clear_filter h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_luks_open" c_luks_open
-  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_luks_open" c_luks_open
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
 
 luks_open :: GuestfsH -> String -> String -> String -> IO ()
 luks_open h device key mapname = do
@@ -2761,8 +4625,8 @@ luks_open h device key mapname = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_luks_open_ro" c_luks_open_ro
-  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_luks_open_ro" c_luks_open_ro
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
 
 luks_open_ro :: GuestfsH -> String -> String -> String -> IO ()
 luks_open_ro h device key mapname = do
@@ -2773,8 +4637,8 @@ luks_open_ro h device key mapname = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_luks_close" c_luks_close
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_luks_close" c_luks_close
+  :: GuestfsP -> CString -> IO CInt
 
 luks_close :: GuestfsH -> String -> IO ()
 luks_close h device = do
@@ -2785,8 +4649,8 @@ luks_close h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_luks_format" c_luks_format
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_luks_format" c_luks_format
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 luks_format :: GuestfsH -> String -> String -> Int -> IO ()
 luks_format h device key keyslot = do
@@ -2797,8 +4661,8 @@ luks_format h device key keyslot = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_luks_format_cipher" c_luks_format_cipher
-  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_luks_format_cipher" c_luks_format_cipher
+  :: GuestfsP -> CString -> CString -> CInt -> CString -> IO CInt
 
 luks_format_cipher :: GuestfsH -> String -> String -> Int -> String -> IO ()
 luks_format_cipher h device key keyslot cipher = do
@@ -2809,8 +4673,8 @@ luks_format_cipher h device key keyslot cipher = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_luks_add_key" c_luks_add_key
-  :: GuestfsP -> CString -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_luks_add_key" c_luks_add_key
+  :: GuestfsP -> CString -> CString -> CString -> CInt -> IO CInt
 
 luks_add_key :: GuestfsH -> String -> String -> String -> Int -> IO ()
 luks_add_key h device key newkey keyslot = do
@@ -2821,8 +4685,8 @@ luks_add_key h device key newkey keyslot = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_luks_kill_slot" c_luks_kill_slot
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_luks_kill_slot" c_luks_kill_slot
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 luks_kill_slot :: GuestfsH -> String -> String -> Int -> IO ()
 luks_kill_slot h device key keyslot = do
@@ -2833,10 +4697,118 @@ luks_kill_slot h device key keyslot = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_upload_offset" c_upload_offset
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_is_lv" c_is_lv
+  :: GuestfsP -> CString -> IO CInt
 
-upload_offset :: GuestfsH -> String -> String -> Int -> IO ()
+is_lv :: GuestfsH -> String -> IO Bool
+is_lv h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_is_lv p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_findfs_uuid" c_findfs_uuid
+  :: GuestfsP -> CString -> IO CString
+
+findfs_uuid :: GuestfsH -> String -> IO String
+findfs_uuid h uuid = do
+  r <- withCString uuid $ \uuid -> withForeignPtr h (\p -> c_findfs_uuid p uuid)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_findfs_label" c_findfs_label
+  :: GuestfsP -> CString -> IO CString
+
+findfs_label :: GuestfsH -> String -> IO String
+findfs_label h label = do
+  r <- withCString label $ \label -> withForeignPtr h (\p -> c_findfs_label p label)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_is_chardev" c_is_chardev
+  :: GuestfsP -> CString -> IO CInt
+
+is_chardev :: GuestfsH -> String -> IO Bool
+is_chardev h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_chardev p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_blockdev" c_is_blockdev
+  :: GuestfsP -> CString -> IO CInt
+
+is_blockdev :: GuestfsH -> String -> IO Bool
+is_blockdev h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_blockdev p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_fifo" c_is_fifo
+  :: GuestfsP -> CString -> IO CInt
+
+is_fifo :: GuestfsH -> String -> IO Bool
+is_fifo h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_fifo p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_symlink" c_is_symlink
+  :: GuestfsP -> CString -> IO CInt
+
+is_symlink :: GuestfsH -> String -> IO Bool
+is_symlink h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_symlink p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_socket" c_is_socket
+  :: GuestfsP -> CString -> IO CInt
+
+is_socket :: GuestfsH -> String -> IO Bool
+is_socket h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_socket p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_part_to_dev" c_part_to_dev
+  :: GuestfsP -> CString -> IO CString
+
+part_to_dev :: GuestfsH -> String -> IO String
+part_to_dev h partition = do
+  r <- withCString partition $ \partition -> withForeignPtr h (\p -> c_part_to_dev p partition)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_upload_offset" c_upload_offset
+  :: GuestfsP -> CString -> CString -> Int64 -> IO CInt
+
+upload_offset :: GuestfsH -> String -> String -> Integer -> IO ()
 upload_offset h filename remotefilename offset = do
   r <- withCString filename $ \filename -> withCString remotefilename $ \remotefilename -> withForeignPtr h (\p -> c_upload_offset p filename remotefilename (fromIntegral offset))
   if (r == -1)
@@ -2845,10 +4817,10 @@ upload_offset h filename remotefilename offset = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_download_offset" c_download_offset
-  :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_download_offset" c_download_offset
+  :: GuestfsP -> CString -> CString -> Int64 -> Int64 -> IO CInt
 
-download_offset :: GuestfsH -> String -> String -> Int -> Int -> IO ()
+download_offset :: GuestfsH -> String -> String -> Integer -> Integer -> IO ()
 download_offset h remotefilename filename offset size = do
   r <- withCString remotefilename $ \remotefilename -> withCString filename $ \filename -> withForeignPtr h (\p -> c_download_offset p remotefilename filename (fromIntegral offset) (fromIntegral size))
   if (r == -1)
@@ -2857,10 +4829,10 @@ download_offset h remotefilename filename offset size = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_pwrite_device" c_pwrite_device
-  :: GuestfsP -> CString -> CString -> CInt -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pwrite_device" c_pwrite_device
+  :: GuestfsP -> CString -> CString -> CInt -> Int64 -> IO CInt
 
-pwrite_device :: GuestfsH -> String -> String -> Int -> IO (Int)
+pwrite_device :: GuestfsH -> String -> String -> Integer -> IO Int
 pwrite_device h device content offset = do
   r <- withCString device $ \device -> withCStringLen content $ \(content, content_size) -> withForeignPtr h (\p -> c_pwrite_device p device content (fromIntegral content_size) (fromIntegral offset))
   if (r == -1)
@@ -2869,8 +4841,20 @@ pwrite_device h device content offset = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_resize2fs_M" c_resize2fs_M
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lvm_canonical_lv_name" c_lvm_canonical_lv_name
+  :: GuestfsP -> CString -> IO CString
+
+lvm_canonical_lv_name :: GuestfsH -> String -> IO String
+lvm_canonical_lv_name h lvname = do
+  r <- withCString lvname $ \lvname -> withForeignPtr h (\p -> c_lvm_canonical_lv_name p lvname)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_resize2fs_M" c_resize2fs_M
+  :: GuestfsP -> CString -> IO CInt
 
 resize2fs_M :: GuestfsH -> String -> IO ()
 resize2fs_M h device = do
@@ -2881,10 +4865,58 @@ resize2fs_M h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_part_to_partnum" c_part_to_partnum
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_is_zero" c_is_zero
+  :: GuestfsP -> CString -> IO CInt
 
-part_to_partnum :: GuestfsH -> String -> IO (Int)
+is_zero :: GuestfsH -> String -> IO Bool
+is_zero h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_zero p path)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_is_zero_device" c_is_zero_device
+  :: GuestfsP -> CString -> IO CInt
+
+is_zero_device :: GuestfsH -> String -> IO Bool
+is_zero_device h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_is_zero_device p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_list_9p" c_list_9p
+  :: GuestfsP -> IO (Ptr CString)
+
+list_9p :: GuestfsH -> IO [String]
+list_9p h = do
+  r <- withForeignPtr h (\p -> c_list_9p p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_list_dm_devices" c_list_dm_devices
+  :: GuestfsP -> IO (Ptr CString)
+
+list_dm_devices :: GuestfsH -> IO [String]
+list_dm_devices h = do
+  r <- withForeignPtr h (\p -> c_list_dm_devices p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_part_to_partnum" c_part_to_partnum
+  :: GuestfsP -> CString -> IO CInt
+
+part_to_partnum :: GuestfsH -> String -> IO Int
 part_to_partnum h partition = do
   r <- withCString partition $ \partition -> withForeignPtr h (\p -> c_part_to_partnum p partition)
   if (r == -1)
@@ -2893,8 +4925,35 @@ part_to_partnum h partition = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_md_stop" c_md_stop
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_list_md_devices" c_list_md_devices
+  :: GuestfsP -> IO (Ptr CString)
+
+list_md_devices :: GuestfsH -> IO [String]
+list_md_devices h = do
+  r <- withForeignPtr h (\p -> c_list_md_devices p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_md_detail" c_md_detail
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+md_detail :: GuestfsH -> String -> IO [(String, String)]
+md_detail h md = do
+  r <- withCString md $ \md -> withForeignPtr h (\p -> c_md_detail p md)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_md_stop" c_md_stop
+  :: GuestfsP -> CString -> IO CInt
 
 md_stop :: GuestfsH -> String -> IO ()
 md_stop h md = do
@@ -2905,8 +4964,35 @@ md_stop h md = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_wipefs" c_wipefs
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_blkid" c_blkid
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+blkid :: GuestfsH -> String -> IO [(String, String)]
+blkid h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_blkid p device)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_llz" c_llz
+  :: GuestfsP -> CString -> IO CString
+
+llz :: GuestfsH -> String -> IO String
+llz h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_llz p directory)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_wipefs" c_wipefs
+  :: GuestfsP -> CString -> IO CInt
 
 wipefs :: GuestfsH -> String -> IO ()
 wipefs h device = do
@@ -2917,8 +5003,8 @@ wipefs h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ntfsclone_in" c_ntfsclone_in
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ntfsclone_in" c_ntfsclone_in
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 ntfsclone_in :: GuestfsH -> String -> String -> IO ()
 ntfsclone_in h backupfile device = do
@@ -2929,20 +5015,20 @@ ntfsclone_in h backupfile device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_set_label" c_set_label
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_label" c_set_label
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 set_label :: GuestfsH -> String -> String -> IO ()
-set_label h device label = do
-  r <- withCString device $ \device -> withCString label $ \label -> withForeignPtr h (\p -> c_set_label p device label)
+set_label h mountable label = do
+  r <- withCString mountable $ \mountable -> withCString label $ \label -> withForeignPtr h (\p -> c_set_label p mountable label)
   if (r == -1)
     then do
       err <- last_error h
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_zero_free_space" c_zero_free_space
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_zero_free_space" c_zero_free_space
+  :: GuestfsP -> CString -> IO CInt
 
 zero_free_space :: GuestfsH -> String -> IO ()
 zero_free_space h directory = do
@@ -2953,8 +5039,8 @@ zero_free_space h directory = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_lvcreate_free" c_lvcreate_free
-  :: GuestfsP -> CString -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_lvcreate_free" c_lvcreate_free
+  :: GuestfsP -> CString -> CString -> CInt -> IO CInt
 
 lvcreate_free :: GuestfsH -> String -> String -> Int -> IO ()
 lvcreate_free h logvol volgroup percent = do
@@ -2965,10 +5051,22 @@ lvcreate_free h logvol volgroup percent = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_get_e2generation" c_get_e2generation
-  :: GuestfsP -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_get_e2attrs" c_get_e2attrs
+  :: GuestfsP -> CString -> IO CString
 
-get_e2generation :: GuestfsH -> String -> IO (Integer)
+get_e2attrs :: GuestfsH -> String -> IO String
+get_e2attrs h file = do
+  r <- withCString file $ \file -> withForeignPtr h (\p -> c_get_e2attrs p file)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_get_e2generation" c_get_e2generation
+  :: GuestfsP -> CString -> IO Int64
+
+get_e2generation :: GuestfsH -> String -> IO Int64
 get_e2generation h file = do
   r <- withCString file $ \file -> withForeignPtr h (\p -> c_get_e2generation p file)
   if (r == -1)
@@ -2977,10 +5075,10 @@ get_e2generation h file = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_set_e2generation" c_set_e2generation
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_set_e2generation" c_set_e2generation
+  :: GuestfsP -> CString -> Int64 -> IO CInt
 
-set_e2generation :: GuestfsH -> String -> Int -> IO ()
+set_e2generation :: GuestfsH -> String -> Integer -> IO ()
 set_e2generation h file generation = do
   r <- withCString file $ \file -> withForeignPtr h (\p -> c_set_e2generation p file (fromIntegral generation))
   if (r == -1)
@@ -2989,8 +5087,8 @@ set_e2generation h file generation = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_subvolume_snapshot" c_btrfs_subvolume_snapshot
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_snapshot" c_btrfs_subvolume_snapshot
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 btrfs_subvolume_snapshot :: GuestfsH -> String -> String -> IO ()
 btrfs_subvolume_snapshot h source dest = do
@@ -3001,8 +5099,8 @@ btrfs_subvolume_snapshot h source dest = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_subvolume_delete" c_btrfs_subvolume_delete
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_delete" c_btrfs_subvolume_delete
+  :: GuestfsP -> CString -> IO CInt
 
 btrfs_subvolume_delete :: GuestfsH -> String -> IO ()
 btrfs_subvolume_delete h subvolume = do
@@ -3013,8 +5111,8 @@ btrfs_subvolume_delete h subvolume = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_subvolume_create" c_btrfs_subvolume_create
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_create" c_btrfs_subvolume_create
+  :: GuestfsP -> CString -> IO CInt
 
 btrfs_subvolume_create :: GuestfsH -> String -> IO ()
 btrfs_subvolume_create h dest = do
@@ -3025,10 +5123,10 @@ btrfs_subvolume_create h dest = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_subvolume_set_default" c_btrfs_subvolume_set_default
-  :: GuestfsP -> CInt -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_subvolume_set_default" c_btrfs_subvolume_set_default
+  :: GuestfsP -> Int64 -> CString -> IO CInt
 
-btrfs_subvolume_set_default :: GuestfsH -> Int -> String -> IO ()
+btrfs_subvolume_set_default :: GuestfsH -> Integer -> String -> IO ()
 btrfs_subvolume_set_default h id fs = do
   r <- withCString fs $ \fs -> withForeignPtr h (\p -> c_btrfs_subvolume_set_default p (fromIntegral id) fs)
   if (r == -1)
@@ -3037,8 +5135,8 @@ btrfs_subvolume_set_default h id fs = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_filesystem_sync" c_btrfs_filesystem_sync
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_filesystem_sync" c_btrfs_filesystem_sync
+  :: GuestfsP -> CString -> IO CInt
 
 btrfs_filesystem_sync :: GuestfsH -> String -> IO ()
 btrfs_filesystem_sync h fs = do
@@ -3049,8 +5147,8 @@ btrfs_filesystem_sync h fs = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_filesystem_balance" c_btrfs_filesystem_balance
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_filesystem_balance" c_btrfs_filesystem_balance
+  :: GuestfsP -> CString -> IO CInt
 
 btrfs_filesystem_balance :: GuestfsH -> String -> IO ()
 btrfs_filesystem_balance h fs = do
@@ -3061,8 +5159,8 @@ btrfs_filesystem_balance h fs = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_device_add" c_btrfs_device_add
-  :: GuestfsP -> Ptr CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_device_add" c_btrfs_device_add
+  :: GuestfsP -> Ptr CString -> CString -> IO CInt
 
 btrfs_device_add :: GuestfsH -> [String] -> String -> IO ()
 btrfs_device_add h devices fs = do
@@ -3073,8 +5171,8 @@ btrfs_device_add h devices fs = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_device_delete" c_btrfs_device_delete
-  :: GuestfsP -> Ptr CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_device_delete" c_btrfs_device_delete
+  :: GuestfsP -> Ptr CString -> CString -> IO CInt
 
 btrfs_device_delete :: GuestfsH -> [String] -> String -> IO ()
 btrfs_device_delete h devices fs = do
@@ -3085,8 +5183,8 @@ btrfs_device_delete h devices fs = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_btrfs_set_seeding" c_btrfs_set_seeding
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_btrfs_set_seeding" c_btrfs_set_seeding
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 btrfs_set_seeding :: GuestfsH -> String -> Bool -> IO ()
 btrfs_set_seeding h device seeding = do
@@ -3097,10 +5195,22 @@ btrfs_set_seeding h device seeding = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_device_index" c_device_index
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_filesystem_available" c_filesystem_available
+  :: GuestfsP -> CString -> IO CInt
 
-device_index :: GuestfsH -> String -> IO (Int)
+filesystem_available :: GuestfsH -> String -> IO Bool
+filesystem_available h filesystem = do
+  r <- withCString filesystem $ \filesystem -> withForeignPtr h (\p -> c_filesystem_available p filesystem)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_device_index" c_device_index
+  :: GuestfsP -> CString -> IO CInt
+
+device_index :: GuestfsH -> String -> IO Int
 device_index h device = do
   r <- withCString device $ \device -> withForeignPtr h (\p -> c_device_index p device)
   if (r == -1)
@@ -3109,10 +5219,10 @@ device_index h device = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_nr_devices" c_nr_devices
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_nr_devices" c_nr_devices
+  :: GuestfsP -> IO CInt
 
-nr_devices :: GuestfsH -> IO (Int)
+nr_devices :: GuestfsH -> IO Int
 nr_devices h = do
   r <- withForeignPtr h (\p -> c_nr_devices p)
   if (r == -1)
@@ -3121,8 +5231,8 @@ nr_devices h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_pvchange_uuid" c_pvchange_uuid
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pvchange_uuid" c_pvchange_uuid
+  :: GuestfsP -> CString -> IO CInt
 
 pvchange_uuid :: GuestfsH -> String -> IO ()
 pvchange_uuid h device = do
@@ -3133,8 +5243,8 @@ pvchange_uuid h device = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_pvchange_uuid_all" c_pvchange_uuid_all
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_pvchange_uuid_all" c_pvchange_uuid_all
+  :: GuestfsP -> IO CInt
 
 pvchange_uuid_all :: GuestfsH -> IO ()
 pvchange_uuid_all h = do
@@ -3145,8 +5255,8 @@ pvchange_uuid_all h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vgchange_uuid" c_vgchange_uuid
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vgchange_uuid" c_vgchange_uuid
+  :: GuestfsP -> CString -> IO CInt
 
 vgchange_uuid :: GuestfsH -> String -> IO ()
 vgchange_uuid h vg = do
@@ -3157,8 +5267,8 @@ vgchange_uuid h vg = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_vgchange_uuid_all" c_vgchange_uuid_all
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_vgchange_uuid_all" c_vgchange_uuid_all
+  :: GuestfsP -> IO CInt
 
 vgchange_uuid_all :: GuestfsH -> IO ()
 vgchange_uuid_all h = do
@@ -3169,8 +5279,8 @@ vgchange_uuid_all h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ls0" c_ls0
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ls0" c_ls0
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 ls0 :: GuestfsH -> String -> String -> IO ()
 ls0 h dir filenames = do
@@ -3181,8 +5291,8 @@ ls0 h dir filenames = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_fill_dir" c_fill_dir
-  :: GuestfsP -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_fill_dir" c_fill_dir
+  :: GuestfsP -> CString -> CInt -> IO CInt
 
 fill_dir :: GuestfsH -> String -> Int -> IO ()
 fill_dir h dir nr = do
@@ -3193,8 +5303,8 @@ fill_dir h dir nr = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_hivex_close" c_hivex_close
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_close" c_hivex_close
+  :: GuestfsP -> IO CInt
 
 hivex_close :: GuestfsH -> IO ()
 hivex_close h = do
@@ -3205,10 +5315,10 @@ hivex_close h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_hivex_root" c_hivex_root
-  :: GuestfsP -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_root" c_hivex_root
+  :: GuestfsP -> IO Int64
 
-hivex_root :: GuestfsH -> IO (Integer)
+hivex_root :: GuestfsH -> IO Int64
 hivex_root h = do
   r <- withForeignPtr h (\p -> c_hivex_root p)
   if (r == -1)
@@ -3217,10 +5327,22 @@ hivex_root h = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_hivex_node_get_child" c_hivex_node_get_child
-  :: GuestfsP -> CInt -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_node_name" c_hivex_node_name
+  :: GuestfsP -> Int64 -> IO CString
 
-hivex_node_get_child :: GuestfsH -> Int -> String -> IO (Integer)
+hivex_node_name :: GuestfsH -> Integer -> IO String
+hivex_node_name h nodeh = do
+  r <- withForeignPtr h (\p -> c_hivex_node_name p (fromIntegral nodeh))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_hivex_node_get_child" c_hivex_node_get_child
+  :: GuestfsP -> Int64 -> CString -> IO Int64
+
+hivex_node_get_child :: GuestfsH -> Integer -> String -> IO Int64
 hivex_node_get_child h nodeh name = do
   r <- withCString name $ \name -> withForeignPtr h (\p -> c_hivex_node_get_child p (fromIntegral nodeh) name)
   if (r == -1)
@@ -3229,10 +5351,10 @@ hivex_node_get_child h nodeh name = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_hivex_node_parent" c_hivex_node_parent
-  :: GuestfsP -> CInt -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_node_parent" c_hivex_node_parent
+  :: GuestfsP -> Int64 -> IO Int64
 
-hivex_node_parent :: GuestfsH -> Int -> IO (Integer)
+hivex_node_parent :: GuestfsH -> Integer -> IO Int64
 hivex_node_parent h nodeh = do
   r <- withForeignPtr h (\p -> c_hivex_node_parent p (fromIntegral nodeh))
   if (r == -1)
@@ -3241,10 +5363,10 @@ hivex_node_parent h nodeh = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_hivex_node_get_value" c_hivex_node_get_value
-  :: GuestfsP -> CInt -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_node_get_value" c_hivex_node_get_value
+  :: GuestfsP -> Int64 -> CString -> IO Int64
 
-hivex_node_get_value :: GuestfsH -> Int -> String -> IO (Integer)
+hivex_node_get_value :: GuestfsH -> Integer -> String -> IO Int64
 hivex_node_get_value h nodeh key = do
   r <- withCString key $ \key -> withForeignPtr h (\p -> c_hivex_node_get_value p (fromIntegral nodeh) key)
   if (r == -1)
@@ -3253,10 +5375,22 @@ hivex_node_get_value h nodeh key = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_hivex_value_type" c_hivex_value_type
-  :: GuestfsP -> CInt -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_value_key" c_hivex_value_key
+  :: GuestfsP -> Int64 -> IO CString
 
-hivex_value_type :: GuestfsH -> Int -> IO (Integer)
+hivex_value_key :: GuestfsH -> Integer -> IO String
+hivex_value_key h valueh = do
+  r <- withForeignPtr h (\p -> c_hivex_value_key p (fromIntegral valueh))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_hivex_value_type" c_hivex_value_type
+  :: GuestfsP -> Int64 -> IO Int64
+
+hivex_value_type :: GuestfsH -> Integer -> IO Int64
 hivex_value_type h valueh = do
   r <- withForeignPtr h (\p -> c_hivex_value_type p (fromIntegral valueh))
   if (r == -1)
@@ -3265,8 +5399,8 @@ hivex_value_type h valueh = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_hivex_commit" c_hivex_commit
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_commit" c_hivex_commit
+  :: GuestfsP -> CString -> IO CInt
 
 hivex_commit :: GuestfsH -> Maybe String -> IO ()
 hivex_commit h filename = do
@@ -3277,10 +5411,10 @@ hivex_commit h filename = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_hivex_node_add_child" c_hivex_node_add_child
-  :: GuestfsP -> CInt -> CString -> IO (Int64)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_node_add_child" c_hivex_node_add_child
+  :: GuestfsP -> Int64 -> CString -> IO Int64
 
-hivex_node_add_child :: GuestfsH -> Int -> String -> IO (Integer)
+hivex_node_add_child :: GuestfsH -> Integer -> String -> IO Int64
 hivex_node_add_child h parent name = do
   r <- withCString name $ \name -> withForeignPtr h (\p -> c_hivex_node_add_child p (fromIntegral parent) name)
   if (r == -1)
@@ -3289,10 +5423,10 @@ hivex_node_add_child h parent name = do
       fail err
     else return (fromIntegral r)
 
-foreign import ccall unsafe "guestfs_hivex_node_delete_child" c_hivex_node_delete_child
-  :: GuestfsP -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_node_delete_child" c_hivex_node_delete_child
+  :: GuestfsP -> Int64 -> IO CInt
 
-hivex_node_delete_child :: GuestfsH -> Int -> IO ()
+hivex_node_delete_child :: GuestfsH -> Integer -> IO ()
 hivex_node_delete_child h nodeh = do
   r <- withForeignPtr h (\p -> c_hivex_node_delete_child p (fromIntegral nodeh))
   if (r == -1)
@@ -3301,10 +5435,10 @@ hivex_node_delete_child h nodeh = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_hivex_node_set_value" c_hivex_node_set_value
-  :: GuestfsP -> CInt -> CString -> CInt -> CString -> CInt -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_hivex_node_set_value" c_hivex_node_set_value
+  :: GuestfsP -> Int64 -> CString -> Int64 -> CString -> CInt -> IO CInt
 
-hivex_node_set_value :: GuestfsH -> Int -> String -> Int -> String -> IO ()
+hivex_node_set_value :: GuestfsH -> Integer -> String -> Integer -> String -> IO ()
 hivex_node_set_value h nodeh key t val = do
   r <- withCString key $ \key -> withCStringLen val $ \(val, val_size) -> withForeignPtr h (\p -> c_hivex_node_set_value p (fromIntegral nodeh) key (fromIntegral t) val (fromIntegral val_size))
   if (r == -1)
@@ -3313,8 +5447,8 @@ hivex_node_set_value h nodeh key t val = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_rm_f" c_rm_f
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_rm_f" c_rm_f
+  :: GuestfsP -> CString -> IO CInt
 
 rm_f :: GuestfsH -> String -> IO ()
 rm_f h path = do
@@ -3325,8 +5459,23 @@ rm_f h path = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_mklost_and_found" c_mklost_and_found
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_list_disk_labels" c_list_disk_labels
+  :: GuestfsP -> IO (Ptr CString)
+
+list_disk_labels :: GuestfsH -> IO [(String, String)]
+list_disk_labels h = do
+  r <- withForeignPtr h (\p -> c_list_disk_labels p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else do
+      arr <- peekArray0 nullPtr r
+      arr <- mapM peekCString arr
+      return (assocListOfHashtable arr)
+
+foreign import ccall unsafe "guestfs.h guestfs_mklost_and_found" c_mklost_and_found
+  :: GuestfsP -> CString -> IO CInt
 
 mklost_and_found :: GuestfsH -> String -> IO ()
 mklost_and_found h mountpoint = do
@@ -3337,8 +5486,20 @@ mklost_and_found h mountpoint = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_acl_set_file" c_acl_set_file
-  :: GuestfsP -> CString -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_acl_get_file" c_acl_get_file
+  :: GuestfsP -> CString -> CString -> IO CString
+
+acl_get_file :: GuestfsH -> String -> String -> IO String
+acl_get_file h path acltype = do
+  r <- withCString path $ \path -> withCString acltype $ \acltype -> withForeignPtr h (\p -> c_acl_get_file p path acltype)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_acl_set_file" c_acl_set_file
+  :: GuestfsP -> CString -> CString -> CString -> IO CInt
 
 acl_set_file :: GuestfsH -> String -> String -> String -> IO ()
 acl_set_file h path acltype acl = do
@@ -3349,8 +5510,8 @@ acl_set_file h path acltype acl = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_acl_delete_def_file" c_acl_delete_def_file
-  :: GuestfsP -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_acl_delete_def_file" c_acl_delete_def_file
+  :: GuestfsP -> CString -> IO CInt
 
 acl_delete_def_file :: GuestfsH -> String -> IO ()
 acl_delete_def_file h dir = do
@@ -3361,8 +5522,20 @@ acl_delete_def_file h dir = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_cap_set_file" c_cap_set_file
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_cap_get_file" c_cap_get_file
+  :: GuestfsP -> CString -> IO CString
+
+cap_get_file :: GuestfsH -> String -> IO String
+cap_get_file h path = do
+  r <- withCString path $ \path -> withForeignPtr h (\p -> c_cap_get_file p path)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_cap_set_file" c_cap_set_file
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 cap_set_file :: GuestfsH -> String -> String -> IO ()
 cap_set_file h path cap = do
@@ -3373,8 +5546,32 @@ cap_set_file h path cap = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ldmtool_create_all" c_ldmtool_create_all
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_list_ldm_volumes" c_list_ldm_volumes
+  :: GuestfsP -> IO (Ptr CString)
+
+list_ldm_volumes :: GuestfsH -> IO [String]
+list_ldm_volumes h = do
+  r <- withForeignPtr h (\p -> c_list_ldm_volumes p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_list_ldm_partitions" c_list_ldm_partitions
+  :: GuestfsP -> IO (Ptr CString)
+
+list_ldm_partitions :: GuestfsH -> IO [String]
+list_ldm_partitions h = do
+  r <- withForeignPtr h (\p -> c_list_ldm_partitions p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_create_all" c_ldmtool_create_all
+  :: GuestfsP -> IO CInt
 
 ldmtool_create_all :: GuestfsH -> IO ()
 ldmtool_create_all h = do
@@ -3385,8 +5582,8 @@ ldmtool_create_all h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_ldmtool_remove_all" c_ldmtool_remove_all
-  :: GuestfsP -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_remove_all" c_ldmtool_remove_all
+  :: GuestfsP -> IO CInt
 
 ldmtool_remove_all :: GuestfsH -> IO ()
 ldmtool_remove_all h = do
@@ -3397,12 +5594,168 @@ ldmtool_remove_all h = do
       fail err
     else return ()
 
-foreign import ccall unsafe "guestfs_rename" c_rename
-  :: GuestfsP -> CString -> CString -> IO (CInt)
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_scan" c_ldmtool_scan
+  :: GuestfsP -> IO (Ptr CString)
+
+ldmtool_scan :: GuestfsH -> IO [String]
+ldmtool_scan h = do
+  r <- withForeignPtr h (\p -> c_ldmtool_scan p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_scan_devices" c_ldmtool_scan_devices
+  :: GuestfsP -> Ptr CString -> IO (Ptr CString)
+
+ldmtool_scan_devices :: GuestfsH -> [String] -> IO [String]
+ldmtool_scan_devices h devices = do
+  r <- withMany withCString devices $ \devices -> withArray0 nullPtr devices $ \devices -> withForeignPtr h (\p -> c_ldmtool_scan_devices p devices)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_diskgroup_name" c_ldmtool_diskgroup_name
+  :: GuestfsP -> CString -> IO CString
+
+ldmtool_diskgroup_name :: GuestfsH -> String -> IO String
+ldmtool_diskgroup_name h diskgroup = do
+  r <- withCString diskgroup $ \diskgroup -> withForeignPtr h (\p -> c_ldmtool_diskgroup_name p diskgroup)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_diskgroup_volumes" c_ldmtool_diskgroup_volumes
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+ldmtool_diskgroup_volumes :: GuestfsH -> String -> IO [String]
+ldmtool_diskgroup_volumes h diskgroup = do
+  r <- withCString diskgroup $ \diskgroup -> withForeignPtr h (\p -> c_ldmtool_diskgroup_volumes p diskgroup)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_diskgroup_disks" c_ldmtool_diskgroup_disks
+  :: GuestfsP -> CString -> IO (Ptr CString)
+
+ldmtool_diskgroup_disks :: GuestfsH -> String -> IO [String]
+ldmtool_diskgroup_disks h diskgroup = do
+  r <- withCString diskgroup $ \diskgroup -> withForeignPtr h (\p -> c_ldmtool_diskgroup_disks p diskgroup)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_volume_type" c_ldmtool_volume_type
+  :: GuestfsP -> CString -> CString -> IO CString
+
+ldmtool_volume_type :: GuestfsH -> String -> String -> IO String
+ldmtool_volume_type h diskgroup volume = do
+  r <- withCString diskgroup $ \diskgroup -> withCString volume $ \volume -> withForeignPtr h (\p -> c_ldmtool_volume_type p diskgroup volume)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_volume_hint" c_ldmtool_volume_hint
+  :: GuestfsP -> CString -> CString -> IO CString
+
+ldmtool_volume_hint :: GuestfsH -> String -> String -> IO String
+ldmtool_volume_hint h diskgroup volume = do
+  r <- withCString diskgroup $ \diskgroup -> withCString volume $ \volume -> withForeignPtr h (\p -> c_ldmtool_volume_hint p diskgroup volume)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_ldmtool_volume_partitions" c_ldmtool_volume_partitions
+  :: GuestfsP -> CString -> CString -> IO (Ptr CString)
+
+ldmtool_volume_partitions :: GuestfsH -> String -> String -> IO [String]
+ldmtool_volume_partitions h diskgroup volume = do
+  r <- withCString diskgroup $ \diskgroup -> withCString volume $ \volume -> withForeignPtr h (\p -> c_ldmtool_volume_partitions p diskgroup volume)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekArray0 nullPtr r >>= mapM peekCString
+
+foreign import ccall unsafe "guestfs.h guestfs_part_set_gpt_type" c_part_set_gpt_type
+  :: GuestfsP -> CString -> CInt -> CString -> IO CInt
+
+part_set_gpt_type :: GuestfsH -> String -> Int -> String -> IO ()
+part_set_gpt_type h device partnum guid = do
+  r <- withCString device $ \device -> withCString guid $ \guid -> withForeignPtr h (\p -> c_part_set_gpt_type p device (fromIntegral partnum) guid)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_part_get_gpt_type" c_part_get_gpt_type
+  :: GuestfsP -> CString -> CInt -> IO CString
+
+part_get_gpt_type :: GuestfsH -> String -> Int -> IO String
+part_get_gpt_type h device partnum = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_part_get_gpt_type p device (fromIntegral partnum))
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_rename" c_rename
+  :: GuestfsP -> CString -> CString -> IO CInt
 
 rename :: GuestfsH -> String -> String -> IO ()
 rename h oldpath newpath = do
   r <- withCString oldpath $ \oldpath -> withCString newpath $ \newpath -> withForeignPtr h (\p -> c_rename p oldpath newpath)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_is_whole_device" c_is_whole_device
+  :: GuestfsP -> CString -> IO CInt
+
+is_whole_device :: GuestfsH -> String -> IO Bool
+is_whole_device h device = do
+  r <- withCString device $ \device -> withForeignPtr h (\p -> c_is_whole_device p device)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_feature_available" c_feature_available
+  :: GuestfsP -> Ptr CString -> IO CInt
+
+feature_available :: GuestfsH -> [String] -> IO Bool
+feature_available h groups = do
+  r <- withMany withCString groups $ \groups -> withArray0 nullPtr groups $ \groups -> withForeignPtr h (\p -> c_feature_available p groups)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_extlinux" c_extlinux
+  :: GuestfsP -> CString -> IO CInt
+
+extlinux :: GuestfsH -> String -> IO ()
+extlinux h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_extlinux p directory)
   if (r == -1)
     then do
       err <- last_error h

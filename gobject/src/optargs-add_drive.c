@@ -42,6 +42,9 @@ struct _GuestfsAddDrivePrivate {
   gchar *iface;
   gchar *name;
   gchar *label;
+  gchar *protocol;
+  /* OStringList not implemented yet */
+  gchar *username;
 };
 
 G_DEFINE_TYPE(GuestfsAddDrive, guestfs_add_drive, G_TYPE_OBJECT);
@@ -52,7 +55,10 @@ enum {
   PROP_GUESTFS_ADD_DRIVE_FORMAT,
   PROP_GUESTFS_ADD_DRIVE_IFACE,
   PROP_GUESTFS_ADD_DRIVE_NAME,
-  PROP_GUESTFS_ADD_DRIVE_LABEL
+  PROP_GUESTFS_ADD_DRIVE_LABEL,
+  PROP_GUESTFS_ADD_DRIVE_PROTOCOL,
+  PROP_GUESTFS_ADD_DRIVE_SERVER,
+  PROP_GUESTFS_ADD_DRIVE_USERNAME
 };
 
 static void
@@ -84,6 +90,16 @@ guestfs_add_drive_set_property(GObject *object, guint property_id, const GValue 
     case PROP_GUESTFS_ADD_DRIVE_LABEL:
       g_free(priv->label);
       priv->label = g_value_dup_string (value);
+      break;
+
+    case PROP_GUESTFS_ADD_DRIVE_PROTOCOL:
+      g_free(priv->protocol);
+      priv->protocol = g_value_dup_string (value);
+      break;
+
+    case PROP_GUESTFS_ADD_DRIVE_USERNAME:
+      g_free(priv->username);
+      priv->username = g_value_dup_string (value);
       break;
 
     default:
@@ -119,6 +135,14 @@ guestfs_add_drive_get_property(GObject *object, guint property_id, GValue *value
       g_value_set_string(value, priv->label);
       break;
 
+    case PROP_GUESTFS_ADD_DRIVE_PROTOCOL:
+      g_value_set_string(value, priv->protocol);
+      break;
+
+    case PROP_GUESTFS_ADD_DRIVE_USERNAME:
+      g_value_set_string(value, priv->username);
+      break;
+
     default:
       /* Invalid property */
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -135,6 +159,8 @@ guestfs_add_drive_finalize(GObject *object)
   g_free(priv->iface);
   g_free(priv->name);
   g_free(priv->label);
+  g_free(priv->protocol);
+  g_free(priv->username);
 
   G_OBJECT_CLASS(guestfs_add_drive_parent_class)->finalize(object);
 }
@@ -225,6 +251,40 @@ guestfs_add_drive_class_init(GuestfsAddDriveClass *klass)
     g_param_spec_string(
       "label",
       "label",
+      "A string.",
+      NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsAddDrive:protocol:
+   *
+   * A string.
+   */
+  g_object_class_install_property(
+    object_class,
+    PROP_GUESTFS_ADD_DRIVE_PROTOCOL,
+    g_param_spec_string(
+      "protocol",
+      "protocol",
+      "A string.",
+      NULL,
+      G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+    )
+  );
+
+  /**
+   * GuestfsAddDrive:username:
+   *
+   * A string.
+   */
+  g_object_class_install_property(
+    object_class,
+    PROP_GUESTFS_ADD_DRIVE_USERNAME,
+    g_param_spec_string(
+      "username",
+      "username",
       "A string.",
       NULL,
       G_PARAM_CONSTRUCT | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS

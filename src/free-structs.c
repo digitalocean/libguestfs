@@ -394,3 +394,21 @@ guestfs_free_hivex_value_list (struct guestfs_hivex_value_list *x)
   }
 }
 
+GUESTFS_DLL_PUBLIC void
+guestfs_free_internal_mountable (struct guestfs_internal_mountable *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_internal_mountable, (char *) x);
+    free (x);
+  }
+}
+
+GUESTFS_DLL_PUBLIC void
+guestfs_free_internal_mountable_list (struct guestfs_internal_mountable_list *x)
+{
+  if (x) {
+    xdr_free ((xdrproc_t) xdr_guestfs_int_internal_mountable_list, (char *) x);
+    free (x);
+  }
+}
+

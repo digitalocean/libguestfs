@@ -90,13 +90,14 @@
 /* Guestfs handle and associated structures. */
 
 /* State. */
-enum state { CONFIG, LAUNCHING, READY, NO_HANDLE };
+enum state { CONFIG = 0, LAUNCHING = 1, READY = 2,
+             NO_HANDLE = 0xebadebad };
 
-/* Attach method. */
-enum attach_method {
-  ATTACH_METHOD_APPLIANCE,
-  ATTACH_METHOD_LIBVIRT,
-  ATTACH_METHOD_UNIX,
+/* Backend. */
+enum backend {
+  BACKEND_DIRECT,
+  BACKEND_LIBVIRT,
+  BACKEND_UNIX,
 };
 
 /* Event. */
@@ -112,8 +113,58 @@ struct event {
 };
 
 /* Drives added to the handle. */
+enum drive_protocol {
+  drive_protocol_file,
+  drive_protocol_gluster,
+  drive_protocol_nbd,
+  drive_protocol_rbd,
+  drive_protocol_sheepdog,
+  drive_protocol_ssh,
+};
+
+enum drive_transport {
+  drive_transport_none = 0,     /* no transport specified */
+  drive_transport_tcp,          /* +tcp */
+  drive_transport_unix,         /* +unix */
+  /* XXX In theory gluster+rdma could be supported here, but
+   * I have no idea what gluster+rdma URLs would look like.
+   */
+};
+
+struct drive_server {
+  enum drive_transport transport;
+
+  /* This field is always non-NULL. */
+  union {
+    char *hostname;             /* hostname or IP address as a string */
+    char *socket;               /* Unix domain socket */
+  } u;
+
+  int port;                     /* port number */
+};
+
+struct drive_source {
+  enum drive_protocol protocol;
+
+  /* This field is always non-NULL.  It may be an empty string. */
+  union {
+    char *path;                 /* path to file (file) */
+    char *exportname;           /* name of export (nbd) */
+  } u;
+
+  /* For network transports, zero or more servers can be specified here.
+   *
+   * - for protocol "nbd": exactly one server
+   */
+  size_t nr_servers;
+  struct drive_server *servers;
+
+  /* Optional username (may be NULL if not specified). */
+  char *username;
+};
+
 struct drive {
-  char *path;
+  struct drive_source src;
 
   bool readonly;
   char *format;
@@ -122,7 +173,8 @@ struct drive {
   char *disk_label;
   bool use_cache_none;
 
-  void *priv;                   /* Data used by attach method. */
+  /* Data used by the backend. */
+  void *priv;
   void (*free_priv) (void *);
 };
 
@@ -134,8 +186,8 @@ struct qemu_param {
   char *qemu_value;             /* May be NULL. */
 };
 
-/* Backend (attach-method) operations. */
-struct attach_ops {
+/* Backend operations. */
+struct backend_ops {
   int (*launch) (guestfs_h *g, const char *arg); /* Initialize and launch. */
                                 /* Shutdown and cleanup. */
   int (*shutdown) (guestfs_h *g, int check_for_errors);
@@ -147,9 +199,51 @@ struct attach_ops {
   int (*hot_add_drive) (guestfs_h *g, struct drive *drv, size_t drv_index);
   int (*hot_remove_drive) (guestfs_h *g, struct drive *drv, size_t drv_index);
 };
-extern struct attach_ops attach_ops_appliance;
-extern struct attach_ops attach_ops_libvirt;
-extern struct attach_ops attach_ops_unix;
+extern struct backend_ops backend_ops_direct;
+extern struct backend_ops backend_ops_libvirt;
+extern struct backend_ops backend_ops_unix;
+
+/* Connection module.  A 'connection' represents the appliance console
+ * connection plus the daemon connection.  It hides the underlying
+ * representation (POSIX sockets, virStreamPtr).
+ */
+struct connection {
+  const struct connection_ops *ops;
+
+  /* In the real struct, private data used by each connection module
+   * follows here.
+   */
+};
+
+struct connection_ops {
+  /* Close everything and free the connection struct and any internal data. */
+  void (*free_connection) (guestfs_h *g, struct connection *);
+
+  /* Accept the connection (back to us) from the daemon.
+   *
+   * Returns: 1 = accepted, 0 = appliance closed connection, -1 = error
+   */
+  int (*accept_connection) (guestfs_h *g, struct connection *);
+
+  /* Read/write the given buffer from/to the daemon.  The whole buffer is
+   * read or written.  Partial reads/writes are automatically completed
+   * if possible, and if this wasn't possible it returns an error.
+   *
+   * These functions also monitor the console socket and deliver log
+   * messages up as events.  This is entirely transparent to the caller.
+   *
+   * Normal return is number of bytes read/written.  Both functions
+   * return 0 to mean that the appliance closed the connection or
+   * otherwise went away.  -1 means there's an error.
+   */
+  ssize_t (*read_data) (guestfs_h *g, struct connection *, void *buf, size_t len);
+  ssize_t (*write_data) (guestfs_h *g, struct connection *, const void *buf, size_t len);
+
+  /* Test if data is available to read on the daemon socket, without blocking.
+   * Returns: 1 = yes, 0 = no, -1 = error
+   */
+  int (*can_read_data) (guestfs_h *g, struct connection *);
+};
 
 /* Stack of old error handlers. */
 struct error_cb_stack {
@@ -168,7 +262,7 @@ struct guestfs_h
   bool verbose;                 /* Debugging. */
   bool trace;                   /* Trace calls. */
   bool autosync;                /* Autosync. */
-  bool direct;                  /* Direct mode. */
+  bool direct_mode;             /* Direct mode. */
   bool recovery_proc;           /* Create a recovery process. */
   bool enable_network;          /* Enable the network. */
   bool selinux;                 /* selinux enabled? */
@@ -184,6 +278,8 @@ struct guestfs_h
 
   struct qemu_param *qemu_params; /* Extra qemu parameters. */
 
+  char *program;                /* Program name. */
+
   /* Array of drives added by add-drive* APIs.
    *
    * Before launch this list can be empty or contain some drives.
@@ -191,7 +287,7 @@ struct guestfs_h
    * During launch, a dummy slot may be added which represents the
    * slot taken up by the appliance drive.
    *
-   * When hotplugging is supported by the attach method, drives can be
+   * When hotplugging is supported by the backend, drives can be
    * added to the end of this list after launch.  Also hot-removing a
    * drive causes a NULL slot to appear in the list.
    *
@@ -208,10 +304,10 @@ struct guestfs_h
   for (i = 0; i < (g)->nr_drives; ++i)    \
     if (((drv) = (g)->drives[i]) != NULL)
 
-  /* Attach method, and associated backend operations. */
-  enum attach_method attach_method;
-  char *attach_method_arg;
-  const struct attach_ops *attach_ops;
+  /* Backend, and associated backend operations. */
+  enum backend backend;
+  char *backend_arg;
+  const struct backend_ops *backend_ops;
 
   /**** Runtime information. ****/
   char *last_error;             /* Last error on handle. */
@@ -265,9 +361,14 @@ struct guestfs_h
    */
   int unique;
 
+  /* In src/info.c: Use new (JSON) or old (human) qemu-img info parser. */
+  int qemu_img_info_parser;
+#define QEMU_IMG_INFO_UNKNOWN_PARSER 0
+#define QEMU_IMG_INFO_NEW_PARSER 1
+#define QEMU_IMG_INFO_OLD_PARSER 2
+
   /*** Protocol. ***/
-  int fd[2];			/* Stdin/stdout of qemu. */
-  int sock;			/* Daemon communications socket. */
+  struct connection *conn;              /* Connection to appliance. */
   int msg_next_serial;
 
 #if HAVE_FUSE
@@ -290,9 +391,9 @@ struct guestfs_h
   virConnectCredentialPtr requested_credentials;
 #endif
 
-  /**** Private data for attach-methods. ****/
+  /**** Private data for backends. ****/
   /* NB: This cannot be a union because of a pathological case where
-   * the user changes attach-method while reusing the handle to launch
+   * the user changes backend while reusing the handle to launch
    * multiple times (not a recommended thing to do).  Some fields here
    * cache things across launches so that would break if we used a
    * union.
@@ -312,7 +413,7 @@ struct guestfs_h
     size_t cmdline_size;
 
     int virtio_scsi;      /* See function qemu_supports_virtio_scsi */
-  } app;
+  } direct;
 
 #ifdef HAVE_LIBVIRT
   struct {                      /* Used only by src/launch-libvirt.c. */
@@ -320,6 +421,9 @@ struct guestfs_h
     virDomainPtr dom;           /* libvirt domain */
   } virt;
 #endif
+  char *virt_selinux_label;
+  char *virt_selinux_imagelabel;
+  bool virt_selinux_norelabel_disks;
 };
 
 /* Per-filesystem data stored for inspect_os. */
@@ -393,7 +497,7 @@ enum inspect_os_package_management {
 
 struct inspect_fs {
   int is_root;
-  char *device;
+  char *mountable;
   enum inspect_os_type type;
   enum inspect_os_distro distro;
   enum inspect_os_package_format package_format;
@@ -416,7 +520,7 @@ struct inspect_fs {
 };
 
 struct inspect_fstab_entry {
-  char *device;
+  char *mountable;
   char *mountpoint;
 };
 
@@ -455,6 +559,8 @@ extern void guestfs___print_BufferOut (FILE *out, const char *buf, size_t buf_si
   }                                                      \
   while (0)
 
+extern void guestfs___launch_failed_error (guestfs_h *g);
+extern void guestfs___unexpected_close_error (guestfs_h *g);
 extern void guestfs___external_command_failed (guestfs_h *g, int status, const char *cmd_name, const char *extra);
 
 /* actions-support.c */
@@ -488,8 +594,12 @@ extern int guestfs___recv_discard (guestfs_h *g, const char *fn);
 extern int guestfs___send_file (guestfs_h *g, const char *filename);
 extern int guestfs___recv_file (guestfs_h *g, const char *filename);
 extern int guestfs___recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn);
-extern int guestfs___accept_from_daemon (guestfs_h *g);
 extern void guestfs___progress_message_callback (guestfs_h *g, const struct guestfs_progress *message);
+extern void guestfs___log_message_callback (guestfs_h *g, const char *buf, size_t len);
+
+/* conn-socket.c */
+extern struct connection *guestfs___new_conn_socket_listening (guestfs_h *g, int daemon_accept_sock, int console_sock);
+extern struct connection *guestfs___new_conn_socket_connected (guestfs_h *g, int daemon_sock, int console_sock);
 
 /* events.c */
 extern void guestfs___call_callbacks_void (guestfs_h *g, uint64_t event);
@@ -507,6 +617,9 @@ extern size_t guestfs___checkpoint_drives (guestfs_h *g);
 extern void guestfs___rollback_drives (guestfs_h *g, size_t);
 extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
 extern void guestfs___free_drives (guestfs_h *g);
+extern void guestfs___copy_drive_source (guestfs_h *g, const struct drive_source *src, struct drive_source *dest);
+extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
+extern void guestfs___free_drive_source (struct drive_source *src);
 
 /* appliance.c */
 extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd, char **appliance);
@@ -515,7 +628,6 @@ extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **initrd
 extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);
 extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
 extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
-extern void guestfs___launch_failed_error (guestfs_h *g);
 extern char *guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev, int flags);
 #define APPLIANCE_COMMAND_LINE_IS_TCG 1
 
@@ -524,14 +636,14 @@ extern char *guestfs___drive_name (size_t index, char *ret);
 
 /* inspect.c */
 extern void guestfs___free_inspect_info (guestfs_h *g);
-extern int guestfs___feature_available (guestfs_h *g, const char *feature);
 extern char *guestfs___download_to_tmp (guestfs_h *g, struct inspect_fs *fs, const char *filename, const char *basename, uint64_t max_size);
 extern struct inspect_fs *guestfs___search_for_root (guestfs_h *g, const char *root);
 
 /* inspect-fs.c */
 extern int guestfs___is_file_nocase (guestfs_h *g, const char *);
 extern int guestfs___is_dir_nocase (guestfs_h *g, const char *);
-extern int guestfs___check_for_filesystem_on (guestfs_h *g, const char *device, int is_block, int is_partnum);
+extern int guestfs___check_for_filesystem_on (guestfs_h *g,
+                                              const char *mountable);
 extern int guestfs___parse_unsigned_int (guestfs_h *g, const char *str);
 extern int guestfs___parse_unsigned_int_ignore_trailing (guestfs_h *g, const char *str);
 extern int guestfs___parse_major_minor (guestfs_h *g, struct inspect_fs *fs);

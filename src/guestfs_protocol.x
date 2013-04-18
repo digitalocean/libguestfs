@@ -322,10 +322,18 @@ struct guestfs_int_hivex_value {
 
 typedef struct guestfs_int_hivex_value guestfs_int_hivex_value_list<>;
 
+struct guestfs_int_internal_mountable {
+  int im_type;
+  string im_device<>;
+  string im_volume<>;
+};
+
+typedef struct guestfs_int_internal_mountable guestfs_int_internal_mountable_list<>;
+
 /* Function arguments and return values. */
 
 struct guestfs_mount_args {
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
@@ -694,20 +702,20 @@ struct guestfs_tgz_out_args {
 };
 
 struct guestfs_mount_ro_args {
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
 struct guestfs_mount_options_args {
   string options<>;
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
 struct guestfs_mount_vfs_args {
   string options<>;
   string vfstype<>;
-  string device<>;
+  string mountable<>;
   string mountpoint<>;
 };
 
@@ -1455,7 +1463,7 @@ struct guestfs_case_sensitive_path_ret {
 };
 
 struct guestfs_vfs_type_args {
-  string device<>;
+  string mountable<>;
 };
 
 struct guestfs_vfs_type_ret {
@@ -1787,7 +1795,7 @@ struct guestfs_fallocate64_args {
 };
 
 struct guestfs_vfs_label_args {
-  string device<>;
+  string mountable<>;
 };
 
 struct guestfs_vfs_label_ret {
@@ -1795,7 +1803,7 @@ struct guestfs_vfs_label_ret {
 };
 
 struct guestfs_vfs_uuid_args {
-  string device<>;
+  string mountable<>;
 };
 
 struct guestfs_vfs_uuid_ret {
@@ -2062,6 +2070,7 @@ struct guestfs_copy_device_to_device_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_copy_device_to_file_args {
@@ -2070,6 +2079,7 @@ struct guestfs_copy_device_to_file_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_copy_file_to_device_args {
@@ -2078,6 +2088,7 @@ struct guestfs_copy_file_to_device_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_copy_file_to_file_args {
@@ -2086,6 +2097,7 @@ struct guestfs_copy_file_to_file_args {
   int64_t srcoffset;
   int64_t destoffset;
   int64_t size;
+  bool sparse;
 };
 
 struct guestfs_tune2fs_args {
@@ -2173,7 +2185,7 @@ struct guestfs_ntfsclone_in_args {
 };
 
 struct guestfs_set_label_args {
-  string device<>;
+  string mountable<>;
   string label<>;
 };
 
@@ -2718,9 +2730,61 @@ struct guestfs_ldmtool_volume_partitions_ret {
   guestfs_str partitions<>;
 };
 
+struct guestfs_part_set_gpt_type_args {
+  string device<>;
+  int partnum;
+  string guid<>;
+};
+
+struct guestfs_part_get_gpt_type_args {
+  string device<>;
+  int partnum;
+};
+
+struct guestfs_part_get_gpt_type_ret {
+  string guid<>;
+};
+
 struct guestfs_rename_args {
   string oldpath<>;
   string newpath<>;
+};
+
+struct guestfs_is_whole_device_args {
+  string device<>;
+};
+
+struct guestfs_is_whole_device_ret {
+  bool flag;
+};
+
+struct guestfs_internal_parse_mountable_args {
+  string mountable<>;
+};
+
+struct guestfs_internal_parse_mountable_ret {
+  guestfs_int_internal_mountable mountable;
+};
+
+struct guestfs_internal_rhbz914931_args {
+  int count;
+};
+
+struct guestfs_feature_available_args {
+  guestfs_str groups<>;
+};
+
+struct guestfs_feature_available_ret {
+  bool isavailable;
+};
+
+struct guestfs_syslinux_args {
+  string device<>;
+  string directory<>;
+};
+
+struct guestfs_extlinux_args {
+  string directory<>;
 };
 
 /* Table of procedure numbers. */
@@ -3109,10 +3173,18 @@ enum guestfs_procedure {
   GUESTFS_PROC_LDMTOOL_VOLUME_TYPE = 389,
   GUESTFS_PROC_LDMTOOL_VOLUME_HINT = 390,
   GUESTFS_PROC_LDMTOOL_VOLUME_PARTITIONS = 391,
-  GUESTFS_PROC_RENAME = 394
+  GUESTFS_PROC_PART_SET_GPT_TYPE = 392,
+  GUESTFS_PROC_PART_GET_GPT_TYPE = 393,
+  GUESTFS_PROC_RENAME = 394,
+  GUESTFS_PROC_IS_WHOLE_DEVICE = 395,
+  GUESTFS_PROC_INTERNAL_PARSE_MOUNTABLE = 396,
+  GUESTFS_PROC_INTERNAL_RHBZ914931 = 397,
+  GUESTFS_PROC_FEATURE_AVAILABLE = 398,
+  GUESTFS_PROC_SYSLINUX = 399,
+  GUESTFS_PROC_EXTLINUX = 400
 };
 
-const GUESTFS_MAX_PROC_NR = 394;
+const GUESTFS_MAX_PROC_NR = 400;
 
 /* The remote procedure call protocol. */
 

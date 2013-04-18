@@ -89,13 +89,14 @@ check_PROGRAMS = tests$(EXEEXT) test-command$(EXEEXT) \
 	test-config$(EXEEXT) test-add-drive-opts$(EXEEXT) \
 	test-last-errno$(EXEEXT) test-private-data$(EXEEXT) \
 	test-user-cancel$(EXEEXT) test-debug-to-file$(EXEEXT) \
-	test-environment$(EXEEXT) $(am__EXEEXT_1)
+	test-environment$(EXEEXT) test-pwd$(EXEEXT) \
+	test-event-string$(EXEEXT) $(am__EXEEXT_1)
 TESTS = tests$(EXEEXT) test-just-header$(EXEEXT) \
 	test-create-handle$(EXEEXT) test-config$(EXEEXT) \
 	test-add-drive-opts$(EXEEXT) test-last-errno$(EXEEXT) \
 	test-private-data$(EXEEXT) test-user-cancel$(EXEEXT) \
 	test-debug-to-file$(EXEEXT) test-environment$(EXEEXT) \
-	$(am__EXEEXT_1)
+	test-event-string$(EXEEXT) $(am__EXEEXT_1)
 @HAVE_CXX_TRUE@am__append_1 = test-just-header-cxx
 @HAVE_CXX_TRUE@am__append_2 = test-just-header-cxx
 subdir = tests/c-api
@@ -132,9 +133,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/getdelim.m4 $(top_srcdir)/m4/getdtablesize.m4 \
 	$(top_srcdir)/m4/getline.m4 $(top_srcdir)/m4/getlogin_r.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/getpagesize.m4 \
-	$(top_srcdir)/m4/gettime.m4 $(top_srcdir)/m4/gettimeofday.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/glob.m4 \
-	$(top_srcdir)/m4/gnu-make.m4 $(top_srcdir)/m4/gnulib-common.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gettime.m4 \
+	$(top_srcdir)/m4/gettimeofday.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/glob.m4 $(top_srcdir)/m4/gnu-make.m4 \
+	$(top_srcdir)/m4/gnulib-common.m4 \
 	$(top_srcdir)/m4/gnulib-comp.m4 $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/hostent.m4 $(top_srcdir)/m4/human.m4 \
 	$(top_srcdir)/m4/i-ring.m4 $(top_srcdir)/m4/include_next.m4 \
@@ -160,8 +162,9 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mbstate_t.m4 $(top_srcdir)/m4/mbtowc.m4 \
 	$(top_srcdir)/m4/memchr.m4 $(top_srcdir)/m4/memmem.m4 \
 	$(top_srcdir)/m4/mempcpy.m4 $(top_srcdir)/m4/memrchr.m4 \
-	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mmap-anon.m4 \
-	$(top_srcdir)/m4/mode_t.m4 $(top_srcdir)/m4/msvc-inval.m4 \
+	$(top_srcdir)/m4/mkdtemp.m4 $(top_srcdir)/m4/mkstemps.m4 \
+	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
+	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
 	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
 	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
@@ -169,32 +172,35 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
 	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
 	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/pread.m4 \
-	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/putenv.m4 \
+	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
+	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/putenv.m4 \
 	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
 	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
 	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
 	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/safe-read.m4 \
+	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
+	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
 	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
-	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
-	$(top_srcdir)/m4/signal_h.m4 $(top_srcdir)/m4/size_max.m4 \
-	$(top_srcdir)/m4/sleep.m4 $(top_srcdir)/m4/snprintf.m4 \
-	$(top_srcdir)/m4/socketlib.m4 $(top_srcdir)/m4/sockets.m4 \
-	$(top_srcdir)/m4/socklen.m4 $(top_srcdir)/m4/sockpfaf.m4 \
-	$(top_srcdir)/m4/ssize_t.m4 $(top_srcdir)/m4/stat-time.m4 \
-	$(top_srcdir)/m4/stat.m4 $(top_srcdir)/m4/stdalign.m4 \
-	$(top_srcdir)/m4/stdarg.m4 $(top_srcdir)/m4/stdbool.m4 \
-	$(top_srcdir)/m4/stddef_h.m4 $(top_srcdir)/m4/stdint.m4 \
-	$(top_srcdir)/m4/stdint_h.m4 $(top_srcdir)/m4/stdio_h.m4 \
-	$(top_srcdir)/m4/stdlib_h.m4 $(top_srcdir)/m4/strchrnul.m4 \
-	$(top_srcdir)/m4/strdup.m4 $(top_srcdir)/m4/strerror.m4 \
-	$(top_srcdir)/m4/strerror_r.m4 $(top_srcdir)/m4/string_h.m4 \
-	$(top_srcdir)/m4/strndup.m4 $(top_srcdir)/m4/strnlen.m4 \
-	$(top_srcdir)/m4/strtoll.m4 $(top_srcdir)/m4/strtoull.m4 \
-	$(top_srcdir)/m4/strtoumax.m4 $(top_srcdir)/m4/symlink.m4 \
-	$(top_srcdir)/m4/symlinkat.m4 $(top_srcdir)/m4/sys_ioctl_h.m4 \
+	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
+	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
+	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
+	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
+	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
+	$(top_srcdir)/m4/sockpfaf.m4 $(top_srcdir)/m4/ssize_t.m4 \
+	$(top_srcdir)/m4/stat-time.m4 $(top_srcdir)/m4/stat.m4 \
+	$(top_srcdir)/m4/stdalign.m4 $(top_srcdir)/m4/stdarg.m4 \
+	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/m4/stddef_h.m4 \
+	$(top_srcdir)/m4/stdint.m4 $(top_srcdir)/m4/stdint_h.m4 \
+	$(top_srcdir)/m4/stdio_h.m4 $(top_srcdir)/m4/stdlib_h.m4 \
+	$(top_srcdir)/m4/strchrnul.m4 $(top_srcdir)/m4/strdup.m4 \
+	$(top_srcdir)/m4/strerror.m4 $(top_srcdir)/m4/strerror_r.m4 \
+	$(top_srcdir)/m4/string_h.m4 $(top_srcdir)/m4/strndup.m4 \
+	$(top_srcdir)/m4/strnlen.m4 $(top_srcdir)/m4/strtoll.m4 \
+	$(top_srcdir)/m4/strtoull.m4 $(top_srcdir)/m4/strtoumax.m4 \
+	$(top_srcdir)/m4/symlink.m4 $(top_srcdir)/m4/symlinkat.m4 \
+	$(top_srcdir)/m4/sys_ioctl_h.m4 \
 	$(top_srcdir)/m4/sys_select_h.m4 \
 	$(top_srcdir)/m4/sys_socket_h.m4 \
 	$(top_srcdir)/m4/sys_stat_h.m4 $(top_srcdir)/m4/sys_time_h.m4 \
@@ -203,18 +209,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/thread.m4 $(top_srcdir)/m4/threadlib.m4 \
 	$(top_srcdir)/m4/time_h.m4 $(top_srcdir)/m4/timespec.m4 \
 	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
-	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/usleep.m4 \
-	$(top_srcdir)/m4/utimbuf.m4 $(top_srcdir)/m4/utimecmp.m4 \
-	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
-	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
-	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
-	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
-	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
-	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
-	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
-	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xsize.m4 \
-	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
-	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
+	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
+	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utimbuf.m4 \
+	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
+	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
+	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/warn-on-use.m4 \
+	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
+	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
+	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
+	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
+	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
+	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
+	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -272,6 +280,15 @@ test_environment_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_environment_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am_test_event_string_OBJECTS =  \
+	test_event_string-test-event-string.$(OBJEXT)
+test_event_string_OBJECTS = $(am_test_event_string_OBJECTS)
+test_event_string_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+test_event_string_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_event_string_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_test_just_header_OBJECTS =  \
 	test_just_header-test-just-header.$(OBJEXT)
 test_just_header_OBJECTS = $(am_test_just_header_OBJECTS)
@@ -306,6 +323,12 @@ test_private_data_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_private_data_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am_test_pwd_OBJECTS = test-pwd.$(OBJEXT)
+test_pwd_OBJECTS = $(am_test_pwd_OBJECTS)
+test_pwd_LDADD = $(LDADD)
+test_pwd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(test_pwd_LDFLAGS) $(LDFLAGS) -o $@
 am_test_user_cancel_OBJECTS =  \
 	test_user_cancel-test-user-cancel.$(OBJEXT)
 test_user_cancel_OBJECTS = $(am_test_user_cancel_OBJECTS)
@@ -315,10 +338,13 @@ test_user_cancel_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(test_user_cancel_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-am_tests_OBJECTS = tests-tests.$(OBJEXT)
+am_tests_OBJECTS = tests-tests.$(OBJEXT) tests-tests-main.$(OBJEXT)
 tests_OBJECTS = $(am_tests_OBJECTS)
-tests_DEPENDENCIES = $(top_builddir)/src/libguestfs.la \
-	$(top_builddir)/gnulib/lib/libgnu.la
+am__DEPENDENCIES_1 =
+tests_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(top_builddir)/src/libutils.la \
+	$(top_builddir)/src/libguestfs.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(top_builddir)/gnulib/lib/libgnu.la
 tests_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(tests_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -377,16 +403,18 @@ am__v_CXXLD_1 =
 SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
-	$(test_just_header_SOURCES) $(test_just_header_cxx_SOURCES) \
-	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
+	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
+	$(test_just_header_cxx_SOURCES) $(test_last_errno_SOURCES) \
+	$(test_private_data_SOURCES) $(test_pwd_SOURCES) \
 	$(test_user_cancel_SOURCES) $(tests_SOURCES)
 DIST_SOURCES = $(test_add_drive_opts_SOURCES) $(test_command_SOURCES) \
 	$(test_config_SOURCES) $(test_create_handle_SOURCES) \
 	$(test_debug_to_file_SOURCES) $(test_environment_SOURCES) \
-	$(test_just_header_SOURCES) \
+	$(test_event_string_SOURCES) $(test_just_header_SOURCES) \
 	$(am__test_just_header_cxx_SOURCES_DIST) \
 	$(test_last_errno_SOURCES) $(test_private_data_SOURCES) \
-	$(test_user_cancel_SOURCES) $(tests_SOURCES)
+	$(test_pwd_SOURCES) $(test_user_cancel_SOURCES) \
+	$(tests_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -415,6 +443,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASH_COMPLETIONS_DIR = @BASH_COMPLETIONS_DIR@
+BASH_COMPLETION_CFLAGS = @BASH_COMPLETION_CFLAGS@
+BASH_COMPLETION_LIBS = @BASH_COMPLETION_LIBS@
 BITSIZEOF_PTRDIFF_T = @BITSIZEOF_PTRDIFF_T@
 BITSIZEOF_SIG_ATOMIC_T = @BITSIZEOF_SIG_ATOMIC_T@
 BITSIZEOF_SIZE_T = @BITSIZEOF_SIZE_T@
@@ -463,6 +494,7 @@ ERLCFLAGS = @ERLCFLAGS@
 ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 EXTRA_JAVAC_FLAGS = @EXTRA_JAVAC_FLAGS@
+EXTRA_PACKAGES = @EXTRA_PACKAGES@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
 FNMATCH_H = @FNMATCH_H@
@@ -653,6 +685,7 @@ GNULIB_RMDIR = @GNULIB_RMDIR@
 GNULIB_RPMATCH = @GNULIB_RPMATCH@
 GNULIB_SCANDIR = @GNULIB_SCANDIR@
 GNULIB_SCANF = @GNULIB_SCANF@
+GNULIB_SECURE_GETENV = @GNULIB_SECURE_GETENV@
 GNULIB_SELECT = @GNULIB_SELECT@
 GNULIB_SEND = @GNULIB_SEND@
 GNULIB_SENDTO = @GNULIB_SENDTO@
@@ -911,6 +944,7 @@ HAVE_REWINDDIR = @HAVE_REWINDDIR@
 HAVE_RPMATCH = @HAVE_RPMATCH@
 HAVE_SA_FAMILY_T = @HAVE_SA_FAMILY_T@
 HAVE_SCANDIR = @HAVE_SCANDIR@
+HAVE_SECURE_GETENV = @HAVE_SECURE_GETENV@
 HAVE_SETENV = @HAVE_SETENV@
 HAVE_SETHOSTNAME = @HAVE_SETHOSTNAME@
 HAVE_SIGACTION = @HAVE_SIGACTION@
@@ -1359,6 +1393,7 @@ STDDEF_H = @STDDEF_H@
 STDINT_H = @STDINT_H@
 STRIP = @STRIP@
 SUPERMIN = @SUPERMIN@
+SUPERMIN_EXTRA_OPTIONS = @SUPERMIN_EXTRA_OPTIONS@
 SUPERMIN_HELPER = @SUPERMIN_HELPER@
 SUPERMIN_PACKAGER_CONFIG = @SUPERMIN_PACKAGER_CONFIG@
 SYS_IOCTL_H_HAVE_WINSOCK2_H = @SYS_IOCTL_H_HAVE_WINSOCK2_H@
@@ -1459,11 +1494,16 @@ EXTRA_DIST = $(BUILT_SOURCES) test-add-libvirt-dom.c
 TESTS_ENVIRONMENT = \
 	SKIP_TEST_COMMAND=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
 	SKIP_TEST_COMMAND_LINES=$(shell ldd test-command | grep -sq 'not a dynamic executable' || echo 1) \
+	SKIP_TEST_COMMAND=$(shell ldd test-pwd | grep -sq 'not a dynamic executable' || echo 1) \
 	$(top_builddir)/run --test $(VG)
 
 
 #SKIP_TEST_CHECKSUM_8=$(shell if test `find ../initramfs -name squashfs.ko | wc -l` -eq 0; then echo 1; fi)
-tests_SOURCES = tests.c
+tests_SOURCES = \
+	tests.c \
+	tests.h \
+	tests-main.c
+
 tests_CPPFLAGS = \
 	-DGUESTFS_PRIVATE=1 \
 	-I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib \
@@ -1471,10 +1511,15 @@ tests_CPPFLAGS = \
 
 tests_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
-	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS) \
+	$(PCRE_CFLAGS)
 
 tests_LDADD = \
+	$(PCRE_LIBS) \
+	$(top_builddir)/src/libutils.la \
 	$(top_builddir)/src/libguestfs.la \
+	$(LIBXML2_LIBS) \
+	$(LIBVIRT_LIBS) \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
 
@@ -1482,6 +1527,8 @@ tests_LDADD = \
 # the "guestfs_command" and "guestfs_command_lines" functions.
 test_command_SOURCES = test-command.c
 test_command_LDFLAGS = -all-static
+test_pwd_SOURCES = test-pwd.c
+test_pwd_LDFLAGS = -all-static
 
 # Hand-written C API tests.
 test_just_header_SOURCES = test-just-header.c
@@ -1605,6 +1652,20 @@ test_environment_LDADD = \
 	$(top_builddir)/src/libguestfs.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
 
+test_event_string_SOURCES = test-event-string.c
+test_event_string_CPPFLAGS = \
+	-I$(top_srcdir)/src -I$(top_builddir)/src \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib
+
+test_event_string_CFLAGS = \
+	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
+	$(GPROF_CFLAGS) $(GCOV_CFLAGS)
+
+test_event_string_LDADD = \
+	$(top_builddir)/src/libguestfs.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
+
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1668,6 +1729,9 @@ test-debug-to-file$(EXEEXT): $(test_debug_to_file_OBJECTS) $(test_debug_to_file_
 test-environment$(EXEEXT): $(test_environment_OBJECTS) $(test_environment_DEPENDENCIES) $(EXTRA_test_environment_DEPENDENCIES) 
 	@rm -f test-environment$(EXEEXT)
 	$(AM_V_CCLD)$(test_environment_LINK) $(test_environment_OBJECTS) $(test_environment_LDADD) $(LIBS)
+test-event-string$(EXEEXT): $(test_event_string_OBJECTS) $(test_event_string_DEPENDENCIES) $(EXTRA_test_event_string_DEPENDENCIES) 
+	@rm -f test-event-string$(EXEEXT)
+	$(AM_V_CCLD)$(test_event_string_LINK) $(test_event_string_OBJECTS) $(test_event_string_LDADD) $(LIBS)
 test-just-header$(EXEEXT): $(test_just_header_OBJECTS) $(test_just_header_DEPENDENCIES) $(EXTRA_test_just_header_DEPENDENCIES) 
 	@rm -f test-just-header$(EXEEXT)
 	$(AM_V_CCLD)$(test_just_header_LINK) $(test_just_header_OBJECTS) $(test_just_header_LDADD) $(LIBS)
@@ -1680,6 +1744,9 @@ test-last-errno$(EXEEXT): $(test_last_errno_OBJECTS) $(test_last_errno_DEPENDENC
 test-private-data$(EXEEXT): $(test_private_data_OBJECTS) $(test_private_data_DEPENDENCIES) $(EXTRA_test_private_data_DEPENDENCIES) 
 	@rm -f test-private-data$(EXEEXT)
 	$(AM_V_CCLD)$(test_private_data_LINK) $(test_private_data_OBJECTS) $(test_private_data_LDADD) $(LIBS)
+test-pwd$(EXEEXT): $(test_pwd_OBJECTS) $(test_pwd_DEPENDENCIES) $(EXTRA_test_pwd_DEPENDENCIES) 
+	@rm -f test-pwd$(EXEEXT)
+	$(AM_V_CCLD)$(test_pwd_LINK) $(test_pwd_OBJECTS) $(test_pwd_LDADD) $(LIBS)
 test-user-cancel$(EXEEXT): $(test_user_cancel_OBJECTS) $(test_user_cancel_DEPENDENCIES) $(EXTRA_test_user_cancel_DEPENDENCIES) 
 	@rm -f test-user-cancel$(EXEEXT)
 	$(AM_V_CCLD)$(test_user_cancel_LINK) $(test_user_cancel_OBJECTS) $(test_user_cancel_LDADD) $(LIBS)
@@ -1694,16 +1761,19 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-command.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-pwd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_add_drive_opts-test-add-drive-opts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_config-test-config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_create_handle-test-create-handle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_debug_to_file-test-debug-to-file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_environment-test-environment.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_event_string-test-event-string.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_just_header-test-just-header.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_just_header_cxx-test-just-header-cxx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_last_errno-test-last-errno.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_private_data-test-private-data.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_user_cancel-test-user-cancel.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tests-tests-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tests-tests.Po@am__quote@
 
 .c.o:
@@ -1797,6 +1867,20 @@ test_environment-test-environment.obj: test-environment.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_environment_CPPFLAGS) $(CPPFLAGS) $(test_environment_CFLAGS) $(CFLAGS) -c -o test_environment-test-environment.obj `if test -f 'test-environment.c'; then $(CYGPATH_W) 'test-environment.c'; else $(CYGPATH_W) '$(srcdir)/test-environment.c'; fi`
 
+test_event_string-test-event-string.o: test-event-string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -MT test_event_string-test-event-string.o -MD -MP -MF $(DEPDIR)/test_event_string-test-event-string.Tpo -c -o test_event_string-test-event-string.o `test -f 'test-event-string.c' || echo '$(srcdir)/'`test-event-string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_event_string-test-event-string.Tpo $(DEPDIR)/test_event_string-test-event-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-event-string.c' object='test_event_string-test-event-string.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -c -o test_event_string-test-event-string.o `test -f 'test-event-string.c' || echo '$(srcdir)/'`test-event-string.c
+
+test_event_string-test-event-string.obj: test-event-string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -MT test_event_string-test-event-string.obj -MD -MP -MF $(DEPDIR)/test_event_string-test-event-string.Tpo -c -o test_event_string-test-event-string.obj `if test -f 'test-event-string.c'; then $(CYGPATH_W) 'test-event-string.c'; else $(CYGPATH_W) '$(srcdir)/test-event-string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_event_string-test-event-string.Tpo $(DEPDIR)/test_event_string-test-event-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-event-string.c' object='test_event_string-test-event-string.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_event_string_CPPFLAGS) $(CPPFLAGS) $(test_event_string_CFLAGS) $(CFLAGS) -c -o test_event_string-test-event-string.obj `if test -f 'test-event-string.c'; then $(CYGPATH_W) 'test-event-string.c'; else $(CYGPATH_W) '$(srcdir)/test-event-string.c'; fi`
+
 test_just_header-test-just-header.o: test-just-header.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_just_header_CPPFLAGS) $(CPPFLAGS) $(test_just_header_CFLAGS) $(CFLAGS) -MT test_just_header-test-just-header.o -MD -MP -MF $(DEPDIR)/test_just_header-test-just-header.Tpo -c -o test_just_header-test-just-header.o `test -f 'test-just-header.c' || echo '$(srcdir)/'`test-just-header.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_just_header-test-just-header.Tpo $(DEPDIR)/test_just_header-test-just-header.Po
@@ -1866,6 +1950,20 @@ tests-tests.obj: tests.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests.c' object='tests-tests.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -c -o tests-tests.obj `if test -f 'tests.c'; then $(CYGPATH_W) 'tests.c'; else $(CYGPATH_W) '$(srcdir)/tests.c'; fi`
+
+tests-tests-main.o: tests-main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -MT tests-tests-main.o -MD -MP -MF $(DEPDIR)/tests-tests-main.Tpo -c -o tests-tests-main.o `test -f 'tests-main.c' || echo '$(srcdir)/'`tests-main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tests-tests-main.Tpo $(DEPDIR)/tests-tests-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests-main.c' object='tests-tests-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -c -o tests-tests-main.o `test -f 'tests-main.c' || echo '$(srcdir)/'`tests-main.c
+
+tests-tests-main.obj: tests-main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -MT tests-tests-main.obj -MD -MP -MF $(DEPDIR)/tests-tests-main.Tpo -c -o tests-tests-main.obj `if test -f 'tests-main.c'; then $(CYGPATH_W) 'tests-main.c'; else $(CYGPATH_W) '$(srcdir)/tests-main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tests-tests-main.Tpo $(DEPDIR)/tests-tests-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests-main.c' object='tests-tests-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_CPPFLAGS) $(CPPFLAGS) $(tests_CFLAGS) $(CFLAGS) -c -o tests-tests-main.obj `if test -f 'tests-main.c'; then $(CYGPATH_W) 'tests-main.c'; else $(CYGPATH_W) '$(srcdir)/tests-main.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

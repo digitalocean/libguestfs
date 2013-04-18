@@ -40,8 +40,13 @@ let rec generate_ruby_c () =
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+#include <errno.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored \"-Wstrict-prototypes\"
 #include <ruby.h>
+#pragma GCC diagnostic pop
 
 /* ruby/defines.h defines '_'. */
 #ifdef _
@@ -262,6 +267,31 @@ ruby_delete_event_callback (VALUE gv, VALUE event_handlev)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   Guestfs::Guestfs.event_to_string(events) -> string
+ *
+ * Call
+ * +guestfs_event_to_string+[http://libguestfs.org/guestfs.3.html#guestfs_event_to_string]
+ * to convert an event or event bitmask into a printable string.
+ */
+static VALUE
+ruby_event_to_string (VALUE modulev, VALUE eventsv)
+{
+  uint64_t events;
+  char *str;
+
+  events = NUM2ULL (eventsv);
+  str = guestfs_event_to_string (events);
+  if (str == NULL)
+    rb_raise (e_Error, \"%%s\", strerror (errno));
+
+  volatile VALUE rv = rb_str_new2 (str);
+  free (str);
+
+  return rv;
+}
+
 static void
 ruby_event_callback_wrapper (guestfs_h *g,
                              void *data,
@@ -373,26 +403,6 @@ get_all_event_callbacks (guestfs_h *g, size_t *len_rtn)
   return r;
 }
 
-/*
- * call-seq:
- *   g.user_cancel() -> nil
- *
- * Call
- * +guestfs_user_cancel+[http://libguestfs.org/guestfs.3.html#guestfs_user_cancel]
- * to cancel the current transfer.  This is safe to call from Ruby
- * signal handlers and threads.
- */
-static VALUE
-ruby_user_cancel (VALUE gv)
-{
-  guestfs_h *g;
-
-  Data_Get_Struct (gv, guestfs_h, g);
-  if (g)
-    guestfs_user_cancel (g);
-  return Qnil;
-}
-
 ";
 
   List.iter (
@@ -502,7 +512,8 @@ ruby_user_cancel (VALUE gv)
 
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | Key n
+        | Pathname n | Device n | Mountable n
+        | Dev_or_Path n | Mountable_or_Path n | String n | Key n
         | FileIn n | FileOut n ->
           pr "  const char *%s = StringValueCStr (%sv);\n" n n;
         | BufferIn n ->
@@ -604,7 +615,8 @@ ruby_user_cancel (VALUE gv)
 
       List.iter (
         function
-        | Pathname _ | Device _ | Dev_or_Path _ | String _ | Key _
+        | Pathname _ | Device _ | Mountable _
+        | Dev_or_Path _ | Mountable_or_Path _ | String _ | Key _
         | FileIn _ | FileOut _ | OptString _ | Bool _ | Int _ | Int64 _
         | BufferIn _ | Pointer _ -> ()
         | StringList n | DeviceList n ->
@@ -700,8 +712,8 @@ Init__guestfs (void)
                     ruby_set_event_callback, 2);
   rb_define_method (c_guestfs, \"delete_event_callback\",
                     ruby_delete_event_callback, 1);
-  rb_define_method (c_guestfs, \"user_cancel\",
-                    ruby_user_cancel, 0);
+  rb_define_module_function (m_guestfs, \"event_to_string\",
+                    ruby_event_to_string, 1);
 
 ";
 

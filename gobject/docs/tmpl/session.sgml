@@ -1234,6 +1234,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_extlinux ##### -->
+<para>
+
+</para>
+
+@session: 
+@directory: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_fallocate ##### -->
 <para>
 
@@ -1254,6 +1265,17 @@ GuestfsSession
 @session: 
 @path: 
 @len: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_feature_available ##### -->
+<para>
+
+</para>
+
+@session: 
+@groups: 
 @err: 
 @Returns: 
 
@@ -1464,6 +1486,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_get_backend ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_get_cachedir ##### -->
 <para>
 
@@ -1612,6 +1644,16 @@ GuestfsSession
 
 
 <!-- ##### FUNCTION guestfs_session_get_pid ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_get_program ##### -->
 <para>
 
 </para>
@@ -2790,6 +2832,17 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_is_whole_device ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_is_zero ##### -->
 <para>
 
@@ -3865,7 +3918,7 @@ GuestfsSession
 </para>
 
 @session: 
-@device: 
+@mountable: 
 @mountpoint: 
 @err: 
 @Returns: 
@@ -3926,7 +3979,7 @@ GuestfsSession
 
 @session: 
 @options: 
-@device: 
+@mountable: 
 @mountpoint: 
 @err: 
 @Returns: 
@@ -3938,7 +3991,7 @@ GuestfsSession
 </para>
 
 @session: 
-@device: 
+@mountable: 
 @mountpoint: 
 @err: 
 @Returns: 
@@ -3952,7 +4005,7 @@ GuestfsSession
 @session: 
 @options: 
 @vfstype: 
-@device: 
+@mountable: 
 @mountpoint: 
 @err: 
 @Returns: 
@@ -4155,6 +4208,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_part_get_gpt_type ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@partnum: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_part_get_mbr_id ##### -->
 <para>
 
@@ -4210,6 +4275,19 @@ GuestfsSession
 @device: 
 @partnum: 
 @bootable: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_part_set_gpt_type ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@partnum: 
+@guid: 
 @err: 
 @Returns: 
 
@@ -4706,7 +4784,7 @@ GuestfsSession
 </para>
 
 @session: 
-@attachmethod: 
+@backend: 
 @err: 
 @Returns: 
 
@@ -4718,6 +4796,17 @@ GuestfsSession
 
 @session: 
 @autosync: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_backend ##### -->
+<para>
+
+</para>
+
+@session: 
+@backend: 
 @err: 
 @Returns: 
 
@@ -4799,7 +4888,7 @@ GuestfsSession
 </para>
 
 @session: 
-@device: 
+@mountable: 
 @label: 
 @err: 
 @Returns: 
@@ -4869,6 +4958,17 @@ GuestfsSession
 
 @session: 
 @pgroup: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_set_program ##### -->
+<para>
+
+</para>
+
+@session: 
+@program: 
 @err: 
 @Returns: 
 
@@ -5237,6 +5337,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_syslinux ##### -->
+<para>
+
+</para>
+
+@session: 
+@device: 
+@optargs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_tail ##### -->
 <para>
 
@@ -5468,6 +5580,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_user_cancel ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_utimens ##### -->
 <para>
 
@@ -5509,7 +5631,7 @@ GuestfsSession
 </para>
 
 @session: 
-@device: 
+@mountable: 
 @err: 
 @Returns: 
 
@@ -5520,7 +5642,7 @@ GuestfsSession
 </para>
 
 @session: 
-@device: 
+@mountable: 
 @err: 
 @Returns: 
 
@@ -5531,7 +5653,7 @@ GuestfsSession
 </para>
 
 @session: 
-@device: 
+@mountable: 
 @err: 
 @Returns: 
 

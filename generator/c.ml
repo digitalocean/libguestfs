@@ -127,6 +127,12 @@ let rec generate_prototype ?(extern = true) ?(static = false)
       | Key n ->
           next ();
           pr "const char *%s" n
+      | Mountable n | Mountable_or_Path n ->
+          next();
+          if in_daemon then
+            pr "const mountable_t *%s" n
+          else
+            pr "const char *%s" n
       | StringList n | DeviceList n ->
           next ();
           pr "char *const *%s" n
@@ -160,6 +166,7 @@ let rec generate_prototype ?(extern = true) ?(static = false)
 
 (* Generate C call arguments, eg "(handle, foo, bar)" *)
 and generate_c_call_args ?handle ?(implicit_size_ptr = "&size")
+    ?(in_daemon = false)
     (ret, args, optargs) =
   pr "(";
   let comma = ref false in
@@ -176,6 +183,9 @@ and generate_c_call_args ?handle ?(implicit_size_ptr = "&size")
     | BufferIn n ->
         next ();
         pr "%s, %s_size" n n
+    | Mountable n | Mountable_or_Path n ->
+        next ();
+        (if in_daemon then pr "&%s" else pr "%s") n
     | arg ->
         next ();
         pr "%s" (name_of_argt arg)
@@ -506,6 +516,8 @@ typedef void (*guestfs_event_callback) (
 extern GUESTFS_DLL_PUBLIC int guestfs_set_event_callback (guestfs_h *g, guestfs_event_callback cb, uint64_t event_bitmask, int flags, void *opaque);
 #define GUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_delete_event_callback (guestfs_h *g, int event_handle);
+#define GUESTFS_HAVE_EVENT_TO_STRING 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_event_to_string (uint64_t event);
 
 /* Old-style event handling. */
 #ifndef GUESTFS_TYPEDEF_LOG_MESSAGE_CB
@@ -545,10 +557,6 @@ extern GUESTFS_DLL_PUBLIC void guestfs_set_close_callback (guestfs_h *g, guestfs
 #define GUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
 extern GUESTFS_DLL_PUBLIC void guestfs_set_progress_callback (guestfs_h *g, guestfs_progress_cb cb, void *opaque)
   GUESTFS_DEPRECATED_BY(\"set_event_callback\");
-
-/* User cancellation. */
-#define GUESTFS_HAVE_USER_CANCEL 1
-extern GUESTFS_DLL_PUBLIC void guestfs_user_cancel (guestfs_h *g);
 
 /* Private data area. */
 #define GUESTFS_HAVE_SET_PRIVATE 1
@@ -726,7 +734,6 @@ pr "\
 #define LIBGUESTFS_HAVE_DELETE_EVENT_CALLBACK 1
 #define LIBGUESTFS_HAVE_SET_CLOSE_CALLBACK 1
 #define LIBGUESTFS_HAVE_SET_PROGRESS_CALLBACK 1
-#define LIBGUESTFS_HAVE_USER_CANCEL 1
 #define LIBGUESTFS_HAVE_SET_PRIVATE 1
 #define LIBGUESTFS_HAVE_GET_PRIVATE 1
 #define LIBGUESTFS_HAVE_FIRST_PRIVATE 1
@@ -946,8 +953,9 @@ and generate_client_actions hash () =
       (* parameters which should not be NULL *)
       | String n
       | Device n
+      | Mountable n
       | Pathname n
-      | Dev_or_Path n
+      | Dev_or_Path n | Mountable_or_Path n
       | FileIn n
       | FileOut n
       | BufferIn n
@@ -1063,8 +1071,9 @@ and generate_client_actions hash () =
       function
       | String n			(* strings *)
       | Device n
+      | Mountable n
       | Pathname n
-      | Dev_or_Path n
+      | Dev_or_Path n | Mountable_or_Path n
       | FileIn n
       | FileOut n ->
           (* guestfish doesn't support string escaping, so neither do we *)
@@ -1276,8 +1285,11 @@ and generate_client_actions hash () =
   in
 
   List.iter (
-    fun f ->
+    function
+    | { wrapper = true } as f ->
       if hash_matches hash f then generate_non_daemon_wrapper f
+    | { wrapper = false } ->
+      () (* no wrapper *)
   ) non_daemon_functions;
 
   (* Client-side stubs for each function. *)
@@ -1380,7 +1392,9 @@ and generate_client_actions hash () =
     ) else (
       List.iter (
         function
-        | Pathname n | Device n | Dev_or_Path n | String n | Key n ->
+        | Pathname n | Device n | Mountable n | Dev_or_Path n 
+        | Mountable_or_Path n | String n
+        | Key n ->
           pr "  args.%s = (char *) %s;\n" n n
         | OptString n ->
           pr "  args.%s = %s ? (char **) &%s : NULL;\n" n n n
@@ -1717,6 +1731,72 @@ and generate_client_actions_variants () =
       generate_back_compat_wrapper f
   ) all_functions_sorted
 
+(* Code for turning events and event bitmasks into printable strings. *)
+and generate_event_string_c () =
+  generate_header CStyle LGPLv2plus;
+
+  (* Longest event name. *)
+  let longest = List.fold_left (
+    fun longest (name, _) ->
+      let len = String.length name in
+      if len > longest then len else longest
+  ) 0 events in
+
+  pr "\
+#include <config.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libintl.h>
+
+#include \"guestfs.h\"
+#include \"guestfs-internal.h\"
+
+GUESTFS_DLL_PUBLIC char *
+guestfs_event_to_string (uint64_t event)
+{
+  char *ret;
+  uint64_t i;
+  size_t len;
+
+  /* Count how long the final string will be. */
+  len = 1;
+  for (i = 0; i < %d; ++i) {
+    if ((event & (UINT64_C(1) << i)) != 0)
+      len += %d; /* overestimate */
+  }
+
+  /* Allocate the final string and construct it. */
+  ret = malloc (len);
+  if (!ret)
+    return NULL;
+
+  len = 0;
+
+" (List.length events) (longest + 1);
+
+  (* Sort the events alphabetically so the events are returned sorted. *)
+  let sorted_event_names = List.sort compare (List.map fst events) in
+
+  List.iter (
+    fun name ->
+      pr "  if ((event & GUESTFS_EVENT_%s) != 0) {\n" (String.uppercase name);
+      pr "    strcpy (&ret[len], \"%s,\");\n" name;
+      pr "    len += %d + 1;\n" (String.length name);
+      pr "  }\n";
+  ) sorted_event_names;
+
+  pr "
+  if (len > 0)
+    ret[len-1] = '\\0'; /* truncates the final trailing comma */
+  else
+    ret[0] = '\\0';
+
+  return ret;
+}
+"
+
 (* Generate the linker script which controls the visibility of
  * symbols in the public ABI and ensures no other symbols get
  * exported accidentally.
@@ -1729,6 +1809,7 @@ and generate_linker_script () =
     "guestfs_create_flags";
     "guestfs_close";
     "guestfs_delete_event_callback";
+    "guestfs_event_to_string";
     "guestfs_first_private";
     "guestfs_get_error_handler";
     "guestfs_get_out_of_memory_handler";
@@ -1747,7 +1828,6 @@ and generate_linker_script () =
     "guestfs_set_private";
     "guestfs_set_progress_callback";
     "guestfs_set_subprocess_quit_callback";
-    "guestfs_user_cancel";
 
     (* Unofficial parts of the API: the bindings code use these
      * functions, so it is useful to export them.
@@ -1756,6 +1836,9 @@ and generate_linker_script () =
     "guestfs___safe_malloc";
     "guestfs___safe_strdup";
     "guestfs___safe_memdup";
+
+    (* Used only by virt-df and virt-alignment-scan. *)
+    "guestfs___add_libvirt_dom";
   ] in
   let functions =
     List.flatten (

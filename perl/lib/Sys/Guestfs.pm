@@ -60,10 +60,6 @@ LVs, what filesystem is in each LV, etc.).  It can also run commands
 in the context of the guest.  Also you can access filesystems over
 FUSE.
 
-See also L<Sys::Guestfs::Lib(3)> for a set of useful library
-functions for using libguestfs from Perl, including integration
-with libvirt.
-
 =head1 ERRORS
 
 All errors turn into calls to C<croak> (see L<Carp(3)>).
@@ -86,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.394';
+$VERSION = '0.400';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -255,6 +251,13 @@ this function.
 This removes the callback which was previously registered using
 C<set_event_callback>.
 
+=item $str = Sys::Guestfs::event_to_string ($events);
+
+C<$events> is either a single event or a bitmask of events.
+This returns a printable string, useful for debugging.
+
+Note that this is a class function, not a method.
+
 =item $errnum = $g->last_errno ();
 
 This returns the last error number (errno) that happened on the
@@ -274,11 +277,6 @@ errnos:
  if ($g->last_errno() == Errno::EEXIST()) {
    # mkdir failed because the directory exists already.
  }
-
-=item $g->user_cancel ();
-
-Cancel current transfer.  This is safe to call from Perl signal
-handlers and threads.
 
 =cut
 
@@ -430,7 +428,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -498,9 +496,99 @@ the drive will also be named C</dev/disk/guestfs/I<label>>.
 
 See L<guestfs(3)/DISK LABELS>.
 
+=item C<protocol>
+
+The optional protocol argument can be used to select an alternate
+source protocol.
+
+See also: L<guestfs(3)/REMOTE STORAGE>.
+
+=over 4
+
+=item C<protocol = "file">
+
+C<filename> is interpreted as a local file or device.
+This is the default if the optional protocol parameter
+is omitted.
+
+=item C<protocol = "gluster">
+
+Connect to the GlusterFS server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = "nbd">
+
+Connect to the Network Block Device server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
+
+=item C<protocol = "rbd">
+
+Connect to the Ceph (librbd/RBD) server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/CEPH>.
+
+=item C<protocol = "sheepdog">
+
+Connect to the Sheepdog server.
+The C<server> parameter may also be supplied - see below.
+
+See also: L<guestfs(3)/SHEEPDOG>.
+
+=item C<protocol = "ssh">
+
+Connect to the Secure Shell (ssh) server.
+
+The C<server> parameter must be supplied.
+The C<username> parameter may be supplied.  See below.
+
+See also: L<guestfs(3)/SSH>.
+
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label]);
+=item C<server>
+
+For protocols which require access to a remote server, this
+is a list of server(s).
+
+ Protocol       Number of servers required
+ --------       --------------------------
+ file           List must be empty or param not used at all
+ gluster        Exactly one
+ nbd            Exactly one
+ rbd            One or more
+ sheepdog       Zero or more
+ ssh            Exactly one
+
+Each list element is a string specifying a server.  The string must be
+in one of the following formats:
+
+ hostname
+ hostname:port
+ tcp:hostname
+ tcp:hostname:port
+ unix:/path/to/socket
+
+If the port number is omitted, then the standard port number
+for the protocol is used (see C</etc/services>).
+
+=item C<username>
+
+For the C<ssh> protocol only, this specifies the remote username.
+
+If not given, then the local username is used.  But note this sometimes
+may give unexpected results, for example if using the libvirt backend
+and if the libvirt backend is configured to start the qemu appliance
+as a special user such as C<qemu.qemu>.  If in doubt, specify the
+remote username you want.
+
+=back
+
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username]);
 
 This is an alias of L</add_drive>.
 
@@ -721,6 +809,12 @@ I<Notes:>
 
 =item *
 
+C<$g-E<gt>feature_available> is the same as this call, but
+with a slightly simpler to use API: that call returns a boolean
+true/false instead of throwing an error.
+
+=item *
+
 You must call C<$g-E<gt>launch> before calling this function.
 
 The reason is because we don't know what groups are
@@ -757,10 +851,11 @@ See also C<$g-E<gt>filesystem_available>.
 This command returns a list of all optional groups that this
 daemon knows about.  Note this returns both supported and unsupported
 groups.  To find out which ones the daemon can actually support
-you have to call C<$g-E<gt>available> on each member of the
-returned list.
+you have to call C<$g-E<gt>available> / C<$g-E<gt>feature_available>
+on each member of the returned list.
 
-See also C<$g-E<gt>available> and L<guestfs(3)/AVAILABILITY>.
+See also C<$g-E<gt>available>, C<$g-E<gt>feature_available>
+and L<guestfs(3)/AVAILABILITY>.
 
 =item $g->base64_in ($base64file, $filename);
 
@@ -1201,7 +1296,7 @@ The first character of C<qemuparam> string must be a C<-> (dash).
 
 C<qemuvalue> can be NULL.
 
-=item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+=item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 The four calls C<$g-E<gt>copy_device_to_device>,
 C<$g-E<gt>copy_device_to_file>,
@@ -1222,17 +1317,23 @@ overlapping regions may not be copied correctly.
 If the destination is a file, it is created if required.  If
 the destination file is not large enough, it is extended.
 
-=item $g->copy_device_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+If the C<sparse> flag is true then the call avoids writing
+blocks that contain only zeroes, which can help in some situations
+where the backing disk is thin-provisioned.  Note that unless
+the target is already zeroed, using this option will result
+in incorrect copying.
+
+=item $g->copy_device_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
 
-=item $g->copy_file_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+=item $g->copy_file_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
 
-=item $g->copy_file_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size]);
+=item $g->copy_file_to_file ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
 See C<$g-E<gt>copy_device_to_device> for a general overview
 of this call.
@@ -1489,6 +1590,29 @@ This returns C<true> if and only if there is a file, directory
 
 See also C<$g-E<gt>is_file>, C<$g-E<gt>is_dir>, C<$g-E<gt>stat>.
 
+=item $g->extlinux ($directory);
+
+Install the SYSLINUX bootloader on the device mounted at C<directory>.
+Unlike C<$g-E<gt>syslinux> which requires a FAT filesystem, this can
+be used on an ext2/3/4 or btrfs filesystem.
+
+The C<directory> parameter can be either a mountpoint, or a
+directory within the mountpoint.
+
+You also have to mark the partition as "active"
+(C<$g-E<gt>part_set_bootable>) and a Master Boot Record must
+be installed (eg. using C<$g-E<gt>pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<extlinux(1)> man page for further information.
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<extlinux.conf> on the filesystem
+under C<directory>.  For further information
+about the contents of this file, see L<extlinux(1)>.
+
+See also C<$g-E<gt>syslinux>.
+
 =item $g->fallocate ($path, $len);
 
 This command preallocates a file (containing zero bytes) named
@@ -1523,6 +1647,13 @@ of files created through that call to 1GB.
 Do not confuse this with the guestfish-specific
 C<alloc> and C<sparse> commands which create
 a file in the host and attach it as a device.
+
+=item $isavailable = $g->feature_available (\@groups);
+
+This is the same as C<$g-E<gt>available>, but unlike that
+call it returns a simple true/false boolean result, instead
+of throwing an exception if a feature is not found.  For
+other documentation see C<$g-E<gt>available>.
 
 =item @lines = $g->fgrep ($pattern, $path);
 
@@ -1697,7 +1828,8 @@ it doesn't mean that a particular filesystem can be mounted,
 since filesystems can fail for other reasons such as it being
 a later version of the filesystem, or having incompatible features.
 
-See also C<$g-E<gt>available>, L<guestfs(3)/AVAILABILITY>.
+See also C<$g-E<gt>available>, C<$g-E<gt>feature_available>,
+L<guestfs(3)/AVAILABILITY>.
 
 =item $g->fill ($c, $len, $path);
 
@@ -1850,15 +1982,30 @@ guest kernel command line.
 
 If C<NULL> then no options are added.
 
-=item $attachmethod = $g->get_attach_method ();
+=item $backend = $g->get_attach_method ();
 
-Return the current attach method.
+Return the current backend.
 
-See C<$g-E<gt>set_attach_method> and L<guestfs(3)/ATTACH METHOD>.
+See C<$g-E<gt>set_backend> and L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.>
+In new code, use the L</get_backend> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $autosync = $g->get_autosync ();
 
 Get the autosync flag.
+
+=item $backend = $g->get_backend ();
+
+Return the current backend.
+
+This handle property was previously called the "attach method".
+
+See C<$g-E<gt>set_backend> and L<guestfs(3)/BACKEND>.
 
 =item $cachedir = $g->get_cachedir ();
 
@@ -2082,6 +2229,10 @@ Return the process ID of the qemu subprocess.  If there is no
 qemu subprocess, then this will return an error.
 
 This is an internal call used for debugging and testing.
+
+=item $program = $g->get_program ();
+
+Get the program name.  See C<$g-E<gt>set_program>.
 
 =item $qemu = $g->get_qemu ();
 
@@ -3362,6 +3513,11 @@ with the given C<path> name.
 
 See also C<$g-E<gt>stat>.
 
+=item $flag = $g->is_whole_device ($device);
+
+This returns C<true> if and only if C<device> refers to a whole block
+device. That is, not a partition or a logical device.
+
 =item $zeroflag = $g->is_zero ($path);
 
 This returns true iff the file exists and the file is empty or
@@ -3570,7 +3726,7 @@ volumes.
 =item %fses = $g->list_filesystems ();
 
 This inspection command looks for filesystems on partitions,
-block devices and logical volumes, returning a list of devices
+block devices and logical volumes, returning a list of C<mountables>
 containing filesystems and their type.
 
 The return value is a hash, where the keys are the devices
@@ -3581,6 +3737,9 @@ For example:
  "/dev/sda2" => "ext2"
  "/dev/vg_guest/lv_root" => "ext4"
  "/dev/vg_guest/lv_swap" => "swap"
+
+The key is not necessarily a block device. It may also be an opaque
+'mountable' string which can be passed to C<$g-E<gt>mount>.
 
 The value can have the special value "unknown", meaning the
 content of the device is undetermined or empty.
@@ -4436,13 +4595,14 @@ This loads a kernel module in the appliance.
 The kernel module must have been whitelisted when libguestfs
 was built (see C<appliance/kmod.whitelist.in> in the source).
 
-=item $g->mount ($device, $mountpoint);
+=item $g->mount ($mountable, $mountpoint);
 
 Mount a guest disk at a position in the filesystem.  Block devices
 are named C</dev/sda>, C</dev/sdb> and so on, as they were added to
 the guest.  If those block devices contain partitions, they will have
 the usual names (eg. C</dev/sda1>).  Also LVM C</dev/VG/LV>-style
-names can be used.
+names can be used, or 'mountable' strings returned by
+C<$g-E<gt>list_filesystems> or C<$g-E<gt>inspect_get_mountpoints>.
 
 The rules are the same as for L<mount(2)>:  A filesystem must
 first be mounted on C</> before others can be mounted.  Other
@@ -4519,7 +4679,7 @@ This command lets you mount C<file> (a filesystem image
 in a file) on a mount point.  It is entirely equivalent to
 the command C<mount -o loop file mountpoint>.
 
-=item $g->mount_options ($options, $device, $mountpoint);
+=item $g->mount_options ($options, $mountable, $mountpoint);
 
 This is the same as the C<$g-E<gt>mount> command, but it
 allows you to set the mount options as for the
@@ -4529,12 +4689,12 @@ If the C<options> parameter is an empty string, then
 no options are passed (all options default to whatever
 the filesystem uses).
 
-=item $g->mount_ro ($device, $mountpoint);
+=item $g->mount_ro ($mountable, $mountpoint);
 
 This is the same as the C<$g-E<gt>mount> command, but it
 mounts the filesystem with the read-only (I<-o ro>) flag.
 
-=item $g->mount_vfs ($options, $vfstype, $device, $mountpoint);
+=item $g->mount_vfs ($options, $vfstype, $mountable, $mountpoint);
 
 This is the same as the C<$g-E<gt>mount> command, but it
 allows you to set both the mount options and the vfstype
@@ -4740,6 +4900,12 @@ C<device> has the bootable flag set.
 
 See also C<$g-E<gt>part_set_bootable>.
 
+=item $guid = $g->part_get_gpt_type ($device, $partnum);
+
+Return the type GUID of numbered GPT partition C<partnum>. For MBR partitions,
+return an appropriate GUID corresponding to the MBR type. Behaviour is undefined
+for other partition types.
+
 =item $idbyte = $g->part_get_mbr_id ($device, $partnum);
 
 Returns the MBR type byte (also known as the ID byte) from
@@ -4870,6 +5036,15 @@ device C<device>.  Note that partitions are numbered from 1.
 The bootable flag is used by some operating systems (notably
 Windows) to determine which partition to boot from.  It is by
 no means universally recognized.
+
+=item $g->part_set_gpt_type ($device, $partnum, $guid);
+
+Set the type GUID of numbered GPT partition C<partnum> to C<guid>. Return an
+error if the partition table of C<device> isn't GPT, or if C<guid> is not a
+valid GUID.
+
+See L<http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs>
+for a useful list of type GUIDs.
 
 =item $g->part_set_mbr_id ($device, $partnum, $idbyte);
 
@@ -5146,7 +5321,7 @@ labels (see the optional C<label> argument to C<$g-E<gt>add_drive_opts>).
 If you didn't use a label, then they cannot be removed.
 
 You can call this function before or after launching the handle.
-If called after launch, if the attach-method supports it, we try to hot
+If called after launch, if the backend supports it, we try to hot
 unplug the drive: see L<guestfs(3)/HOTPLUGGING>.  The disk B<must not>
 be in use (eg. mounted) when you do this.  We try to detect if the
 disk is in use and stop you from doing this.
@@ -5327,12 +5502,19 @@ C<LIBGUESTFS_APPEND> environment variable.
 Setting C<append> to C<NULL> means I<no> additional options
 are passed (libguestfs always adds a few of its own).
 
-=item $g->set_attach_method ($attachmethod);
+=item $g->set_attach_method ($backend);
 
-Set the method that libguestfs uses to connect to the back end
+Set the method that libguestfs uses to connect to the backend
 guestfsd daemon.
 
-See L<guestfs(3)/ATTACH METHOD>.
+See L<guestfs(3)/BACKEND>.
+
+I<This function is deprecated.>
+In new code, use the L</set_backend> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->set_autosync ($autosync);
 
@@ -5343,6 +5525,15 @@ when the handle is closed
 
 This is enabled by default (since libguestfs 1.5.24, previously it was
 disabled by default).
+
+=item $g->set_backend ($backend);
+
+Set the method that libguestfs uses to connect to the backend
+guestfsd daemon.
+
+This handle property was previously called the "attach method".
+
+See L<guestfs(3)/BACKEND>.
 
 =item $g->set_cachedir ($cachedir);
 
@@ -5425,9 +5616,9 @@ L<tune2fs(8)> manpage.
 You can use either C<$g-E<gt>tune2fs_l> or C<$g-E<gt>get_e2uuid>
 to return the existing UUID of a filesystem.
 
-=item $g->set_label ($device, $label);
+=item $g->set_label ($mountable, $label);
 
-Set the filesystem label on C<device> to C<label>.
+Set the filesystem label on C<mountable> to C<label>.
 
 Only some filesystem types support labels, and libguestfs supports
 setting labels on only a subset of these.
@@ -5435,6 +5626,9 @@ setting labels on only a subset of these.
 On ext2/3/4 filesystems, labels are limited to 16 bytes.
 
 On NTFS filesystems, labels are limited to 128 unicode characters.
+
+Setting the label on a btrfs subvolume will set the label on its parent
+filesystem.
 
 To read the label on a filesystem, call C<$g-E<gt>vfs_label>.
 
@@ -5525,6 +5719,15 @@ The default for this flag is false, because usually you want
 C<^C> to kill the subprocess.  Guestfish sets this flag to
 true when used interactively, so that C<^C> can cancel
 long-running commands gracefully (see C<$g-E<gt>user_cancel>).
+
+=item $g->set_program ($program);
+
+Set the program name.  This is an informative string which the
+main program may optionally set in the handle.
+
+When the handle is created, the program name in the handle is
+set to the basename from C<argv[0]>.  If that was not possible,
+it is set to the empty string (but never C<NULL>).
 
 =item $g->set_qemu ($qemu);
 
@@ -5898,6 +6101,38 @@ underlying disk image.
 You should always call this if you have modified a disk image, before
 closing the handle.
 
+=item $g->syslinux ($device [, directory => $directory]);
+
+Install the SYSLINUX bootloader on C<device>.
+
+The device parameter must be either a whole disk formatted
+as a FAT filesystem, or a partition formatted as a FAT filesystem.
+In the latter case, the partition should be marked as "active"
+(C<$g-E<gt>part_set_bootable>) and a Master Boot Record must be
+installed (eg. using C<$g-E<gt>pwrite_device>) on the first
+sector of the whole disk.
+The SYSLINUX package comes with some suitable Master Boot Records.
+See the L<syslinux(1)> man page for further information.
+
+The optional arguments are:
+
+=over 4
+
+=item C<directory>
+
+Install SYSLINUX in the named subdirectory, instead of in the
+root directory of the FAT filesystem.
+
+=back
+
+Additional configuration can be supplied to SYSLINUX by
+placing a file called C<syslinux.cfg> on the FAT filesystem,
+either in the root directory, or under C<directory> if that
+optional argument is being used.  For further information
+about the contents of this file, see L<syslinux(1)>.
+
+See also C<$g-E<gt>extlinux>.
+
 =item @lines = $g->tail ($path);
 
 This command returns up to the last 10 lines of a file as
@@ -6218,6 +6453,35 @@ error occurs.
 
 See also C<$g-E<gt>upload>, C<$g-E<gt>pwrite>.
 
+=item $g->user_cancel ();
+
+This function cancels the current upload or download operation.
+
+Unlike most other libguestfs calls, this function is signal safe and
+thread safe.  You can call it from a signal handler or from another
+thread, without needing to do any locking.
+
+The transfer that was in progress (if there is one) will stop shortly
+afterwards, and will return an error.  The errno (see
+L</guestfs_last_errno>) is set to C<EINTR>, so you can test for this
+to find out if the operation was cancelled or failed because of
+another error.
+
+No cleanup is performed: for example, if a file was being uploaded
+then after cancellation there may be a partially uploaded file.  It is
+the caller's responsibility to clean up if necessary.
+
+There are two common places that you might call C<$g-E<gt>user_cancel>:
+
+In an interactive text-based program, you might call it from a
+C<SIGINT> signal handler so that pressing C<^C> cancels the current
+operation.  (You also need to call L</guestfs_set_pgroup> so that
+child processes don't receive the C<^C> signal).
+
+In a graphical program, when the main thread is displaying a progress
+bar with a cancel button, wire up the cancel button to call this
+function.
+
 =item $g->utimens ($path, $atsecs, $atnsecs, $mtsecs, $mtnsecs);
 
 This command sets the timestamps of a file with nanosecond
@@ -6274,31 +6538,29 @@ I<Note:> Don't use this call to test for availability
 of features.  In enterprise distributions we backport
 features from later versions into earlier versions,
 making this an unreliable way to test for features.
-Use C<$g-E<gt>available> instead.
+Use C<$g-E<gt>available> or C<$g-E<gt>feature_available> instead.
 
-=item $label = $g->vfs_label ($device);
+=item $label = $g->vfs_label ($mountable);
 
-This returns the filesystem label of the filesystem on
-C<device>.
+This returns the label of the filesystem on C<mountable>.
 
 If the filesystem is unlabeled, this returns the empty string.
 
 To find a filesystem from the label, use C<$g-E<gt>findfs_label>.
 
-=item $fstype = $g->vfs_type ($device);
+=item $fstype = $g->vfs_type ($mountable);
 
 This command gets the filesystem type corresponding to
-the filesystem on C<device>.
+the filesystem on C<mountable>.
 
 For most filesystems, the result is the name of the Linux
 VFS module which would be used to mount this filesystem
 if you mounted it without specifying the filesystem type.
 For example a string such as C<ext3> or C<ntfs>.
 
-=item $uuid = $g->vfs_uuid ($device);
+=item $uuid = $g->vfs_uuid ($mountable);
 
-This returns the filesystem UUID of the filesystem on
-C<device>.
+This returns the filesystem UUID of the filesystem on C<mountable>.
 
 If the filesystem does not have a UUID, this returns the empty string.
 
@@ -6748,6 +7010,9 @@ use vars qw(%guestfs_introspection);
       iface => [ 'iface', 'string', 2 ],
       name => [ 'name', 'string', 3 ],
       label => [ 'label', 'string', 4 ],
+      protocol => [ 'protocol', 'string', 5 ],
+      server => [ 'server', 'string list', 6 ],
+      username => [ 'username', 'string', 7 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",
@@ -7102,7 +7367,7 @@ use vars qw(%guestfs_introspection);
   "btrfs_subvolume_list" => {
     ret => 'struct btrfssubvolume list',
     args => [
-      [ 'fs', 'string(path)', 0 ],
+      [ 'fs', 'string(mountable_or_path)', 0 ],
     ],
     name => "btrfs_subvolume_list",
     description => "list btrfs snapshots and subvolumes",
@@ -7274,6 +7539,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_device_to_device",
     description => "copy from source device to destination device",
@@ -7288,6 +7554,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_device_to_file",
     description => "copy from source device to destination file",
@@ -7302,6 +7569,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_file_to_device",
     description => "copy from source file to destination device",
@@ -7316,6 +7584,7 @@ use vars qw(%guestfs_introspection);
       srcoffset => [ 'srcoffset', 'int64', 0 ],
       destoffset => [ 'destoffset', 'int64', 1 ],
       size => [ 'size', 'int64', 2 ],
+      sparse => [ 'sparse', 'bool', 3 ],
     },
     name => "copy_file_to_file",
     description => "copy from source file to destination file",
@@ -7535,6 +7804,14 @@ use vars qw(%guestfs_introspection);
     name => "exists",
     description => "test if file or directory exists",
   },
+  "extlinux" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "extlinux",
+    description => "install the SYSLINUX bootloader on an ext2/3/4 or btrfs filesystem",
+  },
   "fallocate" => {
     ret => 'void',
     args => [
@@ -7552,6 +7829,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "fallocate64",
     description => "preallocate a file in the guest filesystem",
+  },
+  "feature_available" => {
+    ret => 'bool',
+    args => [
+      [ 'groups', 'string list', 0 ],
+    ],
+    name => "feature_available",
+    description => "test availability of some parts of the API",
   },
   "fgrep" => {
     ret => 'string list',
@@ -7699,7 +7984,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_attach_method",
-    description => "get the attach method",
+    description => "get the backend",
   },
   "get_autosync" => {
     ret => 'bool',
@@ -7707,6 +7992,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_autosync",
     description => "get autosync mode",
+  },
+  "get_backend" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_backend",
+    description => "get the backend",
   },
   "get_cachedir" => {
     ret => 'string',
@@ -7819,6 +8111,13 @@ use vars qw(%guestfs_introspection);
     ],
     name => "get_pid",
     description => "get PID of qemu subprocess",
+  },
+  "get_program" => {
+    ret => 'const string',
+    args => [
+    ],
+    name => "get_program",
+    description => "get the program name",
   },
   "get_qemu" => {
     ret => 'const string',
@@ -8184,7 +8483,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_arch" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_arch",
     description => "get architecture of inspected operating system",
@@ -8192,7 +8491,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_distro" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_distro",
     description => "get distro of inspected operating system",
@@ -8200,7 +8499,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_drive_mappings" => {
     ret => 'hash',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_drive_mappings",
     description => "get drive letter mappings",
@@ -8208,7 +8507,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_filesystems" => {
     ret => 'string list',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_filesystems",
     description => "get filesystems associated with inspected operating system",
@@ -8216,7 +8515,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_format" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_format",
     description => "get format of inspected operating system",
@@ -8224,7 +8523,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_hostname" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_hostname",
     description => "get hostname of the operating system",
@@ -8232,7 +8531,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_icon" => {
     ret => 'buffer',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     optargs => {
       favicon => [ 'favicon', 'bool', 0 ],
@@ -8244,7 +8543,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_major_version" => {
     ret => 'int',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_major_version",
     description => "get major version of inspected operating system",
@@ -8252,7 +8551,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_minor_version" => {
     ret => 'int',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_minor_version",
     description => "get minor version of inspected operating system",
@@ -8260,7 +8559,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_mountpoints" => {
     ret => 'hash',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_mountpoints",
     description => "get mountpoints of inspected operating system",
@@ -8268,7 +8567,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_package_format" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_package_format",
     description => "get package format used by the operating system",
@@ -8276,7 +8575,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_package_management" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_package_management",
     description => "get package management tool used by the operating system",
@@ -8284,7 +8583,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_product_name" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_product_name",
     description => "get product name of inspected operating system",
@@ -8292,7 +8591,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_product_variant" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_product_variant",
     description => "get product variant of inspected operating system",
@@ -8307,7 +8606,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_type" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_type",
     description => "get type of inspected operating system",
@@ -8315,7 +8614,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_windows_current_control_set" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_windows_current_control_set",
     description => "get Windows CurrentControlSet of inspected operating system",
@@ -8323,7 +8622,7 @@ use vars qw(%guestfs_introspection);
   "inspect_get_windows_systemroot" => {
     ret => 'string',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_get_windows_systemroot",
     description => "get Windows systemroot of inspected operating system",
@@ -8331,7 +8630,7 @@ use vars qw(%guestfs_introspection);
   "inspect_is_live" => {
     ret => 'bool',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_is_live",
     description => "get live flag for install disk",
@@ -8339,7 +8638,7 @@ use vars qw(%guestfs_introspection);
   "inspect_is_multipart" => {
     ret => 'bool',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_is_multipart",
     description => "get multipart flag for install disk",
@@ -8347,7 +8646,7 @@ use vars qw(%guestfs_introspection);
   "inspect_is_netinst" => {
     ret => 'bool',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_is_netinst",
     description => "get netinst (network installer) flag for install disk",
@@ -8355,7 +8654,7 @@ use vars qw(%guestfs_introspection);
   "inspect_list_applications" => {
     ret => 'struct application list',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_list_applications",
     description => "get list of applications installed in the operating system",
@@ -8363,7 +8662,7 @@ use vars qw(%guestfs_introspection);
   "inspect_list_applications2" => {
     ret => 'struct application2 list',
     args => [
-      [ 'root', 'string(device)', 0 ],
+      [ 'root', 'string(mountable)', 0 ],
     ],
     name => "inspect_list_applications2",
     description => "get list of applications installed in the operating system",
@@ -8751,6 +9050,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "is_symlink",
     description => "test if symbolic link",
+  },
+  "is_whole_device" => {
+    ret => 'bool',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    name => "is_whole_device",
+    description => "test if a device is a whole device",
   },
   "is_zero" => {
     ret => 'bool',
@@ -9611,7 +9918,7 @@ use vars qw(%guestfs_introspection);
   "mount" => {
     ret => 'void',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
       [ 'mountpoint', 'string', 1 ],
     ],
     name => "mount",
@@ -9663,7 +9970,7 @@ use vars qw(%guestfs_introspection);
     ret => 'void',
     args => [
       [ 'options', 'string', 0 ],
-      [ 'device', 'string(device)', 1 ],
+      [ 'mountable', 'string(mountable)', 1 ],
       [ 'mountpoint', 'string', 2 ],
     ],
     name => "mount_options",
@@ -9672,7 +9979,7 @@ use vars qw(%guestfs_introspection);
   "mount_ro" => {
     ret => 'void',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
       [ 'mountpoint', 'string', 1 ],
     ],
     name => "mount_ro",
@@ -9683,7 +9990,7 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'options', 'string', 0 ],
       [ 'vfstype', 'string', 1 ],
-      [ 'device', 'string(device)', 2 ],
+      [ 'mountable', 'string(mountable)', 2 ],
       [ 'mountpoint', 'string', 3 ],
     ],
     name => "mount_vfs",
@@ -9838,6 +10145,15 @@ use vars qw(%guestfs_introspection);
     name => "part_get_bootable",
     description => "return true if a partition is bootable",
   },
+  "part_get_gpt_type" => {
+    ret => 'string',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+    ],
+    name => "part_get_gpt_type",
+    description => "get the type GUID of a GPT partition",
+  },
   "part_get_mbr_id" => {
     ret => 'int',
     args => [
@@ -9881,6 +10197,16 @@ use vars qw(%guestfs_introspection);
     ],
     name => "part_set_bootable",
     description => "make a partition bootable",
+  },
+  "part_set_gpt_type" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'partnum', 'int', 1 ],
+      [ 'guid', 'string', 2 ],
+    ],
+    name => "part_set_gpt_type",
+    description => "set the type GUID of a GPT partition",
   },
   "part_set_mbr_id" => {
     ret => 'void',
@@ -10249,10 +10575,10 @@ use vars qw(%guestfs_introspection);
   "set_attach_method" => {
     ret => 'void',
     args => [
-      [ 'attachmethod', 'string', 0 ],
+      [ 'backend', 'string', 0 ],
     ],
     name => "set_attach_method",
-    description => "set the attach method",
+    description => "set the backend",
   },
   "set_autosync" => {
     ret => 'void',
@@ -10261,6 +10587,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_autosync",
     description => "set autosync mode",
+  },
+  "set_backend" => {
+    ret => 'void',
+    args => [
+      [ 'backend', 'string', 0 ],
+    ],
+    name => "set_backend",
+    description => "set the backend",
   },
   "set_cachedir" => {
     ret => 'void',
@@ -10320,7 +10654,7 @@ use vars qw(%guestfs_introspection);
   "set_label" => {
     ret => 'void',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
       [ 'label', 'string', 1 ],
     ],
     name => "set_label",
@@ -10374,6 +10708,14 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_pgroup",
     description => "set process group flag",
+  },
+  "set_program" => {
+    ret => 'void',
+    args => [
+      [ 'program', 'string', 0 ],
+    ],
+    name => "set_program",
+    description => "set the program name",
   },
   "set_qemu" => {
     ret => 'void',
@@ -10643,6 +10985,17 @@ use vars qw(%guestfs_introspection);
     name => "sync",
     description => "sync disks, writes are flushed through to the disk image",
   },
+  "syslinux" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+    ],
+    optargs => {
+      directory => [ 'directory', 'string', 0 ],
+    },
+    name => "syslinux",
+    description => "install the SYSLINUX bootloader",
+  },
   "tail" => {
     ret => 'string list',
     args => [
@@ -10831,6 +11184,13 @@ use vars qw(%guestfs_introspection);
     name => "upload_offset",
     description => "upload a file from the local machine with offset",
   },
+  "user_cancel" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "user_cancel",
+    description => "cancel the current upload or download operation",
+  },
   "utimens" => {
     ret => 'void',
     args => [
@@ -10860,7 +11220,7 @@ use vars qw(%guestfs_introspection);
   "vfs_label" => {
     ret => 'string',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
     ],
     name => "vfs_label",
     description => "get the filesystem label",
@@ -10868,7 +11228,7 @@ use vars qw(%guestfs_introspection);
   "vfs_type" => {
     ret => 'string',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
     ],
     name => "vfs_type",
     description => "get the Linux VFS type corresponding to a mounted device",
@@ -10876,7 +11236,7 @@ use vars qw(%guestfs_introspection);
   "vfs_uuid" => {
     ret => 'string',
     args => [
-      [ 'device', 'string(device)', 0 ],
+      [ 'mountable', 'string(mountable)', 0 ],
     ],
     name => "vfs_uuid",
     description => "get the filesystem UUID",
@@ -11286,15 +11646,10 @@ containing useful introspection information about the method
   }
 
 To test if particular features are supported by the current
-build, use the L</available> method like the example below.  Note
+build, use the L</feature_available> method like the example below.  Note
 that the appliance must be launched first.
 
- $g->available ( ["augeas"] );
-
-Since the L</available> method croaks if the feature is not supported,
-you might also want to wrap this in an eval and return a boolean.
-In fact this has already been done for you: use
-L<Sys::Guestfs::Lib(3)/feature_available>.
+ $g->feature_available ( ["augeas"] );
 
 For further discussion on this topic, refer to
 L<guestfs(3)/AVAILABILITY>.
@@ -11330,7 +11685,6 @@ Please see the file COPYING.LIB for the full license.
 
 L<guestfs(3)>,
 L<guestfish(1)>,
-L<http://libguestfs.org>,
-L<Sys::Guestfs::Lib(3)>.
+L<http://libguestfs.org>.
 
 =cut

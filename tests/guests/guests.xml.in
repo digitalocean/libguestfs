@@ -152,6 +152,22 @@
   </domain>
 
   <domain type='test'>
+    <name>fedora-btrfs</name>
+    <memory>1048576</memory>
+    <os>
+      <type>hvm</type>
+      <boot dev='hd'/>
+    </os>
+    <devices>
+      <disk type='file' device='disk'>
+        <driver name='qemu'/>
+        <source file='@abs_builddir@/fedora-btrfs.img'/>
+        <target dev='vda' bus='virtio'/>
+      </disk>
+    </devices>
+  </domain>
+
+  <domain type='test'>
     <name>fedora</name>
     <memory>1048576</memory>
     <os>

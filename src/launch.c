@@ -41,13 +41,13 @@
 
 static mode_t get_umask (guestfs_h *g);
 
-static const struct attach_ops *
-get_attach_ops (guestfs_h *g)
+static const struct backend_ops *
+get_backend_ops (guestfs_h *g)
 {
-  switch (g->attach_method) {
-  case ATTACH_METHOD_APPLIANCE: return &attach_ops_appliance;
-  case ATTACH_METHOD_LIBVIRT:   return &attach_ops_libvirt;
-  case ATTACH_METHOD_UNIX:      return &attach_ops_unix;
+  switch (g->backend) {
+  case BACKEND_DIRECT:    return &backend_ops_direct;
+  case BACKEND_LIBVIRT:   return &backend_ops_libvirt;
+  case BACKEND_UNIX:      return &backend_ops_unix;
   default: abort ();
   }
 }
@@ -78,17 +78,17 @@ guestfs__launch (guestfs_h *g)
 
   /* Some common debugging information. */
   if (g->verbose) {
-    CLEANUP_FREE char *attach_method = guestfs__get_attach_method (g);
+    CLEANUP_FREE char *backend = guestfs__get_backend (g);
 
-    debug (g, "launch: attach-method=%s", attach_method);
+    debug (g, "launch: backend=%s", backend);
     debug (g, "launch: tmpdir=%s", g->tmpdir);
     debug (g, "launch: umask=0%03o", get_umask (g));
     debug (g, "launch: euid=%d", geteuid ());
   }
 
   /* Launch the appliance. */
-  g->attach_ops = get_attach_ops (g);
-  return g->attach_ops->launch (g, g->attach_method_arg);
+  g->backend_ops = get_backend_ops (g);
+  return g->backend_ops->launch (g, g->backend_arg);
 }
 
 /* launch (of the appliance) generates approximate progress
@@ -105,7 +105,7 @@ guestfs__launch (guestfs_h *g)
  * or removed in future.
  * (2) Messages are only sent if more than 5 seconds has elapsed
  * since the launch clock started.
- * (3) There is a gross hack in proto.c to make this work.
+ * (3) There is a hack in proto.c to make this work.
  */
 void
 guestfs___launch_send_progress (guestfs_h *g, int perdozen)
@@ -160,48 +160,32 @@ guestfs___timeval_diff (const struct timeval *x, const struct timeval *y)
   return msec;
 }
 
-/* Since this is the most common error seen by people who have
- * installation problems, buggy qemu, etc, and since no one reads the
- * FAQ, describe in this error message what resources are available to
- * debug launch problems.
- */
-void
-guestfs___launch_failed_error (guestfs_h *g)
-{
-  if (g->verbose)
-    error (g, _("guestfs_launch failed, see earlier error messages"));
-  else
-    error (g, _("guestfs_launch failed.\n"
-                "See http://libguestfs.org/guestfs-faq.1.html#debugging-libguestfs\n"
-                "and/or run 'libguestfs-test-tool'."));
-}
-
 int
 guestfs__get_pid (guestfs_h *g)
 {
-  if (g->state != READY || g->attach_ops == NULL) {
+  if (g->state != READY || g->backend_ops == NULL) {
     error (g, _("get-pid can only be called after launch"));
     return -1;
   }
 
-  if (g->attach_ops->get_pid == NULL)
+  if (g->backend_ops->get_pid == NULL)
     NOT_SUPPORTED (g, -1,
-                   _("the current attach-method does not support 'get-pid'"));
+                   _("the current backend does not support 'get-pid'"));
 
-  return g->attach_ops->get_pid (g);
+  return g->backend_ops->get_pid (g);
 }
 
 /* Maximum number of disks. */
 int
 guestfs__max_disks (guestfs_h *g)
 {
-  const struct attach_ops *attach_ops = get_attach_ops (g);
+  const struct backend_ops *backend_ops = get_backend_ops (g);
 
-  if (attach_ops->max_disks == NULL)
+  if (backend_ops->max_disks == NULL)
     NOT_SUPPORTED (g, -1,
-                   _("the current attach-method does not allow max disks to be queried"));
+                   _("the current backend does not allow max disks to be queried"));
 
-  return attach_ops->max_disks (g);
+  return backend_ops->max_disks (g);
 }
 
 /* You had to call this function after launch in versions <= 1.0.70,
@@ -293,7 +277,7 @@ guestfs__config (guestfs_h *g,
 }
 
 /* Construct the Linux command line passed to the appliance.  This is
- * used by the 'appliance' and 'libvirt' attach-methods, and is simply
+ * used by the 'direct' and 'libvirt' backends, and is simply
  * located in this file because it's a convenient place for this
  * common code.
  *

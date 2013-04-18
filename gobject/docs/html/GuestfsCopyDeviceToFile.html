@@ -62,6 +62,7 @@ struct              <a class="link" href="GuestfsCopyDeviceToFile.html#GuestfsCo
 <pre class="synopsis">
   "<a class="link" href="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--destoffset" title='The "destoffset" property'>destoffset</a>"               <span class="type">gint64</span>                : Read / Write / Construct
   "<a class="link" href="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--size" title='The "size" property'>size</a>"                     <span class="type">gint64</span>                : Read / Write / Construct
+  "<a class="link" href="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--sparse" title='The "sparse" property'>sparse</a>"                   <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
   "<a class="link" href="GuestfsCopyDeviceToFile.html#GuestfsCopyDeviceToFile--srcoffset" title='The "srcoffset" property'>srcoffset</a>"                <span class="type">gint64</span>                : Read / Write / Construct
 </pre>
 </div>
@@ -140,6 +141,15 @@ A 64-bit integer.
 A 64-bit integer.
 </p>
 <p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsCopyDeviceToFile--sparse"></a><h3>The <code class="literal">"sparse"</code> property</h3>
+<pre class="programlisting">  "sparse"                   <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
 </div>
 <hr>
 <div class="refsect2">
