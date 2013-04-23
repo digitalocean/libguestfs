@@ -274,7 +274,9 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(girdir)" \
 	"$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(typelibdir)" \
 	"$(DESTDIR)$(libguestfs_gobject_1_0_ladir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libguestfs_gobject_1_0_la_DEPENDENCIES =
+am__DEPENDENCIES_1 =
+libguestfs_gobject_1_0_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-tristate.lo \
 	libguestfs_gobject_1_0_la-struct-int_bool.lo \
@@ -1656,9 +1658,8 @@ libguestfs_gobject_1_0_la_CFLAGS = -I$(top_srcdir)/src -I$(srcdir)/include \
                                    -DGUESTFS_PRIVATE=1 \
                                    $(GOBJECT_CFLAGS)
 
-libguestfs_gobject_1_0_la_LIBS = $(GOBJECT_LIBS)
 libguestfs_gobject_1_0_la_LDFLAGS = $(LDFLAGS) -L$(top_builddir)/src
-libguestfs_gobject_1_0_la_LIBADD = -lguestfs
+libguestfs_gobject_1_0_la_LIBADD = -lguestfs $(GOBJECT_LIBS) $(GIO_LIBS)
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libguestfs-gobject-1.0.pc
 INTROSPECTION_GIRS = $(am__append_1)
