@@ -1,3 +1,82 @@
+2013-04-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.32.
+
+	tests/guests: Add make-guests-all-good.pl to EXTRA_DIST.
+	This fixes commit 2ae72dcaf89130647f03ff7c3d0900215a91f59a.
+
+	release notes: Fix unterminated C<...> sequence in POD.
+
+2013-04-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: sysprep: Specify list of operations explicitly.
+	This commit makes no functional change on its own, but it allows us to
+	filter out failing operations on Ubuntu.
+
+2013-04-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	grub-install: Change test to use /dev/sda instead of /dev/vda.
+	The previous test for grub-install hard-coded /dev/vda (ie. assuming
+	virtio-blk instead of more modern virtio-scsi).
+
+	This changes the test to hard-code /dev/sda instead.  However this
+	change is still not correct since /dev/sda will be adjusted by block
+	device name translation in the call to grub-install, but not what is
+	written to /boot/grub/device.map.
+
+	Since we no longer support grub-install on Fedora, this won't affect
+	things, but Ubuntu still has a 'grub-install' command (although it's
+	actually from grub2).
+
+2013-04-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	gobject: Link libguestfs-gobject library with GIO.
+	So that we get the g_cancellable_* symbols.
+
+	gobject: Link libguestfs-gobject library with GOBJECT_LIBS.
+	There's no such thing as a _LIBS variable in automake, so
+	this line was effectively being ignored.
+
+2013-04-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-ls: Use string instead of small array.
+	This works around the following warning:
+
+	virt-ls.c: In function 'show_file':
+	virt-ls.c:574:1: error: stack protector not protecting function: all local arrays are less than 4 bytes long [-Werror=stack-protector]
+
+2013-04-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	examples: Don't ignore return value of chdir.
+	GCC 4.7.3 whinges about this.
+
+2013-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: guests: Auto-generated guests-all-good.xml.
+	Only include guests which we successfully created, so for example if
+	there's no NTFS support then the Windows guest won't be included.
+
+2013-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: guests: Display some information about each phony guest for debugging.
+	This adds debugging output like this:
+
+	  fedora-btrfs.img: file size bytes: 536870912
+	  fedora-btrfs.img: allocated bytes: 12963840
+	  fedora-btrfs.img: MD5 hash:        7e8eded44fc832b0f88b0dc5eebf490c
+
+2013-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Mark 'skipped' function with __attribute__((printf)).
+	With recent GCC, you get this warning:
+
+	tests-main.c: In function 'skipped':
+	tests-main.c:256:3: error: function might be possible candidate for 'gnu_printf' format attribute [-Werror=suggest-attribute=format]
+
+2013-04-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.31.
+
 2013-04-16  Richard W.M. Jones  <rjones@redhat.com>
 
 	fish: options: Allow Unix domain sockets to be specified in --add URIs.
