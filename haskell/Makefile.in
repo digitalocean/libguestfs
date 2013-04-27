@@ -1295,7 +1295,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 generator_built = \
-	Guestfs.hs \
+	$(srcdir)/Guestfs.hs \
 	Bindtests.hs
 
 
@@ -1611,12 +1611,8 @@ uninstall-am:
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
-	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# A symbolic rule to regenerate the appliance
-.PHONY: appliance
-appliance: force
-	$(MAKE) -C $(top_builddir)/appliance
+	! test -f $(top_builddir)/generator/Makefile || \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator
 @HAVE_HASKELL_TRUE@$(all_targets): $(top_builddir)/src/libguestfs.la
 
 @HAVE_HASKELL_TRUE@all: $(all_targets)
@@ -1658,7 +1654,7 @@ appliance: force
 # directories per target.
 
 @HAVE_HASKELL_TRUE@$(built_tests): %: %.hs Guestfs.hs
-@HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) --make -main-is $@ -odir .$@ -o $@ $< Guestfs.hs -lguestfs
+@HAVE_HASKELL_TRUE@	$(GHC)  $(GHCFLAGS) --make -main-is $@ -odir .$@ -o $@ $< $(srcdir)/Guestfs.hs -lguestfs
 
 @HAVE_HASKELL_TRUE@clean-local:
 @HAVE_HASKELL_TRUE@	-rm -rf $(built_tests:%=.%)

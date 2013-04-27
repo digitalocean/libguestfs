@@ -1,3 +1,140 @@
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	tools: The programs are located in the source directory.
+
+	python: Test programs are located in the source directory.
+
+	fish: Add $srcdir in several places where test files exist in the source directory.
+
+	tests/rsync: This test only copies generated files.
+
+	tests: Add $srcdir in several places for test files located in source directory.
+
+	tests/xml: Get XML data file from source directory.
+
+	tests/btrfs: Get data files from source directory.
+
+	tests/selinux: Pick up run-test.pl script from source directory.
+
+	tests/guests: Various fixes for separated builds.
+	This now correctly builds all the phony guests when
+	builddir != srcdir.
+
+	tests/guests: Don't include fake Windows binary hive files in git.
+	This means that people compiling from git will be required to have the
+	'hivexregedit' command (from hivex).
+
+	tests/guests: Ensure hard to generate files are cleaned by 'make distclean'.
+	This allows us to switch from non-separated to separated builds
+	without breaking (the user must do 'make distclean' between the
+	switch).
+
+	perl: Fix 'make check' to find bindtests.pl in source directory.
+	Despite this change, separated builds are still broken, apparently
+	because ExtUtils::MakeMaker doesn't support this sort of
+	configuration, or else we're using it wrong.
+
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/c-api: Allow FileIn paths to be prefixed by "$srcdir".
+	Since tests involving FileIn will often wish to read from local files,
+	it makes sense that they would want to open files in $srcdir.
+
+	Therefore allow such paths to be prefixed by "$srcdir" which is
+	substituted at run time by the same named environment variable (set by
+	automake).
+
+	This fixes separated builds in tests/c-api directory.
+
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove many uses of $(builddir).
+	"$(builddir)" is always "."
+
+	Therefore most uses of $(builddir) are suspect and should be
+	removed or replaced with "."
+
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Fix rule for building supermin.d/init.img.
+	Use a temporary directory instead of copy hack.
+
+	tests/data: Add a comment noting a bug in the Makefile.
+	abssymlink is an intentionally dangling symlink, but this confuses
+	make which thinks it has to rebuild the rule every time.
+
+	tests/data: Don't prepend build paths with $(builddir).
+	It's both unnecessary and confuses make.
+
+	tests/data: Fix initrd when doing separated builds.
+	Otherwise the initrd contains paths like '../../tests/data/empty'
+	which obviously causes the tests to fail.
+
+	php: Disallow separated builds.
+	As it stands, this will just break.  Until it is fixed, give a
+	diagnostic message.
+
+	gobject: Fix separated builds.
+
+	haskell: Fix separated builds.
+
+	java: Allow source directory to be prepended by make.
+	Fix for separated builds.
+
+	java: Bindtests.java is generated in the source directory.
+	Fix for separated builds.
+
+	ocaml: bindtests.ml is generated in the source directory.
+	This seems to be necessary because separated builds don't recognize
+	the *.ml file as being a source file (unlike, for example, *.c files).
+
+	generator: Place generator, stamp-generator, build files into builddir.
+	Previously the generator binary was (deliberately) placed into the
+	source directory.  However there was no real reason for this to
+	happen.  Always put the build products into the builddir.
+
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Make stamp-generator in the Makefile.
+	Since stamp-generator is a Makefile thing, make it in the Makefile,
+	not in the generator itself.
+
+	Also this ensures stamp-generator is created in the builddir, not in
+	the source directory (fixing separated builds).
+
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Make sure that certain build directories exist.
+	When builddir != srcdir, this ensures that certain build directories
+	which might not exist are created by configure.
+
+	tests/data: Ensure all generated image files are removed by 'make clean'.
+	Otherwise the build breaks if you switch from a non-separated build to
+	a separated build.
+
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	Fix 'make distclean'.
+	Because the generator subdirectory is cleaned first, and other
+	directories recurse into the generator directory, 'make distclean'
+	would fail (because generator/Makefile would be deleted by that
+	point).
+
+	Change subdirs-rules.mk so it doesn't fail if generator/Makefile has
+	been deleted already.
+
+2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	subdirs-rules: Remove 'appliance' rule.
+	It was used in only one place (perl/Makefile.am).
+
+	If users want to build just the appliance, then they could do 'make -C
+	appliance'.
+
+2013-04-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Create resize/ subdirectory if building in a different builddir.
+
 2013-04-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.21.32.

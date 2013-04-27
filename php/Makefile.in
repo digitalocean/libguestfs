@@ -1664,24 +1664,31 @@ uninstall-am: uninstall-phpDATA
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
-	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# A symbolic rule to regenerate the appliance
-.PHONY: appliance
-appliance: force
-	$(MAKE) -C $(top_builddir)/appliance
+	! test -f $(top_builddir)/generator/Makefile || \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator
 
 # Old RHEL 5 autoconf doesn't have abs_srcdir.
 abs_srcdir ?= $(shell cd $(top_srcdir)/php && pwd)
 
 # In theory: EXTRA_LIBS="-lguestfs"  In fact this doesn't work
 # and we need to add the library to EXTRA_LDFLAGS.
-@HAVE_PHP_TRUE@all: extension/config.h
+@HAVE_PHP_TRUE@all: check-builddir-equals-srcdir extension/config.h
 @HAVE_PHP_TRUE@	$(MAKE) -C extension \
 @HAVE_PHP_TRUE@	  EXTRA_INCLUDES="-I$(abs_srcdir)/../src" \
 @HAVE_PHP_TRUE@	  EXTRA_LDFLAGS="-L$(abs_srcdir)/../src/.libs -lguestfs" \
 @HAVE_PHP_TRUE@	  EXTRA_CFLAGS="-DGUESTFS_PRIVATE=1" \
 @HAVE_PHP_TRUE@	  all
+
+# It looks like this is going to be very hard to make work, so
+# disallow it for now.
+@HAVE_PHP_TRUE@check-builddir-equals-srcdir:
+@HAVE_PHP_TRUE@	@if [ $(builddir) != $(srcdir) ]; then \
+@HAVE_PHP_TRUE@	  echo "***"; \
+@HAVE_PHP_TRUE@	  echo "PHP cannot be built with builddir != srcdir"; \
+@HAVE_PHP_TRUE@	  echo "Use ./configure --disable-php"; \
+@HAVE_PHP_TRUE@	  echo "***"; \
+@HAVE_PHP_TRUE@	  exit 1; \
+@HAVE_PHP_TRUE@	fi
 
 @HAVE_PHP_TRUE@extension/config.h: extension/config.m4 ../config.status
 @HAVE_PHP_TRUE@	cd extension && phpize

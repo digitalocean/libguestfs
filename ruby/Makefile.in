@@ -1626,12 +1626,8 @@ builddir ?= .
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
-	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# A symbolic rule to regenerate the appliance
-.PHONY: appliance
-appliance: force
-	$(MAKE) -C $(top_builddir)/appliance
+	! test -f $(top_builddir)/generator/Makefile || \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator
 
 @HAVE_RUBY_TRUE@all: $(generator_built)
 @HAVE_RUBY_TRUE@	$(RAKE) build
@@ -1641,7 +1637,7 @@ appliance: force
 @HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_LIBDIR)
 @HAVE_RUBY_TRUE@	$(MKDIR_P) $(DESTDIR)$(RUBY_ARCHDIR)
 @HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0644 $(srcdir)/lib/guestfs.rb $(DESTDIR)$(RUBY_LIBDIR)
-@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0755 $(builddir)/ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_ARCHDIR)
+@HAVE_RUBY_TRUE@	$(INSTALL) -p -m 0755 ext/guestfs/_guestfs.so $(DESTDIR)$(RUBY_ARCHDIR)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

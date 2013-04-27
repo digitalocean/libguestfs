@@ -1364,7 +1364,8 @@ man_MANS = libguestfs-make-fixed-appliance.1
 # Make clean.
 CLEANFILES = packagelist excludelist \
 	libguestfs-make-fixed-appliance.1 \
-	stamp-libguestfs-make-fixed-appliance.pod
+	stamp-libguestfs-make-fixed-appliance.pod \
+	supermin.d/*
 
 all: all-am
 
@@ -1641,7 +1642,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-local mostlyclean-am
+clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -1712,12 +1713,12 @@ uninstall-man: uninstall-man1
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
-	clean-local distclean distclean-generic distclean-libtool \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-fsDATA \
-	install-html install-html-am install-info install-info-am \
-	install-man install-man1 install-pdf install-pdf-am install-ps \
+	distclean distclean-generic distclean-libtool distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-fsDATA install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man1 install-pdf install-pdf-am install-ps \
 	install-ps-am install-sbinSCRIPTS install-strip \
 	install-superminfsDATA install-udevrulesDATA installcheck \
 	installcheck-am installdirs maintainer-clean \
@@ -1738,12 +1739,8 @@ builddir ?= .
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
-	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# A symbolic rule to regenerate the appliance
-.PHONY: appliance
-appliance: force
-	$(MAKE) -C $(top_builddir)/appliance
+	! test -f $(top_builddir)/generator/Makefile || \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator
 
 # This used to be a configure-generated file.  However config.status
 # always touches the destination file, which means the appliance got
@@ -1769,13 +1766,11 @@ excludelist: excludelist.in Makefile
 
 supermin.d/base.img supermin.d/hostfiles: stamp-supermin
 stamp-supermin: make.sh packagelist excludelist
-	mkdir -p supermin.d
 	rm -f $@ supermin.d/base.img supermin.d/hostfiles
 	./make.sh
 	touch $@
 
 supermin.d/daemon.img: ../daemon/guestfsd guestfsd.suppressions
-	mkdir -p supermin.d
 	rm -f $@ $@-t
 	rm -rf tmp-d
 	mkdir -p tmp-d$(DAEMON_SUPERMIN_DIR) tmp-d/etc
@@ -1786,16 +1781,16 @@ supermin.d/daemon.img: ../daemon/guestfsd guestfsd.suppressions
 	mv $@-t $@
 
 supermin.d/init.img: init
-	cmp -s $(srcdir)/init $(builddir)/init || cp $(srcdir)/init $(builddir)/init
-	mkdir -p supermin.d
-	rm -f $@ $@-t
-	echo "init" | cpio --quiet -o -H newc > $@-t
+	rm -rf init.tmp $@ $@-t
+	mkdir init.tmp
+	cp $< init.tmp
+	(cd init.tmp; echo "init" | cpio --quiet -o -H newc) > $@-t
+	rm -r init.tmp
 	mv $@-t $@
 
 # We should put this file in /lib/udev/rules.d, but put it in /etc so
 # we don't have to deal with all the UsrMove crap in Fedora.
 supermin.d/udev-rules.img: 99-guestfs-serial.rules
-	mkdir -p supermin.d
 	rm -f $@ $@-t
 	rm -rf tmp-u
 	mkdir -p tmp-u/etc/udev/rules.d
@@ -1813,9 +1808,6 @@ stamp-libguestfs-make-fixed-appliance.pod: libguestfs-make-fixed-appliance.pod
 	  --license GPLv2+ \
 	  $<
 	touch $@
-
-clean-local:
-	rm -rf supermin.d
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

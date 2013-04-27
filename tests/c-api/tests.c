@@ -1383,7 +1383,7 @@ test_mke2fs_2 (void)
   const char *_arg325 = "/dev/sda1";
   struct guestfs_mke2fs_argv _optargs326;
   _optargs326.blocksize = 4096;
-  _optargs326.uuid = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  _optargs326.uuid = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   _optargs326.journaldev = 1;
   _optargs326.bitmask = UINT64_C(0x100100002);
   int _ret324;
@@ -1393,7 +1393,7 @@ test_mke2fs_2 (void)
   const char *_arg328 = "/dev/sda2";
   struct guestfs_mke2fs_argv _optargs329;
   _optargs329.blocksize = 4096;
-  _optargs329.journaldevice = "UUID=c787e30d-808b-dce3-ddbe-441f12213f55";
+  _optargs329.journaldevice = "UUID=338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   _optargs329.label = "JOURNAL";
   _optargs329.fstype = "ext2";
   _optargs329.forcecreate = 1;
@@ -5544,9 +5544,10 @@ test_download_offset_0 (void)
   _ret1478 = guestfs_mkdir (g, _arg1479);
   if (_ret1478 == -1)
     return -1;
+  CLEANUP_FREE char *_arg1482 = substitute_srcdir ("$srcdir/../../COPYING.LIB");
   const char *_arg1483 = "/download_offset/COPYING.LIB";
   int _ret1481;
-  _ret1481 = guestfs_upload (g, "../../COPYING.LIB", _arg1483);
+  _ret1481 = guestfs_upload (g, _arg1482, _arg1483);
   if (_ret1481 == -1)
     return -1;
   const char *_arg1486 = "/download_offset/COPYING.LIB";
@@ -5554,9 +5555,10 @@ test_download_offset_0 (void)
   _ret1485 = guestfs_download_offset (g, _arg1486, "testdownload.tmp", 100, 26430);
   if (_ret1485 == -1)
     return -1;
+  CLEANUP_FREE char *_arg1492 = substitute_srcdir ("testdownload.tmp");
   const char *_arg1493 = "/download_offset/COPYING.LIB";
   int _ret1491;
-  _ret1491 = guestfs_upload_offset (g, "testdownload.tmp", _arg1493, 100);
+  _ret1491 = guestfs_upload_offset (g, _arg1492, _arg1493, 100);
   if (_ret1491 == -1)
     return -1;
   const char *_arg1496 = "md5";
@@ -5618,9 +5620,10 @@ test_upload_offset_0 (void)
     return -1;
 
   /* TestResultString for upload_offset (0) */
+  CLEANUP_FREE char *_arg1511 = substitute_srcdir ("$srcdir/../../COPYING.LIB");
   const char *_arg1512 = "/upload_offset";
   int _ret1510;
-  _ret1510 = guestfs_upload_offset (g, "../../COPYING.LIB", _arg1512, 0);
+  _ret1510 = guestfs_upload_offset (g, _arg1511, _arg1512, 0);
   if (_ret1510 == -1)
     return -1;
   const char *_arg1515 = "md5";
@@ -6527,7 +6530,7 @@ test_vfs_uuid_0 (void)
 
   /* TestResultString for vfs_uuid (0) */
   const char *_arg1760 = "/dev/sda1";
-  const char *_arg1761 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg1761 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   int _ret1759;
   _ret1759 = guestfs_set_e2uuid (g, _arg1760, _arg1761);
   if (_ret1759 == -1)
@@ -6537,9 +6540,9 @@ test_vfs_uuid_0 (void)
   ret = guestfs_vfs_uuid (g, _arg1763);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "c787e30d-808b-dce3-ddbe-441f12213f55")) {
+  if (! STREQ (ret, "338f7528-d873-4e8a-d0a4-9e7080f0b5e7")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_vfs_uuid_0", "vfs_uuid", ret, "c787e30d-808b-dce3-ddbe-441f12213f55");
+             "test_vfs_uuid_0", "vfs_uuid", ret, "338f7528-d873-4e8a-d0a4-9e7080f0b5e7");
     return -1;
   }
   return 0;
@@ -7452,9 +7455,10 @@ test_base64_in_0 (void)
     return -1;
 
   /* TestResultString for base64_in (0) */
+  CLEANUP_FREE char *_arg2012 = substitute_srcdir ("../data/hello.b64");
   const char *_arg2013 = "/base64_in";
   int _ret2011;
-  _ret2011 = guestfs_base64_in (g, "../data/hello.b64", _arg2013);
+  _ret2011 = guestfs_base64_in (g, _arg2012, _arg2013);
   if (_ret2011 == -1)
     return -1;
   const char *_arg2015 = "/base64_in";
@@ -7967,9 +7971,10 @@ test_txz_in_0 (void)
   _ret2156 = guestfs_mkdir (g, _arg2157);
   if (_ret2156 == -1)
     return -1;
+  CLEANUP_FREE char *_arg2160 = substitute_srcdir ("$srcdir/../data/helloworld.tar.xz");
   const char *_arg2161 = "/txz_in";
   int _ret2159;
-  _ret2159 = guestfs_txz_in (g, "../data/helloworld.tar.xz", _arg2161);
+  _ret2159 = guestfs_txz_in (g, _arg2160, _arg2161);
   if (_ret2159 == -1)
     return -1;
   const char *_arg2163 = "/txz_in/hello";
@@ -10697,7 +10702,7 @@ test_mke2journal_U_0 (void)
   _ret2936 = guestfs_part_add (g, _arg2937, _arg2938, 204800, -64);
   if (_ret2936 == -1)
     return -1;
-  const char *_arg2944 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg2944 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   const char *_arg2945 = "/dev/sda1";
   int _ret2942;
   _ret2942 = guestfs_mke2journal_U (g, 4096, _arg2944, _arg2945);
@@ -10705,7 +10710,7 @@ test_mke2journal_U_0 (void)
     return -1;
   const char *_arg2948 = "ext2";
   const char *_arg2950 = "/dev/sda2";
-  const char *_arg2951 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg2951 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   int _ret2947;
   _ret2947 = guestfs_mke2fs_JU (g, _arg2948, 4096, _arg2950, _arg2951);
   if (_ret2947 == -1)
@@ -11491,18 +11496,18 @@ test_swapon_uuid_0 (void)
   /* TestRun for swapon_uuid (0) */
   const char *_arg3210 = "/dev/sdc";
   struct guestfs_mkswap_opts_argv _optargs3211;
-  _optargs3211.uuid = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  _optargs3211.uuid = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   _optargs3211.bitmask = UINT64_C(0x2);
   int _ret3209;
   _ret3209 = guestfs_mkswap_opts_argv (g, _arg3210, &_optargs3211);
   if (_ret3209 == -1)
     return -1;
-  const char *_arg3213 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg3213 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   int _ret3212;
   _ret3212 = guestfs_swapon_uuid (g, _arg3213);
   if (_ret3212 == -1)
     return -1;
-  const char *_arg3216 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg3216 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   int _ret3215;
   _ret3215 = guestfs_swapoff_uuid (g, _arg3216);
   if (_ret3215 == -1)
@@ -14199,7 +14204,7 @@ test_mkswap_U_0 (void)
   _ret3866 = guestfs_part_disk (g, _arg3867, _arg3868);
   if (_ret3866 == -1)
     return -1;
-  const char *_arg3871 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg3871 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   const char *_arg3872 = "/dev/sda1";
   int _ret3870;
   _ret3870 = guestfs_mkswap_U (g, _arg3871, _arg3872);
@@ -14427,7 +14432,7 @@ test_mkswap_2 (void)
     return -1;
   const char *_arg3930 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv _optargs3931;
-  _optargs3931.uuid = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  _optargs3931.uuid = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   _optargs3931.bitmask = UINT64_C(0x2);
   int _ret3929;
   _ret3929 = guestfs_mkswap_opts_argv (g, _arg3930, &_optargs3931);
@@ -14491,7 +14496,7 @@ test_mkswap_3 (void)
   const char *_arg3945 = "/dev/sda1";
   struct guestfs_mkswap_opts_argv _optargs3946;
   _optargs3946.label = "hello";
-  _optargs3946.uuid = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  _optargs3946.uuid = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   _optargs3946.bitmask = UINT64_C(0x3);
   int _ret3944;
   _ret3944 = guestfs_mkswap_opts_argv (g, _arg3945, &_optargs3946);
@@ -18019,7 +18024,7 @@ test_get_e2uuid_0 (void)
   if (_ret4894 == -1)
     return -1;
   const char *_arg4899 = "/dev/sdc";
-  const char *_arg4900 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg4900 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   int _ret4898;
   _ret4898 = guestfs_set_e2uuid (g, _arg4899, _arg4900);
   if (_ret4898 == -1)
@@ -18029,9 +18034,9 @@ test_get_e2uuid_0 (void)
   ret = guestfs_get_e2uuid (g, _arg4902);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "c787e30d-808b-dce3-ddbe-441f12213f55")) {
+  if (! STREQ (ret, "338f7528-d873-4e8a-d0a4-9e7080f0b5e7")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_get_e2uuid_0", "get_e2uuid", ret, "c787e30d-808b-dce3-ddbe-441f12213f55");
+             "test_get_e2uuid_0", "get_e2uuid", ret, "338f7528-d873-4e8a-d0a4-9e7080f0b5e7");
     return -1;
   }
   return 0;
@@ -18097,7 +18102,7 @@ test_set_e2uuid_0 (void)
 
   /* TestResultString for set_e2uuid (0) */
   const char *_arg4924 = "/dev/sda1";
-  const char *_arg4925 = "c787e30d-808b-dce3-ddbe-441f12213f55";
+  const char *_arg4925 = "338f7528-d873-4e8a-d0a4-9e7080f0b5e7";
   int _ret4923;
   _ret4923 = guestfs_set_e2uuid (g, _arg4924, _arg4925);
   if (_ret4923 == -1)
@@ -18107,9 +18112,9 @@ test_set_e2uuid_0 (void)
   ret = guestfs_get_e2uuid (g, _arg4927);
   if (ret == NULL)
       return -1;
-  if (! STREQ (ret, "c787e30d-808b-dce3-ddbe-441f12213f55")) {
+  if (! STREQ (ret, "338f7528-d873-4e8a-d0a4-9e7080f0b5e7")) {
     fprintf (stderr, "%s: test failed: expected last command %s to return \"%s\" but it returned \"%s\"\n",
-             "test_set_e2uuid_0", "get_e2uuid", ret, "c787e30d-808b-dce3-ddbe-441f12213f55");
+             "test_set_e2uuid_0", "get_e2uuid", ret, "338f7528-d873-4e8a-d0a4-9e7080f0b5e7");
     return -1;
   }
   return 0;
@@ -19434,9 +19439,10 @@ test_tgz_in_0 (void)
   _ret5319 = guestfs_mkdir (g, _arg5320);
   if (_ret5319 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5323 = substitute_srcdir ("$srcdir/../data/helloworld.tar.gz");
   const char *_arg5324 = "/tgz_in";
   int _ret5322;
-  _ret5322 = guestfs_tgz_in (g, "../data/helloworld.tar.gz", _arg5324);
+  _ret5322 = guestfs_tgz_in (g, _arg5323, _arg5324);
   if (_ret5322 == -1)
     return -1;
   const char *_arg5326 = "/tgz_in/hello";
@@ -19502,11 +19508,12 @@ test_tar_in_0 (void)
   _ret5339 = guestfs_mkdir (g, _arg5340);
   if (_ret5339 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5343 = substitute_srcdir ("$srcdir/../data/helloworld.tar");
   const char *_arg5344 = "/tar_in";
   struct guestfs_tar_in_opts_argv _optargs5345;
   _optargs5345.bitmask = UINT64_C(0x0);
   int _ret5342;
-  _ret5342 = guestfs_tar_in_opts_argv (g, "../data/helloworld.tar", _arg5344, &_optargs5345);
+  _ret5342 = guestfs_tar_in_opts_argv (g, _arg5343, _arg5344, &_optargs5345);
   if (_ret5342 == -1)
     return -1;
   const char *_arg5346 = "/tar_in/hello";
@@ -19572,12 +19579,13 @@ test_tar_in_1 (void)
   _ret5359 = guestfs_mkdir (g, _arg5360);
   if (_ret5359 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5363 = substitute_srcdir ("$srcdir/../data/helloworld.tar.gz");
   const char *_arg5364 = "/tar_in_gz";
   struct guestfs_tar_in_opts_argv _optargs5365;
   _optargs5365.compress = "gzip";
   _optargs5365.bitmask = UINT64_C(0x1);
   int _ret5362;
-  _ret5362 = guestfs_tar_in_opts_argv (g, "../data/helloworld.tar.gz", _arg5364, &_optargs5365);
+  _ret5362 = guestfs_tar_in_opts_argv (g, _arg5363, _arg5364, &_optargs5365);
   if (_ret5362 == -1)
     return -1;
   const char *_arg5366 = "/tar_in_gz/hello";
@@ -19650,12 +19658,13 @@ test_tar_in_2 (void)
   _ret5380 = guestfs_mkdir (g, _arg5381);
   if (_ret5380 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5384 = substitute_srcdir ("$srcdir/../data/helloworld.tar.xz");
   const char *_arg5385 = "/tar_in_xz";
   struct guestfs_tar_in_opts_argv _optargs5386;
   _optargs5386.compress = "xz";
   _optargs5386.bitmask = UINT64_C(0x1);
   int _ret5383;
-  _ret5383 = guestfs_tar_in_opts_argv (g, "../data/helloworld.tar.xz", _arg5385, &_optargs5386);
+  _ret5383 = guestfs_tar_in_opts_argv (g, _arg5384, _arg5385, &_optargs5386);
   if (_ret5383 == -1)
     return -1;
   const char *_arg5387 = "/tar_in_xz/hello";
@@ -20249,9 +20258,10 @@ test_download_0 (void)
   _ret5527 = guestfs_mkdir (g, _arg5528);
   if (_ret5527 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5531 = substitute_srcdir ("$srcdir/../../COPYING.LIB");
   const char *_arg5532 = "/download/COPYING.LIB";
   int _ret5530;
-  _ret5530 = guestfs_upload (g, "../../COPYING.LIB", _arg5532);
+  _ret5530 = guestfs_upload (g, _arg5531, _arg5532);
   if (_ret5530 == -1)
     return -1;
   const char *_arg5535 = "/download/COPYING.LIB";
@@ -20259,9 +20269,10 @@ test_download_0 (void)
   _ret5534 = guestfs_download (g, _arg5535, "testdownload.tmp");
   if (_ret5534 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5539 = substitute_srcdir ("testdownload.tmp");
   const char *_arg5540 = "/download/upload";
   int _ret5538;
-  _ret5538 = guestfs_upload (g, "testdownload.tmp", _arg5540);
+  _ret5538 = guestfs_upload (g, _arg5539, _arg5540);
   if (_ret5538 == -1)
     return -1;
   const char *_arg5542 = "md5";
@@ -20328,9 +20339,10 @@ test_upload_0 (void)
   _ret5556 = guestfs_mkdir (g, _arg5557);
   if (_ret5556 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5560 = substitute_srcdir ("$srcdir/../../COPYING.LIB");
   const char *_arg5561 = "/upload/COPYING.LIB";
   int _ret5559;
-  _ret5559 = guestfs_upload (g, "../../COPYING.LIB", _arg5561);
+  _ret5559 = guestfs_upload (g, _arg5560, _arg5561);
   if (_ret5559 == -1)
     return -1;
   const char *_arg5563 = "md5";
@@ -21064,9 +21076,10 @@ test_command_lines_0 (void)
   ret3 = guestfs_mkdir (g, _arg5712);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5714 = substitute_srcdir ("test-command");
   const char *_arg5715 = "/command_lines/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5715);
+  ret2 = guestfs_upload (g, _arg5714, _arg5715);
   if (ret2 == -1)
     return -1;
   const char *_arg5718 = "/command_lines/test-command";
@@ -21145,9 +21158,10 @@ test_command_lines_1 (void)
   ret3 = guestfs_mkdir (g, _arg5733);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5735 = substitute_srcdir ("test-command");
   const char *_arg5736 = "/command_lines2/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5736);
+  ret2 = guestfs_upload (g, _arg5735, _arg5736);
   if (ret2 == -1)
     return -1;
   const char *_arg5739 = "/command_lines2/test-command";
@@ -21226,9 +21240,10 @@ test_command_lines_2 (void)
   ret3 = guestfs_mkdir (g, _arg5754);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5756 = substitute_srcdir ("test-command");
   const char *_arg5757 = "/command_lines3/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5757);
+  ret2 = guestfs_upload (g, _arg5756, _arg5757);
   if (ret2 == -1)
     return -1;
   const char *_arg5760 = "/command_lines3/test-command";
@@ -21307,9 +21322,10 @@ test_command_lines_3 (void)
   ret3 = guestfs_mkdir (g, _arg5775);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5777 = substitute_srcdir ("test-command");
   const char *_arg5778 = "/command_lines4/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5778);
+  ret2 = guestfs_upload (g, _arg5777, _arg5778);
   if (ret2 == -1)
     return -1;
   const char *_arg5781 = "/command_lines4/test-command";
@@ -21388,9 +21404,10 @@ test_command_lines_4 (void)
   ret3 = guestfs_mkdir (g, _arg5796);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5798 = substitute_srcdir ("test-command");
   const char *_arg5799 = "/command_lines5/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5799);
+  ret2 = guestfs_upload (g, _arg5798, _arg5799);
   if (ret2 == -1)
     return -1;
   const char *_arg5802 = "/command_lines5/test-command";
@@ -21469,9 +21486,10 @@ test_command_lines_5 (void)
   ret3 = guestfs_mkdir (g, _arg5817);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5819 = substitute_srcdir ("test-command");
   const char *_arg5820 = "/command_lines6/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5820);
+  ret2 = guestfs_upload (g, _arg5819, _arg5820);
   if (ret2 == -1)
     return -1;
   const char *_arg5823 = "/command_lines6/test-command";
@@ -21550,9 +21568,10 @@ test_command_lines_6 (void)
   ret3 = guestfs_mkdir (g, _arg5838);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5840 = substitute_srcdir ("test-command");
   const char *_arg5841 = "/command_lines7/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5841);
+  ret2 = guestfs_upload (g, _arg5840, _arg5841);
   if (ret2 == -1)
     return -1;
   const char *_arg5844 = "/command_lines7/test-command";
@@ -21631,9 +21650,10 @@ test_command_lines_7 (void)
   ret3 = guestfs_mkdir (g, _arg5859);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5861 = substitute_srcdir ("test-command");
   const char *_arg5862 = "/command_lines8/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5862);
+  ret2 = guestfs_upload (g, _arg5861, _arg5862);
   if (ret2 == -1)
     return -1;
   const char *_arg5865 = "/command_lines8/test-command";
@@ -21712,9 +21732,10 @@ test_command_lines_8 (void)
   ret3 = guestfs_mkdir (g, _arg5880);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5882 = substitute_srcdir ("test-command");
   const char *_arg5883 = "/command_lines9/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5883);
+  ret2 = guestfs_upload (g, _arg5882, _arg5883);
   if (ret2 == -1)
     return -1;
   const char *_arg5886 = "/command_lines9/test-command";
@@ -21793,9 +21814,10 @@ test_command_lines_9 (void)
   ret3 = guestfs_mkdir (g, _arg5901);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5903 = substitute_srcdir ("test-command");
   const char *_arg5904 = "/command_lines10/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5904);
+  ret2 = guestfs_upload (g, _arg5903, _arg5904);
   if (ret2 == -1)
     return -1;
   const char *_arg5907 = "/command_lines10/test-command";
@@ -21874,9 +21896,10 @@ test_command_lines_10 (void)
   ret3 = guestfs_mkdir (g, _arg5922);
   if (ret3 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5924 = substitute_srcdir ("test-command");
   const char *_arg5925 = "/command_lines11/test-command";
   int ret2;
-  ret2 = guestfs_upload (g, "test-command", _arg5925);
+  ret2 = guestfs_upload (g, _arg5924, _arg5925);
   if (ret2 == -1)
     return -1;
   const char *_arg5928 = "/command_lines11/test-command";
@@ -21955,9 +21978,10 @@ test_command_0 (void)
   _ret5943 = guestfs_mkdir (g, _arg5944);
   if (_ret5943 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5947 = substitute_srcdir ("test-command");
   const char *_arg5948 = "/command/test-command";
   int _ret5946;
-  _ret5946 = guestfs_upload (g, "test-command", _arg5948);
+  _ret5946 = guestfs_upload (g, _arg5947, _arg5948);
   if (_ret5946 == -1)
     return -1;
   const char *_arg5952 = "/command/test-command";
@@ -22034,9 +22058,10 @@ test_command_1 (void)
   _ret5967 = guestfs_mkdir (g, _arg5968);
   if (_ret5967 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5971 = substitute_srcdir ("test-command");
   const char *_arg5972 = "/command2/test-command";
   int _ret5970;
-  _ret5970 = guestfs_upload (g, "test-command", _arg5972);
+  _ret5970 = guestfs_upload (g, _arg5971, _arg5972);
   if (_ret5970 == -1)
     return -1;
   const char *_arg5976 = "/command2/test-command";
@@ -22113,9 +22138,10 @@ test_command_2 (void)
   _ret5991 = guestfs_mkdir (g, _arg5992);
   if (_ret5991 == -1)
     return -1;
+  CLEANUP_FREE char *_arg5995 = substitute_srcdir ("test-command");
   const char *_arg5996 = "/command3/test-command";
   int _ret5994;
-  _ret5994 = guestfs_upload (g, "test-command", _arg5996);
+  _ret5994 = guestfs_upload (g, _arg5995, _arg5996);
   if (_ret5994 == -1)
     return -1;
   const char *_arg6000 = "/command3/test-command";
@@ -22192,9 +22218,10 @@ test_command_3 (void)
   _ret6015 = guestfs_mkdir (g, _arg6016);
   if (_ret6015 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6019 = substitute_srcdir ("test-command");
   const char *_arg6020 = "/command4/test-command";
   int _ret6018;
-  _ret6018 = guestfs_upload (g, "test-command", _arg6020);
+  _ret6018 = guestfs_upload (g, _arg6019, _arg6020);
   if (_ret6018 == -1)
     return -1;
   const char *_arg6024 = "/command4/test-command";
@@ -22271,9 +22298,10 @@ test_command_4 (void)
   _ret6039 = guestfs_mkdir (g, _arg6040);
   if (_ret6039 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6043 = substitute_srcdir ("test-command");
   const char *_arg6044 = "/command5/test-command";
   int _ret6042;
-  _ret6042 = guestfs_upload (g, "test-command", _arg6044);
+  _ret6042 = guestfs_upload (g, _arg6043, _arg6044);
   if (_ret6042 == -1)
     return -1;
   const char *_arg6048 = "/command5/test-command";
@@ -22350,9 +22378,10 @@ test_command_5 (void)
   _ret6063 = guestfs_mkdir (g, _arg6064);
   if (_ret6063 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6067 = substitute_srcdir ("test-command");
   const char *_arg6068 = "/command6/test-command";
   int _ret6066;
-  _ret6066 = guestfs_upload (g, "test-command", _arg6068);
+  _ret6066 = guestfs_upload (g, _arg6067, _arg6068);
   if (_ret6066 == -1)
     return -1;
   const char *_arg6072 = "/command6/test-command";
@@ -22429,9 +22458,10 @@ test_command_6 (void)
   _ret6087 = guestfs_mkdir (g, _arg6088);
   if (_ret6087 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6091 = substitute_srcdir ("test-command");
   const char *_arg6092 = "/command7/test-command";
   int _ret6090;
-  _ret6090 = guestfs_upload (g, "test-command", _arg6092);
+  _ret6090 = guestfs_upload (g, _arg6091, _arg6092);
   if (_ret6090 == -1)
     return -1;
   const char *_arg6096 = "/command7/test-command";
@@ -22508,9 +22538,10 @@ test_command_7 (void)
   _ret6111 = guestfs_mkdir (g, _arg6112);
   if (_ret6111 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6115 = substitute_srcdir ("test-command");
   const char *_arg6116 = "/command8/test-command";
   int _ret6114;
-  _ret6114 = guestfs_upload (g, "test-command", _arg6116);
+  _ret6114 = guestfs_upload (g, _arg6115, _arg6116);
   if (_ret6114 == -1)
     return -1;
   const char *_arg6120 = "/command8/test-command";
@@ -22587,9 +22618,10 @@ test_command_8 (void)
   _ret6135 = guestfs_mkdir (g, _arg6136);
   if (_ret6135 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6139 = substitute_srcdir ("test-command");
   const char *_arg6140 = "/command9/test-command";
   int _ret6138;
-  _ret6138 = guestfs_upload (g, "test-command", _arg6140);
+  _ret6138 = guestfs_upload (g, _arg6139, _arg6140);
   if (_ret6138 == -1)
     return -1;
   const char *_arg6144 = "/command9/test-command";
@@ -22666,9 +22698,10 @@ test_command_9 (void)
   _ret6159 = guestfs_mkdir (g, _arg6160);
   if (_ret6159 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6163 = substitute_srcdir ("test-command");
   const char *_arg6164 = "/command10/test-command";
   int _ret6162;
-  _ret6162 = guestfs_upload (g, "test-command", _arg6164);
+  _ret6162 = guestfs_upload (g, _arg6163, _arg6164);
   if (_ret6162 == -1)
     return -1;
   const char *_arg6168 = "/command10/test-command";
@@ -22745,9 +22778,10 @@ test_command_10 (void)
   _ret6183 = guestfs_mkdir (g, _arg6184);
   if (_ret6183 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6187 = substitute_srcdir ("test-command");
   const char *_arg6188 = "/command11/test-command";
   int _ret6186;
-  _ret6186 = guestfs_upload (g, "test-command", _arg6188);
+  _ret6186 = guestfs_upload (g, _arg6187, _arg6188);
   if (_ret6186 == -1)
     return -1;
   const char *_arg6192 = "/command11/test-command";
@@ -22824,9 +22858,10 @@ test_command_11 (void)
   _ret6207 = guestfs_mkdir (g, _arg6208);
   if (_ret6207 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6211 = substitute_srcdir ("test-command");
   const char *_arg6212 = "/command12/test-command";
   int _ret6210;
-  _ret6210 = guestfs_upload (g, "test-command", _arg6212);
+  _ret6210 = guestfs_upload (g, _arg6211, _arg6212);
   if (_ret6210 == -1)
     return -1;
   const char *_arg6216 = "/command12/test-command";
@@ -22898,9 +22933,10 @@ test_command_12 (void)
   _ret6232 = guestfs_mkdir (g, _arg6233);
   if (_ret6232 == -1)
     return -1;
+  CLEANUP_FREE char *_arg6236 = substitute_srcdir ("test-pwd");
   const char *_arg6237 = "/pwd/test-pwd";
   int _ret6235;
-  _ret6235 = guestfs_upload (g, "test-pwd", _arg6237);
+  _ret6235 = guestfs_upload (g, _arg6236, _arg6237);
   if (_ret6235 == -1)
     return -1;
   const char *_arg6241 = "/pwd/test-pwd";
