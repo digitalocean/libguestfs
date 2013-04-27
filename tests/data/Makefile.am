@@ -41,13 +41,6 @@ EXTRA_DIST = \
 	lib-x86_64.so \
 	test-grep.txt
 
-noinst_DATA = test.iso
-
-CLEANFILES = \
-	test.iso test.sqsh \
-	100kallzeroes 100kallnewlines 100kallspaces 100krandom 10klines \
-	initrd
-
 images_files_src = \
 	$(srcdir)/helloworld.tar \
 	$(srcdir)/helloworld.tar.gz \
@@ -71,17 +64,21 @@ images_files_src = \
 	$(srcdir)/test-grep.txt
 
 images_files_build = \
-	$(builddir)/100kallzeroes \
-	$(builddir)/100kallnewlines \
-	$(builddir)/100kallspaces \
-	$(builddir)/100krandom \
-	$(builddir)/10klines \
-	$(builddir)/abssymlink \
-	$(builddir)/hello.b64 \
-	$(builddir)/initrd \
-	$(builddir)/initrd-x86_64.img \
-	$(builddir)/initrd-x86_64.img.gz \
-	$(builddir)/test-grep.txt.gz
+	100kallzeroes \
+	100kallnewlines \
+	100kallspaces \
+	100krandom \
+	10klines \
+	abssymlink \
+	hello.b64 \
+	initrd \
+	initrd-x86_64.img \
+	initrd-x86_64.img.gz \
+	test-grep.txt.gz
+
+noinst_DATA = $(images_files_build) test.iso
+
+CLEANFILES = $(images_files_build) test.iso
 
 images_files = $(images_files_src) $(images_files_build)
 
@@ -94,27 +91,27 @@ test.iso: $(images_files)
 	rmdir directory
 	mv $@-t $@
 
-$(builddir)/100kallzeroes:
+100kallzeroes:
 	rm -f $@ $@-t
 	dd if=/dev/zero of=$@-t bs=1024 count=100
 	mv $@-t $@
 
-$(builddir)/100kallnewlines: $(builddir)/100kallzeroes
+100kallnewlines: 100kallzeroes
 	rm -f $@ $@-t
 	tr '\0' '\n' < $< > $@-t
 	mv $@-t $@
 
-$(builddir)/100kallspaces: $(builddir)/100kallzeroes
+100kallspaces: 100kallzeroes
 	rm -f $@ $@-t
 	tr '\0' ' ' < $< > $@-t
 	mv $@-t $@
 
-$(builddir)/100krandom:
+100krandom:
 	rm -f $@ $@-t
 	dd if=/dev/urandom of=$@-t bs=1024 count=100
 	mv $@-t $@
 
-$(builddir)/10klines:
+10klines:
 	rm -f $@ $@-t
 	i=0; \
 	while [ $$i -lt 10000 ]; do \
@@ -123,20 +120,28 @@ $(builddir)/10klines:
 	done > $@-t
 	mv $@-t $@
 
-$(builddir)/abssymlink:
+# XXX Make examines this file and believes that it does not exist,
+# resulting in the ISO being rebuilt every time.
+abssymlink:
 	ln -sf /10klines $@
 
-$(builddir)/hello.b64:
+hello.b64:
 	echo "hello" | base64 > $@
 
-$(builddir)/initrd: empty known-1 known-2 known-3 known-4 known-5
-	rm -f $@ $@-t
-	for f in $^; do echo $$f; done | cpio -o -H newc | gzip --best > $@-t
+# When builddir != srcdir, names like 'empty' are rewritten as
+# '../../tests/data/empty'.  We need to copy the files into a fresh
+# subdirectory in order to create the initrd correctly.
+initrd: empty known-1 known-2 known-3 known-4 known-5
+	rm -rf init.tmp $@ $@-t
+	mkdir -p init.tmp
+	cp $^ init.tmp
+	(cd init.tmp; ls -1 * | cpio -o -H newc | gzip --best) > $@-t
+	rm -r init.tmp
 	mv $@-t $@
 
 # Create a dummy initrd with a single file called 'bin/nash' which
 # is used to test the file_architecture function.
-$(builddir)/initrd-x86_64.img: bin-x86_64-dynamic
+initrd-x86_64.img: bin-x86_64-dynamic
 	rm -rf bin $@ $@-t
 	mkdir bin
 	cp $< bin/nash
@@ -144,12 +149,12 @@ $(builddir)/initrd-x86_64.img: bin-x86_64-dynamic
 	mv $@-t $@
 	rm -rf bin $@-t
 
-$(builddir)/initrd-x86_64.img.gz: initrd-x86_64.img
+initrd-x86_64.img.gz: initrd-x86_64.img
 	rm -f $@ $@-t
 	gzip --best -c $< > $@-t
 	mv $@-t $@
 
-$(builddir)/test-grep.txt.gz: test-grep.txt
+test-grep.txt.gz: test-grep.txt
 	rm -f $@ $@-t
 	gzip --best -c $< > $@-t
 	mv $@-t $@

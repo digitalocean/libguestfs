@@ -1615,12 +1615,8 @@ uninstall-am:
 # generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
 $(top_builddir)/generator/stamp-generator: force
-	$(MAKE) -C $(top_builddir)/generator stamp-generator
-
-# A symbolic rule to regenerate the appliance
-.PHONY: appliance
-appliance: force
-	$(MAKE) -C $(top_builddir)/appliance
+	! test -f $(top_builddir)/generator/Makefile || \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator
 
 # Interfacing automake and ExtUtils::MakeMaker known to be
 # a nightmare, news at 11.
@@ -1628,9 +1624,13 @@ appliance: force
 # src/ dependencies
 @HAVE_PERL_TRUE@src_deps: $(top_builddir)/src/libguestfs.la $(generator_built)
 
-# Images used by tests
+# Images used by tests.
 @HAVE_PERL_TRUE@test_images:
 @HAVE_PERL_TRUE@	$(MAKE) -C $(top_builddir)/tests/data
+
+# Build the appliance.
+@HAVE_PERL_TRUE@appliance:
+@HAVE_PERL_TRUE@	$(MAKE) -C $(top_builddir)/appliance
 
 @HAVE_PERL_TRUE@$(TESTS): $(test_prereq)
 
@@ -1650,7 +1650,7 @@ appliance: force
 @HAVE_PERL_TRUE@install-data-hook:
 @HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl DESTDIR=$(DESTDIR) install
 
-.PHONY: src_deps test_images
+.PHONY: appliance src_deps test_images
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

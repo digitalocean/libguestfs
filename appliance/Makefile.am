@@ -78,13 +78,11 @@ excludelist: excludelist.in Makefile
 
 supermin.d/base.img supermin.d/hostfiles: stamp-supermin
 stamp-supermin: make.sh packagelist excludelist
-	mkdir -p supermin.d
 	rm -f $@ supermin.d/base.img supermin.d/hostfiles
 	./make.sh
 	touch $@
 
 supermin.d/daemon.img: ../daemon/guestfsd guestfsd.suppressions
-	mkdir -p supermin.d
 	rm -f $@ $@-t
 	rm -rf tmp-d
 	mkdir -p tmp-d$(DAEMON_SUPERMIN_DIR) tmp-d/etc
@@ -95,16 +93,16 @@ supermin.d/daemon.img: ../daemon/guestfsd guestfsd.suppressions
 	mv $@-t $@
 
 supermin.d/init.img: init
-	cmp -s $(srcdir)/init $(builddir)/init || cp $(srcdir)/init $(builddir)/init
-	mkdir -p supermin.d
-	rm -f $@ $@-t
-	echo "init" | cpio --quiet -o -H newc > $@-t
+	rm -rf init.tmp $@ $@-t
+	mkdir init.tmp
+	cp $< init.tmp
+	(cd init.tmp; echo "init" | cpio --quiet -o -H newc) > $@-t
+	rm -r init.tmp
 	mv $@-t $@
 
 # We should put this file in /lib/udev/rules.d, but put it in /etc so
 # we don't have to deal with all the UsrMove crap in Fedora.
 supermin.d/udev-rules.img: 99-guestfs-serial.rules
-	mkdir -p supermin.d
 	rm -f $@ $@-t
 	rm -rf tmp-u
 	mkdir -p tmp-u/etc/udev/rules.d
@@ -140,7 +138,5 @@ stamp-libguestfs-make-fixed-appliance.pod: libguestfs-make-fixed-appliance.pod
 
 CLEANFILES = packagelist excludelist \
 	libguestfs-make-fixed-appliance.1 \
-	stamp-libguestfs-make-fixed-appliance.pod
-
-clean-local:
-	rm -rf supermin.d
+	stamp-libguestfs-make-fixed-appliance.pod \
+	supermin.d/*
