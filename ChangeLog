@@ -1,4 +1,40 @@
+2013-04-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Almost standardize the Perl tests.
+	This needs more work, but brings them mostly up to the same
+	standard form as the OCaml tests and the test documentation.
+
+2013-04-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Standardize the test sequence for all bindings; implement this for OCaml.
+	The idea behind this change is to have a consistent set of
+	tests across all bindings, while at the same time saving time.
+	For background see:
+
+	https://www.redhat.com/archives/libguestfs/2013-April/thread.html#00069
+
+2013-04-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a regression test for RHBZ#957772.
+
+	daemon: Properly quote arguments for tar-out, base64-out commands (RHBZ#957772).
+	This fixes commit c78ec7e085e99bfddd0509dece72bf6a8d0188ce
+	which was an attempt to fix RHBZ#908322.
+
 2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: ruby: Set $RAKE and fix Ruby tests.
+	This wasn't set which caused Ruby tests to silently not run
+	without any indication.
+
+	ruby: Fix segfault in regression test.
+	This was revealed by the regression test for RHBZ#664558.
+	Unfortunately because Ruby tests had been silently disabled,
+	this regression test was never run.
+
+	ruby: Fix optargs test.
+
+	Version 1.21.33.
 
 	tools: The programs are located in the source directory.
 

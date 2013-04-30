@@ -1,5 +1,5 @@
 # libguestfs Perl bindings -*- perl -*-
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 26;
 
 use Sys::Guestfs;
 
 my $g = Sys::Guestfs->new ();
 ok ($g);
 open FILE, ">test.img";
-truncate FILE, 10*1024*1024;
+truncate FILE, 500*1024*1024;
 close FILE;
 ok (1);
 
@@ -34,11 +34,24 @@ ok (1);
 $g->launch ();
 ok (1);
 
-$g->part_disk ("/dev/sda", "mbr");
+$g->pvcreate ("/dev/sda");
 ok (1);
-$g->mkfs ("ext2", "/dev/sda1");
+$g->vgcreate ("VG", ["/dev/sda"]);
 ok (1);
-$g->mount ("/dev/sda1", "/");
+$g->lvcreate ("LV1", "VG", 200);
+ok (1);
+$g->lvcreate ("LV2", "VG", 200);
+ok (1);
+
+my @lvs = $g->lvs ();
+if (@lvs != 2 || $lvs[0] ne "/dev/VG/LV1" || $lvs[1] ne "/dev/VG/LV2") {
+    die "g->lvs() returned incorrect result"
+}
+ok (1);
+
+$g->mkfs ("ext2", "/dev/VG/LV1");
+ok (1);
+$g->mount ("/dev/VG/LV1", "/");
 ok (1);
 $g->mkdir ("/p");
 ok (1);
@@ -47,10 +60,17 @@ ok (1);
 
 my @dirs = $g->readdir ("/");
 @dirs = sort { $a->{name} cmp $b->{name} } @dirs;
-foreach (@dirs) {
-  print "$_->{name} $_->{ino} $_->{ftyp}\n";
-}
-ok (1);
+ok (@dirs == 5);
+ok ($dirs[0]{name} eq ".");
+ok ($dirs[0]{ftyp} eq "d");
+ok ($dirs[1]{name} eq "..");
+ok ($dirs[1]{ftyp} eq "d");
+ok ($dirs[2]{name} eq "lost+found");
+ok ($dirs[2]{ftyp} eq "d");
+ok ($dirs[3]{name} eq "p");
+ok ($dirs[3]{ftyp} eq "d");
+ok ($dirs[4]{name} eq "q");
+ok ($dirs[4]{ftyp} eq "r");
 
 $g->shutdown ();
 ok (1);
