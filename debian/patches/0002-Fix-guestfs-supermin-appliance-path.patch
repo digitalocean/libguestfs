@@ -9,7 +9,7 @@ The supermin appliance files are not installed to the multiarch lib directory.
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index 9c85c69..7a30b0e 100644
+index 90df421..c3b140d 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
 @@ -30,8 +30,8 @@ EXTRA_DIST = \
@@ -24,10 +24,10 @@ index 9c85c69..7a30b0e 100644
  fs_DATA =
  superminfs_DATA = \
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 3473b01..9c480d6 100644
+index 1aa028f..43c1186 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -117,7 +117,7 @@ libguestfs_la_SOURCES = \
+@@ -120,7 +120,7 @@ libguestfs_la_SOURCES = \
  	libguestfs.syms
  
  libguestfs_la_CPPFLAGS = \

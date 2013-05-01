@@ -1,3 +1,2 @@
 0001-Fix-for-systemd-based-Debian-systems.patch
-0002-out-of-tree-build-fix-building-Perl-bindings.patch
-0003-Fix-guestfs-supermin-appliance-path.patch
+0002-Fix-guestfs-supermin-appliance-path.patch
