@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [34])
+m4_define([libguestfs_release], [35])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1546,6 +1546,8 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
+AC_CONFIG_FILES([perl/run-perl-tests],
+                [chmod +x,-w perl/run-perl-tests])
 AC_CONFIG_FILES([pick-guests.pl],
                 [chmod +x,-w pick-guests.pl])
 AC_CONFIG_FILES([podwrapper.pl],

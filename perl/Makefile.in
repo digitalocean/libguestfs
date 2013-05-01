@@ -83,7 +83,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = README $(srcdir)/Makefile.PL.in $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(top_srcdir)/subdir-rules.mk
+	$(srcdir)/Makefile.in $(srcdir)/run-perl-tests.in \
+	$(top_srcdir)/subdir-rules.mk
 @ENABLE_APPLIANCE_TRUE@@HAVE_PERL_TRUE@am__append_1 = appliance
 @ENABLE_APPLIANCE_TRUE@@HAVE_PERL_TRUE@am__append_2 = run-perl-tests
 subdir = perl
@@ -214,7 +215,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = Makefile.PL
+CONFIG_CLEAN_FILES = run-perl-tests Makefile.PL
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1349,6 +1350,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+run-perl-tests: $(top_builddir)/config.status $(srcdir)/run-perl-tests.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 Makefile.PL: $(top_builddir)/config.status $(srcdir)/Makefile.PL.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
@@ -1635,10 +1638,20 @@ $(top_builddir)/generator/stamp-generator: force
 @HAVE_PERL_TRUE@$(TESTS): $(test_prereq)
 
 @HAVE_PERL_TRUE@all: Makefile-pl src_deps
-@HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl
+@HAVE_PERL_TRUE@	$(MAKE) -C $(srcdir) -f $(abs_builddir)/Makefile-pl \
+@HAVE_PERL_TRUE@		INST_ARCHLIB=$(abs_builddir)/blib/arch \
+@HAVE_PERL_TRUE@		INST_SCRIPT=$(abs_builddir)/blib/script \
+@HAVE_PERL_TRUE@		INST_BIN=$(abs_builddir)/blib/bin \
+@HAVE_PERL_TRUE@		INST_LIB=$(abs_builddir)/blib/lib \
+@HAVE_PERL_TRUE@		INST_MAN1DIR=$(abs_builddir)/blib/man1 \
+@HAVE_PERL_TRUE@		INST_MAN3DIR=$(abs_builddir)/blib/man3 \
+@HAVE_PERL_TRUE@		TEST_FILES=$(abs_srcdir)/t/*.t
 
 @HAVE_PERL_TRUE@Makefile-pl: Makefile.PL
-@HAVE_PERL_TRUE@	perl Makefile.PL INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
+@HAVE_PERL_TRUE@	cd $(srcdir); \
+@HAVE_PERL_TRUE@	perl $(abs_builddir)/Makefile.PL \
+@HAVE_PERL_TRUE@		INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
+@HAVE_PERL_TRUE@	sed -i 's,Makefile.PL,$(abs_builddir)/Makefile.PL,' $@
 
 # No!  Otherwise it is deleted before the clean-local rule runs.
 #CLEANFILES = Makefile-pl
