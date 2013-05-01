@@ -1,5 +1,6 @@
-# libguestfs Perl bindings -*- perl -*-
-# Copyright (C) 2009 Red Hat Inc.
+#!/bin/bash -
+# libguestfs
+# Copyright (C) 2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,44 +16,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use strict;
-use warnings;
-use Test::More tests => 11;
+# Regression test for:
+# https://bugzilla.redhat.com/show_bug.cgi?id=957772
+# Ensure that tar-out and base64-out commands properly quote arguments.
 
-use Sys::Guestfs;
+set -e
+export LANG=C
 
-my $g = Sys::Guestfs->new ();
-ok ($g);
-open FILE, ">test.img";
-truncate FILE, 500*1024*1024;
-close FILE;
-ok (1);
+../../fish/guestfish -N fs -m /dev/sda1 <<EOF
+mkdir "/test 1"
+touch "/test 2"
+tar-out "/test 1" /dev/null
+base64-out "/test 2" /dev/null
+EOF
 
-$g->add_drive ("test.img");
-ok (1);
-
-$g->launch ();
-ok (1);
-
-$g->pvcreate ("/dev/sda");
-ok (1);
-$g->vgcreate ("VG", ["/dev/sda"]);
-ok (1);
-$g->lvcreate ("LV1", "VG", 200);
-ok (1);
-$g->lvcreate ("LV2", "VG", 200);
-ok (1);
-
-my @lvs = $g->lvs ();
-if (@lvs != 2 || $lvs[0] ne "/dev/VG/LV1" || $lvs[1] ne "/dev/VG/LV2") {
-    die "g->lvs() returned incorrect result"
-}
-ok (1);
-
-$g->shutdown ();
-ok (1);
-
-undef $g;
-ok (1);
-
-unlink ("test.img");
+rm test1.img

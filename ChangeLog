@@ -1,4 +1,84 @@
+2013-04-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	erlang: Make separated builds work correctly.
+	Set ERL_LIBS and also create a phony 'ebin' directory for the
+	guestfs.beam (library) so that the tests run against the local copy
+	not the installed version, and so that separated builds work.
+
+	erlang: Add a CLEANFILES rule.
+
+	python: Fix for separated builds.
+	Ensure that ./run sets PYTHONPATH to include the Python source
+	directory (location of guestfs.py).
+
+2013-04-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Fix build and test to work with separated builds.
+	This is inspired largely by Hilko Bengen's equivalent
+	hivex patch here:
+
+	https://github.com/libguestfs/hivex/commit/887466794a40f57b84ce32524e1a650d6674c7e6
+
+2013-04-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: run-bindtests: Don't set PERL5LIB.
+	This environment variable should already be set properly
+	by 'run', there is no need to set it from this test script.
+
+	./run: Set s= (srcdir).  Use absolute paths.
+
+2013-04-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/mountable: Fix incorrect use of inspect-os API (RHBZ#957380).
+
+2013-04-29  Mike Kelly  <pioto@pioto.org>
+
+	Make a 1G test image instead, avoiding a size bug
+	mkfs_btrfs: /dev/vda2: device /dev/vda2 is too small (must be at least
+	256 MB) at .../libguestfs/tests/guests/guest-aux/make-fedora-img.pl line
+	140.
+
+	Refactor image partition sizing
+
+2013-04-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.34.
+
+	perl: Almost standardize the Perl tests.
+	This needs more work, but brings them mostly up to the same
+	standard form as the OCaml tests and the test documentation.
+
+2013-04-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Standardize the test sequence for all bindings; implement this for OCaml.
+	The idea behind this change is to have a consistent set of
+	tests across all bindings, while at the same time saving time.
+	For background see:
+
+	https://www.redhat.com/archives/libguestfs/2013-April/thread.html#00069
+
+2013-04-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a regression test for RHBZ#957772.
+
+	daemon: Properly quote arguments for tar-out, base64-out commands (RHBZ#957772).
+	This fixes commit c78ec7e085e99bfddd0509dece72bf6a8d0188ce
+	which was an attempt to fix RHBZ#908322.
+
 2013-04-25  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: ruby: Set $RAKE and fix Ruby tests.
+	This wasn't set which caused Ruby tests to silently not run
+	without any indication.
+
+	ruby: Fix segfault in regression test.
+	This was revealed by the regression test for RHBZ#664558.
+	Unfortunately because Ruby tests had been silently disabled,
+	this regression test was never run.
+
+	ruby: Fix optargs test.
+
+	Version 1.21.33.
 
 	tools: The programs are located in the source directory.
 
