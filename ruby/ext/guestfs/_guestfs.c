@@ -3601,6 +3601,13 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * device. This is the default if the optional
  * protocol parameter is omitted.
  * 
+ * "protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
+ * Connect to a remote FTP, HTTP or TFTP server.
+ * The "server" parameter must also be supplied -
+ * see below.
+ * 
+ * See also: "FTP, HTTP AND TFTP" in guestfs(3)
+ * 
  * "protocol = "gluster""
  * Connect to the GlusterFS server. The "server"
  * parameter must also be supplied - see below.
@@ -3650,7 +3657,9 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * Protocol       Number of servers required
  * --------       --------------------------
  * file           List must be empty or param not used at all
+ * ftp|ftps|http|https|tftp  Exactly one
  * gluster        Exactly one
+ * iscsi          Exactly one
  * nbd            Exactly one
  * rbd            One or more
  * sheepdog       Zero or more
@@ -3670,8 +3679,9 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * "/etc/services").
  * 
  * "username"
- * For the "ssh" and "rbd" protocols only, this
- * specifies the remote username.
+ * For the "ftp", "ftps", "http", "https", "iscsi",
+ * "rbd", "ssh" and "tftp" protocols, this specifies
+ * the remote username.
  * 
  * If not given, then the local username is used for
  * "ssh", and no authentication is attempted for ceph.

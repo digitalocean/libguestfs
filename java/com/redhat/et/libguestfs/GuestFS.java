@@ -2747,6 +2747,13 @@ public class GuestFS {
    * device. This is the default if the optional
    * protocol parameter is omitted.
    * <p>
+   * "protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
+   * Connect to a remote FTP, HTTP or TFTP server.
+   * The "server" parameter must also be supplied -
+   * see below.
+   * <p>
+   * See also: "FTP, HTTP AND TFTP" in guestfs(3)
+   * <p>
    * "protocol = "gluster""
    * Connect to the GlusterFS server. The "server"
    * parameter must also be supplied - see below.
@@ -2796,7 +2803,9 @@ public class GuestFS {
    * Protocol       Number of servers required
    * --------       --------------------------
    * file           List must be empty or param not used at all
+   * ftp|ftps|http|https|tftp  Exactly one
    * gluster        Exactly one
+   * iscsi          Exactly one
    * nbd            Exactly one
    * rbd            One or more
    * sheepdog       Zero or more
@@ -2816,8 +2825,9 @@ public class GuestFS {
    * "/etc/services").
    * <p>
    * "username"
-   * For the "ssh" and "rbd" protocols only, this
-   * specifies the remote username.
+   * For the "ftp", "ftps", "http", "https", "iscsi",
+   * "rbd", "ssh" and "tftp" protocols, this specifies
+   * the remote username.
    * <p>
    * If not given, then the local username is used for
    * "ssh", and no authentication is attempted for ceph.

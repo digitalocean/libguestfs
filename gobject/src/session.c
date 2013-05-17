@@ -4203,6 +4203,12 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * @filename is interpreted as a local file or device. This is the
  * default if the optional protocol parameter is omitted.
  * 
+ * "protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
+ * Connect to a remote FTP, HTTP or TFTP server. The @server
+ * parameter must also be supplied - see below.
+ * 
+ * See also: "FTP, HTTP AND TFTP" in guestfs(3)
+ * 
  * "protocol = "gluster""
  * Connect to the GlusterFS server. The @server parameter must also
  * be supplied - see below.
@@ -4253,7 +4259,11 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * <![CDATA[file           List must be empty or param not used at all]]>
  * 
+ * <![CDATA[ftp|ftps|http|https|tftp  Exactly one]]>
+ * 
  * <![CDATA[gluster        Exactly one]]>
+ * 
+ * <![CDATA[iscsi          Exactly one]]>
  * 
  * <![CDATA[nbd            Exactly one]]>
  * 
@@ -4280,8 +4290,8 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * protocol is used (see "/etc/services").
  * 
  * @username
- * For the @ssh and @rbd protocols only, this specifies the remote
- * username.
+ * For the @ftp, @ftps, @http, @https, @iscsi, @rbd, @ssh and @tftp
+ * protocols, this specifies the remote username.
  * 
  * If not given, then the local username is used for @ssh, and no
  * authentication is attempted for ceph. But note this sometimes may

@@ -1,4 +1,26 @@
+2013-05-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Fix rules for quoting files that contain ':'.
+	The test was backwards.
+
+	This fixes commit a95214b1985e694946e3426120a6fdc13a3f081f.
+
+2013-05-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	faq: Update documentation for Debian Squeeze (thanks Hilko Bengen).
+
 2013-05-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	http: Fix typo in documentation.
+	This fixes commit 83f74f5c564c51a1324b12e5edc4b50356d49dc6.
+
+	Add support for qemu's curl driver (ie. FTP, FTPS, HTTP, HTTPS, TFTP).
+
+	iscsi: Document that one server must be passed, and that username may be passed.
+	This fixes commit 8b271101a1724bab926c65c77436d8128bf1c2df.
+
+	drives: Fix typo in error message.
+	This fixes commit 0a065c45748ec5efe86f4d02f4864a58ed7dae36.
 
 	Version 1.21.38.
 
