@@ -9621,3 +9621,15 @@ PREINIT:
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
+void
+cp_r (g, src, dest)
+      guestfs_h *g;
+      char *src;
+      char *dest;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_cp_r (g, src, dest);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+

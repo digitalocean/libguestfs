@@ -110,6 +110,7 @@ extern struct command_entry copy_out_cmd_entry;
 extern struct command_entry copy_size_cmd_entry;
 extern struct command_entry cp_cmd_entry;
 extern struct command_entry cp_a_cmd_entry;
+extern struct command_entry cp_r_cmd_entry;
 extern struct command_entry dd_cmd_entry;
 extern struct command_entry debug_cmd_entry;
 extern struct command_entry debug_drives_cmd_entry;
@@ -692,6 +693,8 @@ copy-size, &copy_size_cmd_entry
 cp, &cp_cmd_entry
 cp_a, &cp_a_cmd_entry
 cp-a, &cp_a_cmd_entry
+cp_r, &cp_r_cmd_entry
+cp-r, &cp_r_cmd_entry
 dd, &dd_cmd_entry
 debug, &debug_cmd_entry
 debug_drives, &debug_drives_cmd_entry

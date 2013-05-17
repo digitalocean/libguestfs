@@ -108,6 +108,7 @@ PHP_FUNCTION (guestfs_copy_file_to_file);
 PHP_FUNCTION (guestfs_copy_size);
 PHP_FUNCTION (guestfs_cp);
 PHP_FUNCTION (guestfs_cp_a);
+PHP_FUNCTION (guestfs_cp_r);
 PHP_FUNCTION (guestfs_dd);
 PHP_FUNCTION (guestfs_debug);
 PHP_FUNCTION (guestfs_debug_drives);

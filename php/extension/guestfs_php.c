@@ -134,6 +134,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_copy_size, NULL)
   PHP_FE (guestfs_cp, NULL)
   PHP_FE (guestfs_cp_a, NULL)
+  PHP_FE (guestfs_cp_r, NULL)
   PHP_FE (guestfs_dd, NULL)
   PHP_FE (guestfs_debug, NULL)
   PHP_FE (guestfs_debug_drives, NULL)
@@ -3650,6 +3651,46 @@ PHP_FUNCTION (guestfs_cp_a)
 
   int r;
   r = guestfs_cp_a (g, src, dest);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
+PHP_FUNCTION (guestfs_cp_r)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *src;
+  int src_size;
+  char *dest;
+  int dest_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss",
+        &z_g, &src, &src_size, &dest, &dest_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (src) != src_size) {
+    fprintf (stderr, "libguestfs: cp_r: parameter 'src' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (strlen (dest) != dest_size) {
+    fprintf (stderr, "libguestfs: cp_r: parameter 'dest' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_cp_r (g, src, dest);
 
   if (r == -1) {
     RETURN_FALSE;

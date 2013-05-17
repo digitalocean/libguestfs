@@ -2753,6 +2753,12 @@ public class GuestFS {
    * <p>
    * See also: "GLUSTER" in guestfs(3)
    * <p>
+   * "protocol = "iscsi""
+   * Connect to the iSCSI server. The "server"
+   * parameter must also be supplied - see below.
+   * <p>
+   * See also: "ISCSI" in guestfs(3).
+   * <p>
    * "protocol = "nbd""
    * Connect to the Network Block Device server. The
    * "server" parameter must also be supplied - see
@@ -17146,6 +17152,31 @@ public class GuestFS {
   }
 
   private native void _extlinux (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * copy a file or directory recursively
+   * <p>
+   * This copies a file or directory from "src" to "dest"
+   * recursively using the "cp -rP" command.
+   * <p>
+   * Most users should use "g.cp_a" instead. This command is
+   * useful when you don't want to preserve permissions,
+   * because the target filesystem does not support it
+   * (primarily when writing to DOS FAT filesystems).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void cp_r (String src, String dest)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("cp_r: handle is closed");
+
+    _cp_r (g, src, dest);
+  }
+
+  private native void _cp_r (long g, String src, String dest)
     throws LibGuestFSException;
 
 }

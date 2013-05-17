@@ -458,7 +458,8 @@ module Guestfs (
   rename,
   is_whole_device,
   feature_available,
-  extlinux
+  extlinux,
+  cp_r
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -5756,6 +5757,18 @@ foreign import ccall unsafe "guestfs.h guestfs_extlinux" c_extlinux
 extlinux :: GuestfsH -> String -> IO ()
 extlinux h directory = do
   r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_extlinux p directory)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_cp_r" c_cp_r
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+cp_r :: GuestfsH -> String -> String -> IO ()
+cp_r h src dest = do
+  r <- withCString src $ \src -> withCString dest $ \dest -> withForeignPtr h (\p -> c_cp_r p src dest)
   if (r == -1)
     then do
       err <- last_error h

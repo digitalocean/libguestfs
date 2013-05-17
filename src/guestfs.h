@@ -985,6 +985,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_cp (guestfs_h *g, const char *src, const c
 #define GUESTFS_HAVE_CP_A 1
 extern GUESTFS_DLL_PUBLIC int guestfs_cp_a (guestfs_h *g, const char *src, const char *dest);
 
+#define GUESTFS_HAVE_CP_R 1
+extern GUESTFS_DLL_PUBLIC int guestfs_cp_r (guestfs_h *g, const char *src, const char *dest);
+
 extern GUESTFS_DLL_PUBLIC int guestfs_dd (guestfs_h *g, const char *src, const char *dest)
   GUESTFS_DEPRECATED_BY ("copy_device_to_device");
 
@@ -3306,6 +3309,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_COPY_SIZE 1
 #define LIBGUESTFS_HAVE_CP 1
 #define LIBGUESTFS_HAVE_CP_A 1
+#define LIBGUESTFS_HAVE_CP_R 1
 #define LIBGUESTFS_HAVE_DD 1
 #define LIBGUESTFS_HAVE_DEBUG 1
 #define LIBGUESTFS_HAVE_DEBUG_DRIVES 1

@@ -981,6 +981,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_cp_r ##### -->
+<para>
+
+</para>
+
+@session: 
+@src: 
+@dest: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_dd ##### -->
 <para>
 

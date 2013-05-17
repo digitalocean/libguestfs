@@ -3,7 +3,7 @@
  * It was generated using rpcgen.
  */
 
-#include "./guestfs_protocol.h"
+#include "guestfs_protocol.h"
 #include <config.h>
 #if HAVE_XDR_U_INT64_T
 #define xdr_uint64_t xdr_u_int64_t
@@ -7830,6 +7830,18 @@ xdr_guestfs_extlinux_args (XDR *xdrs, guestfs_extlinux_args *objp)
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->directory, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_cp_r_args (XDR *xdrs, guestfs_cp_r_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->src, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->dest, ~0))
 		 return FALSE;
 	return TRUE;
 }

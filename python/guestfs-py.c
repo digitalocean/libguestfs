@@ -21035,6 +21035,42 @@ py_guestfs_extlinux (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_cp_r (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *src;
+  const char *dest;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_cp_r",
+                         &py_g, &src, &dest))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_cp_r (g, src, dest);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21563,6 +21599,7 @@ static PyMethodDef methods[] = {
   { (char *) "feature_available", py_guestfs_feature_available, METH_VARARGS, NULL },
   { (char *) "syslinux", py_guestfs_syslinux, METH_VARARGS, NULL },
   { (char *) "extlinux", py_guestfs_extlinux, METH_VARARGS, NULL },
+  { (char *) "cp_r", py_guestfs_cp_r, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

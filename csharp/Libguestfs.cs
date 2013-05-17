@@ -1387,6 +1387,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_cp_r (IntPtr h, [In] string src, [In] string dest);
+
+    /// <summary>
+    /// copy a file or directory recursively
+    /// </summary>
+    public void cp_r (string src, string dest)
+    {
+      int r;
+      r = guestfs_cp_r (_handle, src, dest);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_dd (IntPtr h, [In] string src, [In] string dest);
 
     /// <summary>

@@ -4209,6 +4209,12 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * See also: "GLUSTER" in guestfs(3)
  * 
+ * "protocol = "iscsi""
+ * Connect to the iSCSI server. The @server parameter must also be
+ * supplied - see below.
+ * 
+ * See also: "ISCSI" in guestfs(3).
+ * 
  * "protocol = "nbd""
  * Connect to the Network Block Device server. The @server
  * parameter must also be supplied - see below.
@@ -24014,6 +24020,45 @@ guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError
   }
 
   int ret = guestfs_extlinux (g, directory);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_cp_r:
+ * @session: (transfer none): A GuestfsSession object
+ * @src: (transfer none) (type filename):
+ * @dest: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * copy a file or directory recursively
+ *
+ * This copies a file or directory from @src to @dest recursively using the
+ * "cp -rP" command.
+ * 
+ * Most users should use guestfs_session_cp_a() instead. This command is
+ * useful when you don't want to preserve permissions, because the target
+ * filesystem does not support it (primarily when writing to DOS FAT
+ * filesystems).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_cp_r(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cp_r");
+    return FALSE;
+  }
+
+  int ret = guestfs_cp_r (g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;

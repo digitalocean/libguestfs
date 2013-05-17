@@ -1341,6 +1341,13 @@ The C<server> parameter must also be supplied - see below.
 
 See also: L<guestfs(3)/GLUSTER>
 
+=item C<protocol = \"iscsi\">
+
+Connect to the iSCSI server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/ISCSI>.
+
 =item C<protocol = \"nbd\">
 
 Connect to the Network Block Device server.
@@ -11145,6 +11152,28 @@ under C<directory>.  For further information
 about the contents of this file, see L<extlinux(1)>.
 
 See also C<guestfs_syslinux>." };
+
+  { defaults with
+    name = "cp_r";
+    style = RErr, [Pathname "src"; Pathname "dest"], [];
+    proc_nr = Some 401;
+    tests = [
+      InitScratchFS, Always, TestResultString (
+        [["mkdir"; "/cp_r1"];
+         ["mkdir"; "/cp_r2"];
+         ["write"; "/cp_r1/file"; "file content"];
+         ["cp_r"; "/cp_r1"; "/cp_r2"];
+         ["cat"; "/cp_r2/cp_r1/file"]], "file content")
+    ];
+    shortdesc = "copy a file or directory recursively";
+    longdesc = "\
+This copies a file or directory from C<src> to C<dest>
+recursively using the C<cp -rP> command.
+
+Most users should use C<guestfs_cp_a> instead.  This command
+is useful when you don't want to preserve permissions, because
+the target filesystem does not support it (primarily when
+writing to DOS FAT filesystems)." };
 
 ]
 

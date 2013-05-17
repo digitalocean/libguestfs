@@ -379,6 +379,7 @@ external copy_file_to_file : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size
 external copy_size : t -> string -> string -> int64 -> unit = "ocaml_guestfs_copy_size"
 external cp : t -> string -> string -> unit = "ocaml_guestfs_cp"
 external cp_a : t -> string -> string -> unit = "ocaml_guestfs_cp_a"
+external cp_r : t -> string -> string -> unit = "ocaml_guestfs_cp_r"
 external dd : t -> string -> string -> unit = "ocaml_guestfs_dd"
 external debug : t -> string -> string array -> string = "ocaml_guestfs_debug"
 external debug_drives : t -> string array = "ocaml_guestfs_debug_drives"
@@ -915,6 +916,7 @@ class guestfs ?environment ?close_on_exit () =
     method copy_size = copy_size g
     method cp = cp g
     method cp_a = cp_a g
+    method cp_r = cp_r g
     method dd = dd g
     method debug = debug g
     method debug_drives () = debug_drives g

@@ -577,6 +577,9 @@ val cp : t -> string -> string -> unit
 val cp_a : t -> string -> string -> unit
 (** copy a file or directory recursively *)
 
+val cp_r : t -> string -> string -> unit
+(** copy a file or directory recursively *)
+
 val dd : t -> string -> string -> unit
 (** copy from source to destination using dd
 
@@ -2129,6 +2132,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method copy_size : string -> string -> int64 -> unit
   method cp : string -> string -> unit
   method cp_a : string -> string -> unit
+  method cp_r : string -> string -> unit
   method dd : string -> string -> unit
   method debug : string -> string array -> string
   method debug_drives : unit -> string array

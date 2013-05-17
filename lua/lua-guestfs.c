@@ -2263,6 +2263,29 @@ guestfs_lua_cp_a (lua_State *L)
 }
 
 static int
+guestfs_lua_cp_r (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *src;
+  const char *dest;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "cp_r");
+
+  src = luaL_checkstring (L, 2);
+  dest = luaL_checkstring (L, 3);
+
+  r = guestfs_cp_r (g, src, dest);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_dd (lua_State *L)
 {
   int r;
@@ -14422,6 +14445,7 @@ static luaL_Reg methods[] = {
   { "copy_size", guestfs_lua_copy_size },
   { "cp", guestfs_lua_cp },
   { "cp_a", guestfs_lua_cp_a },
+  { "cp_r", guestfs_lua_cp_r },
   { "dd", guestfs_lua_dd },
   { "debug", guestfs_lua_debug },
   { "debug_drives", guestfs_lua_debug_drives },

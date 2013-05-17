@@ -256,6 +256,13 @@ The C<server> parameter must also be supplied - see below.
 
 See also: L<guestfs(3)/GLUSTER>
 
+=item C<protocol = "iscsi">
+
+Connect to the iSCSI server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/ISCSI>.
+
 =item C<protocol = "nbd">
 
 Connect to the Network Block Device server.
@@ -1266,6 +1273,18 @@ either a destination filename or destination directory.
 
 This copies a file or directory from C<src> to C<dest>
 recursively using the C<cp -a> command.
+
+=head2 cp-r
+
+ cp-r src dest
+
+This copies a file or directory from C<src> to C<dest>
+recursively using the C<cp -rP> command.
+
+Most users should use L</cp-a> instead.  This command
+is useful when you don't want to preserve permissions, because
+the target filesystem does not support it (primarily when
+writing to DOS FAT filesystems).
 
 =head2 dd
 

@@ -1,4 +1,55 @@
+2013-05-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.38.
+
+	build: Add 'make maintainer-tag' rule for tagging HEAD with current version.
+
+	tests/regressions: Remove bogus comment in test.
+	This updates commits a95214b1985e694946e3426120a6fdc13a3f081f.
+
+2013-05-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Remove check for ':' in filename (RHBZ#811649).
+	Modern qemu can now handle this properly.  ':' is only special if what
+	precedes it looks like a transport, so:
+
+	  qemu-system-x86_64 -drive foo:bar     .. fails
+	  qemu-system-x86_64 -drive ./foo:bar   .. works
+
+	Thus by adding ./ in front of relative paths that contain ':' we can
+	work around this.
+
+	In addition, this broke iscsi:// URIs because iSCSI target names
+	routinely contain ':' characters.
+
+2013-05-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: ceph/gluster/iscsi/sheepdog/ssh: Force the disk name to begin with a '/'.
+	This avoids confusion when using URIs in guestfish, since the path
+	will always start with a '/', and we don't otherwise know if we should
+	remove it or not.  By forcing the '/' to always be there, we deal with
+	this problem in the API instead.
+
+	drives: Use libxml2 to construct safely quoted URIs for qemu.
+
+2013-05-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add support for iSCSI.
+
+	src/inspect-fs.c: Don't segfault if internal_parse_mountable returns NULL (RHBZ#961812).
+
 2013-05-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Don't set LIBGUESTFS_PATH if --disable-appliance.
+	Thanks Dave Vasilevsky for spotting this problem.
+
+	recipes: Add link to script for converting Windows DVD to bootable USB key.
+
+	New API: cp-r
+	This runs 'cp -rP' and is useful for copying when the target
+	doesn't support file owners or permissions (ie. FAT).
+
+	Version 1.21.37.
 
 	fish/options.c: Whitespace changes.
 

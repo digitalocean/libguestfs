@@ -151,6 +151,7 @@
     <keyword type="function" name="guestfs_session_copy_size ()" link="GuestfsSession.html#guestfs-session-copy-size"/>
     <keyword type="function" name="guestfs_session_cp ()" link="GuestfsSession.html#guestfs-session-cp"/>
     <keyword type="function" name="guestfs_session_cp_a ()" link="GuestfsSession.html#guestfs-session-cp-a"/>
+    <keyword type="function" name="guestfs_session_cp_r ()" link="GuestfsSession.html#guestfs-session-cp-r"/>
     <keyword type="function" name="guestfs_session_dd ()" link="GuestfsSession.html#guestfs-session-dd"/>
     <keyword type="function" name="guestfs_session_debug ()" link="GuestfsSession.html#guestfs-session-debug"/>
     <keyword type="function" name="guestfs_session_debug_drives ()" link="GuestfsSession.html#guestfs-session-debug-drives"/>

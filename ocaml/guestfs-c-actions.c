@@ -3462,6 +3462,39 @@ ocaml_guestfs_cp_a (value gv, value srcv, value destv)
 }
 
 /* Automatically generated wrapper for function
+ * val cp_r : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_cp_r (value gv, value srcv, value destv);
+
+value
+ocaml_guestfs_cp_r (value gv, value srcv, value destv)
+{
+  CAMLparam3 (gv, srcv, destv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("cp_r");
+
+  char *src = guestfs___safe_strdup (g, String_val (srcv));
+  char *dest = guestfs___safe_strdup (g, String_val (destv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_cp_r (g, src, dest);
+  caml_leave_blocking_section ();
+  free (src);
+  free (dest);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "cp_r");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val dd : t -> string -> string -> unit
  */
 

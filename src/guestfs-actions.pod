@@ -348,6 +348,13 @@ The C<server> parameter must also be supplied - see below.
 
 See also: L<guestfs(3)/GLUSTER>
 
+=item C<protocol = "iscsi">
+
+Connect to the iSCSI server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/ISCSI>.
+
 =item C<protocol = "nbd">
 
 Connect to the Network Block Device server.
@@ -2103,6 +2110,23 @@ recursively using the C<cp -a> command.
 This function returns 0 on success or -1 on error.
 
 (Added in 1.0.18)
+
+=head2 guestfs_cp_r
+
+ int
+ guestfs_cp_r (guestfs_h *g,
+               const char *src,
+               const char *dest);
+
+This copies a file or directory from C<src> to C<dest>
+recursively using the C<cp -rP> command.
+
+Most users should use C<guestfs_cp_a> instead.  This command
+is useful when you don't want to preserve permissions, because
+the target filesystem does not support it (primarily when
+writing to DOS FAT filesystems).
+
+This function returns 0 on success or -1 on error.
 
 =head2 guestfs_dd
 

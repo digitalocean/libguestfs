@@ -2035,6 +2035,22 @@ run_cp_a (ETERM *message)
 }
 
 static ETERM *
+run_cp_r (ETERM *message)
+{
+  char *src = erl_iolist_to_string (ARG (0));
+  char *dest = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_cp_r (g, src, dest);
+  free (src);
+  free (dest);
+  if (r == -1)
+    return make_error ("cp_r");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_dd (ETERM *message)
 {
   char *src = erl_iolist_to_string (ARG (0));
@@ -10480,6 +10496,8 @@ dispatch (ETERM *message)
     return run_cp (message);
   else if (atom_equals (fun, "cp_a"))
     return run_cp_a (message);
+  else if (atom_equals (fun, "cp_r"))
+    return run_cp_r (message);
   else if (atom_equals (fun, "dd"))
     return run_dd (message);
   else if (atom_equals (fun, "debug"))

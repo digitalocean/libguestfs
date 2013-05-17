@@ -1319,6 +1319,12 @@ class GuestFS(object):
         
         See also: "GLUSTER" in guestfs(3)
         
+        "protocol = "iscsi""
+        Connect to the iSCSI server. The "server"
+        parameter must also be supplied - see below.
+        
+        See also: "ISCSI" in guestfs(3).
+        
         "protocol = "nbd""
         Connect to the Network Block Device server. The
         "server" parameter must also be supplied - see
@@ -8573,5 +8579,18 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.extlinux (self._o, directory)
+        return r
+
+    def cp_r (self, src, dest):
+        """This copies a file or directory from "src" to "dest"
+        recursively using the "cp -rP" command.
+        
+        Most users should use "g.cp_a" instead. This command is
+        useful when you don't want to preserve permissions,
+        because the target filesystem does not support it
+        (primarily when writing to DOS FAT filesystems).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.cp_r (self._o, src, dest)
         return r
 

@@ -3607,6 +3607,12 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * 
  * See also: "GLUSTER" in guestfs(3)
  * 
+ * "protocol = "iscsi""
+ * Connect to the iSCSI server. The "server"
+ * parameter must also be supplied - see below.
+ * 
+ * See also: "ISCSI" in guestfs(3).
+ * 
  * "protocol = "nbd""
  * Connect to the Network Block Device server. The
  * "server" parameter must also be supplied - see
@@ -24136,6 +24142,44 @@ ruby_guestfs_extlinux (VALUE gv, VALUE directoryv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.cp_r(src, dest) -> nil
+ *
+ * copy a file or directory recursively
+ *
+ * This copies a file or directory from "src" to "dest"
+ * recursively using the "cp -rP" command.
+ * 
+ * Most users should use "g.cp_a" instead. This command is
+ * useful when you don't want to preserve permissions,
+ * because the target filesystem does not support it
+ * (primarily when writing to DOS FAT filesystems).
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_cp_r+[http://libguestfs.org/guestfs.3.html#guestfs_cp_r]).
+ */
+static VALUE
+ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "cp_r");
+
+  const char *src = StringValueCStr (srcv);
+  const char *dest = StringValueCStr (destv);
+
+  int r;
+
+  r = guestfs_cp_r (g, src, dest);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -25237,4 +25281,6 @@ Init__guestfs (void)
         ruby_guestfs_syslinux, -1);
   rb_define_method (c_guestfs, "extlinux",
         ruby_guestfs_extlinux, 1);
+  rb_define_method (c_guestfs, "cp_r",
+        ruby_guestfs_cp_r, 2);
 }

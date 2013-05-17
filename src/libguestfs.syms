@@ -120,6 +120,7 @@
         guestfs_copy_size;
         guestfs_cp;
         guestfs_cp_a;
+        guestfs_cp_r;
         guestfs_create;
         guestfs_create_flags;
         guestfs_dd;

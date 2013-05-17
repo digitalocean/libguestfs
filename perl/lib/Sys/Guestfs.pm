@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.400';
+$VERSION = '0.401';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -517,6 +517,13 @@ Connect to the GlusterFS server.
 The C<server> parameter must also be supplied - see below.
 
 See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = "iscsi">
+
+Connect to the iSCSI server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/ISCSI>.
 
 =item C<protocol = "nbd">
 
@@ -1378,6 +1385,16 @@ either a destination filename or destination directory.
 
 This copies a file or directory from C<src> to C<dest>
 recursively using the C<cp -a> command.
+
+=item $g->cp_r ($src, $dest);
+
+This copies a file or directory from C<src> to C<dest>
+recursively using the C<cp -rP> command.
+
+Most users should use C<$g-E<gt>cp_a> instead.  This command
+is useful when you don't want to preserve permissions, because
+the target filesystem does not support it (primarily when
+writing to DOS FAT filesystems).
 
 =item $g->dd ($src, $dest);
 
@@ -7627,6 +7644,15 @@ use vars qw(%guestfs_introspection);
       [ 'dest', 'string(path)', 1 ],
     ],
     name => "cp_a",
+    description => "copy a file or directory recursively",
+  },
+  "cp_r" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    name => "cp_r",
     description => "copy a file or directory recursively",
   },
   "dd" => {

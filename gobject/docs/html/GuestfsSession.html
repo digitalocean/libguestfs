@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsSession</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="ch01.html" title="Libguestfs GObject Bindings">
@@ -328,6 +328,10 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionEven
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-cp-a" title="guestfs_session_cp_a ()">guestfs_session_cp_a</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-cp-r" title="guestfs_session_cp_r ()">guestfs_session_cp_r</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -2548,6 +2552,14 @@ be supplied - see below.
 </p>
 <p>
 See also: "GLUSTER" in guestfs(3)
+</p>
+<p>
+"protocol = "iscsi""
+Connect to the iSCSI server. The <em class="parameter"><code>server</code></em> parameter must also be
+supplied - see below.
+</p>
+<p>
+See also: "ISCSI" in guestfs(3).
 </p>
 <p>
 "protocol = "nbd""
@@ -6073,6 +6085,58 @@ copy a file or directory recursively
 <p>
 This copies a file or directory from <em class="parameter"><code>src</code></em> to <em class="parameter"><code>dest</code></em> recursively using the
 "cp -a" command.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>src</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-cp-r"></a><h3>guestfs_session_cp_r ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_cp_r                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+copy a file or directory recursively
+</p>
+<p>
+This copies a file or directory from <em class="parameter"><code>src</code></em> to <em class="parameter"><code>dest</code></em> recursively using the
+"cp -rP" command.
+</p>
+<p>
+Most users should use <a class="link" href="GuestfsSession.html#guestfs-session-cp-a" title="guestfs_session_cp_a ()"><code class="function">guestfs_session_cp_a()</code></a> instead. This command is
+useful when you don't want to preserve permissions, because the target
+filesystem does not support it (primarily when writing to DOS FAT
+filesystems).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
