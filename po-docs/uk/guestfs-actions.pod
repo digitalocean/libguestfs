@@ -255,6 +255,7 @@ its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
  GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, const char *protocol,
  GUESTFS_ADD_DRIVE_OPTS_SERVER, char *const *server,
  GUESTFS_ADD_DRIVE_OPTS_USERNAME, const char *username,
+ GUESTFS_ADD_DRIVE_OPTS_SECRET, const char *secret,
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -331,12 +332,26 @@ See also: L<guestfs(3)/REMOTE STORAGE>.
 C<filename> is interpreted as a local file or device.  This is the default
 if the optional protocol parameter is omitted.
 
+=item C<protocol = "ftp"|"ftps"|"http"|"https"|"tftp">
+
+Connect to a remote FTP, HTTP or TFTP server.  The C<server> parameter must
+also be supplied - see below.
+
+See also: L<guestfs(3)/FTP, HTTP AND TFTP>
+
 =item C<protocol = "gluster">
 
 Connect to the GlusterFS server.  The C<server> parameter must also be
 supplied - see below.
 
 See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = "iscsi">
+
+Connect to the iSCSI server.  The C<server> parameter must also be supplied
+- see below.
+
+See also: L<guestfs(3)/ISCSI>.
 
 =item C<protocol = "nbd">
 
@@ -348,7 +363,8 @@ See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
 =item C<protocol = "rbd">
 
 Connect to the Ceph (librbd/RBD) server.  The C<server> parameter must also
-be supplied - see below.
+be supplied - see below.  The C<username> parameter may be supplied.  See
+below.  The C<secret> parameter may be supplied.  See below.
 
 See also: L<guestfs(3)/CEPH>.
 
@@ -378,7 +394,9 @@ server(s).
  Protocol       Number of servers required
  --------       --------------------------
  file           List must be empty or param not used at all
+ ftp|ftps|http|https|tftp  Exactly one
  gluster        Exactly one
+ iscsi          Exactly one
  nbd            Exactly one
  rbd            One or more
  sheepdog       Zero or more
@@ -398,12 +416,23 @@ protocol is used (see C</etc/services>).
 
 =item C<username>
 
-For the C<ssh> protocol only, this specifies the remote username.
+For the C<ftp>, C<ftps>, C<http>, C<https>, C<iscsi>, C<rbd>, C<ssh> and
+C<tftp> protocols, this specifies the remote username.
 
-If not given, then the local username is used.  But note this sometimes may
-give unexpected results, for example if using the libvirt backend and if the
+If not given, then the local username is used for C<ssh>, and no
+authentication is attempted for ceph.  But note this sometimes may give
+unexpected results, for example if using the libvirt backend and if the
 libvirt backend is configured to start the qemu appliance as a special user
 such as C<qemu.qemu>.  If in doubt, specify the remote username you want.
+
+=item C<secret>
+
+For the C<rbd> protocol only, this specifies the 'secret' to use when
+connecting to the remote device.
+
+If not given, then a secret matching the given username will be looked up in
+the default keychain locations, or if no username is given, then no
+authentication will be used.
 
 =back
 
@@ -2029,6 +2058,22 @@ C<cp -a> command.
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 (Додано у 1.0.18)
+
+=head2 guestfs_cp_r
+
+ int
+ guestfs_cp_r (guestfs_h *g,
+               const char *src,
+               const char *dest);
+
+This copies a file or directory from C<src> to C<dest> recursively using the
+C<cp -rP> command.
+
+Most users should use C<guestfs_cp_a> instead.  This command is useful when
+you don't want to preserve permissions, because the target filesystem does
+not support it (primarily when writing to DOS FAT filesystems).
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 =head2 guestfs_dd
 

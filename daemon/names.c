@@ -419,4 +419,5 @@ const char *function_names[] = {
   [398] = "feature_available",
   [399] = "syslinux",
   [400] = "extlinux",
+  [401] = "cp_r",
 };

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsSession</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="ch01.html" title="Libguestfs GObject Bindings">
@@ -328,6 +328,10 @@ struct              <a class="link" href="GuestfsSession.html#GuestfsSessionEven
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-cp-a" title="guestfs_session_cp_a ()">guestfs_session_cp_a</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-cp-r" title="guestfs_session_cp_r ()">guestfs_session_cp_r</a>                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -2542,12 +2546,28 @@ See also: "REMOTE STORAGE" in guestfs(3).
 default if the optional protocol parameter is omitted.
 </p>
 <p>
+"protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
+Connect to a remote FTP, HTTP or TFTP server. The <em class="parameter"><code>server</code></em>
+parameter must also be supplied - see below.
+</p>
+<p>
+See also: "FTP, HTTP AND TFTP" in guestfs(3)
+</p>
+<p>
 "protocol = "gluster""
 Connect to the GlusterFS server. The <em class="parameter"><code>server</code></em> parameter must also
 be supplied - see below.
 </p>
 <p>
 See also: "GLUSTER" in guestfs(3)
+</p>
+<p>
+"protocol = "iscsi""
+Connect to the iSCSI server. The <em class="parameter"><code>server</code></em> parameter must also be
+supplied - see below.
+</p>
+<p>
+See also: "ISCSI" in guestfs(3).
 </p>
 <p>
 "protocol = "nbd""
@@ -2560,7 +2580,9 @@ See also: "NETWORK BLOCK DEVICE" in guestfs(3).
 <p>
 "protocol = "rbd""
 Connect to the Ceph (librbd/RBD) server. The <em class="parameter"><code>server</code></em> parameter
-must also be supplied - see below.
+must also be supplied - see below. The <em class="parameter"><code>username</code></em> parameter may
+be supplied. See below. The <em class="parameter"><code>secret</code></em> parameter may be supplied.
+See below.
 </p>
 <p>
 See also: "CEPH" in guestfs(3).
@@ -2599,7 +2621,13 @@ Protocol       Number of servers required
 file           List must be empty or param not used at all
 </p>
 <p>
+ftp|ftps|http|https|tftp  Exactly one
+</p>
+<p>
 gluster        Exactly one
+</p>
+<p>
+iscsi          Exactly one
 </p>
 <p>
 nbd            Exactly one
@@ -2638,14 +2666,26 @@ protocol is used (see "/etc/services").
 </p>
 <p>
 <em class="parameter"><code>username</code></em>
-For the <em class="parameter"><code>ssh</code></em> protocol only, this specifies the remote username.
+For the <em class="parameter"><code>ftp</code></em>, <em class="parameter"><code>ftps</code></em>, <em class="parameter"><code>http</code></em>, <em class="parameter"><code>https</code></em>, <em class="parameter"><code>iscsi</code></em>, <em class="parameter"><code>rbd</code></em>, <em class="parameter"><code>ssh</code></em> and <em class="parameter"><code>tftp</code></em>
+protocols, this specifies the remote username.
 </p>
 <p>
-If not given, then the local username is used. But note this
-sometimes may give unexpected results, for example if using the
-libvirt backend and if the libvirt backend is configured to start
-the qemu appliance as a special user such as "qemu.qemu". If in
-doubt, specify the remote username you want.
+If not given, then the local username is used for <em class="parameter"><code>ssh</code></em>, and no
+authentication is attempted for ceph. But note this sometimes may
+give unexpected results, for example if using the libvirt backend
+and if the libvirt backend is configured to start the qemu appliance
+as a special user such as "qemu.qemu". If in doubt, specify the
+remote username you want.
+</p>
+<p>
+<em class="parameter"><code>secret</code></em>
+For the <em class="parameter"><code>rbd</code></em> protocol only, this specifies the 'secret' to use when
+connecting to the remote device.
+</p>
+<p>
+If not given, then a secret matching the given username will be
+looked up in the default keychain locations, or if no username is
+given, then no authentication will be used.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -6059,6 +6099,58 @@ copy a file or directory recursively
 <p>
 This copies a file or directory from <em class="parameter"><code>src</code></em> to <em class="parameter"><code>dest</code></em> recursively using the
 "cp -a" command.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>src</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-cp-r"></a><h3>guestfs_session_cp_r ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_cp_r                (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *src</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *dest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+copy a file or directory recursively
+</p>
+<p>
+This copies a file or directory from <em class="parameter"><code>src</code></em> to <em class="parameter"><code>dest</code></em> recursively using the
+"cp -rP" command.
+</p>
+<p>
+Most users should use <a class="link" href="GuestfsSession.html#guestfs-session-cp-a" title="guestfs_session_cp_a ()"><code class="function">guestfs_session_cp_a()</code></a> instead. This command is
+useful when you don't want to preserve permissions, because the target
+filesystem does not support it (primarily when writing to DOS FAT
+filesystems).
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>

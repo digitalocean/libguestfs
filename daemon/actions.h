@@ -568,5 +568,6 @@ extern int do_internal_rhbz914931 (int count);
 extern int do_feature_available (char *const *groups);
 extern int do_syslinux (const char *device, const char *directory);
 extern int do_extlinux (const char *directory);
+extern int do_cp_r (const char *src, const char *dest);
 
 #endif /* GUESTFSD_ACTIONS_H */

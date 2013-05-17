@@ -2747,11 +2747,24 @@ public class GuestFS {
    * device. This is the default if the optional
    * protocol parameter is omitted.
    * <p>
+   * "protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
+   * Connect to a remote FTP, HTTP or TFTP server.
+   * The "server" parameter must also be supplied -
+   * see below.
+   * <p>
+   * See also: "FTP, HTTP AND TFTP" in guestfs(3)
+   * <p>
    * "protocol = "gluster""
    * Connect to the GlusterFS server. The "server"
    * parameter must also be supplied - see below.
    * <p>
    * See also: "GLUSTER" in guestfs(3)
+   * <p>
+   * "protocol = "iscsi""
+   * Connect to the iSCSI server. The "server"
+   * parameter must also be supplied - see below.
+   * <p>
+   * See also: "ISCSI" in guestfs(3).
    * <p>
    * "protocol = "nbd""
    * Connect to the Network Block Device server. The
@@ -2763,7 +2776,9 @@ public class GuestFS {
    * "protocol = "rbd""
    * Connect to the Ceph (librbd/RBD) server. The
    * "server" parameter must also be supplied - see
-   * below.
+   * below. The "username" parameter may be supplied.
+   * See below. The "secret" parameter may be
+   * supplied. See below.
    * <p>
    * See also: "CEPH" in guestfs(3).
    * <p>
@@ -2788,7 +2803,9 @@ public class GuestFS {
    * Protocol       Number of servers required
    * --------       --------------------------
    * file           List must be empty or param not used at all
+   * ftp|ftps|http|https|tftp  Exactly one
    * gluster        Exactly one
+   * iscsi          Exactly one
    * nbd            Exactly one
    * rbd            One or more
    * sheepdog       Zero or more
@@ -2808,15 +2825,27 @@ public class GuestFS {
    * "/etc/services").
    * <p>
    * "username"
-   * For the "ssh" protocol only, this specifies the
-   * remote username.
+   * For the "ftp", "ftps", "http", "https", "iscsi",
+   * "rbd", "ssh" and "tftp" protocols, this specifies
+   * the remote username.
    * <p>
-   * If not given, then the local username is used. But
-   * note this sometimes may give unexpected results, for
-   * example if using the libvirt backend and if the
+   * If not given, then the local username is used for
+   * "ssh", and no authentication is attempted for ceph.
+   * But note this sometimes may give unexpected results,
+   * for example if using the libvirt backend and if the
    * libvirt backend is configured to start the qemu
    * appliance as a special user such as "qemu.qemu". If
    * in doubt, specify the remote username you want.
+   * <p>
+   * "secret"
+   * For the "rbd" protocol only, this specifies the
+   * 'secret' to use when connecting to the remote
+   * device.
+   * <p>
+   * If not given, then a secret matching the given
+   * username will be looked up in the default keychain
+   * locations, or if no username is given, then no
+   * authentication will be used.
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
@@ -2898,8 +2927,16 @@ public class GuestFS {
       username = ((String) _optobj);
       _optargs_bitmask |= 128L;
     }
+    String secret = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("secret");
+    if (_optobj != null) {
+      secret = ((String) _optobj);
+      _optargs_bitmask |= 256L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret);
   }
 
   public void add_drive (String filename)
@@ -2920,7 +2957,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret)
     throws LibGuestFSException;
 
   /**
@@ -17125,6 +17162,31 @@ public class GuestFS {
   }
 
   private native void _extlinux (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * copy a file or directory recursively
+   * <p>
+   * This copies a file or directory from "src" to "dest"
+   * recursively using the "cp -rP" command.
+   * <p>
+   * Most users should use "g.cp_a" instead. This command is
+   * useful when you don't want to preserve permissions,
+   * because the target filesystem does not support it
+   * (primarily when writing to DOS FAT filesystems).
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void cp_r (String src, String dest)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("cp_r: handle is closed");
+
+    _cp_r (g, src, dest);
+  }
+
+  private native void _cp_r (long g, String src, String dest)
     throws LibGuestFSException;
 
 }

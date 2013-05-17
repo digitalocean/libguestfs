@@ -295,6 +295,7 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EMULTIHOP_HIDDEN = @EMULTIHOP_HIDDEN@
 EMULTIHOP_VALUE = @EMULTIHOP_VALUE@
+ENABLE_APPLIANCE = @ENABLE_APPLIANCE@
 ENOLINK_HIDDEN = @ENOLINK_HIDDEN@
 ENOLINK_VALUE = @ENOLINK_VALUE@
 EOVERFLOW_HIDDEN = @EOVERFLOW_HIDDEN@
@@ -1661,7 +1662,8 @@ $(top_builddir)/generator/stamp-generator: force
 @HAVE_PERL_TRUE@	rm -f Makefile-pl
 
 @HAVE_PERL_TRUE@install-data-hook:
-@HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl DESTDIR=$(DESTDIR) install
+@HAVE_PERL_TRUE@	$(MAKE) -C $(srcdir) -f $(abs_builddir)/Makefile-pl \
+@HAVE_PERL_TRUE@		DESTDIR=$(DESTDIR) install
 
 .PHONY: appliance src_deps test_images
 

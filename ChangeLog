@@ -1,4 +1,171 @@
+2013-05-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Fix rules for quoting files that contain ':'.
+	The test was backwards.
+
+	This fixes commit a95214b1985e694946e3426120a6fdc13a3f081f.
+
+2013-05-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	faq: Update documentation for Debian Squeeze (thanks Hilko Bengen).
+
+2013-05-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	http: Fix typo in documentation.
+	This fixes commit 83f74f5c564c51a1324b12e5edc4b50356d49dc6.
+
+	Add support for qemu's curl driver (ie. FTP, FTPS, HTTP, HTTPS, TFTP).
+
+	iscsi: Document that one server must be passed, and that username may be passed.
+	This fixes commit 8b271101a1724bab926c65c77436d8128bf1c2df.
+
+	drives: Fix typo in error message.
+	This fixes commit 0a065c45748ec5efe86f4d02f4864a58ed7dae36.
+
+	Version 1.21.38.
+
+	build: Add 'make maintainer-tag' rule for tagging HEAD with current version.
+
+	tests/regressions: Remove bogus comment in test.
+	This updates commits a95214b1985e694946e3426120a6fdc13a3f081f.
+
+2013-05-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Remove check for ':' in filename (RHBZ#811649).
+	Modern qemu can now handle this properly.  ':' is only special if what
+	precedes it looks like a transport, so:
+
+	  qemu-system-x86_64 -drive foo:bar     .. fails
+	  qemu-system-x86_64 -drive ./foo:bar   .. works
+
+	Thus by adding ./ in front of relative paths that contain ':' we can
+	work around this.
+
+	In addition, this broke iscsi:// URIs because iSCSI target names
+	routinely contain ':' characters.
+
+2013-05-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: ceph/gluster/iscsi/sheepdog/ssh: Force the disk name to begin with a '/'.
+	This avoids confusion when using URIs in guestfish, since the path
+	will always start with a '/', and we don't otherwise know if we should
+	remove it or not.  By forcing the '/' to always be there, we deal with
+	this problem in the API instead.
+
+	drives: Use libxml2 to construct safely quoted URIs for qemu.
+
+2013-05-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add support for iSCSI.
+
+	src/inspect-fs.c: Don't segfault if internal_parse_mountable returns NULL (RHBZ#961812).
+
+2013-05-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	./run: Don't set LIBGUESTFS_PATH if --disable-appliance.
+	Thanks Dave Vasilevsky for spotting this problem.
+
+	recipes: Add link to script for converting Windows DVD to bootable USB key.
+
+	New API: cp-r
+	This runs 'cp -rP' and is useful for copying when the target
+	doesn't support file owners or permissions (ie. FAT).
+
+	Version 1.21.37.
+
+	fish/options.c: Whitespace changes.
+
+2013-05-09  Dave Vasilevsky  <dave@vasilevsky.ca>
+
+	fuse: Document the fstype parameter
+
+	fuse: Allow specifying the fstype of a mount
+
+2013-05-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	rbd: Miscellaneous stylistic changes, no functional change.
+
+	Use size_t for loop iterators.
+
+	src/libvirt-domain.c: Cast constant strings to avoid warning about signedness.
+
+	src/drives.c: 'auth' string is const.
+	This fixes commit f3e01b69e04a0e8321e9d54ca39a4d7ea762f80d.
+
+2013-05-08  Mike Kelly  <pioto@pioto.org>
+
+	rbd: Support using a custom secret
+
+	libvirt: extract usernames for network disks
+
+	rbd: support usernames, for cephx authentication
+
+	libvirt: initial support for networked disks
+
+	rbd: send mon_host for rbd drives
+	This is how the servers are passed to kvm.
+
+2013-05-02  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix rpcgen call for separated builds.
+
+	perl: Fix install target for separated builds.
+
+2013-05-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.36.
+
+	debian: Add OCaml .depend files to DISTCLEANFILES.
+	Otherwise debuild complains that these files have been created after
+	it does a 'make distclean'.
+
+2013-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/c-api: Various code refactorings.
+	- Don't use fixed names for the disks.  This will allow us to
+	  parallelize this test.
+
+	- Add a new "GETKEY:<key>" String parameter which can retrieve keys
+	  from the handle.  The temporary disk names are stored as keys.
+
+	- Don't test the close callback.  However this uses the close callback
+	  mechanism to delete the temporary disks, and in any case close
+	  callbacks are well tested by the language binding tests.
+
+	- The generated code now produces a static array of tests (instead of
+	  a 'perform_tests' function), making it possible to parallelize.
+
+2013-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/c-api: Remove global guestfs handle.
+	This will allow us to parallelize these tests.
+
+	tests/c-api: Warn about deprecated functions in main program.
+	And replace deprecated guestfs_set_close_callback with
+	non-deprecated guestfs_set_event_callback.
+
+	tests/c-api: Factor out common init_* into separate functions.
+
+	java: Standardize Java test numbering.
+
+2013-04-30  Mike Kelly  <pioto@pioto.org>
+
+	ssh: fix setting the username part
+	Right now, we'd always be setting a NULL username.
+
 2013-04-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Standardize test names and numbering.
+
+	python: Standardize test numbering.
+
+	perl: Make the 030-create-flags test same as canonical OCaml version.
+
+	ocaml: Set close-on-exit flag to true in this test so handle is cleaned up.
+	Otherwise the valgrind test fails since the handle resources
+	are leaked.
+
+	Version 1.21.35.
 
 	erlang: Make separated builds work correctly.
 	Set ERL_LIBS and also create a phony 'ebin' directory for the

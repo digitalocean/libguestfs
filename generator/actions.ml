@@ -1247,7 +1247,7 @@ not all belong to a single logical operating system
 
   { defaults with
     name = "add_drive";
-    style = RErr, [String "filename"], [OBool "readonly"; OString "format"; OString "iface"; OString "name"; OString "label"; OString "protocol"; OStringList "server"; OString "username"];
+    style = RErr, [String "filename"], [OBool "readonly"; OString "format"; OString "iface"; OString "name"; OString "label"; OString "protocol"; OStringList "server"; OString "username"; OString "secret"];
     once_had_no_optargs = true;
     blocking = false;
     fish_alias = ["add"];
@@ -1334,12 +1334,26 @@ C<filename> is interpreted as a local file or device.
 This is the default if the optional protocol parameter
 is omitted.
 
+=item C<protocol = \"ftp\"|\"ftps\"|\"http\"|\"https\"|\"tftp\">
+
+Connect to a remote FTP, HTTP or TFTP server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/FTP, HTTP AND TFTP>
+
 =item C<protocol = \"gluster\">
 
 Connect to the GlusterFS server.
 The C<server> parameter must also be supplied - see below.
 
 See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = \"iscsi\">
+
+Connect to the iSCSI server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/ISCSI>.
 
 =item C<protocol = \"nbd\">
 
@@ -1352,6 +1366,8 @@ See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
 
 Connect to the Ceph (librbd/RBD) server.
 The C<server> parameter must also be supplied - see below.
+The C<username> parameter may be supplied.  See below.
+The C<secret> parameter may be supplied.  See below.
 
 See also: L<guestfs(3)/CEPH>.
 
@@ -1381,7 +1397,9 @@ is a list of server(s).
  Protocol       Number of servers required
  --------       --------------------------
  file           List must be empty or param not used at all
+ ftp|ftps|http|https|tftp  Exactly one
  gluster        Exactly one
+ iscsi          Exactly one
  nbd            Exactly one
  rbd            One or more
  sheepdog       Zero or more
@@ -1401,13 +1419,23 @@ for the protocol is used (see C</etc/services>).
 
 =item C<username>
 
-For the C<ssh> protocol only, this specifies the remote username.
+For the C<ftp>, C<ftps>, C<http>, C<https>, C<iscsi>, C<rbd>, C<ssh>
+and C<tftp> protocols, this specifies the remote username.
 
-If not given, then the local username is used.  But note this sometimes
-may give unexpected results, for example if using the libvirt backend
-and if the libvirt backend is configured to start the qemu appliance
-as a special user such as C<qemu.qemu>.  If in doubt, specify the
-remote username you want.
+If not given, then the local username is used for C<ssh>, and no authentication
+is attempted for ceph.  But note this sometimes may give unexpected results, for
+example if using the libvirt backend and if the libvirt backend is configured to
+start the qemu appliance as a special user such as C<qemu.qemu>.  If in doubt,
+specify the remote username you want.
+
+=item C<secret>
+
+For the C<rbd> protocol only, this specifies the 'secret' to use when
+connecting to the remote device.
+
+If not given, then a secret matching the given username will be looked up in the
+default keychain locations, or if no username is given, then no authentication
+will be used.
 
 =back" };
 
@@ -2566,11 +2594,11 @@ data." };
     style = RString "format", [String "filename"], [];
     tests = [
       InitEmpty, Always, TestResultString (
-        [["disk_format"; "test1.img"]], "raw");
+        [["disk_format"; "GETKEY:test1"]], "raw");
       InitEmpty, Always, TestResultString (
-        [["disk_format"; "test2.img"]], "raw");
+        [["disk_format"; "GETKEY:test2"]], "raw");
       InitEmpty, Always, TestResultString (
-        [["disk_format"; "test3.img"]], "raw");
+        [["disk_format"; "GETKEY:test3"]], "raw");
     ];
     shortdesc = "detect the disk format of a disk image";
     longdesc = "\
@@ -2588,11 +2616,11 @@ See also: L<guestfs(3)/DISK IMAGE FORMATS>" };
     style = RInt64 "size", [String "filename"], [];
     tests = [
       InitEmpty, Always, TestResult (
-        [["disk_virtual_size"; "test1.img"]], "ret == UINT64_C (524288000)");
+        [["disk_virtual_size"; "GETKEY:test1"]], "ret == UINT64_C (524288000)");
       InitEmpty, Always, TestResult (
-        [["disk_virtual_size"; "test2.img"]], "ret == UINT64_C (52428800)");
+        [["disk_virtual_size"; "GETKEY:test2"]], "ret == UINT64_C (52428800)");
       InitEmpty, Always, TestResult (
-        [["disk_virtual_size"; "test3.img"]], "ret == UINT64_C (10485760)");
+        [["disk_virtual_size"; "GETKEY:test3"]], "ret == UINT64_C (10485760)");
     ];
     shortdesc = "return virtual size of a disk";
     longdesc = "\
@@ -2607,11 +2635,11 @@ circumstances.  See L<guestfs(3)/CVE-2010-3851>." };
     style = RBool "backingfile", [String "filename"], [];
     tests = [
       InitEmpty, Always, TestResultFalse (
-        [["disk_has_backing_file"; "test1.img"]]);
+        [["disk_has_backing_file"; "GETKEY:test1"]]);
       InitEmpty, Always, TestResultFalse (
-        [["disk_has_backing_file"; "test2.img"]]);
+        [["disk_has_backing_file"; "GETKEY:test2"]]);
       InitEmpty, Always, TestResultFalse (
-        [["disk_has_backing_file"; "test3.img"]]);
+        [["disk_has_backing_file"; "GETKEY:test3"]]);
     ];
     shortdesc = "return whether disk has a backing file";
     longdesc = "\
@@ -11134,6 +11162,28 @@ under C<directory>.  For further information
 about the contents of this file, see L<extlinux(1)>.
 
 See also C<guestfs_syslinux>." };
+
+  { defaults with
+    name = "cp_r";
+    style = RErr, [Pathname "src"; Pathname "dest"], [];
+    proc_nr = Some 401;
+    tests = [
+      InitScratchFS, Always, TestResultString (
+        [["mkdir"; "/cp_r1"];
+         ["mkdir"; "/cp_r2"];
+         ["write"; "/cp_r1/file"; "file content"];
+         ["cp_r"; "/cp_r1"; "/cp_r2"];
+         ["cat"; "/cp_r2/cp_r1/file"]], "file content")
+    ];
+    shortdesc = "copy a file or directory recursively";
+    longdesc = "\
+This copies a file or directory from C<src> to C<dest>
+recursively using the C<cp -rP> command.
+
+Most users should use C<guestfs_cp_a> instead.  This command
+is useful when you don't want to preserve permissions, because
+the target filesystem does not support it (primarily when
+writing to DOS FAT filesystems)." };
 
 ]
 

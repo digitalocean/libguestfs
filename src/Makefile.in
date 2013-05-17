@@ -425,6 +425,7 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EMULTIHOP_HIDDEN = @EMULTIHOP_HIDDEN@
 EMULTIHOP_VALUE = @EMULTIHOP_VALUE@
+ENABLE_APPLIANCE = @ENABLE_APPLIANCE@
 ENOLINK_HIDDEN = @ENOLINK_HIDDEN@
 ENOLINK_VALUE = @ENOLINK_VALUE@
 EOVERFLOW_HIDDEN = @EOVERFLOW_HIDDEN@
@@ -2476,14 +2477,14 @@ errnostring-gperf.c: errnostring-gperf.gperf
 
 @HAVE_RPCGEN_TRUE@guestfs_protocol.c: guestfs_protocol.x
 @HAVE_RPCGEN_TRUE@	rm -f $@-t $@-t2
-@HAVE_RPCGEN_TRUE@	$(RPCGEN) $(RPCGEN_DEFS) -c -o $@-t $(srcdir)/$<
+@HAVE_RPCGEN_TRUE@	$(RPCGEN) $(RPCGEN_DEFS) -c -o $@-t $<
 @HAVE_RPCGEN_TRUE@	sed 's,\.\./\(\.\./\)*src,.,' < $@-t > $@-t2
 @HAVE_RPCGEN_TRUE@	rm $@-t
 @HAVE_RPCGEN_TRUE@	mv $@-t2 $@
 
 @HAVE_RPCGEN_TRUE@guestfs_protocol.h: guestfs_protocol.x
 @HAVE_RPCGEN_TRUE@	rm -f $@-t
-@HAVE_RPCGEN_TRUE@	$(RPCGEN) $(RPCGEN_DEFS) -h -o $@-t $(srcdir)/$<
+@HAVE_RPCGEN_TRUE@	$(RPCGEN) $(RPCGEN_DEFS) -h -o $@-t $<
 @HAVE_RPCGEN_TRUE@	mv $@-t $@
 
 guestfs.3 $(top_builddir)/html/guestfs.3.html: stamp-guestfs.pod

@@ -365,10 +365,10 @@ val add_cdrom : t -> string -> unit
 val add_domain : t -> ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
 (** add the disk(s) from a named libvirt domain *)
 
-val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
+val add_drive : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
 (** add an image to examine or modify *)
 
-val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
+val add_drive_opts : t -> ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
 
 val add_drive_ro : t -> string -> unit
 (** add a drive in snapshot mode (read-only) *)
@@ -575,6 +575,9 @@ val cp : t -> string -> string -> unit
 (** copy a file *)
 
 val cp_a : t -> string -> string -> unit
+(** copy a file or directory recursively *)
+
+val cp_r : t -> string -> string -> unit
 (** copy a file or directory recursively *)
 
 val dd : t -> string -> string -> unit
@@ -2061,8 +2064,8 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method acl_set_file : string -> string -> string -> unit
   method add_cdrom : string -> unit
   method add_domain : ?libvirturi:string -> ?readonly:bool -> ?iface:string -> ?live:bool -> ?allowuuid:bool -> ?readonlydisk:string -> string -> int
-  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
-  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> string -> unit
+  method add_drive : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
+  method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
   method add_drive_ro : string -> unit
   method add_drive_ro_with_if : string -> string -> unit
   method add_drive_with_if : string -> string -> unit
@@ -2129,6 +2132,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method copy_size : string -> string -> int64 -> unit
   method cp : string -> string -> unit
   method cp_a : string -> string -> unit
+  method cp_r : string -> string -> unit
   method dd : string -> string -> unit
   method debug : string -> string array -> string
   method debug_drives : unit -> string array

@@ -292,6 +292,7 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EMULTIHOP_HIDDEN = @EMULTIHOP_HIDDEN@
 EMULTIHOP_VALUE = @EMULTIHOP_VALUE@
+ENABLE_APPLIANCE = @ENABLE_APPLIANCE@
 ENOLINK_HIDDEN = @ENOLINK_HIDDEN@
 ENOLINK_VALUE = @ENOLINK_VALUE@
 EOVERFLOW_HIDDEN = @EOVERFLOW_HIDDEN@
@@ -1305,11 +1306,11 @@ EXTRA_DIST = \
 	lib/guestfs.rb \
 	run-bindtests \
 	run-ruby-tests \
-	tests/tc_*.rb
+	t/tc_*.rb
 
 CLEANFILES = \
 	lib/*~ \
-	tests/*~ \
+	t/*~ \
 	ext/guestfs/*~ \
 	ext/guestfs/extconf.h \
 	ext/guestfs/_guestfs.o \

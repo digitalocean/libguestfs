@@ -4203,11 +4203,23 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * @filename is interpreted as a local file or device. This is the
  * default if the optional protocol parameter is omitted.
  * 
+ * "protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
+ * Connect to a remote FTP, HTTP or TFTP server. The @server
+ * parameter must also be supplied - see below.
+ * 
+ * See also: "FTP, HTTP AND TFTP" in guestfs(3)
+ * 
  * "protocol = "gluster""
  * Connect to the GlusterFS server. The @server parameter must also
  * be supplied - see below.
  * 
  * See also: "GLUSTER" in guestfs(3)
+ * 
+ * "protocol = "iscsi""
+ * Connect to the iSCSI server. The @server parameter must also be
+ * supplied - see below.
+ * 
+ * See also: "ISCSI" in guestfs(3).
  * 
  * "protocol = "nbd""
  * Connect to the Network Block Device server. The @server
@@ -4217,7 +4229,9 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * "protocol = "rbd""
  * Connect to the Ceph (librbd/RBD) server. The @server parameter
- * must also be supplied - see below.
+ * must also be supplied - see below. The @username parameter may
+ * be supplied. See below. The @secret parameter may be supplied.
+ * See below.
  * 
  * See also: "CEPH" in guestfs(3).
  * 
@@ -4245,7 +4259,11 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * <![CDATA[file           List must be empty or param not used at all]]>
  * 
+ * <![CDATA[ftp|ftps|http|https|tftp  Exactly one]]>
+ * 
  * <![CDATA[gluster        Exactly one]]>
+ * 
+ * <![CDATA[iscsi          Exactly one]]>
  * 
  * <![CDATA[nbd            Exactly one]]>
  * 
@@ -4272,13 +4290,23 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * protocol is used (see "/etc/services").
  * 
  * @username
- * For the @ssh protocol only, this specifies the remote username.
+ * For the @ftp, @ftps, @http, @https, @iscsi, @rbd, @ssh and @tftp
+ * protocols, this specifies the remote username.
  * 
- * If not given, then the local username is used. But note this
- * sometimes may give unexpected results, for example if using the
- * libvirt backend and if the libvirt backend is configured to start
- * the qemu appliance as a special user such as "qemu.qemu". If in
- * doubt, specify the remote username you want.
+ * If not given, then the local username is used for @ssh, and no
+ * authentication is attempted for ceph. But note this sometimes may
+ * give unexpected results, for example if using the libvirt backend
+ * and if the libvirt backend is configured to start the qemu appliance
+ * as a special user such as "qemu.qemu". If in doubt, specify the
+ * remote username you want.
+ * 
+ * @secret
+ * For the @rbd protocol only, this specifies the 'secret' to use when
+ * connecting to the remote device.
+ * 
+ * If not given, then a secret matching the given username will be
+ * looked up in the default keychain locations, or if no username is
+ * given, then no authentication will be used.
  * 
  * Returns: true on success, false on error
  */
@@ -4354,6 +4382,14 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, Guestf
     if (username != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
       argv.username = username;
+    }
+    GValue secret_v = {0, };
+    g_value_init(&secret_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "secret", &secret_v);
+    const gchar *secret = g_value_get_string(&secret_v);
+    if (secret != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+      argv.secret = secret;
     }
     argvp = &argv;
   }
@@ -23994,6 +24030,45 @@ guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError
   }
 
   int ret = guestfs_extlinux (g, directory);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_cp_r:
+ * @session: (transfer none): A GuestfsSession object
+ * @src: (transfer none) (type filename):
+ * @dest: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * copy a file or directory recursively
+ *
+ * This copies a file or directory from @src to @dest recursively using the
+ * "cp -rP" command.
+ * 
+ * Most users should use guestfs_session_cp_a() instead. This command is
+ * useful when you don't want to preserve permissions, because the target
+ * filesystem does not support it (primarily when writing to DOS FAT
+ * filesystems).
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_cp_r(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "cp_r");
+    return FALSE;
+  }
+
+  int ret = guestfs_cp_r (g, src, dest);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;

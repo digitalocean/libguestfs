@@ -644,6 +644,7 @@ gint8 guestfs_session_is_whole_device(GuestfsSession *session, const gchar *devi
 gint8 guestfs_session_feature_available(GuestfsSession *session, gchar *const *groups, GError **err);
 gboolean guestfs_session_syslinux(GuestfsSession *session, const gchar *device, GuestfsSyslinux *optargs, GError **err);
 gboolean guestfs_session_extlinux(GuestfsSession *session, const gchar *directory, GError **err);
+gboolean guestfs_session_cp_r(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
 
 G_END_DECLS
 

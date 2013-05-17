@@ -582,14 +582,41 @@ To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
 
  char **servers = { "ceph1.example.org:3000", /* ... */, NULL };
- guestfs_add_drive_opts (g, "pool/image",
+ guestfs_add_drive_opts (g, "/pool/image",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "rbd",
                          GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         GUESTFS_ADD_DRIVE_OPTS_USERNAME, "rbduser",
+                         GUESTFS_ADD_DRIVE_OPTS_SECRET, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
                          -1);
 
 C<servers> (the C<server> parameter) is a list of one or more Ceph servers.
-The server string is documented in L</guestfs_add_drive_opts>.
+The server string is documented in L</guestfs_add_drive_opts>. The
+C<username> and C<secret> parameters are also optional, and if not given,
+then no authentication will be used.
+
+=head3 FTP, HTTP AND TFTP
+
+Libguestfs can access remote disks over FTP, FTPS, HTTP, HTTPS or TFTP
+protocols.
+
+To do this, set the optional C<protocol> and C<server> parameters of
+L</guestfs_add_drive_opts> like this:
+
+ char **servers = { "www.example.org", NULL };
+ guestfs_add_drive_opts (g, "/disk.img",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "http",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
+                         -1);
+
+The C<protocol> can be one of C<"ftp">, C<"ftps">, C<"http">, C<"https"> or
+C<"tftp">.
+
+C<servers> (the C<server> parameter) is a list which must have a single
+element.  The single element is a string defining the web, FTP or TFTP
+server.  The format of this string is documented in
+L</guestfs_add_drive_opts>.
 
 =head3 GLUSTER
 
@@ -599,7 +626,7 @@ To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
 
  char **servers = { "gluster.example.org:3000", NULL };
- guestfs_add_drive_opts (g, "volname/image",
+ guestfs_add_drive_opts (g, "/volname/image",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "gluster",
                          GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,
@@ -608,6 +635,23 @@ L</guestfs_add_drive_opts> like this:
 C<servers> (the C<server> parameter) is a list which must have a single
 element.  The single element is a string defining the Gluster server.  The
 format of this string is documented in L</guestfs_add_drive_opts>.
+
+=head3 ISCSI
+
+Libguestfs can access iSCSI disks remotely.
+
+To do this, set the optional C<protocol> and C<server> parameters like this:
+
+ char **server = { "iscsi.example.org:3000", NULL };
+ guestfs_add_drive_opts (g, "/target-iqn-name/lun",
+                         GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
+                         GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "iscsi",
+                         GUESTFS_ADD_DRIVE_OPTS_SERVER, server,
+                         -1);
+
+The C<server> parameter is a list which must have a single element.  The
+single element is a string defining the iSCSI server.  The format of this
+string is documented in L</guestfs_add_drive_opts>.
 
 =head3 NETWORK BLOCK DEVICE
 
@@ -676,7 +720,7 @@ To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
 
  char **servers = { /* optional servers ... */ NULL };
- guestfs_add_drive_opts (g, "volume",
+ guestfs_add_drive_opts (g, "/volume",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "sheepdog",
                          GUESTFS_ADD_DRIVE_OPTS_SERVER, servers,

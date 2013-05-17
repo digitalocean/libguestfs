@@ -56,6 +56,11 @@ GuestfsAddDrive
 
 </para>
 
+<!-- ##### ARG GuestfsAddDrive:secret ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsAddDrive:username ##### -->
 <para>
 

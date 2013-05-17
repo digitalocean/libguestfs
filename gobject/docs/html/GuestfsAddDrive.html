@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GuestfsAddDrive</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
 <link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
 <link rel="prev" href="GuestfsInternalTest63Optargs.html" title="GuestfsInternalTest63Optargs">
@@ -65,6 +65,7 @@ struct              <a class="link" href="GuestfsAddDrive.html#GuestfsAddDriveCl
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--name" title='The "name" property'>name</a>"                     <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--protocol" title='The "protocol" property'>protocol</a>"                 <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--readonly" title='The "readonly" property'>readonly</a>"                 <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--secret" title='The "secret" property'>secret</a>"                   <span class="type">gchar</span>*                : Read / Write / Construct
   "<a class="link" href="GuestfsAddDrive.html#GuestfsAddDrive--username" title='The "username" property'>username</a>"                 <span class="type">gchar</span>*                : Read / Write / Construct
 </pre>
 </div>
@@ -178,6 +179,15 @@ A string.
 A boolean.
 </p>
 <p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDrive--secret"></a><h3>The <code class="literal">"secret"</code> property</h3>
+<pre class="programlisting">  "secret"                   <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
 </div>
 <hr>
 <div class="refsect2">

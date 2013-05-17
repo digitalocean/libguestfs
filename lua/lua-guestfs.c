@@ -618,6 +618,10 @@ guestfs_lua_add_drive (lua_State *L)
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
       optargs_s.username = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (3, "secret",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+      optargs_s.secret = luaL_checkstring (L, -1);
+    );
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -2252,6 +2256,29 @@ guestfs_lua_cp_a (lua_State *L)
   dest = luaL_checkstring (L, 3);
 
   r = guestfs_cp_a (g, src, dest);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_cp_r (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *src;
+  const char *dest;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "cp_r");
+
+  src = luaL_checkstring (L, 2);
+  dest = luaL_checkstring (L, 3);
+
+  r = guestfs_cp_r (g, src, dest);
   if (r == -1)
     return last_error (L, g);
 
@@ -14418,6 +14445,7 @@ static luaL_Reg methods[] = {
   { "copy_size", guestfs_lua_copy_size },
   { "cp", guestfs_lua_cp },
   { "cp_a", guestfs_lua_cp_a },
+  { "cp_r", guestfs_lua_cp_r },
   { "dd", guestfs_lua_dd },
   { "debug", guestfs_lua_debug },
   { "debug_drives", guestfs_lua_debug_drives },

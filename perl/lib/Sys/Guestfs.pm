@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.400';
+$VERSION = '0.401';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -428,7 +428,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -511,12 +511,26 @@ C<filename> is interpreted as a local file or device.
 This is the default if the optional protocol parameter
 is omitted.
 
+=item C<protocol = "ftp"|"ftps"|"http"|"https"|"tftp">
+
+Connect to a remote FTP, HTTP or TFTP server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/FTP, HTTP AND TFTP>
+
 =item C<protocol = "gluster">
 
 Connect to the GlusterFS server.
 The C<server> parameter must also be supplied - see below.
 
 See also: L<guestfs(3)/GLUSTER>
+
+=item C<protocol = "iscsi">
+
+Connect to the iSCSI server.
+The C<server> parameter must also be supplied - see below.
+
+See also: L<guestfs(3)/ISCSI>.
 
 =item C<protocol = "nbd">
 
@@ -529,6 +543,8 @@ See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
 
 Connect to the Ceph (librbd/RBD) server.
 The C<server> parameter must also be supplied - see below.
+The C<username> parameter may be supplied.  See below.
+The C<secret> parameter may be supplied.  See below.
 
 See also: L<guestfs(3)/CEPH>.
 
@@ -558,7 +574,9 @@ is a list of server(s).
  Protocol       Number of servers required
  --------       --------------------------
  file           List must be empty or param not used at all
+ ftp|ftps|http|https|tftp  Exactly one
  gluster        Exactly one
+ iscsi          Exactly one
  nbd            Exactly one
  rbd            One or more
  sheepdog       Zero or more
@@ -578,17 +596,27 @@ for the protocol is used (see C</etc/services>).
 
 =item C<username>
 
-For the C<ssh> protocol only, this specifies the remote username.
+For the C<ftp>, C<ftps>, C<http>, C<https>, C<iscsi>, C<rbd>, C<ssh>
+and C<tftp> protocols, this specifies the remote username.
 
-If not given, then the local username is used.  But note this sometimes
-may give unexpected results, for example if using the libvirt backend
-and if the libvirt backend is configured to start the qemu appliance
-as a special user such as C<qemu.qemu>.  If in doubt, specify the
-remote username you want.
+If not given, then the local username is used for C<ssh>, and no authentication
+is attempted for ceph.  But note this sometimes may give unexpected results, for
+example if using the libvirt backend and if the libvirt backend is configured to
+start the qemu appliance as a special user such as C<qemu.qemu>.  If in doubt,
+specify the remote username you want.
+
+=item C<secret>
+
+For the C<rbd> protocol only, this specifies the 'secret' to use when
+connecting to the remote device.
+
+If not given, then a secret matching the given username will be looked up in the
+default keychain locations, or if no username is given, then no authentication
+will be used.
 
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username]);
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret]);
 
 This is an alias of L</add_drive>.
 
@@ -1367,6 +1395,16 @@ either a destination filename or destination directory.
 
 This copies a file or directory from C<src> to C<dest>
 recursively using the C<cp -a> command.
+
+=item $g->cp_r ($src, $dest);
+
+This copies a file or directory from C<src> to C<dest>
+recursively using the C<cp -rP> command.
+
+Most users should use C<$g-E<gt>cp_a> instead.  This command
+is useful when you don't want to preserve permissions, because
+the target filesystem does not support it (primarily when
+writing to DOS FAT filesystems).
 
 =item $g->dd ($src, $dest);
 
@@ -7013,6 +7051,7 @@ use vars qw(%guestfs_introspection);
       protocol => [ 'protocol', 'string', 5 ],
       server => [ 'server', 'string list', 6 ],
       username => [ 'username', 'string', 7 ],
+      secret => [ 'secret', 'string', 8 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",
@@ -7615,6 +7654,15 @@ use vars qw(%guestfs_introspection);
       [ 'dest', 'string(path)', 1 ],
     ],
     name => "cp_a",
+    description => "copy a file or directory recursively",
+  },
+  "cp_r" => {
+    ret => 'void',
+    args => [
+      [ 'src', 'string(path)', 0 ],
+      [ 'dest', 'string(path)', 1 ],
+    ],
+    name => "cp_r",
     description => "copy a file or directory recursively",
   },
   "dd" => {

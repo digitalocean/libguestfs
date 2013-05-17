@@ -763,6 +763,11 @@ run_add_drive (ETERM *message)
       optargs_s.username = erl_iolist_to_string (hd_value);
     }
     else
+    if (atom_equals (hd_name, "secret")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+      optargs_s.secret = erl_iolist_to_string (hd_value);
+    }
+    else
       return unknown_optarg ("add_drive", hd_name);
     optargst = ERL_CONS_TAIL (optargst);
   }
@@ -785,6 +790,8 @@ run_add_drive (ETERM *message)
     guestfs___free_string_list ((char **) optargs_s.server);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK))
     free ((char *) optargs_s.username);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK))
+    free ((char *) optargs_s.secret);
   if (r == -1)
     return make_error ("add_drive");
 
@@ -2023,6 +2030,22 @@ run_cp_a (ETERM *message)
   free (dest);
   if (r == -1)
     return make_error ("cp_a");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_cp_r (ETERM *message)
+{
+  char *src = erl_iolist_to_string (ARG (0));
+  char *dest = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_cp_r (g, src, dest);
+  free (src);
+  free (dest);
+  if (r == -1)
+    return make_error ("cp_r");
 
   return erl_mk_atom ("ok");
 }
@@ -10473,6 +10496,8 @@ dispatch (ETERM *message)
     return run_cp (message);
   else if (atom_equals (fun, "cp_a"))
     return run_cp_a (message);
+  else if (atom_equals (fun, "cp_r"))
+    return run_cp_r (message);
   else if (atom_equals (fun, "dd"))
     return run_dd (message);
   else if (atom_equals (fun, "debug"))

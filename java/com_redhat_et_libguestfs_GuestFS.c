@@ -2100,7 +2100,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1list_1filesystems  (JNIEnv *env, jobject
 }
 
 JNIEXPORT void JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jobjectArray jserver, jstring jusername)
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, jlong jg, jstring jfilename, jlong joptargs_bitmask, jboolean jreadonly, jstring jformat, jstring jiface, jstring jname, jstring jlabel, jstring jprotocol, jobjectArray jserver, jstring jusername, jstring jsecret)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
@@ -2128,6 +2128,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   server[server_len] = NULL;
   optargs_s.server = server;
   optargs_s.username = (*env)->GetStringUTFChars (env, jusername, NULL);
+  optargs_s.secret = (*env)->GetStringUTFChars (env, jsecret, NULL);
   optargs_s.bitmask = joptargs_bitmask;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
@@ -2144,6 +2145,7 @@ Java_com_redhat_et_libguestfs_GuestFS__1add_1drive  (JNIEnv *env, jobject obj, j
   }
   free (server);
   (*env)->ReleaseStringUTFChars (env, jusername, optargs_s.username);
+  (*env)->ReleaseStringUTFChars (env, jsecret, optargs_s.secret);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));
@@ -13610,6 +13612,28 @@ Java_com_redhat_et_libguestfs_GuestFS__1extlinux  (JNIEnv *env, jobject obj, jlo
   r = guestfs_extlinux (g, directory);
 
   (*env)->ReleaseStringUTFChars (env, jdirectory, directory);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1cp_1r  (JNIEnv *env, jobject obj, jlong jg, jstring jsrc, jstring jdest)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *src;
+  const char *dest;
+
+  src = (*env)->GetStringUTFChars (env, jsrc, NULL);
+  dest = (*env)->GetStringUTFChars (env, jdest, NULL);
+
+  r = guestfs_cp_r (g, src, dest);
+
+  (*env)->ReleaseStringUTFChars (env, jsrc, src);
+  (*env)->ReleaseStringUTFChars (env, jdest, dest);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

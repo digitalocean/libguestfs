@@ -797,6 +797,7 @@ guestfs_session_copy_file_to_file
 guestfs_session_copy_size
 guestfs_session_cp
 guestfs_session_cp_a
+guestfs_session_cp_r
 guestfs_session_dd
 guestfs_session_debug
 guestfs_session_debug_drives

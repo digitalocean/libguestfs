@@ -276,14 +276,13 @@ Windows guest support.
 
 =item Debian Squeeze (6)
 
-Скористайтеся сховищем портованих пакунків Hilko Bengen:
-L<http://people.debian.org/~bengen/libguestfs/>
+Hilko Bengen has built libguestfs in squeeze backports:
+L<http://packages.debian.org/search?keywords=guestfs&searchon=names&section=all&suite=squeeze-backports>
 
 =item Debian Wheezy та пізніші версії (7+)
 
-Hilko Bengen generously supports libguestfs on Debian.  Official Debian
-packages are available:
-L<http://packages.debian.org/search?keywords=libguestfs>
+Hilko Bengen supports libguestfs on Debian.  Official Debian packages are
+available: L<http://packages.debian.org/search?keywords=libguestfs>
 
 =item Ubuntu
 

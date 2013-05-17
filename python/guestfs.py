@@ -1235,7 +1235,7 @@ class GuestFS(object):
         r = self._maybe_convert_to_dict (r)
         return r
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -1313,11 +1313,24 @@ class GuestFS(object):
         device. This is the default if the optional
         protocol parameter is omitted.
         
+        "protocol = "ftp"|"ftps"|"http"|"https"|"tftp""
+        Connect to a remote FTP, HTTP or TFTP server.
+        The "server" parameter must also be supplied -
+        see below.
+        
+        See also: "FTP, HTTP AND TFTP" in guestfs(3)
+        
         "protocol = "gluster""
         Connect to the GlusterFS server. The "server"
         parameter must also be supplied - see below.
         
         See also: "GLUSTER" in guestfs(3)
+        
+        "protocol = "iscsi""
+        Connect to the iSCSI server. The "server"
+        parameter must also be supplied - see below.
+        
+        See also: "ISCSI" in guestfs(3).
         
         "protocol = "nbd""
         Connect to the Network Block Device server. The
@@ -1329,7 +1342,9 @@ class GuestFS(object):
         "protocol = "rbd""
         Connect to the Ceph (librbd/RBD) server. The
         "server" parameter must also be supplied - see
-        below.
+        below. The "username" parameter may be supplied.
+        See below. The "secret" parameter may be
+        supplied. See below.
         
         See also: "CEPH" in guestfs(3).
         
@@ -1354,7 +1369,9 @@ class GuestFS(object):
         Protocol       Number of servers required
         --------       --------------------------
         file           List must be empty or param not used at all
+        ftp|ftps|http|https|tftp  Exactly one
         gluster        Exactly one
+        iscsi          Exactly one
         nbd            Exactly one
         rbd            One or more
         sheepdog       Zero or more
@@ -1374,18 +1391,30 @@ class GuestFS(object):
         "/etc/services").
         
         "username"
-        For the "ssh" protocol only, this specifies the
-        remote username.
+        For the "ftp", "ftps", "http", "https", "iscsi",
+        "rbd", "ssh" and "tftp" protocols, this specifies
+        the remote username.
         
-        If not given, then the local username is used. But
-        note this sometimes may give unexpected results, for
-        example if using the libvirt backend and if the
+        If not given, then the local username is used for
+        "ssh", and no authentication is attempted for ceph.
+        But note this sometimes may give unexpected results,
+        for example if using the libvirt backend and if the
         libvirt backend is configured to start the qemu
         appliance as a special user such as "qemu.qemu". If
         in doubt, specify the remote username you want.
+        
+        "secret"
+        For the "rbd" protocol only, this specifies the
+        'secret' to use when connecting to the remote
+        device.
+        
+        If not given, then a secret matching the given
+        username will be looked up in the default keychain
+        locations, or if no username is given, then no
+        authentication will be used.
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username)
+        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret)
         return r
 
     add_drive_opts = add_drive
@@ -8560,5 +8589,18 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.extlinux (self._o, directory)
+        return r
+
+    def cp_r (self, src, dest):
+        """This copies a file or directory from "src" to "dest"
+        recursively using the "cp -rP" command.
+        
+        Most users should use "g.cp_a" instead. This command is
+        useful when you don't want to preserve permissions,
+        because the target filesystem does not support it
+        (primarily when writing to DOS FAT filesystems).
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.cp_r (self._o, src, dest)
         return r
 

@@ -327,6 +327,7 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EMULTIHOP_HIDDEN = @EMULTIHOP_HIDDEN@
 EMULTIHOP_VALUE = @EMULTIHOP_VALUE@
+ENABLE_APPLIANCE = @ENABLE_APPLIANCE@
 ENOLINK_HIDDEN = @ENOLINK_HIDDEN@
 ENOLINK_VALUE = @ENOLINK_VALUE@
 EOVERFLOW_HIDDEN = @EOVERFLOW_HIDDEN@
@@ -1424,6 +1425,7 @@ SOURCES = \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep.sh \
 @ENABLE_APPLIANCE_TRUE@@HAVE_OCAML_TRUE@	test-virt-sysprep-script.sh
 
+DISTCLEANFILES = .depend
 all: all-am
 
 .SUFFIXES:
@@ -1723,6 +1725,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

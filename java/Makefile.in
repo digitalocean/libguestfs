@@ -390,6 +390,7 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EMULTIHOP_HIDDEN = @EMULTIHOP_HIDDEN@
 EMULTIHOP_VALUE = @EMULTIHOP_VALUE@
+ENABLE_APPLIANCE = @ENABLE_APPLIANCE@
 ENOLINK_HIDDEN = @ENOLINK_HIDDEN@
 ENOLINK_VALUE = @ENOLINK_VALUE@
 EOVERFLOW_HIDDEN = @EOVERFLOW_HIDDEN@
@@ -1430,10 +1431,11 @@ java_sources = \
 
 java_tests = \
 	Bindtests.java \
-	t/GuestFS005Load.java \
-	t/GuestFS010Basic.java \
-	t/GuestFS080OptArgs.java \
-	t/GuestFS400Events.java
+	t/GuestFS020Create.java \
+	t/GuestFS070OptArgs.java \
+	t/GuestFS100Launch.java \
+	t/GuestFS410CloseEvent.java \
+	t/GuestFS420LogMessages.java
 
 EXTRA_DIST = \
 	$(java_sources) \

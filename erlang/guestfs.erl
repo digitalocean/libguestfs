@@ -96,6 +96,7 @@
 -export([copy_size/4]).
 -export([cp/3]).
 -export([cp_a/3]).
+-export([cp_r/3]).
 -export([dd/3]).
 -export([debug/3]).
 -export([debug_drives/1]).
@@ -828,6 +829,9 @@ cp(G, Src, Dest) ->
 
 cp_a(G, Src, Dest) ->
   call_port(G, {cp_a, Src, Dest}).
+
+cp_r(G, Src, Dest) ->
+  call_port(G, {cp_r, Src, Dest}).
 
 dd(G, Src, Dest) ->
   call_port(G, {dd, Src, Dest}).

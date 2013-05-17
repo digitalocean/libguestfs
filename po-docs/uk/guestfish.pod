@@ -311,9 +311,9 @@ L</REMOTE CONTROL GUESTFISH OVER A SOCKET> below.
 Connect to a live virtual machine.  (Experimental, see
 L<guestfs(3)/ATTACHING TO RUNNING DAEMONS>).
 
-=item B<-m пристрій[:точка_монтування[:параметри]]>
+=item B<-m dev[:mountpoint[:options[:fstype]]]>
 
-=item B<--mount пристрій[:точка_монтування[:параметри]]>
+=item B<--mount dev[:mountpoint[:options[:fstype]]]>
 
 Mount the named partition or logical volume on the given mountpoint.
 
@@ -339,6 +339,11 @@ and/or extended attributes if the filesystem can support them:
  -m /dev/sda1:/:acl,user_xattr
 
 Using this flag is equivalent to using the C<mount-options> command.
+
+The fourth part of the parameter is the filesystem driver to use, such as
+C<ext3> or C<ntfs>. This is rarely needed, but can be useful if multiple
+drivers are valid for a filesystem (eg: C<ext2> and C<ext3>), or if
+libguestfs misidentifies a filesystem.
 
 =item B<--network>
 
@@ -1089,6 +1094,22 @@ The possible I<-a URI> formats are described below.
 
 Add the local disk image (or device) called C<disk.img>.
 
+=head2 B<-a ftp://[user@]example.com[:port]/disk.img>
+
+=head2 B<-a ftps://[user@]example.com[:port]/disk.img>
+
+=head2 B<-a http://[user@]example.com[:port]/disk.img>
+
+=head2 B<-a https://[user@]example.com[:port]/disk.img>
+
+=head2 B<-a tftp://[user@]example.com[:port]/disk.img>
+
+Add a disk located on a remote FTP, HTTP or TFTP server.
+
+The equivalent API command would be:
+
+ ><fs> add /disk.img protocol:(ftp|...) server:tcp:example.com
+
 =head2 B<-a gluster://example.com[:port]/disk>
 
 Add a disk image located on GlusterFS storage.
@@ -1098,6 +1119,14 @@ The server is the one running C<glusterd>, and may be C<localhost>.
 The equivalent API command would be:
 
  ><fs> add /disk protocol:gluster server:tcp:example.com
+
+=head2 B<-a iscsi://example.com[:port]/target-iqn-name[/lun]>
+
+Add a disk located on an iSCSI server.
+
+The equivalent API command would be:
+
+ ><fs> add /target-iqn-name/lun protocol:iscsi server:tcp:example.com
 
 =head2 B<-a nbd://example.com[:port]>
 
