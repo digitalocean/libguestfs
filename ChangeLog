@@ -1,4 +1,56 @@
+2013-05-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	debian: Add OCaml .depend files to DISTCLEANFILES.
+	Otherwise debuild complains that these files have been created after
+	it does a 'make distclean'.
+
+2013-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/c-api: Various code refactorings.
+	- Don't use fixed names for the disks.  This will allow us to
+	  parallelize this test.
+
+	- Add a new "GETKEY:<key>" String parameter which can retrieve keys
+	  from the handle.  The temporary disk names are stored as keys.
+
+	- Don't test the close callback.  However this uses the close callback
+	  mechanism to delete the temporary disks, and in any case close
+	  callbacks are well tested by the language binding tests.
+
+	- The generated code now produces a static array of tests (instead of
+	  a 'perform_tests' function), making it possible to parallelize.
+
+2013-05-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/c-api: Remove global guestfs handle.
+	This will allow us to parallelize these tests.
+
+	tests/c-api: Warn about deprecated functions in main program.
+	And replace deprecated guestfs_set_close_callback with
+	non-deprecated guestfs_set_event_callback.
+
+	tests/c-api: Factor out common init_* into separate functions.
+
+	java: Standardize Java test numbering.
+
+2013-04-30  Mike Kelly  <pioto@pioto.org>
+
+	ssh: fix setting the username part
+	Right now, we'd always be setting a NULL username.
+
 2013-04-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	ruby: Standardize test names and numbering.
+
+	python: Standardize test numbering.
+
+	perl: Make the 030-create-flags test same as canonical OCaml version.
+
+	ocaml: Set close-on-exit flag to true in this test so handle is cleaned up.
+	Otherwise the valgrind test fails since the handle resources
+	are leaked.
+
+	Version 1.21.35.
 
 	erlang: Make separated builds work correctly.
 	Set ERL_LIBS and also create a phony 'ebin' directory for the

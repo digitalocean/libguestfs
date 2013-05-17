@@ -28,12 +28,130 @@
 
 #include <pcre.h>
 
+/* Warn about deprecated libguestfs functions, but only in this file,
+ * not in 'tests.c' (because we want to test deprecated functions).
+ */
+#define GUESTFS_WARN_DEPRECATED 1
+
 #include "guestfs.h"
 #include "guestfs-internal-frontend.h"
 
 #include "tests.h"
 
-guestfs_h *g;
+int
+init_none (guestfs_h *g)
+{
+  /* XXX At some point in the distant past, InitNone and InitEmpty
+   * became folded together as the same thing.  Really we should make
+   * InitNone do nothing at all, but the tests may need to be checked
+   * to make sure this is OK.
+   */
+  return init_empty (g);
+}
+
+int
+init_empty (guestfs_h *g)
+{
+  if (guestfs_blockdev_setrw (g, "/dev/sda") == -1)
+    return -1;
+
+  if (guestfs_umount_all (g) == -1)
+    return -1;
+
+  if (guestfs_lvm_remove_all (g) == -1)
+    return -1;
+
+  return 0;
+}
+
+int
+init_partition (guestfs_h *g)
+{
+  if (init_empty (g) == -1)
+    return -1;
+
+  if (guestfs_part_disk (g, "/dev/sda", "mbr") == -1)
+    return -1;
+
+  return 0;
+}
+
+int
+init_gpt (guestfs_h *g)
+{
+  if (init_empty (g) == -1)
+    return -1;
+
+  if (guestfs_part_disk (g, "/dev/sda", "gpt") == -1)
+    return -1;
+
+  return 0;
+}
+
+int
+init_basic_fs (guestfs_h *g)
+{
+  if (init_partition (g) == -1)
+    return -1;
+
+  if (guestfs_mkfs (g, "ext2", "/dev/sda1") == -1)
+    return -1;
+
+  if (guestfs_mount (g, "/dev/sda1", "/") == -1)
+    return -1;
+
+  return 0;
+}
+
+int
+init_basic_fs_on_lvm (guestfs_h *g)
+{
+  const char *pvs[] = { "/dev/sda1", NULL };
+
+  if (init_partition (g) == -1)
+    return -1;
+
+  if (guestfs_pvcreate (g, "/dev/sda1") == -1)
+    return -1;
+
+  if (guestfs_vgcreate (g, "VG", (char **) pvs) == -1)
+    return -1;
+
+  if (guestfs_lvcreate (g, "LV", "VG", 8) == -1)
+    return -1;
+
+  if (guestfs_mkfs (g, "ext2", "/dev/VG/LV") == -1)
+    return -1;
+
+  if (guestfs_mount (g, "/dev/VG/LV", "/") == -1)
+    return -1;
+
+  return 0;
+}
+
+int
+init_iso_fs (guestfs_h *g)
+{
+  if (init_empty (g) == -1)
+    return -1;
+
+  if (guestfs_mount_ro (g, "/dev/sdd", "/") == -1)
+    return -1;
+
+  return 0;
+}
+
+int
+init_scratch_fs (guestfs_h *g)
+{
+  if (init_empty (g) == -1)
+    return -1;
+
+  if (guestfs_mount (g, "/dev/sdb1", "/") == -1)
+    return -1;
+
+  return 0;
+}
 
 static void
 print_strings (char *const *argv)
@@ -42,13 +160,6 @@ print_strings (char *const *argv)
 
   for (argc = 0; argv[argc] != NULL; ++argc)
     printf ("\t%s\n", argv[argc]);
-}
-
-static void
-incr (guestfs_h *g, void *iv)
-{
-  int *i = (int *) iv;
-  (*i)++;
 }
 
 static int compare_lists (char **, char **, int (*) (const char *, const char *));
@@ -274,9 +385,8 @@ substitute_srcdir (const char *path)
   return ret;
 }
 
-void
-next_test (guestfs_h *g, size_t test_num, size_t nr_tests,
-           const char *test_name)
+static void
+next_test (guestfs_h *g, size_t test_num, const char *test_name)
 {
   if (guestfs_get_verbose (g))
     printf ("-------------------------------------------------------------------------------\n");
@@ -299,17 +409,70 @@ skipped (const char *test_name, const char *fs, ...)
           test_name, reason);
 }
 
-int
-main (int argc, char *argv[])
+static void
+delete_file (guestfs_h *g, void *filenamev,
+             uint64_t event, int eh, int flags,
+             const char *buf, size_t buf_len,
+             const uint64_t *array, size_t array_len)
 {
-  const char *filename;
+  char *filename = filenamev;
+
+  unlink (filename);
+  free (filename);
+}
+
+static void
+add_disk (guestfs_h *g, const char *key, off_t size)
+{
+  CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g);
+  char *filename;
   int fd;
-  size_t nr_failed ;
-  int close_sentinel = 1;
 
-  setbuf (stdout, NULL);
+  if (asprintf (&filename, "%s/diskXXXXXX", tmpdir) == -1) {
+    perror ("asprintf");
+    exit (EXIT_FAILURE);
+  }
 
-  no_test_warnings ();
+  fd = mkostemp (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC|O_CLOEXEC);
+  if (fd == -1) {
+    perror ("mkstemp");
+    exit (EXIT_FAILURE);
+  }
+  if (ftruncate (fd, size) == -1) {
+    perror ("ftruncate");
+    close (fd);
+    unlink (filename);
+    exit (EXIT_FAILURE);
+  }
+  if (close (fd) == -1) {
+    perror (filename);
+    unlink (filename);
+    exit (EXIT_FAILURE);
+  }
+
+  if (guestfs_add_drive (g, filename) == -1) {
+    printf ("FAIL: guestfs_add_drive %s\n", filename);
+    exit (EXIT_FAILURE);
+  }
+
+  if (guestfs_set_event_callback (g, delete_file,
+                                  GUESTFS_EVENT_CLOSE, 0, filename) == -1) {
+    printf ("FAIL: guestfs_set_event_callback (GUESTFS_EVENT_CLOSE)\n");
+    exit (EXIT_FAILURE);
+  }
+
+  /* Record the real filename in the named private key.  Tests can
+   * retrieve these names using the magic "GETKEY:<key>" String
+   * parameter.
+   */
+  guestfs_set_private (g, key, filename);
+}
+
+/* Create the handle, with attached disks. */
+static guestfs_h *
+create_handle (void)
+{
+  guestfs_h *g;
 
   g = guestfs_create ();
   if (g == NULL) {
@@ -317,71 +480,11 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  filename = "test1.img";
-  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC|O_CLOEXEC, 0666);
-  if (fd == -1) {
-    perror (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (ftruncate (fd, 524288000) == -1) {
-    perror ("ftruncate");
-    close (fd);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (close (fd) == -1) {
-    perror (filename);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (guestfs_add_drive (g, filename) == -1) {
-    printf ("FAIL: guestfs_add_drive %s\n", filename);
-    exit (EXIT_FAILURE);
-  }
+  add_disk (g, "test1", 524288000);
 
-  filename = "test2.img";
-  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC|O_CLOEXEC, 0666);
-  if (fd == -1) {
-    perror (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (ftruncate (fd, 52428800) == -1) {
-    perror ("ftruncate");
-    close (fd);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (close (fd) == -1) {
-    perror (filename);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (guestfs_add_drive (g, filename) == -1) {
-    printf ("FAIL: guestfs_add_drive %s\n", filename);
-    exit (EXIT_FAILURE);
-  }
+  add_disk (g, "test2", 52428800);
 
-  filename = "test3.img";
-  fd = open (filename, O_WRONLY|O_CREAT|O_NOCTTY|O_TRUNC|O_CLOEXEC, 0666);
-  if (fd == -1) {
-    perror (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (ftruncate (fd, 10485760) == -1) {
-    perror ("ftruncate");
-    close (fd);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (close (fd) == -1) {
-    perror (filename);
-    unlink (filename);
-    exit (EXIT_FAILURE);
-  }
-  if (guestfs_add_drive (g, filename) == -1) {
-    printf ("FAIL: guestfs_add_drive %s\n", filename);
-    exit (EXIT_FAILURE);
-  }
+  add_disk (g, "test3", 10485760);
 
   if (guestfs_add_drive_ro (g, "../data/test.iso") == -1) {
     printf ("FAIL: guestfs_add_drive_ro ../data/test.iso\n");
@@ -409,21 +512,43 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  nr_failed = perform_tests ();
+  return g;
+}
 
-  /* Check close callback is called. */
-  guestfs_set_close_callback (g, incr, &close_sentinel);
+static size_t
+perform_tests (guestfs_h *g)
+{
+  size_t test_num;
+  size_t nr_failed = 0;
+  struct test *t;
 
-  guestfs_close (g);
-
-  if (close_sentinel != 2) {
-    fprintf (stderr, "FAIL: close callback was not called\n");
-    exit (EXIT_FAILURE);
+  for (test_num = 0; test_num < nr_tests; ++test_num) {
+    t = &tests[test_num];
+    next_test (g, test_num, t->name);
+    if (t->test_fn (g) == -1) {
+      printf ("FAIL: %s\n", t->name);
+      nr_failed++;
+    }
   }
 
-  unlink ("test1.img");
-  unlink ("test2.img");
-  unlink ("test3.img");
+  return nr_failed;
+}
+
+int
+main (int argc, char *argv[])
+{
+  size_t nr_failed;
+  guestfs_h *g;
+
+  setbuf (stdout, NULL);
+
+  no_test_warnings ();
+
+  g = create_handle ();
+
+  nr_failed = perform_tests (g);
+
+  guestfs_close (g);
 
   if (nr_failed > 0) {
     printf ("***** %zu / %zu tests FAILED *****\n", nr_failed, nr_tests);

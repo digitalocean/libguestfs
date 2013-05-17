@@ -1,6 +1,5 @@
-#!/bin/sh -
-# libguestfs Ruby bindings
-# Copyright (C) 2009 Red Hat Inc.
+# libguestfs Python bindings
+# Copyright (C) 2011-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,12 +15,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-set -e
+import os
+import guestfs
 
-# Run them one at a time, otherwise rake runs them in parallel (which
-# is bound to fail because they all use a single test image file).
+g = guestfs.GuestFS (python_return_dict=True)
 
-for f in t/tc_*.rb; do
-    echo $RAKE test "$@" TEST="$f"
-    $RAKE test "$@" TEST="$f"
-done
+close_invoked = 0
+
+def close_callback (ev, eh, buf, array):
+    global close_invoked
+    close_invoked += 1
+
+# Register a callback for the close event.
+g.set_event_callback (close_callback, guestfs.EVENT_CLOSE)
+
+# Close the handle.  The close callback should be invoked.
+if close_invoked != 0:
+    raise "Error: close_invoked should be 0"
+g.close ()
+if close_invoked != 1:
+    raise "Error: close_invoked should be 1"

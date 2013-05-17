@@ -99,31 +99,12 @@ let rec generate_tests () =
   let nr_tests = List.length test_names in
   pr "size_t nr_tests = %d;\n" nr_tests;
   pr "\n";
-
-  pr "\
-size_t
-perform_tests (void)
-{
-  size_t test_num = 0;
-  size_t nr_failed = 0;
-
-";
-
-  iteri (
-    fun i test_name ->
-      pr "  test_num++;\n";
-      pr "  next_test (g, test_num, nr_tests, \"%s\");\n" test_name;
-      pr "  if (%s () == -1) {\n" test_name;
-      pr "    printf (\"FAIL: %%s\\n\", \"%s\");\n" test_name;
-      pr "    nr_failed++;\n";
-      pr "  }\n";
+  pr "struct test tests[%d] = {\n" nr_tests;
+  List.iter (
+    fun name ->
+      pr "  { .name = \"%s\", .test_fn = %s },\n" (c_quote name) name
   ) test_names;
-
-  pr "\
-
-  return nr_failed;
-}
-"
+  pr "};\n"
 
 and generate_one_test name optional i (init, prereq, test) =
   let test_name = sprintf "test_%s_%d" name i in
@@ -148,7 +129,7 @@ static int
 
   pr "\
 static int
-%s (void)
+%s (guestfs_h *g)
 {
   if (%s_skip ()) {
     skipped (\"%s\", \"environment variable set\");
@@ -194,67 +175,30 @@ static int
 
 and generate_one_test_body name i test_name init test =
   (match init with
-   | InitNone (* XXX at some point, InitNone and InitEmpty became
-               * folded together as the same thing.  Really we should
-               * make InitNone do nothing at all, but the tests may
-               * need to be checked to make sure this is OK.
-               *)
+   | InitNone ->
+     pr "  if (init_none (g) == -1)\n";
+     pr "    return -1;\n"
    | InitEmpty ->
-       pr "  /* InitNone|InitEmpty for %s */\n" test_name;
-       List.iter (generate_test_command_call test_name)
-         [["blockdev_setrw"; "/dev/sda"];
-          ["umount_all"];
-          ["lvm_remove_all"]]
+     pr "  if (init_empty (g) == -1)\n";
+     pr "    return -1;\n"
    | InitPartition ->
-       pr "  /* InitPartition for %s: create /dev/sda1 */\n" test_name;
-       List.iter (generate_test_command_call test_name)
-         [["blockdev_setrw"; "/dev/sda"];
-          ["umount_all"];
-          ["lvm_remove_all"];
-          ["part_disk"; "/dev/sda"; "mbr"]]
+     pr "  if (init_partition (g) == -1)\n";
+     pr "    return -1;\n"
    | InitGPT ->
-       pr "  /* InitGPT for %s: create /dev/sda1 */\n" test_name;
-       List.iter (generate_test_command_call test_name)
-         [["blockdev_setrw"; "/dev/sda"];
-          ["umount_all"];
-          ["lvm_remove_all"];
-          ["part_disk"; "/dev/sda"; "gpt"]]
+     pr "  if (init_gpt (g) == -1)\n";
+     pr "    return -1;\n"
    | InitBasicFS ->
-       pr "  /* InitBasicFS for %s: create ext2 on /dev/sda1 */\n" test_name;
-       List.iter (generate_test_command_call test_name)
-         [["blockdev_setrw"; "/dev/sda"];
-          ["umount_all"];
-          ["lvm_remove_all"];
-          ["part_disk"; "/dev/sda"; "mbr"];
-          ["mkfs"; "ext2"; "/dev/sda1"; ""; "NOARG"; ""; ""];
-          ["mount"; "/dev/sda1"; "/"]]
+     pr "  if (init_basic_fs (g) == -1)\n";
+     pr "    return -1;\n"
    | InitBasicFSonLVM ->
-       pr "  /* InitBasicFSonLVM for %s: create ext2 on /dev/VG/LV */\n"
-         test_name;
-       List.iter (generate_test_command_call test_name)
-         [["blockdev_setrw"; "/dev/sda"];
-          ["umount_all"];
-          ["lvm_remove_all"];
-          ["part_disk"; "/dev/sda"; "mbr"];
-          ["pvcreate"; "/dev/sda1"];
-          ["vgcreate"; "VG"; "/dev/sda1"];
-          ["lvcreate"; "LV"; "VG"; "8"];
-          ["mkfs"; "ext2"; "/dev/VG/LV"; ""; "NOARG"; ""; ""];
-          ["mount"; "/dev/VG/LV"; "/"]]
+     pr "  if (init_basic_fs_on_lvm (g) == -1)\n";
+     pr "    return -1;\n"
    | InitISOFS ->
-       pr "  /* InitISOFS for %s */\n" test_name;
-       List.iter (generate_test_command_call test_name)
-         [["blockdev_setrw"; "/dev/sda"];
-          ["umount_all"];
-          ["lvm_remove_all"];
-          ["mount_ro"; "/dev/sdd"; "/"]]
+     pr "  if (init_iso_fs (g) == -1)\n";
+     pr "    return -1;\n"
    | InitScratchFS ->
-       pr "  /* InitScratchFS for %s */\n" test_name;
-       List.iter (generate_test_command_call test_name)
-         [["blockdev_setrw"; "/dev/sda"];
-          ["umount_all"];
-          ["lvm_remove_all"];
-          ["mount"; "/dev/sdb1"; "/"]]
+     pr "  if (init_scratch_fs (g) == -1)\n";
+     pr "    return -1;\n"
   );
 
   pr "\n";
@@ -386,6 +330,10 @@ and generate_test_command_call ?(expect_error = false) ?test ?ret test_name cmd=
   List.iter (
     function
     | OptString _, "NULL", _ -> ()
+    | String _, arg, sym
+      when String.length arg >= 7 && String.sub arg 0 7 = "GETKEY:" ->
+      pr "  const char *%s = guestfs_get_private (g, \"%s\");\n"
+        sym (c_quote (String.sub arg 7 (String.length arg - 7)))
     | Pathname _, arg, sym
     | Device _, arg, sym
     | Mountable _, arg, sym

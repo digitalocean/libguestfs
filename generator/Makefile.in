@@ -1352,6 +1352,7 @@ OCAMLCFLAGS = -warn-error CDEFLMPSUVYZX -I $(srcdir) -I . -package unix,str
 noinst_PROGRAM = generator
 noinst_DATA = stamp-generator
 CLEANFILES = $(noinst_DATA) $(noinst_PROGRAM) *.cmi *.cmo *~
+DISTCLEANFILES = .depend
 SUFFIXES = .cmo .cmi .cmx .ml .mli .mll .mly
 all: all-am
 
@@ -1463,6 +1464,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
