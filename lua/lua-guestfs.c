@@ -618,6 +618,10 @@ guestfs_lua_add_drive (lua_State *L)
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
       optargs_s.username = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (3, "secret",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+      optargs_s.secret = luaL_checkstring (L, -1);
+    );
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);

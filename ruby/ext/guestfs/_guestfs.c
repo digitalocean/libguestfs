@@ -3617,7 +3617,9 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * "protocol = "rbd""
  * Connect to the Ceph (librbd/RBD) server. The
  * "server" parameter must also be supplied - see
- * below.
+ * below. The "username" parameter may be supplied.
+ * See below. The "secret" parameter may be
+ * supplied. See below.
  * 
  * See also: "CEPH" in guestfs(3).
  * 
@@ -3662,15 +3664,26 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * "/etc/services").
  * 
  * "username"
- * For the "ssh" protocol only, this specifies the
- * remote username.
+ * For the "ssh" and "rbd" protocols only, this
+ * specifies the remote username.
  * 
- * If not given, then the local username is used. But
- * note this sometimes may give unexpected results, for
- * example if using the libvirt backend and if the
+ * If not given, then the local username is used for
+ * "ssh", and no authentication is attempted for ceph.
+ * But note this sometimes may give unexpected results,
+ * for example if using the libvirt backend and if the
  * libvirt backend is configured to start the qemu
  * appliance as a special user such as "qemu.qemu". If
  * in doubt, specify the remote username you want.
+ * 
+ * "secret"
+ * For the "rbd" protocol only, this specifies the
+ * 'secret' to use when connecting to the remote
+ * device.
+ * 
+ * If not given, then a secret matching the given
+ * username will be looked up in the default keychain
+ * locations, or if no username is given, then no
+ * authentication will be used.
  * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
@@ -3752,6 +3765,11 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.username = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("secret")));
+  if (v != Qnil) {
+    optargs_s.secret = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
   }
 
   int r;

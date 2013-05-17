@@ -2763,7 +2763,9 @@ public class GuestFS {
    * "protocol = "rbd""
    * Connect to the Ceph (librbd/RBD) server. The
    * "server" parameter must also be supplied - see
-   * below.
+   * below. The "username" parameter may be supplied.
+   * See below. The "secret" parameter may be
+   * supplied. See below.
    * <p>
    * See also: "CEPH" in guestfs(3).
    * <p>
@@ -2808,15 +2810,26 @@ public class GuestFS {
    * "/etc/services").
    * <p>
    * "username"
-   * For the "ssh" protocol only, this specifies the
-   * remote username.
+   * For the "ssh" and "rbd" protocols only, this
+   * specifies the remote username.
    * <p>
-   * If not given, then the local username is used. But
-   * note this sometimes may give unexpected results, for
-   * example if using the libvirt backend and if the
+   * If not given, then the local username is used for
+   * "ssh", and no authentication is attempted for ceph.
+   * But note this sometimes may give unexpected results,
+   * for example if using the libvirt backend and if the
    * libvirt backend is configured to start the qemu
    * appliance as a special user such as "qemu.qemu". If
    * in doubt, specify the remote username you want.
+   * <p>
+   * "secret"
+   * For the "rbd" protocol only, this specifies the
+   * 'secret' to use when connecting to the remote
+   * device.
+   * <p>
+   * If not given, then a secret matching the given
+   * username will be looked up in the default keychain
+   * locations, or if no username is given, then no
+   * authentication will be used.
    * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
@@ -2898,8 +2911,16 @@ public class GuestFS {
       username = ((String) _optobj);
       _optargs_bitmask |= 128L;
     }
+    String secret = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("secret");
+    if (_optobj != null) {
+      secret = ((String) _optobj);
+      _optargs_bitmask |= 256L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret);
   }
 
   public void add_drive (String filename)
@@ -2920,7 +2941,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret)
     throws LibGuestFSException;
 
   /**

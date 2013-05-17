@@ -1,4 +1,46 @@
+2013-05-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish/options.c: Whitespace changes.
+
+2013-05-09  Dave Vasilevsky  <dave@vasilevsky.ca>
+
+	fuse: Document the fstype parameter
+
+	fuse: Allow specifying the fstype of a mount
+
+2013-05-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	rbd: Miscellaneous stylistic changes, no functional change.
+
+	Use size_t for loop iterators.
+
+	src/libvirt-domain.c: Cast constant strings to avoid warning about signedness.
+
+	src/drives.c: 'auth' string is const.
+	This fixes commit f3e01b69e04a0e8321e9d54ca39a4d7ea762f80d.
+
+2013-05-08  Mike Kelly  <pioto@pioto.org>
+
+	rbd: Support using a custom secret
+
+	libvirt: extract usernames for network disks
+
+	rbd: support usernames, for cephx authentication
+
+	libvirt: initial support for networked disks
+
+	rbd: send mon_host for rbd drives
+	This is how the servers are passed to kvm.
+
+2013-05-02  Hilko Bengen  <bengen@hilluzination.de>
+
+	Fix rpcgen call for separated builds.
+
+	perl: Fix install target for separated builds.
+
 2013-05-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.36.
 
 	debian: Add OCaml .depend files to DISTCLEANFILES.
 	Otherwise debuild complains that these files have been created after

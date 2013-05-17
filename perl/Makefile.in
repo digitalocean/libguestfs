@@ -1661,7 +1661,8 @@ $(top_builddir)/generator/stamp-generator: force
 @HAVE_PERL_TRUE@	rm -f Makefile-pl
 
 @HAVE_PERL_TRUE@install-data-hook:
-@HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl DESTDIR=$(DESTDIR) install
+@HAVE_PERL_TRUE@	$(MAKE) -C $(srcdir) -f $(abs_builddir)/Makefile-pl \
+@HAVE_PERL_TRUE@		DESTDIR=$(DESTDIR) install
 
 .PHONY: appliance src_deps test_images
 

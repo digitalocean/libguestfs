@@ -4217,7 +4217,9 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * 
  * "protocol = "rbd""
  * Connect to the Ceph (librbd/RBD) server. The @server parameter
- * must also be supplied - see below.
+ * must also be supplied - see below. The @username parameter may
+ * be supplied. See below. The @secret parameter may be supplied.
+ * See below.
  * 
  * See also: "CEPH" in guestfs(3).
  * 
@@ -4272,13 +4274,23 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * protocol is used (see "/etc/services").
  * 
  * @username
- * For the @ssh protocol only, this specifies the remote username.
+ * For the @ssh and @rbd protocols only, this specifies the remote
+ * username.
  * 
- * If not given, then the local username is used. But note this
- * sometimes may give unexpected results, for example if using the
- * libvirt backend and if the libvirt backend is configured to start
- * the qemu appliance as a special user such as "qemu.qemu". If in
- * doubt, specify the remote username you want.
+ * If not given, then the local username is used for @ssh, and no
+ * authentication is attempted for ceph. But note this sometimes may
+ * give unexpected results, for example if using the libvirt backend
+ * and if the libvirt backend is configured to start the qemu appliance
+ * as a special user such as "qemu.qemu". If in doubt, specify the
+ * remote username you want.
+ * 
+ * @secret
+ * For the @rbd protocol only, this specifies the 'secret' to use when
+ * connecting to the remote device.
+ * 
+ * If not given, then a secret matching the given username will be
+ * looked up in the default keychain locations, or if no username is
+ * given, then no authentication will be used.
  * 
  * Returns: true on success, false on error
  */
@@ -4354,6 +4366,14 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, Guestf
     if (username != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
       argv.username = username;
+    }
+    GValue secret_v = {0, };
+    g_value_init(&secret_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "secret", &secret_v);
+    const gchar *secret = g_value_get_string(&secret_v);
+    if (secret != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+      argv.secret = secret;
     }
     argvp = &argv;
   }

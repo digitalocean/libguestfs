@@ -714,6 +714,7 @@
     <keyword type="property" name="The &quot;name&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--name"/>
     <keyword type="property" name="The &quot;protocol&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--protocol"/>
     <keyword type="property" name="The &quot;readonly&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--readonly"/>
+    <keyword type="property" name="The &quot;secret&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--secret"/>
     <keyword type="property" name="The &quot;username&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--username"/>
     <keyword type="struct" name="struct GuestfsAddDomain" link="GuestfsAddDomain.html#GuestfsAddDomain-struct"/>
     <keyword type="struct" name="struct GuestfsAddDomainClass" link="GuestfsAddDomain.html#GuestfsAddDomainClass"/>

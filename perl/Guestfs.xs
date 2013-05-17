@@ -1823,6 +1823,10 @@ PREINIT:
           optargs_s.username = SvPV_nolen (ST (items_i+1));
           this_mask = GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK;
         }
+        else if (STREQ (this_arg, "secret")) {
+          optargs_s.secret = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+        }
         else croak ("unknown optional argument '%s'", this_arg);
         if (optargs_s.bitmask & this_mask)
           croak ("optional argument '%s' given twice",

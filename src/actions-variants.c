@@ -145,6 +145,9 @@ guestfs_add_drive_opts_va (guestfs_h *g,
     case GUESTFS_ADD_DRIVE_OPTS_USERNAME:
       optargs_s.username = va_arg (args, const char *);
       break;
+    case GUESTFS_ADD_DRIVE_OPTS_SECRET:
+      optargs_s.secret = va_arg (args, const char *);
+      break;
     default:
       error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
              "add_drive", i);
