@@ -1,3 +1,17 @@
+libguestfs (1:1.21.39-1) experimental; urgency=low
+
+  * New upstream development version
+  * Updated patch queue
+    - Use pkg-config for Python (proper fix for #707141)
+    - Removed ntfsprogs from packagelist (Closes: #708520)
+    - Changed selinux mountpoint (CLoses: #707217)
+    - Fixed build with --disable-appliance
+  * Tighten ntfs-3g dependency, thanks to Bastien ROUCARIÈS (Closes:
+    #708520)
+  * Depend on qemu-system instead the obsolete qemu-kvm.
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 19 May 2013 19:24:35 +0200
+
 libguestfs (1:1.21.35-1) experimental; urgency=low
 
   * New upstream development version
