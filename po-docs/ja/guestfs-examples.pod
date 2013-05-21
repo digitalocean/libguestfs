@@ -20,35 +20,35 @@ or:
 このマニュアルページは C プログラミング言語から libguestfs を呼び出す例があります。 libguestfs
 を使用することに慣れていなければ、L<guestfs(3)> を読む必要もあります。
 
-=head1 EXAMPLE: CREATE A DISK IMAGE
+=head1 例: ディスクイメージの作成
 
 @CREATE_DISK@
 
-=head1 EXAMPLE: INSPECT A VIRTUAL MACHINE DISK IMAGE
+=head1 例: 仮想マシンのディスクイメージの検査
 
 @INSPECT_VM@
 
-=head1 EXAMPLE: ENABLE DEBUGGING AND LOGGING
+=head1 例: デバッグおよびロギングの有効化
 
 @DEBUG_LOGGING@
 
-=head1 EXAMPLE: DISPLAY THE OPERATING SYSTEM ICON OF A GUEST
+=head1 例: 仮想マシンにあるオペレーティングシステムのアイコンの表示
 
 @DISPLAY_ICON@
 
-=head1 EXAMPLE: THE LIBVIRT AUTHENTICATION API
+=head1 例: libvirt 認証 API
 
 @LIBVIRT_AUTH@
 
-=head1 EXAMPLE: THE MOUNT LOCAL API
+=head1 例: ローカル API のマウント
 
 @MOUNT_LOCAL@
 
-=head1 EXAMPLE: MULTIPLE HANDLES AND THREADS
+=head1 例: 複数のハンドルおよびスレッド
 
 @COPY_OVER@
 
-=head1 EXAMPLE: FETCH DHCP ADDRESS FROM A GUEST
+=head1 例: 仮想マシンからの DHCP アドレスの取得
 
 @VIRT_DHCP_ADDRESS@
 

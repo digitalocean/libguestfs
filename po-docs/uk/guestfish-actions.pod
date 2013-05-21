@@ -213,12 +213,12 @@ RHBZ#642934.  Specifying the format closes this security hole.
 This rarely-used option lets you emulate the behaviour of the deprecated
 L</add-drive-with-if> call (q.v.)
 
-=item C<назва>
+=item C<name>
 
 The name the drive had in the original guest, e.g. C</dev/sdb>.  This is
 used as a hint to the guest inspection process if it is available.
 
-=item C<мітка>
+=item C<label>
 
 Give the disk a label.  The label should be a unique, short string using
 I<only> ASCII characters C<[a-zA-Z]>.  As well as its usual name in the API
@@ -232,7 +232,7 @@ C</dev/disk/guestfs/I<label>>.
 The optional protocol argument can be used to select an alternate source
 protocol.
 
-See also: L<guestfs(3)/REMOTE STORAGE>.
+Див. також L<guestfs(3)/REMOTE STORAGE>.
 
 =over 4
 
@@ -253,7 +253,7 @@ See also: L<guestfs(3)/FTP, HTTP AND TFTP>
 Connect to the GlusterFS server.  The C<server> parameter must also be
 supplied - see below.
 
-See also: L<guestfs(3)/GLUSTER>
+Див. також L<guestfs(3)/GLUSTER>.
 
 =item C<protocol = "iscsi">
 
@@ -267,7 +267,7 @@ See also: L<guestfs(3)/ISCSI>.
 Connect to the Network Block Device server.  The C<server> parameter must
 also be supplied - see below.
 
-See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
+Див. також L<guestfs(3)/NETWORK BLOCK DEVICE>.
 
 =item C<protocol = "rbd">
 
@@ -275,14 +275,14 @@ Connect to the Ceph (librbd/RBD) server.  The C<server> parameter must also
 be supplied - see below.  The C<username> parameter may be supplied.  See
 below.  The C<secret> parameter may be supplied.  See below.
 
-See also: L<guestfs(3)/CEPH>.
+Див. також L<guestfs(3)/CEPH>.
 
 =item C<protocol = "sheepdog">
 
 Connect to the Sheepdog server.  The C<server> parameter may also be
 supplied - see below.
 
-See also: L<guestfs(3)/SHEEPDOG>.
+Див. також L<guestfs(3)/SHEEPDOG>.
 
 =item C<protocol = "ssh">
 
@@ -1454,7 +1454,7 @@ You can use this command to test the connection through to the daemon.
 
 =head2 egrep
 
- egrep regex path
+ egrep формальний_вираз шлях
 
 This calls the external C<egrep> program and returns the matching lines.
 
@@ -1469,7 +1469,7 @@ these functions.
 
 =head2 egrepi
 
- egrepi regex path
+ egrepi формальний_вираз шлях
 
 This calls the external C<egrep -i> program and returns the matching lines.
 
@@ -1521,7 +1521,7 @@ Additional configuration can be supplied to SYSLINUX by placing a file
 called C<extlinux.conf> on the filesystem under C<directory>.  For further
 information about the contents of this file, see L<extlinux(1)>.
 
-See also L</syslinux>.
+Див. також L</syslinux>.
 
 =head2 fallocate
 
@@ -1619,29 +1619,30 @@ See also: L<file(1)>, L</vfs-type>, L</lstat>, L</is-file>, L</is-blockdev>
 
  file-architecture назва_файла
 
-This detects the architecture of the binary C<filename>, and returns it if
-known.
+Визначає архітектуру виконуваного файла C<назва_файла> і повертає її
+значення, якщо воно визначене у програмі.
 
-Currently defined architectures are:
+Архітектурами, визначеними у поточній версії є:
 
 =over 4
 
 =item "i386"
 
-This string is returned for all 32 bit i386, i486, i586, i686 binaries
-irrespective of the precise processor requirements of the binary.
+Цей рядок буде повернуто для всіх виконуваних файлів для 32-бітових
+процесорів i386, i486, i586, i686, незалежно від точного значення версії
+процесора, визначеного для виконуваного файла.
 
 =item "x86_64"
 
-64 bit x86-64.
+64-бітовий x86-64.
 
 =item "sparc"
 
-32 bit SPARC.
+32-бітовий SPARC.
 
 =item "sparc64"
 
-64 bit SPARC V9 and above.
+64-бітовий SPARC V9 або новіша версія.
 
 =item "ia64"
 
@@ -1649,15 +1650,15 @@ Intel Itanium.
 
 =item "ppc"
 
-32 bit Power PC.
+32-бітовий Power PC.
 
 =item "ppc64"
 
-64 bit Power PC.
+64-бітовий Power PC.
 
 =back
 
-Libguestfs may return other architecture strings in future.
+У майбутніх версіях Libguestfs може повертати і інші рядки назв архітектур.
 
 The function works on at least the following types of files:
 
@@ -1744,7 +1745,7 @@ mean that a particular filesystem can be mounted, since filesystems can fail
 for other reasons such as it being a later version of the filesystem, or
 having incompatible features.
 
-See also L</available>, L</feature-available>, L<guestfs(3)/AVAILABILITY>.
+Див. також L</available>, L</feature-available>, L<guestfs(3)/AVAILABILITY>.
 
 =head2 fill
 
@@ -1800,7 +1801,7 @@ then the returned list from L</find> C</tmp> would be 4 elements:
 
 If C<directory> is not a directory, then this command returns an error.
 
-The returned list is sorted.
+Список результатів буде впорядковано.
 
 =head2 find0
 
@@ -1825,7 +1826,7 @@ L<find(1)> option I<-print0>.
 
 =item *
 
-The result list is not sorted.
+Список результатів не буде впорядковано.
 
 =back
 
@@ -1916,9 +1917,9 @@ If C<NULL> then no options are added.
 
  get-attach-method
 
-Return the current backend.
+Повертає назву поточного модуля.
 
-See L</set-backend> and L<guestfs(3)/BACKEND>.
+Див. L</set-backend> та L<guestfs(3)/BACKEND>.
 
 I<This function is deprecated.> In new code, use the L</get-backend> call
 instead.
@@ -1937,11 +1938,11 @@ Get the autosync flag.
 
  get-backend
 
-Return the current backend.
+Повертає назву поточного модуля.
 
 This handle property was previously called the "attach method".
 
-See L</set-backend> and L<guestfs(3)/BACKEND>.
+Див. L</set-backend> та L<guestfs(3)/BACKEND>.
 
 =head2 get-cachedir
 
@@ -2707,7 +2708,7 @@ possible return values are listed under L</file-architecture>.
 If the architecture could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-distro
 
@@ -2797,11 +2798,11 @@ Slackware.
 
 =item "sles"
 
-SuSE Linux Enterprise Server or Desktop.
+SuSE Linux Enterprise Server або Desktop.
 
 =item "suse-based"
 
-Some openSuSE-derived distro.
+Дистрибутив, заснований на openSuSE.
 
 =item "ttylinux"
 
@@ -2817,15 +2818,15 @@ Ubuntu.
 
 =item "windows"
 
-Windows does not have distributions.  This string is returned if the OS type
-is Windows.
+У Windows немає дистрибутивів. Цей рядок буде повернуто, якщо операційна
+система належить до сімейства Windows.
 
 =back
 
 Future versions of libguestfs may return other strings here.  The caller
 should be prepared to handle any string.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-drive-mappings
 
@@ -2901,7 +2902,7 @@ The format of this disk image is not known.
 Future versions of libguestfs may return other strings here.  The caller
 should be prepared to handle any string.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-hostname
 
@@ -2913,7 +2914,7 @@ inspection of the guest's configuration files.
 If the hostname could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-icon
 
@@ -2993,7 +2994,7 @@ by consulting Wikipedia or MSDN.
 
 If the version could not be determined, then C<0> is returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-minor-version
 
@@ -3047,7 +3048,7 @@ format I<or> if the operating system does not have a real packaging system
 Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
 C<pkgsrc>.  Future versions of libguestfs may return other strings.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-package-management
 
@@ -3066,7 +3067,7 @@ Possible strings include: C<yum>, C<up2date>, C<apt> (for all Debian
 derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.  Future
 versions of libguestfs may return other strings.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-product-name
 
@@ -3079,7 +3080,7 @@ user, but should not be parsed by programs.
 If the product name could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-product-variant
 
@@ -3116,7 +3117,7 @@ whole inspection process.
 This returns an empty list if either no root devices were found or the
 caller has not called L</inspect-os>.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-type
 
@@ -3164,7 +3165,7 @@ MS-DOS, FreeDOS та інші.
 Future versions of libguestfs may return other strings here.  The caller
 should be prepared to handle any string.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-windows-current-control-set
 
@@ -3176,7 +3177,7 @@ CurrentControlSet is a registry key name such as C<ControlSet001>.
 This call assumes that the guest is Windows and that the Registry could be
 examined by inspection.  If this is not the case then an error is returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-get-windows-systemroot
 
@@ -3189,7 +3190,7 @@ This call assumes that the guest is Windows and that the systemroot could be
 determined by inspection.  If this is not the case then an error is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-is-live
 
@@ -3198,7 +3199,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if a live image was detected on the disk.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-is-multipart
 
@@ -3207,7 +3208,7 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 If L</inspect-get-format> returns C<installer> (this is an install disk),
 then this returns true if the disk is part of a set.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-is-netinst
 
@@ -3218,7 +3219,7 @@ then this returns true if the disk is a network installer, ie. not a
 self-contained install CD but one which is likely to require network access
 to complete the install.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-list-applications
 
@@ -3309,7 +3310,7 @@ returned as an empty string C<"">.
 
 =back
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 I<This function is deprecated.> In new code, use the
 L</inspect-list-applications2> call instead.
@@ -3320,7 +3321,7 @@ these functions.
 
 =head2 inspect-list-applications2
 
- inspect-list-applications2 root
+ inspect-list-applications2 кореневий_каталог
 
 Return the list of applications installed in the operating system.
 
@@ -3412,7 +3413,7 @@ returned as an empty string C<"">.
 
 =back
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 =head2 inspect-os
 
@@ -3442,7 +3443,7 @@ function may also use Augeas, so any existing Augeas handle will be closed.
 This function cannot decrypt encrypted disks.  The caller must do that first
 (supplying the necessary keys) if the disk is encrypted.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 Див. також L</list-filesystems>.
 
@@ -4282,7 +4283,7 @@ The metadata version used.
 
 The UUID of the MD device.
 
-=item C<назва>
+=item C<name>
 
 The name of the MD device.
 
@@ -4744,7 +4745,7 @@ The caller is responsible for deleting the temporary file after use.
 If the optional C<suffix> parameter is given, then the suffix (eg. C<.txt>)
 is appended to the temporary name.
 
-See also: L</mkdtemp>.
+Див. також L</mkdtemp>.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.
@@ -4901,7 +4902,7 @@ Some internal mounts are not shown.
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
-See also: L</rename>.
+Див. також L</rename>.
 
 =head2 nr-devices
 
@@ -5589,7 +5590,7 @@ This call removes the extended attribute named C<xattr> of the file C<path>.
 
 =head2 rename
 
- rename oldpath newpath
+ rename стара_адреса нова_адреса
 
 Rename a file to a new place on the same filesystem.  This is the same as
 the Linux L<rename(2)> system call.  In most cases you are better to use
@@ -5621,7 +5622,7 @@ bytes.
 
 =head2 resize2fs-size
 
- resize2fs-size device size
+ resize2fs-size пристрій розмір
 
 This command is the same as L</resize2fs> except that it allows you to
 specify the new size (in bytes) explicitly.
@@ -5801,7 +5802,7 @@ Setting C<append> to C<NULL> means I<no> additional options are passed
 Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 
-See L<guestfs(3)/BACKEND>.
+Див. L<guestfs(3)/BACKEND>.
 
 I<This function is deprecated.> In new code, use the L</set-backend> call
 instead.
@@ -5825,22 +5826,22 @@ disabled by default).
 
 =head2 set-backend
 
-=head2 backend
+=head2 модуль
 
- set-backend backend
+ set-backend модуль
 
 Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 
 This handle property was previously called the "attach method".
 
-See L<guestfs(3)/BACKEND>.
+Див. L<guestfs(3)/BACKEND>.
 
 =head2 set-cachedir
 
-=head2 cachedir
+=head2 каталог_кешування
 
- set-cachedir cachedir
+ set-cachedir каталог_кешування
 
 Set the directory used by the handle to store the appliance cache, when
 using a supermin appliance.  The appliance is cached and shared between all
@@ -5865,7 +5866,7 @@ and handled by L</set-log-message-callback>, but go straight to stdout.
 
 You probably don't want to use this unless you know what you are doing.
 
-The default is disabled.
+Типово вимкнено.
 
 =head2 set-e2attrs
 
@@ -6520,7 +6521,7 @@ called C<syslinux.cfg> on the FAT filesystem, either in the root directory,
 or under C<directory> if that optional argument is being used.  For further
 information about the contents of this file, see L<syslinux(1)>.
 
-See also L</extlinux>.
+Див. також L</extlinux>.
 
 This command has one or more optional arguments.  See L</OPTIONAL
 ARGUMENTS>.

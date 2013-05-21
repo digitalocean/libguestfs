@@ -22,11 +22,11 @@ This manual page contains examples of calling libguestfs from the C
 programming language.  If you are not familiar with using libguestfs, you
 also need to read L<guestfs(3)>.
 
-=head1 EXAMPLE: CREATE A DISK IMAGE
+=head1 ПРИКЛАД. СТВОРЕННЯ ОБРАЗУ ДИСКА
 
 @CREATE_DISK@
 
-=head1 EXAMPLE: INSPECT A VIRTUAL MACHINE DISK IMAGE
+=head1 ПРИКЛАД. ПЕРЕВІРКА ОБРАЗУ ДИСКА ВІРТУАЛЬНОЇ МАШИНИ
 
 @INSPECT_VM@
 

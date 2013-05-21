@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Geert Warrink <geert.warrink@onsnet.nu>, 2011-2012.
-# Richard E. van der Luit <nippur@fedoraproject.org>, 2011, 2012.
-# rjones <rjones@redhat.com>, 2011.
+# Geert Warrink <geert.warrink@onsnet.nu>, 2011-2012
+# Richard E. van der Luit <nippur@fedoraproject.org>, 2011, 2012
+# rjones <rjones@redhat.com>, 2011
 msgid ""
 msgstr ""
 "Project-Id-Version: libguestfs\n"
 "Report-Msgid-Bugs-To: https://bugzilla.redhat.com/enter_bug.cgi?"
 "component=libguestfs&product=Virtualization+Tools\n"
-"POT-Creation-Date: 2013-05-15 10:05+0100\n"
-"PO-Revision-Date: 2013-04-11 13:31+0000\n"
+"POT-Creation-Date: 2013-05-21 18:21+0100\n"
+"PO-Revision-Date: 2013-05-21 13:13+0000\n"
 "Last-Translator: rjones <rjones@redhat.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
 "nl/)\n"
@@ -3966,187 +3966,187 @@ msgstr ""
 msgid "gluster: you cannot specify a secret with this protocol"
 msgstr ""
 
-#: src/drives.c:205
+#: src/drives.c:204
 msgid "gluster: you must specify exactly one server"
 msgstr ""
 
-#: src/drives.c:212
-msgid "gluster: port number must be specified"
-msgstr ""
-
-#: src/drives.c:217
+#: src/drives.c:209
 msgid "gluster: volume name parameter should not be an empty string"
 msgstr ""
 
-#: src/drives.c:251
+#: src/drives.c:214
+msgid "gluster: pathname must begin with a '/'"
+msgstr ""
+
+#: src/drives.c:248
 msgid "nbd: you cannot specify a username with this protocol"
 msgstr ""
 
-#: src/drives.c:255
+#: src/drives.c:252
 msgid "nbd: you cannot specify a secret with this protocol"
 msgstr ""
 
-#: src/drives.c:260
+#: src/drives.c:257
 msgid "nbd: you must specify exactly one server"
 msgstr ""
 
-#: src/drives.c:287
+#: src/drives.c:284
 msgid "rbd: you must specify one or more servers"
 msgstr ""
 
-#: src/drives.c:294
+#: src/drives.c:291
 msgid "rbd: only tcp transport is supported"
 msgstr ""
 
-#: src/drives.c:298
+#: src/drives.c:295
 msgid "rbd: port number must be specified"
 msgstr ""
 
-#: src/drives.c:304
+#: src/drives.c:301
 msgid "rbd: image name parameter should not be an empty string"
 msgstr ""
 
-#: src/drives.c:309
+#: src/drives.c:306
 msgid "rbd: image name must begin with a '/'"
 msgstr ""
 
-#: src/drives.c:333
+#: src/drives.c:330
 msgid "sheepdog: you cannot specify a username with this protocol"
 msgstr ""
 
-#: src/drives.c:337
+#: src/drives.c:334
 msgid "sheepdog: you cannot specify a secret with this protocol"
 msgstr ""
 
-#: src/drives.c:344
+#: src/drives.c:341
 msgid "sheepdog: only tcp transport is supported"
 msgstr ""
 
-#: src/drives.c:348
+#: src/drives.c:345
 msgid "sheepdog: port number must be specified"
 msgstr ""
 
-#: src/drives.c:354
+#: src/drives.c:351
 msgid "sheepdog: volume parameter should not be an empty string"
 msgstr ""
 
-#: src/drives.c:359
+#: src/drives.c:356
 msgid "sheepdog: volume parameter must begin with a '/'"
 msgstr ""
 
-#: src/drives.c:381
+#: src/drives.c:378
 msgid "ssh: you cannot specify a secret with this protocol"
 msgstr ""
 
-#: src/drives.c:386
+#: src/drives.c:383
 msgid "ssh: you must specify exactly one server"
 msgstr ""
 
-#: src/drives.c:392
+#: src/drives.c:389
 msgid "ssh: only tcp transport is supported"
 msgstr ""
 
-#: src/drives.c:397
+#: src/drives.c:394
 msgid "ssh: pathname should not be an empty string"
 msgstr ""
 
-#: src/drives.c:402
+#: src/drives.c:399
 msgid "ssh: pathname must begin with a '/'"
 msgstr ""
 
-#: src/drives.c:407
+#: src/drives.c:404
 msgid "ssh: username should not be an empty string"
 msgstr ""
 
-#: src/drives.c:429
+#: src/drives.c:426
 msgid "iscsi: you cannot specify a username with this protocol"
 msgstr ""
 
-#: src/drives.c:434
+#: src/drives.c:431
 msgid "iscsi: you cannot specify a secret with this protocol"
 msgstr ""
 
-#: src/drives.c:439
+#: src/drives.c:436
 msgid "iscsi: you must specify exactly one server"
 msgstr ""
 
-#: src/drives.c:445
+#: src/drives.c:442
 msgid "iscsi: only tcp transport is supported"
 msgstr ""
 
-#: src/drives.c:450
+#: src/drives.c:447
 msgid "iscsi: target name should not be an empty string"
 msgstr ""
 
-#: src/drives.c:455
+#: src/drives.c:452
 msgid "iscsi: target string must begin with a '/'"
 msgstr ""
 
-#: src/drives.c:483
+#: src/drives.c:480
 msgid "for device '/dev/null', format must be 'raw'"
 msgstr "voor apparaat '/dev/null' moet het formaat 'raw' zijn"
 
-#: src/drives.c:753
+#: src/drives.c:750
 msgid "missing Unix domain socket path"
 msgstr ""
 
-#: src/drives.c:765
+#: src/drives.c:762
 #, c-format
 msgid "invalid port number '%s'"
 msgstr ""
 
-#: src/drives.c:772
+#: src/drives.c:769
 #, c-format
 msgid "invalid hostname '%s'"
 msgstr ""
 
-#: src/drives.c:783
+#: src/drives.c:780
 #, c-format
 msgid "invalid hostname or server string '%s'"
 msgstr ""
 
-#: src/drives.c:861 src/drives.c:867
+#: src/drives.c:858 src/drives.c:864
 #, c-format
 msgid "%s parameter is empty or contains disallowed characters"
 msgstr "%s parameter is leeg of bevat niet geoorloofde karakters"
 
-#: src/drives.c:873
+#: src/drives.c:870
 msgid "label parameter is empty, too long, or contains disallowed characters"
 msgstr "label parameter is leeg, te lang of bevat niet toegestane karakters"
 
-#: src/drives.c:880
+#: src/drives.c:877
 msgid "you cannot specify a server with file-backed disks"
 msgstr ""
 
-#: src/drives.c:885
+#: src/drives.c:882
 msgid "you cannot specify a username with file-backed disks"
 msgstr ""
 
-#: src/drives.c:890
+#: src/drives.c:887
 msgid "you cannot specify a secret with file-backed disks"
 msgstr ""
 
-#: src/drives.c:990
+#: src/drives.c:987
 #, c-format
 msgid "unknown protocol '%s'"
 msgstr ""
 
-#: src/drives.c:1008 src/drives.c:1127
+#: src/drives.c:1005 src/drives.c:1124
 msgid "the current backend does not support hotplugging drives"
 msgstr ""
 
-#: src/drives.c:1014
+#: src/drives.c:1011
 msgid "'label' is required when hotplugging drives"
 msgstr "'label' is vereist bij het hotpluggen van stations"
 
-#: src/drives.c:1082
+#: src/drives.c:1079
 msgid ""
 "filename cannot contain ':' (colon) character. This is a limitation of qemu."
 msgstr ""
 "bestandsnaam kan geen ':' (dubbelepunt) karakter bevatten. Dit is een "
 "beperking van qemu."
 
-#: src/drives.c:1112
+#: src/drives.c:1109
 #, c-format
 msgid "disk with label '%s' not found"
 msgstr "schijf met label '%s' werd niet gevonden"
@@ -4259,25 +4259,15 @@ msgstr "je moet guestfs_mount_local eerst aanroepen"
 msgid "fuse_loop: %s"
 msgstr "fuse_loop: %s"
 
-#: src/fuse.c:1072
+#: src/fuse.c:1069
 msgid "no filesystem is mounted"
 msgstr "er is geen bestandssysteem aangekoppeld"
 
-#: src/fuse.c:1115
-#, c-format
-msgid "fusermount failed: %s: %s"
-msgstr "fusermount mislukte: %s: %s"
-
-#: src/fuse.c:1118
-#, c-format
-msgid "fusermount failed: %s: original error could not be preserved"
-msgstr "fusermount faalde: %s: originele fout kon niet bewaard worden"
-
-#: src/fuse.c:1229
+#: src/fuse.c:1187
 msgid "could not initialize dir cache hashtables"
 msgstr "kon map cache hashtabellen niet initialiseren"
 
-#: src/fuse.c:1480
+#: src/fuse.c:1438
 msgid ""
 "FUSE is not supported in this build of libguestfs because libfuse was not "
 "found when libguestfs was compiled"
@@ -4389,48 +4379,48 @@ msgstr "kan string in aanhalingstekens in de buurt van: %s niet ontleden"
 msgid "you must call guestfs_add_drive before guestfs_launch"
 msgstr "je moet guestfs_add_drive aanroepen voor guestfs_launch"
 
-#: src/launch-direct.c:662 src/launch-libvirt.c:446
+#: src/launch-direct.c:662 src/launch-libvirt.c:449
 msgid "qemu launched and contacted daemon, but state != READY"
 msgstr ""
 "qemu gelanceerd en contact opgenomen met daemon, maar toestand != READY"
 
-#: src/launch-libvirt.c:169
+#: src/launch-libvirt.c:172
 msgid "direct mode flag is not supported yet for libvirt backend"
 msgstr ""
 
-#: src/launch-libvirt.c:178
+#: src/launch-libvirt.c:181
 #, c-format
 msgid "you must have libvirt >= %d.%d.%d to use the 'libvirt' backend"
 msgstr ""
 
-#: src/launch-libvirt.c:193
+#: src/launch-libvirt.c:196
 #, c-format
 msgid "could not connect to libvirt (URI = %s)"
 msgstr "kon niet verbinden met libvirt (URI = %s)"
 
-#: src/launch-libvirt.c:209
+#: src/launch-libvirt.c:212
 msgid "could not get libvirt capabilities"
 msgstr "kon libvirt mogelijkheden niet verkrijgen"
 
-#: src/launch-libvirt.c:379
+#: src/launch-libvirt.c:382
 msgid "could not create appliance through libvirt"
 msgstr "kon appliance niet aanmaken met libvirt"
 
-#: src/launch-libvirt.c:508
+#: src/launch-libvirt.c:511
 msgid "unable to parse capabilities XML returned by libvirt"
 msgstr ""
 
-#: src/launch-libvirt.c:514 src/libvirt-domain.c:352 src/libvirt-domain.c:435
+#: src/launch-libvirt.c:517 src/libvirt-domain.c:352 src/libvirt-domain.c:435
 #: src/libvirt-domain.c:642
 msgid "unable to create new XPath context"
 msgstr "kan nieuwe XPath context niet aanmaken"
 
-#: src/launch-libvirt.c:524
+#: src/launch-libvirt.c:527
 #, c-format
 msgid "unable to evaluate XPath expression: %s"
 msgstr ""
 
-#: src/launch-libvirt.c:557
+#: src/launch-libvirt.c:560
 #, c-format
 msgid ""
 "libvirt hypervisor doesn't support qemu or KVM,\n"
@@ -4445,58 +4435,58 @@ msgid ""
 "For further help, read the guestfs(3) man page and libguestfs FAQ."
 msgstr ""
 
-#: src/launch-libvirt.c:708
+#: src/launch-libvirt.c:711
 #, c-format
 msgid "error constructing libvirt XML at \"%s\""
 msgstr "fout bij het construeren van libvirt XML op \"%s\""
 
-#: src/launch-libvirt.c:1053
+#: src/launch-libvirt.c:1056
 msgid "'iface' parameter is not supported by the libvirt backend"
 msgstr ""
 
-#: src/launch-libvirt.c:1164
+#: src/launch-libvirt.c:1167
 msgid ""
 "libvirt does not support the qemu curl driver protocols (ftp, http, etc.); "
 "try setting LIBGUESTFS_BACKEND=direct"
 msgstr ""
 
-#: src/launch-libvirt.c:1202
+#: src/launch-libvirt.c:1205
 msgid ""
 "could not auto-detect the format.\n"
 "If the format is known, pass the format to libguestfs, eg. using the\n"
 "'--format' option, or via the optional 'format' argument to 'add-drive'."
 msgstr ""
 
-#: src/launch-libvirt.c:1213
+#: src/launch-libvirt.c:1216
 msgid ""
 "could not auto-detect the format when using a non-file protocol.\n"
 "If the format is known, pass the format to libguestfs, eg. using the\n"
 "'--format' option, or via the optional 'format' argument to 'add-drive'."
 msgstr ""
 
-#: src/launch-libvirt.c:1593
+#: src/launch-libvirt.c:1598
 #, c-format
 msgid "realpath: could not convert '%s' to absolute path"
 msgstr "realpath: kon '%s' niet converteren naar een absoluut pad"
 
-#: src/launch-libvirt.c:1672
+#: src/launch-libvirt.c:1677
 msgid "could not destroy libvirt domain"
 msgstr "kon libvirt domein niet vernietigen"
 
-#: src/launch-libvirt.c:1704
+#: src/launch-libvirt.c:1709
 #, c-format
 msgid "%s: internal error forming error message"
 msgstr "%s: interne fout bij formuleren van foutboodschap"
 
-#: src/launch-libvirt.c:1762
+#: src/launch-libvirt.c:1769
 msgid "could not attach disk to libvirt domain"
 msgstr "kon schijf niet koppelen aan libvirt domein"
 
-#: src/launch-libvirt.c:1791
+#: src/launch-libvirt.c:1798
 msgid "could not detach disk from libvirt domain"
 msgstr "kon schijf niet loskoppelen van libvirt domein"
 
-#: src/launch-libvirt.c:1837
+#: src/launch-libvirt.c:1844
 #, c-format
 msgid ""
 "libvirt backend is not available because this version of libguestfs was "
@@ -5370,11 +5360,11 @@ msgstr "Richt eerste partitie uit (standaard: auto)"
 msgid "Change LVM2 PV and VG UUIDs"
 msgstr "Verander LVM2 PV en VG UUID's"
 
-#: ../sysprep/sysprep_operation_hostname.ml:76
+#: ../sysprep/sysprep_operation_hostname.ml:90
 msgid "Change the hostname of the guest"
 msgstr "Verander de hostnaam van een gast"
 
-#: ../sysprep/sysprep_operation_hostname.ml:85
+#: ../sysprep/sysprep_operation_hostname.ml:99
 msgid ""
 "Change the hostname.  If not given, defaults to C<localhost.localdomain>."
 msgstr ""
@@ -5641,7 +5631,7 @@ msgstr "Aankoppel punt op host"
 msgid "Never do SELinux relabel"
 msgstr "Voer nooit een SELinux relabel uit"
 
-#: ../sysprep/sysprep_operation_hostname.ml:84
+#: ../sysprep/sysprep_operation_hostname.ml:98
 msgid "New hostname"
 msgstr "Nieuwe hostnaam"
 
@@ -6116,7 +6106,7 @@ msgstr ""
 "van de schijf van de virtuele machine, maar in oudere distributies werd het "
 "opgeslagen op de schijf."
 
-#: ../sysprep/sysprep_operation_hostname.ml:77
+#: ../sysprep/sysprep_operation_hostname.ml:91
 msgid ""
 "This operation changes the hostname of the guest to the value\n"
 "given in the I<--hostname> parameter.\n"
@@ -6239,7 +6229,7 @@ msgstr "formaat"
 msgid "fs"
 msgstr "bs"
 
-#: ../sysprep/sysprep_operation_hostname.ml:84
+#: ../sysprep/sysprep_operation_hostname.ml:98
 msgid "hostname"
 msgstr "hostnaam"
 
@@ -6452,39 +6442,8 @@ msgstr "je kunt de opties --expand en --shrink niet tezamen gebruiken"
 msgid "you cannot use the same disk image for input and output"
 msgstr "je kunt dezelfde schijf image niet voor input en output gebruiken"
 
-#~ msgid "%s: compiled without support for libvirt and/or libxml2.\n"
-#~ msgstr "%s: gecompileerd zonder ondersteuning voor libvirt en/of libxml2.\n"
+#~ msgid "fusermount failed: %s: %s"
+#~ msgstr "fusermount mislukte: %s: %s"
 
-#~ msgid ""
-#~ "libvirt authentication APIs not available since this version of "
-#~ "libguestfs was compiled without libvirt or libxml2"
-#~ msgstr ""
-#~ "libvirt authenticatie API's zijn niet beschikbaar omdat deze versie van "
-#~ "libguestfs gecompileerd werd zonder libvirt of libxml2"
-
-#~ msgid ""
-#~ "add-domain API not available since this version of libguestfs was "
-#~ "compiled without libvirt or libxml2"
-#~ msgstr ""
-#~ "add-domain API in niet beschikbaar omdat deze versie van libguestfs "
-#~ "gecompileerd werd zonder libvirt or libxml2"
-
-#~ msgid ""
-#~ "\n"
-#~ "Welcome to guestfish, the libguestfs filesystem interactive shell for\n"
-#~ "editing virtual machine filesystems.\n"
-#~ "\n"
-#~ "Type: 'help' for help on commands\n"
-#~ "      'man' to read the manual\n"
-#~ "      'quit' to quit the shell\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "Welkom bij guestfish, de libguestfs bestandssysteem interactive shell "
-#~ "voor\n"
-#~ "het bewerken van virtuele machine bestandssystemen.\n"
-#~ "\n"
-#~ "Type: 'help' voor hulp voor commando's\n"
-#~ "      'man' om de manual te lezen\n"
-#~ "      'quit' om de shell af te sluiten\n"
-#~ "\n"
+#~ msgid "fusermount failed: %s: original error could not be preserved"
+#~ msgstr "fusermount faalde: %s: originele fout kon niet bewaard worden"

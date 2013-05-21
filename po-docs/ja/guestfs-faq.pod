@@ -16,7 +16,7 @@ library, and bindings for many common programming languages.
 
 libguestfs が実行できることの詳細はホームページ (L<http://libguestfs.org>) にある紹介を参照できます。
 
-=head2 What are the virt tools?
+=head2 virt ツールとは何か?
 
 Virt tools (website: L<http://virt-tools.org>) are a whole set of
 virtualization management tools aimed at system administrators.  Some of
@@ -319,18 +319,18 @@ L<http://packages.ubuntu.com/quantal/seabios>
 
 =item Gentoo
 
-Libguestfs was added to Gentoo in 2012-07 by Andreis Vinogradovs
-(libguestfs) and Maxim Koltsov (mainly hivex).  Do:
+libguestfs が Andreis Vinogradovs (libguestfs) および Maxim Koltsov (おもに hivex)
+により 2012-07 に Gentoo に追加されました。次のとおり実行します:
 
  emerge libguestfs
 
 =item SuSE
 
-Libguestfs was added to SuSE in 2012 by Olaf Hering.
+libguestfs が Olaf Hering により 2012 年に SuSE に追加されました。
 
 =item ArchLinux
 
-Libguestfs was added to the AUR in 2010.
+libguestfs が 2010 年に AUR に追加されました。
 
 =item 他の Linux ディストリビューション
 

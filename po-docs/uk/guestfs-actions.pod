@@ -11,7 +11,7 @@ to directory C<dir>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.19.63)
+(Додано у 1.19.63)
 
 =head2 guestfs_acl_get_file
 
@@ -42,7 +42,7 @@ directory.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.19.63)
+(Додано у 1.19.63)
 
 =head2 guestfs_acl_set_file
 
@@ -74,7 +74,7 @@ directory.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.19.63)
+(Додано у 1.19.63)
 
 =head2 guestfs_add_cdrom
 
@@ -304,12 +304,12 @@ RHBZ#642934.  Specifying the format closes this security hole.
 This rarely-used option lets you emulate the behaviour of the deprecated
 C<guestfs_add_drive_with_if> call (q.v.)
 
-=item C<назва>
+=item C<name>
 
 The name the drive had in the original guest, e.g. C</dev/sdb>.  This is
 used as a hint to the guest inspection process if it is available.
 
-=item C<мітка>
+=item C<label>
 
 Give the disk a label.  The label should be a unique, short string using
 I<only> ASCII characters C<[a-zA-Z]>.  As well as its usual name in the API
@@ -323,7 +323,7 @@ C</dev/disk/guestfs/I<label>>.
 The optional protocol argument can be used to select an alternate source
 protocol.
 
-See also: L<guestfs(3)/REMOTE STORAGE>.
+Див. також L<guestfs(3)/REMOTE STORAGE>.
 
 =over 4
 
@@ -344,7 +344,7 @@ See also: L<guestfs(3)/FTP, HTTP AND TFTP>
 Connect to the GlusterFS server.  The C<server> parameter must also be
 supplied - see below.
 
-See also: L<guestfs(3)/GLUSTER>
+Див. також L<guestfs(3)/GLUSTER>.
 
 =item C<protocol = "iscsi">
 
@@ -358,7 +358,7 @@ See also: L<guestfs(3)/ISCSI>.
 Connect to the Network Block Device server.  The C<server> parameter must
 also be supplied - see below.
 
-See also: L<guestfs(3)/NETWORK BLOCK DEVICE>.
+Див. також L<guestfs(3)/NETWORK BLOCK DEVICE>.
 
 =item C<protocol = "rbd">
 
@@ -366,14 +366,14 @@ Connect to the Ceph (librbd/RBD) server.  The C<server> parameter must also
 be supplied - see below.  The C<username> parameter may be supplied.  See
 below.  The C<secret> parameter may be supplied.  See below.
 
-See also: L<guestfs(3)/CEPH>.
+Див. також L<guestfs(3)/CEPH>.
 
 =item C<protocol = "sheepdog">
 
 Connect to the Sheepdog server.  The C<server> parameter may also be
 supplied - see below.
 
-See also: L<guestfs(3)/SHEEPDOG>.
+Див. також L<guestfs(3)/SHEEPDOG>.
 
 =item C<protocol = "ssh">
 
@@ -1379,7 +1379,7 @@ capabilities set is returned in text form (see L<cap_to_text(3)>).
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.19.63)
+(Додано у 1.19.63)
 
 =head2 guestfs_cap_set_file
 
@@ -1394,7 +1394,7 @@ L<cap_from_text(3)>).
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.19.63)
+(Додано у 1.19.63)
 
 =head2 guestfs_case_sensitive_path
 
@@ -2075,6 +2075,8 @@ not support it (primarily when writing to DOS FAT filesystems).
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.21.38)
+
 =head2 guestfs_dd
 
  int
@@ -2521,9 +2523,11 @@ Additional configuration can be supplied to SYSLINUX by placing a file
 called C<extlinux.conf> on the filesystem under C<directory>.  For further
 information about the contents of this file, see L<extlinux(1)>.
 
-See also C<guestfs_syslinux>.
+Див. також C<guestfs_syslinux>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.21.27)
 
 =head2 guestfs_fallocate
 
@@ -2584,6 +2588,8 @@ simple true/false boolean result, instead of throwing an exception if a
 feature is not found.  For other documentation see C<guestfs_available>.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.21.26)
 
 =head2 guestfs_fgrep
 
@@ -2668,29 +2674,30 @@ the returned string after use>.
  guestfs_file_architecture (guestfs_h *g,
                             const char *filename);
 
-This detects the architecture of the binary C<filename>, and returns it if
-known.
+Визначає архітектуру виконуваного файла C<назва_файла> і повертає її
+значення, якщо воно визначене у програмі.
 
-Currently defined architectures are:
+Архітектурами, визначеними у поточній версії є:
 
 =over 4
 
 =item "i386"
 
-This string is returned for all 32 bit i386, i486, i586, i686 binaries
-irrespective of the precise processor requirements of the binary.
+Цей рядок буде повернуто для всіх виконуваних файлів для 32-бітових
+процесорів i386, i486, i586, i686, незалежно від точного значення версії
+процесора, визначеного для виконуваного файла.
 
 =item "x86_64"
 
-64 bit x86-64.
+64-бітовий x86-64.
 
 =item "sparc"
 
-32 bit SPARC.
+32-бітовий SPARC.
 
 =item "sparc64"
 
-64 bit SPARC V9 and above.
+64-бітовий SPARC V9 або новіша версія.
 
 =item "ia64"
 
@@ -2698,15 +2705,15 @@ Intel Itanium.
 
 =item "ppc"
 
-32 bit Power PC.
+32-бітовий Power PC.
 
 =item "ppc64"
 
-64 bit Power PC.
+64-бітовий Power PC.
 
 =back
 
-Libguestfs may return other architecture strings in future.
+У майбутніх версіях Libguestfs може повертати і інші рядки назв архітектур.
 
 The function works on at least the following types of files:
 
@@ -2902,7 +2909,7 @@ then the returned list from C<guestfs_find> C</tmp> would be 4 elements:
 
 If C<directory> is not a directory, then this command returns an error.
 
-The returned list is sorted.
+Список результатів буде впорядковано.
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
@@ -2937,7 +2944,7 @@ L<find(1)> option I<-print0>.
 
 =item *
 
-The result list is not sorted.
+Список результатів не буде впорядковано.
 
 =back
 
@@ -3101,7 +3108,7 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
-Return the current backend.
+Повертає назву поточного модуля.
 
 See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
 
@@ -3126,7 +3133,7 @@ This function returns a C truth value on success or -1 on error.
  char *
  guestfs_get_backend (guestfs_h *g);
 
-Return the current backend.
+Повертає назву поточного модуля.
 
 This handle property was previously called the "attach method".
 
@@ -3134,6 +3141,8 @@ See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
+
+(Added in 1.21.26)
 
 =head2 guestfs_get_cachedir
 
@@ -3483,6 +3492,8 @@ Get the program name.  See C<guestfs_set_program>.
 
 This function returns a string, or NULL on error.  The string is owned by
 the guest handle and must I<not> be freed.
+
+(Added in 1.21.29)
 
 =head2 guestfs_get_qemu
 
@@ -4381,7 +4392,7 @@ possible return values are listed under C<guestfs_file_architecture>.
 If the architecture could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4478,11 +4489,11 @@ Slackware.
 
 =item "sles"
 
-SuSE Linux Enterprise Server or Desktop.
+SuSE Linux Enterprise Server або Desktop.
 
 =item "suse-based"
 
-Some openSuSE-derived distro.
+Дистрибутив, заснований на openSuSE.
 
 =item "ttylinux"
 
@@ -4498,15 +4509,15 @@ Ubuntu.
 
 =item "windows"
 
-Windows does not have distributions.  This string is returned if the OS type
-is Windows.
+У Windows немає дистрибутивів. Цей рядок буде повернуто, якщо операційна
+система належить до сімейства Windows.
 
 =back
 
 Future versions of libguestfs may return other strings here.  The caller
 should be prepared to handle any string.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4606,7 +4617,7 @@ The format of this disk image is not known.
 Future versions of libguestfs may return other strings here.  The caller
 should be prepared to handle any string.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4625,7 +4636,7 @@ inspection of the guest's configuration files.
 If the hostname could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4750,7 +4761,7 @@ by consulting Wikipedia or MSDN.
 
 If the version could not be determined, then C<0> is returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 У разі помилки цією функцією буде повернуто -1.
 
@@ -4825,7 +4836,7 @@ format I<or> if the operating system does not have a real packaging system
 Possible strings include: C<rpm>, C<deb>, C<ebuild>, C<pisi>, C<pacman>,
 C<pkgsrc>.  Future versions of libguestfs may return other strings.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4851,7 +4862,7 @@ Possible strings include: C<yum>, C<up2date>, C<apt> (for all Debian
 derivatives), C<portage>, C<pisi>, C<pacman>, C<urpmi>, C<zypper>.  Future
 versions of libguestfs may return other strings.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4871,7 +4882,7 @@ user, but should not be parsed by programs.
 If the product name could not be determined, then the string C<unknown> is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4921,7 +4932,7 @@ the whole inspection process.
 This returns an empty list if either no root devices were found or the
 caller has not called C<guestfs_inspect_os>.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
@@ -4977,7 +4988,7 @@ MS-DOS, FreeDOS та інші.
 Future versions of libguestfs may return other strings here.  The caller
 should be prepared to handle any string.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -4996,7 +5007,7 @@ CurrentControlSet is a registry key name such as C<ControlSet001>.
 This call assumes that the guest is Windows and that the Registry could be
 examined by inspection.  If this is not the case then an error is returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -5016,7 +5027,7 @@ This call assumes that the guest is Windows and that the systemroot could be
 determined by inspection.  If this is not the case then an error is
 returned.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
@@ -5032,7 +5043,7 @@ the returned string after use>.
 If C<guestfs_inspect_get_format> returns C<installer> (this is an install
 disk), then this returns true if a live image was detected on the disk.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a C truth value on success or -1 on error.
 
@@ -5047,7 +5058,7 @@ This function returns a C truth value on success or -1 on error.
 If C<guestfs_inspect_get_format> returns C<installer> (this is an install
 disk), then this returns true if the disk is part of a set.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a C truth value on success or -1 on error.
 
@@ -5064,7 +5075,7 @@ disk), then this returns true if the disk is a network installer, ie. not a
 self-contained install CD but one which is likely to require network access
 to complete the install.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a C truth value on success or -1 on error.
 
@@ -5169,7 +5180,7 @@ returned as an empty string C<"">.
 
 =back
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a C<struct guestfs_application_list *>, or NULL if
 there was an error.  I<The caller must call C<guestfs_free_application_list>
@@ -5274,7 +5285,7 @@ returned as an empty string C<"">.
 
 =back
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 This function returns a C<struct guestfs_application2_list *>, or NULL if
 there was an error.  I<The caller must call
@@ -5311,7 +5322,7 @@ function may also use Augeas, so any existing Augeas handle will be closed.
 This function cannot decrypt encrypted disks.  The caller must do that first
 (supplying the necessary keys) if the disk is encrypted.
 
-Please read L<guestfs(3)/INSPECTION> for more details.
+З докладнішими даними можна ознайомитися у розділі L<guestfs(3)/INSPECTION>.
 
 Див. також C<guestfs_list_filesystems>.
 
@@ -5507,7 +5518,7 @@ device. That is, not a partition or a logical device.
 
 This function returns a C truth value on success or -1 on error.
 
-(Added in 1.21.9)
+(Додано у 1.21.9)
 
 =head2 guestfs_is_zero
 
@@ -5657,7 +5668,7 @@ Windows dynamic disk.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_diskgroup_disks
 
@@ -5673,7 +5684,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_diskgroup_name
 
@@ -5688,7 +5699,7 @@ C<guestfs_ldmtool_scan>.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_diskgroup_volumes
 
@@ -5704,7 +5715,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_remove_all
 
@@ -5716,7 +5727,7 @@ removes the device mapper mappings for all Windows dynamic disk volumes
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_scan
 
@@ -5734,7 +5745,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_scan_devices
 
@@ -5753,7 +5764,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_volume_hint
 
@@ -5770,7 +5781,7 @@ Windows drive, eg. C<E:>.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_volume_partitions
 
@@ -5786,7 +5797,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_ldmtool_volume_type
 
@@ -5805,7 +5816,7 @@ returned.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_lgetxattr
 
@@ -5974,7 +5985,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_list_ldm_volumes
 
@@ -5988,7 +5999,7 @@ This function returns a NULL-terminated array of strings (like
 L<environ(3)>), or NULL if there was an error.  I<The caller must free the
 strings and the array after use>.
 
-(Added in 1.20.0)
+(Додано у 1.20.0)
 
 =head2 guestfs_list_md_devices
 
@@ -6754,7 +6765,7 @@ The metadata version used.
 
 The UUID of the MD device.
 
-=item C<назва>
+=item C<name>
 
 The name of the MD device.
 
@@ -7922,7 +7933,7 @@ strings and the array after use>.
 This moves a file from C<src> to C<dest> where C<dest> is either a
 destination filename or destination directory.
 
-See also: C<guestfs_rename>.
+Див. також C<guestfs_rename>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -8318,7 +8329,7 @@ type. Behaviour is undefined for other partition types.
 This function returns a string, or NULL on error.  I<The caller must free
 the returned string after use>.
 
-(Added in 1.21.1)
+(Додано у 1.21.1)
 
 =head2 guestfs_part_get_mbr_id
 
@@ -8513,7 +8524,7 @@ for a useful list of type GUIDs.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.21.1)
+(Додано у 1.21.1)
 
 =head2 guestfs_part_set_mbr_id
 
@@ -9050,7 +9061,7 @@ C<guestfs_mv> instead.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.21.5)
+(Додано у 1.21.5)
 
 =head2 guestfs_resize2fs
 
@@ -9444,7 +9455,7 @@ these functions.
 Set the method that libguestfs uses to connect to the backend guestfsd
 daemon.
 
-See L<guestfs(3)/BACKEND>.
+Див. L<guestfs(3)/BACKEND>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -9478,9 +9489,11 @@ daemon.
 
 This handle property was previously called the "attach method".
 
-See L<guestfs(3)/BACKEND>.
+Див. L<guestfs(3)/BACKEND>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.21.26)
 
 =head2 guestfs_set_cachedir
 
@@ -9516,7 +9529,7 @@ stdout.
 
 You probably don't want to use this unless you know what you are doing.
 
-The default is disabled.
+Типово вимкнено.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -9814,6 +9827,8 @@ basename from C<argv[0]>.  If that was not possible, it is set to the empty
 string (but never C<NULL>).
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.21.29)
 
 =head2 guestfs_set_qemu
 
@@ -10486,9 +10501,11 @@ called C<syslinux.cfg> on the FAT filesystem, either in the root directory,
 or under C<directory> if that optional argument is being used.  For further
 information about the contents of this file, see L<syslinux(1)>.
 
-See also C<guestfs_extlinux>.
+Див. також C<guestfs_extlinux>.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+(Added in 1.21.27)
 
 =head2 guestfs_syslinux_va
 
@@ -10497,7 +10514,7 @@ See also C<guestfs_extlinux>.
                       const char *device,
                       va_list args);
 
-This is the "va_list variant" of L</guestfs_syslinux>.
+Це «варіант з va_list» L</guestfs_syslinux>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -10508,7 +10525,7 @@ This is the "va_list variant" of L</guestfs_syslinux>.
                         const char *device,
                         const struct guestfs_syslinux_argv *optargs);
 
-This is the "argv variant" of L</guestfs_syslinux>.
+Це «варіант з argv» L</guestfs_syslinux>.
 
 Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
@@ -11721,7 +11738,7 @@ using the C<guestfs_xfs_info> and C<guestfs_xfs_growfs> calls.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
-(Added in 1.19.33)
+(Додано у 1.19.33)
 
 =head2 guestfs_xfs_admin_va
 

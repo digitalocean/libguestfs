@@ -1,4 +1,4 @@
-/* Test of usleep() function.
+/* Tests of statat and lstatat.
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -14,27 +14,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
-
 #include <config.h>
 
-#include <unistd.h>
+#include "openat.h"
 
 #include "signature.h"
-SIGNATURE_CHECK (usleep, int, (useconds_t));
+SIGNATURE_CHECK (statat, int, (int, char const *, struct stat *));
+SIGNATURE_CHECK (lstatat, int, (int, char const *, struct stat *));
 
-#include <time.h>
-
-#include "macros.h"
-
-int
-main (void)
-{
-  time_t start = time (NULL);
-  ASSERT (usleep (1000000) == 0);
-  ASSERT (start < time (NULL));
-
-  ASSERT (usleep (0) == 0);
-
-  return 0;
-}
+#define BASE "test-statat.t"
+#define TEST_STATAT
+#include "test-fstatat.c"

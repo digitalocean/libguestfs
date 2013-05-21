@@ -89,7 +89,7 @@ supermin.d/daemon.img: ../daemon/guestfsd guestfsd.suppressions
 	ln ../daemon/guestfsd tmp-d$(DAEMON_SUPERMIN_DIR)/guestfsd
 	ln $(srcdir)/guestfsd.suppressions tmp-d/etc/guestfsd.suppressions
 	( cd tmp-d && find | cpio --quiet -o -H newc ) > $@-t
-	rm -rf tmp-d
+	rm -r tmp-d
 	mv $@-t $@
 
 supermin.d/init.img: init
@@ -108,7 +108,7 @@ supermin.d/udev-rules.img: 99-guestfs-serial.rules
 	mkdir -p tmp-u/etc/udev/rules.d
 	for f in $^; do ln $$f tmp-u/etc/udev/rules.d/$$(basename $$f); done
 	( cd tmp-u && find | cpio --quiet -o -H newc ) > $@-t
-	rm -rf tmp-u
+	rm -r tmp-u
 	mv $@-t $@
 
 # If installing the daemon, install the udev rules too.

@@ -6,7 +6,7 @@ guestunmount - Unmount a guestmounted filesystem
 
 =head1 КОРОТКИЙ ОПИС
 
- guestunmount mountpoint
+ guestunmount точка_монтування
 
  guestunmount --fd=<FD> mountpoint
 
@@ -21,13 +21,13 @@ must exist on the current C<PATH>.
 
 There are two ways to use guestunmount.  When called as:
 
- guestunmount mountpoint
+ guestunmount точка_монтування
 
 it unmounts C<mountpoint> immediately.
 
 When called as:
 
- guestunmount --fd=FD mountpoint
+ guestunmount --fd=FD точка_монтування
 
 it waits until the pipe C<FD> is closed.  This can be used to monitor
 another process and clean up its mountpoint when that process exits, as
@@ -45,7 +45,7 @@ file descriptor number of the read side of the pipe (ie. C<pipefd[0]>).
 After mounting the filesystem with L<guestmount(1)> (on C<mountpoint>), fork
 and run guestunmount like this:
 
- guestunmount --fd=FD mountpoint
+ guestunmount --fd=FD точка_монтування
 
 Close the read side of the pipe in the parent process.
 
@@ -77,7 +77,7 @@ pipe is closed.
 
 =item B<--help>
 
-Display brief help and exit.
+Показати короткі довідкові дані і завершити роботу.
 
 =item B<-q>
 
@@ -137,7 +137,7 @@ message printed for the underlying fusermount error.
 
 =item C<3>
 
-The mount point is not mounted.
+Точку монтування не змонтовано.
 
 =back
 
@@ -152,5 +152,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2013 Red Hat Inc.
+© Red Hat Inc., 2013
 

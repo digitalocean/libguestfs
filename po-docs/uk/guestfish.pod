@@ -245,10 +245,11 @@ Read commands from C<file>.  To write pure guestfish scripts, use:
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+Типовим значенням для параметра I<-a> є автоматичне визначення формату
+образу диска. Використання цього параметра примусово визначає значення
+параметрів I<-a> формату диска у наступному рядку команди. Використання
+параметра I<--format> без аргументу перемикає програму у режим автоматичного
+визначення у наступних параметрах I<-a>.
 
 Приклад:
 

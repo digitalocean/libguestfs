@@ -118,9 +118,10 @@ for subsequent I<-a> options.
 примусове встановлення формату без обробки (без автоматичного визначення)
 для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
+форматі, вам слід скористатися цим параметром для визначення формату
+диска. Таким чином можна уникнути можливих проблем з захистом для
+сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
 =item B<--list-operations>
 
