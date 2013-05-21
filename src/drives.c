@@ -200,21 +200,18 @@ create_drive_gluster (guestfs_h *g,
     return NULL;
   }
 
-
   if (nr_servers != 1) {
     error (g, _("gluster: you must specify exactly one server"));
     return NULL;
   }
 
-  if ((servers[0].transport == drive_transport_none ||
-       servers[0].transport == drive_transport_tcp) &&
-      servers[0].port == 0) {
-    error (g, _("gluster: port number must be specified"));
+  if (STREQ (exportname, "")) {
+    error (g, _("gluster: volume name parameter should not be an empty string"));
     return NULL;
   }
 
-  if (STREQ (exportname, "")) {
-    error (g, _("gluster: volume name parameter should not be an empty string"));
+  if (exportname[0] != '/') {
+    error (g, _("gluster: pathname must begin with a '/'"));
     return NULL;
   }
 

@@ -124,10 +124,11 @@ ABOUT CSV FORMAT> below.
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+Типовим значенням для параметра I<-a> є автоматичне визначення формату
+образу диска. Використання цього параметра примусово визначає значення
+параметрів I<-a> формату диска у наступному рядку команди. Використання
+параметра I<--format> без аргументу перемикає програму у режим автоматичного
+визначення у наступних параметрах I<-a>.
 
 Приклад:
 
@@ -141,9 +142,10 @@ auto-detection for subsequent I<-a> options.
 примусове встановлення формату без обробки (без автоматичного визначення)
 для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
+форматі, вам слід скористатися цим параметром для визначення формату
+диска. Таким чином можна уникнути можливих проблем з захистом для
+сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
 =item B<-h>
 
@@ -164,21 +166,21 @@ with malicious guests (CVE-2010-3851).
 Since libguestfs 1.22, this is the default.  This option does nothing and is
 left here for backwards compatibility with older scripts.
 
-=item B<-P> nr_threads
+=item B<-P> кількість_потоків
 
 Since libguestfs 1.22, virt-df is multithreaded and examines guests in
 parallel.  By default the number of threads to use is chosen based on the
 amount of free memory available at the time that virt-df is started.  You
 can force virt-df to use at most C<nr_threads> by using the I<-P> option.
 
-Note that I<-P 0> means to autodetect, and I<-P 1> means to use a single
-thread.
+Зауважте, що I<-P 0> означає автоматичне визначення, а I<-P 1> означає
+використання одного потоку виконання.
 
 =item B<--uuid>
 
-Print UUIDs instead of names.  This is useful for following a guest even
-when the guest is migrated or renamed, or when two guests happen to have the
-same name.
+Виводити UUID замість назв. Корисно для слідкування за гостьовою системою,
+навіть після перенесення або перейменування, або якщо дві гостьові системи
+мають однакові назви.
 
 Note that only domains that we fetch from libvirt come with UUIDs.  For disk
 images, we still print the disk image name even when this option is

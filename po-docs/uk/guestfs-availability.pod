@@ -4,8 +4,8 @@
 
 =item B<acl>
 
-The following functions: L</guestfs_acl_delete_def_file>
-L</guestfs_acl_get_file> L</guestfs_acl_set_file>
+Такі функції: L</guestfs_acl_delete_def_file> L</guestfs_acl_get_file>
+L</guestfs_acl_set_file>
 
 =item B<augeas>
 
@@ -27,7 +27,7 @@ L</guestfs_mkfs_btrfs>
 
 =item B<extlinux>
 
-The following functions: L</guestfs_extlinux>
+Такі функції: L</guestfs_extlinux>
 
 =item B<fstrim>
 
@@ -35,8 +35,7 @@ The following functions: L</guestfs_extlinux>
 
 =item B<gdisk>
 
-The following functions: L</guestfs_part_get_gpt_type>
-L</guestfs_part_set_gpt_type>
+Такі функції: L</guestfs_part_get_gpt_type> L</guestfs_part_set_gpt_type>
 
 =item B<grub>
 
@@ -61,7 +60,7 @@ L</guestfs_inotify_rm_watch>
 
 =item B<ldm>
 
-The following functions: L</guestfs_ldmtool_create_all>
+Такі функції: L</guestfs_ldmtool_create_all>
 L</guestfs_ldmtool_diskgroup_disks> L</guestfs_ldmtool_diskgroup_name>
 L</guestfs_ldmtool_diskgroup_volumes> L</guestfs_ldmtool_remove_all>
 L</guestfs_ldmtool_scan> L</guestfs_ldmtool_scan_devices>
@@ -71,7 +70,7 @@ L</guestfs_list_ldm_volumes>
 
 =item B<linuxcaps>
 
-The following functions: L</guestfs_cap_get_file> L</guestfs_cap_set_file>
+Такі функції: L</guestfs_cap_get_file> L</guestfs_cap_set_file>
 
 =item B<linuxfsuuid>
 
@@ -145,7 +144,7 @@ L</guestfs_scrub_freespace>
 
 =item B<syslinux>
 
-The following functions: L</guestfs_syslinux>
+Такі функції: L</guestfs_syslinux>
 
 =item B<wipefs>
 

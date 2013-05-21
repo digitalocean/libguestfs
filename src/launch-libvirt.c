@@ -138,7 +138,10 @@ static int make_drive_priv (guestfs_h *g, struct drive *drv, const char *selinux
 static void drive_free_priv (void *);
 static void set_socket_create_context (guestfs_h *g);
 static void clear_socket_create_context (guestfs_h *g);
+
+#if HAVE_LIBSELINUX
 static void selinux_warning (guestfs_h *g, const char *func, const char *selinux_op, const char *data);
+#endif
 
 static int
 launch_libvirt (guestfs_h *g, const char *libvirt_uri)
@@ -1265,20 +1268,22 @@ construct_libvirt_xml_disk_source_hosts (guestfs_h *g,
     switch (src->servers[i].transport) {
     case drive_transport_none:
     case drive_transport_tcp: {
-      const char *hostname;
-      int port;
-      char port_str[64];
-
-      hostname = src->servers[i].u.hostname;
-      port = src->servers[i].port;
-      snprintf (port_str, sizeof port_str, "%d", port);
+      const char *hostname = src->servers[i].u.hostname;
+      int port = src->servers[i].port;
 
       XMLERROR (-1,
                 xmlTextWriterWriteAttribute (xo, BAD_CAST "name",
                                              BAD_CAST hostname));
-      XMLERROR (-1,
-                xmlTextWriterWriteAttribute (xo, BAD_CAST "port",
-                                             BAD_CAST port_str));
+
+      if (port > 0) {
+        char port_str[64];
+
+        snprintf (port_str, sizeof port_str, "%d", port);
+
+        XMLERROR (-1,
+                  xmlTextWriterWriteAttribute (xo, BAD_CAST "port",
+                                               BAD_CAST port_str));
+      }
       break;
     }
 
@@ -1716,6 +1721,7 @@ libvirt_error (guestfs_h *g, const char *fs, ...)
   free (msg);
 }
 
+#if HAVE_LIBSELINUX
 static void
 selinux_warning (guestfs_h *g, const char *func,
                  const char *selinux_op, const char *data)
@@ -1724,6 +1730,7 @@ selinux_warning (guestfs_h *g, const char *func,
          " [you can ignore this UNLESS using SELinux + sVirt]",
          func, selinux_op, data ? data : "(none)");
 }
+#endif
 
 /* This backend assumes virtio-scsi is available. */
 static int

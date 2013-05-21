@@ -15,7 +15,8 @@ libguestfs-make-fixed-appliance - Make a "fixed appliance" for libguestfs
 libguestfs-make-fixed-appliance lets you make a pre-built binary appliance
 for libguestfs.
 
-B<Note that ordinary users should not need to run this tool>.
+B<Зауважте, що у звичайних користувачів не повинно виникнути потреби у
+запуску цієї програми>.
 
 Some reasons why you I<might> want to use this include:
 

@@ -331,10 +331,11 @@ LISTING> above.
 
 =item B<--format>
 
-The default for the I<-a> option is to auto-detect the format of the disk
-image.  Using this forces the disk format for I<-a> options which follow on
-the command line.  Using I<--format> with no argument switches back to
-auto-detection for subsequent I<-a> options.
+Типовим значенням для параметра I<-a> є автоматичне визначення формату
+образу диска. Використання цього параметра примусово визначає значення
+параметрів I<-a> формату диска у наступному рядку команди. Використання
+параметра I<--format> без аргументу перемикає програму у режим автоматичного
+визначення у наступних параметрах I<-a>.
 
 Приклад:
 
@@ -348,9 +349,10 @@ auto-detection for subsequent I<-a> options.
 примусове встановлення формату без обробки (без автоматичного визначення)
 для C<disk.img> і повернення до автоматичного визначення для C<another.img>.
 
-If you have untrusted raw-format guest disk images, you should use this
-option to specify the disk format.  This avoids a possible security problem
-with malicious guests (CVE-2010-3851).
+Якщо ви користуєтеся ненадійними образами гостьових систем у необробленому
+форматі, вам слід скористатися цим параметром для визначення формату
+диска. Таким чином можна уникнути можливих проблем з захистом для
+сформованих зловмисниками гостьових систем (CVE-2010-3851).
 
 =item B<-h>
 

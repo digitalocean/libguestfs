@@ -7,7 +7,7 @@ guestfs-release-notes - libguestfs Release Notes
 =begin коментар
 
 NOTE! Pre-release notes for the next stable version of libguestfs.  Updated
-to commit dfa25a46e35b87ae8a5e548d383e8bf75b4b4b26
+to commit 5a69428f5ec197dfa054e98e80098b758b36d5b9
 
 =end коментар
 
@@ -18,7 +18,7 @@ document.body.style.backgroundRepeat = "no-repeat"; </script>
 
 =end html
 
-=head1 RELEASE NOTES FOR LIBGUESTFS 1.22
+=head1 НОТАТКИ ЩОДО ВИПУСКУ LIBGUESTFS 1.22
 
 These release notes only cover the differences from the previous stable/dev
 branch split (1.20.0).  For detailed changelogs, please see the git
@@ -28,8 +28,47 @@ repository, or the ChangeLog file distributed in the tarball.
 
 =head3 API
 
-Remote access to disks: Network Block Device (nbd), Gluster, Ceph (rbd) and
-Sheepdog protocols are now supported.
+Remote access to disks:
+
+=over 4
+
+=item *
+
+Network Block Device (nbd)
+
+=item *
+
+Secure Shell (ssh)
+
+=item *
+
+HTTP and HTTPS
+
+=item *
+
+FTP and FTPS
+
+=item *
+
+iSCSI
+
+=item *
+
+Gluster
+
+=item *
+
+Ceph/rbd (Mike Kelly)
+
+=item *
+
+Sheepdog
+
+=item *
+
+TFTP
+
+=back
 
 The SYSLINUX and EXTLINUX bootloaders can now be installed in disk images
 using the API.
@@ -40,12 +79,24 @@ separately mountable (Matthew Booth).
 "Attach methods" are now known as "backends".  Compatibility with existing
 code is preserved.
 
-=head3 Tools
+Filenames can contain ':', as long as newer QEMU is being used.
+
+=head3 Інструменти
 
 Virt-alignment-scan and virt-df scan multiple guests in parallel.
 
 Guestmount now passes errno accurately back to userspace in almost all
 cases.
+
+Guestfish and other tools can now use a URI-like syntax to access remote
+disks, eg:
+
+ guestfish -a ssh://example.com/path/to/disk.img
+
+Guestfish and guestmount now allow you to specify the filesystem type when
+mounting, which is more secure (Dave Vasilevsky).
+
+Guestfish is now the "guest filesystem shell".
 
 Guestfish allows only C<1> C<true> C<t> C<yes> C<y> C<on> C<0> C<false> C<f>
 C<no> C<n> C<off> for boolean values (case insensitive), and gives an error
@@ -62,7 +113,7 @@ Bash tab completion has been rewritten and can now handle most tools, and
 correctly tab-complete C<--long> options.  In addition, bash completion
 scripts are loaded on demand.
 
-=head3 Language bindings
+=head3 Прив’язки до мов програмування
 
 The Java API now supports events.
 
@@ -78,11 +129,22 @@ The PHP bindings are now tested properly, and have had multiple fixes.
 The long-deprecated Perl C<Sys::Guestfs::Lib> library has been removed.
 L<https://www.redhat.com/archives/libguestfs/2013-April/msg00001.html>
 
-=head3 Other
+=head3 Examples
+
+New example program showing how to enable debugging and capture log
+messages.
+
+=head3 Інше
 
 Distributors can add arbitrary extra packages to the appliance by doing:
 
- ./configure --with-extra-packages="list of package names"
+ ./configure --with-extra-packages="список назв пакунків"
+
+Distributors can use:
+
+ ./configure --with-supermin-extra-options="..."
+
+to add arbitrary extra options to supermin.
 
 =head2 Безпека
 
@@ -90,23 +152,20 @@ No security issues were found in this release.
 
 =head2 Нові програмні інтерфейси
 
+ cp-r
  extlinux
  feature-available
+ get-program
  is-whole-device
  part-get-gpt-type
  part-set-gpt-type
  rename
+ set-program
  syslinux
 
-C only:
+Лише C:
 
  guestfs_event_to_string
-
-Internal:
-
- guestfs_internal_parse_mountable
- guestfs_internal_set_libvirt_selinux_label
- guestfs_internal_set_libvirt_selinux_norelabel_disks
 
 =head2 Внутрішня частина роботи програми
 
@@ -114,19 +173,30 @@ The febootstrap tool has now been renamed to "supermin".  Libguestfs can use
 either, but now prefers "supermin".
 L<http://people.redhat.com/~rjones/supermin/>
 
+libxml2 is required to build libguestfs.
+
+The hivexregedit program (from hivex) is required to build from git.
+
 Internal functions can no longer be used unless the caller defines
 C<-DGUESTFS_PRIVATE=1>.
 
 Enable C compiler warnings in Python, Ruby bindings.
 
-Fail early and clearly if libvirt does not support qemu/KVM (eg.  if default
+Fail early and clearly if libvirt does not support qemu/KVM (eg. if default
 libvirt connection is to Xen).
 
 C<make print-subdirs> rule, useful for selectively running tests.
 
-Multiple fixes to Haskell bindings.
+Multiple fixes to allow separated (sourcedir != builddir) builds.
+
+Декілька виправлень у прив’язках до Haskell.
 
 C<ln> and C<ln-f> APIs now capture C<errno> correctly.
+
+Language binding tests use (mostly) a standard numbering scheme and aim to
+test the same range of features in each language.  Also the number of
+launches required has been reduced so these tests should run much more
+quickly.
 
 Library code internally uses GCC C<__attribute__((cleanup))> (if available)
 to simplify memory allocation.
@@ -160,6 +230,9 @@ Valgrind log files are now written to C<tmp/valgrind-I<DATE>-I<PID>.log>
 
 C<make clean> cleans the local C<tmp/> directory.
 
+The C API tests have been rewritten using a more flexible generator language
+that allows arbitrary C code to be executing during tests.
+
 =head2 Виправлені вади
 
 =begin коментар
@@ -169,6 +242,23 @@ C<make clean> cleans the local C<tmp/> directory.
 =end коментар
 
 =over 4
+
+=item L<https://bugzilla.redhat.com/961812>
+
+Segfault in inspect-fs.c in mountable code
+
+=item L<https://bugzilla.redhat.com/957772>
+
+tar-out and base64-out quoting error
+
+=item L<https://bugzilla.redhat.com/957380>
+
+libguestfs: error: btrfsvol:/dev/sda2/root: root device not found: only call
+this function with a root device previously returned by guestfs_inspect_os
+
+=item L<https://bugzilla.redhat.com/948324>
+
+inspection fails if libosinfo is not installed
 
 =item L<https://bugzilla.redhat.com/928995>
 
@@ -226,6 +316,10 @@ virt-tar fails on non-existent directory names "error in chunked encoding at
 
 virt-cat fails on directory names "/dev/stdout: error in chunked encoding"
 
+=item L<https://bugzilla.redhat.com/907554>
+
+btrfs causes subsequent ntfs-3g filesystem to fail
+
 =item L<https://bugzilla.redhat.com/905341>
 
 "No such file or directory" when execute "hivex-commit"
@@ -251,6 +345,11 @@ directory
 
 libguestfs FTBFS on Fedora 19 because of new ruby
 
+=item L<https://bugzilla.redhat.com/890027>
+
+virt-sysprep: Setting hostname, domain name and pretty name on Fedora 18
+correctly
+
 =item L<https://bugzilla.redhat.com/887971>
 
 pvcreate fails if partition contains a swap signature
@@ -269,6 +368,15 @@ hypervisor is Xen
 Addng a zero-length virtio-scsi disk causes: qemu-kvm: hw/scsi-bus.c:1568:
 scsi_req_complete: Assertion `req->status == -1' failed.
 
+=item L<https://bugzilla.redhat.com/811649>
+
+libguestfs cannot open disk images which are symlinks to files that contain
+':' (colon) character
+
+=item L<https://bugzilla.redhat.com/664558>
+
+RFE: Allow to set log callback in Ruby bindings
+
 =back
 
 =for коментар ################################################################
@@ -281,7 +389,7 @@ repository, or the ChangeLog file distributed in the tarball.
 
 =head2 Нові можливості
 
-=head3 libvirt and sVirt (SELinux confinement)
+=head3 libvirt і sVirt (контейнер SELinux)
 
 You can I<optionally> use libvirt to launch and manage the backend appliance
 by:
@@ -437,7 +545,7 @@ Return the architecture of installed applications (John Eckersberg).
 
 Windows 8 is now supported.
 
-Fedora 18 is now supported.
+Тепер підтримується Fedora 18.
 
 Inspection of ISOs/CDs/DVDs can now use the libosinfo database.
 
@@ -620,7 +728,7 @@ C. Krueger).  Note that Perl is still required in order to build libguestfs.
 Java bindings are now enabled/disabled using C<./configure --with-java> or
 C<./configure --without-java> (Wulf C. Krueger).
 
-New configure options C<./configure --enable-code-profiling> and
+Нові параметри налаштування: C<./configure --enable-code-profiling> і
 C<./configure --enable-code-coverage>.
 
 Multiple fixes to use of 64 bit integers in language bindings.
@@ -1621,7 +1729,7 @@ repository, or the ChangeLog file distributed in the tarball.
 
  - Python bindings now compatible with rpyc (thanks Erez Shinan).
 
- - Transifex is now being used to manage translations.
+ - Для керування перекладами тепер використовується Transifex.
    http://www.transifex.net/projects/p/libguestfs/
 
  - Inspection now supports Red Hat Desktop, Slackware distributions.
@@ -1692,7 +1800,7 @@ repository, or the ChangeLog file distributed in the tarball.
 
 =for коментар ################################################################
 
-=head1 Release notes for libguestfs 1.8
+=head1 Нотатки щодо випуску libguestfs 1.8
 
 These release notes only cover the differences from the previous stable/dev
 branch split (1.6.0).  For detailed changelogs, please see the git
@@ -1834,7 +1942,7 @@ repository, or the ChangeLog file distributed in the tarball.
 
 =for коментар ################################################################
 
-=head1 RELEASE NOTES FOR LIBGUESTFS 1.6
+=head1 НОТАТКИ ЩОДО ВИПУСКУ LIBGUESTFS 1.6
 
 These release notes only cover the differences from the previous stable/dev
 branch split (1.4.0).  For detailed changelogs, please see the git
@@ -2001,7 +2109,7 @@ repository, or the ChangeLog file distributed in the tarball.
 
 =for коментар ################################################################
 
-=head1 RELEASE NOTES FOR LIBGUESTFS 1.4
+=head1 НОТАТКИ ЩОДО ВИПУСКУ LIBGUESTFS 1.4
 
 These release notes only cover the differences from the previous stable/dev
 branch split (1.2.0).  For detailed changelogs, please see the git

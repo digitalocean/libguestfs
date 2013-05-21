@@ -259,8 +259,9 @@ package in EPEL 5: L<https://fedoraproject.org/wiki/EPEL>
 
 =item RHEL 6
 
-It is part of the default install.  On RHEL 6 and 7 (only) you have to
-install C<libguestfs-winsupport> to get Windows guest support.
+Є частиною типового набору для встановлення. У RHEL 6 і 7 (і лише тут) вам
+слід встановити C<libguestfs-winsupport>, щоб мати змогу працювати з
+гостьовими системами Windows.
 
 =item RHEL 7
 
@@ -286,13 +287,15 @@ available: L<http://packages.debian.org/search?keywords=libguestfs>
 
 =item Ubuntu
 
-We don't have a full time Ubuntu maintainer, and the packages supplied by
-Canonical (which are outside our control) are sometimes broken.
+У нас немає повноцінного супровідника пакунків Ubuntu. Пакунки, що надаються
+Canonical (і не контролюються нами) іноді виявляються непрацездатними.
 
-Canonical decided to change the permissions on the kernel so that it's not
-readable except by root.  This is completely stupid, but they won't change
-it (L<https://bugs.launchpad.net/ubuntu/+source/linux/+bug/759725>).  So
-every user should do this:
+Компанією Canonical прийнято рішення щодо зміни прав доступу до ядра таким
+чином, що його читання не може виконувати жоден з користувачів, окрім
+root. Ми вважаємо таке рішення повністю невиправданим, але компанія
+відмовляється його змінювати
+(L<https://bugs.launchpad.net/ubuntu/+source/linux/+bug/759725>). Тому
+користувачам слід віддати таку команду:
 
  sudo chmod 0644 /boot/vmlinuz*
 
@@ -302,13 +305,14 @@ every user should do this:
 
 =item Ubuntu 12.04
 
-libguestfs in this version of Ubuntu works, but you need to update
-febootstrap and seabios to the latest versions.
+libguestfs у цій версії Ubuntu має працювати, але вам слід оновити пакунки
+febootstrap та seabios до найсвіжіших версій.
 
 Вам знадобиться пакунок febootstrap E<ge> 3.14-2 з
 L<http://packages.ubuntu.com/precise/febootstrap>
 
-After installing or updating febootstrap, rebuild the appliance:
+Після встановлення або оновлення febootstrap виконайте повторне збирання
+базової системи:
 
  sudo update-guestfs-appliance
 
@@ -324,18 +328,19 @@ L<http://packages.ubuntu.com/quantal/seabios>
 
 =item Gentoo
 
-Libguestfs was added to Gentoo in 2012-07 by Andreis Vinogradovs
-(libguestfs) and Maxim Koltsov (mainly hivex).  Do:
+Libguestfs було додано до Gentoo 2012-07, автори —  Andreis Vinogradovs
+(libguestfs) та Maxim Koltsov (в основному hivex). Віддайте команду:
 
  emerge libguestfs
 
 =item SuSE
 
-Libguestfs was added to SuSE in 2012 by Olaf Hering.
+Libguestfs було додано до сховищ пакунків SuSE у 2012 році, супровідник —
+Olaf Hering.
 
 =item ArchLinux
 
-Libguestfs was added to the AUR in 2010.
+Libguestfs було додано до AUR у 2010 році.
 
 =item Інші дистрибутиви Linux
 
@@ -889,9 +894,9 @@ by libguestfs itself.  There is no reason for programs to call them, and
 programs should not try to use them.  Using them will often cause bad things
 to happen, as well as not being part of the documented stable API.
 
-=head1 DEVELOPERS
+=head1 РОЗРОБНИКАМ
 
-=head2 Where do I send patches?
+=head2 Куди слід надсилати латки?
 
 Please send patches to the libguestfs mailing list
 L<https://www.redhat.com/mailman/listinfo/libguestfs>.  You don't have to be
@@ -902,7 +907,7 @@ Please don't use github pull requests - they will be ignored.  The reasons
 are (a) we want to discuss and dissect patches on the mailing list, and (b)
 github pull requests turn into merge commits which we don't want.
 
-=head2 How do I propose a feature?
+=head2 Як запропонувати нову можливість?
 
 Large new features that you intend to contribute should be discussed on the
 mailing list first (L<https://www.redhat.com/mailman/listinfo/libguestfs>).
@@ -923,5 +928,5 @@ Richard W.M. Jones (C<rjones at redhat dot com>)
 
 =head1 АВТОРСЬКІ ПРАВА
 
-Copyright (C) 2012-2013 Red Hat Inc.
+© Red Hat Inc., 2012–2013
 

@@ -252,6 +252,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module msvc-inval:
   # Code from module msvc-nothrow:
   # Code from module multiarch:
+  # Code from module nanosleep:
+  # Code from module nanosleep-tests:
   # Code from module netdb:
   # Code from module netdb-tests:
   # Code from module netinet_in:
@@ -315,8 +317,12 @@ AC_DEFUN([gl_EARLY],
   # Code from module setlocale-tests:
   # Code from module setsockopt:
   # Code from module setsockopt-tests:
+  # Code from module sigaction:
+  # Code from module sigaction-tests:
   # Code from module signal-h:
   # Code from module signal-h-tests:
+  # Code from module sigprocmask:
+  # Code from module sigprocmask-tests:
   # Code from module size_max:
   # Code from module sleep:
   # Code from module sleep-tests:
@@ -336,6 +342,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module stat-tests:
   # Code from module stat-time:
   # Code from module stat-time-tests:
+  # Code from module statat:
+  # Code from module statat-tests:
   # Code from module stdalign:
   # Code from module stdalign-tests:
   # Code from module stdarg:
@@ -417,8 +425,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module unsetenv:
   # Code from module unsetenv-tests:
   # Code from module useless-if-before-free:
-  # Code from module usleep:
-  # Code from module usleep-tests:
   # Code from module utimecmp:
   # Code from module utimens:
   # Code from module utimens-tests:
@@ -1205,6 +1211,13 @@ changequote([, ])dnl
   gl_FUNC_MMAP_ANON
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
   AC_CHECK_FUNCS_ONCE([mprotect])
+  gl_FUNC_NANOSLEEP
+  if test $HAVE_NANOSLEEP = 0 || test $REPLACE_NANOSLEEP = 1; then
+    AC_LIBOBJ([nanosleep])
+    gl_PREREQ_NANOSLEEP
+  fi
+  gl_TIME_MODULE_INDICATOR([nanosleep])
+  AC_CHECK_DECLS_ONCE([alarm])
   gl_FUNC_PIPE
   if test $HAVE_PIPE = 0; then
     AC_LIBOBJ([pipe])
@@ -1219,6 +1232,11 @@ changequote([, ])dnl
     gl_PREREQ_PUTENV
   fi
   gl_STDLIB_MODULE_INDICATOR([putenv])
+  dnl Check for prerequisites for memory fence checks.
+  dnl FIXME: zerosize-ptr.h requires these: make a module for it
+  gl_FUNC_MMAP_ANON
+  AC_CHECK_HEADERS_ONCE([sys/mman.h])
+  AC_CHECK_FUNCS_ONCE([mprotect])
   dnl Check for prerequisites for memory fence checks.
   gl_FUNC_MMAP_ANON
   AC_CHECK_HEADERS_ONCE([sys/mman.h])
@@ -1244,7 +1262,20 @@ changequote([, ])dnl
     AC_LIBOBJ([setsockopt])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
+  gl_SIGACTION
+  if test $HAVE_SIGACTION = 0; then
+    AC_LIBOBJ([sigaction])
+    gl_PREREQ_SIGACTION
+  fi
+  gl_SIGNAL_MODULE_INDICATOR([sigaction])
+  gl_SIGNALBLOCKING
+  if test $HAVE_POSIX_SIGNALBLOCKING = 0; then
+    AC_LIBOBJ([sigprocmask])
+    gl_PREREQ_SIGPROCMASK
+  fi
+  gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
   AC_CHECK_DECLS_ONCE([alarm])
+  gl_MODULE_INDICATOR([statat]) dnl for lib/openat.h
   AC_REQUIRE([gt_TYPE_WCHAR_T])
   AC_REQUIRE([gt_TYPE_WINT_T])
   dnl Check for prerequisites for memory fence checks.
@@ -1272,11 +1303,6 @@ changequote([, ])dnl
     gl_PREREQ_UNSETENV
   fi
   gl_STDLIB_MODULE_INDICATOR([unsetenv])
-  gl_FUNC_USLEEP
-  if test $HAVE_USLEEP = 0 || test $REPLACE_USLEEP = 1; then
-    AC_LIBOBJ([usleep])
-  fi
-  gl_UNISTD_MODULE_INDICATOR([usleep])
   gl_UTIMECMP
   abs_aux_dir=`cd "$ac_aux_dir"; pwd`
   AC_SUBST([abs_aux_dir])
@@ -1815,6 +1841,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/msvc-inval.m4
   m4/msvc-nothrow.m4
   m4/multiarch.m4
+  m4/nanosleep.m4
   m4/netdb_h.m4
   m4/netinet_in_h.m4
   m4/nls.m4
@@ -1854,7 +1881,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/servent.m4
   m4/setenv.m4
   m4/setlocale.m4
+  m4/sigaction.m4
   m4/signal_h.m4
+  m4/signalblocking.m4
   m4/size_max.m4
   m4/sleep.m4
   m4/snprintf.m4
@@ -1905,7 +1934,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/unlink.m4
   m4/unlinkat.m4
   m4/unlinkdir.m4
-  m4/usleep.m4
   m4/utimbuf.m4
   m4/utimecmp.m4
   m4/utimens.m4
@@ -2047,6 +2075,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-memchr.c
   tests/test-memmem.c
   tests/test-memrchr.c
+  tests/test-nanosleep.c
   tests/test-netdb.c
   tests/test-netinet_in.c
   tests/test-open.c
@@ -2085,13 +2114,16 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-setlocale2.c
   tests/test-setlocale2.sh
   tests/test-setsockopt.c
+  tests/test-sigaction.c
   tests/test-signal-h.c
+  tests/test-sigprocmask.c
   tests/test-sleep.c
   tests/test-snprintf.c
   tests/test-sockets.c
   tests/test-stat-time.c
   tests/test-stat.c
   tests/test-stat.h
+  tests/test-statat.c
   tests/test-stdalign.c
   tests/test-stdbool.c
   tests/test-stddef.c
@@ -2126,7 +2158,6 @@ AC_DEFUN([gl_FILE_LIST], [
   tests/test-unlink.h
   tests/test-unlinkat.c
   tests/test-unsetenv.c
-  tests/test-usleep.c
   tests/test-utimens-common.h
   tests/test-utimens.c
   tests/test-utimens.h
@@ -2182,6 +2213,7 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/localename.h
   tests=lib/mbtowc-impl.h
   tests=lib/mbtowc.c
+  tests=lib/nanosleep.c
   tests=lib/offtostr.c
   tests=lib/pipe.c
   tests=lib/priv-set.c
@@ -2193,6 +2225,11 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/root-uid.h
   tests=lib/setlocale.c
   tests=lib/setsockopt.c
+  tests=lib/sig-handler.c
+  tests=lib/sig-handler.h
+  tests=lib/sigaction.c
+  tests=lib/sigprocmask.c
+  tests=lib/statat.c
   tests=lib/sys_ioctl.in.h
   tests=lib/uinttostr.c
   tests=lib/umaxtostr.c
@@ -2201,7 +2238,6 @@ AC_DEFUN([gl_FILE_LIST], [
   tests=lib/unlinkdir.c
   tests=lib/unlinkdir.h
   tests=lib/unsetenv.c
-  tests=lib/usleep.c
   tests=lib/utimecmp.c
   tests=lib/utimecmp.h
   tests=lib/w32sock.h

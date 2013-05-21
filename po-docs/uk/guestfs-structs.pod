@@ -452,7 +452,7 @@
  
  struct guestfs_internal_mountable_list {
    uint32_t len; /* Number of elements in list. */
-   struct guestfs_internal_mountable *val; /* Elements. */
+   struct guestfs_internal_mountable *val; /* Елементи. */
  };
  
  void guestfs_free_internal_mountable (struct guestfs_free_internal_mountable *);

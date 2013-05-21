@@ -144,6 +144,10 @@
 #undef GNULIB_SNPRINTF
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
+   whether the gnulib module statat shall be considered present. */
+#undef GNULIB_STATAT
+
+/* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module strerror shall be considered present. */
 #undef GNULIB_STRERROR
 
@@ -294,6 +298,9 @@
 /* Define to 1 when the gnulib module mkstemps should be tested. */
 #undef GNULIB_TEST_MKSTEMPS
 
+/* Define to 1 when the gnulib module nanosleep should be tested. */
+#undef GNULIB_TEST_NANOSLEEP
+
 /* Define to 1 when the gnulib module open should be tested. */
 #undef GNULIB_TEST_OPEN
 
@@ -357,6 +364,12 @@
 /* Define to 1 when the gnulib module setsockopt should be tested. */
 #undef GNULIB_TEST_SETSOCKOPT
 
+/* Define to 1 when the gnulib module sigaction should be tested. */
+#undef GNULIB_TEST_SIGACTION
+
+/* Define to 1 when the gnulib module sigprocmask should be tested. */
+#undef GNULIB_TEST_SIGPROCMASK
+
 /* Define to 1 when the gnulib module sleep should be tested. */
 #undef GNULIB_TEST_SLEEP
 
@@ -407,9 +420,6 @@
 
 /* Define to 1 when the gnulib module unsetenv should be tested. */
 #undef GNULIB_TEST_UNSETENV
-
-/* Define to 1 when the gnulib module usleep should be tested. */
-#undef GNULIB_TEST_USLEEP
 
 /* Define to 1 when the gnulib module vasprintf should be tested. */
 #undef GNULIB_TEST_VASPRINTF
@@ -472,6 +482,9 @@
 
 /* Define to 1 if you have the 'btowc' function. */
 #undef HAVE_BTOWC
+
+/* Define to 1 if nanosleep mishandles large arguments. */
+#undef HAVE_BUG_BIG_NANOSLEEP
 
 /* Define to 1 if you have the <byteswap.h> header file. */
 #undef HAVE_BYTESWAP_H
@@ -1015,6 +1028,9 @@
 
 /* Found PyString_AsString in libpython. */
 #undef HAVE_PYSTRING_ASSTRING
+
+/* Python library found at compile time */
+#undef HAVE_PYTHON
 
 /* Define to 1 if you have the `raise' function. */
 #undef HAVE_RAISE
@@ -1734,6 +1750,15 @@
 /* Define to 1 if you have the `sigaction' function. */
 #undef HAVE_SIGACTION
 
+/* Define to 1 if you have the 'sigaltstack' function. */
+#undef HAVE_SIGALTSTACK
+
+/* Define to 1 if the system has the type `siginfo_t'. */
+#undef HAVE_SIGINFO_T
+
+/* Define to 1 if you have the 'siginterrupt' function. */
+#undef HAVE_SIGINTERRUPT
+
 /* Define to 1 if 'sig_atomic_t' is a signed integer type. */
 #undef HAVE_SIGNED_SIG_ATOMIC_T
 
@@ -1811,6 +1836,9 @@
 
 /* Define to 1 if `decimal_point' is a member of `struct lconv'. */
 #undef HAVE_STRUCT_LCONV_DECIMAL_POINT
+
+/* Define to 1 if `sa_sigaction' is a member of `struct sigaction'. */
+#undef HAVE_STRUCT_SIGACTION_SA_SIGACTION
 
 /* Define to 1 if `sa_len' is a member of `struct sockaddr'. */
 #undef HAVE_STRUCT_SOCKADDR_SA_LEN
@@ -1971,9 +1999,6 @@
 
 /* Define to 1 if you have the `uselocale' function. */
 #undef HAVE_USELOCALE
-
-/* Define to 1 if you have the 'usleep' function. */
-#undef HAVE_USLEEP
 
 /* Define to 1 if you have the 'utimensat' function. */
 #undef HAVE_UTIMENSAT
@@ -2454,13 +2479,21 @@
    Suppress extern inline with HP-UX cc, as it appears to be broken; see
    <http://lists.gnu.org/archive/html/bug-texinfo/2013-02/msg00030.html>.
 
-   Suppress the use of extern inline on Apple's platforms,
-   as Libc-825.25 (2012-09-19) is incompatible with it; see
+   Suppress extern inline with Sun C in standards-conformance mode, as it
+   mishandles inline functions that call each other.  E.g., for 'inline void f
+   (void) { } inline void g (void) { f (); }', c99 incorrectly complains
+   'reference to static identifier "f" in extern inline function'.
+   This bug was observed with Sun C 5.12 SunOS_i386 2011/11/16.
+
+   Suppress the use of extern inline on Apple's platforms, as Libc at least
+   through Libc-825.26 (2013-04-09) is incompatible with it; see, e.g.,
    <http://lists.gnu.org/archive/html/bug-gnulib/2012-12/msg00023.html>.
    Perhaps Apple will fix this some day.  */
 #if ((__GNUC__ \
       ? defined __GNUC_STDC_INLINE__ && __GNUC_STDC_INLINE__ \
-      : 199901L <= __STDC_VERSION__ && !defined __HP_cc) \
+      : (199901L <= __STDC_VERSION__ \
+         && !defined __HP_cc \
+         && !(defined __SUNPRO_C && __STDC__))) \
      && !defined __APPLE__)
 # define _GL_INLINE inline
 # define _GL_EXTERN_INLINE extern inline
@@ -2607,9 +2640,6 @@
 # define _GL_ATTRIBUTE_CONST /* empty */
 #endif
 
-
-/* Define to an unsigned 32-bit type if <sys/types.h> lacks this type. */
-#undef useconds_t
 
 /* Define as a macro for copying va_list variables. */
 #undef va_copy

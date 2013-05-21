@@ -891,7 +891,7 @@ PHP_FUNCTION (guestfs_add_drive)
   char *optargs_t_secret = NULL;
   int optargs_t_secret_size = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssass",
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa!ss",
         &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size, &optargs_t_secret, &optargs_t_secret_size) == FAILURE) {
     RETURN_FALSE;
   }
@@ -931,7 +931,10 @@ PHP_FUNCTION (guestfs_add_drive)
     optargs_s.protocol = optargs_t_protocol;
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK;
   }
-  if (optargs_t_server != NULL && ! ZVAL_IS_NULL (optargs_t_server)) {
+  /* We've seen PHP give us a *long* here when we asked for an array, so
+   * positively check that it gave us an array, otherwise ignore it.
+   */
+  if (optargs_t_server != NULL && Z_TYPE_P (optargs_t_server) == IS_ARRAY) {
     char **r;
     HashTable *a;
     int n;
@@ -8243,7 +8246,7 @@ PHP_FUNCTION (guestfs_internal_test)
   int optargs_t_ostring_size = -1;
   zval *optargs_t_ostringlist;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!abllsss|bllsa",
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!abllsss|bllsa!",
         &z_g, &str, &str_size, &optstr, &optstr_size, &z_strlist, &b, &integer, &integer64, &filein, &filein_size, &fileout, &fileout_size, &bufferin, &bufferin_size, &optargs_t_obool, &optargs_t_oint, &optargs_t_oint64, &optargs_t_ostring, &optargs_t_ostring_size, &optargs_t_ostringlist) == FAILURE) {
     RETURN_FALSE;
   }
@@ -8312,7 +8315,10 @@ PHP_FUNCTION (guestfs_internal_test)
     optargs_s.ostring = optargs_t_ostring;
     optargs_s.bitmask |= GUESTFS_INTERNAL_TEST_OSTRING_BITMASK;
   }
-  if (optargs_t_ostringlist != NULL && ! ZVAL_IS_NULL (optargs_t_ostringlist)) {
+  /* We've seen PHP give us a *long* here when we asked for an array, so
+   * positively check that it gave us an array, otherwise ignore it.
+   */
+  if (optargs_t_ostringlist != NULL && Z_TYPE_P (optargs_t_ostringlist) == IS_ARRAY) {
     char **r;
     HashTable *a;
     int n;
@@ -18619,7 +18625,7 @@ PHP_FUNCTION (guestfs_tar_out)
   zend_bool optargs_t_numericowner = -1;
   zval *optargs_t_excludes;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|sba",
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss|sba!",
         &z_g, &directory, &directory_size, &tarfile, &tarfile_size, &optargs_t_compress, &optargs_t_compress_size, &optargs_t_numericowner, &optargs_t_excludes) == FAILURE) {
     RETURN_FALSE;
   }
@@ -18648,7 +18654,10 @@ PHP_FUNCTION (guestfs_tar_out)
     optargs_s.numericowner = optargs_t_numericowner;
     optargs_s.bitmask |= GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK;
   }
-  if (optargs_t_excludes != NULL && ! ZVAL_IS_NULL (optargs_t_excludes)) {
+  /* We've seen PHP give us a *long* here when we asked for an array, so
+   * positively check that it gave us an array, otherwise ignore it.
+   */
+  if (optargs_t_excludes != NULL && Z_TYPE_P (optargs_t_excludes) == IS_ARRAY) {
     char **r;
     HashTable *a;
     int n;

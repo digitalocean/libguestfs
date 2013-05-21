@@ -153,25 +153,27 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/mmap-anon.m4 $(top_srcdir)/m4/mode_t.m4 \
 	$(top_srcdir)/m4/msvc-inval.m4 \
 	$(top_srcdir)/m4/msvc-nothrow.m4 $(top_srcdir)/m4/multiarch.m4 \
-	$(top_srcdir)/m4/netdb_h.m4 $(top_srcdir)/m4/netinet_in_h.m4 \
-	$(top_srcdir)/m4/nocrash.m4 $(top_srcdir)/m4/ocaml.m4 \
-	$(top_srcdir)/m4/off_t.m4 $(top_srcdir)/m4/onceonly.m4 \
-	$(top_srcdir)/m4/open.m4 $(top_srcdir)/m4/openat.m4 \
-	$(top_srcdir)/m4/opendir.m4 $(top_srcdir)/m4/pathmax.m4 \
-	$(top_srcdir)/m4/perror.m4 $(top_srcdir)/m4/pipe.m4 \
-	$(top_srcdir)/m4/pipe2.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/pread.m4 $(top_srcdir)/m4/printf.m4 \
-	$(top_srcdir)/m4/priv-set.m4 $(top_srcdir)/m4/putenv.m4 \
-	$(top_srcdir)/m4/quote.m4 $(top_srcdir)/m4/quotearg.m4 \
-	$(top_srcdir)/m4/raise.m4 $(top_srcdir)/m4/rawmemchr.m4 \
-	$(top_srcdir)/m4/read-file.m4 $(top_srcdir)/m4/read.m4 \
-	$(top_srcdir)/m4/readdir.m4 $(top_srcdir)/m4/readlink.m4 \
-	$(top_srcdir)/m4/readlinkat.m4 $(top_srcdir)/m4/realloc.m4 \
-	$(top_srcdir)/m4/rmdir.m4 $(top_srcdir)/m4/safe-read.m4 \
-	$(top_srcdir)/m4/safe-write.m4 $(top_srcdir)/m4/save-cwd.m4 \
-	$(top_srcdir)/m4/secure_getenv.m4 $(top_srcdir)/m4/select.m4 \
-	$(top_srcdir)/m4/servent.m4 $(top_srcdir)/m4/setenv.m4 \
-	$(top_srcdir)/m4/setlocale.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/nanosleep.m4 $(top_srcdir)/m4/netdb_h.m4 \
+	$(top_srcdir)/m4/netinet_in_h.m4 $(top_srcdir)/m4/nocrash.m4 \
+	$(top_srcdir)/m4/ocaml.m4 $(top_srcdir)/m4/off_t.m4 \
+	$(top_srcdir)/m4/onceonly.m4 $(top_srcdir)/m4/open.m4 \
+	$(top_srcdir)/m4/openat.m4 $(top_srcdir)/m4/opendir.m4 \
+	$(top_srcdir)/m4/pathmax.m4 $(top_srcdir)/m4/perror.m4 \
+	$(top_srcdir)/m4/pipe.m4 $(top_srcdir)/m4/pipe2.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/pread.m4 \
+	$(top_srcdir)/m4/printf.m4 $(top_srcdir)/m4/priv-set.m4 \
+	$(top_srcdir)/m4/putenv.m4 $(top_srcdir)/m4/quote.m4 \
+	$(top_srcdir)/m4/quotearg.m4 $(top_srcdir)/m4/raise.m4 \
+	$(top_srcdir)/m4/rawmemchr.m4 $(top_srcdir)/m4/read-file.m4 \
+	$(top_srcdir)/m4/read.m4 $(top_srcdir)/m4/readdir.m4 \
+	$(top_srcdir)/m4/readlink.m4 $(top_srcdir)/m4/readlinkat.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/rmdir.m4 \
+	$(top_srcdir)/m4/safe-read.m4 $(top_srcdir)/m4/safe-write.m4 \
+	$(top_srcdir)/m4/save-cwd.m4 $(top_srcdir)/m4/secure_getenv.m4 \
+	$(top_srcdir)/m4/select.m4 $(top_srcdir)/m4/servent.m4 \
+	$(top_srcdir)/m4/setenv.m4 $(top_srcdir)/m4/setlocale.m4 \
+	$(top_srcdir)/m4/sigaction.m4 $(top_srcdir)/m4/signal_h.m4 \
+	$(top_srcdir)/m4/signalblocking.m4 \
 	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sleep.m4 \
 	$(top_srcdir)/m4/snprintf.m4 $(top_srcdir)/m4/socketlib.m4 \
 	$(top_srcdir)/m4/sockets.m4 $(top_srcdir)/m4/socklen.m4 \
@@ -198,18 +200,17 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
 	$(top_srcdir)/m4/ungetc.m4 $(top_srcdir)/m4/unistd-safer.m4 \
 	$(top_srcdir)/m4/unistd_h.m4 $(top_srcdir)/m4/unlink.m4 \
 	$(top_srcdir)/m4/unlinkat.m4 $(top_srcdir)/m4/unlinkdir.m4 \
-	$(top_srcdir)/m4/usleep.m4 $(top_srcdir)/m4/utimbuf.m4 \
-	$(top_srcdir)/m4/utimecmp.m4 $(top_srcdir)/m4/utimens.m4 \
-	$(top_srcdir)/m4/utimes.m4 $(top_srcdir)/m4/vasnprintf.m4 \
-	$(top_srcdir)/m4/vasprintf.m4 $(top_srcdir)/m4/warn-on-use.m4 \
-	$(top_srcdir)/m4/warnings.m4 $(top_srcdir)/m4/wchar_h.m4 \
-	$(top_srcdir)/m4/wchar_t.m4 $(top_srcdir)/m4/wcrtomb.m4 \
-	$(top_srcdir)/m4/wctob.m4 $(top_srcdir)/m4/wctomb.m4 \
-	$(top_srcdir)/m4/wctype_h.m4 $(top_srcdir)/m4/wint_t.m4 \
-	$(top_srcdir)/m4/write.m4 $(top_srcdir)/m4/xalloc.m4 \
-	$(top_srcdir)/m4/xsize.m4 $(top_srcdir)/m4/xstrtol.m4 \
-	$(top_srcdir)/m4/xvasprintf.m4 $(top_srcdir)/m4/yield.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/utimbuf.m4 $(top_srcdir)/m4/utimecmp.m4 \
+	$(top_srcdir)/m4/utimens.m4 $(top_srcdir)/m4/utimes.m4 \
+	$(top_srcdir)/m4/vasnprintf.m4 $(top_srcdir)/m4/vasprintf.m4 \
+	$(top_srcdir)/m4/warn-on-use.m4 $(top_srcdir)/m4/warnings.m4 \
+	$(top_srcdir)/m4/wchar_h.m4 $(top_srcdir)/m4/wchar_t.m4 \
+	$(top_srcdir)/m4/wcrtomb.m4 $(top_srcdir)/m4/wctob.m4 \
+	$(top_srcdir)/m4/wctomb.m4 $(top_srcdir)/m4/wctype_h.m4 \
+	$(top_srcdir)/m4/wint_t.m4 $(top_srcdir)/m4/write.m4 \
+	$(top_srcdir)/m4/xalloc.m4 $(top_srcdir)/m4/xsize.m4 \
+	$(top_srcdir)/m4/xstrtol.m4 $(top_srcdir)/m4/xvasprintf.m4 \
+	$(top_srcdir)/m4/yield.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -939,6 +940,7 @@ LIBVIRT_LIBS = @LIBVIRT_LIBS@
 LIBXML2_CFLAGS = @LIBXML2_CFLAGS@
 LIBXML2_LIBS = @LIBXML2_LIBS@
 LIB_CLOCK_GETTIME = @LIB_CLOCK_GETTIME@
+LIB_NANOSLEEP = @LIB_NANOSLEEP@
 LIB_SELECT = @LIB_SELECT@
 LIPO = @LIPO@
 LN_S = @LN_S@
@@ -1075,8 +1077,9 @@ PRI_MACROS_BROKEN = @PRI_MACROS_BROKEN@
 PTHREAD_H_DEFINES_STRUCT_TIMESPEC = @PTHREAD_H_DEFINES_STRUCT_TIMESPEC@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
-PYTHON_INCLUDEDIR = @PYTHON_INCLUDEDIR@
+PYTHON_CFLAGS = @PYTHON_CFLAGS@
 PYTHON_INSTALLDIR = @PYTHON_INSTALLDIR@
+PYTHON_LIBS = @PYTHON_LIBS@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
 QEMU = @QEMU@

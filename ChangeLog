@@ -1,3 +1,123 @@
+2013-05-21  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.40.
+
+	release notes: Don't document new internal APIs.
+
+	appliance: Use 'rm -f' on files which might have been moved so might not exist.
+	This partially reverts commit fae4a2cfb99bab26f3bd60f52e4a586e39f54f49.
+
+	Update gnulib to latest version.
+
+	docs: Add notes about how various check-* targets are implemented.
+
+	Update translations from Transifex.
+
+	Update ROADMAP for 1.24.
+	That will be the next stable release after 1.22.
+
+	release notes: Update list of bugs.
+
+	sysprep: Be prepared for CentOS etc. 7 which will act the same way as RHEL 7.
+
+	sysprep: Update /etc/machine-info on Fedora 18+, RHEL 7+ (RHBZ#890027).
+
+	sysprep: Refactor code, introducing a function to replace a line in a file.
+
+	Update API support.
+
+2013-05-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	guestfs-recipes: Two more recipes from my blog.
+
+	examples: If user does 'mount-local --help' don't create a disk image called '--help'.
+
+	fuse: Reimplement umount-local using guestunmount.
+	Instead of repeating the same code calling fusermount -u, retrying, etc.
+
+	gluster: Normal port number (assuming 1 brick) is 24007.
+
+	gluster: Note that client needs to run as root.
+
+	gluster: Force exportname to begin with a '/' character.
+
+	gluster: Don't force gluster port number to be specified.
+	Gluster can choose its own port number.
+
+2013-05-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Allow port to be optional.
+	Actually if you don't specify the port, currently libvirt gives
+	an error:
+
+	  libguestfs: error: could not create appliance through libvirt: XML
+	  error: missing port for host [code=27 domain=20]
+
+	However I think that is a bug in libvirt:
+
+	  https://bugzilla.redhat.com/show_bug.cgi?id=965142
+
+2013-05-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Don't use 'rm -f' on files which ought to exist.
+
+2013-05-19  Hilko Bengen  <bengen@hilluzination.de>
+
+	fish/test-events.sh: ignore "trace get_path" line
+	The test would fail when LIBGUESTFS_PATH was not set.
+
+	./run: Turn error message about missing LIBGUESTFS_PATH into warning; output to STDERR
+	The previous behavior caused the build to abort when trying to build
+	the sysprep documentation -- without much of a hint of what went
+	wrong.
+
+2013-05-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	README: Clarify that building from git needs './autogen.sh'.
+
+2013-05-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Don't install man page for guestfsd(8) if --disable-install-daemon.
+
+2013-05-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: Work around buggy PHP returning array as long.
+	Because OStringList is an optarg, we must specify "a!"  to
+	zend_parse_parameters.
+
+	However zend_parse_parameters still returns this as a *long* rather
+	than a NULL (or empty array) so positively check that it has returned
+	an array.
+
+2013-05-17  Richard W.M. Jones  <rjones@redhat.com>
+
+	php: Fix comment in run-php-tests.sh.
+	This updates commit cd40cf713991569e51b42742177e57f3dca148bc.
+
+	Update release notes.
+
+2013-05-17  Matthew Booth  <mbooth@redhat.com>
+
+	Fix compiler warning when libselinux is not present
+	static function selinux_warning() isn't used if HAVE_LIBSELINUX isn't
+	defined, which results in a warning.
+
+2013-05-17  Hilko Bengen  <bengen@hilluzination.de>
+
+	Use pkg-config for Python
+	At least libpython2.7-dev and libpython3.3-dev on current
+	Debian/unstable ship with pkg-config files. As with the pkg-config
+	check for Lua, we check for versioned and an unversioned .pc files.
+
+2013-05-16  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Run lvmetad if it exists.
+	This daemon is used by newer LVM to interface with udev events.
+
+2013-05-15  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.21.39.
+
 2013-05-13  Richard W.M. Jones  <rjones@redhat.com>
 
 	drives: Fix rules for quoting files that contain ':'.

@@ -666,7 +666,7 @@ Libguestfs can access Gluster disks.
 To do this, set the optional C<protocol> and C<server> parameters of
 L</guestfs_add_drive_opts> like this:
 
- char **servers = { "gluster.example.org:3000", NULL };
+ char **servers = { "gluster.example.org:24007", NULL };
  guestfs_add_drive_opts (g, "/volname/image",
                          GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
                          GUESTFS_ADD_DRIVE_OPTS_PROTOCOL, "gluster",
@@ -676,6 +676,10 @@ L</guestfs_add_drive_opts> like this:
 C<servers> (the C<server> parameter) is a list which must have a single
 element.  The single element is a string defining the Gluster server.  The
 format of this string is documented in L</guestfs_add_drive_opts>.
+
+Note that gluster usually requires the client process (ie. libguestfs)  to
+run as B<root> and will give unfathomable errors if it is not (eg. "No data
+available").
 
 =head3 ISCSI
 
@@ -3730,6 +3734,9 @@ Useful targets are:
 
 Runs the regular test suite.
 
+This is implemented using the regular automake C<TESTS> target.  See the
+automake documentation for details.
+
 =item C<make syntax-check -j1 -k>
 
 Checks for various syntax and style problems in the code.
@@ -3737,6 +3744,9 @@ Checks for various syntax and style problems in the code.
 =item C<make check-valgrind>
 
 Runs a subset of the test suite under valgrind.
+
+Any C<Makefile.am> in the tree that has a C<check-valgrind:> target will be
+run by this rule.
 
 =item C<make check-valgrind-local-guests>
 
@@ -3776,6 +3786,9 @@ can set this to another directory on the command line, eg:
 =item C<make check-slow>
 
 Runs some slow/long-running tests which are not run by default.
+
+Any C<Makefile.am> in the tree that has a C<check-slow:> target will be run
+by this rule.
 
 =item C<make extra-tests>
 
@@ -3903,7 +3916,7 @@ here.
 
 =item C<html>
 
-Generated HTML manual pages.
+Створені сторінки підручника у форматі HTML.
 
 =item C<inspector>
 

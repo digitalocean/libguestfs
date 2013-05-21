@@ -2138,6 +2138,8 @@ writing to DOS FAT filesystems).
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.21.38)
+
 =head2 guestfs_dd
 
  int
@@ -2601,6 +2603,8 @@ See also C<guestfs_syslinux>.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.21.27)
+
 =head2 guestfs_fallocate
 
  int
@@ -2666,6 +2670,8 @@ of throwing an exception if a feature is not found.  For
 other documentation see C<guestfs_available>.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.21.26)
 
 =head2 guestfs_fgrep
 
@@ -3230,6 +3236,8 @@ See C<guestfs_set_backend> and L<guestfs(3)/BACKEND>.
 This function returns a string, or NULL on error.
 I<The caller must free the returned string after use>.
 
+(Added in 1.21.26)
+
 =head2 guestfs_get_cachedir
 
  char *
@@ -3584,6 +3592,8 @@ Get the program name.  See C<guestfs_set_program>.
 
 This function returns a string, or NULL on error.
 The string is owned by the guest handle and must I<not> be freed.
+
+(Added in 1.21.29)
 
 =head2 guestfs_get_qemu
 
@@ -9762,6 +9772,8 @@ See L<guestfs(3)/BACKEND>.
 
 This function returns 0 on success or -1 on error.
 
+(Added in 1.21.26)
+
 =head2 guestfs_set_cachedir
 
  int
@@ -10104,6 +10116,8 @@ set to the basename from C<argv[0]>.  If that was not possible,
 it is set to the empty string (but never C<NULL>).
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.21.29)
 
 =head2 guestfs_set_qemu
 
@@ -10804,6 +10818,8 @@ about the contents of this file, see L<syslinux(1)>.
 See also C<guestfs_extlinux>.
 
 This function returns 0 on success or -1 on error.
+
+(Added in 1.21.27)
 
 =head2 guestfs_syslinux_va
 
