@@ -8,7 +8,7 @@ Subject: Fix for changed selinux mountpoint
  2 files changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/appliance/init b/appliance/init
-index fc49126..813442b 100755
+index 34a6177..f5b41bd 100755
 --- a/appliance/init
 +++ b/appliance/init
 @@ -80,7 +80,7 @@ else

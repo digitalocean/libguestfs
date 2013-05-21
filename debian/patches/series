@@ -1,7 +1,4 @@
 0001-Fix-for-systemd-based-Debian-systems.patch
 0002-Fix-guestfs-supermin-appliance-path.patch
-0003-Use-pkg-config-for-Python.patch
-0004-remove-last-trace-of-ntfsprogs.patch
-0005-Fix-for-changed-selinux-mountpoint.patch
-0006-run-Turn-error-message-about-missing-LIBGUESTFS_PATH.patch
-0007-test-events.sh-ignore-trace-get_path-line.patch
+0003-remove-last-trace-of-ntfsprogs.patch
+0004-Fix-for-changed-selinux-mountpoint.patch
