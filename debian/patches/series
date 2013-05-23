@@ -3,3 +3,5 @@
 0003-remove-last-trace-of-ntfsprogs.patch
 0004-Fix-for-changed-selinux-mountpoint.patch
 0005-Disable-test-utimens-test-futimens-gnulib.patch
+0006-perl-various-fixes-for-separated-builds.patch
+0007-python-Build-extension-with-PEP-3149-compliant-suffi.patch
