@@ -137,22 +137,13 @@ override_dh_install:
 		debian/tmp/usr/lib/guestfs/supermin.d/
 
 	erlang-depends -perlang-guestfs
-# Workarounds for:
-# W: libguestfs-perl: script-not-executable usr/lib/perl5/Sys/bindtests.pl
-# E: libguestfs-dev: non-empty-dependency_libs-in-la-file
-	dh_install -X.la -Xbindtests.pl -X.so.owner --fail-missing
 
-# Workaround for python3-defaults < 3.2~b2-1
-# ("do not rename .so files outside dist-packages directory")
-override_dh_python3:
-	dh_python3 -p python-guestfs
-override_dh_python2:
-	dh_python2 -p python-guestfs -V 2.6-
+	dh_install -X.la -X.so.owner --fail-missing
 
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"
 override_dh_makeshlibs:
-	dh_makeshlibs -X/usr/lib/*/jni
+	dh_makeshlibs -X/usr/lib/*/jni -X/usr/lib/python*
 
 %:
 	dh $@ \
