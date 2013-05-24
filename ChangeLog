@@ -1,3 +1,25 @@
+2013-05-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.22.0.
+
+	build: Set 'stable' or 'development' in commit tag automatically.
+	This sets two macros: BRANCH_NUMBER and BRANCH_TYPE.
+
+	release notes: Get ready for 1.22 release.
+
+2013-05-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/mountable/test-internal-parse-mountable.c: Hoist variable decls to top.
+
+	tests/mountable/test-internal-parse-mountable.c: Don't fully allocate 1GB disk.
+	This test required 1 GB of free space since it used posix_fallocate
+	instead of creating a sparse disk.  Use truncate instead.
+
+2013-05-21  Hilko Bengen  <bengen@debian.org>
+
+	Fix for changed selinux mountpoint
+	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=707217
+
 2013-05-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.21.40.

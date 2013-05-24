@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [21])
-m4_define([libguestfs_release], [40])
+m4_define([libguestfs_minor],   [22])
+m4_define([libguestfs_release], [0])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -48,12 +48,16 @@ AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
 
 AC_CONFIG_MACRO_DIR([m4])
 
-dnl Stable or unstable version?
-AC_MSG_CHECKING([if this is a stable or unstable branch of libguestfs])
+dnl Stable or development version?
+BRANCH_NUMBER=libguestfs_major.libguestfs_minor
+AC_SUBST([BRANCH_NUMBER])
+AC_MSG_CHECKING([if $BRANCH_NUMBER is a stable or development branch of libguestfs])
 AS_IF([test "$((libguestfs_minor % 2))" -eq 0 ],[
-    AC_MSG_RESULT([stable])
+    BRANCH_TYPE=stable
+    AC_MSG_RESULT([$BRANCH_TYPE])
 ],[
-    AC_MSG_RESULT([unstable])
+    BRANCH_TYPE=development
+    AC_MSG_RESULT([$BRANCH_TYPE])
     AC_MSG_NOTICE([
 ***
 This is a development version of libguestfs. Some APIs may be unstable
@@ -63,6 +67,7 @@ more information about stable and development branches of libguestfs
 please see the section "LIBGUESTFS VERSION NUMBERS" in guestfs(3).
 ***])
 ])
+AC_SUBST([BRANCH_TYPE])
 
 dnl Extra string, a freeform string defined by packagers.
 AC_ARG_WITH([extra],
