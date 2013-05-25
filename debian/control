@@ -203,6 +203,17 @@ Description: guest disk image management system - Python bindings
  .
  This package contains the Python bindings.
  
+Package: python3-guestfs
+Section: python
+Architecture: i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
+Breaks: python-guestfs (<< 1:1.22.2-1~)
+Description: guest disk image management system - Python 3 bindings
+ The libguestfs library allows accessing and modifying guest disk
+ images.
+ .
+ This package contains the Python 3 bindings.
+
 Package: libguestfs-perl
 Section: perl
 Architecture: i386 amd64
