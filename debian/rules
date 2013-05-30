@@ -9,12 +9,16 @@ RUBY_DEFAULT   := $(shell which ruby | xargs readlink -f | xargs basename)
 LUAS           := lua5.1 lua5.2
 LUA_DEFAULT    := lua5.1
 
+DEB_HOST_GNU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's,i[456]86,i386,')
+QEMU_SYSTEM      := qemu-system-$(DEB_HOST_GNU_CPU)
+
 DEFAULT_CONFIG_FLAGS = \
-	--disable-appliance  \
-	--with-readline	     \
-	--disable-haskell    \
-	--disable-php	     \
-	--enable-gtk-doc
+	--disable-appliance        \
+	--with-readline	           \
+	--disable-haskell          \
+	--disable-php	           \
+	--enable-gtk-doc           \
+	--with-qemu=$(QEMU_SYSTEM)
 
 BARE_CONFIG_FLAGS = \
 	$(DEFAULT_CONFIG_FLAGS) \
