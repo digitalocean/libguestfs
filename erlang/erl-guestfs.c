@@ -586,11 +586,10 @@ make_stat_list (const struct guestfs_stat_list *stats)
 static ETERM *
 run_acl_delete_def_file (ETERM *message)
 {
-  char *dir = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dir = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_acl_delete_def_file (g, dir);
-  free (dir);
   if (r == -1)
     return make_error ("acl_delete_def_file");
 
@@ -600,13 +599,11 @@ run_acl_delete_def_file (ETERM *message)
 static ETERM *
 run_acl_get_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char *acltype = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *acltype = erl_iolist_to_string (ARG (1));
   char *r;
 
   r = guestfs_acl_get_file (g, path, acltype);
-  free (path);
-  free (acltype);
   if (r == NULL)
     return make_error ("acl_get_file");
 
@@ -618,15 +615,12 @@ run_acl_get_file (ETERM *message)
 static ETERM *
 run_acl_set_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char *acltype = erl_iolist_to_string (ARG (1));
-  char *acl = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *acltype = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *acl = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_acl_set_file (g, path, acltype, acl);
-  free (path);
-  free (acltype);
-  free (acl);
   if (r == -1)
     return make_error ("acl_set_file");
 
@@ -636,11 +630,10 @@ run_acl_set_file (ETERM *message)
 static ETERM *
 run_add_cdrom (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_add_cdrom (g, filename);
-  free (filename);
   if (r == -1)
     return make_error ("add_cdrom");
 
@@ -650,7 +643,7 @@ run_add_cdrom (ETERM *message)
 static ETERM *
 run_add_domain (ETERM *message)
 {
-  char *dom = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dom = erl_iolist_to_string (ARG (0));
 
   struct guestfs_add_domain_argv optargs_s = { .bitmask = 0 };
   struct guestfs_add_domain_argv *optargs = &optargs_s;
@@ -697,7 +690,6 @@ run_add_domain (ETERM *message)
   int r;
 
   r = guestfs_add_domain_argv (g, dom, optargs);
-  free (dom);
   if ((optargs_s.bitmask & GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK))
     free ((char *) optargs_s.libvirturi);
   if ((optargs_s.bitmask & GUESTFS_ADD_DOMAIN_IFACE_BITMASK))
@@ -713,7 +705,7 @@ run_add_domain (ETERM *message)
 static ETERM *
 run_add_drive (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
 
   struct guestfs_add_drive_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
@@ -775,7 +767,6 @@ run_add_drive (ETERM *message)
   int r;
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);
-  free (filename);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK))
     free ((char *) optargs_s.format);
   if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK))
@@ -801,11 +792,10 @@ run_add_drive (ETERM *message)
 static ETERM *
 run_add_drive_ro (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_add_drive_ro (g, filename);
-  free (filename);
   if (r == -1)
     return make_error ("add_drive_ro");
 
@@ -815,13 +805,11 @@ run_add_drive_ro (ETERM *message)
 static ETERM *
 run_add_drive_ro_with_if (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
-  char *iface = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *iface = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_add_drive_ro_with_if (g, filename, iface);
-  free (filename);
-  free (iface);
   if (r == -1)
     return make_error ("add_drive_ro_with_if");
 
@@ -831,13 +819,11 @@ run_add_drive_ro_with_if (ETERM *message)
 static ETERM *
 run_add_drive_with_if (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
-  char *iface = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *iface = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_add_drive_with_if (g, filename, iface);
-  free (filename);
-  free (iface);
   if (r == -1)
     return make_error ("add_drive_with_if");
 
@@ -847,11 +833,10 @@ run_add_drive_with_if (ETERM *message)
 static ETERM *
 run_aug_clear (ETERM *message)
 {
-  char *augpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_aug_clear (g, augpath);
-  free (augpath);
   if (r == -1)
     return make_error ("aug_clear");
 
@@ -873,15 +858,12 @@ run_aug_close (ETERM *message)
 static ETERM *
 run_aug_defnode (ETERM *message)
 {
-  char *name = erl_iolist_to_string (ARG (0));
-  char *expr = erl_iolist_to_string (ARG (1));
-  char *val = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *expr = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (2));
   struct guestfs_int_bool *r;
 
   r = guestfs_aug_defnode (g, name, expr, val);
-  free (name);
-  free (expr);
-  free (val);
   if (r == NULL)
     return make_error ("aug_defnode");
 
@@ -893,8 +875,8 @@ run_aug_defnode (ETERM *message)
 static ETERM *
 run_aug_defvar (ETERM *message)
 {
-  char *name = erl_iolist_to_string (ARG (0));
-  char *expr;
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *expr;
   if (atom_equals (ARG (1), "undefined"))
     expr = NULL;
   else
@@ -902,8 +884,6 @@ run_aug_defvar (ETERM *message)
   int r;
 
   r = guestfs_aug_defvar (g, name, expr);
-  free (name);
-  free (expr);
   if (r == -1)
     return make_error ("aug_defvar");
 
@@ -913,11 +893,10 @@ run_aug_defvar (ETERM *message)
 static ETERM *
 run_aug_get (ETERM *message)
 {
-  char *augpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_aug_get (g, augpath);
-  free (augpath);
   if (r == NULL)
     return make_error ("aug_get");
 
@@ -929,12 +908,11 @@ run_aug_get (ETERM *message)
 static ETERM *
 run_aug_init (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   int flags = get_int (ARG (1));
   int r;
 
   r = guestfs_aug_init (g, root, flags);
-  free (root);
   if (r == -1)
     return make_error ("aug_init");
 
@@ -944,14 +922,12 @@ run_aug_init (ETERM *message)
 static ETERM *
 run_aug_insert (ETERM *message)
 {
-  char *augpath = erl_iolist_to_string (ARG (0));
-  char *label = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (1));
   int before = get_bool (ARG (2));
   int r;
 
   r = guestfs_aug_insert (g, augpath, label, before);
-  free (augpath);
-  free (label);
   if (r == -1)
     return make_error ("aug_insert");
 
@@ -973,11 +949,10 @@ run_aug_load (ETERM *message)
 static ETERM *
 run_aug_ls (ETERM *message)
 {
-  char *augpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_aug_ls (g, augpath);
-  free (augpath);
   if (r == NULL)
     return make_error ("aug_ls");
 
@@ -990,11 +965,10 @@ run_aug_ls (ETERM *message)
 static ETERM *
 run_aug_match (ETERM *message)
 {
-  char *augpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_aug_match (g, augpath);
-  free (augpath);
   if (r == NULL)
     return make_error ("aug_match");
 
@@ -1007,13 +981,11 @@ run_aug_match (ETERM *message)
 static ETERM *
 run_aug_mv (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_aug_mv (g, src, dest);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("aug_mv");
 
@@ -1023,11 +995,10 @@ run_aug_mv (ETERM *message)
 static ETERM *
 run_aug_rm (ETERM *message)
 {
-  char *augpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_aug_rm (g, augpath);
-  free (augpath);
   if (r == -1)
     return make_error ("aug_rm");
 
@@ -1049,13 +1020,11 @@ run_aug_save (ETERM *message)
 static ETERM *
 run_aug_set (ETERM *message)
 {
-  char *augpath = erl_iolist_to_string (ARG (0));
-  char *val = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *augpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_aug_set (g, augpath, val);
-  free (augpath);
-  free (val);
   if (r == -1)
     return make_error ("aug_set");
 
@@ -1065,11 +1034,10 @@ run_aug_set (ETERM *message)
 static ETERM *
 run_available (ETERM *message)
 {
-  char **groups = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **groups = get_string_list (ARG (0));
   int r;
 
   r = guestfs_available (g, groups);
-  guestfs___free_string_list (groups);
   if (r == -1)
     return make_error ("available");
 
@@ -1094,13 +1062,11 @@ run_available_all_groups (ETERM *message)
 static ETERM *
 run_base64_in (ETERM *message)
 {
-  char *base64file = erl_iolist_to_string (ARG (0));
-  char *filename = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *base64file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_base64_in (g, base64file, filename);
-  free (base64file);
-  free (filename);
   if (r == -1)
     return make_error ("base64_in");
 
@@ -1110,13 +1076,11 @@ run_base64_in (ETERM *message)
 static ETERM *
 run_base64_out (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
-  char *base64file = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *base64file = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_base64_out (g, filename, base64file);
-  free (filename);
-  free (base64file);
   if (r == -1)
     return make_error ("base64_out");
 
@@ -1126,11 +1090,10 @@ run_base64_out (ETERM *message)
 static ETERM *
 run_blkid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_blkid (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("blkid");
 
@@ -1142,11 +1105,10 @@ run_blkid (ETERM *message)
 static ETERM *
 run_blockdev_flushbufs (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_blockdev_flushbufs (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_flushbufs");
 
@@ -1156,11 +1118,10 @@ run_blockdev_flushbufs (ETERM *message)
 static ETERM *
 run_blockdev_getbsz (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_blockdev_getbsz (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_getbsz");
 
@@ -1170,11 +1131,10 @@ run_blockdev_getbsz (ETERM *message)
 static ETERM *
 run_blockdev_getro (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_blockdev_getro (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_getro");
 
@@ -1184,11 +1144,10 @@ run_blockdev_getro (ETERM *message)
 static ETERM *
 run_blockdev_getsize64 (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t r;
 
   r = guestfs_blockdev_getsize64 (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_getsize64");
 
@@ -1198,11 +1157,10 @@ run_blockdev_getsize64 (ETERM *message)
 static ETERM *
 run_blockdev_getss (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_blockdev_getss (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_getss");
 
@@ -1212,11 +1170,10 @@ run_blockdev_getss (ETERM *message)
 static ETERM *
 run_blockdev_getsz (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t r;
 
   r = guestfs_blockdev_getsz (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_getsz");
 
@@ -1226,11 +1183,10 @@ run_blockdev_getsz (ETERM *message)
 static ETERM *
 run_blockdev_rereadpt (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_blockdev_rereadpt (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_rereadpt");
 
@@ -1240,12 +1196,11 @@ run_blockdev_rereadpt (ETERM *message)
 static ETERM *
 run_blockdev_setbsz (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int blocksize = get_int (ARG (1));
   int r;
 
   r = guestfs_blockdev_setbsz (g, device, blocksize);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_setbsz");
 
@@ -1255,11 +1210,10 @@ run_blockdev_setbsz (ETERM *message)
 static ETERM *
 run_blockdev_setro (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_blockdev_setro (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_setro");
 
@@ -1269,11 +1223,10 @@ run_blockdev_setro (ETERM *message)
 static ETERM *
 run_blockdev_setrw (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_blockdev_setrw (g, device);
-  free (device);
   if (r == -1)
     return make_error ("blockdev_setrw");
 
@@ -1283,13 +1236,11 @@ run_blockdev_setrw (ETERM *message)
 static ETERM *
 run_btrfs_device_add (ETERM *message)
 {
-  char **devices = get_string_list (ARG (0));
-  char *fs = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (0));
+  CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_btrfs_device_add (g, devices, fs);
-  guestfs___free_string_list (devices);
-  free (fs);
   if (r == -1)
     return make_error ("btrfs_device_add");
 
@@ -1299,13 +1250,11 @@ run_btrfs_device_add (ETERM *message)
 static ETERM *
 run_btrfs_device_delete (ETERM *message)
 {
-  char **devices = get_string_list (ARG (0));
-  char *fs = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (0));
+  CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_btrfs_device_delete (g, devices, fs);
-  guestfs___free_string_list (devices);
-  free (fs);
   if (r == -1)
     return make_error ("btrfs_device_delete");
 
@@ -1315,11 +1264,10 @@ run_btrfs_device_delete (ETERM *message)
 static ETERM *
 run_btrfs_filesystem_balance (ETERM *message)
 {
-  char *fs = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_btrfs_filesystem_balance (g, fs);
-  free (fs);
   if (r == -1)
     return make_error ("btrfs_filesystem_balance");
 
@@ -1329,7 +1277,7 @@ run_btrfs_filesystem_balance (ETERM *message)
 static ETERM *
 run_btrfs_filesystem_resize (ETERM *message)
 {
-  char *mountpoint = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (0));
 
   struct guestfs_btrfs_filesystem_resize_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_filesystem_resize_argv *optargs = &optargs_s;
@@ -1351,7 +1299,6 @@ run_btrfs_filesystem_resize (ETERM *message)
   int r;
 
   r = guestfs_btrfs_filesystem_resize_argv (g, mountpoint, optargs);
-  free (mountpoint);
   if (r == -1)
     return make_error ("btrfs_filesystem_resize");
 
@@ -1361,11 +1308,10 @@ run_btrfs_filesystem_resize (ETERM *message)
 static ETERM *
 run_btrfs_filesystem_sync (ETERM *message)
 {
-  char *fs = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_btrfs_filesystem_sync (g, fs);
-  free (fs);
   if (r == -1)
     return make_error ("btrfs_filesystem_sync");
 
@@ -1375,7 +1321,7 @@ run_btrfs_filesystem_sync (ETERM *message)
 static ETERM *
 run_btrfs_fsck (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_btrfs_fsck_argv optargs_s = { .bitmask = 0 };
   struct guestfs_btrfs_fsck_argv *optargs = &optargs_s;
@@ -1402,7 +1348,6 @@ run_btrfs_fsck (ETERM *message)
   int r;
 
   r = guestfs_btrfs_fsck_argv (g, device, optargs);
-  free (device);
   if (r == -1)
     return make_error ("btrfs_fsck");
 
@@ -1412,12 +1357,11 @@ run_btrfs_fsck (ETERM *message)
 static ETERM *
 run_btrfs_set_seeding (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int seeding = get_bool (ARG (1));
   int r;
 
   r = guestfs_btrfs_set_seeding (g, device, seeding);
-  free (device);
   if (r == -1)
     return make_error ("btrfs_set_seeding");
 
@@ -1427,11 +1371,10 @@ run_btrfs_set_seeding (ETERM *message)
 static ETERM *
 run_btrfs_subvolume_create (ETERM *message)
 {
-  char *dest = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_btrfs_subvolume_create (g, dest);
-  free (dest);
   if (r == -1)
     return make_error ("btrfs_subvolume_create");
 
@@ -1441,11 +1384,10 @@ run_btrfs_subvolume_create (ETERM *message)
 static ETERM *
 run_btrfs_subvolume_delete (ETERM *message)
 {
-  char *subvolume = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *subvolume = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_btrfs_subvolume_delete (g, subvolume);
-  free (subvolume);
   if (r == -1)
     return make_error ("btrfs_subvolume_delete");
 
@@ -1455,11 +1397,10 @@ run_btrfs_subvolume_delete (ETERM *message)
 static ETERM *
 run_btrfs_subvolume_list (ETERM *message)
 {
-  char *fs = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (0));
   struct guestfs_btrfssubvolume_list *r;
 
   r = guestfs_btrfs_subvolume_list (g, fs);
-  free (fs);
   if (r == NULL)
     return make_error ("btrfs_subvolume_list");
 
@@ -1472,11 +1413,10 @@ static ETERM *
 run_btrfs_subvolume_set_default (ETERM *message)
 {
   int64_t id = get_int64 (ARG (0));
-  char *fs = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *fs = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_btrfs_subvolume_set_default (g, id, fs);
-  free (fs);
   if (r == -1)
     return make_error ("btrfs_subvolume_set_default");
 
@@ -1486,13 +1426,11 @@ run_btrfs_subvolume_set_default (ETERM *message)
 static ETERM *
 run_btrfs_subvolume_snapshot (ETERM *message)
 {
-  char *source = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *source = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_btrfs_subvolume_snapshot (g, source, dest);
-  free (source);
-  free (dest);
   if (r == -1)
     return make_error ("btrfs_subvolume_snapshot");
 
@@ -1502,11 +1440,10 @@ run_btrfs_subvolume_snapshot (ETERM *message)
 static ETERM *
 run_canonical_device_name (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_canonical_device_name (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("canonical_device_name");
 
@@ -1518,11 +1455,10 @@ run_canonical_device_name (ETERM *message)
 static ETERM *
 run_cap_get_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_cap_get_file (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("cap_get_file");
 
@@ -1534,13 +1470,11 @@ run_cap_get_file (ETERM *message)
 static ETERM *
 run_cap_set_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char *cap = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *cap = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_cap_set_file (g, path, cap);
-  free (path);
-  free (cap);
   if (r == -1)
     return make_error ("cap_set_file");
 
@@ -1550,11 +1484,10 @@ run_cap_set_file (ETERM *message)
 static ETERM *
 run_case_sensitive_path (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_case_sensitive_path (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("case_sensitive_path");
 
@@ -1566,11 +1499,10 @@ run_case_sensitive_path (ETERM *message)
 static ETERM *
 run_cat (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_cat (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("cat");
 
@@ -1582,13 +1514,11 @@ run_cat (ETERM *message)
 static ETERM *
 run_checksum (ETERM *message)
 {
-  char *csumtype = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *csumtype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char *r;
 
   r = guestfs_checksum (g, csumtype, path);
-  free (csumtype);
-  free (path);
   if (r == NULL)
     return make_error ("checksum");
 
@@ -1600,13 +1530,11 @@ run_checksum (ETERM *message)
 static ETERM *
 run_checksum_device (ETERM *message)
 {
-  char *csumtype = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *csumtype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   char *r;
 
   r = guestfs_checksum_device (g, csumtype, device);
-  free (csumtype);
-  free (device);
   if (r == NULL)
     return make_error ("checksum_device");
 
@@ -1618,15 +1546,12 @@ run_checksum_device (ETERM *message)
 static ETERM *
 run_checksums_out (ETERM *message)
 {
-  char *csumtype = erl_iolist_to_string (ARG (0));
-  char *directory = erl_iolist_to_string (ARG (1));
-  char *sumsfile = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *csumtype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *sumsfile = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_checksums_out (g, csumtype, directory, sumsfile);
-  free (csumtype);
-  free (directory);
-  free (sumsfile);
   if (r == -1)
     return make_error ("checksums_out");
 
@@ -1637,11 +1562,10 @@ static ETERM *
 run_chmod (ETERM *message)
 {
   int mode = get_int (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_chmod (g, mode, path);
-  free (path);
   if (r == -1)
     return make_error ("chmod");
 
@@ -1653,11 +1577,10 @@ run_chown (ETERM *message)
 {
   int owner = get_int (ARG (0));
   int group = get_int (ARG (1));
-  char *path = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_chown (g, owner, group, path);
-  free (path);
   if (r == -1)
     return make_error ("chown");
 
@@ -1667,11 +1590,10 @@ run_chown (ETERM *message)
 static ETERM *
 run_command (ETERM *message)
 {
-  char **arguments = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **arguments = get_string_list (ARG (0));
   char *r;
 
   r = guestfs_command (g, arguments);
-  guestfs___free_string_list (arguments);
   if (r == NULL)
     return make_error ("command");
 
@@ -1683,11 +1605,10 @@ run_command (ETERM *message)
 static ETERM *
 run_command_lines (ETERM *message)
 {
-  char **arguments = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **arguments = get_string_list (ARG (0));
   char **r;
 
   r = guestfs_command_lines (g, arguments);
-  guestfs___free_string_list (arguments);
   if (r == NULL)
     return make_error ("command_lines");
 
@@ -1700,9 +1621,9 @@ run_command_lines (ETERM *message)
 static ETERM *
 run_compress_device_out (ETERM *message)
 {
-  char *ctype = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
-  char *zdevice = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *ctype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *zdevice = erl_iolist_to_string (ARG (2));
 
   struct guestfs_compress_device_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_compress_device_out_argv *optargs = &optargs_s;
@@ -1724,9 +1645,6 @@ run_compress_device_out (ETERM *message)
   int r;
 
   r = guestfs_compress_device_out_argv (g, ctype, device, zdevice, optargs);
-  free (ctype);
-  free (device);
-  free (zdevice);
   if (r == -1)
     return make_error ("compress_device_out");
 
@@ -1736,9 +1654,9 @@ run_compress_device_out (ETERM *message)
 static ETERM *
 run_compress_out (ETERM *message)
 {
-  char *ctype = erl_iolist_to_string (ARG (0));
-  char *file = erl_iolist_to_string (ARG (1));
-  char *zfile = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *ctype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *zfile = erl_iolist_to_string (ARG (2));
 
   struct guestfs_compress_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_compress_out_argv *optargs = &optargs_s;
@@ -1760,9 +1678,6 @@ run_compress_out (ETERM *message)
   int r;
 
   r = guestfs_compress_out_argv (g, ctype, file, zfile, optargs);
-  free (ctype);
-  free (file);
-  free (zfile);
   if (r == -1)
     return make_error ("compress_out");
 
@@ -1772,8 +1687,8 @@ run_compress_out (ETERM *message)
 static ETERM *
 run_config (ETERM *message)
 {
-  char *qemuparam = erl_iolist_to_string (ARG (0));
-  char *qemuvalue;
+  CLEANUP_FREE char *qemuparam = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *qemuvalue;
   if (atom_equals (ARG (1), "undefined"))
     qemuvalue = NULL;
   else
@@ -1781,8 +1696,6 @@ run_config (ETERM *message)
   int r;
 
   r = guestfs_config (g, qemuparam, qemuvalue);
-  free (qemuparam);
-  free (qemuvalue);
   if (r == -1)
     return make_error ("config");
 
@@ -1792,8 +1705,8 @@ run_config (ETERM *message)
 static ETERM *
 run_copy_device_to_device (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
 
   struct guestfs_copy_device_to_device_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_device_to_device_argv *optargs = &optargs_s;
@@ -1830,8 +1743,6 @@ run_copy_device_to_device (ETERM *message)
   int r;
 
   r = guestfs_copy_device_to_device_argv (g, src, dest, optargs);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("copy_device_to_device");
 
@@ -1841,8 +1752,8 @@ run_copy_device_to_device (ETERM *message)
 static ETERM *
 run_copy_device_to_file (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
 
   struct guestfs_copy_device_to_file_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_device_to_file_argv *optargs = &optargs_s;
@@ -1879,8 +1790,6 @@ run_copy_device_to_file (ETERM *message)
   int r;
 
   r = guestfs_copy_device_to_file_argv (g, src, dest, optargs);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("copy_device_to_file");
 
@@ -1890,8 +1799,8 @@ run_copy_device_to_file (ETERM *message)
 static ETERM *
 run_copy_file_to_device (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
 
   struct guestfs_copy_file_to_device_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_file_to_device_argv *optargs = &optargs_s;
@@ -1928,8 +1837,6 @@ run_copy_file_to_device (ETERM *message)
   int r;
 
   r = guestfs_copy_file_to_device_argv (g, src, dest, optargs);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("copy_file_to_device");
 
@@ -1939,8 +1846,8 @@ run_copy_file_to_device (ETERM *message)
 static ETERM *
 run_copy_file_to_file (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
 
   struct guestfs_copy_file_to_file_argv optargs_s = { .bitmask = 0 };
   struct guestfs_copy_file_to_file_argv *optargs = &optargs_s;
@@ -1977,8 +1884,6 @@ run_copy_file_to_file (ETERM *message)
   int r;
 
   r = guestfs_copy_file_to_file_argv (g, src, dest, optargs);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("copy_file_to_file");
 
@@ -1988,14 +1893,12 @@ run_copy_file_to_file (ETERM *message)
 static ETERM *
 run_copy_size (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int64_t size = get_int64 (ARG (2));
   int r;
 
   r = guestfs_copy_size (g, src, dest, size);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("copy_size");
 
@@ -2005,13 +1908,11 @@ run_copy_size (ETERM *message)
 static ETERM *
 run_cp (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_cp (g, src, dest);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("cp");
 
@@ -2021,13 +1922,11 @@ run_cp (ETERM *message)
 static ETERM *
 run_cp_a (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_cp_a (g, src, dest);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("cp_a");
 
@@ -2037,13 +1936,11 @@ run_cp_a (ETERM *message)
 static ETERM *
 run_cp_r (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_cp_r (g, src, dest);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("cp_r");
 
@@ -2053,13 +1950,11 @@ run_cp_r (ETERM *message)
 static ETERM *
 run_dd (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_dd (g, src, dest);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("dd");
 
@@ -2069,13 +1964,11 @@ run_dd (ETERM *message)
 static ETERM *
 run_debug (ETERM *message)
 {
-  char *subcmd = erl_iolist_to_string (ARG (0));
-  char **extraargs = get_string_list (ARG (1));
+  CLEANUP_FREE char *subcmd = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **extraargs = get_string_list (ARG (1));
   char *r;
 
   r = guestfs_debug (g, subcmd, extraargs);
-  free (subcmd);
-  guestfs___free_string_list (extraargs);
   if (r == NULL)
     return make_error ("debug");
 
@@ -2102,14 +1995,12 @@ run_debug_drives (ETERM *message)
 static ETERM *
 run_debug_upload (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
-  char *tmpname = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *tmpname = erl_iolist_to_string (ARG (1));
   int mode = get_int (ARG (2));
   int r;
 
   r = guestfs_debug_upload (g, filename, tmpname, mode);
-  free (filename);
-  free (tmpname);
   if (r == -1)
     return make_error ("debug_upload");
 
@@ -2119,11 +2010,10 @@ run_debug_upload (ETERM *message)
 static ETERM *
 run_device_index (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_device_index (g, device);
-  free (device);
   if (r == -1)
     return make_error ("device_index");
 
@@ -2161,11 +2051,10 @@ run_df_h (ETERM *message)
 static ETERM *
 run_disk_format (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_disk_format (g, filename);
-  free (filename);
   if (r == NULL)
     return make_error ("disk_format");
 
@@ -2177,11 +2066,10 @@ run_disk_format (ETERM *message)
 static ETERM *
 run_disk_has_backing_file (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_disk_has_backing_file (g, filename);
-  free (filename);
   if (r == -1)
     return make_error ("disk_has_backing_file");
 
@@ -2191,11 +2079,10 @@ run_disk_has_backing_file (ETERM *message)
 static ETERM *
 run_disk_virtual_size (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   int64_t r;
 
   r = guestfs_disk_virtual_size (g, filename);
-  free (filename);
   if (r == -1)
     return make_error ("disk_virtual_size");
 
@@ -2219,13 +2106,11 @@ run_dmesg (ETERM *message)
 static ETERM *
 run_download (ETERM *message)
 {
-  char *remotefilename = erl_iolist_to_string (ARG (0));
-  char *filename = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *remotefilename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_download (g, remotefilename, filename);
-  free (remotefilename);
-  free (filename);
   if (r == -1)
     return make_error ("download");
 
@@ -2235,15 +2120,13 @@ run_download (ETERM *message)
 static ETERM *
 run_download_offset (ETERM *message)
 {
-  char *remotefilename = erl_iolist_to_string (ARG (0));
-  char *filename = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *remotefilename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (1));
   int64_t offset = get_int64 (ARG (2));
   int64_t size = get_int64 (ARG (3));
   int r;
 
   r = guestfs_download_offset (g, remotefilename, filename, offset, size);
-  free (remotefilename);
-  free (filename);
   if (r == -1)
     return make_error ("download_offset");
 
@@ -2266,11 +2149,10 @@ run_drop_caches (ETERM *message)
 static ETERM *
 run_du (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int64_t r;
 
   r = guestfs_du (g, path);
-  free (path);
   if (r == -1)
     return make_error ("du");
 
@@ -2280,7 +2162,7 @@ run_du (ETERM *message)
 static ETERM *
 run_e2fsck (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_e2fsck_argv optargs_s = { .bitmask = 0 };
   struct guestfs_e2fsck_argv *optargs = &optargs_s;
@@ -2307,7 +2189,6 @@ run_e2fsck (ETERM *message)
   int r;
 
   r = guestfs_e2fsck_argv (g, device, optargs);
-  free (device);
   if (r == -1)
     return make_error ("e2fsck");
 
@@ -2317,11 +2198,10 @@ run_e2fsck (ETERM *message)
 static ETERM *
 run_e2fsck_f (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_e2fsck_f (g, device);
-  free (device);
   if (r == -1)
     return make_error ("e2fsck_f");
 
@@ -2331,11 +2211,10 @@ run_e2fsck_f (ETERM *message)
 static ETERM *
 run_echo_daemon (ETERM *message)
 {
-  char **words = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **words = get_string_list (ARG (0));
   char *r;
 
   r = guestfs_echo_daemon (g, words);
-  guestfs___free_string_list (words);
   if (r == NULL)
     return make_error ("echo_daemon");
 
@@ -2347,13 +2226,11 @@ run_echo_daemon (ETERM *message)
 static ETERM *
 run_egrep (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_egrep (g, regex, path);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("egrep");
 
@@ -2366,13 +2243,11 @@ run_egrep (ETERM *message)
 static ETERM *
 run_egrepi (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_egrepi (g, regex, path);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("egrepi");
 
@@ -2385,13 +2260,11 @@ run_egrepi (ETERM *message)
 static ETERM *
 run_equal (ETERM *message)
 {
-  char *file1 = erl_iolist_to_string (ARG (0));
-  char *file2 = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *file1 = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file2 = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_equal (g, file1, file2);
-  free (file1);
-  free (file2);
   if (r == -1)
     return make_error ("equal");
 
@@ -2401,11 +2274,10 @@ run_equal (ETERM *message)
 static ETERM *
 run_exists (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_exists (g, path);
-  free (path);
   if (r == -1)
     return make_error ("exists");
 
@@ -2415,11 +2287,10 @@ run_exists (ETERM *message)
 static ETERM *
 run_extlinux (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_extlinux (g, directory);
-  free (directory);
   if (r == -1)
     return make_error ("extlinux");
 
@@ -2429,12 +2300,11 @@ run_extlinux (ETERM *message)
 static ETERM *
 run_fallocate (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int len = get_int (ARG (1));
   int r;
 
   r = guestfs_fallocate (g, path, len);
-  free (path);
   if (r == -1)
     return make_error ("fallocate");
 
@@ -2444,12 +2314,11 @@ run_fallocate (ETERM *message)
 static ETERM *
 run_fallocate64 (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int64_t len = get_int64 (ARG (1));
   int r;
 
   r = guestfs_fallocate64 (g, path, len);
-  free (path);
   if (r == -1)
     return make_error ("fallocate64");
 
@@ -2459,11 +2328,10 @@ run_fallocate64 (ETERM *message)
 static ETERM *
 run_feature_available (ETERM *message)
 {
-  char **groups = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **groups = get_string_list (ARG (0));
   int r;
 
   r = guestfs_feature_available (g, groups);
-  guestfs___free_string_list (groups);
   if (r == -1)
     return make_error ("feature_available");
 
@@ -2473,13 +2341,11 @@ run_feature_available (ETERM *message)
 static ETERM *
 run_fgrep (ETERM *message)
 {
-  char *pattern = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_fgrep (g, pattern, path);
-  free (pattern);
-  free (path);
   if (r == NULL)
     return make_error ("fgrep");
 
@@ -2492,13 +2358,11 @@ run_fgrep (ETERM *message)
 static ETERM *
 run_fgrepi (ETERM *message)
 {
-  char *pattern = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_fgrepi (g, pattern, path);
-  free (pattern);
-  free (path);
   if (r == NULL)
     return make_error ("fgrepi");
 
@@ -2511,11 +2375,10 @@ run_fgrepi (ETERM *message)
 static ETERM *
 run_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_file (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("file");
 
@@ -2527,11 +2390,10 @@ run_file (ETERM *message)
 static ETERM *
 run_file_architecture (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_file_architecture (g, filename);
-  free (filename);
   if (r == NULL)
     return make_error ("file_architecture");
 
@@ -2543,11 +2405,10 @@ run_file_architecture (ETERM *message)
 static ETERM *
 run_filesize (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
   int64_t r;
 
   r = guestfs_filesize (g, file);
-  free (file);
   if (r == -1)
     return make_error ("filesize");
 
@@ -2557,11 +2418,10 @@ run_filesize (ETERM *message)
 static ETERM *
 run_filesystem_available (ETERM *message)
 {
-  char *filesystem = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filesystem = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_filesystem_available (g, filesystem);
-  free (filesystem);
   if (r == -1)
     return make_error ("filesystem_available");
 
@@ -2573,11 +2433,10 @@ run_fill (ETERM *message)
 {
   int c = get_int (ARG (0));
   int len = get_int (ARG (1));
-  char *path = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_fill (g, c, len, path);
-  free (path);
   if (r == -1)
     return make_error ("fill");
 
@@ -2587,12 +2446,11 @@ run_fill (ETERM *message)
 static ETERM *
 run_fill_dir (ETERM *message)
 {
-  char *dir = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dir = erl_iolist_to_string (ARG (0));
   int nr = get_int (ARG (1));
   int r;
 
   r = guestfs_fill_dir (g, dir, nr);
-  free (dir);
   if (r == -1)
     return make_error ("fill_dir");
 
@@ -2602,14 +2460,12 @@ run_fill_dir (ETERM *message)
 static ETERM *
 run_fill_pattern (ETERM *message)
 {
-  char *pattern = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
   int len = get_int (ARG (1));
-  char *path = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_fill_pattern (g, pattern, len, path);
-  free (pattern);
-  free (path);
   if (r == -1)
     return make_error ("fill_pattern");
 
@@ -2619,11 +2475,10 @@ run_fill_pattern (ETERM *message)
 static ETERM *
 run_find (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_find (g, directory);
-  free (directory);
   if (r == NULL)
     return make_error ("find");
 
@@ -2636,13 +2491,11 @@ run_find (ETERM *message)
 static ETERM *
 run_find0 (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
-  char *files = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *files = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_find0 (g, directory, files);
-  free (directory);
-  free (files);
   if (r == -1)
     return make_error ("find0");
 
@@ -2652,11 +2505,10 @@ run_find0 (ETERM *message)
 static ETERM *
 run_findfs_label (ETERM *message)
 {
-  char *label = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_findfs_label (g, label);
-  free (label);
   if (r == NULL)
     return make_error ("findfs_label");
 
@@ -2668,11 +2520,10 @@ run_findfs_label (ETERM *message)
 static ETERM *
 run_findfs_uuid (ETERM *message)
 {
-  char *uuid = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_findfs_uuid (g, uuid);
-  free (uuid);
   if (r == NULL)
     return make_error ("findfs_uuid");
 
@@ -2684,13 +2535,11 @@ run_findfs_uuid (ETERM *message)
 static ETERM *
 run_fsck (ETERM *message)
 {
-  char *fstype = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_fsck (g, fstype, device);
-  free (fstype);
-  free (device);
   if (r == -1)
     return make_error ("fsck");
 
@@ -2700,7 +2549,7 @@ run_fsck (ETERM *message)
 static ETERM *
 run_fstrim (ETERM *message)
 {
-  char *mountpoint = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (0));
 
   struct guestfs_fstrim_argv optargs_s = { .bitmask = 0 };
   struct guestfs_fstrim_argv *optargs = &optargs_s;
@@ -2732,7 +2581,6 @@ run_fstrim (ETERM *message)
   int r;
 
   r = guestfs_fstrim_argv (g, mountpoint, optargs);
-  free (mountpoint);
   if (r == -1)
     return make_error ("fstrim");
 
@@ -2823,11 +2671,10 @@ run_get_direct (ETERM *message)
 static ETERM *
 run_get_e2attrs (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_get_e2attrs (g, file);
-  free (file);
   if (r == NULL)
     return make_error ("get_e2attrs");
 
@@ -2839,11 +2686,10 @@ run_get_e2attrs (ETERM *message)
 static ETERM *
 run_get_e2generation (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
   int64_t r;
 
   r = guestfs_get_e2generation (g, file);
-  free (file);
   if (r == -1)
     return make_error ("get_e2generation");
 
@@ -2853,11 +2699,10 @@ run_get_e2generation (ETERM *message)
 static ETERM *
 run_get_e2label (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_get_e2label (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("get_e2label");
 
@@ -2869,11 +2714,10 @@ run_get_e2label (ETERM *message)
 static ETERM *
 run_get_e2uuid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_get_e2uuid (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("get_e2uuid");
 
@@ -3141,14 +2985,12 @@ run_getcon (ETERM *message)
 static ETERM *
 run_getxattr (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char *name = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (1));
   char *r;
   size_t size;
 
   r = guestfs_getxattr (g, path, name, &size);
-  free (path);
-  free (name);
   if (r == NULL)
     return make_error ("getxattr");
 
@@ -3160,11 +3002,10 @@ run_getxattr (ETERM *message)
 static ETERM *
 run_getxattrs (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_xattr_list *r;
 
   r = guestfs_getxattrs (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("getxattrs");
 
@@ -3176,11 +3017,10 @@ run_getxattrs (ETERM *message)
 static ETERM *
 run_glob_expand (ETERM *message)
 {
-  char *pattern = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_glob_expand (g, pattern);
-  free (pattern);
   if (r == NULL)
     return make_error ("glob_expand");
 
@@ -3193,8 +3033,8 @@ run_glob_expand (ETERM *message)
 static ETERM *
 run_grep (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
 
   struct guestfs_grep_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_grep_opts_argv *optargs = &optargs_s;
@@ -3231,8 +3071,6 @@ run_grep (ETERM *message)
   char **r;
 
   r = guestfs_grep_opts_argv (g, regex, path, optargs);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("grep");
 
@@ -3245,13 +3083,11 @@ run_grep (ETERM *message)
 static ETERM *
 run_grepi (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_grepi (g, regex, path);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("grepi");
 
@@ -3264,13 +3100,11 @@ run_grepi (ETERM *message)
 static ETERM *
 run_grub_install (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_grub_install (g, root, device);
-  free (root);
-  free (device);
   if (r == -1)
     return make_error ("grub_install");
 
@@ -3280,11 +3114,10 @@ run_grub_install (ETERM *message)
 static ETERM *
 run_head (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_head (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("head");
 
@@ -3298,11 +3131,10 @@ static ETERM *
 run_head_n (ETERM *message)
 {
   int nrlines = get_int (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_head_n (g, nrlines, path);
-  free (path);
   if (r == NULL)
     return make_error ("head_n");
 
@@ -3315,11 +3147,10 @@ run_head_n (ETERM *message)
 static ETERM *
 run_hexdump (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_hexdump (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("hexdump");
 
@@ -3343,7 +3174,7 @@ run_hivex_close (ETERM *message)
 static ETERM *
 run_hivex_commit (ETERM *message)
 {
-  char *filename;
+  CLEANUP_FREE char *filename;
   if (atom_equals (ARG (0), "undefined"))
     filename = NULL;
   else
@@ -3351,7 +3182,6 @@ run_hivex_commit (ETERM *message)
   int r;
 
   r = guestfs_hivex_commit (g, filename);
-  free (filename);
   if (r == -1)
     return make_error ("hivex_commit");
 
@@ -3362,11 +3192,10 @@ static ETERM *
 run_hivex_node_add_child (ETERM *message)
 {
   int64_t parent = get_int64 (ARG (0));
-  char *name = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (1));
   int64_t r;
 
   r = guestfs_hivex_node_add_child (g, parent, name);
-  free (name);
   if (r == -1)
     return make_error ("hivex_node_add_child");
 
@@ -3405,11 +3234,10 @@ static ETERM *
 run_hivex_node_get_child (ETERM *message)
 {
   int64_t nodeh = get_int64 (ARG (0));
-  char *name = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (1));
   int64_t r;
 
   r = guestfs_hivex_node_get_child (g, nodeh, name);
-  free (name);
   if (r == -1)
     return make_error ("hivex_node_get_child");
 
@@ -3420,11 +3248,10 @@ static ETERM *
 run_hivex_node_get_value (ETERM *message)
 {
   int64_t nodeh = get_int64 (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
   int64_t r;
 
   r = guestfs_hivex_node_get_value (g, nodeh, key);
-  free (key);
   if (r == -1)
     return make_error ("hivex_node_get_value");
 
@@ -3463,7 +3290,7 @@ static ETERM *
 run_hivex_node_set_value (ETERM *message)
 {
   int64_t nodeh = get_int64 (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
   int64_t t = get_int64 (ARG (2));
   ETERM *val_bin = erl_iolist_to_binary (ARG (3));
   const void *val = ERL_BIN_PTR (val_bin);
@@ -3471,7 +3298,6 @@ run_hivex_node_set_value (ETERM *message)
   int r;
 
   r = guestfs_hivex_node_set_value (g, nodeh, key, t, val, val_size);
-  free (key);
   if (r == -1)
     return make_error ("hivex_node_set_value");
 
@@ -3496,7 +3322,7 @@ run_hivex_node_values (ETERM *message)
 static ETERM *
 run_hivex_open (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
 
   struct guestfs_hivex_open_argv optargs_s = { .bitmask = 0 };
   struct guestfs_hivex_open_argv *optargs = &optargs_s;
@@ -3528,7 +3354,6 @@ run_hivex_open (ETERM *message)
   int r;
 
   r = guestfs_hivex_open_argv (g, filename, optargs);
-  free (filename);
   if (r == -1)
     return make_error ("hivex_open");
 
@@ -3609,14 +3434,12 @@ run_hivex_value_value (ETERM *message)
 static ETERM *
 run_initrd_cat (ETERM *message)
 {
-  char *initrdpath = erl_iolist_to_string (ARG (0));
-  char *filename = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *initrdpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (1));
   char *r;
   size_t size;
 
   r = guestfs_initrd_cat (g, initrdpath, filename, &size);
-  free (initrdpath);
-  free (filename);
   if (r == NULL)
     return make_error ("initrd_cat");
 
@@ -3628,11 +3451,10 @@ run_initrd_cat (ETERM *message)
 static ETERM *
 run_initrd_list (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_initrd_list (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("initrd_list");
 
@@ -3645,12 +3467,11 @@ run_initrd_list (ETERM *message)
 static ETERM *
 run_inotify_add_watch (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int mask = get_int (ARG (1));
   int64_t r;
 
   r = guestfs_inotify_add_watch (g, path, mask);
-  free (path);
   if (r == -1)
     return make_error ("inotify_add_watch");
 
@@ -3727,11 +3548,10 @@ run_inotify_rm_watch (ETERM *message)
 static ETERM *
 run_inspect_get_arch (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_arch (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_arch");
 
@@ -3743,11 +3563,10 @@ run_inspect_get_arch (ETERM *message)
 static ETERM *
 run_inspect_get_distro (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_distro (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_distro");
 
@@ -3759,11 +3578,10 @@ run_inspect_get_distro (ETERM *message)
 static ETERM *
 run_inspect_get_drive_mappings (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_inspect_get_drive_mappings (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_drive_mappings");
 
@@ -3775,11 +3593,10 @@ run_inspect_get_drive_mappings (ETERM *message)
 static ETERM *
 run_inspect_get_filesystems (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_inspect_get_filesystems (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_filesystems");
 
@@ -3792,11 +3609,10 @@ run_inspect_get_filesystems (ETERM *message)
 static ETERM *
 run_inspect_get_format (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_format (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_format");
 
@@ -3808,11 +3624,10 @@ run_inspect_get_format (ETERM *message)
 static ETERM *
 run_inspect_get_hostname (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_hostname (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_hostname");
 
@@ -3824,7 +3639,7 @@ run_inspect_get_hostname (ETERM *message)
 static ETERM *
 run_inspect_get_icon (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
 
   struct guestfs_inspect_get_icon_argv optargs_s = { .bitmask = 0 };
   struct guestfs_inspect_get_icon_argv *optargs = &optargs_s;
@@ -3852,7 +3667,6 @@ run_inspect_get_icon (ETERM *message)
   size_t size;
 
   r = guestfs_inspect_get_icon_argv (g, root, &size, optargs);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_icon");
 
@@ -3864,11 +3678,10 @@ run_inspect_get_icon (ETERM *message)
 static ETERM *
 run_inspect_get_major_version (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_inspect_get_major_version (g, root);
-  free (root);
   if (r == -1)
     return make_error ("inspect_get_major_version");
 
@@ -3878,11 +3691,10 @@ run_inspect_get_major_version (ETERM *message)
 static ETERM *
 run_inspect_get_minor_version (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_inspect_get_minor_version (g, root);
-  free (root);
   if (r == -1)
     return make_error ("inspect_get_minor_version");
 
@@ -3892,11 +3704,10 @@ run_inspect_get_minor_version (ETERM *message)
 static ETERM *
 run_inspect_get_mountpoints (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_inspect_get_mountpoints (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_mountpoints");
 
@@ -3908,11 +3719,10 @@ run_inspect_get_mountpoints (ETERM *message)
 static ETERM *
 run_inspect_get_package_format (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_package_format (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_package_format");
 
@@ -3924,11 +3734,10 @@ run_inspect_get_package_format (ETERM *message)
 static ETERM *
 run_inspect_get_package_management (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_package_management (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_package_management");
 
@@ -3940,11 +3749,10 @@ run_inspect_get_package_management (ETERM *message)
 static ETERM *
 run_inspect_get_product_name (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_product_name (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_product_name");
 
@@ -3956,11 +3764,10 @@ run_inspect_get_product_name (ETERM *message)
 static ETERM *
 run_inspect_get_product_variant (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_product_variant (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_product_variant");
 
@@ -3987,11 +3794,10 @@ run_inspect_get_roots (ETERM *message)
 static ETERM *
 run_inspect_get_type (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_type (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_type");
 
@@ -4003,11 +3809,10 @@ run_inspect_get_type (ETERM *message)
 static ETERM *
 run_inspect_get_windows_current_control_set (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_windows_current_control_set (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_windows_current_control_set");
 
@@ -4019,11 +3824,10 @@ run_inspect_get_windows_current_control_set (ETERM *message)
 static ETERM *
 run_inspect_get_windows_systemroot (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_inspect_get_windows_systemroot (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_get_windows_systemroot");
 
@@ -4035,11 +3839,10 @@ run_inspect_get_windows_systemroot (ETERM *message)
 static ETERM *
 run_inspect_is_live (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_inspect_is_live (g, root);
-  free (root);
   if (r == -1)
     return make_error ("inspect_is_live");
 
@@ -4049,11 +3852,10 @@ run_inspect_is_live (ETERM *message)
 static ETERM *
 run_inspect_is_multipart (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_inspect_is_multipart (g, root);
-  free (root);
   if (r == -1)
     return make_error ("inspect_is_multipart");
 
@@ -4063,11 +3865,10 @@ run_inspect_is_multipart (ETERM *message)
 static ETERM *
 run_inspect_is_netinst (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_inspect_is_netinst (g, root);
-  free (root);
   if (r == -1)
     return make_error ("inspect_is_netinst");
 
@@ -4077,11 +3878,10 @@ run_inspect_is_netinst (ETERM *message)
 static ETERM *
 run_inspect_list_applications (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   struct guestfs_application_list *r;
 
   r = guestfs_inspect_list_applications (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_list_applications");
 
@@ -4093,11 +3893,10 @@ run_inspect_list_applications (ETERM *message)
 static ETERM *
 run_inspect_list_applications2 (ETERM *message)
 {
-  char *root = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *root = erl_iolist_to_string (ARG (0));
   struct guestfs_application2_list *r;
 
   r = guestfs_inspect_list_applications2 (g, root);
-  free (root);
   if (r == NULL)
     return make_error ("inspect_list_applications2");
 
@@ -4124,18 +3923,18 @@ run_inspect_os (ETERM *message)
 static ETERM *
 run_internal_test (ETERM *message)
 {
-  char *str = erl_iolist_to_string (ARG (0));
-  char *optstr;
+  CLEANUP_FREE char *str = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *optstr;
   if (atom_equals (ARG (1), "undefined"))
     optstr = NULL;
   else
     optstr = erl_iolist_to_string (ARG (1));
-  char **strlist = get_string_list (ARG (2));
+  CLEANUP_FREE_STRING_LIST char **strlist = get_string_list (ARG (2));
   int b = get_bool (ARG (3));
   int integer = get_int (ARG (4));
   int64_t integer64 = get_int64 (ARG (5));
-  char *filein = erl_iolist_to_string (ARG (6));
-  char *fileout = erl_iolist_to_string (ARG (7));
+  CLEANUP_FREE char *filein = erl_iolist_to_string (ARG (6));
+  CLEANUP_FREE char *fileout = erl_iolist_to_string (ARG (7));
   ETERM *bufferin_bin = erl_iolist_to_binary (ARG (8));
   const void *bufferin = ERL_BIN_PTR (bufferin_bin);
   size_t bufferin_size = ERL_BIN_SIZE (bufferin_bin);
@@ -4180,11 +3979,6 @@ run_internal_test (ETERM *message)
   int r;
 
   r = guestfs_internal_test_argv (g, str, optstr, strlist, b, integer, integer64, filein, fileout, bufferin, bufferin_size, optargs);
-  free (str);
-  free (optstr);
-  guestfs___free_string_list (strlist);
-  free (filein);
-  free (fileout);
   if ((optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRING_BITMASK))
     free ((char *) optargs_s.ostring);
   if ((optargs_s.bitmask & GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK))
@@ -4580,11 +4374,10 @@ run_internal_test_only_optargs (ETERM *message)
 static ETERM *
 run_internal_test_rbool (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_internal_test_rbool (g, val);
-  free (val);
   if (r == -1)
     return make_error ("internal_test_rbool");
 
@@ -4606,12 +4399,11 @@ run_internal_test_rboolerr (ETERM *message)
 static ETERM *
 run_internal_test_rbufferout (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   char *r;
   size_t size;
 
   r = guestfs_internal_test_rbufferout (g, val, &size);
-  free (val);
   if (r == NULL)
     return make_error ("internal_test_rbufferout");
 
@@ -4638,11 +4430,10 @@ run_internal_test_rbufferouterr (ETERM *message)
 static ETERM *
 run_internal_test_rconstoptstring (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   const char *r;
 
   r = guestfs_internal_test_rconstoptstring (g, val);
-  free (val);
 
   ETERM *rt;
   if (r)
@@ -4670,11 +4461,10 @@ run_internal_test_rconstoptstringerr (ETERM *message)
 static ETERM *
 run_internal_test_rconststring (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   const char *r;
 
   r = guestfs_internal_test_rconststring (g, val);
-  free (val);
   if (r == NULL)
     return make_error ("internal_test_rconststring");
 
@@ -4696,11 +4486,10 @@ run_internal_test_rconststringerr (ETERM *message)
 static ETERM *
 run_internal_test_rhashtable (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_internal_test_rhashtable (g, val);
-  free (val);
   if (r == NULL)
     return make_error ("internal_test_rhashtable");
 
@@ -4726,11 +4515,10 @@ run_internal_test_rhashtableerr (ETERM *message)
 static ETERM *
 run_internal_test_rint (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_internal_test_rint (g, val);
-  free (val);
   if (r == -1)
     return make_error ("internal_test_rint");
 
@@ -4740,11 +4528,10 @@ run_internal_test_rint (ETERM *message)
 static ETERM *
 run_internal_test_rint64 (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   int64_t r;
 
   r = guestfs_internal_test_rint64 (g, val);
-  free (val);
   if (r == -1)
     return make_error ("internal_test_rint64");
 
@@ -4778,11 +4565,10 @@ run_internal_test_rinterr (ETERM *message)
 static ETERM *
 run_internal_test_rstring (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_internal_test_rstring (g, val);
-  free (val);
   if (r == NULL)
     return make_error ("internal_test_rstring");
 
@@ -4808,11 +4594,10 @@ run_internal_test_rstringerr (ETERM *message)
 static ETERM *
 run_internal_test_rstringlist (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_internal_test_rstringlist (g, val);
-  free (val);
   if (r == NULL)
     return make_error ("internal_test_rstringlist");
 
@@ -4840,11 +4625,10 @@ run_internal_test_rstringlisterr (ETERM *message)
 static ETERM *
 run_internal_test_rstruct (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   struct guestfs_lvm_pv *r;
 
   r = guestfs_internal_test_rstruct (g, val);
-  free (val);
   if (r == NULL)
     return make_error ("internal_test_rstruct");
 
@@ -4870,11 +4654,10 @@ run_internal_test_rstructerr (ETERM *message)
 static ETERM *
 run_internal_test_rstructlist (ETERM *message)
 {
-  char *val = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (0));
   struct guestfs_lvm_pv_list *r;
 
   r = guestfs_internal_test_rstructlist (g, val);
-  free (val);
   if (r == NULL)
     return make_error ("internal_test_rstructlist");
 
@@ -4900,11 +4683,10 @@ run_internal_test_rstructlisterr (ETERM *message)
 static ETERM *
 run_internal_test_set_output (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_internal_test_set_output (g, filename);
-  free (filename);
   if (r == -1)
     return make_error ("internal_test_set_output");
 
@@ -4914,11 +4696,10 @@ run_internal_test_set_output (ETERM *message)
 static ETERM *
 run_is_blockdev (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_blockdev (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_blockdev");
 
@@ -4940,11 +4721,10 @@ run_is_busy (ETERM *message)
 static ETERM *
 run_is_chardev (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_chardev (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_chardev");
 
@@ -4966,11 +4746,10 @@ run_is_config (ETERM *message)
 static ETERM *
 run_is_dir (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_dir (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_dir");
 
@@ -4980,11 +4759,10 @@ run_is_dir (ETERM *message)
 static ETERM *
 run_is_fifo (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_fifo (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_fifo");
 
@@ -4994,11 +4772,10 @@ run_is_fifo (ETERM *message)
 static ETERM *
 run_is_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_file (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_file");
 
@@ -5020,11 +4797,10 @@ run_is_launching (ETERM *message)
 static ETERM *
 run_is_lv (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_lv (g, device);
-  free (device);
   if (r == -1)
     return make_error ("is_lv");
 
@@ -5046,11 +4822,10 @@ run_is_ready (ETERM *message)
 static ETERM *
 run_is_socket (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_socket (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_socket");
 
@@ -5060,11 +4835,10 @@ run_is_socket (ETERM *message)
 static ETERM *
 run_is_symlink (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_symlink (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_symlink");
 
@@ -5074,11 +4848,10 @@ run_is_symlink (ETERM *message)
 static ETERM *
 run_is_whole_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_whole_device (g, device);
-  free (device);
   if (r == -1)
     return make_error ("is_whole_device");
 
@@ -5088,11 +4861,10 @@ run_is_whole_device (ETERM *message)
 static ETERM *
 run_is_zero (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_zero (g, path);
-  free (path);
   if (r == -1)
     return make_error ("is_zero");
 
@@ -5102,11 +4874,10 @@ run_is_zero (ETERM *message)
 static ETERM *
 run_is_zero_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_is_zero_device (g, device);
-  free (device);
   if (r == -1)
     return make_error ("is_zero_device");
 
@@ -5116,11 +4887,10 @@ run_is_zero_device (ETERM *message)
 static ETERM *
 run_isoinfo (ETERM *message)
 {
-  char *isofile = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *isofile = erl_iolist_to_string (ARG (0));
   struct guestfs_isoinfo *r;
 
   r = guestfs_isoinfo (g, isofile);
-  free (isofile);
   if (r == NULL)
     return make_error ("isoinfo");
 
@@ -5132,11 +4902,10 @@ run_isoinfo (ETERM *message)
 static ETERM *
 run_isoinfo_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   struct guestfs_isoinfo *r;
 
   r = guestfs_isoinfo_device (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("isoinfo_device");
 
@@ -5174,11 +4943,10 @@ run_lchown (ETERM *message)
 {
   int owner = get_int (ARG (0));
   int group = get_int (ARG (1));
-  char *path = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_lchown (g, owner, group, path);
-  free (path);
   if (r == -1)
     return make_error ("lchown");
 
@@ -5200,11 +4968,10 @@ run_ldmtool_create_all (ETERM *message)
 static ETERM *
 run_ldmtool_diskgroup_disks (ETERM *message)
 {
-  char *diskgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_ldmtool_diskgroup_disks (g, diskgroup);
-  free (diskgroup);
   if (r == NULL)
     return make_error ("ldmtool_diskgroup_disks");
 
@@ -5217,11 +4984,10 @@ run_ldmtool_diskgroup_disks (ETERM *message)
 static ETERM *
 run_ldmtool_diskgroup_name (ETERM *message)
 {
-  char *diskgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_ldmtool_diskgroup_name (g, diskgroup);
-  free (diskgroup);
   if (r == NULL)
     return make_error ("ldmtool_diskgroup_name");
 
@@ -5233,11 +4999,10 @@ run_ldmtool_diskgroup_name (ETERM *message)
 static ETERM *
 run_ldmtool_diskgroup_volumes (ETERM *message)
 {
-  char *diskgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_ldmtool_diskgroup_volumes (g, diskgroup);
-  free (diskgroup);
   if (r == NULL)
     return make_error ("ldmtool_diskgroup_volumes");
 
@@ -5277,11 +5042,10 @@ run_ldmtool_scan (ETERM *message)
 static ETERM *
 run_ldmtool_scan_devices (ETERM *message)
 {
-  char **devices = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (0));
   char **r;
 
   r = guestfs_ldmtool_scan_devices (g, devices);
-  guestfs___free_string_list (devices);
   if (r == NULL)
     return make_error ("ldmtool_scan_devices");
 
@@ -5294,13 +5058,11 @@ run_ldmtool_scan_devices (ETERM *message)
 static ETERM *
 run_ldmtool_volume_hint (ETERM *message)
 {
-  char *diskgroup = erl_iolist_to_string (ARG (0));
-  char *volume = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *volume = erl_iolist_to_string (ARG (1));
   char *r;
 
   r = guestfs_ldmtool_volume_hint (g, diskgroup, volume);
-  free (diskgroup);
-  free (volume);
   if (r == NULL)
     return make_error ("ldmtool_volume_hint");
 
@@ -5312,13 +5074,11 @@ run_ldmtool_volume_hint (ETERM *message)
 static ETERM *
 run_ldmtool_volume_partitions (ETERM *message)
 {
-  char *diskgroup = erl_iolist_to_string (ARG (0));
-  char *volume = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *volume = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_ldmtool_volume_partitions (g, diskgroup, volume);
-  free (diskgroup);
-  free (volume);
   if (r == NULL)
     return make_error ("ldmtool_volume_partitions");
 
@@ -5331,13 +5091,11 @@ run_ldmtool_volume_partitions (ETERM *message)
 static ETERM *
 run_ldmtool_volume_type (ETERM *message)
 {
-  char *diskgroup = erl_iolist_to_string (ARG (0));
-  char *volume = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *diskgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *volume = erl_iolist_to_string (ARG (1));
   char *r;
 
   r = guestfs_ldmtool_volume_type (g, diskgroup, volume);
-  free (diskgroup);
-  free (volume);
   if (r == NULL)
     return make_error ("ldmtool_volume_type");
 
@@ -5349,14 +5107,12 @@ run_ldmtool_volume_type (ETERM *message)
 static ETERM *
 run_lgetxattr (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char *name = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (1));
   char *r;
   size_t size;
 
   r = guestfs_lgetxattr (g, path, name, &size);
-  free (path);
-  free (name);
   if (r == NULL)
     return make_error ("lgetxattr");
 
@@ -5368,11 +5124,10 @@ run_lgetxattr (ETERM *message)
 static ETERM *
 run_lgetxattrs (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_xattr_list *r;
 
   r = guestfs_lgetxattrs (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("lgetxattrs");
 
@@ -5517,11 +5272,10 @@ run_list_partitions (ETERM *message)
 static ETERM *
 run_ll (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_ll (g, directory);
-  free (directory);
   if (r == NULL)
     return make_error ("ll");
 
@@ -5533,11 +5287,10 @@ run_ll (ETERM *message)
 static ETERM *
 run_llz (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_llz (g, directory);
-  free (directory);
   if (r == NULL)
     return make_error ("llz");
 
@@ -5549,13 +5302,11 @@ run_llz (ETERM *message)
 static ETERM *
 run_ln (ETERM *message)
 {
-  char *target = erl_iolist_to_string (ARG (0));
-  char *linkname = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *target = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *linkname = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_ln (g, target, linkname);
-  free (target);
-  free (linkname);
   if (r == -1)
     return make_error ("ln");
 
@@ -5565,13 +5316,11 @@ run_ln (ETERM *message)
 static ETERM *
 run_ln_f (ETERM *message)
 {
-  char *target = erl_iolist_to_string (ARG (0));
-  char *linkname = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *target = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *linkname = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_ln_f (g, target, linkname);
-  free (target);
-  free (linkname);
   if (r == -1)
     return make_error ("ln_f");
 
@@ -5581,13 +5330,11 @@ run_ln_f (ETERM *message)
 static ETERM *
 run_ln_s (ETERM *message)
 {
-  char *target = erl_iolist_to_string (ARG (0));
-  char *linkname = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *target = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *linkname = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_ln_s (g, target, linkname);
-  free (target);
-  free (linkname);
   if (r == -1)
     return make_error ("ln_s");
 
@@ -5597,13 +5344,11 @@ run_ln_s (ETERM *message)
 static ETERM *
 run_ln_sf (ETERM *message)
 {
-  char *target = erl_iolist_to_string (ARG (0));
-  char *linkname = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *target = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *linkname = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_ln_sf (g, target, linkname);
-  free (target);
-  free (linkname);
   if (r == -1)
     return make_error ("ln_sf");
 
@@ -5613,13 +5358,11 @@ run_ln_sf (ETERM *message)
 static ETERM *
 run_lremovexattr (ETERM *message)
 {
-  char *xattr = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *xattr = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_lremovexattr (g, xattr, path);
-  free (xattr);
-  free (path);
   if (r == -1)
     return make_error ("lremovexattr");
 
@@ -5629,11 +5372,10 @@ run_lremovexattr (ETERM *message)
 static ETERM *
 run_ls (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_ls (g, directory);
-  free (directory);
   if (r == NULL)
     return make_error ("ls");
 
@@ -5646,13 +5388,11 @@ run_ls (ETERM *message)
 static ETERM *
 run_ls0 (ETERM *message)
 {
-  char *dir = erl_iolist_to_string (ARG (0));
-  char *filenames = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *dir = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *filenames = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_ls0 (g, dir, filenames);
-  free (dir);
-  free (filenames);
   if (r == -1)
     return make_error ("ls0");
 
@@ -5662,16 +5402,13 @@ run_ls0 (ETERM *message)
 static ETERM *
 run_lsetxattr (ETERM *message)
 {
-  char *xattr = erl_iolist_to_string (ARG (0));
-  char *val = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *xattr = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (1));
   int vallen = get_int (ARG (2));
-  char *path = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_lsetxattr (g, xattr, val, vallen, path);
-  free (xattr);
-  free (val);
-  free (path);
   if (r == -1)
     return make_error ("lsetxattr");
 
@@ -5681,11 +5418,10 @@ run_lsetxattr (ETERM *message)
 static ETERM *
 run_lstat (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_stat *r;
 
   r = guestfs_lstat (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("lstat");
 
@@ -5697,13 +5433,11 @@ run_lstat (ETERM *message)
 static ETERM *
 run_lstatlist (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char **names = get_string_list (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **names = get_string_list (ARG (1));
   struct guestfs_stat_list *r;
 
   r = guestfs_lstatlist (g, path, names);
-  free (path);
-  guestfs___free_string_list (names);
   if (r == NULL)
     return make_error ("lstatlist");
 
@@ -5715,16 +5449,13 @@ run_lstatlist (ETERM *message)
 static ETERM *
 run_luks_add_key (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
-  char *newkey = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *newkey = erl_iolist_to_string (ARG (2));
   int keyslot = get_int (ARG (3));
   int r;
 
   r = guestfs_luks_add_key (g, device, key, newkey, keyslot);
-  free (device);
-  free (key);
-  free (newkey);
   if (r == -1)
     return make_error ("luks_add_key");
 
@@ -5734,11 +5465,10 @@ run_luks_add_key (ETERM *message)
 static ETERM *
 run_luks_close (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_luks_close (g, device);
-  free (device);
   if (r == -1)
     return make_error ("luks_close");
 
@@ -5748,14 +5478,12 @@ run_luks_close (ETERM *message)
 static ETERM *
 run_luks_format (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
   int keyslot = get_int (ARG (2));
   int r;
 
   r = guestfs_luks_format (g, device, key, keyslot);
-  free (device);
-  free (key);
   if (r == -1)
     return make_error ("luks_format");
 
@@ -5765,16 +5493,13 @@ run_luks_format (ETERM *message)
 static ETERM *
 run_luks_format_cipher (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
   int keyslot = get_int (ARG (2));
-  char *cipher = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *cipher = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_luks_format_cipher (g, device, key, keyslot, cipher);
-  free (device);
-  free (key);
-  free (cipher);
   if (r == -1)
     return make_error ("luks_format_cipher");
 
@@ -5784,14 +5509,12 @@ run_luks_format_cipher (ETERM *message)
 static ETERM *
 run_luks_kill_slot (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
   int keyslot = get_int (ARG (2));
   int r;
 
   r = guestfs_luks_kill_slot (g, device, key, keyslot);
-  free (device);
-  free (key);
   if (r == -1)
     return make_error ("luks_kill_slot");
 
@@ -5801,15 +5524,12 @@ run_luks_kill_slot (ETERM *message)
 static ETERM *
 run_luks_open (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
-  char *mapname = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mapname = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_luks_open (g, device, key, mapname);
-  free (device);
-  free (key);
-  free (mapname);
   if (r == -1)
     return make_error ("luks_open");
 
@@ -5819,15 +5539,12 @@ run_luks_open (ETERM *message)
 static ETERM *
 run_luks_open_ro (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *key = erl_iolist_to_string (ARG (1));
-  char *mapname = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *key = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mapname = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_luks_open_ro (g, device, key, mapname);
-  free (device);
-  free (key);
-  free (mapname);
   if (r == -1)
     return make_error ("luks_open_ro");
 
@@ -5837,14 +5554,12 @@ run_luks_open_ro (ETERM *message)
 static ETERM *
 run_lvcreate (ETERM *message)
 {
-  char *logvol = erl_iolist_to_string (ARG (0));
-  char *volgroup = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *logvol = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *volgroup = erl_iolist_to_string (ARG (1));
   int mbytes = get_int (ARG (2));
   int r;
 
   r = guestfs_lvcreate (g, logvol, volgroup, mbytes);
-  free (logvol);
-  free (volgroup);
   if (r == -1)
     return make_error ("lvcreate");
 
@@ -5854,14 +5569,12 @@ run_lvcreate (ETERM *message)
 static ETERM *
 run_lvcreate_free (ETERM *message)
 {
-  char *logvol = erl_iolist_to_string (ARG (0));
-  char *volgroup = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *logvol = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *volgroup = erl_iolist_to_string (ARG (1));
   int percent = get_int (ARG (2));
   int r;
 
   r = guestfs_lvcreate_free (g, logvol, volgroup, percent);
-  free (logvol);
-  free (volgroup);
   if (r == -1)
     return make_error ("lvcreate_free");
 
@@ -5871,11 +5584,10 @@ run_lvcreate_free (ETERM *message)
 static ETERM *
 run_lvm_canonical_lv_name (ETERM *message)
 {
-  char *lvname = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *lvname = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_lvm_canonical_lv_name (g, lvname);
-  free (lvname);
   if (r == NULL)
     return make_error ("lvm_canonical_lv_name");
 
@@ -5911,11 +5623,10 @@ run_lvm_remove_all (ETERM *message)
 static ETERM *
 run_lvm_set_filter (ETERM *message)
 {
-  char **devices = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (0));
   int r;
 
   r = guestfs_lvm_set_filter (g, devices);
-  guestfs___free_string_list (devices);
   if (r == -1)
     return make_error ("lvm_set_filter");
 
@@ -5925,11 +5636,10 @@ run_lvm_set_filter (ETERM *message)
 static ETERM *
 run_lvremove (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_lvremove (g, device);
-  free (device);
   if (r == -1)
     return make_error ("lvremove");
 
@@ -5939,13 +5649,11 @@ run_lvremove (ETERM *message)
 static ETERM *
 run_lvrename (ETERM *message)
 {
-  char *logvol = erl_iolist_to_string (ARG (0));
-  char *newlogvol = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *logvol = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *newlogvol = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_lvrename (g, logvol, newlogvol);
-  free (logvol);
-  free (newlogvol);
   if (r == -1)
     return make_error ("lvrename");
 
@@ -5955,12 +5663,11 @@ run_lvrename (ETERM *message)
 static ETERM *
 run_lvresize (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int mbytes = get_int (ARG (1));
   int r;
 
   r = guestfs_lvresize (g, device, mbytes);
-  free (device);
   if (r == -1)
     return make_error ("lvresize");
 
@@ -5970,12 +5677,11 @@ run_lvresize (ETERM *message)
 static ETERM *
 run_lvresize_free (ETERM *message)
 {
-  char *lv = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *lv = erl_iolist_to_string (ARG (0));
   int percent = get_int (ARG (1));
   int r;
 
   r = guestfs_lvresize_free (g, lv, percent);
-  free (lv);
   if (r == -1)
     return make_error ("lvresize_free");
 
@@ -6014,11 +5720,10 @@ run_lvs_full (ETERM *message)
 static ETERM *
 run_lvuuid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_lvuuid (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("lvuuid");
 
@@ -6030,13 +5735,11 @@ run_lvuuid (ETERM *message)
 static ETERM *
 run_lxattrlist (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char **names = get_string_list (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **names = get_string_list (ARG (1));
   struct guestfs_xattr_list *r;
 
   r = guestfs_lxattrlist (g, path, names);
-  free (path);
-  guestfs___free_string_list (names);
   if (r == NULL)
     return make_error ("lxattrlist");
 
@@ -6060,8 +5763,8 @@ run_max_disks (ETERM *message)
 static ETERM *
 run_md_create (ETERM *message)
 {
-  char *name = erl_iolist_to_string (ARG (0));
-  char **devices = get_string_list (ARG (1));
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (1));
 
   struct guestfs_md_create_argv optargs_s = { .bitmask = 0 };
   struct guestfs_md_create_argv *optargs = &optargs_s;
@@ -6103,8 +5806,6 @@ run_md_create (ETERM *message)
   int r;
 
   r = guestfs_md_create_argv (g, name, devices, optargs);
-  free (name);
-  guestfs___free_string_list (devices);
   if ((optargs_s.bitmask & GUESTFS_MD_CREATE_LEVEL_BITMASK))
     free ((char *) optargs_s.level);
   if (r == -1)
@@ -6116,11 +5817,10 @@ run_md_create (ETERM *message)
 static ETERM *
 run_md_detail (ETERM *message)
 {
-  char *md = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *md = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_md_detail (g, md);
-  free (md);
   if (r == NULL)
     return make_error ("md_detail");
 
@@ -6132,11 +5832,10 @@ run_md_detail (ETERM *message)
 static ETERM *
 run_md_stat (ETERM *message)
 {
-  char *md = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *md = erl_iolist_to_string (ARG (0));
   struct guestfs_mdstat_list *r;
 
   r = guestfs_md_stat (g, md);
-  free (md);
   if (r == NULL)
     return make_error ("md_stat");
 
@@ -6148,11 +5847,10 @@ run_md_stat (ETERM *message)
 static ETERM *
 run_md_stop (ETERM *message)
 {
-  char *md = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *md = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_md_stop (g, md);
-  free (md);
   if (r == -1)
     return make_error ("md_stop");
 
@@ -6162,11 +5860,10 @@ run_md_stop (ETERM *message)
 static ETERM *
 run_mkdir (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_mkdir (g, path);
-  free (path);
   if (r == -1)
     return make_error ("mkdir");
 
@@ -6176,12 +5873,11 @@ run_mkdir (ETERM *message)
 static ETERM *
 run_mkdir_mode (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int mode = get_int (ARG (1));
   int r;
 
   r = guestfs_mkdir_mode (g, path, mode);
-  free (path);
   if (r == -1)
     return make_error ("mkdir_mode");
 
@@ -6191,11 +5887,10 @@ run_mkdir_mode (ETERM *message)
 static ETERM *
 run_mkdir_p (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_mkdir_p (g, path);
-  free (path);
   if (r == -1)
     return make_error ("mkdir_p");
 
@@ -6205,11 +5900,10 @@ run_mkdir_p (ETERM *message)
 static ETERM *
 run_mkdtemp (ETERM *message)
 {
-  char *tmpl = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *tmpl = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_mkdtemp (g, tmpl);
-  free (tmpl);
   if (r == NULL)
     return make_error ("mkdtemp");
 
@@ -6221,7 +5915,7 @@ run_mkdtemp (ETERM *message)
 static ETERM *
 run_mke2fs (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_mke2fs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mke2fs_argv *optargs = &optargs_s;
@@ -6428,7 +6122,6 @@ run_mke2fs (ETERM *message)
   int r;
 
   r = guestfs_mke2fs_argv (g, device, optargs);
-  free (device);
   if ((optargs_s.bitmask & GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK))
     free ((char *) optargs_s.journaldevice);
   if ((optargs_s.bitmask & GUESTFS_MKE2FS_LABEL_BITMASK))
@@ -6452,16 +6145,13 @@ run_mke2fs (ETERM *message)
 static ETERM *
 run_mke2fs_J (ETERM *message)
 {
-  char *fstype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
   int blocksize = get_int (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
-  char *journal = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *journal = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_mke2fs_J (g, fstype, blocksize, device, journal);
-  free (fstype);
-  free (device);
-  free (journal);
   if (r == -1)
     return make_error ("mke2fs_J");
 
@@ -6471,16 +6161,13 @@ run_mke2fs_J (ETERM *message)
 static ETERM *
 run_mke2fs_JL (ETERM *message)
 {
-  char *fstype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
   int blocksize = get_int (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
-  char *label = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_mke2fs_JL (g, fstype, blocksize, device, label);
-  free (fstype);
-  free (device);
-  free (label);
   if (r == -1)
     return make_error ("mke2fs_JL");
 
@@ -6490,16 +6177,13 @@ run_mke2fs_JL (ETERM *message)
 static ETERM *
 run_mke2fs_JU (ETERM *message)
 {
-  char *fstype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
   int blocksize = get_int (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
-  char *uuid = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_mke2fs_JU (g, fstype, blocksize, device, uuid);
-  free (fstype);
-  free (device);
-  free (uuid);
   if (r == -1)
     return make_error ("mke2fs_JU");
 
@@ -6510,11 +6194,10 @@ static ETERM *
 run_mke2journal (ETERM *message)
 {
   int blocksize = get_int (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mke2journal (g, blocksize, device);
-  free (device);
   if (r == -1)
     return make_error ("mke2journal");
 
@@ -6525,13 +6208,11 @@ static ETERM *
 run_mke2journal_L (ETERM *message)
 {
   int blocksize = get_int (ARG (0));
-  char *label = erl_iolist_to_string (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_mke2journal_L (g, blocksize, label, device);
-  free (label);
-  free (device);
   if (r == -1)
     return make_error ("mke2journal_L");
 
@@ -6542,13 +6223,11 @@ static ETERM *
 run_mke2journal_U (ETERM *message)
 {
   int blocksize = get_int (ARG (0));
-  char *uuid = erl_iolist_to_string (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_mke2journal_U (g, blocksize, uuid, device);
-  free (uuid);
-  free (device);
   if (r == -1)
     return make_error ("mke2journal_U");
 
@@ -6559,11 +6238,10 @@ static ETERM *
 run_mkfifo (ETERM *message)
 {
   int mode = get_int (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mkfifo (g, mode, path);
-  free (path);
   if (r == -1)
     return make_error ("mkfifo");
 
@@ -6573,8 +6251,8 @@ run_mkfifo (ETERM *message)
 static ETERM *
 run_mkfs (ETERM *message)
 {
-  char *fstype = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
 
   struct guestfs_mkfs_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mkfs_opts_argv *optargs = &optargs_s;
@@ -6611,8 +6289,6 @@ run_mkfs (ETERM *message)
   int r;
 
   r = guestfs_mkfs_opts_argv (g, fstype, device, optargs);
-  free (fstype);
-  free (device);
   if ((optargs_s.bitmask & GUESTFS_MKFS_OPTS_FEATURES_BITMASK))
     free ((char *) optargs_s.features);
   if (r == -1)
@@ -6624,14 +6300,12 @@ run_mkfs (ETERM *message)
 static ETERM *
 run_mkfs_b (ETERM *message)
 {
-  char *fstype = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *fstype = erl_iolist_to_string (ARG (0));
   int blocksize = get_int (ARG (1));
-  char *device = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_mkfs_b (g, fstype, blocksize, device);
-  free (fstype);
-  free (device);
   if (r == -1)
     return make_error ("mkfs_b");
 
@@ -6641,7 +6315,7 @@ run_mkfs_b (ETERM *message)
 static ETERM *
 run_mkfs_btrfs (ETERM *message)
 {
-  char **devices = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **devices = get_string_list (ARG (0));
 
   struct guestfs_mkfs_btrfs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mkfs_btrfs_argv *optargs = &optargs_s;
@@ -6698,7 +6372,6 @@ run_mkfs_btrfs (ETERM *message)
   int r;
 
   r = guestfs_mkfs_btrfs_argv (g, devices, optargs);
-  guestfs___free_string_list (devices);
   if ((optargs_s.bitmask & GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK))
     free ((char *) optargs_s.datatype);
   if ((optargs_s.bitmask & GUESTFS_MKFS_BTRFS_LABEL_BITMASK))
@@ -6714,11 +6387,10 @@ run_mkfs_btrfs (ETERM *message)
 static ETERM *
 run_mklost_and_found (ETERM *message)
 {
-  char *mountpoint = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_mklost_and_found (g, mountpoint);
-  free (mountpoint);
   if (r == -1)
     return make_error ("mklost_and_found");
 
@@ -6728,11 +6400,10 @@ run_mklost_and_found (ETERM *message)
 static ETERM *
 run_mkmountpoint (ETERM *message)
 {
-  char *exemptpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *exemptpath = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_mkmountpoint (g, exemptpath);
-  free (exemptpath);
   if (r == -1)
     return make_error ("mkmountpoint");
 
@@ -6745,11 +6416,10 @@ run_mknod (ETERM *message)
   int mode = get_int (ARG (0));
   int devmajor = get_int (ARG (1));
   int devminor = get_int (ARG (2));
-  char *path = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_mknod (g, mode, devmajor, devminor, path);
-  free (path);
   if (r == -1)
     return make_error ("mknod");
 
@@ -6762,11 +6432,10 @@ run_mknod_b (ETERM *message)
   int mode = get_int (ARG (0));
   int devmajor = get_int (ARG (1));
   int devminor = get_int (ARG (2));
-  char *path = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_mknod_b (g, mode, devmajor, devminor, path);
-  free (path);
   if (r == -1)
     return make_error ("mknod_b");
 
@@ -6779,11 +6448,10 @@ run_mknod_c (ETERM *message)
   int mode = get_int (ARG (0));
   int devmajor = get_int (ARG (1));
   int devminor = get_int (ARG (2));
-  char *path = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_mknod_c (g, mode, devmajor, devminor, path);
-  free (path);
   if (r == -1)
     return make_error ("mknod_c");
 
@@ -6793,7 +6461,7 @@ run_mknod_c (ETERM *message)
 static ETERM *
 run_mkswap (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_mkswap_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mkswap_opts_argv *optargs = &optargs_s;
@@ -6820,7 +6488,6 @@ run_mkswap (ETERM *message)
   int r;
 
   r = guestfs_mkswap_opts_argv (g, device, optargs);
-  free (device);
   if ((optargs_s.bitmask & GUESTFS_MKSWAP_OPTS_LABEL_BITMASK))
     free ((char *) optargs_s.label);
   if ((optargs_s.bitmask & GUESTFS_MKSWAP_OPTS_UUID_BITMASK))
@@ -6834,13 +6501,11 @@ run_mkswap (ETERM *message)
 static ETERM *
 run_mkswap_L (ETERM *message)
 {
-  char *label = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mkswap_L (g, label, device);
-  free (label);
-  free (device);
   if (r == -1)
     return make_error ("mkswap_L");
 
@@ -6850,13 +6515,11 @@ run_mkswap_L (ETERM *message)
 static ETERM *
 run_mkswap_U (ETERM *message)
 {
-  char *uuid = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mkswap_U (g, uuid, device);
-  free (uuid);
-  free (device);
   if (r == -1)
     return make_error ("mkswap_U");
 
@@ -6866,11 +6529,10 @@ run_mkswap_U (ETERM *message)
 static ETERM *
 run_mkswap_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_mkswap_file (g, path);
-  free (path);
   if (r == -1)
     return make_error ("mkswap_file");
 
@@ -6880,7 +6542,7 @@ run_mkswap_file (ETERM *message)
 static ETERM *
 run_mktemp (ETERM *message)
 {
-  char *tmpl = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *tmpl = erl_iolist_to_string (ARG (0));
 
   struct guestfs_mktemp_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mktemp_argv *optargs = &optargs_s;
@@ -6902,7 +6564,6 @@ run_mktemp (ETERM *message)
   char *r;
 
   r = guestfs_mktemp_argv (g, tmpl, optargs);
-  free (tmpl);
   if ((optargs_s.bitmask & GUESTFS_MKTEMP_SUFFIX_BITMASK))
     free ((char *) optargs_s.suffix);
   if (r == NULL)
@@ -6916,11 +6577,10 @@ run_mktemp (ETERM *message)
 static ETERM *
 run_modprobe (ETERM *message)
 {
-  char *modulename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *modulename = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_modprobe (g, modulename);
-  free (modulename);
   if (r == -1)
     return make_error ("modprobe");
 
@@ -6930,13 +6590,11 @@ run_modprobe (ETERM *message)
 static ETERM *
 run_mount (ETERM *message)
 {
-  char *mountable = erl_iolist_to_string (ARG (0));
-  char *mountpoint = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mount (g, mountable, mountpoint);
-  free (mountable);
-  free (mountpoint);
   if (r == -1)
     return make_error ("mount");
 
@@ -6946,8 +6604,8 @@ run_mount (ETERM *message)
 static ETERM *
 run_mount_9p (ETERM *message)
 {
-  char *mounttag = erl_iolist_to_string (ARG (0));
-  char *mountpoint = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mounttag = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (1));
 
   struct guestfs_mount_9p_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mount_9p_argv *optargs = &optargs_s;
@@ -6969,8 +6627,6 @@ run_mount_9p (ETERM *message)
   int r;
 
   r = guestfs_mount_9p_argv (g, mounttag, mountpoint, optargs);
-  free (mounttag);
-  free (mountpoint);
   if ((optargs_s.bitmask & GUESTFS_MOUNT_9P_OPTIONS_BITMASK))
     free ((char *) optargs_s.options);
   if (r == -1)
@@ -6982,7 +6638,7 @@ run_mount_9p (ETERM *message)
 static ETERM *
 run_mount_local (ETERM *message)
 {
-  char *localmountpoint = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *localmountpoint = erl_iolist_to_string (ARG (0));
 
   struct guestfs_mount_local_argv optargs_s = { .bitmask = 0 };
   struct guestfs_mount_local_argv *optargs = &optargs_s;
@@ -7019,7 +6675,6 @@ run_mount_local (ETERM *message)
   int r;
 
   r = guestfs_mount_local_argv (g, localmountpoint, optargs);
-  free (localmountpoint);
   if ((optargs_s.bitmask & GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK))
     free ((char *) optargs_s.options);
   if (r == -1)
@@ -7043,13 +6698,11 @@ run_mount_local_run (ETERM *message)
 static ETERM *
 run_mount_loop (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
-  char *mountpoint = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mount_loop (g, file, mountpoint);
-  free (file);
-  free (mountpoint);
   if (r == -1)
     return make_error ("mount_loop");
 
@@ -7059,15 +6712,12 @@ run_mount_loop (ETERM *message)
 static ETERM *
 run_mount_options (ETERM *message)
 {
-  char *options = erl_iolist_to_string (ARG (0));
-  char *mountable = erl_iolist_to_string (ARG (1));
-  char *mountpoint = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *options = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_mount_options (g, options, mountable, mountpoint);
-  free (options);
-  free (mountable);
-  free (mountpoint);
   if (r == -1)
     return make_error ("mount_options");
 
@@ -7077,13 +6727,11 @@ run_mount_options (ETERM *message)
 static ETERM *
 run_mount_ro (ETERM *message)
 {
-  char *mountable = erl_iolist_to_string (ARG (0));
-  char *mountpoint = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mount_ro (g, mountable, mountpoint);
-  free (mountable);
-  free (mountpoint);
   if (r == -1)
     return make_error ("mount_ro");
 
@@ -7093,17 +6741,13 @@ run_mount_ro (ETERM *message)
 static ETERM *
 run_mount_vfs (ETERM *message)
 {
-  char *options = erl_iolist_to_string (ARG (0));
-  char *vfstype = erl_iolist_to_string (ARG (1));
-  char *mountable = erl_iolist_to_string (ARG (2));
-  char *mountpoint = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *options = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *vfstype = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_mount_vfs (g, options, vfstype, mountable, mountpoint);
-  free (options);
-  free (vfstype);
-  free (mountable);
-  free (mountpoint);
   if (r == -1)
     return make_error ("mount_vfs");
 
@@ -7142,13 +6786,11 @@ run_mounts (ETERM *message)
 static ETERM *
 run_mv (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_mv (g, src, dest);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("mv");
 
@@ -7171,11 +6813,10 @@ static ETERM *
 run_ntfs_3g_probe (ETERM *message)
 {
   int rw = get_bool (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_ntfs_3g_probe (g, rw, device);
-  free (device);
   if (r == -1)
     return make_error ("ntfs_3g_probe");
 
@@ -7185,13 +6826,11 @@ run_ntfs_3g_probe (ETERM *message)
 static ETERM *
 run_ntfsclone_in (ETERM *message)
 {
-  char *backupfile = erl_iolist_to_string (ARG (0));
-  char *device = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *backupfile = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_ntfsclone_in (g, backupfile, device);
-  free (backupfile);
-  free (device);
   if (r == -1)
     return make_error ("ntfsclone_in");
 
@@ -7201,8 +6840,8 @@ run_ntfsclone_in (ETERM *message)
 static ETERM *
 run_ntfsclone_out (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *backupfile = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *backupfile = erl_iolist_to_string (ARG (1));
 
   struct guestfs_ntfsclone_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsclone_out_argv *optargs = &optargs_s;
@@ -7244,8 +6883,6 @@ run_ntfsclone_out (ETERM *message)
   int r;
 
   r = guestfs_ntfsclone_out_argv (g, device, backupfile, optargs);
-  free (device);
-  free (backupfile);
   if (r == -1)
     return make_error ("ntfsclone_out");
 
@@ -7255,7 +6892,7 @@ run_ntfsclone_out (ETERM *message)
 static ETERM *
 run_ntfsfix (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_ntfsfix_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsfix_argv *optargs = &optargs_s;
@@ -7277,7 +6914,6 @@ run_ntfsfix (ETERM *message)
   int r;
 
   r = guestfs_ntfsfix_argv (g, device, optargs);
-  free (device);
   if (r == -1)
     return make_error ("ntfsfix");
 
@@ -7287,7 +6923,7 @@ run_ntfsfix (ETERM *message)
 static ETERM *
 run_ntfsresize (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_ntfsresize_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_ntfsresize_opts_argv *optargs = &optargs_s;
@@ -7314,7 +6950,6 @@ run_ntfsresize (ETERM *message)
   int r;
 
   r = guestfs_ntfsresize_opts_argv (g, device, optargs);
-  free (device);
   if (r == -1)
     return make_error ("ntfsresize");
 
@@ -7324,12 +6959,11 @@ run_ntfsresize (ETERM *message)
 static ETERM *
 run_ntfsresize_size (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_ntfsresize_size (g, device, size);
-  free (device);
   if (r == -1)
     return make_error ("ntfsresize_size");
 
@@ -7351,11 +6985,10 @@ run_parse_environment (ETERM *message)
 static ETERM *
 run_parse_environment_list (ETERM *message)
 {
-  char **environment = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **environment = get_string_list (ARG (0));
   int r;
 
   r = guestfs_parse_environment_list (g, environment);
-  guestfs___free_string_list (environment);
   if (r == -1)
     return make_error ("parse_environment_list");
 
@@ -7365,15 +6998,13 @@ run_parse_environment_list (ETERM *message)
 static ETERM *
 run_part_add (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *prlogex = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *prlogex = erl_iolist_to_string (ARG (1));
   int64_t startsect = get_int64 (ARG (2));
   int64_t endsect = get_int64 (ARG (3));
   int r;
 
   r = guestfs_part_add (g, device, prlogex, startsect, endsect);
-  free (device);
-  free (prlogex);
   if (r == -1)
     return make_error ("part_add");
 
@@ -7383,12 +7014,11 @@ run_part_add (ETERM *message)
 static ETERM *
 run_part_del (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
   int r;
 
   r = guestfs_part_del (g, device, partnum);
-  free (device);
   if (r == -1)
     return make_error ("part_del");
 
@@ -7398,13 +7028,11 @@ run_part_del (ETERM *message)
 static ETERM *
 run_part_disk (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *parttype = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *parttype = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_part_disk (g, device, parttype);
-  free (device);
-  free (parttype);
   if (r == -1)
     return make_error ("part_disk");
 
@@ -7414,12 +7042,11 @@ run_part_disk (ETERM *message)
 static ETERM *
 run_part_get_bootable (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
   int r;
 
   r = guestfs_part_get_bootable (g, device, partnum);
-  free (device);
   if (r == -1)
     return make_error ("part_get_bootable");
 
@@ -7429,12 +7056,11 @@ run_part_get_bootable (ETERM *message)
 static ETERM *
 run_part_get_gpt_type (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
   char *r;
 
   r = guestfs_part_get_gpt_type (g, device, partnum);
-  free (device);
   if (r == NULL)
     return make_error ("part_get_gpt_type");
 
@@ -7446,12 +7072,11 @@ run_part_get_gpt_type (ETERM *message)
 static ETERM *
 run_part_get_mbr_id (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
   int r;
 
   r = guestfs_part_get_mbr_id (g, device, partnum);
-  free (device);
   if (r == -1)
     return make_error ("part_get_mbr_id");
 
@@ -7461,11 +7086,10 @@ run_part_get_mbr_id (ETERM *message)
 static ETERM *
 run_part_get_parttype (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_part_get_parttype (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("part_get_parttype");
 
@@ -7477,13 +7101,11 @@ run_part_get_parttype (ETERM *message)
 static ETERM *
 run_part_init (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *parttype = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *parttype = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_part_init (g, device, parttype);
-  free (device);
-  free (parttype);
   if (r == -1)
     return make_error ("part_init");
 
@@ -7493,11 +7115,10 @@ run_part_init (ETERM *message)
 static ETERM *
 run_part_list (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   struct guestfs_partition_list *r;
 
   r = guestfs_part_list (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("part_list");
 
@@ -7509,13 +7130,12 @@ run_part_list (ETERM *message)
 static ETERM *
 run_part_set_bootable (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
   int bootable = get_bool (ARG (2));
   int r;
 
   r = guestfs_part_set_bootable (g, device, partnum, bootable);
-  free (device);
   if (r == -1)
     return make_error ("part_set_bootable");
 
@@ -7525,14 +7145,12 @@ run_part_set_bootable (ETERM *message)
 static ETERM *
 run_part_set_gpt_type (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
-  char *guid = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *guid = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_part_set_gpt_type (g, device, partnum, guid);
-  free (device);
-  free (guid);
   if (r == -1)
     return make_error ("part_set_gpt_type");
 
@@ -7542,13 +7160,12 @@ run_part_set_gpt_type (ETERM *message)
 static ETERM *
 run_part_set_mbr_id (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
   int idbyte = get_int (ARG (2));
   int r;
 
   r = guestfs_part_set_mbr_id (g, device, partnum, idbyte);
-  free (device);
   if (r == -1)
     return make_error ("part_set_mbr_id");
 
@@ -7558,14 +7175,12 @@ run_part_set_mbr_id (ETERM *message)
 static ETERM *
 run_part_set_name (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
-  char *name = erl_iolist_to_string (ARG (2));
+  CLEANUP_FREE char *name = erl_iolist_to_string (ARG (2));
   int r;
 
   r = guestfs_part_set_name (g, device, partnum, name);
-  free (device);
-  free (name);
   if (r == -1)
     return make_error ("part_set_name");
 
@@ -7575,11 +7190,10 @@ run_part_set_name (ETERM *message)
 static ETERM *
 run_part_to_dev (ETERM *message)
 {
-  char *partition = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *partition = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_part_to_dev (g, partition);
-  free (partition);
   if (r == NULL)
     return make_error ("part_to_dev");
 
@@ -7591,11 +7205,10 @@ run_part_to_dev (ETERM *message)
 static ETERM *
 run_part_to_partnum (ETERM *message)
 {
-  char *partition = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *partition = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_part_to_partnum (g, partition);
-  free (partition);
   if (r == -1)
     return make_error ("part_to_partnum");
 
@@ -7617,14 +7230,13 @@ run_ping_daemon (ETERM *message)
 static ETERM *
 run_pread (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int count = get_int (ARG (1));
   int64_t offset = get_int64 (ARG (2));
   char *r;
   size_t size;
 
   r = guestfs_pread (g, path, count, offset, &size);
-  free (path);
   if (r == NULL)
     return make_error ("pread");
 
@@ -7636,14 +7248,13 @@ run_pread (ETERM *message)
 static ETERM *
 run_pread_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int count = get_int (ARG (1));
   int64_t offset = get_int64 (ARG (2));
   char *r;
   size_t size;
 
   r = guestfs_pread_device (g, device, count, offset, &size);
-  free (device);
   if (r == NULL)
     return make_error ("pread_device");
 
@@ -7655,11 +7266,10 @@ run_pread_device (ETERM *message)
 static ETERM *
 run_pvchange_uuid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_pvchange_uuid (g, device);
-  free (device);
   if (r == -1)
     return make_error ("pvchange_uuid");
 
@@ -7681,11 +7291,10 @@ run_pvchange_uuid_all (ETERM *message)
 static ETERM *
 run_pvcreate (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_pvcreate (g, device);
-  free (device);
   if (r == -1)
     return make_error ("pvcreate");
 
@@ -7695,11 +7304,10 @@ run_pvcreate (ETERM *message)
 static ETERM *
 run_pvremove (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_pvremove (g, device);
-  free (device);
   if (r == -1)
     return make_error ("pvremove");
 
@@ -7709,11 +7317,10 @@ run_pvremove (ETERM *message)
 static ETERM *
 run_pvresize (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_pvresize (g, device);
-  free (device);
   if (r == -1)
     return make_error ("pvresize");
 
@@ -7723,12 +7330,11 @@ run_pvresize (ETERM *message)
 static ETERM *
 run_pvresize_size (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_pvresize_size (g, device, size);
-  free (device);
   if (r == -1)
     return make_error ("pvresize_size");
 
@@ -7767,11 +7373,10 @@ run_pvs_full (ETERM *message)
 static ETERM *
 run_pvuuid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_pvuuid (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("pvuuid");
 
@@ -7783,7 +7388,7 @@ run_pvuuid (ETERM *message)
 static ETERM *
 run_pwrite (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   ETERM *content_bin = erl_iolist_to_binary (ARG (1));
   const void *content = ERL_BIN_PTR (content_bin);
   size_t content_size = ERL_BIN_SIZE (content_bin);
@@ -7791,7 +7396,6 @@ run_pwrite (ETERM *message)
   int r;
 
   r = guestfs_pwrite (g, path, content, content_size, offset);
-  free (path);
   if (r == -1)
     return make_error ("pwrite");
 
@@ -7801,7 +7405,7 @@ run_pwrite (ETERM *message)
 static ETERM *
 run_pwrite_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   ETERM *content_bin = erl_iolist_to_binary (ARG (1));
   const void *content = ERL_BIN_PTR (content_bin);
   size_t content_size = ERL_BIN_SIZE (content_bin);
@@ -7809,7 +7413,6 @@ run_pwrite_device (ETERM *message)
   int r;
 
   r = guestfs_pwrite_device (g, device, content, content_size, offset);
-  free (device);
   if (r == -1)
     return make_error ("pwrite_device");
 
@@ -7819,12 +7422,11 @@ run_pwrite_device (ETERM *message)
 static ETERM *
 run_read_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
   size_t size;
 
   r = guestfs_read_file (g, path, &size);
-  free (path);
   if (r == NULL)
     return make_error ("read_file");
 
@@ -7836,11 +7438,10 @@ run_read_file (ETERM *message)
 static ETERM *
 run_read_lines (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_read_lines (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("read_lines");
 
@@ -7853,11 +7454,10 @@ run_read_lines (ETERM *message)
 static ETERM *
 run_readdir (ETERM *message)
 {
-  char *dir = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dir = erl_iolist_to_string (ARG (0));
   struct guestfs_dirent_list *r;
 
   r = guestfs_readdir (g, dir);
-  free (dir);
   if (r == NULL)
     return make_error ("readdir");
 
@@ -7869,11 +7469,10 @@ run_readdir (ETERM *message)
 static ETERM *
 run_readlink (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_readlink (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("readlink");
 
@@ -7885,13 +7484,11 @@ run_readlink (ETERM *message)
 static ETERM *
 run_readlinklist (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char **names = get_string_list (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **names = get_string_list (ARG (1));
   char **r;
 
   r = guestfs_readlinklist (g, path, names);
-  free (path);
-  guestfs___free_string_list (names);
   if (r == NULL)
     return make_error ("readlinklist");
 
@@ -7904,11 +7501,10 @@ run_readlinklist (ETERM *message)
 static ETERM *
 run_realpath (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_realpath (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("realpath");
 
@@ -7920,11 +7516,10 @@ run_realpath (ETERM *message)
 static ETERM *
 run_remove_drive (ETERM *message)
 {
-  char *label = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_remove_drive (g, label);
-  free (label);
   if (r == -1)
     return make_error ("remove_drive");
 
@@ -7934,13 +7529,11 @@ run_remove_drive (ETERM *message)
 static ETERM *
 run_removexattr (ETERM *message)
 {
-  char *xattr = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *xattr = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_removexattr (g, xattr, path);
-  free (xattr);
-  free (path);
   if (r == -1)
     return make_error ("removexattr");
 
@@ -7950,13 +7543,11 @@ run_removexattr (ETERM *message)
 static ETERM *
 run_rename (ETERM *message)
 {
-  char *oldpath = erl_iolist_to_string (ARG (0));
-  char *newpath = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *oldpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *newpath = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_rename (g, oldpath, newpath);
-  free (oldpath);
-  free (newpath);
   if (r == -1)
     return make_error ("rename");
 
@@ -7966,11 +7557,10 @@ run_rename (ETERM *message)
 static ETERM *
 run_resize2fs (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_resize2fs (g, device);
-  free (device);
   if (r == -1)
     return make_error ("resize2fs");
 
@@ -7980,11 +7570,10 @@ run_resize2fs (ETERM *message)
 static ETERM *
 run_resize2fs_M (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_resize2fs_M (g, device);
-  free (device);
   if (r == -1)
     return make_error ("resize2fs_M");
 
@@ -7994,12 +7583,11 @@ run_resize2fs_M (ETERM *message)
 static ETERM *
 run_resize2fs_size (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_resize2fs_size (g, device, size);
-  free (device);
   if (r == -1)
     return make_error ("resize2fs_size");
 
@@ -8009,11 +7597,10 @@ run_resize2fs_size (ETERM *message)
 static ETERM *
 run_rm (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_rm (g, path);
-  free (path);
   if (r == -1)
     return make_error ("rm");
 
@@ -8023,11 +7610,10 @@ run_rm (ETERM *message)
 static ETERM *
 run_rm_f (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_rm_f (g, path);
-  free (path);
   if (r == -1)
     return make_error ("rm_f");
 
@@ -8037,11 +7623,10 @@ run_rm_f (ETERM *message)
 static ETERM *
 run_rm_rf (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_rm_rf (g, path);
-  free (path);
   if (r == -1)
     return make_error ("rm_rf");
 
@@ -8051,11 +7636,10 @@ run_rm_rf (ETERM *message)
 static ETERM *
 run_rmdir (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_rmdir (g, path);
-  free (path);
   if (r == -1)
     return make_error ("rmdir");
 
@@ -8065,11 +7649,10 @@ run_rmdir (ETERM *message)
 static ETERM *
 run_rmmountpoint (ETERM *message)
 {
-  char *exemptpath = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *exemptpath = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_rmmountpoint (g, exemptpath);
-  free (exemptpath);
   if (r == -1)
     return make_error ("rmmountpoint");
 
@@ -8079,8 +7662,8 @@ run_rmmountpoint (ETERM *message)
 static ETERM *
 run_rsync (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
 
   struct guestfs_rsync_argv optargs_s = { .bitmask = 0 };
   struct guestfs_rsync_argv *optargs = &optargs_s;
@@ -8107,8 +7690,6 @@ run_rsync (ETERM *message)
   int r;
 
   r = guestfs_rsync_argv (g, src, dest, optargs);
-  free (src);
-  free (dest);
   if (r == -1)
     return make_error ("rsync");
 
@@ -8118,8 +7699,8 @@ run_rsync (ETERM *message)
 static ETERM *
 run_rsync_in (ETERM *message)
 {
-  char *remote = erl_iolist_to_string (ARG (0));
-  char *dest = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *remote = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dest = erl_iolist_to_string (ARG (1));
 
   struct guestfs_rsync_in_argv optargs_s = { .bitmask = 0 };
   struct guestfs_rsync_in_argv *optargs = &optargs_s;
@@ -8146,8 +7727,6 @@ run_rsync_in (ETERM *message)
   int r;
 
   r = guestfs_rsync_in_argv (g, remote, dest, optargs);
-  free (remote);
-  free (dest);
   if (r == -1)
     return make_error ("rsync_in");
 
@@ -8157,8 +7736,8 @@ run_rsync_in (ETERM *message)
 static ETERM *
 run_rsync_out (ETERM *message)
 {
-  char *src = erl_iolist_to_string (ARG (0));
-  char *remote = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *src = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *remote = erl_iolist_to_string (ARG (1));
 
   struct guestfs_rsync_out_argv optargs_s = { .bitmask = 0 };
   struct guestfs_rsync_out_argv *optargs = &optargs_s;
@@ -8185,8 +7764,6 @@ run_rsync_out (ETERM *message)
   int r;
 
   r = guestfs_rsync_out_argv (g, src, remote, optargs);
-  free (src);
-  free (remote);
   if (r == -1)
     return make_error ("rsync_out");
 
@@ -8196,11 +7773,10 @@ run_rsync_out (ETERM *message)
 static ETERM *
 run_scrub_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_scrub_device (g, device);
-  free (device);
   if (r == -1)
     return make_error ("scrub_device");
 
@@ -8210,11 +7786,10 @@ run_scrub_device (ETERM *message)
 static ETERM *
 run_scrub_file (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_scrub_file (g, file);
-  free (file);
   if (r == -1)
     return make_error ("scrub_file");
 
@@ -8224,11 +7799,10 @@ run_scrub_file (ETERM *message)
 static ETERM *
 run_scrub_freespace (ETERM *message)
 {
-  char *dir = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *dir = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_scrub_freespace (g, dir);
-  free (dir);
   if (r == -1)
     return make_error ("scrub_freespace");
 
@@ -8238,7 +7812,7 @@ run_scrub_freespace (ETERM *message)
 static ETERM *
 run_set_append (ETERM *message)
 {
-  char *append;
+  CLEANUP_FREE char *append;
   if (atom_equals (ARG (0), "undefined"))
     append = NULL;
   else
@@ -8246,7 +7820,6 @@ run_set_append (ETERM *message)
   int r;
 
   r = guestfs_set_append (g, append);
-  free (append);
   if (r == -1)
     return make_error ("set_append");
 
@@ -8256,11 +7829,10 @@ run_set_append (ETERM *message)
 static ETERM *
 run_set_attach_method (ETERM *message)
 {
-  char *backend = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *backend = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_set_attach_method (g, backend);
-  free (backend);
   if (r == -1)
     return make_error ("set_attach_method");
 
@@ -8283,11 +7855,10 @@ run_set_autosync (ETERM *message)
 static ETERM *
 run_set_backend (ETERM *message)
 {
-  char *backend = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *backend = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_set_backend (g, backend);
-  free (backend);
   if (r == -1)
     return make_error ("set_backend");
 
@@ -8297,7 +7868,7 @@ run_set_backend (ETERM *message)
 static ETERM *
 run_set_cachedir (ETERM *message)
 {
-  char *cachedir;
+  CLEANUP_FREE char *cachedir;
   if (atom_equals (ARG (0), "undefined"))
     cachedir = NULL;
   else
@@ -8305,7 +7876,6 @@ run_set_cachedir (ETERM *message)
   int r;
 
   r = guestfs_set_cachedir (g, cachedir);
-  free (cachedir);
   if (r == -1)
     return make_error ("set_cachedir");
 
@@ -8328,8 +7898,8 @@ run_set_direct (ETERM *message)
 static ETERM *
 run_set_e2attrs (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
-  char *attrs = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *attrs = erl_iolist_to_string (ARG (1));
 
   struct guestfs_set_e2attrs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_set_e2attrs_argv *optargs = &optargs_s;
@@ -8351,8 +7921,6 @@ run_set_e2attrs (ETERM *message)
   int r;
 
   r = guestfs_set_e2attrs_argv (g, file, attrs, optargs);
-  free (file);
-  free (attrs);
   if (r == -1)
     return make_error ("set_e2attrs");
 
@@ -8362,12 +7930,11 @@ run_set_e2attrs (ETERM *message)
 static ETERM *
 run_set_e2generation (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
   int64_t generation = get_int64 (ARG (1));
   int r;
 
   r = guestfs_set_e2generation (g, file, generation);
-  free (file);
   if (r == -1)
     return make_error ("set_e2generation");
 
@@ -8377,13 +7944,11 @@ run_set_e2generation (ETERM *message)
 static ETERM *
 run_set_e2label (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *label = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_set_e2label (g, device, label);
-  free (device);
-  free (label);
   if (r == -1)
     return make_error ("set_e2label");
 
@@ -8393,13 +7958,11 @@ run_set_e2label (ETERM *message)
 static ETERM *
 run_set_e2uuid (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char *uuid = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_set_e2uuid (g, device, uuid);
-  free (device);
-  free (uuid);
   if (r == -1)
     return make_error ("set_e2uuid");
 
@@ -8409,13 +7972,11 @@ run_set_e2uuid (ETERM *message)
 static ETERM *
 run_set_label (ETERM *message)
 {
-  char *mountable = erl_iolist_to_string (ARG (0));
-  char *label = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_set_label (g, mountable, label);
-  free (mountable);
-  free (label);
   if (r == -1)
     return make_error ("set_label");
 
@@ -8441,11 +8002,10 @@ run_set_libvirt_requested_credential (ETERM *message)
 static ETERM *
 run_set_libvirt_supported_credentials (ETERM *message)
 {
-  char **creds = get_string_list (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **creds = get_string_list (ARG (0));
   int r;
 
   r = guestfs_set_libvirt_supported_credentials (g, creds);
-  guestfs___free_string_list (creds);
   if (r == -1)
     return make_error ("set_libvirt_supported_credentials");
 
@@ -8481,7 +8041,7 @@ run_set_network (ETERM *message)
 static ETERM *
 run_set_path (ETERM *message)
 {
-  char *searchpath;
+  CLEANUP_FREE char *searchpath;
   if (atom_equals (ARG (0), "undefined"))
     searchpath = NULL;
   else
@@ -8489,7 +8049,6 @@ run_set_path (ETERM *message)
   int r;
 
   r = guestfs_set_path (g, searchpath);
-  free (searchpath);
   if (r == -1)
     return make_error ("set_path");
 
@@ -8512,11 +8071,10 @@ run_set_pgroup (ETERM *message)
 static ETERM *
 run_set_program (ETERM *message)
 {
-  char *program = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *program = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_set_program (g, program);
-  free (program);
   if (r == -1)
     return make_error ("set_program");
 
@@ -8526,7 +8084,7 @@ run_set_program (ETERM *message)
 static ETERM *
 run_set_qemu (ETERM *message)
 {
-  char *qemu;
+  CLEANUP_FREE char *qemu;
   if (atom_equals (ARG (0), "undefined"))
     qemu = NULL;
   else
@@ -8534,7 +8092,6 @@ run_set_qemu (ETERM *message)
   int r;
 
   r = guestfs_set_qemu (g, qemu);
-  free (qemu);
   if (r == -1)
     return make_error ("set_qemu");
 
@@ -8583,7 +8140,7 @@ run_set_smp (ETERM *message)
 static ETERM *
 run_set_tmpdir (ETERM *message)
 {
-  char *tmpdir;
+  CLEANUP_FREE char *tmpdir;
   if (atom_equals (ARG (0), "undefined"))
     tmpdir = NULL;
   else
@@ -8591,7 +8148,6 @@ run_set_tmpdir (ETERM *message)
   int r;
 
   r = guestfs_set_tmpdir (g, tmpdir);
-  free (tmpdir);
   if (r == -1)
     return make_error ("set_tmpdir");
 
@@ -8627,11 +8183,10 @@ run_set_verbose (ETERM *message)
 static ETERM *
 run_setcon (ETERM *message)
 {
-  char *context = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *context = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_setcon (g, context);
-  free (context);
   if (r == -1)
     return make_error ("setcon");
 
@@ -8641,16 +8196,13 @@ run_setcon (ETERM *message)
 static ETERM *
 run_setxattr (ETERM *message)
 {
-  char *xattr = erl_iolist_to_string (ARG (0));
-  char *val = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *xattr = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *val = erl_iolist_to_string (ARG (1));
   int vallen = get_int (ARG (2));
-  char *path = erl_iolist_to_string (ARG (3));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (3));
   int r;
 
   r = guestfs_setxattr (g, xattr, val, vallen, path);
-  free (xattr);
-  free (val);
-  free (path);
   if (r == -1)
     return make_error ("setxattr");
 
@@ -8660,16 +8212,14 @@ run_setxattr (ETERM *message)
 static ETERM *
 run_sfdisk (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int cyls = get_int (ARG (1));
   int heads = get_int (ARG (2));
   int sectors = get_int (ARG (3));
-  char **lines = get_string_list (ARG (4));
+  CLEANUP_FREE_STRING_LIST char **lines = get_string_list (ARG (4));
   int r;
 
   r = guestfs_sfdisk (g, device, cyls, heads, sectors, lines);
-  free (device);
-  guestfs___free_string_list (lines);
   if (r == -1)
     return make_error ("sfdisk");
 
@@ -8679,13 +8229,11 @@ run_sfdisk (ETERM *message)
 static ETERM *
 run_sfdiskM (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
-  char **lines = get_string_list (ARG (1));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **lines = get_string_list (ARG (1));
   int r;
 
   r = guestfs_sfdiskM (g, device, lines);
-  free (device);
-  guestfs___free_string_list (lines);
   if (r == -1)
     return make_error ("sfdiskM");
 
@@ -8695,17 +8243,15 @@ run_sfdiskM (ETERM *message)
 static ETERM *
 run_sfdisk_N (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int partnum = get_int (ARG (1));
   int cyls = get_int (ARG (2));
   int heads = get_int (ARG (3));
   int sectors = get_int (ARG (4));
-  char *line = erl_iolist_to_string (ARG (5));
+  CLEANUP_FREE char *line = erl_iolist_to_string (ARG (5));
   int r;
 
   r = guestfs_sfdisk_N (g, device, partnum, cyls, heads, sectors, line);
-  free (device);
-  free (line);
   if (r == -1)
     return make_error ("sfdisk_N");
 
@@ -8715,11 +8261,10 @@ run_sfdisk_N (ETERM *message)
 static ETERM *
 run_sfdisk_disk_geometry (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_sfdisk_disk_geometry (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("sfdisk_disk_geometry");
 
@@ -8731,11 +8276,10 @@ run_sfdisk_disk_geometry (ETERM *message)
 static ETERM *
 run_sfdisk_kernel_geometry (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_sfdisk_kernel_geometry (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("sfdisk_kernel_geometry");
 
@@ -8747,11 +8291,10 @@ run_sfdisk_kernel_geometry (ETERM *message)
 static ETERM *
 run_sfdisk_l (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_sfdisk_l (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("sfdisk_l");
 
@@ -8763,11 +8306,10 @@ run_sfdisk_l (ETERM *message)
 static ETERM *
 run_sh (ETERM *message)
 {
-  char *command = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *command = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_sh (g, command);
-  free (command);
   if (r == NULL)
     return make_error ("sh");
 
@@ -8779,11 +8321,10 @@ run_sh (ETERM *message)
 static ETERM *
 run_sh_lines (ETERM *message)
 {
-  char *command = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *command = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_sh_lines (g, command);
-  free (command);
   if (r == NULL)
     return make_error ("sh_lines");
 
@@ -8821,11 +8362,10 @@ run_sleep (ETERM *message)
 static ETERM *
 run_stat (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_stat *r;
 
   r = guestfs_stat (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("stat");
 
@@ -8837,11 +8377,10 @@ run_stat (ETERM *message)
 static ETERM *
 run_statvfs (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   struct guestfs_statvfs *r;
 
   r = guestfs_statvfs (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("statvfs");
 
@@ -8853,11 +8392,10 @@ run_statvfs (ETERM *message)
 static ETERM *
 run_strings (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_strings (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("strings");
 
@@ -8870,13 +8408,11 @@ run_strings (ETERM *message)
 static ETERM *
 run_strings_e (ETERM *message)
 {
-  char *encoding = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *encoding = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_strings_e (g, encoding, path);
-  free (encoding);
-  free (path);
   if (r == NULL)
     return make_error ("strings_e");
 
@@ -8889,11 +8425,10 @@ run_strings_e (ETERM *message)
 static ETERM *
 run_swapoff_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapoff_device (g, device);
-  free (device);
   if (r == -1)
     return make_error ("swapoff_device");
 
@@ -8903,11 +8438,10 @@ run_swapoff_device (ETERM *message)
 static ETERM *
 run_swapoff_file (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapoff_file (g, file);
-  free (file);
   if (r == -1)
     return make_error ("swapoff_file");
 
@@ -8917,11 +8451,10 @@ run_swapoff_file (ETERM *message)
 static ETERM *
 run_swapoff_label (ETERM *message)
 {
-  char *label = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapoff_label (g, label);
-  free (label);
   if (r == -1)
     return make_error ("swapoff_label");
 
@@ -8931,11 +8464,10 @@ run_swapoff_label (ETERM *message)
 static ETERM *
 run_swapoff_uuid (ETERM *message)
 {
-  char *uuid = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapoff_uuid (g, uuid);
-  free (uuid);
   if (r == -1)
     return make_error ("swapoff_uuid");
 
@@ -8945,11 +8477,10 @@ run_swapoff_uuid (ETERM *message)
 static ETERM *
 run_swapon_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapon_device (g, device);
-  free (device);
   if (r == -1)
     return make_error ("swapon_device");
 
@@ -8959,11 +8490,10 @@ run_swapon_device (ETERM *message)
 static ETERM *
 run_swapon_file (ETERM *message)
 {
-  char *file = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *file = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapon_file (g, file);
-  free (file);
   if (r == -1)
     return make_error ("swapon_file");
 
@@ -8973,11 +8503,10 @@ run_swapon_file (ETERM *message)
 static ETERM *
 run_swapon_label (ETERM *message)
 {
-  char *label = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapon_label (g, label);
-  free (label);
   if (r == -1)
     return make_error ("swapon_label");
 
@@ -8987,11 +8516,10 @@ run_swapon_label (ETERM *message)
 static ETERM *
 run_swapon_uuid (ETERM *message)
 {
-  char *uuid = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_swapon_uuid (g, uuid);
-  free (uuid);
   if (r == -1)
     return make_error ("swapon_uuid");
 
@@ -9013,7 +8541,7 @@ run_sync (ETERM *message)
 static ETERM *
 run_syslinux (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_syslinux_argv optargs_s = { .bitmask = 0 };
   struct guestfs_syslinux_argv *optargs = &optargs_s;
@@ -9035,7 +8563,6 @@ run_syslinux (ETERM *message)
   int r;
 
   r = guestfs_syslinux_argv (g, device, optargs);
-  free (device);
   if ((optargs_s.bitmask & GUESTFS_SYSLINUX_DIRECTORY_BITMASK))
     free ((char *) optargs_s.directory);
   if (r == -1)
@@ -9047,11 +8574,10 @@ run_syslinux (ETERM *message)
 static ETERM *
 run_tail (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_tail (g, path);
-  free (path);
   if (r == NULL)
     return make_error ("tail");
 
@@ -9065,11 +8591,10 @@ static ETERM *
 run_tail_n (ETERM *message)
 {
   int nrlines = get_int (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_tail_n (g, nrlines, path);
-  free (path);
   if (r == NULL)
     return make_error ("tail_n");
 
@@ -9082,8 +8607,8 @@ run_tail_n (ETERM *message)
 static ETERM *
 run_tar_in (ETERM *message)
 {
-  char *tarfile = erl_iolist_to_string (ARG (0));
-  char *directory = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *tarfile = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (1));
 
   struct guestfs_tar_in_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_tar_in_opts_argv *optargs = &optargs_s;
@@ -9105,8 +8630,6 @@ run_tar_in (ETERM *message)
   int r;
 
   r = guestfs_tar_in_opts_argv (g, tarfile, directory, optargs);
-  free (tarfile);
-  free (directory);
   if ((optargs_s.bitmask & GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK))
     free ((char *) optargs_s.compress);
   if (r == -1)
@@ -9118,8 +8641,8 @@ run_tar_in (ETERM *message)
 static ETERM *
 run_tar_out (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
-  char *tarfile = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *tarfile = erl_iolist_to_string (ARG (1));
 
   struct guestfs_tar_out_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_tar_out_opts_argv *optargs = &optargs_s;
@@ -9151,8 +8674,6 @@ run_tar_out (ETERM *message)
   int r;
 
   r = guestfs_tar_out_opts_argv (g, directory, tarfile, optargs);
-  free (directory);
-  free (tarfile);
   if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK))
     free ((char *) optargs_s.compress);
   if ((optargs_s.bitmask & GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK))
@@ -9166,13 +8687,11 @@ run_tar_out (ETERM *message)
 static ETERM *
 run_tgz_in (ETERM *message)
 {
-  char *tarball = erl_iolist_to_string (ARG (0));
-  char *directory = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *tarball = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_tgz_in (g, tarball, directory);
-  free (tarball);
-  free (directory);
   if (r == -1)
     return make_error ("tgz_in");
 
@@ -9182,13 +8701,11 @@ run_tgz_in (ETERM *message)
 static ETERM *
 run_tgz_out (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
-  char *tarball = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *tarball = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_tgz_out (g, directory, tarball);
-  free (directory);
-  free (tarball);
   if (r == -1)
     return make_error ("tgz_out");
 
@@ -9198,11 +8715,10 @@ run_tgz_out (ETERM *message)
 static ETERM *
 run_touch (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_touch (g, path);
-  free (path);
   if (r == -1)
     return make_error ("touch");
 
@@ -9212,11 +8728,10 @@ run_touch (ETERM *message)
 static ETERM *
 run_truncate (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_truncate (g, path);
-  free (path);
   if (r == -1)
     return make_error ("truncate");
 
@@ -9226,12 +8741,11 @@ run_truncate (ETERM *message)
 static ETERM *
 run_truncate_size (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int64_t size = get_int64 (ARG (1));
   int r;
 
   r = guestfs_truncate_size (g, path, size);
-  free (path);
   if (r == -1)
     return make_error ("truncate_size");
 
@@ -9241,7 +8755,7 @@ run_truncate_size (ETERM *message)
 static ETERM *
 run_tune2fs (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_tune2fs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_tune2fs_argv *optargs = &optargs_s;
@@ -9308,7 +8822,6 @@ run_tune2fs (ETERM *message)
   int r;
 
   r = guestfs_tune2fs_argv (g, device, optargs);
-  free (device);
   if ((optargs_s.bitmask & GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK))
     free ((char *) optargs_s.errorbehavior);
   if ((optargs_s.bitmask & GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK))
@@ -9322,11 +8835,10 @@ run_tune2fs (ETERM *message)
 static ETERM *
 run_tune2fs_l (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_tune2fs_l (g, device);
-  free (device);
   if (r == NULL)
     return make_error ("tune2fs_l");
 
@@ -9338,13 +8850,11 @@ run_tune2fs_l (ETERM *message)
 static ETERM *
 run_txz_in (ETERM *message)
 {
-  char *tarball = erl_iolist_to_string (ARG (0));
-  char *directory = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *tarball = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_txz_in (g, tarball, directory);
-  free (tarball);
-  free (directory);
   if (r == -1)
     return make_error ("txz_in");
 
@@ -9354,13 +8864,11 @@ run_txz_in (ETERM *message)
 static ETERM *
 run_txz_out (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
-  char *tarball = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *tarball = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_txz_out (g, directory, tarball);
-  free (directory);
-  free (tarball);
   if (r == -1)
     return make_error ("txz_out");
 
@@ -9383,7 +8891,7 @@ run_umask (ETERM *message)
 static ETERM *
 run_umount (ETERM *message)
 {
-  char *pathordevice = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *pathordevice = erl_iolist_to_string (ARG (0));
 
   struct guestfs_umount_opts_argv optargs_s = { .bitmask = 0 };
   struct guestfs_umount_opts_argv *optargs = &optargs_s;
@@ -9410,7 +8918,6 @@ run_umount (ETERM *message)
   int r;
 
   r = guestfs_umount_opts_argv (g, pathordevice, optargs);
-  free (pathordevice);
   if (r == -1)
     return make_error ("umount");
 
@@ -9462,13 +8969,11 @@ run_umount_local (ETERM *message)
 static ETERM *
 run_upload (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
-  char *remotefilename = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *remotefilename = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_upload (g, filename, remotefilename);
-  free (filename);
-  free (remotefilename);
   if (r == -1)
     return make_error ("upload");
 
@@ -9478,14 +8983,12 @@ run_upload (ETERM *message)
 static ETERM *
 run_upload_offset (ETERM *message)
 {
-  char *filename = erl_iolist_to_string (ARG (0));
-  char *remotefilename = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *remotefilename = erl_iolist_to_string (ARG (1));
   int64_t offset = get_int64 (ARG (2));
   int r;
 
   r = guestfs_upload_offset (g, filename, remotefilename, offset);
-  free (filename);
-  free (remotefilename);
   if (r == -1)
     return make_error ("upload_offset");
 
@@ -9507,7 +9010,7 @@ run_user_cancel (ETERM *message)
 static ETERM *
 run_utimens (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int64_t atsecs = get_int64 (ARG (1));
   int64_t atnsecs = get_int64 (ARG (2));
   int64_t mtsecs = get_int64 (ARG (3));
@@ -9515,7 +9018,6 @@ run_utimens (ETERM *message)
   int r;
 
   r = guestfs_utimens (g, path, atsecs, atnsecs, mtsecs, mtnsecs);
-  free (path);
   if (r == -1)
     return make_error ("utimens");
 
@@ -9553,11 +9055,10 @@ run_version (ETERM *message)
 static ETERM *
 run_vfs_label (ETERM *message)
 {
-  char *mountable = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_vfs_label (g, mountable);
-  free (mountable);
   if (r == NULL)
     return make_error ("vfs_label");
 
@@ -9569,11 +9070,10 @@ run_vfs_label (ETERM *message)
 static ETERM *
 run_vfs_type (ETERM *message)
 {
-  char *mountable = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_vfs_type (g, mountable);
-  free (mountable);
   if (r == NULL)
     return make_error ("vfs_type");
 
@@ -9585,11 +9085,10 @@ run_vfs_type (ETERM *message)
 static ETERM *
 run_vfs_uuid (ETERM *message)
 {
-  char *mountable = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_vfs_uuid (g, mountable);
-  free (mountable);
   if (r == NULL)
     return make_error ("vfs_uuid");
 
@@ -9602,11 +9101,10 @@ static ETERM *
 run_vg_activate (ETERM *message)
 {
   int activate = get_bool (ARG (0));
-  char **volgroups = get_string_list (ARG (1));
+  CLEANUP_FREE_STRING_LIST char **volgroups = get_string_list (ARG (1));
   int r;
 
   r = guestfs_vg_activate (g, activate, volgroups);
-  guestfs___free_string_list (volgroups);
   if (r == -1)
     return make_error ("vg_activate");
 
@@ -9629,11 +9127,10 @@ run_vg_activate_all (ETERM *message)
 static ETERM *
 run_vgchange_uuid (ETERM *message)
 {
-  char *vg = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *vg = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_vgchange_uuid (g, vg);
-  free (vg);
   if (r == -1)
     return make_error ("vgchange_uuid");
 
@@ -9655,13 +9152,11 @@ run_vgchange_uuid_all (ETERM *message)
 static ETERM *
 run_vgcreate (ETERM *message)
 {
-  char *volgroup = erl_iolist_to_string (ARG (0));
-  char **physvols = get_string_list (ARG (1));
+  CLEANUP_FREE char *volgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE_STRING_LIST char **physvols = get_string_list (ARG (1));
   int r;
 
   r = guestfs_vgcreate (g, volgroup, physvols);
-  free (volgroup);
-  guestfs___free_string_list (physvols);
   if (r == -1)
     return make_error ("vgcreate");
 
@@ -9671,11 +9166,10 @@ run_vgcreate (ETERM *message)
 static ETERM *
 run_vglvuuids (ETERM *message)
 {
-  char *vgname = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *vgname = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_vglvuuids (g, vgname);
-  free (vgname);
   if (r == NULL)
     return make_error ("vglvuuids");
 
@@ -9688,12 +9182,11 @@ run_vglvuuids (ETERM *message)
 static ETERM *
 run_vgmeta (ETERM *message)
 {
-  char *vgname = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *vgname = erl_iolist_to_string (ARG (0));
   char *r;
   size_t size;
 
   r = guestfs_vgmeta (g, vgname, &size);
-  free (vgname);
   if (r == NULL)
     return make_error ("vgmeta");
 
@@ -9705,11 +9198,10 @@ run_vgmeta (ETERM *message)
 static ETERM *
 run_vgpvuuids (ETERM *message)
 {
-  char *vgname = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *vgname = erl_iolist_to_string (ARG (0));
   char **r;
 
   r = guestfs_vgpvuuids (g, vgname);
-  free (vgname);
   if (r == NULL)
     return make_error ("vgpvuuids");
 
@@ -9722,11 +9214,10 @@ run_vgpvuuids (ETERM *message)
 static ETERM *
 run_vgremove (ETERM *message)
 {
-  char *vgname = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *vgname = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_vgremove (g, vgname);
-  free (vgname);
   if (r == -1)
     return make_error ("vgremove");
 
@@ -9736,13 +9227,11 @@ run_vgremove (ETERM *message)
 static ETERM *
 run_vgrename (ETERM *message)
 {
-  char *volgroup = erl_iolist_to_string (ARG (0));
-  char *newvolgroup = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *volgroup = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *newvolgroup = erl_iolist_to_string (ARG (1));
   int r;
 
   r = guestfs_vgrename (g, volgroup, newvolgroup);
-  free (volgroup);
-  free (newvolgroup);
   if (r == -1)
     return make_error ("vgrename");
 
@@ -9793,11 +9282,10 @@ run_vgscan (ETERM *message)
 static ETERM *
 run_vguuid (ETERM *message)
 {
-  char *vgname = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *vgname = erl_iolist_to_string (ARG (0));
   char *r;
 
   r = guestfs_vguuid (g, vgname);
-  free (vgname);
   if (r == NULL)
     return make_error ("vguuid");
 
@@ -9821,11 +9309,10 @@ run_wait_ready (ETERM *message)
 static ETERM *
 run_wc_c (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_wc_c (g, path);
-  free (path);
   if (r == -1)
     return make_error ("wc_c");
 
@@ -9835,11 +9322,10 @@ run_wc_c (ETERM *message)
 static ETERM *
 run_wc_l (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_wc_l (g, path);
-  free (path);
   if (r == -1)
     return make_error ("wc_l");
 
@@ -9849,11 +9335,10 @@ run_wc_l (ETERM *message)
 static ETERM *
 run_wc_w (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_wc_w (g, path);
-  free (path);
   if (r == -1)
     return make_error ("wc_w");
 
@@ -9863,11 +9348,10 @@ run_wc_w (ETERM *message)
 static ETERM *
 run_wipefs (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_wipefs (g, device);
-  free (device);
   if (r == -1)
     return make_error ("wipefs");
 
@@ -9877,14 +9361,13 @@ run_wipefs (ETERM *message)
 static ETERM *
 run_write (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   ETERM *content_bin = erl_iolist_to_binary (ARG (1));
   const void *content = ERL_BIN_PTR (content_bin);
   size_t content_size = ERL_BIN_SIZE (content_bin);
   int r;
 
   r = guestfs_write (g, path, content, content_size);
-  free (path);
   if (r == -1)
     return make_error ("write");
 
@@ -9894,14 +9377,13 @@ run_write (ETERM *message)
 static ETERM *
 run_write_append (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
   ETERM *content_bin = erl_iolist_to_binary (ARG (1));
   const void *content = ERL_BIN_PTR (content_bin);
   size_t content_size = ERL_BIN_SIZE (content_bin);
   int r;
 
   r = guestfs_write_append (g, path, content, content_size);
-  free (path);
   if (r == -1)
     return make_error ("write_append");
 
@@ -9911,14 +9393,12 @@ run_write_append (ETERM *message)
 static ETERM *
 run_write_file (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
-  char *content = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *content = erl_iolist_to_string (ARG (1));
   int size = get_int (ARG (2));
   int r;
 
   r = guestfs_write_file (g, path, content, size);
-  free (path);
-  free (content);
   if (r == -1)
     return make_error ("write_file");
 
@@ -9928,7 +9408,7 @@ run_write_file (ETERM *message)
 static ETERM *
 run_xfs_admin (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_xfs_admin_argv optargs_s = { .bitmask = 0 };
   struct guestfs_xfs_admin_argv *optargs = &optargs_s;
@@ -9980,7 +9460,6 @@ run_xfs_admin (ETERM *message)
   int r;
 
   r = guestfs_xfs_admin_argv (g, device, optargs);
-  free (device);
   if ((optargs_s.bitmask & GUESTFS_XFS_ADMIN_LABEL_BITMASK))
     free ((char *) optargs_s.label);
   if ((optargs_s.bitmask & GUESTFS_XFS_ADMIN_UUID_BITMASK))
@@ -9994,7 +9473,7 @@ run_xfs_admin (ETERM *message)
 static ETERM *
 run_xfs_growfs (ETERM *message)
 {
-  char *path = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
 
   struct guestfs_xfs_growfs_argv optargs_s = { .bitmask = 0 };
   struct guestfs_xfs_growfs_argv *optargs = &optargs_s;
@@ -10051,7 +9530,6 @@ run_xfs_growfs (ETERM *message)
   int r;
 
   r = guestfs_xfs_growfs_argv (g, path, optargs);
-  free (path);
   if (r == -1)
     return make_error ("xfs_growfs");
 
@@ -10061,11 +9539,10 @@ run_xfs_growfs (ETERM *message)
 static ETERM *
 run_xfs_info (ETERM *message)
 {
-  char *pathordevice = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *pathordevice = erl_iolist_to_string (ARG (0));
   struct guestfs_xfsinfo *r;
 
   r = guestfs_xfs_info (g, pathordevice);
-  free (pathordevice);
   if (r == NULL)
     return make_error ("xfs_info");
 
@@ -10077,7 +9554,7 @@ run_xfs_info (ETERM *message)
 static ETERM *
 run_xfs_repair (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
 
   struct guestfs_xfs_repair_argv optargs_s = { .bitmask = 0 };
   struct guestfs_xfs_repair_argv *optargs = &optargs_s;
@@ -10144,7 +9621,6 @@ run_xfs_repair (ETERM *message)
   int r;
 
   r = guestfs_xfs_repair_argv (g, device, optargs);
-  free (device);
   if ((optargs_s.bitmask & GUESTFS_XFS_REPAIR_LOGDEV_BITMASK))
     free ((char *) optargs_s.logdev);
   if ((optargs_s.bitmask & GUESTFS_XFS_REPAIR_RTDEV_BITMASK))
@@ -10158,13 +9634,11 @@ run_xfs_repair (ETERM *message)
 static ETERM *
 run_zegrep (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_zegrep (g, regex, path);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("zegrep");
 
@@ -10177,13 +9651,11 @@ run_zegrep (ETERM *message)
 static ETERM *
 run_zegrepi (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_zegrepi (g, regex, path);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("zegrepi");
 
@@ -10196,11 +9668,10 @@ run_zegrepi (ETERM *message)
 static ETERM *
 run_zero (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_zero (g, device);
-  free (device);
   if (r == -1)
     return make_error ("zero");
 
@@ -10210,11 +9681,10 @@ run_zero (ETERM *message)
 static ETERM *
 run_zero_device (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_zero_device (g, device);
-  free (device);
   if (r == -1)
     return make_error ("zero_device");
 
@@ -10224,11 +9694,10 @@ run_zero_device (ETERM *message)
 static ETERM *
 run_zero_free_space (ETERM *message)
 {
-  char *directory = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_zero_free_space (g, directory);
-  free (directory);
   if (r == -1)
     return make_error ("zero_free_space");
 
@@ -10238,11 +9707,10 @@ run_zero_free_space (ETERM *message)
 static ETERM *
 run_zerofree (ETERM *message)
 {
-  char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
   int r;
 
   r = guestfs_zerofree (g, device);
-  free (device);
   if (r == -1)
     return make_error ("zerofree");
 
@@ -10252,13 +9720,11 @@ run_zerofree (ETERM *message)
 static ETERM *
 run_zfgrep (ETERM *message)
 {
-  char *pattern = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_zfgrep (g, pattern, path);
-  free (pattern);
-  free (path);
   if (r == NULL)
     return make_error ("zfgrep");
 
@@ -10271,13 +9737,11 @@ run_zfgrep (ETERM *message)
 static ETERM *
 run_zfgrepi (ETERM *message)
 {
-  char *pattern = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *pattern = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_zfgrepi (g, pattern, path);
-  free (pattern);
-  free (path);
   if (r == NULL)
     return make_error ("zfgrepi");
 
@@ -10290,13 +9754,11 @@ run_zfgrepi (ETERM *message)
 static ETERM *
 run_zfile (ETERM *message)
 {
-  char *meth = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *meth = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char *r;
 
   r = guestfs_zfile (g, meth, path);
-  free (meth);
-  free (path);
   if (r == NULL)
     return make_error ("zfile");
 
@@ -10308,13 +9770,11 @@ run_zfile (ETERM *message)
 static ETERM *
 run_zgrep (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_zgrep (g, regex, path);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("zgrep");
 
@@ -10327,13 +9787,11 @@ run_zgrep (ETERM *message)
 static ETERM *
 run_zgrepi (ETERM *message)
 {
-  char *regex = erl_iolist_to_string (ARG (0));
-  char *path = erl_iolist_to_string (ARG (1));
+  CLEANUP_FREE char *regex = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *path = erl_iolist_to_string (ARG (1));
   char **r;
 
   r = guestfs_zgrepi (g, regex, path);
-  free (regex);
-  free (path);
   if (r == NULL)
     return make_error ("zgrepi");
 
