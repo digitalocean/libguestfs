@@ -1,3 +1,103 @@
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Fix double-free when certain guest files are empty.
+	The following commit:
+
+	  commit 5a3da366268825b26b470cde35658b67c1d11cd4
+	  Author: Richard W.M. Jones <rjones@redhat.com>
+	  Date:   Thu Jan 24 17:07:38 2013 +0000
+
+	      inspect: Use CLEANUP_* macros in inspection code.
+
+	can cause a double-free along an error path when certain guest files
+	are empty where we expected those files to contain at least one line.
+
+	This causes virt-inspector to crash when run on these guests.
+
+	The following is a test case which demonstrates the crash.
+	`f20rawhidex64' is a Fedora guest, but with small adjustments to the
+	test you could use any Linux guest for this test.
+
+	  $ qemu-img create -f qcow2 -b f20rawhidex64 /tmp/test.qcow2
+	  Formatting '/tmp/test.qcow2', fmt=qcow2 size=21474836480 backing_file='f20rawhidex64' encryption=off cluster_size=65536 lazy_refcounts=off
+	  $ guestfish -i -a /tmp/test.qcow2 -- rm /etc/redhat-release : touch /etc/redhat-release
+	  $ virt-inspector /tmp/test.qcow2
+	  *** glibc detected *** virt-inspector: double free or corruption (fasttop): 0x00007f18bc9925a0 ***
+	  ======= Backtrace: =========
+	  /lib64/libc.so.6(+0x34ecc7ca8e)[0x7f18b8e64a8e]
+	  /lib64/libguestfs.so.0(+0x3f91898078)[0x7f18ba13c078]
+	  /lib64/libguestfs.so.0(+0x3f91899761)[0x7f18ba13d761]
+	  /lib64/libguestfs.so.0(+0x3f91896d12)[0x7f18ba13ad12]
+	  /lib64/libguestfs.so.0(+0x3f91894140)[0x7f18ba138140]
+	  /lib64/libguestfs.so.0(guestfs_inspect_os+0x35)[0x7f18ba0bcc35]
+	  virt-inspector(main+0x547)[0x7f18ba7c57d7]
+	  /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f18b8e09a05]
+	  virt-inspector(+0x6665)[0x7f18ba7c7665]
+
+	This is a denial of service, but not likely to be exploitable.
+
+	(Found by Coverity)
+	(cherry picked from commit fa6a76050d82894365dfe32916903ef7fee3ffcd)
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	rbd: Fix overallocation because of incorrect 'sizeof'.
+	(Found by Coverity)
+	(cherry picked from commit 1e7f2b29c428538aa3486c15c72a30c030b276f3)
+
+	conn-socket: Don't leak 'conn' on error paths.
+	(Found by Coverity)
+	(cherry picked from commit 9854d1f08d3142324593e953744281fca1940dbf)
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	erlang: Don't leak (some) strings along error paths.
+	This fixes several string leaks along error paths which
+	were found by Coverity.
+
+	However this is not a complete fix.
+	(cherry picked from commit 0e756842f6e7435ff09c116c1c3edc5316d752a7)
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Check for out of memory failure.
+	(Found by Coverity)
+	(cherry picked from commit e52a6b56f487890f5507b89c3ff6fdf173eab402)
+
+	inspection: Test for failure from match1 function.
+	(Found by Coverity)
+	(cherry picked from commit a9a191d20e6b4ea951b0ef38cb5abad68987c81b)
+
+	drives: Don't call `close (-1)'.
+	(Found by Coverity)
+	(cherry picked from commit 49cb55146f6933dd1a7a9c38ec884aa5afc12247)
+
+	syntax-check: HAVE_DECL_* macros are always defined.
+	These macros are always defined to 0|1.  We don't need to
+	check if they are defined.
+	(cherry picked from commit ada943b949774cdfc60953606f5e7aa9ac0a8638)
+
+	syntax-check: Remove trailing whitespace. (cherry picked from commit 2ed3a383b4fc78966fa37b291c72784cd48100d6)
+
+	syntax-check: Use newline before EOF in these text files. (cherry picked from commit a787d2565f69e651b39fe08246b7235322db7a49)
+
+	syntax-check: Remove unused ``#includes''. (cherry picked from commit 5c80f22b64af2d15623105571cc743beec2f94f6)
+
+	syntax-check: Use exit (EXIT_*) macros instead of hard-coded 0|1.
+	These are defined in <stdlib.h> which the test program already includes.
+	(cherry picked from commit 014bc5f398d05f6474eb690d86f9f944e9e04000)
+
+	syntax-check: Ignore more syntax-check problems.
+	For some reason maint.mk doesn't process all of these regexps,
+	or perhaps the regexps are not well-formed.
+	(cherry picked from commit 77d08060b412775d1a9ab846decd14439980781d)
+
+	Ignore various intermediate files left around by 'make syntax-check'. (cherry picked from commit 2bc1d522dbaea8727cfc7bcc4bb03bbb8a5c212a)
+
+	make help: Suggest using -j1 -k options with make syntax-check.
+	This lets you see all the output, not interleaved.
+	(cherry picked from commit 42e268a2b412cc67c139d2023521de6ea35b3882)
+
 2013-05-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.22.0.

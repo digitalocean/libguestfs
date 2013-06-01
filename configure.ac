@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [22])
-m4_define([libguestfs_release], [0])
+m4_define([libguestfs_release], [1])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -236,7 +236,7 @@ AC_LANG_SOURCE([[
 void
 freep (void *ptr)
 {
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
 
 void
@@ -249,7 +249,7 @@ int
 main (int argc, char *argv[])
 {
   test ();
-  exit (1);
+  exit (EXIT_FAILURE);
 }
 ]])
     ],[
