@@ -147,7 +147,7 @@ override_dh_install:
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"
 override_dh_makeshlibs:
-	dh_makeshlibs -X/usr/lib/*/jni -X/usr/lib/python*
+	dh_makeshlibs -X/jni/ -X/python2/ -X/python3/
 
 %:
 	dh $@ \
