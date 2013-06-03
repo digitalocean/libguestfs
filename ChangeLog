@@ -1,3 +1,145 @@
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Updated release versions which fix CVE-2013-2124. (cherry picked from commit 731d0e1bf6b2b4b977633a454a697eb61dc1557e)
+
+	perl: Add rules + environment variables so Perl code can be valgrinded. (cherry picked from commit e8af0982da9f48cce00d999ec6777c15ab931d80)
+
+	inspection: Use guestfs_is_{dir,file} in preference to guestfs_exists.
+	Where possible, using this is more accurate, and it helps when
+	trying to do fuzz testing.
+	(cherry picked from commit e71b2c11f59b3f8ae0c4b31c4ab5b0d1bfcdf181)
+
+	events: Avoid event handler limit if program allocates and deallocates handlers. (cherry picked from commit b4d8757dadb67d86d14bd8af854d7ba48e9a55f6)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	proto: Fix for rare FileIn hangs. (RHBZ#969845).
+	Yet another protocol bug!
+
+	If the daemon cancels, then the library should send a cancellation
+	chunk.  It normally does this during the loop where it is uploading a
+	file.  However due to an oversight or possibly a regression when we
+	modularized the socket code, the library did not send a cancellation
+	chunk if the daemon cancelled just before the end of file was sent.
+
+	This commit fixes this.
+	(cherry picked from commit 697b0f89fed04a4017e033861a9eaaa40b3270d9)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Correct fix for segfault if /etc/SuSE-release is an empty file.
+	The test was the wrong way round.
+
+	See: CVE-2013-2124.
+
+	This fixes commit ae8bb84ecd46d7b6ef557a87725923ac8d09dce0.
+	(cherry picked from commit 1c9dfd079aa6d7893f72c5fd17656c847f72c8d6)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Don't call directly from one guestfs__* function to another.
+	The public-facing functions like 'guestfs_*' are implemented as
+	wrappers around implementation functions like 'guestfs__*' (for
+	library-side functions only).
+
+	Don't call from one 'guestfs__*' function to another.  It prevents
+	ENTER events from being caught, especially where a deprecated function
+	calls another implementation.
+
+	Most code was not doing this, but there were still some places left
+	where it was done.
+	(cherry picked from commit 823628d41f898982979ab7dd53656377bef8ce1d)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	events: Use bool for flag. (cherry picked from commit e86459e5014eca637eade0bf0410175e5a4b5305)
+
+	events: Refactor code to make the common path clear. (cherry picked from commit 75cf879613899c1beb847b1f7a776df90b565be3)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Don't segfault if /etc/SuSE-release is an empty file.
+	Related to CVE-2013-2124.
+
+	Thanks: Olaf Hering.
+	(cherry picked from commit ae8bb84ecd46d7b6ef557a87725923ac8d09dce0)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/http: Add a test of HTTP protocol.
+	Disabled for various reasons.  See comment in Makefile.am.
+	(cherry picked from commit 36d6df671e57cd755dc4b0b38acd539615b73936)
+
+	release notes: Recompile so that long URLs aren't broken in text output. (cherry picked from commit b3e5ed69b5d1540f463413122f2db21b3bbcfd46)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Set Text::Wrap::huge property to "overflow".
+	This stops long URLs from being broken in the text output mode.
+
+	See:
+	https://www.redhat.com/archives/libguestfs/2013-May/thread.html#00088
+	(cherry picked from commit aab882a3a6f4acf99b7fba6ea9f9f072ed2898ea)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	security: Centralize CVE information in one place (in guestfs(3)). (cherry picked from commit b0bd0bba933141c4922c9eecd1c721228adccb97)
+
+	security: Add documentation for CVE-2013-2124. (cherry picked from commit ee9f1abe7ffacf4c6000c16721dc9259c51b61a1)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Add sensible disk optimizations.
+	The timeout lets us read remote images without timing out.
+
+	The noop scheduler lets the host do scheduling.  This generally makes
+	sense for mixed workloads because the host has a global view of the
+	system, and often has more compute power too.
+	(cherry picked from commit 1766ff1177f0cd2e918632f2f67183851f0273f5)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Remove dead code which (if not dead) would have set disk scheduler to noop. (cherry picked from commit da764805ba42fd940c3fbe4bbdc2312c5f84c38f)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Don't set 'rotational' on virtio-blk devices.
+	virtio-blk is obsolete so we don't need to bother optimizing it.
+	People should use virtio-scsi instead.
+
+	Also virtio-blk should choose the optimal settings itself.
+
+	This was originally added to fix this bug:
+	https://bugzilla.redhat.com/show_bug.cgi?id=509383
+	(cherry picked from commit 52eb691e0b85d5a934db11c5dba042f7ce089b53)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Set builddir for old RHEL 5 which didn't have this. (cherry picked from commit 9df4e51f65f15f3d217f527127c17da650d9ef48)
+
+	generator: Set abs_srcdir for old RHEL 5 which didn't have this. (cherry picked from commit 1d08ea938f6c7b29160b833fa7b4be8241b4f565)
+
+	generator: Set abs_builddir for old RHEL 5 which didn't have this. (cherry picked from commit 06291ce0dd656605d3ada94c56103013d6eeaf3d)
+
+	tests: Add 'make check-release' rule.
+	This is a subset of tests which will be required to pass before a
+	tarball can be released by the maintainer.
+	(cherry picked from commit 809a7012dec57977b6fd283c44c26584c15d6999)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add new 'make check-all' rule.
+	This runs all of the check* rules.  Since this includes 'make check',
+	'make check-all' is not quite equivalent to 'make extra-tests'.
+
+	Cherry picked from commit 0a60332e1bcff698555d31c8b2524a435a93a3f9
+	and modified because make extra-tests has not been removed from
+	this stable branch.
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.22.1.
+
 2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspection: Fix double-free when certain guest files are empty.

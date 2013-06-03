@@ -1555,6 +1555,15 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
 
+# Old RHEL 5 autoconf doesn't have abs_builddir.
+abs_builddir ?= $(shell pwd)
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/generator && pwd)
+
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
+
 @HAVE_OCAML_TRUE@generator: $(objects)
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -linkpkg $^ -o $@
 
