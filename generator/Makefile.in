@@ -244,6 +244,8 @@ BITSIZEOF_SIZE_T = @BITSIZEOF_SIZE_T@
 BITSIZEOF_WCHAR_T = @BITSIZEOF_WCHAR_T@
 BITSIZEOF_WINT_T = @BITSIZEOF_WINT_T@
 BMPTOPNM = @BMPTOPNM@
+BRANCH_NUMBER = @BRANCH_NUMBER@
+BRANCH_TYPE = @BRANCH_TYPE@
 BYTESWAP_H = @BYTESWAP_H@
 CAP_LIBS = @CAP_LIBS@
 CC = @CC@
@@ -1552,6 +1554,15 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
+
+# Old RHEL 5 autoconf doesn't have abs_builddir.
+abs_builddir ?= $(shell pwd)
+
+# Old RHEL 5 autoconf doesn't have abs_srcdir.
+abs_srcdir ?= $(shell cd $(top_srcdir)/generator && pwd)
+
+# Old RHEL 5 autoconf doesn't have builddir.
+builddir ?= .
 
 @HAVE_OCAML_TRUE@generator: $(objects)
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -linkpkg $^ -o $@

@@ -1,6 +1,5 @@
-#!/bin/bash -
 # libguestfs
-# Copyright (C) 2010-2012 Red Hat Inc.
+# Copyright (C) 2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,18 +15,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Regression test for:
-# https://bugzilla.redhat.com/show_bug.cgi?id=576879#c0
-# upload loses synchronization if the disk is not mounted
+include $(top_srcdir)/subdir-rules.mk
 
-set -e
+# Test uses the Python SimpleHTTPServer module which is
+# conveniently part of Python core.
 
-rm -f test1.img
+if HAVE_PYTHON
 
-../../fish/guestfish -N disk <<EOF
--upload $srcdir/rhbz576879.sh /test.sh
-# Shouldn't lose synchronization, so next command should work:
-ping-daemon
-EOF
+# Test disabled for now.  Several things conspire to stop this working:
+#
+# (1) Python may throw "Broken pipe" errors:
+# http://bugs.python.org/issue14574
+# Fixed upstream in Python >= 2.7.5.
+#
+# (2) Fedora 18's Curl is broken.  Can be resolved by compiling Curl
+# from git and setting LD_LIBRARY_PATH=~/curl/lib/.libs
 
-rm -f test1.img
+# TESTS = test-http.py
+#
+# TESTS_ENVIRONMENT = $(top_builddir)/run --test $(PYTHON)
+
+endif
+
+EXTRA_DIST = \
+	test-http.py

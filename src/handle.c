@@ -112,8 +112,7 @@ guestfs_create_flags (unsigned flags, ...)
   if (!g->qemu) goto error;
 
   /* Get program name. */
-#if defined(HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME) && \
-    HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME == 1
+#if HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME == 1
   if (STRPREFIX (program_invocation_short_name, "lt-"))
     /* Remove libtool (lt-*) prefix from short name. */
     g->program = strdup (program_invocation_short_name + 3);
@@ -637,7 +636,7 @@ guestfs__set_backend (guestfs_h *g, const char *method)
 int
 guestfs__set_attach_method (guestfs_h *g, const char *method)
 {
-  return guestfs__set_backend (g, method);
+  return guestfs_set_backend (g, method);
 }
 
 char *
@@ -677,7 +676,7 @@ guestfs__get_attach_method (guestfs_h *g)
     return safe_strdup (g, "appliance");
 
   default:
-    return guestfs__get_backend (g);
+    return guestfs_get_backend (g);
   }
 }
 

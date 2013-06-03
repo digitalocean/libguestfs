@@ -258,14 +258,14 @@ check_filesystem (guestfs_h *g, const char *mountable,
   else if (is_dir_etc &&
            is_dir_bin &&
            is_dir_share &&
-           guestfs_exists (g, "/local") == 0 &&
+           guestfs_is_dir (g, "/local") == 0 &&
            guestfs_is_file (g, "/etc/fstab") == 0)
     ;
   /* Linux /usr? */
   else if (is_dir_etc &&
            is_dir_bin &&
            is_dir_share &&
-           guestfs_exists (g, "/local") > 0 &&
+           guestfs_is_dir (g, "/local") > 0 &&
            guestfs_is_file (g, "/etc/fstab") == 0)
     ;
   /* Linux /var? */
@@ -544,7 +544,7 @@ guestfs___check_package_management (guestfs_h *g, struct inspect_fs *fs)
 char *
 guestfs___first_line_of_file (guestfs_h *g, const char *filename)
 {
-  CLEANUP_FREE char **lines = NULL; /* sic: not CLEANUP_FREE_STRING_LIST */
+  char **lines = NULL; /* sic: not CLEANUP_FREE_STRING_LIST */
   int64_t size;
   char *ret;
 
@@ -572,6 +572,8 @@ guestfs___first_line_of_file (guestfs_h *g, const char *filename)
   /* lines[1] should be NULL because of '1' argument above ... */
 
   ret = lines[0];               /* caller frees */
+
+  free (lines);
 
   return ret;
 }

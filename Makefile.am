@@ -57,6 +57,7 @@ SUBDIRS += tests/bigdirs
 SUBDIRS += tests/disk-labels
 SUBDIRS += tests/hotplug
 SUBDIRS += tests/nbd
+SUBDIRS += tests/http
 SUBDIRS += tests/syslinux
 SUBDIRS += tests/regressions
 endif
@@ -338,6 +339,25 @@ extra-tests:
 	  check-with-upstream-libvirt \
 	  check-slow
 
+check-all:
+	$(MAKE) -j1 \
+	  check \
+	  check-valgrind \
+	  check-valgrind-local-guests \
+	  check-direct \
+	  check-valgrind-direct \
+	  check-with-upstream-qemu \
+	  check-with-upstream-libvirt \
+	  check-slow
+
+check-release:
+	$(MAKE) -j1 \
+	  check \
+	  check-valgrind \
+	  check-direct \
+	  check-valgrind-direct \
+	  check-slow
+
 check-valgrind: build-test-guests
 	@errors=0; \
 	for f in `grep -l '^$@:' $(SUBDIRS:%=%/Makefile.am)`; do \
@@ -425,7 +445,7 @@ print-subdirs:
 # Tag HEAD with current version (only for maintainer).
 
 maintainer-tag:
-	git tag -a $(VERSION) -m "Version $(VERSION) (development)" -f
+	git tag -a $(VERSION) -m "Version $(VERSION) ($(BRANCH_TYPE))" -f
 
 # Provide help on common Makefile targets.
 
@@ -445,7 +465,10 @@ help:
 	@echo "  make check-with-upstream-libvirt   Test using upstream libvirt."
 	@echo "  make check-slow                    Slow/long-running tests."
 	@echo
-	@echo "make syntax-check                 Check syntax and style problems in the code."
+	@echo "make check-all                    Runs all 'check*' rules."
+	@echo "make check-release                Runs 'check*' rules required for release."
+	@echo
+	@echo "make syntax-check -j1 -k          Check syntax and style problems in the code."
 	@echo "make print-subdirs                Print subdirectories."
 	@echo
 	@echo "make install                      Install everything."

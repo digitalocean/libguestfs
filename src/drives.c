@@ -493,7 +493,6 @@ create_drive_dev_null (guestfs_h *g, bool readonly, const char *format,
   fd = open (tmpfile, O_WRONLY|O_CREAT|O_NOCTTY|O_CLOEXEC, 0600);
   if (fd == -1) {
     perrorf (g, "open: %s", tmpfile);
-    close (fd);
     return NULL;
   }
   if (ftruncate (fd, 4096) == -1) {
@@ -1043,7 +1042,7 @@ guestfs__add_drive_ro (guestfs_h *g, const char *filename)
     .readonly = true,
   };
 
-  return guestfs__add_drive_opts (g, filename, &optargs);
+  return guestfs_add_drive_opts_argv (g, filename, &optargs);
 }
 
 int
@@ -1055,7 +1054,7 @@ guestfs__add_drive_with_if (guestfs_h *g, const char *filename,
     .iface = iface,
   };
 
-  return guestfs__add_drive_opts (g, filename, &optargs);
+  return guestfs_add_drive_opts_argv (g, filename, &optargs);
 }
 
 int
@@ -1069,7 +1068,7 @@ guestfs__add_drive_ro_with_if (guestfs_h *g, const char *filename,
     .readonly = true,
   };
 
-  return guestfs__add_drive_opts (g, filename, &optargs);
+  return guestfs_add_drive_opts_argv (g, filename, &optargs);
 }
 
 int
@@ -1086,7 +1085,7 @@ guestfs__add_cdrom (guestfs_h *g, const char *filename)
     return -1;
   }
 
-  return guestfs__config (g, "-cdrom", filename);
+  return guestfs_config (g, "-cdrom", filename);
 }
 
 /* Depending on whether we are hotplugging or not, this function
@@ -1318,7 +1317,7 @@ guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src)
       n += 8; /* for slashes, colons, & port numbers */
     }
     n++; /* for \0 */
-    mon_host = safe_malloc (g, sizeof (char *) * n);
+    mon_host = safe_malloc (g, n);
     n = 0;
     for (i = 0; i < src->nr_servers; i++) {
       CLEANUP_FREE char *port = NULL;

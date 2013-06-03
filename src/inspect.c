@@ -52,7 +52,7 @@ guestfs__inspect_os (guestfs_h *g)
    */
 
   CLEANUP_FREE_STRING_LIST char **fses = guestfs_list_filesystems (g);
-  if (fses == NULL) return NULL; 
+  if (fses == NULL) return NULL;
 
   for (char **fs = fses; *fs; fs += 2) {
     if (guestfs___check_for_filesystem_on (g, *fs)) {
@@ -64,9 +64,9 @@ guestfs__inspect_os (guestfs_h *g)
   /* At this point we have, in the handle, a list of all filesystems
    * found and data about each one.  Now we assemble the list of
    * filesystems which are root devices and return that to the user.
-   * Fall through to guestfs__inspect_get_roots to do that.
+   * Fall through to guestfs_inspect_get_roots to do that.
    */
-  char **ret = guestfs__inspect_get_roots (g);
+  char **ret = guestfs_inspect_get_roots (g);
   if (ret == NULL)
     guestfs___free_inspect_info (g);
   return ret;

@@ -1,3 +1,267 @@
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Updated release versions which fix CVE-2013-2124. (cherry picked from commit 731d0e1bf6b2b4b977633a454a697eb61dc1557e)
+
+	perl: Add rules + environment variables so Perl code can be valgrinded. (cherry picked from commit e8af0982da9f48cce00d999ec6777c15ab931d80)
+
+	inspection: Use guestfs_is_{dir,file} in preference to guestfs_exists.
+	Where possible, using this is more accurate, and it helps when
+	trying to do fuzz testing.
+	(cherry picked from commit e71b2c11f59b3f8ae0c4b31c4ab5b0d1bfcdf181)
+
+	events: Avoid event handler limit if program allocates and deallocates handlers. (cherry picked from commit b4d8757dadb67d86d14bd8af854d7ba48e9a55f6)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	proto: Fix for rare FileIn hangs. (RHBZ#969845).
+	Yet another protocol bug!
+
+	If the daemon cancels, then the library should send a cancellation
+	chunk.  It normally does this during the loop where it is uploading a
+	file.  However due to an oversight or possibly a regression when we
+	modularized the socket code, the library did not send a cancellation
+	chunk if the daemon cancelled just before the end of file was sent.
+
+	This commit fixes this.
+	(cherry picked from commit 697b0f89fed04a4017e033861a9eaaa40b3270d9)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Correct fix for segfault if /etc/SuSE-release is an empty file.
+	The test was the wrong way round.
+
+	See: CVE-2013-2124.
+
+	This fixes commit ae8bb84ecd46d7b6ef557a87725923ac8d09dce0.
+	(cherry picked from commit 1c9dfd079aa6d7893f72c5fd17656c847f72c8d6)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Don't call directly from one guestfs__* function to another.
+	The public-facing functions like 'guestfs_*' are implemented as
+	wrappers around implementation functions like 'guestfs__*' (for
+	library-side functions only).
+
+	Don't call from one 'guestfs__*' function to another.  It prevents
+	ENTER events from being caught, especially where a deprecated function
+	calls another implementation.
+
+	Most code was not doing this, but there were still some places left
+	where it was done.
+	(cherry picked from commit 823628d41f898982979ab7dd53656377bef8ce1d)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	events: Use bool for flag. (cherry picked from commit e86459e5014eca637eade0bf0410175e5a4b5305)
+
+	events: Refactor code to make the common path clear. (cherry picked from commit 75cf879613899c1beb847b1f7a776df90b565be3)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Don't segfault if /etc/SuSE-release is an empty file.
+	Related to CVE-2013-2124.
+
+	Thanks: Olaf Hering.
+	(cherry picked from commit ae8bb84ecd46d7b6ef557a87725923ac8d09dce0)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/http: Add a test of HTTP protocol.
+	Disabled for various reasons.  See comment in Makefile.am.
+	(cherry picked from commit 36d6df671e57cd755dc4b0b38acd539615b73936)
+
+	release notes: Recompile so that long URLs aren't broken in text output. (cherry picked from commit b3e5ed69b5d1540f463413122f2db21b3bbcfd46)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Set Text::Wrap::huge property to "overflow".
+	This stops long URLs from being broken in the text output mode.
+
+	See:
+	https://www.redhat.com/archives/libguestfs/2013-May/thread.html#00088
+	(cherry picked from commit aab882a3a6f4acf99b7fba6ea9f9f072ed2898ea)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	security: Centralize CVE information in one place (in guestfs(3)). (cherry picked from commit b0bd0bba933141c4922c9eecd1c721228adccb97)
+
+	security: Add documentation for CVE-2013-2124. (cherry picked from commit ee9f1abe7ffacf4c6000c16721dc9259c51b61a1)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Add sensible disk optimizations.
+	The timeout lets us read remote images without timing out.
+
+	The noop scheduler lets the host do scheduling.  This generally makes
+	sense for mixed workloads because the host has a global view of the
+	system, and often has more compute power too.
+	(cherry picked from commit 1766ff1177f0cd2e918632f2f67183851f0273f5)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Remove dead code which (if not dead) would have set disk scheduler to noop. (cherry picked from commit da764805ba42fd940c3fbe4bbdc2312c5f84c38f)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Don't set 'rotational' on virtio-blk devices.
+	virtio-blk is obsolete so we don't need to bother optimizing it.
+	People should use virtio-scsi instead.
+
+	Also virtio-blk should choose the optimal settings itself.
+
+	This was originally added to fix this bug:
+	https://bugzilla.redhat.com/show_bug.cgi?id=509383
+	(cherry picked from commit 52eb691e0b85d5a934db11c5dba042f7ce089b53)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Set builddir for old RHEL 5 which didn't have this. (cherry picked from commit 9df4e51f65f15f3d217f527127c17da650d9ef48)
+
+	generator: Set abs_srcdir for old RHEL 5 which didn't have this. (cherry picked from commit 1d08ea938f6c7b29160b833fa7b4be8241b4f565)
+
+	generator: Set abs_builddir for old RHEL 5 which didn't have this. (cherry picked from commit 06291ce0dd656605d3ada94c56103013d6eeaf3d)
+
+	tests: Add 'make check-release' rule.
+	This is a subset of tests which will be required to pass before a
+	tarball can be released by the maintainer.
+	(cherry picked from commit 809a7012dec57977b6fd283c44c26584c15d6999)
+
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add new 'make check-all' rule.
+	This runs all of the check* rules.  Since this includes 'make check',
+	'make check-all' is not quite equivalent to 'make extra-tests'.
+
+	Cherry picked from commit 0a60332e1bcff698555d31c8b2524a435a93a3f9
+	and modified because make extra-tests has not been removed from
+	this stable branch.
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.22.1.
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Fix double-free when certain guest files are empty.
+	The following commit:
+
+	  commit 5a3da366268825b26b470cde35658b67c1d11cd4
+	  Author: Richard W.M. Jones <rjones@redhat.com>
+	  Date:   Thu Jan 24 17:07:38 2013 +0000
+
+	      inspect: Use CLEANUP_* macros in inspection code.
+
+	can cause a double-free along an error path when certain guest files
+	are empty where we expected those files to contain at least one line.
+
+	This causes virt-inspector to crash when run on these guests.
+
+	The following is a test case which demonstrates the crash.
+	`f20rawhidex64' is a Fedora guest, but with small adjustments to the
+	test you could use any Linux guest for this test.
+
+	  $ qemu-img create -f qcow2 -b f20rawhidex64 /tmp/test.qcow2
+	  Formatting '/tmp/test.qcow2', fmt=qcow2 size=21474836480 backing_file='f20rawhidex64' encryption=off cluster_size=65536 lazy_refcounts=off
+	  $ guestfish -i -a /tmp/test.qcow2 -- rm /etc/redhat-release : touch /etc/redhat-release
+	  $ virt-inspector /tmp/test.qcow2
+	  *** glibc detected *** virt-inspector: double free or corruption (fasttop): 0x00007f18bc9925a0 ***
+	  ======= Backtrace: =========
+	  /lib64/libc.so.6(+0x34ecc7ca8e)[0x7f18b8e64a8e]
+	  /lib64/libguestfs.so.0(+0x3f91898078)[0x7f18ba13c078]
+	  /lib64/libguestfs.so.0(+0x3f91899761)[0x7f18ba13d761]
+	  /lib64/libguestfs.so.0(+0x3f91896d12)[0x7f18ba13ad12]
+	  /lib64/libguestfs.so.0(+0x3f91894140)[0x7f18ba138140]
+	  /lib64/libguestfs.so.0(guestfs_inspect_os+0x35)[0x7f18ba0bcc35]
+	  virt-inspector(main+0x547)[0x7f18ba7c57d7]
+	  /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f18b8e09a05]
+	  virt-inspector(+0x6665)[0x7f18ba7c7665]
+
+	This is a denial of service, but not likely to be exploitable.
+
+	(Found by Coverity)
+	(cherry picked from commit fa6a76050d82894365dfe32916903ef7fee3ffcd)
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	rbd: Fix overallocation because of incorrect 'sizeof'.
+	(Found by Coverity)
+	(cherry picked from commit 1e7f2b29c428538aa3486c15c72a30c030b276f3)
+
+	conn-socket: Don't leak 'conn' on error paths.
+	(Found by Coverity)
+	(cherry picked from commit 9854d1f08d3142324593e953744281fca1940dbf)
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	erlang: Don't leak (some) strings along error paths.
+	This fixes several string leaks along error paths which
+	were found by Coverity.
+
+	However this is not a complete fix.
+	(cherry picked from commit 0e756842f6e7435ff09c116c1c3edc5316d752a7)
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Check for out of memory failure.
+	(Found by Coverity)
+	(cherry picked from commit e52a6b56f487890f5507b89c3ff6fdf173eab402)
+
+	inspection: Test for failure from match1 function.
+	(Found by Coverity)
+	(cherry picked from commit a9a191d20e6b4ea951b0ef38cb5abad68987c81b)
+
+	drives: Don't call `close (-1)'.
+	(Found by Coverity)
+	(cherry picked from commit 49cb55146f6933dd1a7a9c38ec884aa5afc12247)
+
+	syntax-check: HAVE_DECL_* macros are always defined.
+	These macros are always defined to 0|1.  We don't need to
+	check if they are defined.
+	(cherry picked from commit ada943b949774cdfc60953606f5e7aa9ac0a8638)
+
+	syntax-check: Remove trailing whitespace. (cherry picked from commit 2ed3a383b4fc78966fa37b291c72784cd48100d6)
+
+	syntax-check: Use newline before EOF in these text files. (cherry picked from commit a787d2565f69e651b39fe08246b7235322db7a49)
+
+	syntax-check: Remove unused ``#includes''. (cherry picked from commit 5c80f22b64af2d15623105571cc743beec2f94f6)
+
+	syntax-check: Use exit (EXIT_*) macros instead of hard-coded 0|1.
+	These are defined in <stdlib.h> which the test program already includes.
+	(cherry picked from commit 014bc5f398d05f6474eb690d86f9f944e9e04000)
+
+	syntax-check: Ignore more syntax-check problems.
+	For some reason maint.mk doesn't process all of these regexps,
+	or perhaps the regexps are not well-formed.
+	(cherry picked from commit 77d08060b412775d1a9ab846decd14439980781d)
+
+	Ignore various intermediate files left around by 'make syntax-check'. (cherry picked from commit 2bc1d522dbaea8727cfc7bcc4bb03bbb8a5c212a)
+
+	make help: Suggest using -j1 -k options with make syntax-check.
+	This lets you see all the output, not interleaved.
+	(cherry picked from commit 42e268a2b412cc67c139d2023521de6ea35b3882)
+
+2013-05-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.22.0.
+
+	build: Set 'stable' or 'development' in commit tag automatically.
+	This sets two macros: BRANCH_NUMBER and BRANCH_TYPE.
+
+	release notes: Get ready for 1.22 release.
+
+2013-05-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/mountable/test-internal-parse-mountable.c: Hoist variable decls to top.
+
+	tests/mountable/test-internal-parse-mountable.c: Don't fully allocate 1GB disk.
+	This test required 1 GB of free space since it used posix_fallocate
+	instead of creating a sparse disk.  Use truncate instead.
+
+2013-05-21  Hilko Bengen  <bengen@debian.org>
+
+	Fix for changed selinux mountpoint
+	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=707217
+
 2013-05-21  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.21.40.
