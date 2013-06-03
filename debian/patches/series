@@ -1,7 +1,6 @@
 0001-Fix-for-systemd-based-Debian-systems.patch
 0002-Fix-guestfs-supermin-appliance-path.patch
 0003-remove-last-trace-of-ntfsprogs.patch
-0004-Fix-for-changed-selinux-mountpoint.patch
-0005-Disable-test-utimens-test-futimens-gnulib.patch
-0006-perl-various-fixes-for-separated-builds.patch
-0007-python-Build-extension-with-PEP-3149-compliant-suffi.patch
+0004-python-Build-extension-with-PEP-3149-compliant-suffi.patch
+0005-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
+0006-Disable-gnulib-tests-by-default.patch
