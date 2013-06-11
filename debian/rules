@@ -144,6 +144,11 @@ override_dh_install:
 
 	dh_install -X.la -X.so.owner -Xbindtests --fail-missing
 
+override_dh_python3:
+	dh_python3 -p python3-guestfs
+override_dh_python2:
+	dh_python2 -p python-guestfs -V 2.6-
+
 # Workaround for Lintian warning
 # "{pre,post}inst-has-useless-call-to-ldconfig"
 override_dh_makeshlibs:
