@@ -1,3 +1,3 @@
 # format version number, currently 3; this line is compulsory!
 version=3
-http://libguestfs.org/download/([\d\.]*)-development/libguestfs-([\d\.]*)\.tar\.gz
+http://libguestfs.org/download/1.22-stable/libguestfs-([\d\.]*)\.tar\.gz
