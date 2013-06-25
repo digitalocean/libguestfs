@@ -4,9 +4,9 @@ Subject: perl: revert failed attempt at building out-of-tree, set PERL5LIB
  correctly for bindtests
 
 ---
- perl/Makefile.PL.in |    6 +++---
- perl/Makefile.am    |   18 ++++--------------
- run.in              |    4 ++--
+ perl/Makefile.PL.in |  6 +++---
+ perl/Makefile.am    | 18 ++++--------------
+ run.in              |  4 ++--
  3 files changed, 9 insertions(+), 19 deletions(-)
 
 diff --git a/perl/Makefile.PL.in b/perl/Makefile.PL.in

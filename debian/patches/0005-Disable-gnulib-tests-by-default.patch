@@ -3,15 +3,15 @@ Date: Sat, 1 Jun 2013 15:12:27 +0200
 Subject: Disable gnulib tests by default
 
 ---
- Makefile.am  |    5 ++++-
- configure.ac |    9 +++++++++
+ Makefile.am  | 5 ++++-
+ configure.ac | 9 +++++++++
  2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index c08ea36..9079cc0 100644
+index 284eb63..c8d49b4 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -22,7 +22,10 @@ include $(top_srcdir)/subdir-rules.mk
+@@ -23,7 +23,10 @@ include $(top_srcdir)/common-rules.mk
  ACLOCAL_AMFLAGS = -I m4
  
  # Gnulib - must be built and tested before the library.
@@ -24,7 +24,7 @@ index c08ea36..9079cc0 100644
  # Basic source for the library.
  SUBDIRS += tests/data generator src examples po
 diff --git a/configure.ac b/configure.ac
-index 7311405..c80e2e3 100644
+index ae0b289..b4ce7b7 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1538,6 +1538,15 @@ PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [

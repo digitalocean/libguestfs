@@ -1,6 +1,5 @@
 0001-Fix-for-systemd-based-Debian-systems.patch
 0002-Fix-guestfs-supermin-appliance-path.patch
 0003-remove-last-trace-of-ntfsprogs.patch
-0004-python-Build-extension-with-PEP-3149-compliant-suffi.patch
-0005-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
-0006-Disable-gnulib-tests-by-default.patch
+0004-perl-revert-failed-attempt-at-building-out-of-tree-s.patch
+0005-Disable-gnulib-tests-by-default.patch
