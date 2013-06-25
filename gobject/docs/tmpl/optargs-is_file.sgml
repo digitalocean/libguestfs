@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsIsFile
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsIsFile ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsIsFile:followsymlinks ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsIsFileClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_is_file_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

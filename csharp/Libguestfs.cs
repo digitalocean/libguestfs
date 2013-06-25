@@ -3729,7 +3729,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_is_blockdev (IntPtr h, [In] string path);
+    static extern int guestfs_is_blockdev_opts_argv (IntPtr h, [In] string path, void *);
 
     /// <summary>
     /// test if block device
@@ -3737,10 +3737,15 @@ namespace Guestfs
     public bool is_blockdev (string path)
     {
       int r;
-      r = guestfs_is_blockdev (_handle, path);
+      r = guestfs_is_blockdev_opts_argv (_handle, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    public bool is_blockdev_opts (string path)
+    {
+      return is_blockdev (path);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3759,7 +3764,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_is_chardev (IntPtr h, [In] string path);
+    static extern int guestfs_is_chardev_opts_argv (IntPtr h, [In] string path, void *);
 
     /// <summary>
     /// test if character device
@@ -3767,10 +3772,15 @@ namespace Guestfs
     public bool is_chardev (string path)
     {
       int r;
-      r = guestfs_is_chardev (_handle, path);
+      r = guestfs_is_chardev_opts_argv (_handle, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    public bool is_chardev_opts (string path)
+    {
+      return is_chardev (path);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3789,7 +3799,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_is_dir (IntPtr h, [In] string path);
+    static extern int guestfs_is_dir_opts_argv (IntPtr h, [In] string path, void *);
 
     /// <summary>
     /// test if a directory
@@ -3797,14 +3807,19 @@ namespace Guestfs
     public bool is_dir (string path)
     {
       int r;
-      r = guestfs_is_dir (_handle, path);
+      r = guestfs_is_dir_opts_argv (_handle, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
     }
 
+    public bool is_dir_opts (string path)
+    {
+      return is_dir (path);
+    }
+
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_is_fifo (IntPtr h, [In] string path);
+    static extern int guestfs_is_fifo_opts_argv (IntPtr h, [In] string path, void *);
 
     /// <summary>
     /// test if FIFO (named pipe)
@@ -3812,14 +3827,19 @@ namespace Guestfs
     public bool is_fifo (string path)
     {
       int r;
-      r = guestfs_is_fifo (_handle, path);
+      r = guestfs_is_fifo_opts_argv (_handle, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
     }
 
+    public bool is_fifo_opts (string path)
+    {
+      return is_fifo (path);
+    }
+
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_is_file (IntPtr h, [In] string path);
+    static extern int guestfs_is_file_opts_argv (IntPtr h, [In] string path, void *);
 
     /// <summary>
     /// test if a regular file
@@ -3827,10 +3847,15 @@ namespace Guestfs
     public bool is_file (string path)
     {
       int r;
-      r = guestfs_is_file (_handle, path);
+      r = guestfs_is_file_opts_argv (_handle, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    public bool is_file_opts (string path)
+    {
+      return is_file (path);
     }
 
     [DllImport ("libguestfs.so.0")]
@@ -3879,7 +3904,7 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
-    static extern int guestfs_is_socket (IntPtr h, [In] string path);
+    static extern int guestfs_is_socket_opts_argv (IntPtr h, [In] string path, void *);
 
     /// <summary>
     /// test if socket
@@ -3887,10 +3912,15 @@ namespace Guestfs
     public bool is_socket (string path)
     {
       int r;
-      r = guestfs_is_socket (_handle, path);
+      r = guestfs_is_socket_opts_argv (_handle, path, NULL);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
       return r != 0 ? true : false;
+    }
+
+    public bool is_socket_opts (string path)
+    {
+      return is_socket (path);
     }
 
     [DllImport ("libguestfs.so.0")]

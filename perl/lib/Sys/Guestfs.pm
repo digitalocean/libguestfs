@@ -3467,12 +3467,28 @@ Please read L<guestfs(3)/INSPECTION> for more details.
 
 See also C<$g-E<gt>list_filesystems>.
 
-=item $flag = $g->is_blockdev ($path);
+=item $flag = $g->is_blockdev ($path [, followsymlinks => $followsymlinks]);
 
 This returns C<true> if and only if there is a block device
 with the given C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink
+(or chain of symlinks) that ends with a block device also causes the
+function to return true.
+
 See also C<$g-E<gt>stat>.
+
+=item $flag = $g->is_blockdev_opts ($path [, followsymlinks => $followsymlinks]);
+
+This is an alias of L</is_blockdev>.
+
+=cut
+
+sub is_blockdev_opts {
+  &is_blockdev (@_)
+}
+
+=pod
 
 =item $busy = $g->is_busy ();
 
@@ -3481,12 +3497,28 @@ replacement.  Do not use this function.
 
 For more information on states, see L<guestfs(3)>.
 
-=item $flag = $g->is_chardev ($path);
+=item $flag = $g->is_chardev ($path [, followsymlinks => $followsymlinks]);
 
 This returns C<true> if and only if there is a character device
 with the given C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink
+(or chain of symlinks) that ends with a chardev also causes the
+function to return true.
+
 See also C<$g-E<gt>stat>.
+
+=item $flag = $g->is_chardev_opts ($path [, followsymlinks => $followsymlinks]);
+
+This is an alias of L</is_chardev>.
+
+=cut
+
+sub is_chardev_opts {
+  &is_chardev (@_)
+}
+
+=pod
 
 =item $config = $g->is_config ();
 
@@ -3495,28 +3527,76 @@ This returns true iff this handle is being configured
 
 For more information on states, see L<guestfs(3)>.
 
-=item $dirflag = $g->is_dir ($path);
+=item $dirflag = $g->is_dir ($path [, followsymlinks => $followsymlinks]);
 
 This returns C<true> if and only if there is a directory
 with the given C<path> name.  Note that it returns false for
 other objects like files.
 
+If the optional flag C<followsymlinks> is true, then a symlink
+(or chain of symlinks) that ends with a directory also causes the
+function to return true.
+
 See also C<$g-E<gt>stat>.
 
-=item $flag = $g->is_fifo ($path);
+=item $dirflag = $g->is_dir_opts ($path [, followsymlinks => $followsymlinks]);
+
+This is an alias of L</is_dir>.
+
+=cut
+
+sub is_dir_opts {
+  &is_dir (@_)
+}
+
+=pod
+
+=item $flag = $g->is_fifo ($path [, followsymlinks => $followsymlinks]);
 
 This returns C<true> if and only if there is a FIFO (named pipe)
 with the given C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink
+(or chain of symlinks) that ends with a FIFO also causes the
+function to return true.
+
 See also C<$g-E<gt>stat>.
 
-=item $fileflag = $g->is_file ($path);
+=item $flag = $g->is_fifo_opts ($path [, followsymlinks => $followsymlinks]);
+
+This is an alias of L</is_fifo>.
+
+=cut
+
+sub is_fifo_opts {
+  &is_fifo (@_)
+}
+
+=pod
+
+=item $fileflag = $g->is_file ($path [, followsymlinks => $followsymlinks]);
 
 This returns C<true> if and only if there is a regular file
 with the given C<path> name.  Note that it returns false for
 other objects like directories.
 
+If the optional flag C<followsymlinks> is true, then a symlink
+(or chain of symlinks) that ends with a file also causes the
+function to return true.
+
 See also C<$g-E<gt>stat>.
+
+=item $fileflag = $g->is_file_opts ($path [, followsymlinks => $followsymlinks]);
+
+This is an alias of L</is_file>.
+
+=cut
+
+sub is_file_opts {
+  &is_file (@_)
+}
+
+=pod
 
 =item $launching = $g->is_launching ();
 
@@ -3537,12 +3617,28 @@ This returns true iff this handle is ready to accept commands
 
 For more information on states, see L<guestfs(3)>.
 
-=item $flag = $g->is_socket ($path);
+=item $flag = $g->is_socket ($path [, followsymlinks => $followsymlinks]);
 
 This returns C<true> if and only if there is a Unix domain socket
 with the given C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink
+(or chain of symlinks) that ends with a socket also causes the
+function to return true.
+
 See also C<$g-E<gt>stat>.
+
+=item $flag = $g->is_socket_opts ($path [, followsymlinks => $followsymlinks]);
+
+This is an alias of L</is_socket>.
+
+=cut
+
+sub is_socket_opts {
+  &is_socket (@_)
+}
+
+=pod
 
 =item $flag = $g->is_symlink ($path);
 
@@ -9012,6 +9108,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'path', 'string(path)', 0 ],
     ],
+    optargs => {
+      followsymlinks => [ 'followsymlinks', 'bool', 0 ],
+    },
     name => "is_blockdev",
     description => "test if block device",
   },
@@ -9027,6 +9126,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'path', 'string(path)', 0 ],
     ],
+    optargs => {
+      followsymlinks => [ 'followsymlinks', 'bool', 0 ],
+    },
     name => "is_chardev",
     description => "test if character device",
   },
@@ -9042,6 +9144,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'path', 'string(path)', 0 ],
     ],
+    optargs => {
+      followsymlinks => [ 'followsymlinks', 'bool', 0 ],
+    },
     name => "is_dir",
     description => "test if a directory",
   },
@@ -9050,6 +9155,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'path', 'string(path)', 0 ],
     ],
+    optargs => {
+      followsymlinks => [ 'followsymlinks', 'bool', 0 ],
+    },
     name => "is_fifo",
     description => "test if FIFO (named pipe)",
   },
@@ -9058,6 +9166,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'path', 'string(path)', 0 ],
     ],
+    optargs => {
+      followsymlinks => [ 'followsymlinks', 'bool', 0 ],
+    },
     name => "is_file",
     description => "test if a regular file",
   },
@@ -9088,6 +9199,9 @@ use vars qw(%guestfs_introspection);
     args => [
       [ 'path', 'string(path)', 0 ],
     ],
+    optargs => {
+      followsymlinks => [ 'followsymlinks', 'bool', 0 ],
+    },
     name => "is_socket",
     description => "test if socket",
   },
@@ -11632,18 +11746,30 @@ my %ielem0 = %{$guestfs_introspection{add_drive}};
 $guestfs_introspection{add_drive_opts} = \%ielem0;
 my %ielem1 = %{$guestfs_introspection{grep}};
 $guestfs_introspection{grep_opts} = \%ielem1;
-my %ielem2 = %{$guestfs_introspection{mkfs}};
-$guestfs_introspection{mkfs_opts} = \%ielem2;
-my %ielem3 = %{$guestfs_introspection{mkswap}};
-$guestfs_introspection{mkswap_opts} = \%ielem3;
-my %ielem4 = %{$guestfs_introspection{ntfsresize}};
-$guestfs_introspection{ntfsresize_opts} = \%ielem4;
-my %ielem5 = %{$guestfs_introspection{tar_in}};
-$guestfs_introspection{tar_in_opts} = \%ielem5;
-my %ielem6 = %{$guestfs_introspection{tar_out}};
-$guestfs_introspection{tar_out_opts} = \%ielem6;
-my %ielem7 = %{$guestfs_introspection{umount}};
-$guestfs_introspection{umount_opts} = \%ielem7;
+my %ielem2 = %{$guestfs_introspection{is_blockdev}};
+$guestfs_introspection{is_blockdev_opts} = \%ielem2;
+my %ielem3 = %{$guestfs_introspection{is_chardev}};
+$guestfs_introspection{is_chardev_opts} = \%ielem3;
+my %ielem4 = %{$guestfs_introspection{is_dir}};
+$guestfs_introspection{is_dir_opts} = \%ielem4;
+my %ielem5 = %{$guestfs_introspection{is_fifo}};
+$guestfs_introspection{is_fifo_opts} = \%ielem5;
+my %ielem6 = %{$guestfs_introspection{is_file}};
+$guestfs_introspection{is_file_opts} = \%ielem6;
+my %ielem7 = %{$guestfs_introspection{is_socket}};
+$guestfs_introspection{is_socket_opts} = \%ielem7;
+my %ielem8 = %{$guestfs_introspection{mkfs}};
+$guestfs_introspection{mkfs_opts} = \%ielem8;
+my %ielem9 = %{$guestfs_introspection{mkswap}};
+$guestfs_introspection{mkswap_opts} = \%ielem9;
+my %ielem10 = %{$guestfs_introspection{ntfsresize}};
+$guestfs_introspection{ntfsresize_opts} = \%ielem10;
+my %ielem11 = %{$guestfs_introspection{tar_in}};
+$guestfs_introspection{tar_in_opts} = \%ielem11;
+my %ielem12 = %{$guestfs_introspection{tar_out}};
+$guestfs_introspection{tar_out_opts} = \%ielem12;
+my %ielem13 = %{$guestfs_introspection{umount}};
+$guestfs_introspection{umount_opts} = \%ielem13;
 
 1;
 

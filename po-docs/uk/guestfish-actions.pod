@@ -3449,21 +3449,38 @@ This function cannot decrypt encrypted disks.  The caller must do that first
 
 =head2 is-blockdev
 
- is-blockdev шлях
+=head2 is-blockdev-opts
+
+ is-blockdev path [followsymlinks:true|false]
 
 This returns C<true> if and only if there is a block device with the given
 C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a block device also causes the function to return
+true.
+
 Див. також L</stat>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 is-chardev
 
- is-chardev шлях
+=head2 is-chardev-opts
+
+ is-chardev path [followsymlinks:true|false]
 
 This returns C<true> if and only if there is a character device with the
 given C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a chardev also causes the function to return true.
+
 Див. також L</stat>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 is-config
 
@@ -3476,31 +3493,56 @@ For more information on states, see L<guestfs(3)>.
 
 =head2 is-dir
 
- is-dir шлях
+=head2 is-dir-opts
+
+ is-dir path [followsymlinks:true|false]
 
 This returns C<true> if and only if there is a directory with the given
 C<path> name.  Note that it returns false for other objects like files.
 
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a directory also causes the function to return
+true.
+
 Див. також L</stat>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 is-fifo
 
- is-fifo шлях
+=head2 is-fifo-opts
+
+ is-fifo path [followsymlinks:true|false]
 
 This returns C<true> if and only if there is a FIFO (named pipe)  with the
 given C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a FIFO also causes the function to return true.
+
 Див. також L</stat>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 is-file
 
- is-file шлях
+=head2 is-file-opts
+
+ is-file path [followsymlinks:true|false]
 
 This returns C<true> if and only if there is a regular file with the given
 C<path> name.  Note that it returns false for other objects like
 directories.
 
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a file also causes the function to return true.
+
 Див. також L</stat>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 is-lv
 
@@ -3511,12 +3553,20 @@ iff this is the case.
 
 =head2 is-socket
 
- is-socket шлях
+=head2 is-socket-opts
+
+ is-socket path [followsymlinks:true|false]
 
 This returns C<true> if and only if there is a Unix domain socket with the
 given C<path> name.
 
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a socket also causes the function to return true.
+
 Див. також L</stat>.
+
+This command has one or more optional arguments.  See L</OPTIONAL
+ARGUMENTS>.
 
 =head2 is-symlink
 

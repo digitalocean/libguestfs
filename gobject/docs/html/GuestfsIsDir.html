@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsIsDir</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsIsFile.html" title="GuestfsIsFile">
+<link rel="next" href="GuestfsUmount.html" title="GuestfsUmount">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsIsFile.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsUmount.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsIsDir.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsIsDir.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsIsDir.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsIsDir.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsIsDir"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsIsDir.top_of_page"></a>GuestfsIsDir</span></h2>
+<p>GuestfsIsDir — An object encapsulating optional arguments for guestfs_session_is_dir</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsIsDir.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsIsDir.html#GuestfsIsDir-struct" title="struct GuestfsIsDir">GuestfsIsDir</a>;
+struct              <a class="link" href="GuestfsIsDir.html#GuestfsIsDirClass" title="struct GuestfsIsDirClass">GuestfsIsDirClass</a>;
+<a class="link" href="GuestfsIsDir.html" title="GuestfsIsDir"><span class="returnvalue">GuestfsIsDir</span></a> *      <a class="link" href="GuestfsIsDir.html#guestfs-is-dir-new" title="guestfs_is_dir_new ()">guestfs_is_dir_new</a>                  (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsDir.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsIsDir
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsDir.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsIsDir.html#GuestfsIsDir--followsymlinks" title='The "followsymlinks" property'>followsymlinks</a>"           <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsDir.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_is_dir
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsDir.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsIsDir-struct"></a><h3>struct GuestfsIsDir</h3>
+<pre class="programlisting">struct GuestfsIsDir;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_is_dir.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsIsDirClass"></a><h3>struct GuestfsIsDirClass</h3>
+<pre class="programlisting">struct GuestfsIsDirClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsIsDir.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsIsDirClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsIsDirClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-is-dir-new"></a><h3>guestfs_is_dir_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsIsDir.html" title="GuestfsIsDir"><span class="returnvalue">GuestfsIsDir</span></a> *      guestfs_is_dir_new                  (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsIsDir object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsIsDir object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsDir.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsIsDir--followsymlinks"></a><h3>The <code class="literal">"followsymlinks"</code> property</h3>
+<pre class="programlisting">  "followsymlinks"           <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

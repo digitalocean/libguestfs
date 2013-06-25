@@ -50,11 +50,17 @@
 #include <guestfs-gobject/optargs-inspect_get_icon.h>
 #include <guestfs-gobject/optargs-mount_local.h>
 #include <guestfs-gobject/optargs-umount_local.h>
+#include <guestfs-gobject/optargs-is_file.h>
+#include <guestfs-gobject/optargs-is_dir.h>
 #include <guestfs-gobject/optargs-umount.h>
 #include <guestfs-gobject/optargs-tar_in.h>
 #include <guestfs-gobject/optargs-tar_out.h>
 #include <guestfs-gobject/optargs-mkswap.h>
 #include <guestfs-gobject/optargs-grep.h>
+#include <guestfs-gobject/optargs-is_chardev.h>
+#include <guestfs-gobject/optargs-is_blockdev.h>
+#include <guestfs-gobject/optargs-is_fifo.h>
+#include <guestfs-gobject/optargs-is_socket.h>
 #include <guestfs-gobject/optargs-mkfs.h>
 #include <guestfs-gobject/optargs-mount_9p.h>
 #include <guestfs-gobject/optargs-ntfsresize.h>

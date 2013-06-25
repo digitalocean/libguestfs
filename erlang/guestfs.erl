@@ -254,17 +254,23 @@
 -export([internal_test_rstructlist/2]).
 -export([internal_test_rstructlisterr/1]).
 -export([internal_test_set_output/2]).
--export([is_blockdev/2]).
+-export([is_blockdev/2, is_blockdev/3]).
+-export([is_blockdev_opts/2, is_blockdev_opts/3]).
 -export([is_busy/1]).
--export([is_chardev/2]).
+-export([is_chardev/2, is_chardev/3]).
+-export([is_chardev_opts/2, is_chardev_opts/3]).
 -export([is_config/1]).
--export([is_dir/2]).
--export([is_fifo/2]).
--export([is_file/2]).
+-export([is_dir/2, is_dir/3]).
+-export([is_dir_opts/2, is_dir_opts/3]).
+-export([is_fifo/2, is_fifo/3]).
+-export([is_fifo_opts/2, is_fifo_opts/3]).
+-export([is_file/2, is_file/3]).
+-export([is_file_opts/2, is_file_opts/3]).
 -export([is_launching/1]).
 -export([is_lv/2]).
 -export([is_ready/1]).
--export([is_socket/2]).
+-export([is_socket/2, is_socket/3]).
+-export([is_socket_opts/2, is_socket_opts/3]).
 -export([is_symlink/2]).
 -export([is_whole_device/2]).
 -export([is_zero/2]).
@@ -1321,26 +1327,56 @@ internal_test_rstructlisterr(G) ->
 internal_test_set_output(G, Filename) ->
   call_port(G, {internal_test_set_output, Filename}).
 
+is_blockdev(G, Path, Optargs) ->
+  call_port(G, {is_blockdev, Path, Optargs}).
 is_blockdev(G, Path) ->
-  call_port(G, {is_blockdev, Path}).
+  is_blockdev(G, Path, []).
+is_blockdev_opts(G, Path, Optargs) ->
+  is_blockdev(G, Path, Optargs).
+is_blockdev_opts(G, Path) ->
+  is_blockdev(G, Path).
 
 is_busy(G) ->
   call_port(G, {is_busy}).
 
+is_chardev(G, Path, Optargs) ->
+  call_port(G, {is_chardev, Path, Optargs}).
 is_chardev(G, Path) ->
-  call_port(G, {is_chardev, Path}).
+  is_chardev(G, Path, []).
+is_chardev_opts(G, Path, Optargs) ->
+  is_chardev(G, Path, Optargs).
+is_chardev_opts(G, Path) ->
+  is_chardev(G, Path).
 
 is_config(G) ->
   call_port(G, {is_config}).
 
+is_dir(G, Path, Optargs) ->
+  call_port(G, {is_dir, Path, Optargs}).
 is_dir(G, Path) ->
-  call_port(G, {is_dir, Path}).
+  is_dir(G, Path, []).
+is_dir_opts(G, Path, Optargs) ->
+  is_dir(G, Path, Optargs).
+is_dir_opts(G, Path) ->
+  is_dir(G, Path).
 
+is_fifo(G, Path, Optargs) ->
+  call_port(G, {is_fifo, Path, Optargs}).
 is_fifo(G, Path) ->
-  call_port(G, {is_fifo, Path}).
+  is_fifo(G, Path, []).
+is_fifo_opts(G, Path, Optargs) ->
+  is_fifo(G, Path, Optargs).
+is_fifo_opts(G, Path) ->
+  is_fifo(G, Path).
 
+is_file(G, Path, Optargs) ->
+  call_port(G, {is_file, Path, Optargs}).
 is_file(G, Path) ->
-  call_port(G, {is_file, Path}).
+  is_file(G, Path, []).
+is_file_opts(G, Path, Optargs) ->
+  is_file(G, Path, Optargs).
+is_file_opts(G, Path) ->
+  is_file(G, Path).
 
 is_launching(G) ->
   call_port(G, {is_launching}).
@@ -1351,8 +1387,14 @@ is_lv(G, Device) ->
 is_ready(G) ->
   call_port(G, {is_ready}).
 
+is_socket(G, Path, Optargs) ->
+  call_port(G, {is_socket, Path, Optargs}).
 is_socket(G, Path) ->
-  call_port(G, {is_socket, Path}).
+  is_socket(G, Path, []).
+is_socket_opts(G, Path, Optargs) ->
+  is_socket(G, Path, Optargs).
+is_socket_opts(G, Path) ->
+  is_socket(G, Path).
 
 is_symlink(G, Path) ->
   call_port(G, {is_symlink, Path}).

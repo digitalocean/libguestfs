@@ -3171,27 +3171,39 @@ class GuestFS(object):
         r = libguestfsmod.exists (self._o, path)
         return r
 
-    def is_file (self, path):
+    def is_file (self, path, followsymlinks=None):
         """This returns "true" if and only if there is a regular
         file with the given "path" name. Note that it returns
         false for other objects like directories.
         
-        See also "g.stat".
-        """
-        self._check_not_closed ()
-        r = libguestfsmod.is_file (self._o, path)
-        return r
-
-    def is_dir (self, path):
-        """This returns "true" if and only if there is a directory
-        with the given "path" name. Note that it returns false
-        for other objects like files.
+        If the optional flag "followsymlinks" is true, then a
+        symlink (or chain of symlinks) that ends with a file
+        also causes the function to return true.
         
         See also "g.stat".
         """
         self._check_not_closed ()
-        r = libguestfsmod.is_dir (self._o, path)
+        r = libguestfsmod.is_file (self._o, path, followsymlinks)
         return r
+
+    is_file_opts = is_file
+
+    def is_dir (self, path, followsymlinks=None):
+        """This returns "true" if and only if there is a directory
+        with the given "path" name. Note that it returns false
+        for other objects like files.
+        
+        If the optional flag "followsymlinks" is true, then a
+        symlink (or chain of symlinks) that ends with a
+        directory also causes the function to return true.
+        
+        See also "g.stat".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.is_dir (self._o, path, followsymlinks)
+        return r
+
+    is_dir_opts = is_dir
 
     def pvcreate (self, device):
         """This creates an LVM physical volume on the named
@@ -6569,35 +6581,53 @@ class GuestFS(object):
         r = libguestfsmod.findfs_label (self._o, label)
         return r
 
-    def is_chardev (self, path):
+    def is_chardev (self, path, followsymlinks=None):
         """This returns "true" if and only if there is a character
         device with the given "path" name.
         
+        If the optional flag "followsymlinks" is true, then a
+        symlink (or chain of symlinks) that ends with a chardev
+        also causes the function to return true.
+        
         See also "g.stat".
         """
         self._check_not_closed ()
-        r = libguestfsmod.is_chardev (self._o, path)
+        r = libguestfsmod.is_chardev (self._o, path, followsymlinks)
         return r
 
-    def is_blockdev (self, path):
+    is_chardev_opts = is_chardev
+
+    def is_blockdev (self, path, followsymlinks=None):
         """This returns "true" if and only if there is a block
         device with the given "path" name.
         
-        See also "g.stat".
-        """
-        self._check_not_closed ()
-        r = libguestfsmod.is_blockdev (self._o, path)
-        return r
-
-    def is_fifo (self, path):
-        """This returns "true" if and only if there is a FIFO
-        (named pipe) with the given "path" name.
+        If the optional flag "followsymlinks" is true, then a
+        symlink (or chain of symlinks) that ends with a block
+        device also causes the function to return true.
         
         See also "g.stat".
         """
         self._check_not_closed ()
-        r = libguestfsmod.is_fifo (self._o, path)
+        r = libguestfsmod.is_blockdev (self._o, path, followsymlinks)
         return r
+
+    is_blockdev_opts = is_blockdev
+
+    def is_fifo (self, path, followsymlinks=None):
+        """This returns "true" if and only if there is a FIFO
+        (named pipe) with the given "path" name.
+        
+        If the optional flag "followsymlinks" is true, then a
+        symlink (or chain of symlinks) that ends with a FIFO
+        also causes the function to return true.
+        
+        See also "g.stat".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.is_fifo (self._o, path, followsymlinks)
+        return r
+
+    is_fifo_opts = is_fifo
 
     def is_symlink (self, path):
         """This returns "true" if and only if there is a symbolic
@@ -6609,15 +6639,21 @@ class GuestFS(object):
         r = libguestfsmod.is_symlink (self._o, path)
         return r
 
-    def is_socket (self, path):
+    def is_socket (self, path, followsymlinks=None):
         """This returns "true" if and only if there is a Unix
         domain socket with the given "path" name.
+        
+        If the optional flag "followsymlinks" is true, then a
+        symlink (or chain of symlinks) that ends with a socket
+        also causes the function to return true.
         
         See also "g.stat".
         """
         self._check_not_closed ()
-        r = libguestfsmod.is_socket (self._o, path)
+        r = libguestfsmod.is_socket (self._o, path, followsymlinks)
         return r
+
+    is_socket_opts = is_socket
 
     def part_to_dev (self, partition):
         """This function takes a partition name (eg. "/dev/sdb1")

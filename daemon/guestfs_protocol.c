@@ -1452,6 +1452,8 @@ xdr_guestfs_is_file_args (XDR *xdrs, guestfs_is_file_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->followsymlinks))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -1471,6 +1473,8 @@ xdr_guestfs_is_dir_args (XDR *xdrs, guestfs_is_dir_args *objp)
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->followsymlinks))
 		 return FALSE;
 	return TRUE;
 }
@@ -5140,6 +5144,8 @@ xdr_guestfs_is_chardev_args (XDR *xdrs, guestfs_is_chardev_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->followsymlinks))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -5160,6 +5166,8 @@ xdr_guestfs_is_blockdev_args (XDR *xdrs, guestfs_is_blockdev_args *objp)
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
 		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->followsymlinks))
+		 return FALSE;
 	return TRUE;
 }
 
@@ -5179,6 +5187,8 @@ xdr_guestfs_is_fifo_args (XDR *xdrs, guestfs_is_fifo_args *objp)
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->followsymlinks))
 		 return FALSE;
 	return TRUE;
 }
@@ -5219,6 +5229,8 @@ xdr_guestfs_is_socket_args (XDR *xdrs, guestfs_is_socket_args *objp)
 	register int32_t *buf;
 
 	 if (!xdr_string (xdrs, &objp->path, ~0))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->followsymlinks))
 		 return FALSE;
 	return TRUE;
 }

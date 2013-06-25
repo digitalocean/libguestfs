@@ -50,6 +50,8 @@
  * simultaneously.
  */
 static pcre *re_windows_version;
+static pcre *re_boot_ini_os_header;
+static pcre *re_boot_ini_os;
 
 static void compile_regexps (void) __attribute__((constructor));
 static void free_regexps (void) __attribute__((destructor));
@@ -70,12 +72,16 @@ compile_regexps (void)
   } while (0)
 
   COMPILE (re_windows_version, "^(\\d+)\\.(\\d+)", 0);
+  COMPILE (re_boot_ini_os_header, "^\\[operating systems\\]\\s*$", 0);
+  COMPILE (re_boot_ini_os, "^(multi|scsi)\\((\\d+)\\)disk\\((\\d+)\\)rdisk\\((\\d+)\\)partition\\((\\d+)\\)([^=]+)=", 0);
 }
 
 static void
 free_regexps (void)
 {
   pcre_free (re_windows_version);
+  pcre_free (re_boot_ini_os_header);
+  pcre_free (re_boot_ini_os);
 }
 
 static int check_windows_arch (guestfs_h *g, struct inspect_fs *fs);
@@ -101,59 +107,138 @@ static char *map_registry_disk_blob (guestfs_h *g, const void *blob);
  * "/Program Files" and "/System Volume Information".  Those would
  * *not* be Windows root disks.  (RHBZ#674130)
  */
-static const char *systemroots[] =
-  { "/windows", "/winnt", "/win32", "/win", NULL };
 
-int
-guestfs___has_windows_systemroot (guestfs_h *g)
+static int
+is_systemroot (guestfs_h *const g, const char *systemroot)
 {
-  size_t i;
   char path[256];
 
-  for (i = 0; i < sizeof systemroots / sizeof systemroots[0]; ++i) {
-    CLEANUP_FREE char *systemroot =
+  snprintf (path, sizeof path, "%s/system32", systemroot);
+  if (!guestfs___is_dir_nocase (g, path))
+    return 0;
+
+  snprintf (path, sizeof path, "%s/system32/config", systemroot);
+  if (!guestfs___is_dir_nocase (g, path))
+    return 0;
+
+  snprintf (path, sizeof path, "%s/system32/cmd.exe", systemroot);
+  if (!guestfs___is_file_nocase (g, path))
+    return 0;
+
+  return 1;
+}
+
+char *
+guestfs___get_windows_systemroot (guestfs_h *g)
+{
+  /* Check a predefined list of common windows system root locations */
+  static const char *systemroots[] =
+    { "/windows", "/winnt", "/win32", "/win", NULL };
+
+  for (size_t i = 0; i < sizeof systemroots / sizeof systemroots[0]; ++i) {
+    char *systemroot =
       guestfs___case_sensitive_path_silently (g, systemroots[i]);
     if (!systemroot)
       continue;
 
-    snprintf (path, sizeof path, "%s/system32", systemroot);
-    if (!guestfs___is_dir_nocase (g, path))
-      continue;
+    if (is_systemroot (g, systemroot)) {
+      debug (g, "windows %%SYSTEMROOT%% = %s", systemroot);
 
-    snprintf (path, sizeof path, "%s/system32/config", systemroot);
-    if (!guestfs___is_dir_nocase (g, path))
-      continue;
-
-    snprintf (path, sizeof path, "%s/system32/cmd.exe", systemroot);
-    if (!guestfs___is_file_nocase (g, path))
-      continue;
-
-    return (int)i;
+      return systemroot;
+    } else {
+      free (systemroot);
+    }
   }
 
-  return -1; /* not found */
+  /* If the fs contains boot.ini, check it for non-standard
+   * systemroot locations */
+  CLEANUP_FREE char *boot_ini_path =
+    guestfs___case_sensitive_path_silently (g, "/boot.ini");
+  if (boot_ini_path && guestfs_is_file (g, boot_ini_path) > 0) {
+    CLEANUP_FREE_STRING_LIST char **boot_ini =
+      guestfs_read_lines (g, boot_ini_path);
+    if (!boot_ini) {
+      debug (g, "error reading %s", boot_ini_path);
+      return NULL;
+    }
+
+    int found_os = 0;
+    for (char **i = boot_ini; *i != NULL; i++) {
+      CLEANUP_FREE char *controller_type = NULL;
+      CLEANUP_FREE char *controller = NULL;
+      CLEANUP_FREE char *disk = NULL;
+      CLEANUP_FREE char *rdisk = NULL;
+      CLEANUP_FREE char *partition = NULL;
+      CLEANUP_FREE char *path = NULL;
+
+      char *line = *i;
+
+      if (!found_os) {
+        if (match (g, line, re_boot_ini_os_header)) {
+          found_os = 1;
+          continue;
+        }
+      }
+
+      /* See http://support.microsoft.com/kb/102873 for a discussion
+       * of what this line means */
+      if (match6 (g, line, re_boot_ini_os, &controller_type,
+                  &controller, &disk, &rdisk, &partition, &path))
+      {
+        /* The Windows system root may be on any disk. However, there
+         * are currently (at least) 2 practical problems preventing us
+         * from locating it on another disk:
+         *
+         * 1. We don't have enough metadata about the disks we were
+         * given to know if what controller they were on and what
+         * index they had.
+         *
+         * 2. The way inspection of filesystems currently works, we
+         * can't mark another filesystem, which we may have already
+         * inspected, to be inspected for a specific Windows system
+         * root.
+         *
+         * Solving 1 properly would require a new API at a minimum. We
+         * might be able to fudge something practical without this,
+         * though, e.g. by looking at the <partition>th partition of
+         * every disk for the specific windows root.
+         *
+         * Solving 2 would probably require a significant refactoring
+         * of the way filesystems are inspected. We should probably do
+         * this some time.
+         *
+         * For the moment, we ignore all partition information and
+         * assume the system root is on the current partition. In
+         * practice, this will normally be correct.
+         */
+
+        /* Swap backslashes for forward slashes in the system root
+         * path */
+        for (char *j = path; *j != '\0'; j++) {
+          if (*j == '\\') *j = '/';
+        }
+
+        char *systemroot = guestfs___case_sensitive_path_silently (g, path);
+        if (systemroot && is_systemroot (g, systemroot)) {
+          debug (g, "windows %%SYSTEMROOT%% = %s", systemroot);
+
+          return systemroot;
+        } else {
+          free (systemroot);
+        }
+      }
+    }
+  }
+
+  return NULL; /* not found */
 }
 
 int
-guestfs___check_windows_root (guestfs_h *g, struct inspect_fs *fs)
+guestfs___check_windows_root (guestfs_h *g, struct inspect_fs *fs,
+                              char *const systemroot)
 {
-  int i;
-  char *systemroot;
-
   fs->type = OS_TYPE_WINDOWS;
   fs->distro = OS_DISTRO_WINDOWS;
-
-  i = guestfs___has_windows_systemroot (g);
-  if (i == -1) {
-    error (g, "check_windows_root: has_windows_systemroot unexpectedly returned -1");
-    return -1;
-  }
-
-  systemroot = guestfs_case_sensitive_path (g, systemroots[i]);
-  if (!systemroot)
-    return -1;
-
-  debug (g, "windows %%SYSTEMROOT%% = %s", systemroot);
 
   /* Freed by guestfs___free_inspect_info. */
   fs->windows_systemroot = systemroot;
@@ -179,7 +264,7 @@ check_windows_arch (guestfs_h *g, struct inspect_fs *fs)
   char cmd_exe[len];
   snprintf (cmd_exe, len, "%s/system32/cmd.exe", fs->windows_systemroot);
 
-  /* Should exist because of previous check above in has_windows_systemroot. */
+  /* Should exist because of previous check above in get_windows_systemroot. */
   CLEANUP_FREE char *cmd_exe_path = guestfs_case_sensitive_path (g, cmd_exe);
   if (!cmd_exe_path)
     return -1;
