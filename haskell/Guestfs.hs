@@ -167,8 +167,6 @@ module Guestfs (
   chmod,
   chown,
   exists,
-  is_file,
-  is_dir,
   pvcreate,
   vgcreate,
   lvcreate,
@@ -374,11 +372,7 @@ module Guestfs (
   is_lv,
   findfs_uuid,
   findfs_label,
-  is_chardev,
-  is_blockdev,
-  is_fifo,
   is_symlink,
-  is_socket,
   part_to_dev,
   upload_offset,
   download_offset,
@@ -2238,30 +2232,6 @@ foreign import ccall unsafe "guestfs.h guestfs_exists" c_exists
 exists :: GuestfsH -> String -> IO Bool
 exists h path = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_exists p path)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return (toBool r)
-
-foreign import ccall unsafe "guestfs.h guestfs_is_file" c_is_file
-  :: GuestfsP -> CString -> IO CInt
-
-is_file :: GuestfsH -> String -> IO Bool
-is_file h path = do
-  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_file p path)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return (toBool r)
-
-foreign import ccall unsafe "guestfs.h guestfs_is_dir" c_is_dir
-  :: GuestfsP -> CString -> IO CInt
-
-is_dir :: GuestfsH -> String -> IO Bool
-is_dir h path = do
-  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_dir p path)
   if (r == -1)
     then do
       err <- last_error h
@@ -4734,60 +4704,12 @@ findfs_label h label = do
       fail err
     else peekCString r
 
-foreign import ccall unsafe "guestfs.h guestfs_is_chardev" c_is_chardev
-  :: GuestfsP -> CString -> IO CInt
-
-is_chardev :: GuestfsH -> String -> IO Bool
-is_chardev h path = do
-  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_chardev p path)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return (toBool r)
-
-foreign import ccall unsafe "guestfs.h guestfs_is_blockdev" c_is_blockdev
-  :: GuestfsP -> CString -> IO CInt
-
-is_blockdev :: GuestfsH -> String -> IO Bool
-is_blockdev h path = do
-  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_blockdev p path)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return (toBool r)
-
-foreign import ccall unsafe "guestfs.h guestfs_is_fifo" c_is_fifo
-  :: GuestfsP -> CString -> IO CInt
-
-is_fifo :: GuestfsH -> String -> IO Bool
-is_fifo h path = do
-  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_fifo p path)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return (toBool r)
-
 foreign import ccall unsafe "guestfs.h guestfs_is_symlink" c_is_symlink
   :: GuestfsP -> CString -> IO CInt
 
 is_symlink :: GuestfsH -> String -> IO Bool
 is_symlink h path = do
   r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_symlink p path)
-  if (r == -1)
-    then do
-      err <- last_error h
-      fail err
-    else return (toBool r)
-
-foreign import ccall unsafe "guestfs.h guestfs_is_socket" c_is_socket
-  :: GuestfsP -> CString -> IO CInt
-
-is_socket :: GuestfsH -> String -> IO Bool
-is_socket h path = do
-  r <- withCString path $ \path -> withForeignPtr h (\p -> c_is_socket p path)
   if (r == -1)
     then do
       err <- last_error h

@@ -48,6 +48,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# libguestfs
+# Copyright (C) 2013 Red Hat Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# 'common-rules.mk' should be included in every Makefile.am.
+# cf. 'subdir-rules.mk'
+
 
 VPATH = @srcdir@
 am__make_dryrun = \
@@ -86,7 +106,7 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/META.in $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/build-aux/depcomp \
-	$(top_srcdir)/subdir-rules.mk
+	$(top_srcdir)/common-rules.mk $(top_srcdir)/subdir-rules.mk
 
 # Note that both calls to ocamlmklib below will create
 # 'libmlguestfs.a' and if run at the same time, they will stomp on or
@@ -1101,6 +1121,7 @@ PTHREAD_H_DEFINES_STRUCT_TIMESPEC = @PTHREAD_H_DEFINES_STRUCT_TIMESPEC@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
 PYTHON_CFLAGS = @PYTHON_CFLAGS@
+PYTHON_EXT_SUFFIX = @PYTHON_EXT_SUFFIX@
 PYTHON_INSTALLDIR = @PYTHON_INSTALLDIR@
 PYTHON_LIBS = @PYTHON_LIBS@
 PYTHON_PREFIX = @PYTHON_PREFIX@
@@ -1416,7 +1437,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cmo .cmi .cmx .ml .mli .mll .mly .c .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1437,7 +1458,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/subdir-rules.mk:
+$(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -1851,11 +1872,15 @@ uninstall-am:
 	tags uninstall uninstall-am
 
 
-# Old RHEL 5 autoconf doesn't have builddir.
-builddir ?= .
+-include $(top_builddir)/localenv
 
-# Old RHEL 5 autoconf doesn't have abs_srcdir.
-abs_srcdir ?= $(shell cd $(top_srcdir)/ocaml && pwd)
+# Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
+# create variables for them.  So define them here if they're not
+# defined already.
+builddir     ?= @builddir@
+abs_builddir ?= @abs_builddir@
+srcdir       ?= @srcdir@
+abs_srcdir   ?= @abs_srcdir@
 
 # Define a force dependency which will always be rebuilt
 .PHONY: force
@@ -1878,7 +1903,7 @@ $(top_builddir)/generator/stamp-generator: force
 @HAVE_OCAML_TRUE@	  -L$(top_builddir)/src/.libs -lguestfs
 @HAVE_OCAML_TRUE@	touch $@
 
-@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: $(srcdir)/guestfs*.mli $(srcdir)/guestfs*.ml
+@HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@html/index.html: $(srcdir)/guestfs.mli $(srcdir)/guestfs.ml
 @HAVE_OCAMLDOC_TRUE@@HAVE_OCAML_TRUE@	-$(OCAMLDOC) -d html -html $^
 
 @HAVE_OCAML_TRUE@%.bc: %.cmo mlguestfs.cma
@@ -1905,7 +1930,7 @@ $(top_builddir)/generator/stamp-generator: force
 
 @HAVE_OCAML_TRUE@depend: .depend
 
-@HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml)
+@HAVE_OCAML_TRUE@.depend: $(wildcard $(abs_srcdir)/*.mli) $(wildcard $(abs_srcdir)/*.ml) $(wildcard $(abs_srcdir)/t/*.ml)
 @HAVE_OCAML_TRUE@	rm -f $@ $@-t
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamldep -I ../ocaml -I $(abs_srcdir) $^ | \
 @HAVE_OCAML_TRUE@	  $(SED) 's/ *$$//' | \

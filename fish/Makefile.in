@@ -48,6 +48,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# libguestfs
+# Copyright (C) 2013 Red Hat Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# 'common-rules.mk' should be included in every Makefile.am.
+# cf. 'subdir-rules.mk'
+
 
 
 
@@ -87,7 +107,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/subdir-rules.mk
+	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/common-rules.mk \
+	$(top_srcdir)/subdir-rules.mk
 bin_PROGRAMS = guestfish$(EXEEXT)
 @HAVE_RPCGEN_TRUE@@HAVE_XDR_U_INT64_T_TRUE@am__append_1 = -DHAVE_XDR_U_INT64_T=1
 @HAVE_RPCGEN_TRUE@@HAVE_XDR_UINT64_T_TRUE@@HAVE_XDR_U_INT64_T_FALSE@am__append_2 = -DHAVE_XDR_UINT64_T=1
@@ -1176,6 +1197,7 @@ PTHREAD_H_DEFINES_STRUCT_TIMESPEC = @PTHREAD_H_DEFINES_STRUCT_TIMESPEC@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
 PYTHON_CFLAGS = @PYTHON_CFLAGS@
+PYTHON_EXT_SUFFIX = @PYTHON_EXT_SUFFIX@
 PYTHON_INSTALLDIR = @PYTHON_INSTALLDIR@
 PYTHON_LIBS = @PYTHON_LIBS@
 PYTHON_PREFIX = @PYTHON_PREFIX@
@@ -1577,7 +1599,7 @@ all: $(BUILT_SOURCES)
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1598,7 +1620,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/subdir-rules.mk:
+$(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -2700,6 +2722,16 @@ uninstall-man: uninstall-man1
 	uninstall-binSCRIPTS uninstall-man uninstall-man1 \
 	uninstall-toolsconfDATA
 
+
+-include $(top_builddir)/localenv
+
+# Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
+# create variables for them.  So define them here if they're not
+# defined already.
+builddir     ?= @builddir@
+abs_builddir ?= @abs_builddir@
+srcdir       ?= @srcdir@
+abs_srcdir   ?= @abs_srcdir@
 
 # Define a force dependency which will always be rebuilt
 .PHONY: force

@@ -1430,18 +1430,18 @@ JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1exists
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _is_file
- * Signature: (JLjava/lang/String;)Z
+ * Signature: (JLjava/lang/String;JZ)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1file
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _is_dir
- * Signature: (JLjava/lang/String;)Z
+ * Signature: (JLjava/lang/String;JZ)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1dir
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -3206,26 +3206,26 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1findfs_1label
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _is_chardev
- * Signature: (JLjava/lang/String;)Z
+ * Signature: (JLjava/lang/String;JZ)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1chardev
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _is_blockdev
- * Signature: (JLjava/lang/String;)Z
+ * Signature: (JLjava/lang/String;JZ)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1blockdev
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _is_fifo
- * Signature: (JLjava/lang/String;)Z
+ * Signature: (JLjava/lang/String;JZ)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1fifo
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
@@ -3238,10 +3238,10 @@ JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1symlink
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _is_socket
- * Signature: (JLjava/lang/String;)Z
+ * Signature: (JLjava/lang/String;JZ)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1is_1socket
-  (JNIEnv *, jobject, jlong, jstring);
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS

@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsIsChardev
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsIsChardev ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsIsChardev:followsymlinks ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsIsChardevClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_is_chardev_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

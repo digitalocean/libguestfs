@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsIsBlockdev</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsIsChardev.html" title="GuestfsIsChardev">
+<link rel="next" href="GuestfsIsFifo.html" title="GuestfsIsFifo">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsIsChardev.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsIsFifo.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsIsBlockdev.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsIsBlockdev.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsIsBlockdev.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsIsBlockdev.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsIsBlockdev"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsIsBlockdev.top_of_page"></a>GuestfsIsBlockdev</span></h2>
+<p>GuestfsIsBlockdev — An object encapsulating optional arguments for guestfs_session_is_blockdev</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsIsBlockdev.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsIsBlockdev.html#GuestfsIsBlockdev-struct" title="struct GuestfsIsBlockdev">GuestfsIsBlockdev</a>;
+struct              <a class="link" href="GuestfsIsBlockdev.html#GuestfsIsBlockdevClass" title="struct GuestfsIsBlockdevClass">GuestfsIsBlockdevClass</a>;
+<a class="link" href="GuestfsIsBlockdev.html" title="GuestfsIsBlockdev"><span class="returnvalue">GuestfsIsBlockdev</span></a> * <a class="link" href="GuestfsIsBlockdev.html#guestfs-is-blockdev-new" title="guestfs_is_blockdev_new ()">guestfs_is_blockdev_new</a>             (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsBlockdev.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsIsBlockdev
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsBlockdev.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsIsBlockdev.html#GuestfsIsBlockdev--followsymlinks" title='The "followsymlinks" property'>followsymlinks</a>"           <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsBlockdev.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_is_blockdev
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsBlockdev.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsIsBlockdev-struct"></a><h3>struct GuestfsIsBlockdev</h3>
+<pre class="programlisting">struct GuestfsIsBlockdev;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_is_blockdev.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsIsBlockdevClass"></a><h3>struct GuestfsIsBlockdevClass</h3>
+<pre class="programlisting">struct GuestfsIsBlockdevClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsIsBlockdev.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsIsBlockdevClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsIsBlockdevClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-is-blockdev-new"></a><h3>guestfs_is_blockdev_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsIsBlockdev.html" title="GuestfsIsBlockdev"><span class="returnvalue">GuestfsIsBlockdev</span></a> * guestfs_is_blockdev_new             (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsIsBlockdev object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsIsBlockdev object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsIsBlockdev.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsIsBlockdev--followsymlinks"></a><h3>The <code class="literal">"followsymlinks"</code> property</h3>
+<pre class="programlisting">  "followsymlinks"           <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

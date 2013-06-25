@@ -15,9 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Old RHEL 5 autoconf doesn't have builddir.
-builddir ?= .
-
 include $(top_srcdir)/subdir-rules.mk
 
 generator_built = \
@@ -56,7 +53,7 @@ libguestfsmod_la_LIBADD = \
 	$(LIBVIRT_LIBS) \
 	../gnulib/lib/libgnu.la
 
-libguestfsmod_la_LDFLAGS = -avoid-version -shared
+libguestfsmod_la_LDFLAGS = -avoid-version -shared -module -shrext $(PYTHON_EXT_SUFFIX)
 
 TESTS_ENVIRONMENT = $(top_builddir)/run --test
 

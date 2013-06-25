@@ -1483,13 +1483,13 @@ struct command_entry exists_cmd_entry = {
 
 struct command_entry is_file_cmd_entry = {
   .name = "is-file",
-  .help = "NAME\n    is-file - test if a regular file\n\nSYNOPSIS\n     is-file path\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a regular file with the\n    given \"path\" name. Note that it returns false for other objects like\n    directories.\n\n    See also \"stat\".\n\n",
+  .help = "NAME\n    is-file - test if a regular file\n\nSYNOPSIS\n     is-file path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a regular file with the\n    given \"path\" name. Note that it returns false for other objects like\n    directories.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a file also causes the function to return\n    true.\n\n    See also \"stat\".\n\n    You can use 'is-file-opts' as an alias for this command.\n\n",
   .run = run_is_file
 };
 
 struct command_entry is_dir_cmd_entry = {
   .name = "is-dir",
-  .help = "NAME\n    is-dir - test if a directory\n\nSYNOPSIS\n     is-dir path\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a directory with the given\n    \"path\" name. Note that it returns false for other objects like files.\n\n    See also \"stat\".\n\n",
+  .help = "NAME\n    is-dir - test if a directory\n\nSYNOPSIS\n     is-dir path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a directory with the given\n    \"path\" name. Note that it returns false for other objects like files.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a directory also causes the function to\n    return true.\n\n    See also \"stat\".\n\n    You can use 'is-dir-opts' as an alias for this command.\n\n",
   .run = run_is_dir
 };
 
@@ -2815,19 +2815,19 @@ struct command_entry findfs_label_cmd_entry = {
 
 struct command_entry is_chardev_cmd_entry = {
   .name = "is-chardev",
-  .help = "NAME\n    is-chardev - test if character device\n\nSYNOPSIS\n     is-chardev path\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a character device with the\n    given \"path\" name.\n\n    See also \"stat\".\n\n",
+  .help = "NAME\n    is-chardev - test if character device\n\nSYNOPSIS\n     is-chardev path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a character device with the\n    given \"path\" name.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a chardev also causes the function to return\n    true.\n\n    See also \"stat\".\n\n    You can use 'is-chardev-opts' as an alias for this command.\n\n",
   .run = run_is_chardev
 };
 
 struct command_entry is_blockdev_cmd_entry = {
   .name = "is-blockdev",
-  .help = "NAME\n    is-blockdev - test if block device\n\nSYNOPSIS\n     is-blockdev path\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a block device with the\n    given \"path\" name.\n\n    See also \"stat\".\n\n",
+  .help = "NAME\n    is-blockdev - test if block device\n\nSYNOPSIS\n     is-blockdev path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a block device with the\n    given \"path\" name.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a block device also causes the function to\n    return true.\n\n    See also \"stat\".\n\n    You can use 'is-blockdev-opts' as an alias for this command.\n\n",
   .run = run_is_blockdev
 };
 
 struct command_entry is_fifo_cmd_entry = {
   .name = "is-fifo",
-  .help = "NAME\n    is-fifo - test if FIFO (named pipe)\n\nSYNOPSIS\n     is-fifo path\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a FIFO (named pipe) with the\n    given \"path\" name.\n\n    See also \"stat\".\n\n",
+  .help = "NAME\n    is-fifo - test if FIFO (named pipe)\n\nSYNOPSIS\n     is-fifo path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a FIFO (named pipe) with the\n    given \"path\" name.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a FIFO also causes the function to return\n    true.\n\n    See also \"stat\".\n\n    You can use 'is-fifo-opts' as an alias for this command.\n\n",
   .run = run_is_fifo
 };
 
@@ -2839,7 +2839,7 @@ struct command_entry is_symlink_cmd_entry = {
 
 struct command_entry is_socket_cmd_entry = {
   .name = "is-socket",
-  .help = "NAME\n    is-socket - test if socket\n\nSYNOPSIS\n     is-socket path\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a Unix domain socket with\n    the given \"path\" name.\n\n    See also \"stat\".\n\n",
+  .help = "NAME\n    is-socket - test if socket\n\nSYNOPSIS\n     is-socket path [followsymlinks:true|false]\n\nDESCRIPTION\n    This returns \"true\" if and only if there is a Unix domain socket with\n    the given \"path\" name.\n\n    If the optional flag \"followsymlinks\" is true, then a symlink (or chain\n    of symlinks) that ends with a socket also causes the function to return\n    true.\n\n    See also \"stat\".\n\n    You can use 'is-socket-opts' as an alias for this command.\n\n",
   .run = run_is_socket
 };
 
@@ -8336,16 +8336,46 @@ run_is_file (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   char *path;
+  struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
   if (path == NULL) goto out_path;
-  r = guestfs_is_file (g, path);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "followsymlinks:")) {
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.followsymlinks = 0; break;
+        default: optargs_s.followsymlinks = 1;
+      }
+      this_mask = GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+      this_arg = "followsymlinks";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_is_file_opts_argv (g, path, optargs);
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
@@ -8362,16 +8392,46 @@ run_is_dir (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   char *path;
+  struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
   if (path == NULL) goto out_path;
-  r = guestfs_is_dir (g, path);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "followsymlinks:")) {
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.followsymlinks = 0; break;
+        default: optargs_s.followsymlinks = 1;
+      }
+      this_mask = GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+      this_arg = "followsymlinks";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
@@ -15598,16 +15658,46 @@ run_is_chardev (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   char *path;
+  struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
   if (path == NULL) goto out_path;
-  r = guestfs_is_chardev (g, path);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "followsymlinks:")) {
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.followsymlinks = 0; break;
+        default: optargs_s.followsymlinks = 1;
+      }
+      this_mask = GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      this_arg = "followsymlinks";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
@@ -15624,16 +15714,46 @@ run_is_blockdev (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   char *path;
+  struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
   if (path == NULL) goto out_path;
-  r = guestfs_is_blockdev (g, path);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "followsymlinks:")) {
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.followsymlinks = 0; break;
+        default: optargs_s.followsymlinks = 1;
+      }
+      this_mask = GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      this_arg = "followsymlinks";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
@@ -15650,16 +15770,46 @@ run_is_fifo (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   char *path;
+  struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
   if (path == NULL) goto out_path;
-  r = guestfs_is_fifo (g, path);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "followsymlinks:")) {
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.followsymlinks = 0; break;
+        default: optargs_s.followsymlinks = 1;
+      }
+      this_mask = GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+      this_arg = "followsymlinks";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");
@@ -15702,16 +15852,46 @@ run_is_socket (const char *cmd, size_t argc, char *argv[])
   int ret = -1;
   int r;
   char *path;
+  struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
   size_t i = 0;
 
-  if (argc != 1) {
-    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
   path = win_prefix (argv[i++]); /* process "win:" prefix */
   if (path == NULL) goto out_path;
-  r = guestfs_is_socket (g, path);
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "followsymlinks:")) {
+      switch (is_true (&argv[i][15])) {
+        case -1: goto out;
+        case 0:  optargs_s.followsymlinks = 0; break;
+        default: optargs_s.followsymlinks = 1;
+      }
+      this_mask = GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+      this_arg = "followsymlinks";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
   if (r == -1) goto out;
   ret = 0;
   if (r) printf ("true\n"); else printf ("false\n");

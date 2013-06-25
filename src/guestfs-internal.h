@@ -589,11 +589,13 @@ extern int guestfs___match (guestfs_h *g, const char *str, const pcre *re);
 extern char *guestfs___match1 (guestfs_h *g, const char *str, const pcre *re);
 extern int guestfs___match2 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2);
 extern int guestfs___match3 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3);
+extern int guestfs___match6 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3, char **ret4, char **ret5, char **ret6);
 
 #define match guestfs___match
 #define match1 guestfs___match1
 #define match2 guestfs___match2
 #define match3 guestfs___match3
+#define match6 guestfs___match6
 
 /* proto.c */
 extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
@@ -668,8 +670,8 @@ extern int guestfs___check_hurd_root (guestfs_h *g, struct inspect_fs *fs);
 
 /* inspect-fs-windows.c */
 extern char *guestfs___case_sensitive_path_silently (guestfs_h *g, const char *);
-extern int guestfs___has_windows_systemroot (guestfs_h *g);
-extern int guestfs___check_windows_root (guestfs_h *g, struct inspect_fs *fs);
+extern char * guestfs___get_windows_systemroot (guestfs_h *g);
+extern int guestfs___check_windows_root (guestfs_h *g, struct inspect_fs *fs, char *windows_systemroot);
 
 /* inspect-fs-cd.c */
 extern int guestfs___check_installer_root (guestfs_h *g, struct inspect_fs *fs);

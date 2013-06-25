@@ -494,6 +494,7 @@ struct guestfs_exists_ret {
 
 struct guestfs_is_file_args {
   string path<>;
+  bool followsymlinks;
 };
 
 struct guestfs_is_file_ret {
@@ -502,6 +503,7 @@ struct guestfs_is_file_ret {
 
 struct guestfs_is_dir_args {
   string path<>;
+  bool followsymlinks;
 };
 
 struct guestfs_is_dir_ret {
@@ -1882,6 +1884,7 @@ struct guestfs_findfs_label_ret {
 
 struct guestfs_is_chardev_args {
   string path<>;
+  bool followsymlinks;
 };
 
 struct guestfs_is_chardev_ret {
@@ -1890,6 +1893,7 @@ struct guestfs_is_chardev_ret {
 
 struct guestfs_is_blockdev_args {
   string path<>;
+  bool followsymlinks;
 };
 
 struct guestfs_is_blockdev_ret {
@@ -1898,6 +1902,7 @@ struct guestfs_is_blockdev_ret {
 
 struct guestfs_is_fifo_args {
   string path<>;
+  bool followsymlinks;
 };
 
 struct guestfs_is_fifo_ret {
@@ -1914,6 +1919,7 @@ struct guestfs_is_symlink_ret {
 
 struct guestfs_is_socket_args {
   string path<>;
+  bool followsymlinks;
 };
 
 struct guestfs_is_socket_ret {

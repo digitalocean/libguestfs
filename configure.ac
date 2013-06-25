@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [22])
-m4_define([libguestfs_release], [2])
+m4_define([libguestfs_release], [3])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -484,7 +484,7 @@ dnl
 SUPERMIN_EXTRA_OPTIONS=no
 AC_MSG_CHECKING([for --with-supermin-extra-options option])
 AC_ARG_WITH([supermin-extra-options],
-    [AS_HELP_STRING([--with-supermin-extra-options=STRING],
+    [AS_HELP_STRING([--with-supermin-extra-options="--opt1 --opt2 ..."],
         [Pass additional supermin options. @<:@default=no@:>@])],
     [SUPERMIN_EXTRA_OPTIONS="$withval"
      AC_MSG_RESULT([$SUPERMIN_EXTRA_OPTIONS"])],
@@ -524,7 +524,7 @@ AC_SUBST([DISTRO])
 
 dnl Add extra packages to the appliance.
 AC_ARG_WITH([extra-packages],
-    [AS_HELP_STRING([--with-extra-packages],
+    [AS_HELP_STRING([--with-extra-packages="pkg1 pkg2 ..."],
                     [add extra packages to the appliance])],
     [EXTRA_PACKAGES="$withval"],
     [EXTRA_PACKAGES=])
@@ -678,8 +678,8 @@ dnl back to basic 'qemu'.  Allow the user to override it.
 qemu_system="`echo qemu-system-$host_cpu | $SED 's/i@<:@456@:>@86/i386/g'`"
 default_qemu="qemu-kvm kvm $qemu_system qemu"
 AC_ARG_WITH([qemu],
-    [AS_HELP_STRING([--with-qemu],
-        [set default QEMU binary @<:@default=[qemu-kvm] qemu-system-<host> qemu@:>@])],
+    [AS_HELP_STRING([--with-qemu="bin1 bin2 ..."],
+        [set default QEMU binary @<:@default="[qemu-kvm] qemu-system-<host> qemu"@:>@])],
         [],
         [with_qemu="$default_qemu"])
 AC_PATH_PROGS([QEMU],[$with_qemu],[no],
@@ -1163,6 +1163,14 @@ AS_IF([test "x$enable_python" != "xno"],[
             AC_MSG_RESULT([$PYTHON_INSTALLDIR])
         fi
 
+        AC_MSG_CHECKING([for Python extension suffix (PEP-3149)])
+        if test -z "$PYTHON_EXT_SUFFIX"; then
+            python_ext_suffix=`$PYTHON -c "import sysconfig; \
+                                         print (sysconfig.get_config_var('EXT_SUFFIX') or sysconfig.get_config_var('SO'))"`
+            PYTHON_EXT_SUFFIX=$python_ext_suffix
+        fi
+        AC_MSG_RESULT([$PYTHON_EXT_SUFFIX])
+
         dnl Look for some optional symbols in libpython.
         old_LIBS="$LIBS"
 
@@ -1183,6 +1191,7 @@ AS_IF([test "x$enable_python" != "xno"],[
     AC_SUBST(PYTHON_PREFIX)
     AC_SUBST(PYTHON_VERSION)
     AC_SUBST(PYTHON_INSTALLDIR)
+    AC_SUBST(PYTHON_EXT_SUFFIX)
 ])
 AM_CONDITIONAL([HAVE_PYTHON],
     [test "x$PYTHON" != "xno" && test "x$PYTHON_LIBS" != "x" ])
