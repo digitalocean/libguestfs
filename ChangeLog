@@ -1,3 +1,39 @@
+2013-06-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.5.
+
+	tests: inspection: Add example and test XML to EXTRA_DIST.
+	This fixes commit a86cb71fcadbed3881e593b6de9706c03ca57149.
+
+	tests: inspection: Don't complain because NTFS UUID changes between test runs.
+	This fixes commit a86cb71fcadbed3881e593b6de9706c03ca57149.
+
+	inspector: Add a real test of inspection.
+	Verify that the output from inspection doesn't change, in order to
+	catch regressions such as RHBZ#975412.
+
+2013-06-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Replace phony XML with virt-inspector output from real guests.
+	Also add an example from a real RHEL 6 guest.
+
+	Remove rules for building these XML files which are no longer
+	relevant.  These files were built by running virt-inspector on real
+	guests, and then edited to remove excessive <application> sections.
+
+2013-06-18  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Fix hostname inspection because of faulty Augeas path expression (RHBZ#975412).
+
+	Augeas >= 1.0.0 is now required.
+
+	utils: Add utility functions guestfs___concat_strings and guestfs__join_strings.
+	These concatenate strings or join them with a separator in between.
+
+2013-06-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.4.
+
 2013-06-14  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspection: Fix inspection of Fedora guests (RHBZ#974489).

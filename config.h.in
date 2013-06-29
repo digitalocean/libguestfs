@@ -462,18 +462,6 @@
 /* Define to 1 if you have the <attr/xattr.h> header file. */
 #undef HAVE_ATTR_XATTR_H
 
-/* Define to 1 if you have Augeas. */
-#undef HAVE_AUGEAS
-
-/* Define to 1 if you have the `aug_defnode' function. */
-#undef HAVE_AUG_DEFNODE
-
-/* Define to 1 if you have the `aug_defvar' function. */
-#undef HAVE_AUG_DEFVAR
-
-/* Define to 1 if you have the `aug_load' function. */
-#undef HAVE_AUG_LOAD
-
 /* Define to 1 if you have the `be32toh' function. */
 #undef HAVE_BE32TOH
 

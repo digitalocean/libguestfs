@@ -1406,7 +1406,27 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+example_xml = \
+	example-debian.xml \
+	example-fedora.xml \
+	example-rhel-6.xml \
+	example-ubuntu.xml \
+	example-windows.xml \
+	example-debian-netinst-cd.xml \
+	example-fedora-dvd.xml \
+	example-fedora-netinst-cd.xml \
+	example-rhel-6-dvd.xml \
+	example-rhel-6-netinst-cd.xml \
+	example-ubuntu-live-cd.xml \
+	example-windows-2003-x64-cd.xml \
+	example-windows-2003-x86-cd.xml \
+	example-windows-xp-cd.xml
+
 EXTRA_DIST = \
+	expected-debian.img.xml \
+	expected-fedora.img.xml \
+	expected-ubuntu.img.xml \
+	expected-windows.img.xml \
 	test-virt-inspector.sh \
 	test-xmllint.sh.in \
 	virt-inspector.pod
@@ -1414,7 +1434,7 @@ EXTRA_DIST = \
 CLEANFILES = stamp-virt-inspector.pod
 dist_doc_DATA = \
 	virt-inspector.rng \
-	$(EXAMPLE_XML)
+	$(example_xml)
 
 SHARED_SOURCE_FILES = \
 	../fish/config.c \
@@ -2095,21 +2115,6 @@ $(top_builddir)/generator/generator:
 	  echo "warning: Run 'make' at the top level to build $@"; \
 	fi
 
-export EXAMPLE_XML = \
-	example-debian.xml \
-	example-fedora.xml \
-	example-ubuntu.xml \
-	example-windows.xml \
-	example-debian-netinst-cd.xml \
-	example-fedora-dvd.xml \
-	example-fedora-netinst-cd.xml \
-	example-rhel-6-dvd.xml \
-	example-rhel-6-netinst-cd.xml \
-	example-ubuntu-live-cd.xml \
-	example-windows-2003-x64-cd.xml \
-	example-windows-2003-x86-cd.xml \
-	example-windows-xp-cd.xml
-
 virt-inspector.1 $(top_builddir)/html/virt-inspector.1.html: stamp-virt-inspector.pod
 
 stamp-virt-inspector.pod: virt-inspector.pod
@@ -2127,31 +2132,6 @@ check-valgrind-local-guests:
 	for g in $(GUESTS); do \
 	  $(top_builddir)/run --test @VG@ ./virt-inspector -c "$(libvirt_ro_uri)" -d "$$g" || exit $$?; \
 	done
-
-# These rules require virt-inspector so there is no good time that we
-# can run them.  Instead you can run them by hand.
-
-example-debian.xml:
-	rm -f $@ $@-t
-	$(top_builddir)/run --test \
-	    ./virt-inspector ../tests/guests/debian.img > $@-t
-	mv $@-t $@
-example-fedora.xml:
-	rm -f $@ $@-t
-	$(top_builddir)/run --test \
-	    ./virt-inspector ../tests/guests/fedora.img > $@-t
-	mv $@-t $@
-example-ubuntu.xml:
-	rm -f $@ $@-t
-	$(top_builddir)/run --test \
-	    ./virt-inspector ../tests/guests/ubuntu.img > $@-t
-	mv $@-t $@
-example-windows.xml:
-	rm -f $@ $@-t
-	$(top_builddir)/run --test \
-	    ./virt-inspector ../tests/guests/windows.img | \
-	    fgrep -v '<uuid>' > $@-t
-	mv $@-t $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
