@@ -1056,26 +1056,36 @@ val internal_test_rstructlisterr : t -> lvm_pv array
 
 val internal_test_set_output : t -> string -> unit
 
-val is_blockdev : t -> string -> bool
+val is_blockdev : t -> ?followsymlinks:bool -> string -> bool
 (** test if block device *)
+
+val is_blockdev_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_busy : t -> bool
 (** is busy processing a command *)
 
-val is_chardev : t -> string -> bool
+val is_chardev : t -> ?followsymlinks:bool -> string -> bool
 (** test if character device *)
+
+val is_chardev_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_config : t -> bool
 (** is in configuration state *)
 
-val is_dir : t -> string -> bool
+val is_dir : t -> ?followsymlinks:bool -> string -> bool
 (** test if a directory *)
 
-val is_fifo : t -> string -> bool
+val is_dir_opts : t -> ?followsymlinks:bool -> string -> bool
+
+val is_fifo : t -> ?followsymlinks:bool -> string -> bool
 (** test if FIFO (named pipe) *)
 
-val is_file : t -> string -> bool
+val is_fifo_opts : t -> ?followsymlinks:bool -> string -> bool
+
+val is_file : t -> ?followsymlinks:bool -> string -> bool
 (** test if a regular file *)
+
+val is_file_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_launching : t -> bool
 (** is launching subprocess *)
@@ -1086,8 +1096,10 @@ val is_lv : t -> string -> bool
 val is_ready : t -> bool
 (** is ready to accept commands *)
 
-val is_socket : t -> string -> bool
+val is_socket : t -> ?followsymlinks:bool -> string -> bool
 (** test if socket *)
+
+val is_socket_opts : t -> ?followsymlinks:bool -> string -> bool
 
 val is_symlink : t -> string -> bool
 (** test if symbolic link *)
@@ -2293,17 +2305,23 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method internal_test_rstructlist : string -> lvm_pv array
   method internal_test_rstructlisterr : unit -> lvm_pv array
   method internal_test_set_output : string -> unit
-  method is_blockdev : string -> bool
+  method is_blockdev : ?followsymlinks:bool -> string -> bool
+  method is_blockdev_opts : ?followsymlinks:bool -> string -> bool
   method is_busy : unit -> bool
-  method is_chardev : string -> bool
+  method is_chardev : ?followsymlinks:bool -> string -> bool
+  method is_chardev_opts : ?followsymlinks:bool -> string -> bool
   method is_config : unit -> bool
-  method is_dir : string -> bool
-  method is_fifo : string -> bool
-  method is_file : string -> bool
+  method is_dir : ?followsymlinks:bool -> string -> bool
+  method is_dir_opts : ?followsymlinks:bool -> string -> bool
+  method is_fifo : ?followsymlinks:bool -> string -> bool
+  method is_fifo_opts : ?followsymlinks:bool -> string -> bool
+  method is_file : ?followsymlinks:bool -> string -> bool
+  method is_file_opts : ?followsymlinks:bool -> string -> bool
   method is_launching : unit -> bool
   method is_lv : string -> bool
   method is_ready : unit -> bool
-  method is_socket : string -> bool
+  method is_socket : ?followsymlinks:bool -> string -> bool
+  method is_socket_opts : ?followsymlinks:bool -> string -> bool
   method is_symlink : string -> bool
   method is_whole_device : string -> bool
   method is_zero : string -> bool

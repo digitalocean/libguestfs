@@ -8728,16 +8728,16 @@ ocaml_guestfs_internal_test_set_output (value gv, value filenamev)
 }
 
 /* Automatically generated wrapper for function
- * val is_blockdev : t -> string -> bool
+ * val is_blockdev : t -> ?followsymlinks:bool -> string -> bool
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_is_blockdev (value gv, value pathv);
+value ocaml_guestfs_is_blockdev (value gv, value followsymlinksv, value pathv);
 
 value
-ocaml_guestfs_is_blockdev (value gv, value pathv)
+ocaml_guestfs_is_blockdev (value gv, value followsymlinksv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, followsymlinksv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -8745,10 +8745,16 @@ ocaml_guestfs_is_blockdev (value gv, value pathv)
     ocaml_guestfs_raise_closed ("is_blockdev");
 
   char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
+  if (followsymlinksv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = Bool_val (Field (followsymlinksv, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_blockdev (g, path);
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
   caml_leave_blocking_section ();
   free (path);
   if (r == -1)
@@ -8786,16 +8792,16 @@ ocaml_guestfs_is_busy (value gv)
 }
 
 /* Automatically generated wrapper for function
- * val is_chardev : t -> string -> bool
+ * val is_chardev : t -> ?followsymlinks:bool -> string -> bool
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_is_chardev (value gv, value pathv);
+value ocaml_guestfs_is_chardev (value gv, value followsymlinksv, value pathv);
 
 value
-ocaml_guestfs_is_chardev (value gv, value pathv)
+ocaml_guestfs_is_chardev (value gv, value followsymlinksv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, followsymlinksv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -8803,10 +8809,16 @@ ocaml_guestfs_is_chardev (value gv, value pathv)
     ocaml_guestfs_raise_closed ("is_chardev");
 
   char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
+  if (followsymlinksv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = Bool_val (Field (followsymlinksv, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_chardev (g, path);
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
   caml_leave_blocking_section ();
   free (path);
   if (r == -1)
@@ -8844,16 +8856,16 @@ ocaml_guestfs_is_config (value gv)
 }
 
 /* Automatically generated wrapper for function
- * val is_dir : t -> string -> bool
+ * val is_dir : t -> ?followsymlinks:bool -> string -> bool
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_is_dir (value gv, value pathv);
+value ocaml_guestfs_is_dir (value gv, value followsymlinksv, value pathv);
 
 value
-ocaml_guestfs_is_dir (value gv, value pathv)
+ocaml_guestfs_is_dir (value gv, value followsymlinksv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, followsymlinksv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -8861,10 +8873,16 @@ ocaml_guestfs_is_dir (value gv, value pathv)
     ocaml_guestfs_raise_closed ("is_dir");
 
   char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
+  if (followsymlinksv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = Bool_val (Field (followsymlinksv, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_dir (g, path);
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
   caml_leave_blocking_section ();
   free (path);
   if (r == -1)
@@ -8875,16 +8893,16 @@ ocaml_guestfs_is_dir (value gv, value pathv)
 }
 
 /* Automatically generated wrapper for function
- * val is_fifo : t -> string -> bool
+ * val is_fifo : t -> ?followsymlinks:bool -> string -> bool
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_is_fifo (value gv, value pathv);
+value ocaml_guestfs_is_fifo (value gv, value followsymlinksv, value pathv);
 
 value
-ocaml_guestfs_is_fifo (value gv, value pathv)
+ocaml_guestfs_is_fifo (value gv, value followsymlinksv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, followsymlinksv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -8892,10 +8910,16 @@ ocaml_guestfs_is_fifo (value gv, value pathv)
     ocaml_guestfs_raise_closed ("is_fifo");
 
   char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
+  if (followsymlinksv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = Bool_val (Field (followsymlinksv, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_fifo (g, path);
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
   caml_leave_blocking_section ();
   free (path);
   if (r == -1)
@@ -8906,16 +8930,16 @@ ocaml_guestfs_is_fifo (value gv, value pathv)
 }
 
 /* Automatically generated wrapper for function
- * val is_file : t -> string -> bool
+ * val is_file : t -> ?followsymlinks:bool -> string -> bool
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_is_file (value gv, value pathv);
+value ocaml_guestfs_is_file (value gv, value followsymlinksv, value pathv);
 
 value
-ocaml_guestfs_is_file (value gv, value pathv)
+ocaml_guestfs_is_file (value gv, value followsymlinksv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, followsymlinksv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -8923,10 +8947,16 @@ ocaml_guestfs_is_file (value gv, value pathv)
     ocaml_guestfs_raise_closed ("is_file");
 
   char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
+  if (followsymlinksv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = Bool_val (Field (followsymlinksv, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_file (g, path);
+  r = guestfs_is_file_opts_argv (g, path, optargs);
   caml_leave_blocking_section ();
   free (path);
   if (r == -1)
@@ -9022,16 +9052,16 @@ ocaml_guestfs_is_ready (value gv)
 }
 
 /* Automatically generated wrapper for function
- * val is_socket : t -> string -> bool
+ * val is_socket : t -> ?followsymlinks:bool -> string -> bool
  */
 
 /* Emit prototype to appease gcc's -Wmissing-prototypes. */
-value ocaml_guestfs_is_socket (value gv, value pathv);
+value ocaml_guestfs_is_socket (value gv, value followsymlinksv, value pathv);
 
 value
-ocaml_guestfs_is_socket (value gv, value pathv)
+ocaml_guestfs_is_socket (value gv, value followsymlinksv, value pathv)
 {
-  CAMLparam2 (gv, pathv);
+  CAMLparam3 (gv, followsymlinksv, pathv);
   CAMLlocal1 (rv);
 
   guestfs_h *g = Guestfs_val (gv);
@@ -9039,10 +9069,16 @@ ocaml_guestfs_is_socket (value gv, value pathv)
     ocaml_guestfs_raise_closed ("is_socket");
 
   char *path = guestfs___safe_strdup (g, String_val (pathv));
+  struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
+  if (followsymlinksv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = Bool_val (Field (followsymlinksv, 0));
+  }
   int r;
 
   caml_enter_blocking_section ();
-  r = guestfs_is_socket (g, path);
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
   caml_leave_blocking_section ();
   free (path);
   if (r == -1)

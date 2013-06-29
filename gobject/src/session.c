@@ -8598,6 +8598,7 @@ guestfs_session_exists(GuestfsSession *session, const gchar *path, GError **err)
  * guestfs_session_is_file:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsIsFile containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * test if a regular file
@@ -8606,12 +8607,16 @@ guestfs_session_exists(GuestfsSession *session, const gchar *path, GError **err)
  * @path name. Note that it returns false for other objects like
  * directories.
  * 
+ * If the optional flag @followsymlinks is true, then a symlink (or chain
+ * of symlinks) that ends with a file also causes the function to return
+ * true.
+ * 
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_is_file(GuestfsSession *session, const gchar *path, GError **err)
+guestfs_session_is_file(GuestfsSession *session, const gchar *path, GuestfsIsFile *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -8621,7 +8626,23 @@ guestfs_session_is_file(GuestfsSession *session, const gchar *path, GError **err
     return -1;
   }
 
-  int ret = guestfs_is_file (g, path);
+  struct guestfs_is_file_opts_argv argv;
+  struct guestfs_is_file_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue followsymlinks_v = {0, };
+    g_value_init(&followsymlinks_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "followsymlinks", &followsymlinks_v);
+    GuestfsTristate followsymlinks = g_value_get_enum(&followsymlinks_v);
+    if (followsymlinks != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+      argv.followsymlinks = followsymlinks;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_is_file_opts_argv (g, path, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -8634,6 +8655,7 @@ guestfs_session_is_file(GuestfsSession *session, const gchar *path, GError **err
  * guestfs_session_is_dir:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsIsDir containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * test if a directory
@@ -8641,12 +8663,16 @@ guestfs_session_is_file(GuestfsSession *session, const gchar *path, GError **err
  * This returns @true if and only if there is a directory with the given
  * @path name. Note that it returns false for other objects like files.
  * 
+ * If the optional flag @followsymlinks is true, then a symlink (or chain
+ * of symlinks) that ends with a directory also causes the function to
+ * return true.
+ * 
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_is_dir(GuestfsSession *session, const gchar *path, GError **err)
+guestfs_session_is_dir(GuestfsSession *session, const gchar *path, GuestfsIsDir *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -8656,7 +8682,23 @@ guestfs_session_is_dir(GuestfsSession *session, const gchar *path, GError **err)
     return -1;
   }
 
-  int ret = guestfs_is_dir (g, path);
+  struct guestfs_is_dir_opts_argv argv;
+  struct guestfs_is_dir_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue followsymlinks_v = {0, };
+    g_value_init(&followsymlinks_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "followsymlinks", &followsymlinks_v);
+    GuestfsTristate followsymlinks = g_value_get_enum(&followsymlinks_v);
+    if (followsymlinks != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+      argv.followsymlinks = followsymlinks;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_is_dir_opts_argv (g, path, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -17456,6 +17498,7 @@ guestfs_session_findfs_label(GuestfsSession *session, const gchar *label, GError
  * guestfs_session_is_chardev:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsIsChardev containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * test if character device
@@ -17463,12 +17506,16 @@ guestfs_session_findfs_label(GuestfsSession *session, const gchar *label, GError
  * This returns @true if and only if there is a character device with the
  * given @path name.
  * 
+ * If the optional flag @followsymlinks is true, then a symlink (or chain
+ * of symlinks) that ends with a chardev also causes the function to return
+ * true.
+ * 
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GError **err)
+guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GuestfsIsChardev *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -17478,7 +17525,23 @@ guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GError **
     return -1;
   }
 
-  int ret = guestfs_is_chardev (g, path);
+  struct guestfs_is_chardev_opts_argv argv;
+  struct guestfs_is_chardev_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue followsymlinks_v = {0, };
+    g_value_init(&followsymlinks_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "followsymlinks", &followsymlinks_v);
+    GuestfsTristate followsymlinks = g_value_get_enum(&followsymlinks_v);
+    if (followsymlinks != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      argv.followsymlinks = followsymlinks;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_is_chardev_opts_argv (g, path, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -17491,6 +17554,7 @@ guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GError **
  * guestfs_session_is_blockdev:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsIsBlockdev containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * test if block device
@@ -17498,12 +17562,16 @@ guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GError **
  * This returns @true if and only if there is a block device with the given
  * @path name.
  * 
+ * If the optional flag @followsymlinks is true, then a symlink (or chain
+ * of symlinks) that ends with a block device also causes the function to
+ * return true.
+ * 
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GError **err)
+guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GuestfsIsBlockdev *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -17513,7 +17581,23 @@ guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GError *
     return -1;
   }
 
-  int ret = guestfs_is_blockdev (g, path);
+  struct guestfs_is_blockdev_opts_argv argv;
+  struct guestfs_is_blockdev_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue followsymlinks_v = {0, };
+    g_value_init(&followsymlinks_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "followsymlinks", &followsymlinks_v);
+    GuestfsTristate followsymlinks = g_value_get_enum(&followsymlinks_v);
+    if (followsymlinks != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      argv.followsymlinks = followsymlinks;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_is_blockdev_opts_argv (g, path, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -17526,6 +17610,7 @@ guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GError *
  * guestfs_session_is_fifo:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsIsFifo containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * test if FIFO (named pipe)
@@ -17533,12 +17618,16 @@ guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GError *
  * This returns @true if and only if there is a FIFO (named pipe) with the
  * given @path name.
  * 
+ * If the optional flag @followsymlinks is true, then a symlink (or chain
+ * of symlinks) that ends with a FIFO also causes the function to return
+ * true.
+ * 
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_is_fifo(GuestfsSession *session, const gchar *path, GError **err)
+guestfs_session_is_fifo(GuestfsSession *session, const gchar *path, GuestfsIsFifo *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -17548,7 +17637,23 @@ guestfs_session_is_fifo(GuestfsSession *session, const gchar *path, GError **err
     return -1;
   }
 
-  int ret = guestfs_is_fifo (g, path);
+  struct guestfs_is_fifo_opts_argv argv;
+  struct guestfs_is_fifo_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue followsymlinks_v = {0, };
+    g_value_init(&followsymlinks_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "followsymlinks", &followsymlinks_v);
+    GuestfsTristate followsymlinks = g_value_get_enum(&followsymlinks_v);
+    if (followsymlinks != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+      argv.followsymlinks = followsymlinks;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_is_fifo_opts_argv (g, path, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;
@@ -17596,6 +17701,7 @@ guestfs_session_is_symlink(GuestfsSession *session, const gchar *path, GError **
  * guestfs_session_is_socket:
  * @session: (transfer none): A GuestfsSession object
  * @path: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsIsSocket containing optional arguments
  * @err: A GError object to receive any generated errors
  *
  * test if socket
@@ -17603,12 +17709,16 @@ guestfs_session_is_symlink(GuestfsSession *session, const gchar *path, GError **
  * This returns @true if and only if there is a Unix domain socket with the
  * given @path name.
  * 
+ * If the optional flag @followsymlinks is true, then a symlink (or chain
+ * of symlinks) that ends with a socket also causes the function to return
+ * true.
+ * 
  * See also guestfs_session_stat().
  * 
  * Returns: the returned value, or -1 on error
  */
 gint8
-guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GError **err)
+guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GuestfsIsSocket *optargs, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -17618,7 +17728,23 @@ guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GError **e
     return -1;
   }
 
-  int ret = guestfs_is_socket (g, path);
+  struct guestfs_is_socket_opts_argv argv;
+  struct guestfs_is_socket_opts_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue followsymlinks_v = {0, };
+    g_value_init(&followsymlinks_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "followsymlinks", &followsymlinks_v);
+    GuestfsTristate followsymlinks = g_value_get_enum(&followsymlinks_v);
+    if (followsymlinks != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+      argv.followsymlinks = followsymlinks;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_is_socket_opts_argv (g, path, argvp);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return -1;

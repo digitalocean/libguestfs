@@ -1455,11 +1455,37 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_os (guestfs_h *g);
 #define GUESTFS_HAVE_IS_BLOCKDEV 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_blockdev (guestfs_h *g, const char *path);
 
+#define GUESTFS_HAVE_IS_BLOCKDEV_OPTS 1
+#define GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS 0
+extern GUESTFS_DLL_PUBLIC int guestfs_is_blockdev_opts (guestfs_h *g, const char *path, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_is_blockdev_opts_va (guestfs_h *g, const char *path, va_list args);
+
+struct guestfs_is_blockdev_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+  int followsymlinks;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_is_blockdev_opts_argv (guestfs_h *g, const char *path, const struct guestfs_is_blockdev_opts_argv *optargs);
+
 #define GUESTFS_HAVE_IS_BUSY 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_busy (guestfs_h *g);
 
 #define GUESTFS_HAVE_IS_CHARDEV 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_chardev (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_IS_CHARDEV_OPTS 1
+#define GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS 0
+extern GUESTFS_DLL_PUBLIC int guestfs_is_chardev_opts (guestfs_h *g, const char *path, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_is_chardev_opts_va (guestfs_h *g, const char *path, va_list args);
+
+struct guestfs_is_chardev_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+  int followsymlinks;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_is_chardev_opts_argv (guestfs_h *g, const char *path, const struct guestfs_is_chardev_opts_argv *optargs);
 
 #define GUESTFS_HAVE_IS_CONFIG 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_config (guestfs_h *g);
@@ -1467,11 +1493,50 @@ extern GUESTFS_DLL_PUBLIC int guestfs_is_config (guestfs_h *g);
 #define GUESTFS_HAVE_IS_DIR 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_dir (guestfs_h *g, const char *path);
 
+#define GUESTFS_HAVE_IS_DIR_OPTS 1
+#define GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS 0
+extern GUESTFS_DLL_PUBLIC int guestfs_is_dir_opts (guestfs_h *g, const char *path, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_is_dir_opts_va (guestfs_h *g, const char *path, va_list args);
+
+struct guestfs_is_dir_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+  int followsymlinks;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_is_dir_opts_argv (guestfs_h *g, const char *path, const struct guestfs_is_dir_opts_argv *optargs);
+
 #define GUESTFS_HAVE_IS_FIFO 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_fifo (guestfs_h *g, const char *path);
 
+#define GUESTFS_HAVE_IS_FIFO_OPTS 1
+#define GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS 0
+extern GUESTFS_DLL_PUBLIC int guestfs_is_fifo_opts (guestfs_h *g, const char *path, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_is_fifo_opts_va (guestfs_h *g, const char *path, va_list args);
+
+struct guestfs_is_fifo_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+  int followsymlinks;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_is_fifo_opts_argv (guestfs_h *g, const char *path, const struct guestfs_is_fifo_opts_argv *optargs);
+
 #define GUESTFS_HAVE_IS_FILE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_file (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_IS_FILE_OPTS 1
+#define GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS 0
+extern GUESTFS_DLL_PUBLIC int guestfs_is_file_opts (guestfs_h *g, const char *path, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_is_file_opts_va (guestfs_h *g, const char *path, va_list args);
+
+struct guestfs_is_file_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+  int followsymlinks;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_is_file_opts_argv (guestfs_h *g, const char *path, const struct guestfs_is_file_opts_argv *optargs);
 
 #define GUESTFS_HAVE_IS_LAUNCHING 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_launching (guestfs_h *g);
@@ -1484,6 +1549,19 @@ extern GUESTFS_DLL_PUBLIC int guestfs_is_ready (guestfs_h *g);
 
 #define GUESTFS_HAVE_IS_SOCKET 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_socket (guestfs_h *g, const char *path);
+
+#define GUESTFS_HAVE_IS_SOCKET_OPTS 1
+#define GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS 0
+extern GUESTFS_DLL_PUBLIC int guestfs_is_socket_opts (guestfs_h *g, const char *path, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_is_socket_opts_va (guestfs_h *g, const char *path, va_list args);
+
+struct guestfs_is_socket_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+  int followsymlinks;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_is_socket_opts_argv (guestfs_h *g, const char *path, const struct guestfs_is_socket_opts_argv *optargs);
 
 #define GUESTFS_HAVE_IS_SYMLINK 1
 extern GUESTFS_DLL_PUBLIC int guestfs_is_symlink (guestfs_h *g, const char *path);

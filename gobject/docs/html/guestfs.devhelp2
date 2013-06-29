@@ -33,11 +33,17 @@
       <sub name="GuestfsInspectGetIcon" link="GuestfsInspectGetIcon.html"/>
       <sub name="GuestfsMountLocal" link="GuestfsMountLocal.html"/>
       <sub name="GuestfsUmountLocal" link="GuestfsUmountLocal.html"/>
+      <sub name="GuestfsIsFile" link="GuestfsIsFile.html"/>
+      <sub name="GuestfsIsDir" link="GuestfsIsDir.html"/>
       <sub name="GuestfsUmount" link="GuestfsUmount.html"/>
       <sub name="GuestfsTarIn" link="GuestfsTarIn.html"/>
       <sub name="GuestfsTarOut" link="GuestfsTarOut.html"/>
       <sub name="GuestfsMkswap" link="GuestfsMkswap.html"/>
       <sub name="GuestfsGrep" link="GuestfsGrep.html"/>
+      <sub name="GuestfsIsChardev" link="GuestfsIsChardev.html"/>
+      <sub name="GuestfsIsBlockdev" link="GuestfsIsBlockdev.html"/>
+      <sub name="GuestfsIsFifo" link="GuestfsIsFifo.html"/>
+      <sub name="GuestfsIsSocket" link="GuestfsIsSocket.html"/>
       <sub name="GuestfsMkfs" link="GuestfsMkfs.html"/>
       <sub name="GuestfsMount9P" link="GuestfsMount9P.html"/>
       <sub name="GuestfsNTFSResizeOpts" link="GuestfsNTFSResizeOpts.html"/>
@@ -744,6 +750,14 @@
     <keyword type="struct" name="struct GuestfsUmountLocalClass" link="GuestfsUmountLocal.html#GuestfsUmountLocalClass"/>
     <keyword type="function" name="guestfs_umount_local_new ()" link="GuestfsUmountLocal.html#guestfs-umount-local-new"/>
     <keyword type="property" name="The &quot;retry&quot; property" link="GuestfsUmountLocal.html#GuestfsUmountLocal--retry"/>
+    <keyword type="struct" name="struct GuestfsIsFile" link="GuestfsIsFile.html#GuestfsIsFile-struct"/>
+    <keyword type="struct" name="struct GuestfsIsFileClass" link="GuestfsIsFile.html#GuestfsIsFileClass"/>
+    <keyword type="function" name="guestfs_is_file_new ()" link="GuestfsIsFile.html#guestfs-is-file-new"/>
+    <keyword type="property" name="The &quot;followsymlinks&quot; property" link="GuestfsIsFile.html#GuestfsIsFile--followsymlinks"/>
+    <keyword type="struct" name="struct GuestfsIsDir" link="GuestfsIsDir.html#GuestfsIsDir-struct"/>
+    <keyword type="struct" name="struct GuestfsIsDirClass" link="GuestfsIsDir.html#GuestfsIsDirClass"/>
+    <keyword type="function" name="guestfs_is_dir_new ()" link="GuestfsIsDir.html#guestfs-is-dir-new"/>
+    <keyword type="property" name="The &quot;followsymlinks&quot; property" link="GuestfsIsDir.html#GuestfsIsDir--followsymlinks"/>
     <keyword type="struct" name="struct GuestfsUmount" link="GuestfsUmount.html#GuestfsUmount-struct"/>
     <keyword type="struct" name="struct GuestfsUmountClass" link="GuestfsUmount.html#GuestfsUmountClass"/>
     <keyword type="function" name="guestfs_umount_new ()" link="GuestfsUmount.html#guestfs-umount-new"/>
@@ -770,6 +784,22 @@
     <keyword type="property" name="The &quot;extended&quot; property" link="GuestfsGrep.html#GuestfsGrep--extended"/>
     <keyword type="property" name="The &quot;fixed&quot; property" link="GuestfsGrep.html#GuestfsGrep--fixed"/>
     <keyword type="property" name="The &quot;insensitive&quot; property" link="GuestfsGrep.html#GuestfsGrep--insensitive"/>
+    <keyword type="struct" name="struct GuestfsIsChardev" link="GuestfsIsChardev.html#GuestfsIsChardev-struct"/>
+    <keyword type="struct" name="struct GuestfsIsChardevClass" link="GuestfsIsChardev.html#GuestfsIsChardevClass"/>
+    <keyword type="function" name="guestfs_is_chardev_new ()" link="GuestfsIsChardev.html#guestfs-is-chardev-new"/>
+    <keyword type="property" name="The &quot;followsymlinks&quot; property" link="GuestfsIsChardev.html#GuestfsIsChardev--followsymlinks"/>
+    <keyword type="struct" name="struct GuestfsIsBlockdev" link="GuestfsIsBlockdev.html#GuestfsIsBlockdev-struct"/>
+    <keyword type="struct" name="struct GuestfsIsBlockdevClass" link="GuestfsIsBlockdev.html#GuestfsIsBlockdevClass"/>
+    <keyword type="function" name="guestfs_is_blockdev_new ()" link="GuestfsIsBlockdev.html#guestfs-is-blockdev-new"/>
+    <keyword type="property" name="The &quot;followsymlinks&quot; property" link="GuestfsIsBlockdev.html#GuestfsIsBlockdev--followsymlinks"/>
+    <keyword type="struct" name="struct GuestfsIsFifo" link="GuestfsIsFifo.html#GuestfsIsFifo-struct"/>
+    <keyword type="struct" name="struct GuestfsIsFifoClass" link="GuestfsIsFifo.html#GuestfsIsFifoClass"/>
+    <keyword type="function" name="guestfs_is_fifo_new ()" link="GuestfsIsFifo.html#guestfs-is-fifo-new"/>
+    <keyword type="property" name="The &quot;followsymlinks&quot; property" link="GuestfsIsFifo.html#GuestfsIsFifo--followsymlinks"/>
+    <keyword type="struct" name="struct GuestfsIsSocket" link="GuestfsIsSocket.html#GuestfsIsSocket-struct"/>
+    <keyword type="struct" name="struct GuestfsIsSocketClass" link="GuestfsIsSocket.html#GuestfsIsSocketClass"/>
+    <keyword type="function" name="guestfs_is_socket_new ()" link="GuestfsIsSocket.html#guestfs-is-socket-new"/>
+    <keyword type="property" name="The &quot;followsymlinks&quot; property" link="GuestfsIsSocket.html#GuestfsIsSocket--followsymlinks"/>
     <keyword type="struct" name="struct GuestfsMkfs" link="GuestfsMkfs.html#GuestfsMkfs-struct"/>
     <keyword type="struct" name="struct GuestfsMkfsClass" link="GuestfsMkfs.html#GuestfsMkfsClass"/>
     <keyword type="function" name="guestfs_mkfs_new ()" link="GuestfsMkfs.html#guestfs-mkfs-new"/>

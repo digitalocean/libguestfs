@@ -8236,7 +8236,7 @@ ruby_guestfs_exists (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.is_file(path) -> [True|False]
+ *   g.is_file(path, {optargs...}) -> [True|False]
  *
  * test if a regular file
  *
@@ -8244,25 +8244,49 @@ ruby_guestfs_exists (VALUE gv, VALUE pathv)
  * file with the given "path" name. Note that it returns
  * false for other objects like directories.
  * 
+ * If the optional flag "followsymlinks" is true, then a
+ * symlink (or chain of symlinks) that ends with a file
+ * also causes the function to return true.
+ * 
  * See also "g.stat".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_is_file+[http://libguestfs.org/guestfs.3.html#guestfs_is_file]).
  */
 static VALUE
-ruby_guestfs_is_file (VALUE gv, VALUE pathv)
+ruby_guestfs_is_file (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "is_file");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("followsymlinks")));
+  if (v != Qnil) {
+    optargs_s.followsymlinks = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_is_file (g, path);
+  r = guestfs_is_file_opts_argv (g, path, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -8271,7 +8295,7 @@ ruby_guestfs_is_file (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.is_dir(path) -> [True|False]
+ *   g.is_dir(path, {optargs...}) -> [True|False]
  *
  * test if a directory
  *
@@ -8279,25 +8303,49 @@ ruby_guestfs_is_file (VALUE gv, VALUE pathv)
  * with the given "path" name. Note that it returns false
  * for other objects like files.
  * 
+ * If the optional flag "followsymlinks" is true, then a
+ * symlink (or chain of symlinks) that ends with a
+ * directory also causes the function to return true.
+ * 
  * See also "g.stat".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_is_dir+[http://libguestfs.org/guestfs.3.html#guestfs_is_dir]).
  */
 static VALUE
-ruby_guestfs_is_dir (VALUE gv, VALUE pathv)
+ruby_guestfs_is_dir (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "is_dir");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("followsymlinks")));
+  if (v != Qnil) {
+    optargs_s.followsymlinks = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_is_dir (g, path);
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -17648,32 +17696,56 @@ ruby_guestfs_findfs_label (VALUE gv, VALUE labelv)
 
 /*
  * call-seq:
- *   g.is_chardev(path) -> [True|False]
+ *   g.is_chardev(path, {optargs...}) -> [True|False]
  *
  * test if character device
  *
  * This returns "true" if and only if there is a character
  * device with the given "path" name.
  * 
+ * If the optional flag "followsymlinks" is true, then a
+ * symlink (or chain of symlinks) that ends with a chardev
+ * also causes the function to return true.
+ * 
  * See also "g.stat".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_is_chardev+[http://libguestfs.org/guestfs.3.html#guestfs_is_chardev]).
  */
 static VALUE
-ruby_guestfs_is_chardev (VALUE gv, VALUE pathv)
+ruby_guestfs_is_chardev (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "is_chardev");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("followsymlinks")));
+  if (v != Qnil) {
+    optargs_s.followsymlinks = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_is_chardev (g, path);
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -17682,32 +17754,56 @@ ruby_guestfs_is_chardev (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.is_blockdev(path) -> [True|False]
+ *   g.is_blockdev(path, {optargs...}) -> [True|False]
  *
  * test if block device
  *
  * This returns "true" if and only if there is a block
  * device with the given "path" name.
  * 
+ * If the optional flag "followsymlinks" is true, then a
+ * symlink (or chain of symlinks) that ends with a block
+ * device also causes the function to return true.
+ * 
  * See also "g.stat".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_is_blockdev+[http://libguestfs.org/guestfs.3.html#guestfs_is_blockdev]).
  */
 static VALUE
-ruby_guestfs_is_blockdev (VALUE gv, VALUE pathv)
+ruby_guestfs_is_blockdev (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "is_blockdev");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("followsymlinks")));
+  if (v != Qnil) {
+    optargs_s.followsymlinks = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_is_blockdev (g, path);
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -17716,32 +17812,56 @@ ruby_guestfs_is_blockdev (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.is_fifo(path) -> [True|False]
+ *   g.is_fifo(path, {optargs...}) -> [True|False]
  *
  * test if FIFO (named pipe)
  *
  * This returns "true" if and only if there is a FIFO
  * (named pipe) with the given "path" name.
  * 
+ * If the optional flag "followsymlinks" is true, then a
+ * symlink (or chain of symlinks) that ends with a FIFO
+ * also causes the function to return true.
+ * 
  * See also "g.stat".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_is_fifo+[http://libguestfs.org/guestfs.3.html#guestfs_is_fifo]).
  */
 static VALUE
-ruby_guestfs_is_fifo (VALUE gv, VALUE pathv)
+ruby_guestfs_is_fifo (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "is_fifo");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("followsymlinks")));
+  if (v != Qnil) {
+    optargs_s.followsymlinks = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_is_fifo (g, path);
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -17784,32 +17904,56 @@ ruby_guestfs_is_symlink (VALUE gv, VALUE pathv)
 
 /*
  * call-seq:
- *   g.is_socket(path) -> [True|False]
+ *   g.is_socket(path, {optargs...}) -> [True|False]
  *
  * test if socket
  *
  * This returns "true" if and only if there is a Unix
  * domain socket with the given "path" name.
  * 
+ * If the optional flag "followsymlinks" is true, then a
+ * symlink (or chain of symlinks) that ends with a socket
+ * also causes the function to return true.
+ * 
  * See also "g.stat".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_is_socket+[http://libguestfs.org/guestfs.3.html#guestfs_is_socket]).
  */
 static VALUE
-ruby_guestfs_is_socket (VALUE gv, VALUE pathv)
+ruby_guestfs_is_socket (int argc, VALUE *argv, VALUE gv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "is_socket");
 
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE pathv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
   const char *path = StringValueCStr (pathv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("followsymlinks")));
+  if (v != Qnil) {
+    optargs_s.followsymlinks = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
 
   int r;
 
-  r = guestfs_is_socket (g, path);
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -24638,9 +24782,13 @@ Init__guestfs (void)
   rb_define_method (c_guestfs, "exists",
         ruby_guestfs_exists, 1);
   rb_define_method (c_guestfs, "is_file",
-        ruby_guestfs_is_file, 1);
+        ruby_guestfs_is_file, -1);
+  rb_define_method (c_guestfs, "is_file_opts",
+        ruby_guestfs_is_file, -1);
   rb_define_method (c_guestfs, "is_dir",
-        ruby_guestfs_is_dir, 1);
+        ruby_guestfs_is_dir, -1);
+  rb_define_method (c_guestfs, "is_dir_opts",
+        ruby_guestfs_is_dir, -1);
   rb_define_method (c_guestfs, "pvcreate",
         ruby_guestfs_pvcreate, 1);
   rb_define_method (c_guestfs, "vgcreate",
@@ -25092,15 +25240,23 @@ Init__guestfs (void)
   rb_define_method (c_guestfs, "findfs_label",
         ruby_guestfs_findfs_label, 1);
   rb_define_method (c_guestfs, "is_chardev",
-        ruby_guestfs_is_chardev, 1);
+        ruby_guestfs_is_chardev, -1);
+  rb_define_method (c_guestfs, "is_chardev_opts",
+        ruby_guestfs_is_chardev, -1);
   rb_define_method (c_guestfs, "is_blockdev",
-        ruby_guestfs_is_blockdev, 1);
+        ruby_guestfs_is_blockdev, -1);
+  rb_define_method (c_guestfs, "is_blockdev_opts",
+        ruby_guestfs_is_blockdev, -1);
   rb_define_method (c_guestfs, "is_fifo",
-        ruby_guestfs_is_fifo, 1);
+        ruby_guestfs_is_fifo, -1);
+  rb_define_method (c_guestfs, "is_fifo_opts",
+        ruby_guestfs_is_fifo, -1);
   rb_define_method (c_guestfs, "is_symlink",
         ruby_guestfs_is_symlink, 1);
   rb_define_method (c_guestfs, "is_socket",
-        ruby_guestfs_is_socket, 1);
+        ruby_guestfs_is_socket, -1);
+  rb_define_method (c_guestfs, "is_socket_opts",
+        ruby_guestfs_is_socket, -1);
   rb_define_method (c_guestfs, "part_to_dev",
         ruby_guestfs_part_to_dev, 1);
   rb_define_method (c_guestfs, "upload_offset",

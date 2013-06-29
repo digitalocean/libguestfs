@@ -5949,20 +5949,59 @@ public class GuestFS {
    * file with the given "path" name. Note that it returns
    * false for other objects like directories.
    * <p>
+   * If the optional flag "followsymlinks" is true, then a
+   * symlink (or chain of symlinks) that ends with a file
+   * also causes the function to return true.
+   * <p>
    * See also "g.stat".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public boolean is_file (String path)
+  public boolean is_file (String path, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("is_file: handle is closed");
 
-    return _is_file (g, path);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean followsymlinks = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("followsymlinks");
+    if (_optobj != null) {
+      followsymlinks = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    return _is_file (g, path, _optargs_bitmask, followsymlinks);
   }
 
-  private native boolean _is_file (long g, String path)
+  public boolean is_file (String path)
+    throws LibGuestFSException
+  {
+    return is_file (path, null);
+  }
+
+  public boolean is_file_opts (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return is_file (path, optargs);
+  }
+
+  public boolean is_file_opts (String path)
+    throws LibGuestFSException
+  {
+    return is_file (path, null);
+  }
+
+  private native boolean _is_file (long g, String path, long _optargs_bitmask, boolean followsymlinks)
     throws LibGuestFSException;
 
   /**
@@ -5972,20 +6011,59 @@ public class GuestFS {
    * with the given "path" name. Note that it returns false
    * for other objects like files.
    * <p>
+   * If the optional flag "followsymlinks" is true, then a
+   * symlink (or chain of symlinks) that ends with a
+   * directory also causes the function to return true.
+   * <p>
    * See also "g.stat".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public boolean is_dir (String path)
+  public boolean is_dir (String path, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("is_dir: handle is closed");
 
-    return _is_dir (g, path);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean followsymlinks = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("followsymlinks");
+    if (_optobj != null) {
+      followsymlinks = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    return _is_dir (g, path, _optargs_bitmask, followsymlinks);
   }
 
-  private native boolean _is_dir (long g, String path)
+  public boolean is_dir (String path)
+    throws LibGuestFSException
+  {
+    return is_dir (path, null);
+  }
+
+  public boolean is_dir_opts (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return is_dir (path, optargs);
+  }
+
+  public boolean is_dir_opts (String path)
+    throws LibGuestFSException
+  {
+    return is_dir (path, null);
+  }
+
+  private native boolean _is_dir (long g, String path, long _optargs_bitmask, boolean followsymlinks)
     throws LibGuestFSException;
 
   /**
@@ -12129,20 +12207,59 @@ public class GuestFS {
    * This returns "true" if and only if there is a character
    * device with the given "path" name.
    * <p>
+   * If the optional flag "followsymlinks" is true, then a
+   * symlink (or chain of symlinks) that ends with a chardev
+   * also causes the function to return true.
+   * <p>
    * See also "g.stat".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public boolean is_chardev (String path)
+  public boolean is_chardev (String path, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("is_chardev: handle is closed");
 
-    return _is_chardev (g, path);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean followsymlinks = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("followsymlinks");
+    if (_optobj != null) {
+      followsymlinks = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    return _is_chardev (g, path, _optargs_bitmask, followsymlinks);
   }
 
-  private native boolean _is_chardev (long g, String path)
+  public boolean is_chardev (String path)
+    throws LibGuestFSException
+  {
+    return is_chardev (path, null);
+  }
+
+  public boolean is_chardev_opts (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return is_chardev (path, optargs);
+  }
+
+  public boolean is_chardev_opts (String path)
+    throws LibGuestFSException
+  {
+    return is_chardev (path, null);
+  }
+
+  private native boolean _is_chardev (long g, String path, long _optargs_bitmask, boolean followsymlinks)
     throws LibGuestFSException;
 
   /**
@@ -12151,20 +12268,59 @@ public class GuestFS {
    * This returns "true" if and only if there is a block
    * device with the given "path" name.
    * <p>
+   * If the optional flag "followsymlinks" is true, then a
+   * symlink (or chain of symlinks) that ends with a block
+   * device also causes the function to return true.
+   * <p>
    * See also "g.stat".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public boolean is_blockdev (String path)
+  public boolean is_blockdev (String path, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("is_blockdev: handle is closed");
 
-    return _is_blockdev (g, path);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean followsymlinks = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("followsymlinks");
+    if (_optobj != null) {
+      followsymlinks = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    return _is_blockdev (g, path, _optargs_bitmask, followsymlinks);
   }
 
-  private native boolean _is_blockdev (long g, String path)
+  public boolean is_blockdev (String path)
+    throws LibGuestFSException
+  {
+    return is_blockdev (path, null);
+  }
+
+  public boolean is_blockdev_opts (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return is_blockdev (path, optargs);
+  }
+
+  public boolean is_blockdev_opts (String path)
+    throws LibGuestFSException
+  {
+    return is_blockdev (path, null);
+  }
+
+  private native boolean _is_blockdev (long g, String path, long _optargs_bitmask, boolean followsymlinks)
     throws LibGuestFSException;
 
   /**
@@ -12173,20 +12329,59 @@ public class GuestFS {
    * This returns "true" if and only if there is a FIFO
    * (named pipe) with the given "path" name.
    * <p>
+   * If the optional flag "followsymlinks" is true, then a
+   * symlink (or chain of symlinks) that ends with a FIFO
+   * also causes the function to return true.
+   * <p>
    * See also "g.stat".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public boolean is_fifo (String path)
+  public boolean is_fifo (String path, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("is_fifo: handle is closed");
 
-    return _is_fifo (g, path);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean followsymlinks = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("followsymlinks");
+    if (_optobj != null) {
+      followsymlinks = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    return _is_fifo (g, path, _optargs_bitmask, followsymlinks);
   }
 
-  private native boolean _is_fifo (long g, String path)
+  public boolean is_fifo (String path)
+    throws LibGuestFSException
+  {
+    return is_fifo (path, null);
+  }
+
+  public boolean is_fifo_opts (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return is_fifo (path, optargs);
+  }
+
+  public boolean is_fifo_opts (String path)
+    throws LibGuestFSException
+  {
+    return is_fifo (path, null);
+  }
+
+  private native boolean _is_fifo (long g, String path, long _optargs_bitmask, boolean followsymlinks)
     throws LibGuestFSException;
 
   /**
@@ -12217,20 +12412,59 @@ public class GuestFS {
    * This returns "true" if and only if there is a Unix
    * domain socket with the given "path" name.
    * <p>
+   * If the optional flag "followsymlinks" is true, then a
+   * symlink (or chain of symlinks) that ends with a socket
+   * also causes the function to return true.
+   * <p>
    * See also "g.stat".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
    * <p>
    * @throws LibGuestFSException
    */
-  public boolean is_socket (String path)
+  public boolean is_socket (String path, Map<String, Object> optargs)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("is_socket: handle is closed");
 
-    return _is_socket (g, path);
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean followsymlinks = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("followsymlinks");
+    if (_optobj != null) {
+      followsymlinks = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    return _is_socket (g, path, _optargs_bitmask, followsymlinks);
   }
 
-  private native boolean _is_socket (long g, String path)
+  public boolean is_socket (String path)
+    throws LibGuestFSException
+  {
+    return is_socket (path, null);
+  }
+
+  public boolean is_socket_opts (String path, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    return is_socket (path, optargs);
+  }
+
+  public boolean is_socket_opts (String path)
+    throws LibGuestFSException
+  {
+    return is_socket (path, null);
+  }
+
+  private native boolean _is_socket (long g, String path, long _optargs_bitmask, boolean followsymlinks)
     throws LibGuestFSException;
 
   /**

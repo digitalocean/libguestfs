@@ -4649,15 +4649,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1exists  (JNIEnv *env, jobject obj, jlong
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1file  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong joptargs_bitmask, jboolean jfollowsymlinks)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
+  struct guestfs_is_file_opts_argv optargs_s;
+  const struct guestfs_is_file_opts_argv *optargs = &optargs_s;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
 
-  r = guestfs_is_file (g, path);
+  optargs_s.followsymlinks = jfollowsymlinks;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_is_file_opts_argv (g, path, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jpath, path);
 
@@ -4669,15 +4674,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1file  (JNIEnv *env, jobject obj, jlo
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1dir  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1dir  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong joptargs_bitmask, jboolean jfollowsymlinks)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
+  struct guestfs_is_dir_opts_argv optargs_s;
+  const struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
 
-  r = guestfs_is_dir (g, path);
+  optargs_s.followsymlinks = jfollowsymlinks;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jpath, path);
 
@@ -10231,15 +10241,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1findfs_1label  (JNIEnv *env, jobject obj
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1chardev  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1chardev  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong joptargs_bitmask, jboolean jfollowsymlinks)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
+  struct guestfs_is_chardev_opts_argv optargs_s;
+  const struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
 
-  r = guestfs_is_chardev (g, path);
+  optargs_s.followsymlinks = jfollowsymlinks;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jpath, path);
 
@@ -10251,15 +10266,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1chardev  (JNIEnv *env, jobject obj, 
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1blockdev  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1blockdev  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong joptargs_bitmask, jboolean jfollowsymlinks)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
+  struct guestfs_is_blockdev_opts_argv optargs_s;
+  const struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
 
-  r = guestfs_is_blockdev (g, path);
+  optargs_s.followsymlinks = jfollowsymlinks;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jpath, path);
 
@@ -10271,15 +10291,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1blockdev  (JNIEnv *env, jobject obj,
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1fifo  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1fifo  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong joptargs_bitmask, jboolean jfollowsymlinks)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
+  struct guestfs_is_fifo_opts_argv optargs_s;
+  const struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
 
-  r = guestfs_is_fifo (g, path);
+  optargs_s.followsymlinks = jfollowsymlinks;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jpath, path);
 
@@ -10311,15 +10336,20 @@ Java_com_redhat_et_libguestfs_GuestFS__1is_1symlink  (JNIEnv *env, jobject obj, 
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_redhat_et_libguestfs_GuestFS__1is_1socket  (JNIEnv *env, jobject obj, jlong jg, jstring jpath)
+Java_com_redhat_et_libguestfs_GuestFS__1is_1socket  (JNIEnv *env, jobject obj, jlong jg, jstring jpath, jlong joptargs_bitmask, jboolean jfollowsymlinks)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
   int r;
   const char *path;
+  struct guestfs_is_socket_opts_argv optargs_s;
+  const struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
 
   path = (*env)->GetStringUTFChars (env, jpath, NULL);
 
-  r = guestfs_is_socket (g, path);
+  optargs_s.followsymlinks = jfollowsymlinks;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jpath, path);
 

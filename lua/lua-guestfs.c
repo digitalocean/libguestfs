@@ -6146,6 +6146,8 @@ guestfs_lua_is_blockdev (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *path;
+  struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
@@ -6153,7 +6155,15 @@ guestfs_lua_is_blockdev (lua_State *L)
 
   path = luaL_checkstring (L, 2);
 
-  r = guestfs_is_blockdev (g, path);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "followsymlinks",
+      optargs_s.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -6188,6 +6198,8 @@ guestfs_lua_is_chardev (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *path;
+  struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
@@ -6195,7 +6207,15 @@ guestfs_lua_is_chardev (lua_State *L)
 
   path = luaL_checkstring (L, 2);
 
-  r = guestfs_is_chardev (g, path);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "followsymlinks",
+      optargs_s.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -6230,6 +6250,8 @@ guestfs_lua_is_dir (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *path;
+  struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
@@ -6237,7 +6259,15 @@ guestfs_lua_is_dir (lua_State *L)
 
   path = luaL_checkstring (L, 2);
 
-  r = guestfs_is_dir (g, path);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "followsymlinks",
+      optargs_s.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -6252,6 +6282,8 @@ guestfs_lua_is_fifo (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *path;
+  struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
@@ -6259,7 +6291,15 @@ guestfs_lua_is_fifo (lua_State *L)
 
   path = luaL_checkstring (L, 2);
 
-  r = guestfs_is_fifo (g, path);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "followsymlinks",
+      optargs_s.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -6274,6 +6314,8 @@ guestfs_lua_is_file (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *path;
+  struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
@@ -6281,7 +6323,15 @@ guestfs_lua_is_file (lua_State *L)
 
   path = luaL_checkstring (L, 2);
 
-  r = guestfs_is_file (g, path);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "followsymlinks",
+      optargs_s.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_is_file_opts_argv (g, path, optargs);
   if (r == -1)
     return last_error (L, g);
 
@@ -6358,6 +6408,8 @@ guestfs_lua_is_socket (lua_State *L)
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
   const char *path;
+  struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
@@ -6365,7 +6417,15 @@ guestfs_lua_is_socket (lua_State *L)
 
   path = luaL_checkstring (L, 2);
 
-  r = guestfs_is_socket (g, path);
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "followsymlinks",
+      optargs_s.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
   if (r == -1)
     return last_error (L, g);
 

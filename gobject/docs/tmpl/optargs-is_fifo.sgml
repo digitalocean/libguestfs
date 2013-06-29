@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsIsFifo
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsIsFifo ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsIsFifo:followsymlinks ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsIsFifoClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_is_fifo_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

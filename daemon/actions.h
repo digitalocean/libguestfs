@@ -26,6 +26,8 @@
 #include "guestfs_protocol.h"
 #include "daemon.h"
 
+#define GUESTFS_IS_FILE_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_IS_DIR_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_UMOUNT_FORCE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_UMOUNT_LAZYUNMOUNT_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_TAR_IN_COMPRESS_BITMASK (UINT64_C(1)<<0)
@@ -38,6 +40,10 @@
 #define GUESTFS_GREP_FIXED_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_GREP_INSENSITIVE_BITMASK (UINT64_C(1)<<2)
 #define GUESTFS_GREP_COMPRESSED_BITMASK (UINT64_C(1)<<3)
+#define GUESTFS_IS_CHARDEV_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_IS_BLOCKDEV_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_IS_FIFO_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_IS_SOCKET_FOLLOWSYMLINKS_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_MKFS_BLOCKSIZE_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_MKFS_FEATURES_BITMASK (UINT64_C(1)<<1)
 #define GUESTFS_MKFS_INODE_BITMASK (UINT64_C(1)<<2)
@@ -209,8 +215,8 @@ extern int do_mkdir_p (const char *path);
 extern int do_chmod (int mode, const char *path);
 extern int do_chown (int owner, int group, const char *path);
 extern int do_exists (const char *path);
-extern int do_is_file (const char *path);
-extern int do_is_dir (const char *path);
+extern int do_is_file (const char *path, int followsymlinks);
+extern int do_is_dir (const char *path, int followsymlinks);
 extern int do_pvcreate (const char *device);
 extern int do_vgcreate (const char *volgroup, char *const *physvols);
 extern int do_lvcreate (const char *logvol, const char *volgroup, int mbytes);
@@ -435,11 +441,11 @@ extern int do_luks_kill_slot (const char *device, const char *key, int keyslot);
 extern int do_is_lv (const char *device);
 extern char *do_findfs_uuid (const char *uuid);
 extern char *do_findfs_label (const char *label);
-extern int do_is_chardev (const char *path);
-extern int do_is_blockdev (const char *path);
-extern int do_is_fifo (const char *path);
+extern int do_is_chardev (const char *path, int followsymlinks);
+extern int do_is_blockdev (const char *path, int followsymlinks);
+extern int do_is_fifo (const char *path, int followsymlinks);
 extern int do_is_symlink (const char *path);
-extern int do_is_socket (const char *path);
+extern int do_is_socket (const char *path, int followsymlinks);
 extern char *do_part_to_dev (const char *partition);
 extern int do_upload_offset (const char *remotefilename, int64_t offset);
 extern int do_download_offset (const char *remotefilename, int64_t offset, int64_t size);

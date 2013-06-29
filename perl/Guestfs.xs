@@ -3395,13 +3395,34 @@ PREINIT:
       RETVAL
 
 SV *
-is_file (g, path)
+is_file (g, path, ...)
       guestfs_h *g;
       char *path;
 PREINIT:
       int r;
+      struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_is_file_opts_argv *optargs = &optargs_s;
+      size_t items_i;
    CODE:
-      r = guestfs_is_file (g, path);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "followsymlinks")) {
+          optargs_s.followsymlinks = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_is_file_opts_argv (g, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -3409,13 +3430,34 @@ PREINIT:
       RETVAL
 
 SV *
-is_dir (g, path)
+is_dir (g, path, ...)
       guestfs_h *g;
       char *path;
 PREINIT:
       int r;
+      struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
+      size_t items_i;
    CODE:
-      r = guestfs_is_dir (g, path);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "followsymlinks")) {
+          optargs_s.followsymlinks = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_is_dir_opts_argv (g, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -6714,13 +6756,34 @@ PREINIT:
       RETVAL
 
 SV *
-is_chardev (g, path)
+is_chardev (g, path, ...)
       guestfs_h *g;
       char *path;
 PREINIT:
       int r;
+      struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
+      size_t items_i;
    CODE:
-      r = guestfs_is_chardev (g, path);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "followsymlinks")) {
+          optargs_s.followsymlinks = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_is_chardev_opts_argv (g, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -6728,13 +6791,34 @@ PREINIT:
       RETVAL
 
 SV *
-is_blockdev (g, path)
+is_blockdev (g, path, ...)
       guestfs_h *g;
       char *path;
 PREINIT:
       int r;
+      struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
+      size_t items_i;
    CODE:
-      r = guestfs_is_blockdev (g, path);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "followsymlinks")) {
+          optargs_s.followsymlinks = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_is_blockdev_opts_argv (g, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -6742,13 +6826,34 @@ PREINIT:
       RETVAL
 
 SV *
-is_fifo (g, path)
+is_fifo (g, path, ...)
       guestfs_h *g;
       char *path;
 PREINIT:
       int r;
+      struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
+      size_t items_i;
    CODE:
-      r = guestfs_is_fifo (g, path);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "followsymlinks")) {
+          optargs_s.followsymlinks = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_is_fifo_opts_argv (g, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);
@@ -6770,13 +6875,34 @@ PREINIT:
       RETVAL
 
 SV *
-is_socket (g, path)
+is_socket (g, path, ...)
       guestfs_h *g;
       char *path;
 PREINIT:
       int r;
+      struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
+      size_t items_i;
    CODE:
-      r = guestfs_is_socket (g, path);
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "followsymlinks")) {
+          optargs_s.followsymlinks = SvIV (ST (items_i+1));
+          this_mask = GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_is_socket_opts_argv (g, path, optargs);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSViv (r);

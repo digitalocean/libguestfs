@@ -264,11 +264,22 @@ L<https://fedoraproject.org/wiki/EPEL>
 It is part of the default install.  On RHEL 6 and 7 (only) you have to
 install C<libguestfs-winsupport> to get Windows guest support.
 
+=over 4
+
+=item RHEL 6.5
+
+There is a preview repository available for people who want to see
+what packages will be in RHEL 6.5.  Follow the instructions here:
+
+L<https://www.redhat.com/archives/libguestfs/2013-May/msg00100.html>
+
+=back
+
 =item RHEL 7
 
-It will be part of the default install, and based on libguestfs 1.20
-or 1.22.  You will need to install C<libguestfs-winsupport> separately
-to get Windows guest support.
+It will be part of the default install, and based on S<libguestfs 1.22>.
+You will need to install C<libguestfs-winsupport> separately to get
+Windows guest support.
 
 =back
 
@@ -300,6 +311,8 @@ So every user should do this:
 
  sudo chmod 0644 /boot/vmlinuz*
 
+=over 4
+
 =item Ubuntu 10.04
 
 See:
@@ -325,6 +338,8 @@ L<http://packages.ubuntu.com/quantal/seabios>
 Also you need to do (see above):
 
  sudo chmod 0644 /boot/vmlinuz*
+
+=back
 
 =back
 
@@ -370,8 +385,7 @@ Patches to port supermin to more Linux distros are welcome.
 =head2 Why do I get an error when I try to rebuild from the source
 RPMs supplied by Red Hat / Fedora?
 
-[Note: This issue is fixed in libguestfs E<ge> 1.21.26 in
-Fedora E<ge> 19 and RHEL E<ge> 7]
+B<Note:> This issue is fixed in S<Fedora E<ge> 19> and S<RHEL E<ge> 6.5>.
 
 Because of the complexity of building the libguestfs appliance, the
 source RPMs provided cannot be rebuilt directly using C<rpmbuild> or
@@ -395,9 +409,9 @@ If you are using mock, do:
 
 =head2 How can I add support for sVirt?
 
-Note for Fedora/RHEL users: This configuration is the default starting
-with S<Fedora 18> and S<RHEL 7>.  If you find any problems, please let
-us know or file a bug.
+B<Note for Fedora/RHEL users:> This configuration is the default
+starting with S<Fedora 18> and S<RHEL 7>.  If you find any problems,
+please let us know or file a bug.
 
 L<SVirt|http://selinuxproject.org/page/SVirt> provides a hardened
 appliance using SELinux, making it very hard for a rogue disk image to
@@ -460,7 +474,7 @@ Debian in the approx(8) manual page.
 
 =head1 SPEED, DISK SPACE USED BY LIBGUESTFS
 
-Note: Most of the information in this section has moved:
+B<Note:> Most of the information in this section has moved:
 L<guestfs-performance(1)>.
 
 =head2 Upload or write seem very slow.
@@ -928,10 +942,10 @@ L<https://www.redhat.com/mailman/listinfo/libguestfs>.  You don't have
 to be subscribed, but there will be a delay until your posting is
 manually approved.
 
-Please don't use github pull requests - they will be ignored.  The
+B<Please don't use github pull requests - they will be ignored>.  The
 reasons are (a) we want to discuss and dissect patches on the mailing
-list, and (b) github pull requests turn into merge commits which we
-don't want.
+list, and (b) github pull requests turn into merge commits we prefer
+to have a linear history.
 
 =head2 How do I propose a feature?
 
@@ -944,6 +958,20 @@ into the libguestfs project.
 If you want to suggest a useful feature but don't want to write the
 code, you can file a bug (see L</GETTING HELP AND REPORTING BUGS>)
 with C<"RFE: "> at the beginning of the Summary line.
+
+=head2 Who can commit to libguestfs git?
+
+About 5 people have commit access to github.  Patches should be posted
+on the list first and ACKed.  The policy for ACKing and pushing
+patches is outlined here:
+
+L<https://www.redhat.com/archives/libguestfs/2012-January/msg00023.html>
+
+=head2 Can I fork libguestfs?
+
+Of course you can.  Git makes it easy to fork libguestfs.  Github
+makes it even easier.  It's nice if you tell us on the mailing list
+about forks and the reasons for them.
 
 =head1 SEE ALSO
 

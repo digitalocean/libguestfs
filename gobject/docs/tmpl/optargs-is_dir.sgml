@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsIsDir
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsIsDir ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsIsDir:followsymlinks ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsIsDirClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_is_dir_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

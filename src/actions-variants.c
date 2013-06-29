@@ -1254,6 +1254,354 @@ guestfs_internal_test_only_optargs_va (guestfs_h *g,
 }
 
 int
+guestfs_is_blockdev_opts (guestfs_h *g,
+                          const char *path,
+                          ...)
+{
+  va_list optargs;
+
+  va_start (optargs, path);
+  int r = guestfs_is_blockdev_opts_va (g, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_is_blockdev_opts_va (guestfs_h *g,
+                             const char *path,
+                             va_list args)
+{
+  struct guestfs_is_blockdev_opts_argv optargs_s;
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS:
+      optargs_s.followsymlinks = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "is_blockdev", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "is_blockdev");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_is_blockdev_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_blockdev (guestfs_h *g,
+                     const char *path)
+{
+  struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
+
+  return guestfs_is_blockdev_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_chardev_opts (guestfs_h *g,
+                         const char *path,
+                         ...)
+{
+  va_list optargs;
+
+  va_start (optargs, path);
+  int r = guestfs_is_chardev_opts_va (g, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_is_chardev_opts_va (guestfs_h *g,
+                            const char *path,
+                            va_list args)
+{
+  struct guestfs_is_chardev_opts_argv optargs_s;
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS:
+      optargs_s.followsymlinks = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "is_chardev", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "is_chardev");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_is_chardev_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_chardev (guestfs_h *g,
+                    const char *path)
+{
+  struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
+
+  return guestfs_is_chardev_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_dir_opts (guestfs_h *g,
+                     const char *path,
+                     ...)
+{
+  va_list optargs;
+
+  va_start (optargs, path);
+  int r = guestfs_is_dir_opts_va (g, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_is_dir_opts_va (guestfs_h *g,
+                        const char *path,
+                        va_list args)
+{
+  struct guestfs_is_dir_opts_argv optargs_s;
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS:
+      optargs_s.followsymlinks = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "is_dir", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "is_dir");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_is_dir_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_dir (guestfs_h *g,
+                const char *path)
+{
+  struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
+
+  return guestfs_is_dir_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_fifo_opts (guestfs_h *g,
+                      const char *path,
+                      ...)
+{
+  va_list optargs;
+
+  va_start (optargs, path);
+  int r = guestfs_is_fifo_opts_va (g, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_is_fifo_opts_va (guestfs_h *g,
+                         const char *path,
+                         va_list args)
+{
+  struct guestfs_is_fifo_opts_argv optargs_s;
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS:
+      optargs_s.followsymlinks = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "is_fifo", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "is_fifo");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_is_fifo_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_fifo (guestfs_h *g,
+                 const char *path)
+{
+  struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
+
+  return guestfs_is_fifo_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_file_opts (guestfs_h *g,
+                      const char *path,
+                      ...)
+{
+  va_list optargs;
+
+  va_start (optargs, path);
+  int r = guestfs_is_file_opts_va (g, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_is_file_opts_va (guestfs_h *g,
+                         const char *path,
+                         va_list args)
+{
+  struct guestfs_is_file_opts_argv optargs_s;
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS:
+      optargs_s.followsymlinks = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "is_file", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "is_file");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_is_file_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_file (guestfs_h *g,
+                 const char *path)
+{
+  struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
+
+  return guestfs_is_file_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_socket_opts (guestfs_h *g,
+                        const char *path,
+                        ...)
+{
+  va_list optargs;
+
+  va_start (optargs, path);
+  int r = guestfs_is_socket_opts_va (g, path, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_is_socket_opts_va (guestfs_h *g,
+                           const char *path,
+                           va_list args)
+{
+  struct guestfs_is_socket_opts_argv optargs_s;
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS:
+      optargs_s.followsymlinks = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "is_socket", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "is_socket");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_is_socket_opts_argv (g, path, optargs);
+}
+
+int
+guestfs_is_socket (guestfs_h *g,
+                   const char *path)
+{
+  struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
+
+  return guestfs_is_socket_opts_argv (g, path, optargs);
+}
+
+int
 guestfs_md_create (guestfs_h *g,
                    const char *name,
                    char *const *devices,

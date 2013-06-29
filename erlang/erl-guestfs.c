@@ -4697,9 +4697,27 @@ static ETERM *
 run_is_blockdev (ETERM *message)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "followsymlinks")) {
+      optargs_s.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("is_blockdev", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_is_blockdev (g, path);
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
   if (r == -1)
     return make_error ("is_blockdev");
 
@@ -4722,9 +4740,27 @@ static ETERM *
 run_is_chardev (ETERM *message)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "followsymlinks")) {
+      optargs_s.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("is_chardev", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_is_chardev (g, path);
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
   if (r == -1)
     return make_error ("is_chardev");
 
@@ -4747,9 +4783,27 @@ static ETERM *
 run_is_dir (ETERM *message)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "followsymlinks")) {
+      optargs_s.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("is_dir", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_is_dir (g, path);
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
   if (r == -1)
     return make_error ("is_dir");
 
@@ -4760,9 +4814,27 @@ static ETERM *
 run_is_fifo (ETERM *message)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "followsymlinks")) {
+      optargs_s.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("is_fifo", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_is_fifo (g, path);
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
   if (r == -1)
     return make_error ("is_fifo");
 
@@ -4773,9 +4845,27 @@ static ETERM *
 run_is_file (ETERM *message)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "followsymlinks")) {
+      optargs_s.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("is_file", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_is_file (g, path);
+  r = guestfs_is_file_opts_argv (g, path, optargs);
   if (r == -1)
     return make_error ("is_file");
 
@@ -4823,9 +4913,27 @@ static ETERM *
 run_is_socket (ETERM *message)
 {
   CLEANUP_FREE char *path = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "followsymlinks")) {
+      optargs_s.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+      optargs_s.followsymlinks = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("is_socket", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
   int r;
 
-  r = guestfs_is_socket (g, path);
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
   if (r == -1)
     return make_error ("is_socket");
 

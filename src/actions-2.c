@@ -4033,9 +4033,16 @@ guestfs_is_lv (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC int
-guestfs_is_chardev (guestfs_h *g,
-                    const char *path)
+guestfs_is_chardev_opts_argv (guestfs_h *g,
+                              const char *path,
+                              const struct guestfs_is_chardev_opts_argv *optargs)
 {
+  struct guestfs_is_chardev_opts_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
   struct guestfs_is_chardev_args args;
   guestfs_message_header hdr;
   guestfs_message_error err;
@@ -4051,7 +4058,13 @@ guestfs_is_chardev (guestfs_h *g,
                                     "is_chardev", 10);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "is_chardev", "path");
+           "is_chardev_opts", "path");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "is_chardev_opts", "is_chardev_opts");
     return -1;
   }
 
@@ -4059,6 +4072,9 @@ guestfs_is_chardev (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "is_chardev");
     fprintf (trace_buffer.fp, " \"%s\"", path);
+    if (optargs->bitmask & GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "followsymlinks", optargs->followsymlinks ? "true" : "false");
+    }
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
@@ -4070,8 +4086,13 @@ guestfs_is_chardev (guestfs_h *g,
   }
 
   args.path = (char *) path;
+  if (optargs->bitmask & GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK) {
+    args.followsymlinks = optargs->followsymlinks;
+  } else {
+    args.followsymlinks = 0;
+  }
   serial = guestfs___send (g, GUESTFS_PROC_IS_CHARDEV,
-                           progress_hint, 0,
+                           progress_hint, optargs->bitmask,
                            (xdrproc_t) xdr_guestfs_is_chardev_args, (char *) &args);
   if (serial == -1) {
     if (trace_flag)
@@ -4129,9 +4150,16 @@ guestfs_is_chardev (guestfs_h *g,
 }
 
 GUESTFS_DLL_PUBLIC int
-guestfs_is_socket (guestfs_h *g,
-                   const char *path)
+guestfs_is_socket_opts_argv (guestfs_h *g,
+                             const char *path,
+                             const struct guestfs_is_socket_opts_argv *optargs)
 {
+  struct guestfs_is_socket_opts_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
   struct guestfs_is_socket_args args;
   guestfs_message_header hdr;
   guestfs_message_error err;
@@ -4147,7 +4175,13 @@ guestfs_is_socket (guestfs_h *g,
                                     "is_socket", 9);
   if (path == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "is_socket", "path");
+           "is_socket_opts", "path");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "is_socket_opts", "is_socket_opts");
     return -1;
   }
 
@@ -4155,6 +4189,9 @@ guestfs_is_socket (guestfs_h *g,
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "is_socket");
     fprintf (trace_buffer.fp, " \"%s\"", path);
+    if (optargs->bitmask & GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "followsymlinks", optargs->followsymlinks ? "true" : "false");
+    }
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
@@ -4166,8 +4203,13 @@ guestfs_is_socket (guestfs_h *g,
   }
 
   args.path = (char *) path;
+  if (optargs->bitmask & GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK) {
+    args.followsymlinks = optargs->followsymlinks;
+  } else {
+    args.followsymlinks = 0;
+  }
   serial = guestfs___send (g, GUESTFS_PROC_IS_SOCKET,
-                           progress_hint, 0,
+                           progress_hint, optargs->bitmask,
                            (xdrproc_t) xdr_guestfs_is_socket_args, (char *) &args);
   if (serial == -1) {
     if (trace_flag)

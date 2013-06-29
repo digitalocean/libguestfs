@@ -7212,18 +7212,29 @@ py_guestfs_is_file (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_is_file_opts_argv optargs_s;
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
   int r;
   const char *path;
+  PyObject *py_followsymlinks;
 
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_is_file",
-                         &py_g, &path))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_is_file",
+                         &py_g, &path, &py_followsymlinks))
     goto out;
   g = get_handle (py_g);
+
+  if (py_followsymlinks != Py_None) {
+    optargs_s.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
+    if (PyErr_Occurred ()) goto out;
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_is_file (g, path);
+  r = guestfs_is_file_opts_argv (g, path, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -7246,18 +7257,29 @@ py_guestfs_is_dir (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_is_dir_opts_argv optargs_s;
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
   int r;
   const char *path;
+  PyObject *py_followsymlinks;
 
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_is_dir",
-                         &py_g, &path))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_is_dir",
+                         &py_g, &path, &py_followsymlinks))
     goto out;
   g = get_handle (py_g);
+
+  if (py_followsymlinks != Py_None) {
+    optargs_s.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
+    if (PyErr_Occurred ()) goto out;
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_is_dir (g, path);
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -15403,18 +15425,29 @@ py_guestfs_is_chardev (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_is_chardev_opts_argv optargs_s;
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
   int r;
   const char *path;
+  PyObject *py_followsymlinks;
 
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_is_chardev",
-                         &py_g, &path))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_is_chardev",
+                         &py_g, &path, &py_followsymlinks))
     goto out;
   g = get_handle (py_g);
+
+  if (py_followsymlinks != Py_None) {
+    optargs_s.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
+    if (PyErr_Occurred ()) goto out;
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_is_chardev (g, path);
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -15437,18 +15470,29 @@ py_guestfs_is_blockdev (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_is_blockdev_opts_argv optargs_s;
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
   int r;
   const char *path;
+  PyObject *py_followsymlinks;
 
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_is_blockdev",
-                         &py_g, &path))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_is_blockdev",
+                         &py_g, &path, &py_followsymlinks))
     goto out;
   g = get_handle (py_g);
+
+  if (py_followsymlinks != Py_None) {
+    optargs_s.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
+    if (PyErr_Occurred ()) goto out;
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_is_blockdev (g, path);
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -15471,18 +15515,29 @@ py_guestfs_is_fifo (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_is_fifo_opts_argv optargs_s;
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
   int r;
   const char *path;
+  PyObject *py_followsymlinks;
 
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_is_fifo",
-                         &py_g, &path))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_is_fifo",
+                         &py_g, &path, &py_followsymlinks))
     goto out;
   g = get_handle (py_g);
+
+  if (py_followsymlinks != Py_None) {
+    optargs_s.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
+    if (PyErr_Occurred ()) goto out;
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_is_fifo (g, path);
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);
@@ -15539,18 +15594,29 @@ py_guestfs_is_socket (PyObject *self, PyObject *args)
   PyObject *py_g;
   guestfs_h *g;
   PyObject *py_r = NULL;
+  struct guestfs_is_socket_opts_argv optargs_s;
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
   int r;
   const char *path;
+  PyObject *py_followsymlinks;
 
-  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_is_socket",
-                         &py_g, &path))
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OsO:guestfs_is_socket",
+                         &py_g, &path, &py_followsymlinks))
     goto out;
   g = get_handle (py_g);
+
+  if (py_followsymlinks != Py_None) {
+    optargs_s.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+    optargs_s.followsymlinks = PyLong_AsLong (py_followsymlinks);
+    if (PyErr_Occurred ()) goto out;
+  }
 
   if (PyEval_ThreadsInitialized ())
     py_save = PyEval_SaveThread ();
 
-  r = guestfs_is_socket (g, path);
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
 
   if (PyEval_ThreadsInitialized ())
     PyEval_RestoreThread (py_save);

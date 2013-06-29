@@ -1,4 +1,46 @@
+2013-06-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Fix inspection of Fedora guests (RHBZ#974489).
+	Commit e71b2c11f59b3f8ae0c4b31c4ab5b0d1bfcdf181 broke inspection of
+	Fedora guests because guestfs_is_file returns false for
+	/etc/redhat-release (it's a symlink to a file, not a file).
+
+	We fix this by using the new followsymlinks flag added in the
+	previous commit.  Thus guestfs_is_file becomes
+	guestfs_is_file_opts (g, filename, GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, 1, -1)
+	which checks if it's a file or a symlink to a file.
+
+	This fixes commit e71b2c11f59b3f8ae0c4b31c4ab5b0d1bfcdf181.
+
+2013-06-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Add followsymlinks flag to is-file, is-dir, is-blockdev, is-chardev, is-fifo and is-socket APIs.
+	This adds an extra optional boolean 'followsymlinks' flag to those 6
+	is-* APIs.  If the flag is true, then symlinks are followed, ie. we
+	use stat instead of lstat in the test.
+
+	For the rationale behind this change, see:
+	https://bugzilla.redhat.com/show_bug.cgi?id=974489
+
+2013-06-11  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Developer questions about committing and forking.
+
+	FAQ: Emphasize that we don't accept github pull requests.
+
+	FAQ: Put B<> bold section around "Note"s in the text.
+
+	FAQ: RHEL 6.5 will fix the buildnet problem.
+
+	FAQ: Indent Ubuntu releases in list.
+
+	FAQ: RHEL 7 is based on libguestfs 1.22.
+
+	FAQ: Add link to RHEL 6.5 preview repository.
+
 2013-06-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.3.
 
 	build: Fix 'make distclean' (again).
 	So it doesn't break after the generator has been deleted by

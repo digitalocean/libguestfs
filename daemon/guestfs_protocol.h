@@ -611,6 +611,7 @@ typedef struct guestfs_exists_ret guestfs_exists_ret;
 
 struct guestfs_is_file_args {
 	char *path;
+	bool_t followsymlinks;
 };
 typedef struct guestfs_is_file_args guestfs_is_file_args;
 
@@ -621,6 +622,7 @@ typedef struct guestfs_is_file_ret guestfs_is_file_ret;
 
 struct guestfs_is_dir_args {
 	char *path;
+	bool_t followsymlinks;
 };
 typedef struct guestfs_is_dir_args guestfs_is_dir_args;
 
@@ -2448,6 +2450,7 @@ typedef struct guestfs_findfs_label_ret guestfs_findfs_label_ret;
 
 struct guestfs_is_chardev_args {
 	char *path;
+	bool_t followsymlinks;
 };
 typedef struct guestfs_is_chardev_args guestfs_is_chardev_args;
 
@@ -2458,6 +2461,7 @@ typedef struct guestfs_is_chardev_ret guestfs_is_chardev_ret;
 
 struct guestfs_is_blockdev_args {
 	char *path;
+	bool_t followsymlinks;
 };
 typedef struct guestfs_is_blockdev_args guestfs_is_blockdev_args;
 
@@ -2468,6 +2472,7 @@ typedef struct guestfs_is_blockdev_ret guestfs_is_blockdev_ret;
 
 struct guestfs_is_fifo_args {
 	char *path;
+	bool_t followsymlinks;
 };
 typedef struct guestfs_is_fifo_args guestfs_is_fifo_args;
 
@@ -2488,6 +2493,7 @@ typedef struct guestfs_is_symlink_ret guestfs_is_symlink_ret;
 
 struct guestfs_is_socket_args {
 	char *path;
+	bool_t followsymlinks;
 };
 typedef struct guestfs_is_socket_args guestfs_is_socket_args;
 

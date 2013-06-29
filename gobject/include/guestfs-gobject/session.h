@@ -295,8 +295,8 @@ gboolean guestfs_session_mkdir_p(GuestfsSession *session, const gchar *path, GEr
 gboolean guestfs_session_chmod(GuestfsSession *session, gint32 mode, const gchar *path, GError **err);
 gboolean guestfs_session_chown(GuestfsSession *session, gint32 owner, gint32 group, const gchar *path, GError **err);
 gint8 guestfs_session_exists(GuestfsSession *session, const gchar *path, GError **err);
-gint8 guestfs_session_is_file(GuestfsSession *session, const gchar *path, GError **err);
-gint8 guestfs_session_is_dir(GuestfsSession *session, const gchar *path, GError **err);
+gint8 guestfs_session_is_file(GuestfsSession *session, const gchar *path, GuestfsIsFile *optargs, GError **err);
+gint8 guestfs_session_is_dir(GuestfsSession *session, const gchar *path, GuestfsIsDir *optargs, GError **err);
 gboolean guestfs_session_pvcreate(GuestfsSession *session, const gchar *device, GError **err);
 gboolean guestfs_session_vgcreate(GuestfsSession *session, const gchar *volgroup, gchar *const *physvols, GError **err);
 gboolean guestfs_session_lvcreate(GuestfsSession *session, const gchar *logvol, const gchar *volgroup, gint32 mbytes, GError **err);
@@ -517,11 +517,11 @@ gboolean guestfs_session_luks_kill_slot(GuestfsSession *session, const gchar *de
 gint8 guestfs_session_is_lv(GuestfsSession *session, const gchar *device, GError **err);
 gchar *guestfs_session_findfs_uuid(GuestfsSession *session, const gchar *uuid, GError **err);
 gchar *guestfs_session_findfs_label(GuestfsSession *session, const gchar *label, GError **err);
-gint8 guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GError **err);
-gint8 guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GError **err);
-gint8 guestfs_session_is_fifo(GuestfsSession *session, const gchar *path, GError **err);
+gint8 guestfs_session_is_chardev(GuestfsSession *session, const gchar *path, GuestfsIsChardev *optargs, GError **err);
+gint8 guestfs_session_is_blockdev(GuestfsSession *session, const gchar *path, GuestfsIsBlockdev *optargs, GError **err);
+gint8 guestfs_session_is_fifo(GuestfsSession *session, const gchar *path, GuestfsIsFifo *optargs, GError **err);
 gint8 guestfs_session_is_symlink(GuestfsSession *session, const gchar *path, GError **err);
-gint8 guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GError **err);
+gint8 guestfs_session_is_socket(GuestfsSession *session, const gchar *path, GuestfsIsSocket *optargs, GError **err);
 gchar *guestfs_session_part_to_dev(GuestfsSession *session, const gchar *partition, GError **err);
 gboolean guestfs_session_upload_offset(GuestfsSession *session, const gchar *filename, const gchar *remotefilename, gint64 offset, GCancellable *cancellable, GError **err);
 gboolean guestfs_session_download_offset(GuestfsSession *session, const gchar *remotefilename, const gchar *filename, gint64 offset, gint64 size, GCancellable *cancellable, GError **err);

@@ -9561,9 +9561,12 @@ PHP_FUNCTION (guestfs_is_blockdev)
   guestfs_h *g;
   char *path;
   int path_size;
+  struct guestfs_is_blockdev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_blockdev_opts_argv *optargs = &optargs_s;
+  zend_bool optargs_t_followsymlinks = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &path, &path_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|b",
+        &z_g, &path, &path_size, &optargs_t_followsymlinks) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -9578,8 +9581,13 @@ PHP_FUNCTION (guestfs_is_blockdev)
     RETURN_FALSE;
   }
 
+  if (optargs_t_followsymlinks != (zend_bool)-1) {
+    optargs_s.followsymlinks = optargs_t_followsymlinks;
+    optargs_s.bitmask |= GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
+
   int r;
-  r = guestfs_is_blockdev (g, path);
+  r = guestfs_is_blockdev_opts_argv (g, path, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -9620,9 +9628,12 @@ PHP_FUNCTION (guestfs_is_chardev)
   guestfs_h *g;
   char *path;
   int path_size;
+  struct guestfs_is_chardev_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_chardev_opts_argv *optargs = &optargs_s;
+  zend_bool optargs_t_followsymlinks = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &path, &path_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|b",
+        &z_g, &path, &path_size, &optargs_t_followsymlinks) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -9637,8 +9648,13 @@ PHP_FUNCTION (guestfs_is_chardev)
     RETURN_FALSE;
   }
 
+  if (optargs_t_followsymlinks != (zend_bool)-1) {
+    optargs_s.followsymlinks = optargs_t_followsymlinks;
+    optargs_s.bitmask |= GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
+
   int r;
-  r = guestfs_is_chardev (g, path);
+  r = guestfs_is_chardev_opts_argv (g, path, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -9679,9 +9695,12 @@ PHP_FUNCTION (guestfs_is_dir)
   guestfs_h *g;
   char *path;
   int path_size;
+  struct guestfs_is_dir_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_dir_opts_argv *optargs = &optargs_s;
+  zend_bool optargs_t_followsymlinks = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &path, &path_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|b",
+        &z_g, &path, &path_size, &optargs_t_followsymlinks) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -9696,8 +9715,13 @@ PHP_FUNCTION (guestfs_is_dir)
     RETURN_FALSE;
   }
 
+  if (optargs_t_followsymlinks != (zend_bool)-1) {
+    optargs_s.followsymlinks = optargs_t_followsymlinks;
+    optargs_s.bitmask |= GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
+
   int r;
-  r = guestfs_is_dir (g, path);
+  r = guestfs_is_dir_opts_argv (g, path, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -9712,9 +9736,12 @@ PHP_FUNCTION (guestfs_is_fifo)
   guestfs_h *g;
   char *path;
   int path_size;
+  struct guestfs_is_fifo_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_fifo_opts_argv *optargs = &optargs_s;
+  zend_bool optargs_t_followsymlinks = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &path, &path_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|b",
+        &z_g, &path, &path_size, &optargs_t_followsymlinks) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -9729,8 +9756,13 @@ PHP_FUNCTION (guestfs_is_fifo)
     RETURN_FALSE;
   }
 
+  if (optargs_t_followsymlinks != (zend_bool)-1) {
+    optargs_s.followsymlinks = optargs_t_followsymlinks;
+    optargs_s.bitmask |= GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
+
   int r;
-  r = guestfs_is_fifo (g, path);
+  r = guestfs_is_fifo_opts_argv (g, path, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -9745,9 +9777,12 @@ PHP_FUNCTION (guestfs_is_file)
   guestfs_h *g;
   char *path;
   int path_size;
+  struct guestfs_is_file_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_file_opts_argv *optargs = &optargs_s;
+  zend_bool optargs_t_followsymlinks = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &path, &path_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|b",
+        &z_g, &path, &path_size, &optargs_t_followsymlinks) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -9762,8 +9797,13 @@ PHP_FUNCTION (guestfs_is_file)
     RETURN_FALSE;
   }
 
+  if (optargs_t_followsymlinks != (zend_bool)-1) {
+    optargs_s.followsymlinks = optargs_t_followsymlinks;
+    optargs_s.bitmask |= GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
+
   int r;
-  r = guestfs_is_file (g, path);
+  r = guestfs_is_file_opts_argv (g, path, optargs);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -9863,9 +9903,12 @@ PHP_FUNCTION (guestfs_is_socket)
   guestfs_h *g;
   char *path;
   int path_size;
+  struct guestfs_is_socket_opts_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_is_socket_opts_argv *optargs = &optargs_s;
+  zend_bool optargs_t_followsymlinks = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
-        &z_g, &path, &path_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|b",
+        &z_g, &path, &path_size, &optargs_t_followsymlinks) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -9880,8 +9923,13 @@ PHP_FUNCTION (guestfs_is_socket)
     RETURN_FALSE;
   }
 
+  if (optargs_t_followsymlinks != (zend_bool)-1) {
+    optargs_s.followsymlinks = optargs_t_followsymlinks;
+    optargs_s.bitmask |= GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK;
+  }
+
   int r;
-  r = guestfs_is_socket (g, path);
+  r = guestfs_is_socket_opts_argv (g, path, optargs);
 
   if (r == -1) {
     RETURN_FALSE;

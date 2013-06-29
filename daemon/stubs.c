@@ -1258,9 +1258,10 @@ is_file_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_file_args args;
   char *path;
+  int followsymlinks;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -1272,9 +1273,10 @@ is_file_stub (XDR *xdr_in)
   }
   path = args.path;
   ABS_PATH (path, , goto done);
+  followsymlinks = args.followsymlinks;
 
   NEED_ROOT (, goto done);
-  r = do_is_file (path);
+  r = do_is_file (path, followsymlinks);
   if (r == -1)
     /* do_is_file has already called reply_with_error */
     goto done;
@@ -1294,9 +1296,10 @@ is_dir_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_dir_args args;
   char *path;
+  int followsymlinks;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -1308,9 +1311,10 @@ is_dir_stub (XDR *xdr_in)
   }
   path = args.path;
   ABS_PATH (path, , goto done);
+  followsymlinks = args.followsymlinks;
 
   NEED_ROOT (, goto done);
-  r = do_is_dir (path);
+  r = do_is_dir (path, followsymlinks);
   if (r == -1)
     /* do_is_dir has already called reply_with_error */
     goto done;
@@ -9931,9 +9935,10 @@ is_chardev_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_chardev_args args;
   char *path;
+  int followsymlinks;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -9945,9 +9950,10 @@ is_chardev_stub (XDR *xdr_in)
   }
   path = args.path;
   ABS_PATH (path, , goto done);
+  followsymlinks = args.followsymlinks;
 
   NEED_ROOT (, goto done);
-  r = do_is_chardev (path);
+  r = do_is_chardev (path, followsymlinks);
   if (r == -1)
     /* do_is_chardev has already called reply_with_error */
     goto done;
@@ -9967,9 +9973,10 @@ is_blockdev_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_blockdev_args args;
   char *path;
+  int followsymlinks;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -9981,9 +9988,10 @@ is_blockdev_stub (XDR *xdr_in)
   }
   path = args.path;
   ABS_PATH (path, , goto done);
+  followsymlinks = args.followsymlinks;
 
   NEED_ROOT (, goto done);
-  r = do_is_blockdev (path);
+  r = do_is_blockdev (path, followsymlinks);
   if (r == -1)
     /* do_is_blockdev has already called reply_with_error */
     goto done;
@@ -10003,9 +10011,10 @@ is_fifo_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_fifo_args args;
   char *path;
+  int followsymlinks;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -10017,9 +10026,10 @@ is_fifo_stub (XDR *xdr_in)
   }
   path = args.path;
   ABS_PATH (path, , goto done);
+  followsymlinks = args.followsymlinks;
 
   NEED_ROOT (, goto done);
-  r = do_is_fifo (path);
+  r = do_is_fifo (path, followsymlinks);
   if (r == -1)
     /* do_is_fifo has already called reply_with_error */
     goto done;
@@ -10075,9 +10085,10 @@ is_socket_stub (XDR *xdr_in)
   int r;
   struct guestfs_is_socket_args args;
   char *path;
+  int followsymlinks;
 
-  if (optargs_bitmask != 0) {
-    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+  if (optargs_bitmask & UINT64_C(0xfffffffffffffffe)) {
+    reply_with_error ("unknown option in optional arguments bitmask (this can happen if a program is compiled against a newer version of libguestfs, then run against an older version of the daemon)");
     goto done_no_free;
   }
 
@@ -10089,9 +10100,10 @@ is_socket_stub (XDR *xdr_in)
   }
   path = args.path;
   ABS_PATH (path, , goto done);
+  followsymlinks = args.followsymlinks;
 
   NEED_ROOT (, goto done);
-  r = do_is_socket (path);
+  r = do_is_socket (path, followsymlinks);
   if (r == -1)
     /* do_is_socket has already called reply_with_error */
     goto done;

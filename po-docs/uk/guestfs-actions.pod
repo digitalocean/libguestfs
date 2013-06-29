@@ -5338,14 +5338,59 @@ strings and the array after use>.
  guestfs_is_blockdev (guestfs_h *g,
                       const char *path);
 
+This function is provided for backwards compatibility with earlier versions
+of libguestfs.  It simply calls L</guestfs_is_blockdev_opts> with no
+optional arguments.
+
+(Додано у 1.5.10)
+
+
+
+=head2 guestfs_is_blockdev_opts
+
+ int
+ guestfs_is_blockdev_opts (guestfs_h *g,
+                           const char *path,
+                           ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS, int followsymlinks,
+
 This returns C<true> if and only if there is a block device with the given
 C<path> name.
+
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a block device also causes the function to return
+true.
 
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Додано у 1.5.10)
+=head2 guestfs_is_blockdev_opts_va
+
+ int
+ guestfs_is_blockdev_opts_va (guestfs_h *g,
+                              const char *path,
+                              va_list args);
+
+This is the "va_list variant" of L</guestfs_is_blockdev_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_is_blockdev_opts_argv
+
+ int
+ guestfs_is_blockdev_opts_argv (guestfs_h *g,
+                                const char *path,
+                                const struct guestfs_is_blockdev_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_is_blockdev_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_is_busy
 
@@ -5367,14 +5412,58 @@ This function returns a C truth value on success or -1 on error.
  guestfs_is_chardev (guestfs_h *g,
                      const char *path);
 
+This function is provided for backwards compatibility with earlier versions
+of libguestfs.  It simply calls L</guestfs_is_chardev_opts> with no optional
+arguments.
+
+(Додано у 1.5.10)
+
+
+
+=head2 guestfs_is_chardev_opts
+
+ int
+ guestfs_is_chardev_opts (guestfs_h *g,
+                          const char *path,
+                          ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS, int followsymlinks,
+
 This returns C<true> if and only if there is a character device with the
 given C<path> name.
+
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a chardev also causes the function to return true.
 
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Додано у 1.5.10)
+=head2 guestfs_is_chardev_opts_va
+
+ int
+ guestfs_is_chardev_opts_va (guestfs_h *g,
+                             const char *path,
+                             va_list args);
+
+This is the "va_list variant" of L</guestfs_is_chardev_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_is_chardev_opts_argv
+
+ int
+ guestfs_is_chardev_opts_argv (guestfs_h *g,
+                               const char *path,
+                               const struct guestfs_is_chardev_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_is_chardev_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_is_config
 
@@ -5396,14 +5485,59 @@ This function returns a C truth value on success or -1 on error.
  guestfs_is_dir (guestfs_h *g,
                  const char *path);
 
+This function is provided for backwards compatibility with earlier versions
+of libguestfs.  It simply calls L</guestfs_is_dir_opts> with no optional
+arguments.
+
+(Додано у 0.8)
+
+
+
+=head2 guestfs_is_dir_opts
+
+ int
+ guestfs_is_dir_opts (guestfs_h *g,
+                      const char *path,
+                      ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS, int followsymlinks,
+
 This returns C<true> if and only if there is a directory with the given
 C<path> name.  Note that it returns false for other objects like files.
+
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a directory also causes the function to return
+true.
 
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Додано у 0.8)
+=head2 guestfs_is_dir_opts_va
+
+ int
+ guestfs_is_dir_opts_va (guestfs_h *g,
+                         const char *path,
+                         va_list args);
+
+This is the "va_list variant" of L</guestfs_is_dir_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_is_dir_opts_argv
+
+ int
+ guestfs_is_dir_opts_argv (guestfs_h *g,
+                           const char *path,
+                           const struct guestfs_is_dir_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_is_dir_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_is_fifo
 
@@ -5411,14 +5545,58 @@ This function returns a C truth value on success or -1 on error.
  guestfs_is_fifo (guestfs_h *g,
                   const char *path);
 
+This function is provided for backwards compatibility with earlier versions
+of libguestfs.  It simply calls L</guestfs_is_fifo_opts> with no optional
+arguments.
+
+(Додано у 1.5.10)
+
+
+
+=head2 guestfs_is_fifo_opts
+
+ int
+ guestfs_is_fifo_opts (guestfs_h *g,
+                       const char *path,
+                       ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS, int followsymlinks,
+
 This returns C<true> if and only if there is a FIFO (named pipe)  with the
 given C<path> name.
+
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a FIFO also causes the function to return true.
 
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Додано у 1.5.10)
+=head2 guestfs_is_fifo_opts_va
+
+ int
+ guestfs_is_fifo_opts_va (guestfs_h *g,
+                          const char *path,
+                          va_list args);
+
+This is the "va_list variant" of L</guestfs_is_fifo_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_is_fifo_opts_argv
+
+ int
+ guestfs_is_fifo_opts_argv (guestfs_h *g,
+                            const char *path,
+                            const struct guestfs_is_fifo_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_is_fifo_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_is_file
 
@@ -5426,15 +5604,59 @@ This function returns a C truth value on success or -1 on error.
  guestfs_is_file (guestfs_h *g,
                   const char *path);
 
+This function is provided for backwards compatibility with earlier versions
+of libguestfs.  It simply calls L</guestfs_is_file_opts> with no optional
+arguments.
+
+(Додано у 0.8)
+
+
+
+=head2 guestfs_is_file_opts
+
+ int
+ guestfs_is_file_opts (guestfs_h *g,
+                       const char *path,
+                       ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS, int followsymlinks,
+
 This returns C<true> if and only if there is a regular file with the given
 C<path> name.  Note that it returns false for other objects like
 directories.
+
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a file also causes the function to return true.
 
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Додано у 0.8)
+=head2 guestfs_is_file_opts_va
+
+ int
+ guestfs_is_file_opts_va (guestfs_h *g,
+                          const char *path,
+                          va_list args);
+
+This is the "va_list variant" of L</guestfs_is_file_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_is_file_opts_argv
+
+ int
+ guestfs_is_file_opts_argv (guestfs_h *g,
+                            const char *path,
+                            const struct guestfs_is_file_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_is_file_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_is_launching
 
@@ -5483,14 +5705,58 @@ This function returns a C truth value on success or -1 on error.
  guestfs_is_socket (guestfs_h *g,
                     const char *path);
 
+This function is provided for backwards compatibility with earlier versions
+of libguestfs.  It simply calls L</guestfs_is_socket_opts> with no optional
+arguments.
+
+(Додано у 1.5.10)
+
+
+
+=head2 guestfs_is_socket_opts
+
+ int
+ guestfs_is_socket_opts (guestfs_h *g,
+                         const char *path,
+                         ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS, int followsymlinks,
+
 This returns C<true> if and only if there is a Unix domain socket with the
 given C<path> name.
+
+If the optional flag C<followsymlinks> is true, then a symlink (or chain of
+symlinks) that ends with a socket also causes the function to return true.
 
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
 
-(Додано у 1.5.10)
+=head2 guestfs_is_socket_opts_va
+
+ int
+ guestfs_is_socket_opts_va (guestfs_h *g,
+                            const char *path,
+                            va_list args);
+
+This is the "va_list variant" of L</guestfs_is_socket_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_is_socket_opts_argv
+
+ int
+ guestfs_is_socket_opts_argv (guestfs_h *g,
+                              const char *path,
+                              const struct guestfs_is_socket_opts_argv *optargs);
+
+This is the "argv variant" of L</guestfs_is_socket_opts>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
 
 =head2 guestfs_is_symlink
 
