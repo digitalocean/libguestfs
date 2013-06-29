@@ -32,43 +32,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-# libguestfs
-# Copyright (C) 2013 Red Hat Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-# 'common-rules.mk' should be included in every Makefile.am.
-# cf. 'subdir-rules.mk'
-
-# libguestfs
 # Copyright (C) 2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -134,11 +97,11 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/build-aux/ltmain.sh \
 	$(top_srcdir)/build-aux/missing $(top_srcdir)/common-rules.mk \
 	$(top_srcdir)/configure \
-	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in \
-	$(top_srcdir)/subdir-rules.mk AUTHORS COPYING COPYING.LIB \
-	ChangeLog TODO build-aux/compile build-aux/config.guess \
-	build-aux/config.rpath build-aux/config.sub build-aux/depcomp \
-	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
+	$(top_srcdir)/ruby/ext/guestfs/extconf.rb.in AUTHORS COPYING \
+	COPYING.LIB ChangeLog TODO build-aux/compile \
+	build-aux/config.guess build-aux/config.rpath \
+	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
+	build-aux/ltmain.sh build-aux/missing
 @ENABLE_DAEMON_TRUE@am__append_1 = daemon
 
 # Tests - order is important.
@@ -152,7 +115,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
 @ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/http \
-@ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/regressions
+@ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/fuzz \
+@ENABLE_APPLIANCE_TRUE@	tests/regressions
 
 # Language bindings.
 @HAVE_PERL_TRUE@am__append_3 = perl perl/examples
@@ -384,12 +348,12 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	tests/selinux tests/ntfsclone tests/btrfs tests/charsets \
 	tests/xml tests/mount-local tests/9p tests/rsync tests/bigdirs \
 	tests/disk-labels tests/hotplug tests/nbd tests/http \
-	tests/syslinux tests/regressions test-tool fish align cat df \
-	edit format inspector rescue bash perl perl/examples ocaml \
-	ocaml/examples python python/examples ruby ruby/examples java \
-	java/examples haskell php erlang erlang/examples lua \
-	lua/examples gobject csharp resize sparsify sysprep tools fuse \
-	po-docs
+	tests/syslinux tests/fuzz tests/regressions test-tool fish \
+	align cat df edit format inspector rescue bash perl \
+	perl/examples ocaml ocaml/examples python python/examples ruby \
+	ruby/examples java java/examples haskell php erlang \
+	erlang/examples lua lua/examples gobject csharp resize \
+	sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1517,7 +1481,6 @@ SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
 	$(am__append_13) $(am__append_14) $(am__append_15) \
 	$(am__append_16)
 EXTRA_DIST = \
-	$(generator_built) \
 	BUGS HACKING ROADMAP TODO \
 	.gitignore \
 	.lvimrc \
@@ -1645,7 +1608,7 @@ all: config.h
 .SUFFIXES:
 am--refresh: Makefile
 	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1668,7 +1631,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(top_srcdir)/common-rules.mk:
+$(top_srcdir)/common-rules.mk:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
@@ -2224,28 +2187,6 @@ uninstall-man: uninstall-man1
 
 -include $(top_builddir)/localenv
 
--include $(top_builddir)/localenv
-
-# Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
-# create variables for them.  So define them here if they're not
-# defined already.
-builddir     ?= @builddir@
-abs_builddir ?= @abs_builddir@
-srcdir       ?= @srcdir@
-abs_srcdir   ?= @abs_srcdir@
-
-# Define a force dependency which will always be rebuilt
-.PHONY: force
-
-# Automatically build targets defined in generator_built
-# generator_built is defined in individual Makefiles
-$(generator_built): $(top_builddir)/generator/stamp-generator
-$(top_builddir)/generator/stamp-generator: force
-	! test -f $(top_builddir)/generator/Makefile || \
-	  $(MAKE) -C $(top_builddir)/generator stamp-generator
-
--include $(top_builddir)/localenv
-
 # Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
 # create variables for them.  So define them here if they're not
 # defined already.
@@ -2283,21 +2224,10 @@ dist-hook:
 # to DIST_SUBDIRS.
 all-local:
 	cd $(srcdir); \
-	find $(DIST_SUBDIRS) \
-	    -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
-	grep -v '^perl/blib/' | \
-	grep -v '^tests/' | \
-	grep -v '^daemon/lib/' | \
-	grep -v '^daemon/tests/' | \
-	grep -v '^examples/' | \
-	grep -v '^gnulib/' | \
-	grep -v '^perl/examples/' | \
-	grep -v '/guestfs_protocol.c' | \
-	grep -v '/rc_protocol.c' | \
-	grep -v '^po-docs/' | \
-	grep -v '^images/' | \
-	LC_ALL=C sort | \
-	sed 's,^\./,,' > po/POTFILES
+	find $(DIST_SUBDIRS) -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
+	grep -v -E '^(examples|gnulib|perl/(blib|examples)|po-docs|tests)/' | \
+	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
+	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
 	find resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
@@ -2332,16 +2262,6 @@ quickcheck:
 	$(top_builddir)/run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
 
 # Non-standard tests.
-
-extra-tests:
-	$(MAKE) -j1 \
-	  check-valgrind \
-	  check-valgrind-local-guests \
-	  check-direct \
-	  check-valgrind-direct \
-	  check-with-upstream-qemu \
-	  check-with-upstream-libvirt \
-	  check-slow
 
 check-all:
 	$(MAKE) -j1 \
@@ -2455,14 +2375,13 @@ help:
 	@echo "make check                        Run the standard tests"
 	@echo "make -k check                       ... and display all errors at once."
 	@echo
-	@echo "make extra-tests                  Runs all of the following tests:"
-	@echo "  make check-valgrind                Run a subset of the tests under valgrind."
-	@echo "  make check-valgrind-local-guests   Test under valgrind using local guests."
-	@echo "  make check-direct                  Test using direct backend."
-	@echo "  make check-valgrind-direct         Test valgrind + direct backend."
-	@echo "  make check-with-upstream-qemu      Test using upstream qemu."
-	@echo "  make check-with-upstream-libvirt   Test using upstream libvirt."
-	@echo "  make check-slow                    Slow/long-running tests."
+	@echo "make check-valgrind               Run a subset of the tests under valgrind."
+	@echo "make check-valgrind-local-guests  Test under valgrind using local guests."
+	@echo "make check-direct                 Test using direct backend."
+	@echo "make check-valgrind-direct        Test valgrind + direct backend."
+	@echo "make check-with-upstream-qemu     Test using upstream qemu."
+	@echo "make check-with-upstream-libvirt  Test using upstream libvirt."
+	@echo "make check-slow                   Slow/long-running tests."
 	@echo
 	@echo "make check-all                    Runs all 'check*' rules."
 	@echo "make check-release                Runs 'check*' rules required for release."

@@ -420,4 +420,5 @@ const char *function_names[] = {
   [399] = "syslinux",
   [400] = "extlinux",
   [401] = "cp_r",
+  [402] = "remount",
 };

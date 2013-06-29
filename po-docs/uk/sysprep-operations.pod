@@ -193,6 +193,13 @@ process accounting is on.
 
 Вилучити ідентифікатор системи у RHN.
 
+=head2 B<rpm-db> *
+
+Remove host-specific RPM database files.
+
+Remove host-specific RPM database files and locks.  RPM will recreate these
+files automatically if needed.
+
 =head2 B<samba-db-log> *
 
 Вилучити бази даних та файли журналів Samba.

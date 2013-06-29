@@ -15,9 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
--include $(top_builddir)/localenv
-
-include $(top_srcdir)/subdir-rules.mk
 include $(top_srcdir)/common-rules.mk
 
 ACLOCAL_AMFLAGS = -I m4
@@ -60,6 +57,7 @@ SUBDIRS += tests/hotplug
 SUBDIRS += tests/nbd
 SUBDIRS += tests/http
 SUBDIRS += tests/syslinux
+SUBDIRS += tests/fuzz
 SUBDIRS += tests/regressions
 endif
 
@@ -131,7 +129,6 @@ SUBDIRS += po-docs
 endif
 
 EXTRA_DIST = \
-	$(generator_built) \
 	BUGS HACKING ROADMAP TODO \
 	.gitignore \
 	.lvimrc \
@@ -257,21 +254,10 @@ dist-hook:
 # to DIST_SUBDIRS.
 all-local:
 	cd $(srcdir); \
-	find $(DIST_SUBDIRS) \
-	    -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
-	grep -v '^perl/blib/' | \
-	grep -v '^tests/' | \
-	grep -v '^daemon/lib/' | \
-	grep -v '^daemon/tests/' | \
-	grep -v '^examples/' | \
-	grep -v '^gnulib/' | \
-	grep -v '^perl/examples/' | \
-	grep -v '/guestfs_protocol.c' | \
-	grep -v '/rc_protocol.c' | \
-	grep -v '^po-docs/' | \
-	grep -v '^images/' | \
-	LC_ALL=C sort | \
-	sed 's,^\./,,' > po/POTFILES
+	find $(DIST_SUBDIRS) -name '*.c' -o -name '*.pl' -o -name '*.pm' | \
+	grep -v -E '^(examples|gnulib|perl/(blib|examples)|po-docs|tests)/' | \
+	grep -v -E '/((guestfs|rc)_protocol\.c)$$' | \
+	LC_ALL=C sort > po/POTFILES
 	cd $(srcdir); \
 	find resize sparsify sysprep -name '*.ml' | \
 	LC_ALL=C sort > po/POTFILES-ml
@@ -329,16 +315,6 @@ quickcheck:
 	$(top_builddir)/run test-tool/libguestfs-test-tool $(QUICKCHECK_TEST_TOOL_ARGS)
 
 # Non-standard tests.
-
-extra-tests:
-	$(MAKE) -j1 \
-	  check-valgrind \
-	  check-valgrind-local-guests \
-	  check-direct \
-	  check-valgrind-direct \
-	  check-with-upstream-qemu \
-	  check-with-upstream-libvirt \
-	  check-slow
 
 check-all:
 	$(MAKE) -j1 \
@@ -457,14 +433,13 @@ help:
 	@echo "make check                        Run the standard tests"
 	@echo "make -k check                       ... and display all errors at once."
 	@echo
-	@echo "make extra-tests                  Runs all of the following tests:"
-	@echo "  make check-valgrind                Run a subset of the tests under valgrind."
-	@echo "  make check-valgrind-local-guests   Test under valgrind using local guests."
-	@echo "  make check-direct                  Test using direct backend."
-	@echo "  make check-valgrind-direct         Test valgrind + direct backend."
-	@echo "  make check-with-upstream-qemu      Test using upstream qemu."
-	@echo "  make check-with-upstream-libvirt   Test using upstream libvirt."
-	@echo "  make check-slow                    Slow/long-running tests."
+	@echo "make check-valgrind               Run a subset of the tests under valgrind."
+	@echo "make check-valgrind-local-guests  Test under valgrind using local guests."
+	@echo "make check-direct                 Test using direct backend."
+	@echo "make check-valgrind-direct        Test valgrind + direct backend."
+	@echo "make check-with-upstream-qemu     Test using upstream qemu."
+	@echo "make check-with-upstream-libvirt  Test using upstream libvirt."
+	@echo "make check-slow                   Slow/long-running tests."
 	@echo
 	@echo "make check-all                    Runs all 'check*' rules."
 	@echo "make check-release                Runs 'check*' rules required for release."

@@ -17423,4 +17423,53 @@ public class GuestFS {
   private native void _cp_r (long g, String src, String dest)
     throws LibGuestFSException;
 
+  /**
+   * remount a filesystem with different options
+   * <p>
+   * This call allows you to change the "rw"
+   * (readonly/read-write) flag on an already mounted
+   * filesystem at "mountpoint", converting a readonly
+   * filesystem to be read-write, or vice-versa.
+   * <p>
+   * Note that at the moment you must supply the "optional"
+   * "rw" parameter. In future we may allow other flags to be
+   * adjusted.
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void remount (String mountpoint, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("remount: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    boolean rw = false;
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("rw");
+    if (_optobj != null) {
+      rw = ((Boolean) _optobj).booleanValue();
+      _optargs_bitmask |= 1L;
+    }
+
+    _remount (g, mountpoint, _optargs_bitmask, rw);
+  }
+
+  public void remount (String mountpoint)
+    throws LibGuestFSException
+  {
+    remount (mountpoint, null);
+  }
+
+  private native void _remount (long g, String mountpoint, long _optargs_bitmask, boolean rw)
+    throws LibGuestFSException;
+
 }

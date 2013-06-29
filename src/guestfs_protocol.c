@@ -7859,6 +7859,18 @@ xdr_guestfs_cp_r_args (XDR *xdrs, guestfs_cp_r_args *objp)
 }
 
 bool_t
+xdr_guestfs_remount_args (XDR *xdrs, guestfs_remount_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->mountpoint, ~0))
+		 return FALSE;
+	 if (!xdr_bool (xdrs, &objp->rw))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

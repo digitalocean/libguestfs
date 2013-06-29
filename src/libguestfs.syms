@@ -565,6 +565,9 @@
         guestfs_readlink;
         guestfs_readlinklist;
         guestfs_realpath;
+        guestfs_remount;
+        guestfs_remount_argv;
+        guestfs_remount_va;
         guestfs_remove_drive;
         guestfs_removexattr;
         guestfs_rename;

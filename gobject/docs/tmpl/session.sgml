@@ -4589,6 +4589,18 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_remount ##### -->
+<para>
+
+</para>
+
+@session: 
+@mountpoint: 
+@optargs: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_remove_drive ##### -->
 <para>
 

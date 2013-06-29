@@ -451,6 +451,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_readlink, NULL)
   PHP_FE (guestfs_readlinklist, NULL)
   PHP_FE (guestfs_realpath, NULL)
+  PHP_FE (guestfs_remount, NULL)
   PHP_FE (guestfs_remove_drive, NULL)
   PHP_FE (guestfs_removexattr, NULL)
   PHP_FE (guestfs_rename, NULL)
@@ -16070,6 +16071,47 @@ PHP_FUNCTION (guestfs_realpath)
   char *r_copy = estrdup (r);
   free (r);
   RETURN_STRING (r_copy, 0);
+}
+
+PHP_FUNCTION (guestfs_remount)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *mountpoint;
+  int mountpoint_size;
+  struct guestfs_remount_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_remount_argv *optargs = &optargs_s;
+  zend_bool optargs_t_rw = -1;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|b",
+        &z_g, &mountpoint, &mountpoint_size, &optargs_t_rw) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (mountpoint) != mountpoint_size) {
+    fprintf (stderr, "libguestfs: remount: parameter 'mountpoint' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  if (optargs_t_rw != (zend_bool)-1) {
+    optargs_s.rw = optargs_t_rw;
+    optargs_s.bitmask |= GUESTFS_REMOUNT_RW_BITMASK;
+  }
+
+  int r;
+  r = guestfs_remount_argv (g, mountpoint, optargs);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
 }
 
 PHP_FUNCTION (guestfs_remove_drive)

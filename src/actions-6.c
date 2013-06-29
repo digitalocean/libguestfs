@@ -6615,3 +6615,118 @@ guestfs_internal_parse_mountable (guestfs_h *g,
   return ret_v;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_remount_argv (guestfs_h *g,
+                      const char *mountpoint,
+                      const struct guestfs_remount_argv *optargs)
+{
+  struct guestfs_remount_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  struct guestfs_remount_args args;
+  guestfs_message_header hdr;
+  guestfs_message_error err;
+  int serial;
+  int r;
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int ret_v;
+  const uint64_t progress_hint = 0;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "remount", 7);
+  if (mountpoint == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "remount", "mountpoint");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffe)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "remount", "remount");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "remount");
+    fprintf (trace_buffer.fp, " \"%s\"", mountpoint);
+    if (optargs->bitmask & GUESTFS_REMOUNT_RW_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "rw", optargs->rw ? "true" : "false");
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  if (guestfs___check_appliance_up (g, "remount") == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "remount", "-1");
+    return -1;
+  }
+
+  args.mountpoint = (char *) mountpoint;
+  if (optargs->bitmask & GUESTFS_REMOUNT_RW_BITMASK) {
+    args.rw = optargs->rw;
+  } else {
+    args.rw = 0;
+  }
+  serial = guestfs___send (g, GUESTFS_PROC_REMOUNT,
+                           progress_hint, optargs->bitmask,
+                           (xdrproc_t) xdr_guestfs_remount_args, (char *) &args);
+  if (serial == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "remount", "-1");
+    return -1;
+  }
+
+  memset (&hdr, 0, sizeof hdr);
+  memset (&err, 0, sizeof err);
+
+  r = guestfs___recv (g, "remount", &hdr, &err,
+        NULL, NULL);
+  if (r == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "remount", "-1");
+    return -1;
+  }
+
+  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_REMOUNT, serial) == -1) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "remount", "-1");
+    return -1;
+  }
+
+  if (hdr.status == GUESTFS_STATUS_ERROR) {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "remount", "-1");
+    int errnum = 0;
+    if (err.errno_string[0] != '\0')
+      errnum = guestfs___string_to_errno (err.errno_string);
+    if (errnum <= 0)
+      error (g, "%s: %s", "remount", err.error_message);
+    else
+      guestfs___error_errno (g, errnum, "%s: %s", "remount",
+                           err.error_message);
+    free (err.error_message);
+    free (err.errno_string);
+    return -1;
+  }
+
+  ret_v = 0;
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s = ", "remount");
+    fprintf (trace_buffer.fp, "%d", ret_v);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  return ret_v;
+}
+

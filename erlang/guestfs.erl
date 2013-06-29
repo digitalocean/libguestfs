@@ -423,6 +423,7 @@
 -export([readlink/2]).
 -export([readlinklist/3]).
 -export([realpath/2]).
+-export([remount/2, remount/3]).
 -export([remove_drive/2]).
 -export([removexattr/3]).
 -export([rename/3]).
@@ -1876,6 +1877,11 @@ readlinklist(G, Path, Names) ->
 
 realpath(G, Path) ->
   call_port(G, {realpath, Path}).
+
+remount(G, Mountpoint, Optargs) ->
+  call_port(G, {remount, Mountpoint, Optargs}).
+remount(G, Mountpoint) ->
+  remount(G, Mountpoint, []).
 
 remove_drive(G, Label) ->
   call_port(G, {remove_drive, Label}).

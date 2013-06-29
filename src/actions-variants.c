@@ -2349,6 +2349,54 @@ guestfs_ntfsresize (guestfs_h *g,
 }
 
 int
+guestfs_remount (guestfs_h *g,
+                 const char *mountpoint,
+                 ...)
+{
+  va_list optargs;
+
+  va_start (optargs, mountpoint);
+  int r = guestfs_remount_va (g, mountpoint, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_remount_va (guestfs_h *g,
+                    const char *mountpoint,
+                    va_list args)
+{
+  struct guestfs_remount_argv optargs_s;
+  struct guestfs_remount_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_REMOUNT_RW:
+      optargs_s.rw = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "remount", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "remount");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_remount_argv (g, mountpoint, optargs);
+}
+
+int
 guestfs_rsync (guestfs_h *g,
                const char *src,
                const char *dest,

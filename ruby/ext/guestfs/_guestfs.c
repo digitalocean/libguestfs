@@ -24334,6 +24334,64 @@ ruby_guestfs_cp_r (VALUE gv, VALUE srcv, VALUE destv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.remount(mountpoint, {optargs...}) -> nil
+ *
+ * remount a filesystem with different options
+ *
+ * This call allows you to change the "rw"
+ * (readonly/read-write) flag on an already mounted
+ * filesystem at "mountpoint", converting a readonly
+ * filesystem to be read-write, or vice-versa.
+ * 
+ * Note that at the moment you must supply the "optional"
+ * "rw" parameter. In future we may allow other flags to be
+ * adjusted.
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_remount+[http://libguestfs.org/guestfs.3.html#guestfs_remount]).
+ */
+static VALUE
+ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "remount");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE mountpointv = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  const char *mountpoint = StringValueCStr (mountpointv);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_remount_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_remount_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("rw")));
+  if (v != Qnil) {
+    optargs_s.rw = RTEST (v);
+    optargs_s.bitmask |= GUESTFS_REMOUNT_RW_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_remount_argv (g, mountpoint, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -25449,4 +25507,6 @@ Init__guestfs (void)
         ruby_guestfs_extlinux, 1);
   rb_define_method (c_guestfs, "cp_r",
         ruby_guestfs_cp_r, 2);
+  rb_define_method (c_guestfs, "remount",
+        ruby_guestfs_remount, -1);
 }

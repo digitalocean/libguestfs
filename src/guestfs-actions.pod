@@ -9547,6 +9547,51 @@ I<The caller must free the returned string after use>.
 
 (Added in 1.0.66)
 
+=head2 guestfs_remount
+
+ int
+ guestfs_remount (guestfs_h *g,
+                  const char *mountpoint,
+                  ...);
+
+You may supply a list of optional arguments to this call.
+Use zero or more of the following pairs of parameters,
+and terminate the list with C<-1> on its own.
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_REMOUNT_RW, int rw,
+
+This call allows you to change the C<rw> (readonly/read-write)
+flag on an already mounted filesystem at C<mountpoint>,
+converting a readonly filesystem to be read-write, or vice-versa.
+
+Note that at the moment you must supply the "optional" C<rw>
+parameter.  In future we may allow other flags to be adjusted.
+
+This function returns 0 on success or -1 on error.
+
+=head2 guestfs_remount_va
+
+ int
+ guestfs_remount_va (guestfs_h *g,
+                     const char *mountpoint,
+                     va_list args);
+
+This is the "va_list variant" of L</guestfs_remount>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_remount_argv
+
+ int
+ guestfs_remount_argv (guestfs_h *g,
+                       const char *mountpoint,
+                       const struct guestfs_remount_argv *optargs);
+
+This is the "argv variant" of L</guestfs_remount>.
+
+See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_remove_drive
 
  int

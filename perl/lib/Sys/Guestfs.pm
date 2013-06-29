@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.401';
+$VERSION = '0.402';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -5445,6 +5445,15 @@ list a directory contents without making many round-trips.
 Return the canonicalized absolute pathname of C<path>.  The
 returned path has no C<.>, C<..> or symbolic link path elements.
 
+=item $g->remount ($mountpoint [, rw => $rw]);
+
+This call allows you to change the C<rw> (readonly/read-write)
+flag on an already mounted filesystem at C<mountpoint>,
+converting a readonly filesystem to be read-write, or vice-versa.
+
+Note that at the moment you must supply the "optional" C<rw>
+parameter.  In future we may allow other flags to be adjusted.
+
 =item $g->remove_drive ($label);
 
 This function is conceptually the opposite of C<$g-E<gt>add_drive_opts>.
@@ -10571,6 +10580,17 @@ use vars qw(%guestfs_introspection);
     ],
     name => "realpath",
     description => "canonicalized absolute pathname",
+  },
+  "remount" => {
+    ret => 'void',
+    args => [
+      [ 'mountpoint', 'string(path)', 0 ],
+    ],
+    optargs => {
+      rw => [ 'rw', 'bool', 0 ],
+    },
+    name => "remount",
+    description => "remount a filesystem with different options",
   },
   "remove_drive" => {
     ret => 'void',

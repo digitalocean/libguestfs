@@ -409,6 +409,7 @@
 <ANCHOR id="guestfs-session-readlink" href="guestfs/GuestfsSession.html#guestfs-session-readlink">
 <ANCHOR id="guestfs-session-readlinklist" href="guestfs/GuestfsSession.html#guestfs-session-readlinklist">
 <ANCHOR id="guestfs-session-realpath" href="guestfs/GuestfsSession.html#guestfs-session-realpath">
+<ANCHOR id="guestfs-session-remount" href="guestfs/GuestfsSession.html#guestfs-session-remount">
 <ANCHOR id="guestfs-session-remove-drive" href="guestfs/GuestfsSession.html#guestfs-session-remove-drive">
 <ANCHOR id="guestfs-session-removexattr" href="guestfs/GuestfsSession.html#guestfs-session-removexattr">
 <ANCHOR id="guestfs-session-rename" href="guestfs/GuestfsSession.html#guestfs-session-rename">
@@ -1403,6 +1404,17 @@
 <ANCHOR id="guestfs-syslinux-new" href="guestfs/GuestfsSyslinux.html#guestfs-syslinux-new">
 <ANCHOR id="GuestfsSyslinux.property-details" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux.property-details">
 <ANCHOR id="GuestfsSyslinux--directory" href="guestfs/GuestfsSyslinux.html#GuestfsSyslinux--directory">
+<ANCHOR id="GuestfsRemount" href="guestfs/GuestfsRemount.html">
+<ANCHOR id="GuestfsRemount.synopsis" href="guestfs/GuestfsRemount.html#GuestfsRemount.synopsis">
+<ANCHOR id="GuestfsRemount.object-hierarchy" href="guestfs/GuestfsRemount.html#GuestfsRemount.object-hierarchy">
+<ANCHOR id="GuestfsRemount.properties" href="guestfs/GuestfsRemount.html#GuestfsRemount.properties">
+<ANCHOR id="GuestfsRemount.description" href="guestfs/GuestfsRemount.html#GuestfsRemount.description">
+<ANCHOR id="GuestfsRemount.details" href="guestfs/GuestfsRemount.html#GuestfsRemount.details">
+<ANCHOR id="GuestfsRemount-struct" href="guestfs/GuestfsRemount.html#GuestfsRemount-struct">
+<ANCHOR id="GuestfsRemountClass" href="guestfs/GuestfsRemount.html#GuestfsRemountClass">
+<ANCHOR id="guestfs-remount-new" href="guestfs/GuestfsRemount.html#guestfs-remount-new">
+<ANCHOR id="GuestfsRemount.property-details" href="guestfs/GuestfsRemount.html#GuestfsRemount.property-details">
+<ANCHOR id="GuestfsRemount--rw" href="guestfs/GuestfsRemount.html#GuestfsRemount--rw">
 <ANCHOR id="annotation-glossterm-array" href="guestfs/annotation-glossary.html#annotation-glossterm-array">
 <ANCHOR id="annotation-glossterm-allow-none" href="guestfs/annotation-glossary.html#annotation-glossterm-allow-none">
 <ANCHOR id="annotation-glossterm-element-type" href="guestfs/annotation-glossary.html#annotation-glossterm-element-type">

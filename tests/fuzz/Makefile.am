@@ -1,6 +1,5 @@
-#!/bin/sh -
-# libguestfs Perl bindings
-# Copyright (C) 2009 Red Hat Inc.
+# libguestfs
+# Copyright (C) 2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +15,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-set -e
+include $(top_srcdir)/subdir-rules.mk
 
-make -C $srcdir -f @abs_builddir@/Makefile-pl test "$@"
+EXTRA_DIST = \
+	$(TESTS)
+
+export ITERATIONS ?= 10
+
+TESTS = \
+	fuzz-inspection.pl
+
+TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+
+check-valgrind:
+	$(MAKE) VG="@VG@" check

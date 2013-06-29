@@ -222,6 +222,7 @@ Makefile.in
 /html/virt-tar-in.1.html
 /html/virt-tar-out.1.html
 /html/virt-win-reg.1.html
+/inspector/actual-*.xml
 /inspector/stamp-virt-inspector.pod
 /inspector/test-xmllint.sh
 /inspector/virt-inspector
@@ -287,7 +288,6 @@ Makefile.in
 /perl/MYMETA.json
 /perl/MYMETA.yml
 /perl/pm_to_blib
-/perl/run-perl-tests
 /php/extension/acinclude.m4
 /php/extension/aclocal.m4
 /php/extension/autom4te.cache

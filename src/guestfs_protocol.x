@@ -2798,6 +2798,11 @@ struct guestfs_cp_r_args {
   string dest<>;
 };
 
+struct guestfs_remount_args {
+  string mountpoint<>;
+  bool rw;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3193,10 +3198,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_FEATURE_AVAILABLE = 398,
   GUESTFS_PROC_SYSLINUX = 399,
   GUESTFS_PROC_EXTLINUX = 400,
-  GUESTFS_PROC_CP_R = 401
+  GUESTFS_PROC_CP_R = 401,
+  GUESTFS_PROC_REMOUNT = 402
 };
 
-const GUESTFS_MAX_PROC_NR = 401;
+const GUESTFS_MAX_PROC_NR = 402;
 
 /* The remote procedure call protocol. */
 

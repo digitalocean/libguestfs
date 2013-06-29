@@ -90,3 +90,4 @@
 #include <guestfs-gobject/optargs-mke2fs.h>
 #include <guestfs-gobject/optargs-mktemp.h>
 #include <guestfs-gobject/optargs-syslinux.h>
+#include <guestfs-gobject/optargs-remount.h>

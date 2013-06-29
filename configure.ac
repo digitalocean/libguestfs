@@ -19,8 +19,8 @@
 # add extra information using --with-extra="..." which may be any
 # freeform string.
 m4_define([libguestfs_major],   [1])
-m4_define([libguestfs_minor],   [22])
-m4_define([libguestfs_release], [3])
+m4_define([libguestfs_minor],   [23])
+m4_define([libguestfs_release], [6])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -519,6 +519,9 @@ fi
 if test -f /etc/arch-release; then
     DISTRO=ARCHLINUX
 fi
+if test -f /etc/SuSE-release; then
+    DISTRO=SUSE
+fi
 AC_MSG_RESULT([$DISTRO])
 AC_SUBST([DISTRO])
 
@@ -546,19 +549,6 @@ AM_CONDITIONAL([HAVE_XDR_U_INT64_T],
                [test "x$ac_cv_search_xdr_u_int64_t" != "xno"])
 AM_CONDITIONAL([HAVE_XDR_UINT64_T],
                [test "x$ac_cv_search_xdr_uint64_t" != "xno"])
-
-dnl Check for Augeas (optional).
-PKG_CHECK_MODULES([AUGEAS],[augeas],[
-    AC_SUBST([AUGEAS_CFLAGS])
-    AC_SUBST([AUGEAS_LIBS])
-    AC_DEFINE([HAVE_AUGEAS],[1],[Define to 1 if you have Augeas.])
-
-    old_LIBS="$LIBS"
-    LIBS="$LIBS $AUGEAS_LIBS"
-    dnl Check for functions not available in earlier versions of Augeas.
-    AC_CHECK_FUNCS([aug_load aug_defvar aug_defnode])
-    LIBS="$old_LIBS"
-],[AC_MSG_WARN([augeas not found, some core features will be disabled])])
 
 dnl Check for libselinux (optional).
 AC_CHECK_HEADERS([selinux/selinux.h])
@@ -812,6 +802,9 @@ AS_IF([test "x$with_readline" != xno],[
 
 dnl Check for PCRE (required)
 PKG_CHECK_MODULES([PCRE], [libpcre])
+
+dnl Check for Augeas >= 1.0.0 (required).
+PKG_CHECK_MODULES([AUGEAS],[augeas >= 1.0.0])
 
 dnl libmagic (highly recommended)
 AC_CHECK_LIB([magic],[magic_file],[
@@ -1566,8 +1559,6 @@ AC_CONFIG_FILES([appliance/libguestfs-make-fixed-appliance],
                 [chmod +x,-w appliance/libguestfs-make-fixed-appliance])
 AC_CONFIG_FILES([inspector/test-xmllint.sh],
                 [chmod +x,-w inspector/test-xmllint.sh])
-AC_CONFIG_FILES([perl/run-perl-tests],
-                [chmod +x,-w perl/run-perl-tests])
 AC_CONFIG_FILES([pick-guests.pl],
                 [chmod +x,-w pick-guests.pl])
 AC_CONFIG_FILES([podwrapper.pl],
@@ -1635,6 +1626,7 @@ AC_CONFIG_FILES([Makefile
                  tests/data/Makefile
                  tests/disks/Makefile
                  tests/disk-labels/Makefile
+                 tests/fuzz/Makefile
                  tests/guests/Makefile
                  tests/guests/guests.xml
                  tests/hotplug/Makefile

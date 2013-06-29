@@ -73,6 +73,7 @@
       <sub name="GuestfsMke2fs" link="GuestfsMke2fs.html"/>
       <sub name="GuestfsMktemp" link="GuestfsMktemp.html"/>
       <sub name="GuestfsSyslinux" link="GuestfsSyslinux.html"/>
+      <sub name="GuestfsRemount" link="GuestfsRemount.html"/>
     </sub>
     <sub name="Object Hierarchy" link="object-tree.html"/>
     <sub name="API Index" link="api-index-full.html"/>
@@ -474,6 +475,7 @@
     <keyword type="function" name="guestfs_session_readlink ()" link="GuestfsSession.html#guestfs-session-readlink"/>
     <keyword type="function" name="guestfs_session_readlinklist ()" link="GuestfsSession.html#guestfs-session-readlinklist"/>
     <keyword type="function" name="guestfs_session_realpath ()" link="GuestfsSession.html#guestfs-session-realpath"/>
+    <keyword type="function" name="guestfs_session_remount ()" link="GuestfsSession.html#guestfs-session-remount"/>
     <keyword type="function" name="guestfs_session_remove_drive ()" link="GuestfsSession.html#guestfs-session-remove-drive"/>
     <keyword type="function" name="guestfs_session_removexattr ()" link="GuestfsSession.html#guestfs-session-removexattr"/>
     <keyword type="function" name="guestfs_session_rename ()" link="GuestfsSession.html#guestfs-session-rename"/>
@@ -1023,6 +1025,10 @@
     <keyword type="struct" name="struct GuestfsSyslinuxClass" link="GuestfsSyslinux.html#GuestfsSyslinuxClass"/>
     <keyword type="function" name="guestfs_syslinux_new ()" link="GuestfsSyslinux.html#guestfs-syslinux-new"/>
     <keyword type="property" name="The &quot;directory&quot; property" link="GuestfsSyslinux.html#GuestfsSyslinux--directory"/>
+    <keyword type="struct" name="struct GuestfsRemount" link="GuestfsRemount.html#GuestfsRemount-struct"/>
+    <keyword type="struct" name="struct GuestfsRemountClass" link="GuestfsRemount.html#GuestfsRemountClass"/>
+    <keyword type="function" name="guestfs_remount_new ()" link="GuestfsRemount.html#guestfs-remount-new"/>
+    <keyword type="property" name="The &quot;rw&quot; property" link="GuestfsRemount.html#GuestfsRemount--rw"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_CLOSE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-CLOSE:CAPS"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_SUBPROCESS_QUIT" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-SUBPROCESS-QUIT:CAPS"/>
     <keyword type="constant" name="GUESTFS_SESSION_EVENT_LAUNCH_DONE" link="GuestfsSession.html#GUESTFS-SESSION-EVENT-LAUNCH-DONE:CAPS"/>

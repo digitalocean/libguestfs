@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# subdir-rules.mk should be included in every *subdirectory* Makefile.am.
 
 # libguestfs
 # Copyright (C) 2013 Red Hat Inc.
@@ -368,7 +370,8 @@ am__objects_1 = libguestfs_gobject_1_0_la-session.lo \
 	libguestfs_gobject_1_0_la-optargs-xfs_repair.lo \
 	libguestfs_gobject_1_0_la-optargs-mke2fs.lo \
 	libguestfs_gobject_1_0_la-optargs-mktemp.lo \
-	libguestfs_gobject_1_0_la-optargs-syslinux.lo
+	libguestfs_gobject_1_0_la-optargs-syslinux.lo \
+	libguestfs_gobject_1_0_la-optargs-remount.lo
 am_libguestfs_gobject_1_0_la_OBJECTS = $(am__objects_1)
 libguestfs_gobject_1_0_la_OBJECTS =  \
 	$(am_libguestfs_gobject_1_0_la_OBJECTS)
@@ -1601,7 +1604,8 @@ guestfs_gobject_headers = \
   include/guestfs-gobject/optargs-xfs_repair.h \
   include/guestfs-gobject/optargs-mke2fs.h \
   include/guestfs-gobject/optargs-mktemp.h \
-  include/guestfs-gobject/optargs-syslinux.h
+  include/guestfs-gobject/optargs-syslinux.h \
+  include/guestfs-gobject/optargs-remount.h
 
 guestfs_gobject_sources = \
   src/session.c \
@@ -1673,7 +1677,8 @@ guestfs_gobject_sources = \
   src/optargs-xfs_repair.c \
   src/optargs-mke2fs.c \
   src/optargs-mktemp.c \
-  src/optargs-syslinux.c
+  src/optargs-syslinux.c \
+  src/optargs-remount.c
 
 generator_built = \
 	$(guestfs_gobject_headers) \
@@ -1841,6 +1846,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsclone_out.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsfix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-ntfsresize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-remount.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_in.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_gobject_1_0_la-optargs-rsync_out.Plo@am__quote@
@@ -2388,6 +2394,13 @@ libguestfs_gobject_1_0_la-optargs-syslinux.lo: src/optargs-syslinux.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-syslinux.lo `test -f 'src/optargs-syslinux.c' || echo '$(srcdir)/'`src/optargs-syslinux.c
 
+libguestfs_gobject_1_0_la-optargs-remount.lo: src/optargs-remount.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -MT libguestfs_gobject_1_0_la-optargs-remount.lo -MD -MP -MF $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-remount.Tpo -c -o libguestfs_gobject_1_0_la-optargs-remount.lo `test -f 'src/optargs-remount.c' || echo '$(srcdir)/'`src/optargs-remount.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-remount.Tpo $(DEPDIR)/libguestfs_gobject_1_0_la-optargs-remount.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/optargs-remount.c' object='libguestfs_gobject_1_0_la-optargs-remount.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libguestfs_gobject_1_0_la_CFLAGS) $(CFLAGS) -c -o libguestfs_gobject_1_0_la-optargs-remount.lo `test -f 'src/optargs-remount.c' || echo '$(srcdir)/'`src/optargs-remount.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -2907,15 +2920,27 @@ abs_builddir ?= @abs_builddir@
 srcdir       ?= @srcdir@
 abs_srcdir   ?= @abs_srcdir@
 
-# Define a force dependency which will always be rebuilt
-.PHONY: force
+# Individual Makefile.am's should define generator_built if that
+# subdirectory contains any files which are built by the generator.
+# Set generator_built to the list of those files.
 
-# Automatically build targets defined in generator_built
-# generator_built is defined in individual Makefiles
 $(generator_built): $(top_builddir)/generator/stamp-generator
-$(top_builddir)/generator/stamp-generator: force
-	! test -f $(top_builddir)/generator/Makefile || \
-	  $(MAKE) -C $(top_builddir)/generator stamp-generator
+
+$(top_builddir)/generator/stamp-generator: $(top_builddir)/generator/generator
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $(generator_built)"; \
+	fi
+
+# If this file doesn't exist, just print a warning and continue.
+# During 'make distclean' we can end up deleting this file.
+$(top_builddir)/generator/generator:
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $@"; \
+	fi
 
 # All the headers except <guestfs-gobject.h> should be installed
 # in the subdirectory.

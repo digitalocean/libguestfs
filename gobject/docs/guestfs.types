@@ -47,6 +47,7 @@ guestfs_ntfsclone_out_get_type
 guestfs_ntfsfix_get_type
 guestfs_ntfsresize_get_type
 guestfs_partition_get_type
+guestfs_remount_get_type
 guestfs_rsync_get_type
 guestfs_rsync_in_get_type
 guestfs_rsync_out_get_type

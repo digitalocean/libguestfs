@@ -1460,6 +1460,10 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-realpath" title="guestfs_session_realpath ()">guestfs_session_realpath</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-remount" title="guestfs_session_remount ()">guestfs_session_remount</a>             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsRemount.html" title="GuestfsRemount"><span class="type">GuestfsRemount</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-remove-drive" title="guestfs_session_remove_drive ()">guestfs_session_remove_drive</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *label</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
@@ -22329,6 +22333,57 @@ has no ".", ".." or symbolic link path elements.
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
 </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-remount"></a><h3>guestfs_session_remount ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_remount             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GuestfsRemount.html" title="GuestfsRemount"><span class="type">GuestfsRemount</span></a> *optargs</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+remount a filesystem with different options
+</p>
+<p>
+This call allows you to change the <em class="parameter"><code>rw</code></em> (readonly/read-write) flag on an
+already mounted filesystem at <em class="parameter"><code>mountpoint</code></em>, converting a readonly
+filesystem to be read-write, or vice-versa.
+</p>
+<p>
+Note that at the moment you must supply the "optional" <em class="parameter"><code>rw</code></em> parameter. In
+future we may allow other flags to be adjusted.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mountpoint</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>optargs</code></em> :</span></p></td>
+<td>a GuestfsRemount containing optional arguments. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
 </tr>
 </tbody>
 </table></div>

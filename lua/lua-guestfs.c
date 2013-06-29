@@ -10207,6 +10207,37 @@ guestfs_lua_realpath (lua_State *L)
 }
 
 static int
+guestfs_lua_remount (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *mountpoint;
+  struct guestfs_remount_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_remount_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "remount");
+
+  mountpoint = luaL_checkstring (L, 2);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "rw",
+      optargs_s.bitmask |= GUESTFS_REMOUNT_RW_BITMASK;
+      optargs_s.rw = lua_toboolean (L, -1);
+    );
+  }
+
+  r = guestfs_remount_argv (g, mountpoint, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_remove_drive (lua_State *L)
 {
   int r;
@@ -14822,6 +14853,7 @@ static luaL_Reg methods[] = {
   { "readlink", guestfs_lua_readlink },
   { "readlinklist", guestfs_lua_readlinklist },
   { "realpath", guestfs_lua_realpath },
+  { "remount", guestfs_lua_remount },
   { "remove_drive", guestfs_lua_remove_drive },
   { "removexattr", guestfs_lua_removexattr },
   { "rename", guestfs_lua_rename },

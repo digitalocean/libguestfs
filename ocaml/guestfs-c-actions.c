@@ -14328,6 +14328,43 @@ ocaml_guestfs_realpath (value gv, value pathv)
 }
 
 /* Automatically generated wrapper for function
+ * val remount : t -> ?rw:bool -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_remount (value gv, value rwv, value mountpointv);
+
+value
+ocaml_guestfs_remount (value gv, value rwv, value mountpointv)
+{
+  CAMLparam3 (gv, rwv, mountpointv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("remount");
+
+  char *mountpoint = guestfs___safe_strdup (g, String_val (mountpointv));
+  struct guestfs_remount_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_remount_argv *optargs = &optargs_s;
+  if (rwv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_REMOUNT_RW_BITMASK;
+    optargs_s.rw = Bool_val (Field (rwv, 0));
+  }
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_remount_argv (g, mountpoint, optargs);
+  caml_leave_blocking_section ();
+  free (mountpoint);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "remount");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val remove_drive : t -> string -> unit
  */
 

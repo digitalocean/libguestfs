@@ -2309,6 +2309,19 @@ extern GUESTFS_DLL_PUBLIC char **guestfs_readlinklist (guestfs_h *g, const char 
 #define GUESTFS_HAVE_REALPATH 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_realpath (guestfs_h *g, const char *path);
 
+#define GUESTFS_HAVE_REMOUNT 1
+#define GUESTFS_REMOUNT_RW 0
+extern GUESTFS_DLL_PUBLIC int guestfs_remount (guestfs_h *g, const char *mountpoint, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_remount_va (guestfs_h *g, const char *mountpoint, va_list args);
+
+struct guestfs_remount_argv {
+  uint64_t bitmask;
+# define GUESTFS_REMOUNT_RW_BITMASK (UINT64_C(1)<<0)
+  int rw;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_remount_argv (guestfs_h *g, const char *mountpoint, const struct guestfs_remount_argv *optargs);
+
 #define GUESTFS_HAVE_REMOVE_DRIVE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_remove_drive (guestfs_h *g, const char *label);
 
@@ -3677,6 +3690,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_READLINK 1
 #define LIBGUESTFS_HAVE_READLINKLIST 1
 #define LIBGUESTFS_HAVE_REALPATH 1
+#define LIBGUESTFS_HAVE_REMOUNT 1
 #define LIBGUESTFS_HAVE_REMOVE_DRIVE 1
 #define LIBGUESTFS_HAVE_REMOVEXATTR 1
 #define LIBGUESTFS_HAVE_RENAME 1
