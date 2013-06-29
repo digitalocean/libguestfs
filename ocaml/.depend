@@ -3,3 +3,25 @@
 ./guestfs.cmi :
 ./guestfs.cmo : ./guestfs.cmi
 ./guestfs.cmx : ./guestfs.cmi
+./t/guestfs_010_load.cmo :
+./t/guestfs_010_load.cmx :
+./t/guestfs_020_create.cmo : guestfs.cmi
+./t/guestfs_020_create.cmx : guestfs.cmx
+./t/guestfs_030_create_flags.cmo : guestfs.cmi
+./t/guestfs_030_create_flags.cmx : guestfs.cmx
+./t/guestfs_040_create_multiple.cmo : guestfs.cmi
+./t/guestfs_040_create_multiple.cmx : guestfs.cmx
+./t/guestfs_050_handle_properties.cmo : guestfs.cmi
+./t/guestfs_050_handle_properties.cmx : guestfs.cmx
+./t/guestfs_060_explicit_close.cmo : guestfs.cmi
+./t/guestfs_060_explicit_close.cmx : guestfs.cmx
+./t/guestfs_070_optargs.cmo : guestfs.cmi
+./t/guestfs_070_optargs.cmx : guestfs.cmx
+./t/guestfs_100_launch.cmo : guestfs.cmi
+./t/guestfs_100_launch.cmx : guestfs.cmx
+./t/guestfs_410_close_event.cmo : guestfs.cmi
+./t/guestfs_410_close_event.cmx : guestfs.cmx
+./t/guestfs_420_log_messages.cmo : guestfs.cmi
+./t/guestfs_420_log_messages.cmx : guestfs.cmx
+./t/guestfs_430_progress_messages.cmo : guestfs.cmi
+./t/guestfs_430_progress_messages.cmx : guestfs.cmx

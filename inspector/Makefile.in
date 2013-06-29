@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,6 +47,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# subdir-rules.mk should be included in every *subdirectory* Makefile.am.
+
+# libguestfs
+# Copyright (C) 2013 Red Hat Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# 'common-rules.mk' should be included in every Makefile.am.
+# cf. 'subdir-rules.mk'
 
 
 VPATH = @srcdir@
@@ -86,7 +108,8 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(dist_doc_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/test-xmllint.sh.in \
-	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/subdir-rules.mk
+	$(top_srcdir)/build-aux/depcomp $(top_srcdir)/common-rules.mk \
+	$(top_srcdir)/subdir-rules.mk
 bin_PROGRAMS = virt-inspector$(EXEEXT)
 @HAVE_XMLLINT_TRUE@am__append_1 = test-xmllint.sh
 subdir = inspector
@@ -1128,6 +1151,7 @@ PTHREAD_H_DEFINES_STRUCT_TIMESPEC = @PTHREAD_H_DEFINES_STRUCT_TIMESPEC@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
 PYTHON_CFLAGS = @PYTHON_CFLAGS@
+PYTHON_EXT_SUFFIX = @PYTHON_EXT_SUFFIX@
 PYTHON_INSTALLDIR = @PYTHON_INSTALLDIR@
 PYTHON_LIBS = @PYTHON_LIBS@
 PYTHON_PREFIX = @PYTHON_PREFIX@
@@ -1435,7 +1459,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1456,7 +1480,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/subdir-rules.mk:
+$(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -2039,18 +2063,37 @@ uninstall-man: uninstall-man1
 	uninstall-man uninstall-man1
 
 
-# Old RHEL 5 autoconf doesn't have builddir.
-builddir ?= .
+-include $(top_builddir)/localenv
 
-# Define a force dependency which will always be rebuilt
-.PHONY: force
+# Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
+# create variables for them.  So define them here if they're not
+# defined already.
+builddir     ?= @builddir@
+abs_builddir ?= @abs_builddir@
+srcdir       ?= @srcdir@
+abs_srcdir   ?= @abs_srcdir@
 
-# Automatically build targets defined in generator_built
-# generator_built is defined in individual Makefiles
+# Individual Makefile.am's should define generator_built if that
+# subdirectory contains any files which are built by the generator.
+# Set generator_built to the list of those files.
+
 $(generator_built): $(top_builddir)/generator/stamp-generator
-$(top_builddir)/generator/stamp-generator: force
-	! test -f $(top_builddir)/generator/Makefile || \
-	  $(MAKE) -C $(top_builddir)/generator stamp-generator
+
+$(top_builddir)/generator/stamp-generator: $(top_builddir)/generator/generator
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $(generator_built)"; \
+	fi
+
+# If this file doesn't exist, just print a warning and continue.
+# During 'make distclean' we can end up deleting this file.
+$(top_builddir)/generator/generator:
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $@"; \
+	fi
 
 export EXAMPLE_XML = \
 	example-debian.xml \

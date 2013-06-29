@@ -1,5 +1,5 @@
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,12 +15,28 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Define a force dependency which will always be rebuilt
-.PHONY: force
+# subdir-rules.mk should be included in every *subdirectory* Makefile.am.
 
-# Automatically build targets defined in generator_built
-# generator_built is defined in individual Makefiles
+include $(top_srcdir)/common-rules.mk
+
+# Individual Makefile.am's should define generator_built if that
+# subdirectory contains any files which are built by the generator.
+# Set generator_built to the list of those files.
+
 $(generator_built): $(top_builddir)/generator/stamp-generator
-$(top_builddir)/generator/stamp-generator: force
-	! test -f $(top_builddir)/generator/Makefile || \
-	  $(MAKE) -C $(top_builddir)/generator stamp-generator
+
+$(top_builddir)/generator/stamp-generator: $(top_builddir)/generator/generator
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $(generator_built)"; \
+	fi
+
+# If this file doesn't exist, just print a warning and continue.
+# During 'make distclean' we can end up deleting this file.
+$(top_builddir)/generator/generator:
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $@"; \
+	fi

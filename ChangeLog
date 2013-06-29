@@ -1,4 +1,124 @@
+2013-06-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Fix 'make distclean' (again).
+	So it doesn't break after the generator has been deleted by
+	a previous distclean rule.
+
+2013-06-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	txz-out: Fix this API to produce xz files again (RHBZ#972775).
+	Commit 864ef706a84c7c87a62f776d4b2e82a6f959ae14 (in Aug 2012) broke
+	the deprecated txz-out API.  Because of a thinko during this commit,
+	instead of producing xz files it produces bzip2 files.
+
+	Fix this API again.
+
+	Thanks: Bo Fan / Red Hat QA team.
+
+2013-06-07  Matthew Booth  <mbooth@redhat.com>
+
+	inspect: Fix bogus warning for partitions without /boot.ini
+	Fix a bogus warning introduced by
+	5abb196de869cd27a6fa2377d79b9a267120f48e. If a non-windows partition
+	hasn't been detected as something else and falls through to windows
+	detection, inspection would display a bogus warning about missing
+	/boot.ini.
+
+	RWMJ: Test if guestfs_is_file > 0, in case it returns an error.
+
+2013-06-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Reformat is_systemroot declaration.
+	Just code motion.
+
+2013-06-05  Matthew Booth  <mbooth@redhat.com>
+
+	inspect: Partial support for non-standard windows system root
+	Support arbitrary windows system root for pre-vista systems where
+	boot.ini is on the same partition as the system root.
+
+	inspect: Add internal match6 function
+
+2013-06-05  Matthew Booth  <mbooth@redhat.com>
+
+	inspection: Refactor windows systemroot detection to allow re-use
+	This change refactors guestfs___has_windows_systemroot to
+	guestfs___get_windows_systemroot. The new function returns a
+	dynamically allocated char * which must be freed.
+
+	The new function is no less efficient than before, as it returns the
+	result of guestfs___case_sensitive_path_silently, which is required
+	anyway. The new code is slightly more efficient than before, as it
+	re-uses the result of this testing in guestfs___check_windows_root
+	rather than running it again.
+
+2013-06-04  Olaf Hering  <olaf@aepfle.de>
+
+	Set DISTRO to SUSE if /etc/SuSE-release exists
+
+2013-06-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Build dependencies for tests too.
+
+2013-06-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Add common-rules.mk, common rules for all Makefiles.
+	This file is mainly a central place to:
+
+	 - include localenv if it exists, and
+
+	 - define the RHEL 5 backwards compatibility macros, instead of
+	   spreading them over every other file.
+
+2013-06-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Don't include subdir-rules.mk in top level Makefile.am.
+	Also there are no generated files at the top level, so no need to
+	mention $(generator_built) in this file.
+
+	Quote ./configure --help output (options) properly.
+
+2013-06-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	build: Simplify and speed up expression that generates po/POTFILES.
+	This has to run on every build, so:
+
+	- Use two grep commands instead of lots.
+
+	- Remove unnecessary use of sed.
+
+	- Remove some obsolete directories that haven't existed for a long time.
+
+2013-06-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Don't always recurse into the generator directory.
+	Previously, every subdirectory that contained generated files would
+	cause a recursion into the ../generator directory.  This was slow and
+	unnecessary.  Only recurse if the generator actually needs to be
+	rerun.
+
+	Note this changes the semantics slightly: For example if you added a
+	new action and just ran `make -C ocaml' then previously the generator
+	would be rerun, but now it would not.  However I'm not convinced the
+	previous semantics were that useful, particularly considering that
+	with this change a simple `make' is much faster.
+
+2013-06-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocamldoc: Depend directly on guestfs.mli, guestfs.ml files, not wildcards.
+
+2013-06-03  Hilko Bengen  <bengen@hilluzination.de>
+
+	python: Build extension with PEP-3149 compliant suffix if defined.
+
+	perl: Use symlink hack from hivex
+
+	Revert "perl: Fix build and test to work with separated builds."
+	This reverts commit 4ea016dae96ed4fc3ca6d057f17fde9697f0e627.
+
 2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.2.
 
 	docs: Updated release versions which fix CVE-2013-2124.
 

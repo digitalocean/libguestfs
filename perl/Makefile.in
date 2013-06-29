@@ -32,7 +32,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # libguestfs
-# Copyright (C) 2009 Red Hat Inc.
+# Copyright (C) 2009-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,6 +47,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# subdir-rules.mk should be included in every *subdirectory* Makefile.am.
+
+# libguestfs
+# Copyright (C) 2013 Red Hat Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# 'common-rules.mk' should be included in every Makefile.am.
+# cf. 'subdir-rules.mk'
 VPATH = @srcdir@
 am__make_dryrun = \
   { \
@@ -83,7 +105,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = README $(srcdir)/Makefile.PL.in $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/run-perl-tests.in \
+	$(srcdir)/Makefile.in $(top_srcdir)/common-rules.mk \
 	$(top_srcdir)/subdir-rules.mk
 @ENABLE_APPLIANCE_TRUE@@HAVE_PERL_TRUE@am__append_1 = appliance
 @ENABLE_APPLIANCE_TRUE@@HAVE_PERL_TRUE@am__append_2 = run-perl-tests
@@ -216,7 +238,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = run-perl-tests Makefile.PL
+CONFIG_CLEAN_FILES = Makefile.PL
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -1048,6 +1070,7 @@ PTHREAD_H_DEFINES_STRUCT_TIMESPEC = @PTHREAD_H_DEFINES_STRUCT_TIMESPEC@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 PYTHON = @PYTHON@
 PYTHON_CFLAGS = @PYTHON_CFLAGS@
+PYTHON_EXT_SUFFIX = @PYTHON_EXT_SUFFIX@
 PYTHON_INSTALLDIR = @PYTHON_INSTALLDIR@
 PYTHON_LIBS = @PYTHON_LIBS@
 PYTHON_PREFIX = @PYTHON_PREFIX@
@@ -1325,7 +1348,7 @@ EXTRA_DIST = \
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -1346,7 +1369,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/subdir-rules.mk:
+$(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -1356,8 +1379,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-run-perl-tests: $(top_builddir)/config.status $(srcdir)/run-perl-tests.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 Makefile.PL: $(top_builddir)/config.status $(srcdir)/Makefile.PL.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
@@ -1617,15 +1638,37 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
 
-# Define a force dependency which will always be rebuilt
-.PHONY: force
+-include $(top_builddir)/localenv
 
-# Automatically build targets defined in generator_built
-# generator_built is defined in individual Makefiles
+# Old RHEL 5 autoconf defines these, but RHEL 5 automake doesn't
+# create variables for them.  So define them here if they're not
+# defined already.
+builddir     ?= @builddir@
+abs_builddir ?= @abs_builddir@
+srcdir       ?= @srcdir@
+abs_srcdir   ?= @abs_srcdir@
+
+# Individual Makefile.am's should define generator_built if that
+# subdirectory contains any files which are built by the generator.
+# Set generator_built to the list of those files.
+
 $(generator_built): $(top_builddir)/generator/stamp-generator
-$(top_builddir)/generator/stamp-generator: force
-	! test -f $(top_builddir)/generator/Makefile || \
-	  $(MAKE) -C $(top_builddir)/generator stamp-generator
+
+$(top_builddir)/generator/stamp-generator: $(top_builddir)/generator/generator
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator stamp-generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $(generator_built)"; \
+	fi
+
+# If this file doesn't exist, just print a warning and continue.
+# During 'make distclean' we can end up deleting this file.
+$(top_builddir)/generator/generator:
+	@if test -f $(top_builddir)/generator/Makefile; then \
+	  $(MAKE) -C $(top_builddir)/generator generator; \
+	else \
+	  echo "warning: Run 'make' at the top level to build $@"; \
+	fi
 
 # Interfacing automake and ExtUtils::MakeMaker known to be
 # a nightmare, news at 11.
@@ -1644,20 +1687,11 @@ $(top_builddir)/generator/stamp-generator: force
 @HAVE_PERL_TRUE@$(TESTS): $(test_prereq)
 
 @HAVE_PERL_TRUE@all: Makefile-pl src_deps
-@HAVE_PERL_TRUE@	$(MAKE) -C $(srcdir) -f $(abs_builddir)/Makefile-pl \
-@HAVE_PERL_TRUE@		INST_ARCHLIB=$(abs_builddir)/blib/arch \
-@HAVE_PERL_TRUE@		INST_SCRIPT=$(abs_builddir)/blib/script \
-@HAVE_PERL_TRUE@		INST_BIN=$(abs_builddir)/blib/bin \
-@HAVE_PERL_TRUE@		INST_LIB=$(abs_builddir)/blib/lib \
-@HAVE_PERL_TRUE@		INST_MAN1DIR=$(abs_builddir)/blib/man1 \
-@HAVE_PERL_TRUE@		INST_MAN3DIR=$(abs_builddir)/blib/man3 \
-@HAVE_PERL_TRUE@		TEST_FILES=$(abs_srcdir)/t/*.t
+@HAVE_PERL_TRUE@	$(MAKE) -f Makefile-pl
 
 @HAVE_PERL_TRUE@Makefile-pl: Makefile.PL
-@HAVE_PERL_TRUE@	cd $(srcdir); \
-@HAVE_PERL_TRUE@	perl $(abs_builddir)/Makefile.PL \
-@HAVE_PERL_TRUE@		INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
-@HAVE_PERL_TRUE@	sed -i 's,Makefile.PL,$(abs_builddir)/Makefile.PL,' $@
+@HAVE_PERL_TRUE@	-[ $(srcdir) != $(builddir) ] && cp -rsu $(abs_srcdir)/. $(builddir)/.
+@HAVE_PERL_TRUE@	perl Makefile.PL INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
 
 # No!  Otherwise it is deleted before the clean-local rule runs.
 #CLEANFILES = Makefile-pl
