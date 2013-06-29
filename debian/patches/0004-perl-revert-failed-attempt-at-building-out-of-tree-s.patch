@@ -4,61 +4,14 @@ Subject: perl: revert failed attempt at building out-of-tree, set PERL5LIB
  correctly for bindtests
 
 ---
- perl/Makefile.PL.in |  6 +++---
- perl/Makefile.am    | 18 ++++--------------
- run.in              |  4 ++--
- 3 files changed, 9 insertions(+), 19 deletions(-)
+ perl/Makefile.am | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/perl/Makefile.PL.in b/perl/Makefile.PL.in
-index 4f12bc0..59b00d6 100644
---- a/perl/Makefile.PL.in
-+++ b/perl/Makefile.PL.in
-@@ -19,13 +19,13 @@ use Config;
- use ExtUtils::MakeMaker;
- 
- WriteMakefile (
--    FIRST_MAKEFILE => '@abs_builddir@/Makefile-pl',
-+    FIRST_MAKEFILE => 'Makefile-pl',
- 
-     NAME => 'Sys::Guestfs',
-     VERSION => '0.@MAX_PROC_NR@',
- 
--    LIBS => '-L@abs_top_builddir@/src/.libs -lguestfs',
--    INC => '-I@abs_top_builddir@/src -I@abs_top_srcdir@/src',
-+    LIBS => '-L@top_builddir@/src/.libs -lguestfs',
-+    INC => '-I@top_builddir@/src -I@top_srcdir@/src',
-     TYPEMAPS => [ '@srcdir@/typemap' ],
-     CCFLAGS => $Config{ccflags} . ' -DGUESTFS_PRIVATE=1 @CFLAGS@',
-     );
 diff --git a/perl/Makefile.am b/perl/Makefile.am
-index 780024f..1cbdff2 100644
+index 1eb0469..1cbdff2 100644
 --- a/perl/Makefile.am
 +++ b/perl/Makefile.am
-@@ -64,20 +64,11 @@ TESTS_ENVIRONMENT = $(top_builddir)/run --test
- INSTALLDIRS = site
- 
- all: Makefile-pl src_deps
--	$(MAKE) -C $(srcdir) -f $(abs_builddir)/Makefile-pl \
--		INST_ARCHLIB=$(abs_builddir)/blib/arch \
--		INST_SCRIPT=$(abs_builddir)/blib/script \
--		INST_BIN=$(abs_builddir)/blib/bin \
--		INST_LIB=$(abs_builddir)/blib/lib \
--		INST_MAN1DIR=$(abs_builddir)/blib/man1 \
--		INST_MAN3DIR=$(abs_builddir)/blib/man3 \
--		TEST_FILES=$(abs_srcdir)/t/*.t
-+	$(MAKE) -f Makefile-pl
- 
- Makefile-pl: Makefile.PL
--	cd $(srcdir); \
--	perl $(abs_builddir)/Makefile.PL \
--		INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
--	sed -i 's,Makefile.PL,$(abs_builddir)/Makefile.PL,' $@
-+	-[ $(srcdir) != $(builddir) ] && cp -rsu $(abs_srcdir)/. $(builddir)/.
-+	perl Makefile.PL INSTALLDIRS=$(INSTALLDIRS) PREFIX=$(prefix)
- 
- # No!  Otherwise it is deleted before the clean-local rule runs.
- #CLEANFILES = Makefile-pl
-@@ -87,8 +78,7 @@ clean-local:
+@@ -78,8 +78,7 @@ clean-local:
  	rm -f Makefile-pl
  
  install-data-hook:
@@ -67,20 +20,4 @@ index 780024f..1cbdff2 100644
 +	$(MAKE) -f Makefile-pl DESTDIR=$(DESTDIR) install
  
  endif
- 
-diff --git a/run.in b/run.in
-index 5bc9459..686bfe5 100755
---- a/run.in
-+++ b/run.in
-@@ -90,9 +90,9 @@ export LD_LIBRARY_PATH
- 
- # For Perl.
- if [ -z "$PERL5LIB" ]; then
--    PERL5LIB="$s/perl/lib:$b/perl/blib/lib:$b/perl/blib/arch"
-+    PERL5LIB="$b/perl/lib:$b/perl/blib/lib:$b/perl/blib/arch"
- else
--    PERL5LIB="$s/perl/lib:$b/perl/blib/lib:$b/perl/blib/arch:$PERL5LIB"
-+    PERL5LIB="$b/perl/lib:$b/perl/blib/lib:$b/perl/blib/arch:$PERL5LIB"
- fi
- export PERL5LIB
  

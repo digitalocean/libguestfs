@@ -8,10 +8,10 @@ Subject: Disable gnulib tests by default
  2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index 284eb63..c8d49b4 100644
+index 34ca59d..79a4b05 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -23,7 +23,10 @@ include $(top_srcdir)/common-rules.mk
+@@ -20,7 +20,10 @@ include $(top_srcdir)/common-rules.mk
  ACLOCAL_AMFLAGS = -I m4
  
  # Gnulib - must be built and tested before the library.
@@ -24,10 +24,10 @@ index 284eb63..c8d49b4 100644
  # Basic source for the library.
  SUBDIRS += tests/data generator src examples po
 diff --git a/configure.ac b/configure.ac
-index ae0b289..b4ce7b7 100644
+index eca0e25..b558d77 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1538,6 +1538,15 @@ PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [
+@@ -1531,6 +1531,15 @@ PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [
  ])
  AM_CONDITIONAL([HAVE_BASH_COMPLETION],[test "x$bash_completion" = "xyes"])
  

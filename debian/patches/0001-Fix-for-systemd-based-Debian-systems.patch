@@ -3,14 +3,14 @@ Date: Thu, 11 Aug 2011 00:24:11 +0200
 Subject: Fix for systemd-based Debian systems
 
 ---
- appliance/make.sh.in |    3 +++
+ appliance/make.sh.in | 3 +++
  1 file changed, 3 insertions(+)
 
 diff --git a/appliance/make.sh.in b/appliance/make.sh.in
-index 50c60f1..e198b05 100755
+index 8ba1fa4..81ba395 100755
 --- a/appliance/make.sh.in
 +++ b/appliance/make.sh.in
-@@ -65,4 +65,7 @@ if grep -q /usr/share/augeas/lenses supermin.d/hostfiles-t; then
+@@ -64,4 +64,7 @@ if grep -q /usr/share/augeas/lenses supermin.d/hostfiles-t; then
      echo "/usr/share/augeas/lenses/*.aug" >> supermin.d/hostfiles-t
  fi
  

@@ -4,15 +4,15 @@ Subject: Fix guestfs, supermin appliance path
 
 The supermin appliance files are not installed to the multiarch lib directory.
 ---
- appliance/Makefile.am |    4 ++--
- src/Makefile.am       |    2 +-
+ appliance/Makefile.am | 4 ++--
+ src/Makefile.am       | 2 +-
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/appliance/Makefile.am b/appliance/Makefile.am
-index 90df421..c3b140d 100644
+index 54d3379..13a9f6c 100644
 --- a/appliance/Makefile.am
 +++ b/appliance/Makefile.am
-@@ -30,8 +30,8 @@ EXTRA_DIST = \
+@@ -27,8 +27,8 @@ EXTRA_DIST = \
  	make.sh.in \
  	packagelist.in
  
@@ -24,7 +24,7 @@ index 90df421..c3b140d 100644
  fs_DATA =
  superminfs_DATA = \
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 1aa028f..43c1186 100644
+index 57cdf34..f066bee 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -120,7 +120,7 @@ libguestfs_la_SOURCES = \
