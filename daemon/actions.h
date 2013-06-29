@@ -175,6 +175,7 @@
 #define GUESTFS_MKE2FS_UNINITBG_BITMASK (UINT64_C(1)<<37)
 #define GUESTFS_MKTEMP_SUFFIX_BITMASK (UINT64_C(1)<<0)
 #define GUESTFS_SYSLINUX_DIRECTORY_BITMASK (UINT64_C(1)<<0)
+#define GUESTFS_REMOUNT_RW_BITMASK (UINT64_C(1)<<0)
 extern int do_mount (const mountable_t *mountable, const char *mountpoint);
 extern int do_sync (void);
 extern int do_touch (const char *path);
@@ -569,5 +570,6 @@ extern int do_feature_available (char *const *groups);
 extern int do_syslinux (const char *device, const char *directory);
 extern int do_extlinux (const char *directory);
 extern int do_cp_r (const char *src, const char *dest);
+extern int do_remount (const char *mountpoint, int rw);
 
 #endif /* GUESTFSD_ACTIONS_H */

@@ -1,3 +1,138 @@
+2013-06-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Updated release versions which fix CVE-2013-2124.
+
+	inspection: Add a fuzz-test of inspection.
+
+2013-06-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	perl: Add rules + environment variables so Perl code can be valgrinded.
+
+	inspection: Use guestfs_is_{dir,file} in preference to guestfs_exists.
+	Where possible, using this is more accurate, and it helps when
+	trying to do fuzz testing.
+
+	events: Avoid event handler limit if program allocates and deallocates handlers.
+
+	New API: remount: Allow rw flag to be adjusted on mounted filesystem.
+
+2013-06-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	proto: Fix for rare FileIn hangs. (RHBZ#969845).
+	Yet another protocol bug!
+
+	If the daemon cancels, then the library should send a cancellation
+	chunk.  It normally does this during the loop where it is uploading a
+	file.  However due to an oversight or possibly a regression when we
+	modularized the socket code, the library did not send a cancellation
+	chunk if the daemon cancelled just before the end of file was sent.
+
+	This commit fixes this.
+
+2013-06-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Correct fix for segfault if /etc/SuSE-release is an empty file.
+	The test was the wrong way round.
+
+	See: CVE-2013-2124.
+
+	This fixes commit ae8bb84ecd46d7b6ef557a87725923ac8d09dce0.
+
+2013-05-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	lib: Don't call directly from one guestfs__* function to another.
+	The public-facing functions like 'guestfs_*' are implemented as
+	wrappers around implementation functions like 'guestfs__*' (for
+	library-side functions only).
+
+	Don't call from one 'guestfs__*' function to another.  It prevents
+	ENTER events from being caught, especially where a deprecated function
+	calls another implementation.
+
+	Most code was not doing this, but there were still some places left
+	where it was done.
+
+2013-05-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	events: Use bool for flag.
+
+	events: Refactor code to make the common path clear.
+
+2013-05-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Don't segfault if /etc/SuSE-release is an empty file.
+	Related to CVE-2013-2124.
+
+	Thanks: Olaf Hering.
+
+2013-05-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/http: Add a test of HTTP protocol.
+	Disabled for various reasons.  See comment in Makefile.am.
+
+	release notes: Recompile so that long URLs aren't broken in text output.
+
+2013-05-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	podwrapper: Set Text::Wrap::huge property to "overflow".
+	This stops long URLs from being broken in the text output mode.
+
+	See:
+	https://www.redhat.com/archives/libguestfs/2013-May/thread.html#00088
+
+2013-05-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	security: Centralize CVE information in one place (in guestfs(3)).
+
+	security: Add documentation for CVE-2013-2124.
+
+2013-05-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Add sensible disk optimizations.
+	The timeout lets us read remote images without timing out.
+
+	The noop scheduler lets the host do scheduling.  This generally makes
+	sense for mixed workloads because the host has a global view of the
+	system, and often has more compute power too.
+
+2013-05-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Remove dead code which (if not dead) would have set disk scheduler to noop.
+
+2013-05-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	appliance: Don't set 'rotational' on virtio-blk devices.
+	virtio-blk is obsolete so we don't need to bother optimizing it.
+	People should use virtio-scsi instead.
+
+	Also virtio-blk should choose the optimal settings itself.
+
+	This was originally added to fix this bug:
+	https://bugzilla.redhat.com/show_bug.cgi?id=509383
+
+2013-05-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Set builddir for old RHEL 5 which didn't have this.
+
+	generator: Set abs_srcdir for old RHEL 5 which didn't have this.
+
+	generator: Set abs_builddir for old RHEL 5 which didn't have this.
+
+2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add 'make check-release' rule.
+	This is a subset of tests which will be required to pass before a
+	tarball can be released by the maintainer.
+
+	tests: Add new 'make check-all' rule.
+	This runs all of the check* rules.  Since this includes 'make check',
+	'make check-all' is not quite equivalent to the old 'make extra-tests'
+	which was removed in the previous commit.
+
+	tests: Remove 'make extra-tests' rule.
+
+	Version 1.23.1.
+
 2013-05-28  Richard W.M. Jones  <rjones@redhat.com>
 
 	inspection: Fix double-free when certain guest files are empty.

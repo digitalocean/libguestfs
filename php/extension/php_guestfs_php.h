@@ -425,6 +425,7 @@ PHP_FUNCTION (guestfs_readdir);
 PHP_FUNCTION (guestfs_readlink);
 PHP_FUNCTION (guestfs_readlinklist);
 PHP_FUNCTION (guestfs_realpath);
+PHP_FUNCTION (guestfs_remount);
 PHP_FUNCTION (guestfs_remove_drive);
 PHP_FUNCTION (guestfs_removexattr);
 PHP_FUNCTION (guestfs_rename);

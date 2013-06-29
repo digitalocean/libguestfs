@@ -13641,3 +13641,27 @@ Java_com_redhat_et_libguestfs_GuestFS__1cp_1r  (JNIEnv *env, jobject obj, jlong 
   }
 }
 
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1remount  (JNIEnv *env, jobject obj, jlong jg, jstring jmountpoint, jlong joptargs_bitmask, jboolean jrw)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *mountpoint;
+  struct guestfs_remount_argv optargs_s;
+  const struct guestfs_remount_argv *optargs = &optargs_s;
+
+  mountpoint = (*env)->GetStringUTFChars (env, jmountpoint, NULL);
+
+  optargs_s.rw = jrw;
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_remount_argv (g, mountpoint, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+

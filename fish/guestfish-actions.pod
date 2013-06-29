@@ -5801,6 +5801,19 @@ list a directory contents without making many round-trips.
 Return the canonicalized absolute pathname of C<path>.  The
 returned path has no C<.>, C<..> or symbolic link path elements.
 
+=head2 remount
+
+ remount mountpoint [rw:true|false]
+
+This call allows you to change the C<rw> (readonly/read-write)
+flag on an already mounted filesystem at C<mountpoint>,
+converting a readonly filesystem to be read-write, or vice-versa.
+
+Note that at the moment you must supply the "optional" C<rw>
+parameter.  In future we may allow other flags to be adjusted.
+
+This command has one or more optional arguments.  See L</OPTIONAL ARGUMENTS>.
+
 =head2 remove-drive
 
  remove-drive label

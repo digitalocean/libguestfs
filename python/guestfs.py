@@ -8604,3 +8604,17 @@ class GuestFS(object):
         r = libguestfsmod.cp_r (self._o, src, dest)
         return r
 
+    def remount (self, mountpoint, rw=None):
+        """This call allows you to change the "rw"
+        (readonly/read-write) flag on an already mounted
+        filesystem at "mountpoint", converting a readonly
+        filesystem to be read-write, or vice-versa.
+        
+        Note that at the moment you must supply the "optional"
+        "rw" parameter. In future we may allow other flags to be
+        adjusted.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.remount (self._o, mountpoint, rw)
+        return r
+

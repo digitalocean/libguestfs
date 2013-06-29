@@ -423,6 +423,7 @@ static const char *const commands[] = {
   "readlink",
   "readlinklist",
   "realpath",
+  "remount",
   "remove-drive",
   "removexattr",
   "rename",

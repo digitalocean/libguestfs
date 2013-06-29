@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsRemount</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsSyslinux.html" title="GuestfsSyslinux">
+<link rel="next" href="object-tree.html" title="Object Hierarchy">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsSyslinux.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="object-tree.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsRemount.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsRemount.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsRemount.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsRemount.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsRemount"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsRemount.top_of_page"></a>GuestfsRemount</span></h2>
+<p>GuestfsRemount — An object encapsulating optional arguments for guestfs_session_remount</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsRemount.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsRemount.html#GuestfsRemount-struct" title="struct GuestfsRemount">GuestfsRemount</a>;
+struct              <a class="link" href="GuestfsRemount.html#GuestfsRemountClass" title="struct GuestfsRemountClass">GuestfsRemountClass</a>;
+<a class="link" href="GuestfsRemount.html" title="GuestfsRemount"><span class="returnvalue">GuestfsRemount</span></a> *    <a class="link" href="GuestfsRemount.html#guestfs-remount-new" title="guestfs_remount_new ()">guestfs_remount_new</a>                 (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsRemount.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsRemount
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsRemount.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsRemount.html#GuestfsRemount--rw" title='The "rw" property'>rw</a>"                       <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsRemount.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_remount
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsRemount.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsRemount-struct"></a><h3>struct GuestfsRemount</h3>
+<pre class="programlisting">struct GuestfsRemount;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_remount.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsRemountClass"></a><h3>struct GuestfsRemountClass</h3>
+<pre class="programlisting">struct GuestfsRemountClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsRemount.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsRemountClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsRemountClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-remount-new"></a><h3>guestfs_remount_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsRemount.html" title="GuestfsRemount"><span class="returnvalue">GuestfsRemount</span></a> *    guestfs_remount_new                 (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsRemount object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsRemount object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsRemount.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsRemount--rw"></a><h3>The <code class="literal">"rw"</code> property</h3>
+<pre class="programlisting">  "rw"                       <a class="link" href="GuestfsTristate.html" title="GuestfsTristate"><span class="type">GuestfsTristate</span></a>       : Read / Write / Construct</pre>
+<p>
+A boolean.
+</p>
+<p>Default value: GUESTFS_TRISTATE_NONE</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -497,6 +497,23 @@ guestfs_ntfsresize_get_type
 </SECTION>
 
 <SECTION>
+<FILE>optargs-remount</FILE>
+<TITLE>GuestfsRemount</TITLE>
+GuestfsRemount
+GuestfsRemountClass
+guestfs_remount_new
+<SUBSECTION Standard>
+GUESTFS_IS_REMOUNT
+GUESTFS_IS_REMOUNT_CLASS
+GUESTFS_REMOUNT
+GUESTFS_REMOUNT_CLASS
+GUESTFS_REMOUNT_GET_CLASS
+GUESTFS_TYPE_REMOUNT
+GuestfsRemountPrivate
+guestfs_remount_get_type
+</SECTION>
+
+<SECTION>
 <FILE>optargs-rsync</FILE>
 <TITLE>GuestfsRsync</TITLE>
 GuestfsRsync
@@ -1114,6 +1131,7 @@ guestfs_session_readdir
 guestfs_session_readlink
 guestfs_session_readlinklist
 guestfs_session_realpath
+guestfs_session_remount
 guestfs_session_remove_drive
 guestfs_session_removexattr
 guestfs_session_rename

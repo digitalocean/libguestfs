@@ -532,6 +532,7 @@ static int run_feature_available (const char *cmd, size_t argc, char *argv[]);
 static int run_syslinux (const char *cmd, size_t argc, char *argv[]);
 static int run_extlinux (const char *cmd, size_t argc, char *argv[]);
 static int run_cp_r (const char *cmd, size_t argc, char *argv[]);
+static int run_remount (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -3581,6 +3582,12 @@ struct command_entry cp_r_cmd_entry = {
   .run = run_cp_r
 };
 
+struct command_entry remount_cmd_entry = {
+  .name = "remount",
+  .help = "NAME\n    remount - remount a filesystem with different options\n\nSYNOPSIS\n     remount mountpoint [rw:true|false]\n\nDESCRIPTION\n    This call allows you to change the \"rw\" (readonly/read-write) flag on an\n    already mounted filesystem at \"mountpoint\", converting a readonly\n    filesystem to be read-write, or vice-versa.\n\n    Note that at the moment you must supply the \"optional\" \"rw\" parameter.\n    In future we may allow other flags to be adjusted.\n\n",
+  .run = run_remount
+};
+
 void
 list_commands (void)
 {
@@ -3958,6 +3965,7 @@ list_commands (void)
   printf ("%-20s %s\n", "readlink", _("read the target of a symbolic link"));
   printf ("%-20s %s\n", "readlinklist", _("readlink on multiple files"));
   printf ("%-20s %s\n", "realpath", _("canonicalized absolute pathname"));
+  printf ("%-20s %s\n", "remount", _("remount a filesystem with different options"));
   printf ("%-20s %s\n", "remove-drive", _("remove a disk image"));
   printf ("%-20s %s\n", "removexattr", _("remove extended attribute of a file or directory"));
   printf ("%-20s %s\n", "rename", _("rename a file on the same filesystem"));
@@ -21531,6 +21539,61 @@ run_cp_r (const char *cmd, size_t argc, char *argv[])
  out_dest:
   free (src);
  out_src:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_remount (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *mountpoint;
+  struct guestfs_remount_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_remount_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 2) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  mountpoint = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (mountpoint == NULL) goto out_mountpoint;
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "rw:")) {
+      switch (is_true (&argv[i][3])) {
+        case -1: goto out;
+        case 0:  optargs_s.rw = 0; break;
+        default: optargs_s.rw = 1;
+      }
+      this_mask = GUESTFS_REMOUNT_RW_BITMASK;
+      this_arg = "rw";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_remount_argv (g, mountpoint, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (mountpoint);
+ out_mountpoint:
  out_noargs:
   return ret;
 }

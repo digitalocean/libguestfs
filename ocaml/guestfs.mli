@@ -1575,6 +1575,9 @@ val readlinklist : t -> string -> string array -> string array
 val realpath : t -> string -> string
 (** canonicalized absolute pathname *)
 
+val remount : t -> ?rw:bool -> string -> unit
+(** remount a filesystem with different options *)
+
 val remove_drive : t -> string -> unit
 (** remove a disk image *)
 
@@ -2453,6 +2456,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method readlink : string -> string
   method readlinklist : string -> string array -> string array
   method realpath : string -> string
+  method remount : ?rw:bool -> string -> unit
   method remove_drive : string -> unit
   method removexattr : string -> string -> unit
   method rename : string -> string -> unit

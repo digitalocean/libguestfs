@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsRemount
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsRemount ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsRemount:rw ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsRemountClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_remount_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

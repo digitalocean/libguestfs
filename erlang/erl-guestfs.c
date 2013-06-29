@@ -7514,6 +7514,37 @@ run_realpath (ETERM *message)
 }
 
 static ETERM *
+run_remount (ETERM *message)
+{
+  CLEANUP_FREE char *mountpoint = erl_iolist_to_string (ARG (0));
+
+  struct guestfs_remount_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_remount_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "rw")) {
+      optargs_s.bitmask |= GUESTFS_REMOUNT_RW_BITMASK;
+      optargs_s.rw = get_bool (hd_value);
+    }
+    else
+      return unknown_optarg ("remount", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_remount_argv (g, mountpoint, optargs);
+  if (r == -1)
+    return make_error ("remount");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_remove_drive (ETERM *message)
 {
   CLEANUP_FREE char *label = erl_iolist_to_string (ARG (0));
@@ -10588,6 +10619,8 @@ dispatch (ETERM *message)
     return run_readlinklist (message);
   else if (atom_equals (fun, "realpath"))
     return run_realpath (message);
+  else if (atom_equals (fun, "remount"))
+    return run_remount (message);
   else if (atom_equals (fun, "remove_drive"))
     return run_remove_drive (message);
   else if (atom_equals (fun, "removexattr"))

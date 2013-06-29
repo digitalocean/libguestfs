@@ -4227,6 +4227,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1extlinux
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1cp_1r
   (JNIEnv *, jobject, jlong, jstring, jstring);
 
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _remount
+ * Signature: (JLjava/lang/String;JZ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1remount
+  (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

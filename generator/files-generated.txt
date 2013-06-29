@@ -50,6 +50,7 @@ gobject/include/guestfs-gobject/optargs-mount_local.h
 gobject/include/guestfs-gobject/optargs-ntfsclone_out.h
 gobject/include/guestfs-gobject/optargs-ntfsfix.h
 gobject/include/guestfs-gobject/optargs-ntfsresize.h
+gobject/include/guestfs-gobject/optargs-remount.h
 gobject/include/guestfs-gobject/optargs-rsync.h
 gobject/include/guestfs-gobject/optargs-rsync_in.h
 gobject/include/guestfs-gobject/optargs-rsync_out.h
@@ -114,6 +115,7 @@ gobject/src/optargs-mount_local.c
 gobject/src/optargs-ntfsclone_out.c
 gobject/src/optargs-ntfsfix.c
 gobject/src/optargs-ntfsresize.c
+gobject/src/optargs-remount.c
 gobject/src/optargs-rsync.c
 gobject/src/optargs-rsync_in.c
 gobject/src/optargs-rsync_out.c

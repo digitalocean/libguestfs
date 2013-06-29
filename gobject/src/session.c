@@ -24076,3 +24076,57 @@ guestfs_session_cp_r(GuestfsSession *session, const gchar *src, const gchar *des
 
   return TRUE;
 }
+
+/**
+ * guestfs_session_remount:
+ * @session: (transfer none): A GuestfsSession object
+ * @mountpoint: (transfer none) (type filename):
+ * @optargs: (transfer none) (allow-none): a GuestfsRemount containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * remount a filesystem with different options
+ *
+ * This call allows you to change the @rw (readonly/read-write) flag on an
+ * already mounted filesystem at @mountpoint, converting a readonly
+ * filesystem to be read-write, or vice-versa.
+ * 
+ * Note that at the moment you must supply the "optional" @rw parameter. In
+ * future we may allow other flags to be adjusted.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_remount(GuestfsSession *session, const gchar *mountpoint, GuestfsRemount *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "remount");
+    return FALSE;
+  }
+
+  struct guestfs_remount_argv argv;
+  struct guestfs_remount_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue rw_v = {0, };
+    g_value_init(&rw_v, GUESTFS_TYPE_TRISTATE);
+    g_object_get_property(G_OBJECT(optargs), "rw", &rw_v);
+    GuestfsTristate rw = g_value_get_enum(&rw_v);
+    if (rw != GUESTFS_TRISTATE_NONE) {
+      argv.bitmask |= GUESTFS_REMOUNT_RW_BITMASK;
+      argv.rw = rw;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_remount_argv (g, mountpoint, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}

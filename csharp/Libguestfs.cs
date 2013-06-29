@@ -6071,6 +6071,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_remount_argv (IntPtr h, [In] string mountpoint, void *);
+
+    /// <summary>
+    /// remount a filesystem with different options
+    /// </summary>
+    public void remount (string mountpoint)
+    {
+      int r;
+      r = guestfs_remount_argv (_handle, mountpoint, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_remove_drive (IntPtr h, [In] string label);
 
     /// <summary>
