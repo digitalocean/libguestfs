@@ -190,6 +190,13 @@ guest.
 
 RHN システム ID を削除します。
 
+=head2 B<rpm-db> *
+
+Remove host-specific RPM database files.
+
+Remove host-specific RPM database files and locks.  RPM will recreate these
+files automatically if needed.
+
 =head2 B<samba-db-log> *
 
 Samba のデータベースおよびログファイルを削除します。

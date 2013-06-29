@@ -598,11 +598,11 @@ let mark_partition_for_resize ~option ?(force = false) p newsize =
           error (f_"%s: This partition has unknown content which might be damaged by shrinking it.  If you want to shrink this partition, you need to use the '--resize-force' option, but that could destroy any data on this partition.  (This error came from '%s' option on the command line.)")
             name option
       | ContentPV size when size > newsize ->
-          error (f_"%s: This partition has contains an LVM physical volume which will be damaged by shrinking it below %Ld bytes (user asked to shrink it to %Ld bytes).  If you want to shrink this partition, you need to use the '--resize-force' option, but that could destroy any data on this partition.  (This error came from '%s' option on the command line.)")
+          error (f_"%s: This partition contains an LVM physical volume which will be damaged by shrinking it below %Ld bytes (user asked to shrink it to %Ld bytes).  If you want to shrink this partition, you need to use the '--resize-force' option, but that could destroy any data on this partition.  (This error came from '%s' option on the command line.)")
             name size newsize option
       | ContentPV _ -> ()
       | ContentFS (fstype, size) when size > newsize ->
-          error (f_"%s: This partition has contains a %s filesystem which will be damaged by shrinking it below %Ld bytes (user asked to shrink it to %Ld bytes).  If you want to shrink this partition, you need to use the '--resize-force' option, but that could destroy any data on this partition.  (This error came from '%s' option on the command line.)")
+          error (f_"%s: This partition contains a %s filesystem which will be damaged by shrinking it below %Ld bytes (user asked to shrink it to %Ld bytes).  If you want to shrink this partition, you need to use the '--resize-force' option, but that could destroy any data on this partition.  (This error came from '%s' option on the command line.)")
             name fstype size newsize option
       | ContentFS _ -> ()
       | ContentExtendedPartition ->
@@ -647,15 +647,34 @@ let () =
  * a surplus, if it is < 0 then it's a deficit.
  *)
 let calculate_surplus () =
-  (* We need some overhead for partitioning.  Worst case would be for
-   * EFI partitioning + massive per-partition alignment.
-   *)
-  let nr_partitions = List.length partitions in
-  let overhead = (Int64.of_int sectsize) *^ (
-    2L *^ 64L +^                                 (* GPT start and end *)
-    (alignment *^ (Int64.of_int (nr_partitions + 1))) (* Maximum alignment *)
-  ) +^
-  (Int64.of_int (max_bootloader - 64 * 512)) in  (* Bootloader *)
+  (* We need some overhead for partitioning. *)
+  let overhead =
+    let maxl64 = List.fold_left max 0L in
+
+    let nr_partitions = List.length partitions in
+
+    let gpt_start_sects = 64L in
+    let gpt_end_sects = gpt_start_sects in
+
+    let first_part_start_sects =
+      match partitions with
+      | { p_part = { G.part_start = start }} :: _ ->
+        start /^ Int64.of_int sectsize
+      | [] -> 0L in
+
+    let max_bootloader_sects = Int64.of_int max_bootloader /^ 512L in
+
+    (* Size of the unpartitioned space before the first partition. *)
+    let start_overhead_sects =
+      maxl64 [gpt_start_sects; max_bootloader_sects; first_part_start_sects] in
+
+    (* Maximum space lost because of alignment of partitions. *)
+    let alignment_sects = alignment *^ Int64.of_int (nr_partitions + 1) in
+
+    (* Add up the total max. overhead. *)
+    let overhead_sects =
+      start_overhead_sects +^ alignment_sects +^ gpt_end_sects in
+    Int64.of_int sectsize *^ overhead_sects in
 
   let required = List.fold_left (
     fun total p ->
@@ -667,7 +686,13 @@ let calculate_surplus () =
       total +^ newsize
   ) 0L partitions in
 
-  outsize -^ (required +^ overhead)
+  let surplus = outsize -^ (required +^ overhead) in
+
+  if debug then
+    eprintf "calculate surplus: outsize=%Ld required=%Ld overhead=%Ld surplus=%Ld\n%!"
+      outsize required overhead surplus;
+
+  surplus
 
 (* Handle --expand and --shrink options. *)
 let () =
@@ -952,6 +977,10 @@ let partitions =
          let end_ = start +^ size in
          let next = roundup64 end_ alignment in
 
+         if debug then
+           eprintf "target partition %d: ignore or copy: start=%Ld end=%Ld\n%!"
+             partnum start (end_ -^ 1L);
+
          { p with p_target_start = start; p_target_end = end_ -^ 1L;
            p_target_partnum = partnum } :: loop (partnum+1) next ps
 
@@ -961,6 +990,10 @@ let partitions =
          (* Start of next partition + alignment. *)
          let next = start +^ size in
          let next = roundup64 next alignment in
+
+         if debug then
+           eprintf "target partition %d: resize: newsize=%Ld start=%Ld end=%Ld\n%!"
+             partnum newsize start (next -^ 1L);
 
          { p with p_target_start = start; p_target_end = next -^ 1L;
            p_target_partnum = partnum } :: loop (partnum+1) next ps

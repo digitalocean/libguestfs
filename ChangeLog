@@ -1,3 +1,55 @@
+2013-06-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Verify ext2/3/4 filesystem name before passing to mke2fs (RHBZ#978302).
+	Add a utility function (fstype_is_extfs) to match ext2/3/4 filesystem
+	names.  This is used in a couple of places.
+
+	When passing the mke2fs -t parameter, verify that the request is for
+	an ext2/3/4 filesystem.  Previously we did not check this, and neither
+	did mke2fs when the -F flag was also used.
+
+2013-06-24  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: New operation to remove RPM database files.
+	See:
+	https://lists.fedoraproject.org/pipermail/devel/2013-June/184389.html
+
+2013-06-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-resize: Add notes about Windows and disk consistency (RHBZ#975753).
+	Also group the Windows-related notes together.
+
+2013-06-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-resize: Take into account large start offset of the first partition when calculating overhead (RHBZ#974904).
+	Since we don't usually move the first partition, if the first
+	partition has an unusually large offset from the start of the disk,
+	then the unpartitioned space in front of that partition counts as
+	partitioning overhead.  However the previous surplus calculation was
+	not taking that into account.
+
+	This was a problem for certain Ubuntu images which are partitioned
+	with an 8 MB gap before the first partition.
+
+	Thanks: David Hart.
+
+2013-06-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	virt-resize: Add some more debugging messages.
+	These are only printed when using the --debug flag and are
+	helpful for diagnosing problems.
+
+	virt-resize: Fix minor typo in error message.
+
+	tests: Add a regression test for iface launch hangs (RHBZ#975797).
+
+	launch: direct: Calculate appliance root correctly when iface drives are added (RHBZ#975797).
+	This also changes guestfs___appliance_command_line to allow
+	appliance_dev parameter to be NULL.  Previously a bogus root=
+	parameter could be passed.
+
+	tests/regressions: Remove duplicate test skip code.
+
 2013-06-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.5.

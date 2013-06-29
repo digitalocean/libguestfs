@@ -1,6 +1,6 @@
 #!/bin/bash -
 # libguestfs
-# Copyright (C) 2011 Red Hat Inc.
+# Copyright (C) 2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=690819
-# mkfs fails creating a filesytem on a disk device when using a disk
-# with 'ide' interface
+# Regression test for:
+# https://bugzilla.redhat.com/show_bug.cgi?id=975797
+# Ensure the appliance doesn't hang when using the 'iface' parameter.
 
 set -e
 export LANG=C
@@ -34,15 +34,24 @@ if [[ "$backend" =~ ^libvirt ]]; then
     exit 77
 fi
 
-rm -f test.img
+rm -f test1.img test2.img test3.img
 
-../../fish/guestfish sparse test.img 100M
+# The timeout utility was not available in RHEL 5.
+if timeout --help >/dev/null 2>&1; then
+    timeout="timeout 600"
+fi
 
-../../fish/guestfish <<EOF
-add-drive-with-if test.img ide
+# Use real disk images here since the code for adding /dev/null may
+# take shortcuts.
+truncate -s 1G test1.img
+truncate -s 1G test2.img
+truncate -s 1G test3.img
+
+$timeout ../../fish/guestfish <<EOF
+add-drive test1.img iface:virtio
+add-drive test2.img iface:ide
+add-drive test3.img
 run
-mkfs ext3 /dev/sda
-mount /dev/sda /
 EOF
 
-rm -f test.img
+rm test1.img test2.img test3.img
