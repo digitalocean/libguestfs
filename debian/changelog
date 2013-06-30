@@ -1,3 +1,12 @@
+libguestfs (1:1.23.6-1) experimental; urgency=low
+
+  * New upstream development version
+  * Rebased patch queue
+  * Since 1.23.5, Augeas >= 1.0.0 is required.
+  * Added symbols file for libguestfs0
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 30 Jun 2013 17:14:08 +0200
+
 libguestfs (1:1.22.3-1) unstable; urgency=low
 
   * New upstream version
