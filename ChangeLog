@@ -1,3 +1,22 @@
+2013-07-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.7.
+
+	Add Go (language) bindings.
+
+2013-07-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	java: Fix comment in test script.
+
+2013-06-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: python: RHEL 6 doesn't have sysconfig, use distutils.sysconfig instead.
+	This works on recent Python as well.
+
+2013-06-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.6.
+
 2013-06-26  Richard W.M. Jones  <rjones@redhat.com>
 
 	daemon: Verify ext2/3/4 filesystem name before passing to mke2fs (RHBZ#978302).

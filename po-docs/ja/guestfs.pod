@@ -1008,6 +1008,23 @@ L<guestfs-erlang(3)> 参照。
 Experimental GObject bindings (with GObject Introspection support) are
 available.  See the C<gobject> directory in the source.
 
+=item B<Go>
+
+Experimental Go bindings are available.  See the C<golang> directory in the
+source.  These are incomplete:
+
+=over 4
+
+=item *
+
+No support for L</EVENTS>.
+
+=item *
+
+UUIDs cannot be returned in structures.
+
+=back
+
 =item B<Haskell>
 
 This language binding is working but incomplete:
@@ -3951,6 +3968,8 @@ Perl で書かれたコマンドラインツール (L<virt-win-reg(1)> および
 =item C<erlang>
 
 =item C<gobject>
+
+=item C<golang>
 
 =item C<haskell>
 
