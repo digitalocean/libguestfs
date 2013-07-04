@@ -129,18 +129,19 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @HAVE_ERLANG_TRUE@am__append_10 = erlang erlang/examples
 @HAVE_LUA_TRUE@am__append_11 = lua lua/examples
 @HAVE_GOBJECT_TRUE@am__append_12 = gobject
+@HAVE_GOLANG_TRUE@am__append_13 = golang
 
 # OCaml tools.
-@HAVE_OCAML_TRUE@am__append_13 = resize sparsify sysprep
+@HAVE_OCAML_TRUE@am__append_14 = resize sparsify sysprep
 
 # Perl tools.
-@HAVE_TOOLS_TRUE@am__append_14 = tools
+@HAVE_TOOLS_TRUE@am__append_15 = tools
 
 # guestmount
-@HAVE_FUSE_TRUE@am__append_15 = fuse
+@HAVE_FUSE_TRUE@am__append_16 = fuse
 
 # po-docs must come after tools, inspector.
-@HAVE_PO4A_TRUE@am__append_16 = po-docs
+@HAVE_PO4A_TRUE@am__append_17 = po-docs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/00gnulib.m4 \
@@ -352,7 +353,7 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	align cat df edit format inspector rescue bash perl \
 	perl/examples ocaml ocaml/examples python python/examples ruby \
 	ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject csharp resize \
+	erlang/examples lua lua/examples gobject golang csharp resize \
 	sparsify sysprep tools fuse po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
@@ -763,8 +764,12 @@ GNULIB_WMEMMOVE = @GNULIB_WMEMMOVE@
 GNULIB_WMEMSET = @GNULIB_WMEMSET@
 GNULIB_WRITE = @GNULIB_WRITE@
 GNULIB__EXIT = @GNULIB__EXIT@
+GOARCH = @GOARCH@
 GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
+GOLANG = @GOLANG@
+GOOS = @GOOS@
+GOROOT = @GOROOT@
 GPERF = @GPERF@
 GPROF_CFLAGS = @GPROF_CFLAGS@
 GREP = @GREP@
@@ -1477,9 +1482,9 @@ SUBDIRS = gnulib/lib gnulib/tests tests/data generator src examples po \
 	cat df edit format inspector rescue bash $(am__append_3) \
 	$(am__append_4) $(am__append_5) $(am__append_6) \
 	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) $(am__append_12) csharp \
-	$(am__append_13) $(am__append_14) $(am__append_15) \
-	$(am__append_16)
+	$(am__append_10) $(am__append_11) $(am__append_12) \
+	$(am__append_13) csharp $(am__append_14) $(am__append_15) \
+	$(am__append_16) $(am__append_17)
 EXTRA_DIST = \
 	BUGS HACKING ROADMAP TODO \
 	.gitignore \

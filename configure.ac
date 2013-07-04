@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [23])
-m4_define([libguestfs_release], [6])
+m4_define([libguestfs_release], [7])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1158,8 +1158,8 @@ AS_IF([test "x$enable_python" != "xno"],[
 
         AC_MSG_CHECKING([for Python extension suffix (PEP-3149)])
         if test -z "$PYTHON_EXT_SUFFIX"; then
-            python_ext_suffix=`$PYTHON -c "import sysconfig; \
-                                         print (sysconfig.get_config_var('EXT_SUFFIX') or sysconfig.get_config_var('SO'))"`
+            python_ext_suffix=`$PYTHON -c "import distutils.sysconfig; \
+                                         print (distutils.sysconfig.get_config_var('EXT_SUFFIX') or distutils.sysconfig.get_config_var('SO'))"`
             PYTHON_EXT_SUFFIX=$python_ext_suffix
         fi
         AC_MSG_RESULT([$PYTHON_EXT_SUFFIX])
@@ -1446,6 +1446,34 @@ AS_IF([test "x$enable_lua" != "xno"],[
 ])
 AM_CONDITIONAL([HAVE_LUA],[test "x$LUA_LIBS" != "x"])
 
+dnl Golang
+AC_ARG_ENABLE([golang],
+    AS_HELP_STRING([--disable-golang], [disable Go language bindings]),
+        [],
+        [enable_golang=yes])
+AS_IF([test "x$enable_golang" != "xno"],[
+    AC_CHECK_PROG([GOLANG],[go],[go],[no])
+    AS_IF([test "x$GOLANG" != "xno"],[
+        AC_MSG_CHECKING([if $GOLANG is usable])
+        AS_IF([$GOLANG run golang/config-test.go],[
+            AC_MSG_RESULT([yes])
+
+            # Substitute some golang environment.
+            GOOS=`$GOLANG env GOOS`
+            GOARCH=`$GOLANG env GOARCH`
+            GOROOT=`$GOLANG env GOROOT`
+            AC_SUBST([GOOS])
+            AC_SUBST([GOARCH])
+            AC_SUBST([GOROOT])
+        ],[
+            AC_MSG_RESULT([no])
+            AC_MSG_WARN([golang ($GOLANG) is installed but not usable])
+            GOLANG=no
+        ])
+    ])
+],[GOLANG=no])
+AM_CONDITIONAL([HAVE_GOLANG],[test "x$GOLANG" != "xno"])
+
 dnl Check for Perl modules needed by Perl virt tools (virt-df, etc.)
 AS_IF([test "x$PERL" != "xno"],[
     missing_perl_modules=no
@@ -1588,6 +1616,7 @@ AC_CONFIG_FILES([Makefile
                  gobject/Makefile
                  gobject/docs/Makefile
                  gobject/docs/guestfs-docs.sgml
+                 golang/Makefile
                  haskell/Makefile
                  inspector/Makefile
                  java/Makefile
@@ -1687,6 +1716,8 @@ AS_ECHO_N(["Erlang bindings ..................... "])
 if test "x$HAVE_ERLANG_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["Lua bindings ........................ "])
 if test "x$HAVE_LUA_TRUE" = "x"; then echo "yes"; else echo "no"; fi
+AS_ECHO_N(["Go bindings ......................... "])
+if test "x$HAVE_GOLANG_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["gobject bindings .................... "])
 if test "x$HAVE_GOBJECT_TRUE" = "x"; then echo "yes"; else echo "no"; fi
 AS_ECHO_N(["gobject introspection ............... "])
