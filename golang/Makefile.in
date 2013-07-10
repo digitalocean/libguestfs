@@ -1365,11 +1365,13 @@ source_files = \
 	src/$(pkg)/guestfs_*_test.go
 
 generator_built = \
-	$(source_files)
+	$(source_files) \
+	bindtests.go
 
 EXTRA_DIST = \
 	$(generator_built) \
 	config-test.go \
+	run-bindtests \
 	run-tests
 
 @HAVE_GOLANG_TRUE@golangpkgdir = $(GOROOT)/pkg/$(GOOS)_$(GOARCH)/$(pkg)
@@ -1379,7 +1381,7 @@ EXTRA_DIST = \
 
 @HAVE_GOLANG_TRUE@golangsrc_DATA = $(source_files)
 @HAVE_GOLANG_TRUE@TESTS_ENVIRONMENT = pkg=$(pkg) $(top_builddir)/run $(VG) # --test
-@HAVE_GOLANG_TRUE@TESTS = run-tests
+@HAVE_GOLANG_TRUE@TESTS = run-bindtests run-tests
 CLEANFILES = *~ src/$(pkg)/*~
 all: all-am
 

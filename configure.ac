@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [23])
-m4_define([libguestfs_release], [7])
+m4_define([libguestfs_release], [8])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1455,7 +1455,7 @@ AS_IF([test "x$enable_golang" != "xno"],[
     AC_CHECK_PROG([GOLANG],[go],[go],[no])
     AS_IF([test "x$GOLANG" != "xno"],[
         AC_MSG_CHECKING([if $GOLANG is usable])
-        AS_IF([$GOLANG run golang/config-test.go],[
+        AS_IF([$GOLANG run golang/config-test.go 2>&AS_MESSAGE_LOG_FD],[
             AC_MSG_RESULT([yes])
 
             # Substitute some golang environment.
@@ -1617,6 +1617,7 @@ AC_CONFIG_FILES([Makefile
                  gobject/docs/Makefile
                  gobject/docs/guestfs-docs.sgml
                  golang/Makefile
+                 golang/examples/Makefile
                  haskell/Makefile
                  inspector/Makefile
                  java/Makefile

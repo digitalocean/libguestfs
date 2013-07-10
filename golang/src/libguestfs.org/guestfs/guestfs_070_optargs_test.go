@@ -25,33 +25,34 @@ func Test070Optargs (t *testing.T) {
 	if errno != nil {
 		t.Errorf ("could not create handle: %s", errno)
 	}
+	defer g.Close ()
 	err := g.Add_drive ("/dev/null", nil)
 	if err != nil {
 		t.Errorf ("%s", err)
 	}
 	err = g.Add_drive ("/dev/null", &OptargsAdd_drive{
-		readonly_is_set: true,
-		readonly: true,
+		Readonly_is_set: true,
+		Readonly: true,
 	})
 	if err != nil {
 		t.Errorf ("%s", err)
 	}
 	err = g.Add_drive ("/dev/null", &OptargsAdd_drive{
-		readonly_is_set: true,
-		readonly: true,
-		format_is_set: true,
-		format: "raw",
+		Readonly_is_set: true,
+		Readonly: true,
+		Format_is_set: true,
+		Format: "raw",
 	})
 	if err != nil {
 		t.Errorf ("%s", err)
 	}
 	err = g.Add_drive ("/dev/null", &OptargsAdd_drive{
-		readonly_is_set: true,
-		readonly: true,
-		format_is_set: true,
-		format: "raw",
-		iface_is_set: true,
-		iface: "virtio",
+		Readonly_is_set: true,
+		Readonly: true,
+		Format_is_set: true,
+		Format: "raw",
+		Iface_is_set: true,
+		Iface: "virtio",
 	})
 	if err != nil {
 		t.Errorf ("%s", err)

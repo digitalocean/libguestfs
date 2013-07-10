@@ -112,8 +112,8 @@ func (e *GuestfsError) String() string {
 }
 
 func get_error_from_handle (g *Guestfs, op string) *GuestfsError {
+    // NB: DO NOT try to free c_errmsg!
     c_errmsg := C.guestfs_last_error (g.g)
-    defer C.free (unsafe.Pointer (c_errmsg))
     errmsg := C.GoString (c_errmsg)
 
     errno := syscall.Errno (C.guestfs_last_errno (g.g))
@@ -270,20 +270,21 @@ func return_hashtable (argv **C.char) map[string]string {
         pr "type Optargs%s struct {\n" go_name;
         List.iter (
           fun optarg ->
-            let n = name_of_optargt optarg in
-            pr "    /* %s field is ignored unless %s_is_set == true */\n" n n;
-            pr "    %s_is_set bool\n" n;
+            let cn = String.capitalize (name_of_optargt optarg) in
+            pr "    /* %s field is ignored unless %s_is_set == true */\n"
+              cn cn;
+            pr "    %s_is_set bool\n" cn;
             match optarg with
-            | OBool n ->
-              pr "    %s bool\n" n
-            | OInt n ->
-              pr "    %s int\n" n
-            | OInt64 n ->
-              pr "    %s int64\n" n
-            | OString n ->
-              pr "    %s string\n" n
-            | OStringList n ->
-              pr "    %s []string\n" n
+            | OBool _ ->
+              pr "    %s bool\n" cn
+            | OInt _ ->
+              pr "    %s int\n" cn
+            | OInt64 _ ->
+              pr "    %s int64\n" cn
+            | OString _ ->
+              pr "    %s string\n" cn
+            | OStringList _ ->
+              pr "    %s []string\n" cn
         ) optargs;
         pr "}\n";
       );
@@ -309,9 +310,9 @@ func return_hashtable (argv **C.char) map[string]string {
           | Pathname n
           | Dev_or_Path n
           | Mountable_or_Path n
-          | OptString n
           | Key n
           | FileIn n | FileOut n -> pr "%s string" n
+          | OptString n -> pr "%s *string" n
           | StringList n
           | DeviceList n -> pr "%s []string" n
           | BufferIn n -> pr "%s []byte" n
@@ -364,12 +365,18 @@ func return_hashtable (argv **C.char) map[string]string {
         | Pathname n
         | Dev_or_Path n
         | Mountable_or_Path n
-        | OptString n
         | Key n
         | FileIn n | FileOut n ->
           pr "\n";
           pr "    c_%s := C.CString (%s)\n" n n;
           pr "    defer C.free (unsafe.Pointer (c_%s))\n" n
+        | OptString n ->
+          pr "\n";
+          pr "    var c_%s *C.char = nil\n" n;
+          pr "    if %s != nil {\n" n;
+          pr "        c_%s = C.CString (*%s)\n" n n;
+          pr "        defer C.free (unsafe.Pointer (c_%s))\n" n;
+          pr "    }\n"
         | StringList n
         | DeviceList n ->
           pr "\n";
@@ -395,21 +402,23 @@ func return_hashtable (argv **C.char) map[string]string {
         List.iter (
           fun optarg ->
             let n = name_of_optargt optarg in
-            pr "        if optargs.%s_is_set {\n" n;
+            let cn = String.capitalize n in
+            pr "        if optargs.%s_is_set {\n" cn;
             pr "            c_optargs.bitmask |= C.%s_%s_BITMASK\n"
               f.c_optarg_prefix (String.uppercase n);
             (match optarg with
-            | OBool n ->
-              pr "            if optargs.%s { c_optargs.%s = 1 } else { c_optargs.%s = 0}\n" n n n
-            | OInt n ->
-              pr "            c_optargs.%s = C.int (optargs.%s)\n" n n
-            | OInt64 n ->
-              pr "            c_optargs.%s = C.int64_t (optargs.%s)\n" n n
-            | OString n ->
-              pr "            c_optargs.%s = C.CString (optargs.%s)\n" n n;
+            | OBool _ ->
+              pr "            if optargs.%s { c_optargs.%s = 1 } else { c_optargs.%s = 0}\n" cn n n
+            | OInt _ ->
+              pr "            c_optargs.%s = C.int (optargs.%s)\n" n cn
+            | OInt64 _ ->
+              pr "            c_optargs.%s = C.int64_t (optargs.%s)\n" n cn
+            | OString _ ->
+              pr "            c_optargs.%s = C.CString (optargs.%s)\n" n cn;
               pr "            defer C.free (unsafe.Pointer (c_optargs.%s))\n" n
-            | OStringList n ->
-              pr "            c_optargs.%s = arg_string_list (optargs.%s)\n" n n;
+            | OStringList _ ->
+              pr "            c_optargs.%s = arg_string_list (optargs.%s)\n"
+                n cn;
               pr "            defer free_string_list (c_optargs.%s)\n" n
             );
             pr "        }\n"

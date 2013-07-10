@@ -1,3 +1,79 @@
+2013-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add test for aug_ls.
+
+	tests: Test aug_insert, aug_clear and aug_save.
+
+	tests: Test aug_set.
+
+	tests: Test result of aug_get properly.
+	Don't just check aug_get runs, check the resulting string is correct.
+
+2013-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: c-api: Add a cleanup function for tests.
+	By specifying a cleanup function we can ensure that Augeas and hivex
+	functions can be tested.
+
+	There is no functional change here, verified by diffing the generated
+	file tests/c-api/tests.c before and after.
+
+2013-07-06  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Fix mix up of actual/expected in error messages.
+
+	FAQ: Fix typo.
+
+	FAQ: Explain qemu-nbd & libguestfs better.
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add basic Augeas tests.
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	hivex: Add some simple tests of the hivex_* APIs.
+	These are by no means comprehensive, but cover the basics.
+
+	The 'minimal' hive comes from hivex.
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: hivex: Check that hivex_commit is passed an absolute path (RHBZ#981683).
+	You will now get an error like:
+
+	libguestfs: error: hivex_commit: do_hivex_commit: path must start with a / character
+
+2013-07-05  Richard W.M. Jones  <rjones@redhat.com>
+
+	filesystem-available: Clarify documentation for this test.
+	See:
+	https://bugzilla.redhat.com/show_bug.cgi?id=980358#c1
+
+	Thanks Bo Fan.
+
+2013-07-04  Richard W.M. Jones  <rjones@redhat.com>
+
+	golang: Add examples and guestfs-golang(3) man page.
+
+	golang: Don't try to free the result of guestfs_last_error.
+	The return value is a constant string, part of the handle, and
+	it must not be freed by the golang code.
+
+	golang: tests: Call or defer g.Close().
+
+	golang: Add bindtests.
+
+	golang: Map OptString to *string, not string (since string is not nullable).
+
+	golang: Capitalize fields in OptArgs* structs.
+	Otherwise those fields aren't accessible outside the package.  We
+	didn't catch this because all tests run in the same package.
+
+	golang: If 'go run' command fails, log the error message in config.log.
+
+	java: Fix typo in comment.
+
 2013-07-03  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.7.

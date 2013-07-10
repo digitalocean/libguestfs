@@ -21238,9 +21238,10 @@ ruby_guestfs_btrfs_fsck (int argc, VALUE *argv, VALUE gv)
  * 
  * This is mainly useful as a negative test. If this
  * returns true, it doesn't mean that a particular
- * filesystem can be mounted, since filesystems can fail
- * for other reasons such as it being a later version of
- * the filesystem, or having incompatible features.
+ * filesystem can be created or mounted, since filesystems
+ * can fail for other reasons such as it being a later
+ * version of the filesystem, or having incompatible
+ * features, or lacking the right mkfs.<*fs*> tool.
  * 
  * See also "g.available", "g.feature_available",
  * "AVAILABILITY" in guestfs(3).

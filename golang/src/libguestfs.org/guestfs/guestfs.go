@@ -98,8 +98,8 @@ func (e *GuestfsError) String() string {
 }
 
 func get_error_from_handle (g *Guestfs, op string) *GuestfsError {
+    // NB: DO NOT try to free c_errmsg!
     c_errmsg := C.guestfs_last_error (g.g)
-    defer C.free (unsafe.Pointer (c_errmsg))
     errmsg := C.GoString (c_errmsg)
 
     errno := syscall.Errno (C.guestfs_last_errno (g.g))
@@ -996,24 +996,24 @@ func (g *Guestfs) Add_cdrom (filename string) *GuestfsError {
 
 /* Struct carrying optional arguments for Add_domain */
 type OptargsAdd_domain struct {
-    /* libvirturi field is ignored unless libvirturi_is_set == true */
-    libvirturi_is_set bool
-    libvirturi string
-    /* readonly field is ignored unless readonly_is_set == true */
-    readonly_is_set bool
-    readonly bool
-    /* iface field is ignored unless iface_is_set == true */
-    iface_is_set bool
-    iface string
-    /* live field is ignored unless live_is_set == true */
-    live_is_set bool
-    live bool
-    /* allowuuid field is ignored unless allowuuid_is_set == true */
-    allowuuid_is_set bool
-    allowuuid bool
-    /* readonlydisk field is ignored unless readonlydisk_is_set == true */
-    readonlydisk_is_set bool
-    readonlydisk string
+    /* Libvirturi field is ignored unless Libvirturi_is_set == true */
+    Libvirturi_is_set bool
+    Libvirturi string
+    /* Readonly field is ignored unless Readonly_is_set == true */
+    Readonly_is_set bool
+    Readonly bool
+    /* Iface field is ignored unless Iface_is_set == true */
+    Iface_is_set bool
+    Iface string
+    /* Live field is ignored unless Live_is_set == true */
+    Live_is_set bool
+    Live bool
+    /* Allowuuid field is ignored unless Allowuuid_is_set == true */
+    Allowuuid_is_set bool
+    Allowuuid bool
+    /* Readonlydisk field is ignored unless Readonlydisk_is_set == true */
+    Readonlydisk_is_set bool
+    Readonlydisk string
 }
 
 /* add_domain : add the disk(s) from a named libvirt domain */
@@ -1026,31 +1026,31 @@ func (g *Guestfs) Add_domain (dom string, optargs *OptargsAdd_domain) (int, *Gue
     defer C.free (unsafe.Pointer (c_dom))
     c_optargs := C.struct_guestfs_add_domain_argv{}
     if optargs != nil {
-        if optargs.libvirturi_is_set {
+        if optargs.Libvirturi_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_LIBVIRTURI_BITMASK
-            c_optargs.libvirturi = C.CString (optargs.libvirturi)
+            c_optargs.libvirturi = C.CString (optargs.Libvirturi)
             defer C.free (unsafe.Pointer (c_optargs.libvirturi))
         }
-        if optargs.readonly_is_set {
+        if optargs.Readonly_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_READONLY_BITMASK
-            if optargs.readonly { c_optargs.readonly = 1 } else { c_optargs.readonly = 0}
+            if optargs.Readonly { c_optargs.readonly = 1 } else { c_optargs.readonly = 0}
         }
-        if optargs.iface_is_set {
+        if optargs.Iface_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_IFACE_BITMASK
-            c_optargs.iface = C.CString (optargs.iface)
+            c_optargs.iface = C.CString (optargs.Iface)
             defer C.free (unsafe.Pointer (c_optargs.iface))
         }
-        if optargs.live_is_set {
+        if optargs.Live_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_LIVE_BITMASK
-            if optargs.live { c_optargs.live = 1 } else { c_optargs.live = 0}
+            if optargs.Live { c_optargs.live = 1 } else { c_optargs.live = 0}
         }
-        if optargs.allowuuid_is_set {
+        if optargs.Allowuuid_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_ALLOWUUID_BITMASK
-            if optargs.allowuuid { c_optargs.allowuuid = 1 } else { c_optargs.allowuuid = 0}
+            if optargs.Allowuuid { c_optargs.allowuuid = 1 } else { c_optargs.allowuuid = 0}
         }
-        if optargs.readonlydisk_is_set {
+        if optargs.Readonlydisk_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DOMAIN_READONLYDISK_BITMASK
-            c_optargs.readonlydisk = C.CString (optargs.readonlydisk)
+            c_optargs.readonlydisk = C.CString (optargs.Readonlydisk)
             defer C.free (unsafe.Pointer (c_optargs.readonlydisk))
         }
     }
@@ -1065,33 +1065,33 @@ func (g *Guestfs) Add_domain (dom string, optargs *OptargsAdd_domain) (int, *Gue
 
 /* Struct carrying optional arguments for Add_drive */
 type OptargsAdd_drive struct {
-    /* readonly field is ignored unless readonly_is_set == true */
-    readonly_is_set bool
-    readonly bool
-    /* format field is ignored unless format_is_set == true */
-    format_is_set bool
-    format string
-    /* iface field is ignored unless iface_is_set == true */
-    iface_is_set bool
-    iface string
-    /* name field is ignored unless name_is_set == true */
-    name_is_set bool
-    name string
-    /* label field is ignored unless label_is_set == true */
-    label_is_set bool
-    label string
-    /* protocol field is ignored unless protocol_is_set == true */
-    protocol_is_set bool
-    protocol string
-    /* server field is ignored unless server_is_set == true */
-    server_is_set bool
-    server []string
-    /* username field is ignored unless username_is_set == true */
-    username_is_set bool
-    username string
-    /* secret field is ignored unless secret_is_set == true */
-    secret_is_set bool
-    secret string
+    /* Readonly field is ignored unless Readonly_is_set == true */
+    Readonly_is_set bool
+    Readonly bool
+    /* Format field is ignored unless Format_is_set == true */
+    Format_is_set bool
+    Format string
+    /* Iface field is ignored unless Iface_is_set == true */
+    Iface_is_set bool
+    Iface string
+    /* Name field is ignored unless Name_is_set == true */
+    Name_is_set bool
+    Name string
+    /* Label field is ignored unless Label_is_set == true */
+    Label_is_set bool
+    Label string
+    /* Protocol field is ignored unless Protocol_is_set == true */
+    Protocol_is_set bool
+    Protocol string
+    /* Server field is ignored unless Server_is_set == true */
+    Server_is_set bool
+    Server []string
+    /* Username field is ignored unless Username_is_set == true */
+    Username_is_set bool
+    Username string
+    /* Secret field is ignored unless Secret_is_set == true */
+    Secret_is_set bool
+    Secret string
 }
 
 /* add_drive : add an image to examine or modify */
@@ -1104,48 +1104,48 @@ func (g *Guestfs) Add_drive (filename string, optargs *OptargsAdd_drive) *Guestf
     defer C.free (unsafe.Pointer (c_filename))
     c_optargs := C.struct_guestfs_add_drive_opts_argv{}
     if optargs != nil {
-        if optargs.readonly_is_set {
+        if optargs.Readonly_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
-            if optargs.readonly { c_optargs.readonly = 1 } else { c_optargs.readonly = 0}
+            if optargs.Readonly { c_optargs.readonly = 1 } else { c_optargs.readonly = 0}
         }
-        if optargs.format_is_set {
+        if optargs.Format_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK
-            c_optargs.format = C.CString (optargs.format)
+            c_optargs.format = C.CString (optargs.Format)
             defer C.free (unsafe.Pointer (c_optargs.format))
         }
-        if optargs.iface_is_set {
+        if optargs.Iface_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK
-            c_optargs.iface = C.CString (optargs.iface)
+            c_optargs.iface = C.CString (optargs.Iface)
             defer C.free (unsafe.Pointer (c_optargs.iface))
         }
-        if optargs.name_is_set {
+        if optargs.Name_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK
-            c_optargs.name = C.CString (optargs.name)
+            c_optargs.name = C.CString (optargs.Name)
             defer C.free (unsafe.Pointer (c_optargs.name))
         }
-        if optargs.label_is_set {
+        if optargs.Label_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK
-            c_optargs.label = C.CString (optargs.label)
+            c_optargs.label = C.CString (optargs.Label)
             defer C.free (unsafe.Pointer (c_optargs.label))
         }
-        if optargs.protocol_is_set {
+        if optargs.Protocol_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK
-            c_optargs.protocol = C.CString (optargs.protocol)
+            c_optargs.protocol = C.CString (optargs.Protocol)
             defer C.free (unsafe.Pointer (c_optargs.protocol))
         }
-        if optargs.server_is_set {
+        if optargs.Server_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK
-            c_optargs.server = arg_string_list (optargs.server)
+            c_optargs.server = arg_string_list (optargs.Server)
             defer free_string_list (c_optargs.server)
         }
-        if optargs.username_is_set {
+        if optargs.Username_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK
-            c_optargs.username = C.CString (optargs.username)
+            c_optargs.username = C.CString (optargs.Username)
             defer C.free (unsafe.Pointer (c_optargs.username))
         }
-        if optargs.secret_is_set {
+        if optargs.Secret_is_set {
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK
-            c_optargs.secret = C.CString (optargs.secret)
+            c_optargs.secret = C.CString (optargs.Secret)
             defer C.free (unsafe.Pointer (c_optargs.secret))
         }
     }
@@ -1271,7 +1271,7 @@ func (g *Guestfs) Aug_defnode (name string, expr string, val string) (*IntBool, 
 }
 
 /* aug_defvar : define an Augeas variable */
-func (g *Guestfs) Aug_defvar (name string, expr string) (int, *GuestfsError) {
+func (g *Guestfs) Aug_defvar (name string, expr *string) (int, *GuestfsError) {
     if g.g == nil {
         return 0, closed_handle_error ("aug_defvar")
     }
@@ -1279,8 +1279,11 @@ func (g *Guestfs) Aug_defvar (name string, expr string) (int, *GuestfsError) {
     c_name := C.CString (name)
     defer C.free (unsafe.Pointer (c_name))
 
-    c_expr := C.CString (expr)
-    defer C.free (unsafe.Pointer (c_expr))
+    var c_expr *C.char = nil
+    if expr != nil {
+        c_expr = C.CString (*expr)
+        defer C.free (unsafe.Pointer (c_expr))
+    }
 
     r := C.guestfs_aug_defvar (g.g, c_name, c_expr)
 
@@ -1788,9 +1791,9 @@ func (g *Guestfs) Btrfs_filesystem_balance (fs string) *GuestfsError {
 
 /* Struct carrying optional arguments for Btrfs_filesystem_resize */
 type OptargsBtrfs_filesystem_resize struct {
-    /* size field is ignored unless size_is_set == true */
-    size_is_set bool
-    size int64
+    /* Size field is ignored unless Size_is_set == true */
+    Size_is_set bool
+    Size int64
 }
 
 /* btrfs_filesystem_resize : resize a btrfs filesystem */
@@ -1803,9 +1806,9 @@ func (g *Guestfs) Btrfs_filesystem_resize (mountpoint string, optargs *OptargsBt
     defer C.free (unsafe.Pointer (c_mountpoint))
     c_optargs := C.struct_guestfs_btrfs_filesystem_resize_argv{}
     if optargs != nil {
-        if optargs.size_is_set {
+        if optargs.Size_is_set {
             c_optargs.bitmask |= C.GUESTFS_BTRFS_FILESYSTEM_RESIZE_SIZE_BITMASK
-            c_optargs.size = C.int64_t (optargs.size)
+            c_optargs.size = C.int64_t (optargs.Size)
         }
     }
 
@@ -1836,12 +1839,12 @@ func (g *Guestfs) Btrfs_filesystem_sync (fs string) *GuestfsError {
 
 /* Struct carrying optional arguments for Btrfs_fsck */
 type OptargsBtrfs_fsck struct {
-    /* superblock field is ignored unless superblock_is_set == true */
-    superblock_is_set bool
-    superblock int64
-    /* repair field is ignored unless repair_is_set == true */
-    repair_is_set bool
-    repair bool
+    /* Superblock field is ignored unless Superblock_is_set == true */
+    Superblock_is_set bool
+    Superblock int64
+    /* Repair field is ignored unless Repair_is_set == true */
+    Repair_is_set bool
+    Repair bool
 }
 
 /* btrfs_fsck : check a btrfs filesystem */
@@ -1854,13 +1857,13 @@ func (g *Guestfs) Btrfs_fsck (device string, optargs *OptargsBtrfs_fsck) *Guestf
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_btrfs_fsck_argv{}
     if optargs != nil {
-        if optargs.superblock_is_set {
+        if optargs.Superblock_is_set {
             c_optargs.bitmask |= C.GUESTFS_BTRFS_FSCK_SUPERBLOCK_BITMASK
-            c_optargs.superblock = C.int64_t (optargs.superblock)
+            c_optargs.superblock = C.int64_t (optargs.Superblock)
         }
-        if optargs.repair_is_set {
+        if optargs.Repair_is_set {
             c_optargs.bitmask |= C.GUESTFS_BTRFS_FSCK_REPAIR_BITMASK
-            if optargs.repair { c_optargs.repair = 1 } else { c_optargs.repair = 0}
+            if optargs.Repair { c_optargs.repair = 1 } else { c_optargs.repair = 0}
         }
     }
 
@@ -2210,9 +2213,9 @@ func (g *Guestfs) Command_lines (arguments []string) ([]string, *GuestfsError) {
 
 /* Struct carrying optional arguments for Compress_device_out */
 type OptargsCompress_device_out struct {
-    /* level field is ignored unless level_is_set == true */
-    level_is_set bool
-    level int
+    /* Level field is ignored unless Level_is_set == true */
+    Level_is_set bool
+    Level int
 }
 
 /* compress_device_out : output compressed device */
@@ -2231,9 +2234,9 @@ func (g *Guestfs) Compress_device_out (ctype string, device string, zdevice stri
     defer C.free (unsafe.Pointer (c_zdevice))
     c_optargs := C.struct_guestfs_compress_device_out_argv{}
     if optargs != nil {
-        if optargs.level_is_set {
+        if optargs.Level_is_set {
             c_optargs.bitmask |= C.GUESTFS_COMPRESS_DEVICE_OUT_LEVEL_BITMASK
-            c_optargs.level = C.int (optargs.level)
+            c_optargs.level = C.int (optargs.Level)
         }
     }
 
@@ -2247,9 +2250,9 @@ func (g *Guestfs) Compress_device_out (ctype string, device string, zdevice stri
 
 /* Struct carrying optional arguments for Compress_out */
 type OptargsCompress_out struct {
-    /* level field is ignored unless level_is_set == true */
-    level_is_set bool
-    level int
+    /* Level field is ignored unless Level_is_set == true */
+    Level_is_set bool
+    Level int
 }
 
 /* compress_out : output compressed file */
@@ -2268,9 +2271,9 @@ func (g *Guestfs) Compress_out (ctype string, file string, zfile string, optargs
     defer C.free (unsafe.Pointer (c_zfile))
     c_optargs := C.struct_guestfs_compress_out_argv{}
     if optargs != nil {
-        if optargs.level_is_set {
+        if optargs.Level_is_set {
             c_optargs.bitmask |= C.GUESTFS_COMPRESS_OUT_LEVEL_BITMASK
-            c_optargs.level = C.int (optargs.level)
+            c_optargs.level = C.int (optargs.Level)
         }
     }
 
@@ -2283,7 +2286,7 @@ func (g *Guestfs) Compress_out (ctype string, file string, zfile string, optargs
 }
 
 /* config : add qemu parameters */
-func (g *Guestfs) Config (qemuparam string, qemuvalue string) *GuestfsError {
+func (g *Guestfs) Config (qemuparam string, qemuvalue *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("config")
     }
@@ -2291,8 +2294,11 @@ func (g *Guestfs) Config (qemuparam string, qemuvalue string) *GuestfsError {
     c_qemuparam := C.CString (qemuparam)
     defer C.free (unsafe.Pointer (c_qemuparam))
 
-    c_qemuvalue := C.CString (qemuvalue)
-    defer C.free (unsafe.Pointer (c_qemuvalue))
+    var c_qemuvalue *C.char = nil
+    if qemuvalue != nil {
+        c_qemuvalue = C.CString (*qemuvalue)
+        defer C.free (unsafe.Pointer (c_qemuvalue))
+    }
 
     r := C.guestfs_config (g.g, c_qemuparam, c_qemuvalue)
 
@@ -2304,18 +2310,18 @@ func (g *Guestfs) Config (qemuparam string, qemuvalue string) *GuestfsError {
 
 /* Struct carrying optional arguments for Copy_device_to_device */
 type OptargsCopy_device_to_device struct {
-    /* srcoffset field is ignored unless srcoffset_is_set == true */
-    srcoffset_is_set bool
-    srcoffset int64
-    /* destoffset field is ignored unless destoffset_is_set == true */
-    destoffset_is_set bool
-    destoffset int64
-    /* size field is ignored unless size_is_set == true */
-    size_is_set bool
-    size int64
-    /* sparse field is ignored unless sparse_is_set == true */
-    sparse_is_set bool
-    sparse bool
+    /* Srcoffset field is ignored unless Srcoffset_is_set == true */
+    Srcoffset_is_set bool
+    Srcoffset int64
+    /* Destoffset field is ignored unless Destoffset_is_set == true */
+    Destoffset_is_set bool
+    Destoffset int64
+    /* Size field is ignored unless Size_is_set == true */
+    Size_is_set bool
+    Size int64
+    /* Sparse field is ignored unless Sparse_is_set == true */
+    Sparse_is_set bool
+    Sparse bool
 }
 
 /* copy_device_to_device : copy from source device to destination device */
@@ -2331,21 +2337,21 @@ func (g *Guestfs) Copy_device_to_device (src string, dest string, optargs *Optar
     defer C.free (unsafe.Pointer (c_dest))
     c_optargs := C.struct_guestfs_copy_device_to_device_argv{}
     if optargs != nil {
-        if optargs.srcoffset_is_set {
+        if optargs.Srcoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET_BITMASK
-            c_optargs.srcoffset = C.int64_t (optargs.srcoffset)
+            c_optargs.srcoffset = C.int64_t (optargs.Srcoffset)
         }
-        if optargs.destoffset_is_set {
+        if optargs.Destoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_DEVICE_DESTOFFSET_BITMASK
-            c_optargs.destoffset = C.int64_t (optargs.destoffset)
+            c_optargs.destoffset = C.int64_t (optargs.Destoffset)
         }
-        if optargs.size_is_set {
+        if optargs.Size_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_DEVICE_SIZE_BITMASK
-            c_optargs.size = C.int64_t (optargs.size)
+            c_optargs.size = C.int64_t (optargs.Size)
         }
-        if optargs.sparse_is_set {
+        if optargs.Sparse_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_DEVICE_SPARSE_BITMASK
-            if optargs.sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
+            if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
         }
     }
 
@@ -2359,18 +2365,18 @@ func (g *Guestfs) Copy_device_to_device (src string, dest string, optargs *Optar
 
 /* Struct carrying optional arguments for Copy_device_to_file */
 type OptargsCopy_device_to_file struct {
-    /* srcoffset field is ignored unless srcoffset_is_set == true */
-    srcoffset_is_set bool
-    srcoffset int64
-    /* destoffset field is ignored unless destoffset_is_set == true */
-    destoffset_is_set bool
-    destoffset int64
-    /* size field is ignored unless size_is_set == true */
-    size_is_set bool
-    size int64
-    /* sparse field is ignored unless sparse_is_set == true */
-    sparse_is_set bool
-    sparse bool
+    /* Srcoffset field is ignored unless Srcoffset_is_set == true */
+    Srcoffset_is_set bool
+    Srcoffset int64
+    /* Destoffset field is ignored unless Destoffset_is_set == true */
+    Destoffset_is_set bool
+    Destoffset int64
+    /* Size field is ignored unless Size_is_set == true */
+    Size_is_set bool
+    Size int64
+    /* Sparse field is ignored unless Sparse_is_set == true */
+    Sparse_is_set bool
+    Sparse bool
 }
 
 /* copy_device_to_file : copy from source device to destination file */
@@ -2386,21 +2392,21 @@ func (g *Guestfs) Copy_device_to_file (src string, dest string, optargs *Optargs
     defer C.free (unsafe.Pointer (c_dest))
     c_optargs := C.struct_guestfs_copy_device_to_file_argv{}
     if optargs != nil {
-        if optargs.srcoffset_is_set {
+        if optargs.Srcoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_FILE_SRCOFFSET_BITMASK
-            c_optargs.srcoffset = C.int64_t (optargs.srcoffset)
+            c_optargs.srcoffset = C.int64_t (optargs.Srcoffset)
         }
-        if optargs.destoffset_is_set {
+        if optargs.Destoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_FILE_DESTOFFSET_BITMASK
-            c_optargs.destoffset = C.int64_t (optargs.destoffset)
+            c_optargs.destoffset = C.int64_t (optargs.Destoffset)
         }
-        if optargs.size_is_set {
+        if optargs.Size_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_FILE_SIZE_BITMASK
-            c_optargs.size = C.int64_t (optargs.size)
+            c_optargs.size = C.int64_t (optargs.Size)
         }
-        if optargs.sparse_is_set {
+        if optargs.Sparse_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_DEVICE_TO_FILE_SPARSE_BITMASK
-            if optargs.sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
+            if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
         }
     }
 
@@ -2414,18 +2420,18 @@ func (g *Guestfs) Copy_device_to_file (src string, dest string, optargs *Optargs
 
 /* Struct carrying optional arguments for Copy_file_to_device */
 type OptargsCopy_file_to_device struct {
-    /* srcoffset field is ignored unless srcoffset_is_set == true */
-    srcoffset_is_set bool
-    srcoffset int64
-    /* destoffset field is ignored unless destoffset_is_set == true */
-    destoffset_is_set bool
-    destoffset int64
-    /* size field is ignored unless size_is_set == true */
-    size_is_set bool
-    size int64
-    /* sparse field is ignored unless sparse_is_set == true */
-    sparse_is_set bool
-    sparse bool
+    /* Srcoffset field is ignored unless Srcoffset_is_set == true */
+    Srcoffset_is_set bool
+    Srcoffset int64
+    /* Destoffset field is ignored unless Destoffset_is_set == true */
+    Destoffset_is_set bool
+    Destoffset int64
+    /* Size field is ignored unless Size_is_set == true */
+    Size_is_set bool
+    Size int64
+    /* Sparse field is ignored unless Sparse_is_set == true */
+    Sparse_is_set bool
+    Sparse bool
 }
 
 /* copy_file_to_device : copy from source file to destination device */
@@ -2441,21 +2447,21 @@ func (g *Guestfs) Copy_file_to_device (src string, dest string, optargs *Optargs
     defer C.free (unsafe.Pointer (c_dest))
     c_optargs := C.struct_guestfs_copy_file_to_device_argv{}
     if optargs != nil {
-        if optargs.srcoffset_is_set {
+        if optargs.Srcoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_DEVICE_SRCOFFSET_BITMASK
-            c_optargs.srcoffset = C.int64_t (optargs.srcoffset)
+            c_optargs.srcoffset = C.int64_t (optargs.Srcoffset)
         }
-        if optargs.destoffset_is_set {
+        if optargs.Destoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_DEVICE_DESTOFFSET_BITMASK
-            c_optargs.destoffset = C.int64_t (optargs.destoffset)
+            c_optargs.destoffset = C.int64_t (optargs.Destoffset)
         }
-        if optargs.size_is_set {
+        if optargs.Size_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_DEVICE_SIZE_BITMASK
-            c_optargs.size = C.int64_t (optargs.size)
+            c_optargs.size = C.int64_t (optargs.Size)
         }
-        if optargs.sparse_is_set {
+        if optargs.Sparse_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_DEVICE_SPARSE_BITMASK
-            if optargs.sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
+            if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
         }
     }
 
@@ -2469,18 +2475,18 @@ func (g *Guestfs) Copy_file_to_device (src string, dest string, optargs *Optargs
 
 /* Struct carrying optional arguments for Copy_file_to_file */
 type OptargsCopy_file_to_file struct {
-    /* srcoffset field is ignored unless srcoffset_is_set == true */
-    srcoffset_is_set bool
-    srcoffset int64
-    /* destoffset field is ignored unless destoffset_is_set == true */
-    destoffset_is_set bool
-    destoffset int64
-    /* size field is ignored unless size_is_set == true */
-    size_is_set bool
-    size int64
-    /* sparse field is ignored unless sparse_is_set == true */
-    sparse_is_set bool
-    sparse bool
+    /* Srcoffset field is ignored unless Srcoffset_is_set == true */
+    Srcoffset_is_set bool
+    Srcoffset int64
+    /* Destoffset field is ignored unless Destoffset_is_set == true */
+    Destoffset_is_set bool
+    Destoffset int64
+    /* Size field is ignored unless Size_is_set == true */
+    Size_is_set bool
+    Size int64
+    /* Sparse field is ignored unless Sparse_is_set == true */
+    Sparse_is_set bool
+    Sparse bool
 }
 
 /* copy_file_to_file : copy from source file to destination file */
@@ -2496,21 +2502,21 @@ func (g *Guestfs) Copy_file_to_file (src string, dest string, optargs *OptargsCo
     defer C.free (unsafe.Pointer (c_dest))
     c_optargs := C.struct_guestfs_copy_file_to_file_argv{}
     if optargs != nil {
-        if optargs.srcoffset_is_set {
+        if optargs.Srcoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_FILE_SRCOFFSET_BITMASK
-            c_optargs.srcoffset = C.int64_t (optargs.srcoffset)
+            c_optargs.srcoffset = C.int64_t (optargs.Srcoffset)
         }
-        if optargs.destoffset_is_set {
+        if optargs.Destoffset_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_FILE_DESTOFFSET_BITMASK
-            c_optargs.destoffset = C.int64_t (optargs.destoffset)
+            c_optargs.destoffset = C.int64_t (optargs.Destoffset)
         }
-        if optargs.size_is_set {
+        if optargs.Size_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_FILE_SIZE_BITMASK
-            c_optargs.size = C.int64_t (optargs.size)
+            c_optargs.size = C.int64_t (optargs.Size)
         }
-        if optargs.sparse_is_set {
+        if optargs.Sparse_is_set {
             c_optargs.bitmask |= C.GUESTFS_COPY_FILE_TO_FILE_SPARSE_BITMASK
-            if optargs.sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
+            if optargs.Sparse { c_optargs.sparse = 1 } else { c_optargs.sparse = 0}
         }
     }
 
@@ -2865,12 +2871,12 @@ func (g *Guestfs) Du (path string) (int64, *GuestfsError) {
 
 /* Struct carrying optional arguments for E2fsck */
 type OptargsE2fsck struct {
-    /* correct field is ignored unless correct_is_set == true */
-    correct_is_set bool
-    correct bool
-    /* forceall field is ignored unless forceall_is_set == true */
-    forceall_is_set bool
-    forceall bool
+    /* Correct field is ignored unless Correct_is_set == true */
+    Correct_is_set bool
+    Correct bool
+    /* Forceall field is ignored unless Forceall_is_set == true */
+    Forceall_is_set bool
+    Forceall bool
 }
 
 /* e2fsck : check an ext2/ext3 filesystem */
@@ -2883,13 +2889,13 @@ func (g *Guestfs) E2fsck (device string, optargs *OptargsE2fsck) *GuestfsError {
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_e2fsck_argv{}
     if optargs != nil {
-        if optargs.correct_is_set {
+        if optargs.Correct_is_set {
             c_optargs.bitmask |= C.GUESTFS_E2FSCK_CORRECT_BITMASK
-            if optargs.correct { c_optargs.correct = 1 } else { c_optargs.correct = 0}
+            if optargs.Correct { c_optargs.correct = 1 } else { c_optargs.correct = 0}
         }
-        if optargs.forceall_is_set {
+        if optargs.Forceall_is_set {
             c_optargs.bitmask |= C.GUESTFS_E2FSCK_FORCEALL_BITMASK
-            if optargs.forceall { c_optargs.forceall = 1 } else { c_optargs.forceall = 0}
+            if optargs.Forceall { c_optargs.forceall = 1 } else { c_optargs.forceall = 0}
         }
     }
 
@@ -3345,15 +3351,15 @@ func (g *Guestfs) Fsck (fstype string, device string) (int, *GuestfsError) {
 
 /* Struct carrying optional arguments for Fstrim */
 type OptargsFstrim struct {
-    /* offset field is ignored unless offset_is_set == true */
-    offset_is_set bool
-    offset int64
-    /* length field is ignored unless length_is_set == true */
-    length_is_set bool
-    length int64
-    /* minimumfreeextent field is ignored unless minimumfreeextent_is_set == true */
-    minimumfreeextent_is_set bool
-    minimumfreeextent int64
+    /* Offset field is ignored unless Offset_is_set == true */
+    Offset_is_set bool
+    Offset int64
+    /* Length field is ignored unless Length_is_set == true */
+    Length_is_set bool
+    Length int64
+    /* Minimumfreeextent field is ignored unless Minimumfreeextent_is_set == true */
+    Minimumfreeextent_is_set bool
+    Minimumfreeextent int64
 }
 
 /* fstrim : trim free space in a filesystem */
@@ -3366,17 +3372,17 @@ func (g *Guestfs) Fstrim (mountpoint string, optargs *OptargsFstrim) *GuestfsErr
     defer C.free (unsafe.Pointer (c_mountpoint))
     c_optargs := C.struct_guestfs_fstrim_argv{}
     if optargs != nil {
-        if optargs.offset_is_set {
+        if optargs.Offset_is_set {
             c_optargs.bitmask |= C.GUESTFS_FSTRIM_OFFSET_BITMASK
-            c_optargs.offset = C.int64_t (optargs.offset)
+            c_optargs.offset = C.int64_t (optargs.Offset)
         }
-        if optargs.length_is_set {
+        if optargs.Length_is_set {
             c_optargs.bitmask |= C.GUESTFS_FSTRIM_LENGTH_BITMASK
-            c_optargs.length = C.int64_t (optargs.length)
+            c_optargs.length = C.int64_t (optargs.Length)
         }
-        if optargs.minimumfreeextent_is_set {
+        if optargs.Minimumfreeextent_is_set {
             c_optargs.bitmask |= C.GUESTFS_FSTRIM_MINIMUMFREEEXTENT_BITMASK
-            c_optargs.minimumfreeextent = C.int64_t (optargs.minimumfreeextent)
+            c_optargs.minimumfreeextent = C.int64_t (optargs.Minimumfreeextent)
         }
     }
 
@@ -3894,18 +3900,18 @@ func (g *Guestfs) Glob_expand (pattern string) ([]string, *GuestfsError) {
 
 /* Struct carrying optional arguments for Grep */
 type OptargsGrep struct {
-    /* extended field is ignored unless extended_is_set == true */
-    extended_is_set bool
-    extended bool
-    /* fixed field is ignored unless fixed_is_set == true */
-    fixed_is_set bool
-    fixed bool
-    /* insensitive field is ignored unless insensitive_is_set == true */
-    insensitive_is_set bool
-    insensitive bool
-    /* compressed field is ignored unless compressed_is_set == true */
-    compressed_is_set bool
-    compressed bool
+    /* Extended field is ignored unless Extended_is_set == true */
+    Extended_is_set bool
+    Extended bool
+    /* Fixed field is ignored unless Fixed_is_set == true */
+    Fixed_is_set bool
+    Fixed bool
+    /* Insensitive field is ignored unless Insensitive_is_set == true */
+    Insensitive_is_set bool
+    Insensitive bool
+    /* Compressed field is ignored unless Compressed_is_set == true */
+    Compressed_is_set bool
+    Compressed bool
 }
 
 /* grep : return lines matching a pattern */
@@ -3921,21 +3927,21 @@ func (g *Guestfs) Grep (regex string, path string, optargs *OptargsGrep) ([]stri
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_grep_opts_argv{}
     if optargs != nil {
-        if optargs.extended_is_set {
+        if optargs.Extended_is_set {
             c_optargs.bitmask |= C.GUESTFS_GREP_OPTS_EXTENDED_BITMASK
-            if optargs.extended { c_optargs.extended = 1 } else { c_optargs.extended = 0}
+            if optargs.Extended { c_optargs.extended = 1 } else { c_optargs.extended = 0}
         }
-        if optargs.fixed_is_set {
+        if optargs.Fixed_is_set {
             c_optargs.bitmask |= C.GUESTFS_GREP_OPTS_FIXED_BITMASK
-            if optargs.fixed { c_optargs.fixed = 1 } else { c_optargs.fixed = 0}
+            if optargs.Fixed { c_optargs.fixed = 1 } else { c_optargs.fixed = 0}
         }
-        if optargs.insensitive_is_set {
+        if optargs.Insensitive_is_set {
             c_optargs.bitmask |= C.GUESTFS_GREP_OPTS_INSENSITIVE_BITMASK
-            if optargs.insensitive { c_optargs.insensitive = 1 } else { c_optargs.insensitive = 0}
+            if optargs.Insensitive { c_optargs.insensitive = 1 } else { c_optargs.insensitive = 0}
         }
-        if optargs.compressed_is_set {
+        if optargs.Compressed_is_set {
             c_optargs.bitmask |= C.GUESTFS_GREP_OPTS_COMPRESSED_BITMASK
-            if optargs.compressed { c_optargs.compressed = 1 } else { c_optargs.compressed = 0}
+            if optargs.Compressed { c_optargs.compressed = 1 } else { c_optargs.compressed = 0}
         }
     }
 
@@ -4058,13 +4064,16 @@ func (g *Guestfs) Hivex_close () *GuestfsError {
 }
 
 /* hivex_commit : commit (write) changes back to the hive */
-func (g *Guestfs) Hivex_commit (filename string) *GuestfsError {
+func (g *Guestfs) Hivex_commit (filename *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("hivex_commit")
     }
 
-    c_filename := C.CString (filename)
-    defer C.free (unsafe.Pointer (c_filename))
+    var c_filename *C.char = nil
+    if filename != nil {
+        c_filename = C.CString (*filename)
+        defer C.free (unsafe.Pointer (c_filename))
+    }
 
     r := C.guestfs_hivex_commit (g.g, c_filename)
 
@@ -4225,15 +4234,15 @@ func (g *Guestfs) Hivex_node_values (nodeh int64) (*[]HivexValue, *GuestfsError)
 
 /* Struct carrying optional arguments for Hivex_open */
 type OptargsHivex_open struct {
-    /* verbose field is ignored unless verbose_is_set == true */
-    verbose_is_set bool
-    verbose bool
-    /* debug field is ignored unless debug_is_set == true */
-    debug_is_set bool
-    debug bool
-    /* write field is ignored unless write_is_set == true */
-    write_is_set bool
-    write bool
+    /* Verbose field is ignored unless Verbose_is_set == true */
+    Verbose_is_set bool
+    Verbose bool
+    /* Debug field is ignored unless Debug_is_set == true */
+    Debug_is_set bool
+    Debug bool
+    /* Write field is ignored unless Write_is_set == true */
+    Write_is_set bool
+    Write bool
 }
 
 /* hivex_open : open a Windows Registry hive file */
@@ -4246,17 +4255,17 @@ func (g *Guestfs) Hivex_open (filename string, optargs *OptargsHivex_open) *Gues
     defer C.free (unsafe.Pointer (c_filename))
     c_optargs := C.struct_guestfs_hivex_open_argv{}
     if optargs != nil {
-        if optargs.verbose_is_set {
+        if optargs.Verbose_is_set {
             c_optargs.bitmask |= C.GUESTFS_HIVEX_OPEN_VERBOSE_BITMASK
-            if optargs.verbose { c_optargs.verbose = 1 } else { c_optargs.verbose = 0}
+            if optargs.Verbose { c_optargs.verbose = 1 } else { c_optargs.verbose = 0}
         }
-        if optargs.debug_is_set {
+        if optargs.Debug_is_set {
             c_optargs.bitmask |= C.GUESTFS_HIVEX_OPEN_DEBUG_BITMASK
-            if optargs.debug { c_optargs.debug = 1 } else { c_optargs.debug = 0}
+            if optargs.Debug { c_optargs.debug = 1 } else { c_optargs.debug = 0}
         }
-        if optargs.write_is_set {
+        if optargs.Write_is_set {
             c_optargs.bitmask |= C.GUESTFS_HIVEX_OPEN_WRITE_BITMASK
-            if optargs.write { c_optargs.write = 1 } else { c_optargs.write = 0}
+            if optargs.Write { c_optargs.write = 1 } else { c_optargs.write = 0}
         }
     }
 
@@ -4583,12 +4592,12 @@ func (g *Guestfs) Inspect_get_hostname (root string) (string, *GuestfsError) {
 
 /* Struct carrying optional arguments for Inspect_get_icon */
 type OptargsInspect_get_icon struct {
-    /* favicon field is ignored unless favicon_is_set == true */
-    favicon_is_set bool
-    favicon bool
-    /* highquality field is ignored unless highquality_is_set == true */
-    highquality_is_set bool
-    highquality bool
+    /* Favicon field is ignored unless Favicon_is_set == true */
+    Favicon_is_set bool
+    Favicon bool
+    /* Highquality field is ignored unless Highquality_is_set == true */
+    Highquality_is_set bool
+    Highquality bool
 }
 
 /* inspect_get_icon : get the icon corresponding to this operating system */
@@ -4601,13 +4610,13 @@ func (g *Guestfs) Inspect_get_icon (root string, optargs *OptargsInspect_get_ico
     defer C.free (unsafe.Pointer (c_root))
     c_optargs := C.struct_guestfs_inspect_get_icon_argv{}
     if optargs != nil {
-        if optargs.favicon_is_set {
+        if optargs.Favicon_is_set {
             c_optargs.bitmask |= C.GUESTFS_INSPECT_GET_ICON_FAVICON_BITMASK
-            if optargs.favicon { c_optargs.favicon = 1 } else { c_optargs.favicon = 0}
+            if optargs.Favicon { c_optargs.favicon = 1 } else { c_optargs.favicon = 0}
         }
-        if optargs.highquality_is_set {
+        if optargs.Highquality_is_set {
             c_optargs.bitmask |= C.GUESTFS_INSPECT_GET_ICON_HIGHQUALITY_BITMASK
-            if optargs.highquality { c_optargs.highquality = 1 } else { c_optargs.highquality = 0}
+            if optargs.Highquality { c_optargs.highquality = 1 } else { c_optargs.highquality = 0}
         }
     }
 
@@ -4919,25 +4928,25 @@ func (g *Guestfs) Inspect_os () ([]string, *GuestfsError) {
 
 /* Struct carrying optional arguments for Internal_test */
 type OptargsInternal_test struct {
-    /* obool field is ignored unless obool_is_set == true */
-    obool_is_set bool
-    obool bool
-    /* oint field is ignored unless oint_is_set == true */
-    oint_is_set bool
-    oint int
-    /* oint64 field is ignored unless oint64_is_set == true */
-    oint64_is_set bool
-    oint64 int64
-    /* ostring field is ignored unless ostring_is_set == true */
-    ostring_is_set bool
-    ostring string
-    /* ostringlist field is ignored unless ostringlist_is_set == true */
-    ostringlist_is_set bool
-    ostringlist []string
+    /* Obool field is ignored unless Obool_is_set == true */
+    Obool_is_set bool
+    Obool bool
+    /* Oint field is ignored unless Oint_is_set == true */
+    Oint_is_set bool
+    Oint int
+    /* Oint64 field is ignored unless Oint64_is_set == true */
+    Oint64_is_set bool
+    Oint64 int64
+    /* Ostring field is ignored unless Ostring_is_set == true */
+    Ostring_is_set bool
+    Ostring string
+    /* Ostringlist field is ignored unless Ostringlist_is_set == true */
+    Ostringlist_is_set bool
+    Ostringlist []string
 }
 
 /* internal_test : internal test function - do not use */
-func (g *Guestfs) Internal_test (str string, optstr string, strlist []string, b bool, integer int, integer64 int64, filein string, fileout string, bufferin []byte, optargs *OptargsInternal_test) *GuestfsError {
+func (g *Guestfs) Internal_test (str string, optstr *string, strlist []string, b bool, integer int, integer64 int64, filein string, fileout string, bufferin []byte, optargs *OptargsInternal_test) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("internal_test")
     }
@@ -4945,8 +4954,11 @@ func (g *Guestfs) Internal_test (str string, optstr string, strlist []string, b 
     c_str := C.CString (str)
     defer C.free (unsafe.Pointer (c_str))
 
-    c_optstr := C.CString (optstr)
-    defer C.free (unsafe.Pointer (c_optstr))
+    var c_optstr *C.char = nil
+    if optstr != nil {
+        c_optstr = C.CString (*optstr)
+        defer C.free (unsafe.Pointer (c_optstr))
+    }
 
     c_strlist := arg_string_list (strlist)
     defer free_string_list (c_strlist)
@@ -4969,26 +4981,26 @@ func (g *Guestfs) Internal_test (str string, optstr string, strlist []string, b 
     defer C.free (unsafe.Pointer (c_bufferin))
     c_optargs := C.struct_guestfs_internal_test_argv{}
     if optargs != nil {
-        if optargs.obool_is_set {
+        if optargs.Obool_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_OBOOL_BITMASK
-            if optargs.obool { c_optargs.obool = 1 } else { c_optargs.obool = 0}
+            if optargs.Obool { c_optargs.obool = 1 } else { c_optargs.obool = 0}
         }
-        if optargs.oint_is_set {
+        if optargs.Oint_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_OINT_BITMASK
-            c_optargs.oint = C.int (optargs.oint)
+            c_optargs.oint = C.int (optargs.Oint)
         }
-        if optargs.oint64_is_set {
+        if optargs.Oint64_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_OINT64_BITMASK
-            c_optargs.oint64 = C.int64_t (optargs.oint64)
+            c_optargs.oint64 = C.int64_t (optargs.Oint64)
         }
-        if optargs.ostring_is_set {
+        if optargs.Ostring_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_OSTRING_BITMASK
-            c_optargs.ostring = C.CString (optargs.ostring)
+            c_optargs.ostring = C.CString (optargs.Ostring)
             defer C.free (unsafe.Pointer (c_optargs.ostring))
         }
-        if optargs.ostringlist_is_set {
+        if optargs.Ostringlist_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_OSTRINGLIST_BITMASK
-            c_optargs.ostringlist = arg_string_list (optargs.ostringlist)
+            c_optargs.ostringlist = arg_string_list (optargs.Ostringlist)
             defer free_string_list (c_optargs.ostringlist)
         }
     }
@@ -5003,195 +5015,195 @@ func (g *Guestfs) Internal_test (str string, optstr string, strlist []string, b 
 
 /* Struct carrying optional arguments for Internal_test_63_optargs */
 type OptargsInternal_test_63_optargs struct {
-    /* opt1 field is ignored unless opt1_is_set == true */
-    opt1_is_set bool
-    opt1 int
-    /* opt2 field is ignored unless opt2_is_set == true */
-    opt2_is_set bool
-    opt2 int
-    /* opt3 field is ignored unless opt3_is_set == true */
-    opt3_is_set bool
-    opt3 int
-    /* opt4 field is ignored unless opt4_is_set == true */
-    opt4_is_set bool
-    opt4 int
-    /* opt5 field is ignored unless opt5_is_set == true */
-    opt5_is_set bool
-    opt5 int
-    /* opt6 field is ignored unless opt6_is_set == true */
-    opt6_is_set bool
-    opt6 int
-    /* opt7 field is ignored unless opt7_is_set == true */
-    opt7_is_set bool
-    opt7 int
-    /* opt8 field is ignored unless opt8_is_set == true */
-    opt8_is_set bool
-    opt8 int
-    /* opt9 field is ignored unless opt9_is_set == true */
-    opt9_is_set bool
-    opt9 int
-    /* opt10 field is ignored unless opt10_is_set == true */
-    opt10_is_set bool
-    opt10 int
-    /* opt11 field is ignored unless opt11_is_set == true */
-    opt11_is_set bool
-    opt11 int
-    /* opt12 field is ignored unless opt12_is_set == true */
-    opt12_is_set bool
-    opt12 int
-    /* opt13 field is ignored unless opt13_is_set == true */
-    opt13_is_set bool
-    opt13 int
-    /* opt14 field is ignored unless opt14_is_set == true */
-    opt14_is_set bool
-    opt14 int
-    /* opt15 field is ignored unless opt15_is_set == true */
-    opt15_is_set bool
-    opt15 int
-    /* opt16 field is ignored unless opt16_is_set == true */
-    opt16_is_set bool
-    opt16 int
-    /* opt17 field is ignored unless opt17_is_set == true */
-    opt17_is_set bool
-    opt17 int
-    /* opt18 field is ignored unless opt18_is_set == true */
-    opt18_is_set bool
-    opt18 int
-    /* opt19 field is ignored unless opt19_is_set == true */
-    opt19_is_set bool
-    opt19 int
-    /* opt20 field is ignored unless opt20_is_set == true */
-    opt20_is_set bool
-    opt20 int
-    /* opt21 field is ignored unless opt21_is_set == true */
-    opt21_is_set bool
-    opt21 int
-    /* opt22 field is ignored unless opt22_is_set == true */
-    opt22_is_set bool
-    opt22 int
-    /* opt23 field is ignored unless opt23_is_set == true */
-    opt23_is_set bool
-    opt23 int
-    /* opt24 field is ignored unless opt24_is_set == true */
-    opt24_is_set bool
-    opt24 int
-    /* opt25 field is ignored unless opt25_is_set == true */
-    opt25_is_set bool
-    opt25 int
-    /* opt26 field is ignored unless opt26_is_set == true */
-    opt26_is_set bool
-    opt26 int
-    /* opt27 field is ignored unless opt27_is_set == true */
-    opt27_is_set bool
-    opt27 int
-    /* opt28 field is ignored unless opt28_is_set == true */
-    opt28_is_set bool
-    opt28 int
-    /* opt29 field is ignored unless opt29_is_set == true */
-    opt29_is_set bool
-    opt29 int
-    /* opt30 field is ignored unless opt30_is_set == true */
-    opt30_is_set bool
-    opt30 int
-    /* opt31 field is ignored unless opt31_is_set == true */
-    opt31_is_set bool
-    opt31 int
-    /* opt32 field is ignored unless opt32_is_set == true */
-    opt32_is_set bool
-    opt32 int
-    /* opt33 field is ignored unless opt33_is_set == true */
-    opt33_is_set bool
-    opt33 int
-    /* opt34 field is ignored unless opt34_is_set == true */
-    opt34_is_set bool
-    opt34 int
-    /* opt35 field is ignored unless opt35_is_set == true */
-    opt35_is_set bool
-    opt35 int
-    /* opt36 field is ignored unless opt36_is_set == true */
-    opt36_is_set bool
-    opt36 int
-    /* opt37 field is ignored unless opt37_is_set == true */
-    opt37_is_set bool
-    opt37 int
-    /* opt38 field is ignored unless opt38_is_set == true */
-    opt38_is_set bool
-    opt38 int
-    /* opt39 field is ignored unless opt39_is_set == true */
-    opt39_is_set bool
-    opt39 int
-    /* opt40 field is ignored unless opt40_is_set == true */
-    opt40_is_set bool
-    opt40 int
-    /* opt41 field is ignored unless opt41_is_set == true */
-    opt41_is_set bool
-    opt41 int
-    /* opt42 field is ignored unless opt42_is_set == true */
-    opt42_is_set bool
-    opt42 int
-    /* opt43 field is ignored unless opt43_is_set == true */
-    opt43_is_set bool
-    opt43 int
-    /* opt44 field is ignored unless opt44_is_set == true */
-    opt44_is_set bool
-    opt44 int
-    /* opt45 field is ignored unless opt45_is_set == true */
-    opt45_is_set bool
-    opt45 int
-    /* opt46 field is ignored unless opt46_is_set == true */
-    opt46_is_set bool
-    opt46 int
-    /* opt47 field is ignored unless opt47_is_set == true */
-    opt47_is_set bool
-    opt47 int
-    /* opt48 field is ignored unless opt48_is_set == true */
-    opt48_is_set bool
-    opt48 int
-    /* opt49 field is ignored unless opt49_is_set == true */
-    opt49_is_set bool
-    opt49 int
-    /* opt50 field is ignored unless opt50_is_set == true */
-    opt50_is_set bool
-    opt50 int
-    /* opt51 field is ignored unless opt51_is_set == true */
-    opt51_is_set bool
-    opt51 int
-    /* opt52 field is ignored unless opt52_is_set == true */
-    opt52_is_set bool
-    opt52 int
-    /* opt53 field is ignored unless opt53_is_set == true */
-    opt53_is_set bool
-    opt53 int
-    /* opt54 field is ignored unless opt54_is_set == true */
-    opt54_is_set bool
-    opt54 int
-    /* opt55 field is ignored unless opt55_is_set == true */
-    opt55_is_set bool
-    opt55 int
-    /* opt56 field is ignored unless opt56_is_set == true */
-    opt56_is_set bool
-    opt56 int
-    /* opt57 field is ignored unless opt57_is_set == true */
-    opt57_is_set bool
-    opt57 int
-    /* opt58 field is ignored unless opt58_is_set == true */
-    opt58_is_set bool
-    opt58 int
-    /* opt59 field is ignored unless opt59_is_set == true */
-    opt59_is_set bool
-    opt59 int
-    /* opt60 field is ignored unless opt60_is_set == true */
-    opt60_is_set bool
-    opt60 int
-    /* opt61 field is ignored unless opt61_is_set == true */
-    opt61_is_set bool
-    opt61 int
-    /* opt62 field is ignored unless opt62_is_set == true */
-    opt62_is_set bool
-    opt62 int
-    /* opt63 field is ignored unless opt63_is_set == true */
-    opt63_is_set bool
-    opt63 int
+    /* Opt1 field is ignored unless Opt1_is_set == true */
+    Opt1_is_set bool
+    Opt1 int
+    /* Opt2 field is ignored unless Opt2_is_set == true */
+    Opt2_is_set bool
+    Opt2 int
+    /* Opt3 field is ignored unless Opt3_is_set == true */
+    Opt3_is_set bool
+    Opt3 int
+    /* Opt4 field is ignored unless Opt4_is_set == true */
+    Opt4_is_set bool
+    Opt4 int
+    /* Opt5 field is ignored unless Opt5_is_set == true */
+    Opt5_is_set bool
+    Opt5 int
+    /* Opt6 field is ignored unless Opt6_is_set == true */
+    Opt6_is_set bool
+    Opt6 int
+    /* Opt7 field is ignored unless Opt7_is_set == true */
+    Opt7_is_set bool
+    Opt7 int
+    /* Opt8 field is ignored unless Opt8_is_set == true */
+    Opt8_is_set bool
+    Opt8 int
+    /* Opt9 field is ignored unless Opt9_is_set == true */
+    Opt9_is_set bool
+    Opt9 int
+    /* Opt10 field is ignored unless Opt10_is_set == true */
+    Opt10_is_set bool
+    Opt10 int
+    /* Opt11 field is ignored unless Opt11_is_set == true */
+    Opt11_is_set bool
+    Opt11 int
+    /* Opt12 field is ignored unless Opt12_is_set == true */
+    Opt12_is_set bool
+    Opt12 int
+    /* Opt13 field is ignored unless Opt13_is_set == true */
+    Opt13_is_set bool
+    Opt13 int
+    /* Opt14 field is ignored unless Opt14_is_set == true */
+    Opt14_is_set bool
+    Opt14 int
+    /* Opt15 field is ignored unless Opt15_is_set == true */
+    Opt15_is_set bool
+    Opt15 int
+    /* Opt16 field is ignored unless Opt16_is_set == true */
+    Opt16_is_set bool
+    Opt16 int
+    /* Opt17 field is ignored unless Opt17_is_set == true */
+    Opt17_is_set bool
+    Opt17 int
+    /* Opt18 field is ignored unless Opt18_is_set == true */
+    Opt18_is_set bool
+    Opt18 int
+    /* Opt19 field is ignored unless Opt19_is_set == true */
+    Opt19_is_set bool
+    Opt19 int
+    /* Opt20 field is ignored unless Opt20_is_set == true */
+    Opt20_is_set bool
+    Opt20 int
+    /* Opt21 field is ignored unless Opt21_is_set == true */
+    Opt21_is_set bool
+    Opt21 int
+    /* Opt22 field is ignored unless Opt22_is_set == true */
+    Opt22_is_set bool
+    Opt22 int
+    /* Opt23 field is ignored unless Opt23_is_set == true */
+    Opt23_is_set bool
+    Opt23 int
+    /* Opt24 field is ignored unless Opt24_is_set == true */
+    Opt24_is_set bool
+    Opt24 int
+    /* Opt25 field is ignored unless Opt25_is_set == true */
+    Opt25_is_set bool
+    Opt25 int
+    /* Opt26 field is ignored unless Opt26_is_set == true */
+    Opt26_is_set bool
+    Opt26 int
+    /* Opt27 field is ignored unless Opt27_is_set == true */
+    Opt27_is_set bool
+    Opt27 int
+    /* Opt28 field is ignored unless Opt28_is_set == true */
+    Opt28_is_set bool
+    Opt28 int
+    /* Opt29 field is ignored unless Opt29_is_set == true */
+    Opt29_is_set bool
+    Opt29 int
+    /* Opt30 field is ignored unless Opt30_is_set == true */
+    Opt30_is_set bool
+    Opt30 int
+    /* Opt31 field is ignored unless Opt31_is_set == true */
+    Opt31_is_set bool
+    Opt31 int
+    /* Opt32 field is ignored unless Opt32_is_set == true */
+    Opt32_is_set bool
+    Opt32 int
+    /* Opt33 field is ignored unless Opt33_is_set == true */
+    Opt33_is_set bool
+    Opt33 int
+    /* Opt34 field is ignored unless Opt34_is_set == true */
+    Opt34_is_set bool
+    Opt34 int
+    /* Opt35 field is ignored unless Opt35_is_set == true */
+    Opt35_is_set bool
+    Opt35 int
+    /* Opt36 field is ignored unless Opt36_is_set == true */
+    Opt36_is_set bool
+    Opt36 int
+    /* Opt37 field is ignored unless Opt37_is_set == true */
+    Opt37_is_set bool
+    Opt37 int
+    /* Opt38 field is ignored unless Opt38_is_set == true */
+    Opt38_is_set bool
+    Opt38 int
+    /* Opt39 field is ignored unless Opt39_is_set == true */
+    Opt39_is_set bool
+    Opt39 int
+    /* Opt40 field is ignored unless Opt40_is_set == true */
+    Opt40_is_set bool
+    Opt40 int
+    /* Opt41 field is ignored unless Opt41_is_set == true */
+    Opt41_is_set bool
+    Opt41 int
+    /* Opt42 field is ignored unless Opt42_is_set == true */
+    Opt42_is_set bool
+    Opt42 int
+    /* Opt43 field is ignored unless Opt43_is_set == true */
+    Opt43_is_set bool
+    Opt43 int
+    /* Opt44 field is ignored unless Opt44_is_set == true */
+    Opt44_is_set bool
+    Opt44 int
+    /* Opt45 field is ignored unless Opt45_is_set == true */
+    Opt45_is_set bool
+    Opt45 int
+    /* Opt46 field is ignored unless Opt46_is_set == true */
+    Opt46_is_set bool
+    Opt46 int
+    /* Opt47 field is ignored unless Opt47_is_set == true */
+    Opt47_is_set bool
+    Opt47 int
+    /* Opt48 field is ignored unless Opt48_is_set == true */
+    Opt48_is_set bool
+    Opt48 int
+    /* Opt49 field is ignored unless Opt49_is_set == true */
+    Opt49_is_set bool
+    Opt49 int
+    /* Opt50 field is ignored unless Opt50_is_set == true */
+    Opt50_is_set bool
+    Opt50 int
+    /* Opt51 field is ignored unless Opt51_is_set == true */
+    Opt51_is_set bool
+    Opt51 int
+    /* Opt52 field is ignored unless Opt52_is_set == true */
+    Opt52_is_set bool
+    Opt52 int
+    /* Opt53 field is ignored unless Opt53_is_set == true */
+    Opt53_is_set bool
+    Opt53 int
+    /* Opt54 field is ignored unless Opt54_is_set == true */
+    Opt54_is_set bool
+    Opt54 int
+    /* Opt55 field is ignored unless Opt55_is_set == true */
+    Opt55_is_set bool
+    Opt55 int
+    /* Opt56 field is ignored unless Opt56_is_set == true */
+    Opt56_is_set bool
+    Opt56 int
+    /* Opt57 field is ignored unless Opt57_is_set == true */
+    Opt57_is_set bool
+    Opt57 int
+    /* Opt58 field is ignored unless Opt58_is_set == true */
+    Opt58_is_set bool
+    Opt58 int
+    /* Opt59 field is ignored unless Opt59_is_set == true */
+    Opt59_is_set bool
+    Opt59 int
+    /* Opt60 field is ignored unless Opt60_is_set == true */
+    Opt60_is_set bool
+    Opt60 int
+    /* Opt61 field is ignored unless Opt61_is_set == true */
+    Opt61_is_set bool
+    Opt61 int
+    /* Opt62 field is ignored unless Opt62_is_set == true */
+    Opt62_is_set bool
+    Opt62 int
+    /* Opt63 field is ignored unless Opt63_is_set == true */
+    Opt63_is_set bool
+    Opt63 int
 }
 
 /* internal_test_63_optargs : internal test function - do not use */
@@ -5201,257 +5213,257 @@ func (g *Guestfs) Internal_test_63_optargs (optargs *OptargsInternal_test_63_opt
     }
     c_optargs := C.struct_guestfs_internal_test_63_optargs_argv{}
     if optargs != nil {
-        if optargs.opt1_is_set {
+        if optargs.Opt1_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT1_BITMASK
-            c_optargs.opt1 = C.int (optargs.opt1)
+            c_optargs.opt1 = C.int (optargs.Opt1)
         }
-        if optargs.opt2_is_set {
+        if optargs.Opt2_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT2_BITMASK
-            c_optargs.opt2 = C.int (optargs.opt2)
+            c_optargs.opt2 = C.int (optargs.Opt2)
         }
-        if optargs.opt3_is_set {
+        if optargs.Opt3_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT3_BITMASK
-            c_optargs.opt3 = C.int (optargs.opt3)
+            c_optargs.opt3 = C.int (optargs.Opt3)
         }
-        if optargs.opt4_is_set {
+        if optargs.Opt4_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT4_BITMASK
-            c_optargs.opt4 = C.int (optargs.opt4)
+            c_optargs.opt4 = C.int (optargs.Opt4)
         }
-        if optargs.opt5_is_set {
+        if optargs.Opt5_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT5_BITMASK
-            c_optargs.opt5 = C.int (optargs.opt5)
+            c_optargs.opt5 = C.int (optargs.Opt5)
         }
-        if optargs.opt6_is_set {
+        if optargs.Opt6_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT6_BITMASK
-            c_optargs.opt6 = C.int (optargs.opt6)
+            c_optargs.opt6 = C.int (optargs.Opt6)
         }
-        if optargs.opt7_is_set {
+        if optargs.Opt7_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT7_BITMASK
-            c_optargs.opt7 = C.int (optargs.opt7)
+            c_optargs.opt7 = C.int (optargs.Opt7)
         }
-        if optargs.opt8_is_set {
+        if optargs.Opt8_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT8_BITMASK
-            c_optargs.opt8 = C.int (optargs.opt8)
+            c_optargs.opt8 = C.int (optargs.Opt8)
         }
-        if optargs.opt9_is_set {
+        if optargs.Opt9_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT9_BITMASK
-            c_optargs.opt9 = C.int (optargs.opt9)
+            c_optargs.opt9 = C.int (optargs.Opt9)
         }
-        if optargs.opt10_is_set {
+        if optargs.Opt10_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT10_BITMASK
-            c_optargs.opt10 = C.int (optargs.opt10)
+            c_optargs.opt10 = C.int (optargs.Opt10)
         }
-        if optargs.opt11_is_set {
+        if optargs.Opt11_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT11_BITMASK
-            c_optargs.opt11 = C.int (optargs.opt11)
+            c_optargs.opt11 = C.int (optargs.Opt11)
         }
-        if optargs.opt12_is_set {
+        if optargs.Opt12_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT12_BITMASK
-            c_optargs.opt12 = C.int (optargs.opt12)
+            c_optargs.opt12 = C.int (optargs.Opt12)
         }
-        if optargs.opt13_is_set {
+        if optargs.Opt13_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT13_BITMASK
-            c_optargs.opt13 = C.int (optargs.opt13)
+            c_optargs.opt13 = C.int (optargs.Opt13)
         }
-        if optargs.opt14_is_set {
+        if optargs.Opt14_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT14_BITMASK
-            c_optargs.opt14 = C.int (optargs.opt14)
+            c_optargs.opt14 = C.int (optargs.Opt14)
         }
-        if optargs.opt15_is_set {
+        if optargs.Opt15_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT15_BITMASK
-            c_optargs.opt15 = C.int (optargs.opt15)
+            c_optargs.opt15 = C.int (optargs.Opt15)
         }
-        if optargs.opt16_is_set {
+        if optargs.Opt16_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT16_BITMASK
-            c_optargs.opt16 = C.int (optargs.opt16)
+            c_optargs.opt16 = C.int (optargs.Opt16)
         }
-        if optargs.opt17_is_set {
+        if optargs.Opt17_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT17_BITMASK
-            c_optargs.opt17 = C.int (optargs.opt17)
+            c_optargs.opt17 = C.int (optargs.Opt17)
         }
-        if optargs.opt18_is_set {
+        if optargs.Opt18_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT18_BITMASK
-            c_optargs.opt18 = C.int (optargs.opt18)
+            c_optargs.opt18 = C.int (optargs.Opt18)
         }
-        if optargs.opt19_is_set {
+        if optargs.Opt19_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT19_BITMASK
-            c_optargs.opt19 = C.int (optargs.opt19)
+            c_optargs.opt19 = C.int (optargs.Opt19)
         }
-        if optargs.opt20_is_set {
+        if optargs.Opt20_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT20_BITMASK
-            c_optargs.opt20 = C.int (optargs.opt20)
+            c_optargs.opt20 = C.int (optargs.Opt20)
         }
-        if optargs.opt21_is_set {
+        if optargs.Opt21_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT21_BITMASK
-            c_optargs.opt21 = C.int (optargs.opt21)
+            c_optargs.opt21 = C.int (optargs.Opt21)
         }
-        if optargs.opt22_is_set {
+        if optargs.Opt22_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT22_BITMASK
-            c_optargs.opt22 = C.int (optargs.opt22)
+            c_optargs.opt22 = C.int (optargs.Opt22)
         }
-        if optargs.opt23_is_set {
+        if optargs.Opt23_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT23_BITMASK
-            c_optargs.opt23 = C.int (optargs.opt23)
+            c_optargs.opt23 = C.int (optargs.Opt23)
         }
-        if optargs.opt24_is_set {
+        if optargs.Opt24_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT24_BITMASK
-            c_optargs.opt24 = C.int (optargs.opt24)
+            c_optargs.opt24 = C.int (optargs.Opt24)
         }
-        if optargs.opt25_is_set {
+        if optargs.Opt25_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT25_BITMASK
-            c_optargs.opt25 = C.int (optargs.opt25)
+            c_optargs.opt25 = C.int (optargs.Opt25)
         }
-        if optargs.opt26_is_set {
+        if optargs.Opt26_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT26_BITMASK
-            c_optargs.opt26 = C.int (optargs.opt26)
+            c_optargs.opt26 = C.int (optargs.Opt26)
         }
-        if optargs.opt27_is_set {
+        if optargs.Opt27_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT27_BITMASK
-            c_optargs.opt27 = C.int (optargs.opt27)
+            c_optargs.opt27 = C.int (optargs.Opt27)
         }
-        if optargs.opt28_is_set {
+        if optargs.Opt28_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT28_BITMASK
-            c_optargs.opt28 = C.int (optargs.opt28)
+            c_optargs.opt28 = C.int (optargs.Opt28)
         }
-        if optargs.opt29_is_set {
+        if optargs.Opt29_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT29_BITMASK
-            c_optargs.opt29 = C.int (optargs.opt29)
+            c_optargs.opt29 = C.int (optargs.Opt29)
         }
-        if optargs.opt30_is_set {
+        if optargs.Opt30_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT30_BITMASK
-            c_optargs.opt30 = C.int (optargs.opt30)
+            c_optargs.opt30 = C.int (optargs.Opt30)
         }
-        if optargs.opt31_is_set {
+        if optargs.Opt31_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT31_BITMASK
-            c_optargs.opt31 = C.int (optargs.opt31)
+            c_optargs.opt31 = C.int (optargs.Opt31)
         }
-        if optargs.opt32_is_set {
+        if optargs.Opt32_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT32_BITMASK
-            c_optargs.opt32 = C.int (optargs.opt32)
+            c_optargs.opt32 = C.int (optargs.Opt32)
         }
-        if optargs.opt33_is_set {
+        if optargs.Opt33_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT33_BITMASK
-            c_optargs.opt33 = C.int (optargs.opt33)
+            c_optargs.opt33 = C.int (optargs.Opt33)
         }
-        if optargs.opt34_is_set {
+        if optargs.Opt34_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT34_BITMASK
-            c_optargs.opt34 = C.int (optargs.opt34)
+            c_optargs.opt34 = C.int (optargs.Opt34)
         }
-        if optargs.opt35_is_set {
+        if optargs.Opt35_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT35_BITMASK
-            c_optargs.opt35 = C.int (optargs.opt35)
+            c_optargs.opt35 = C.int (optargs.Opt35)
         }
-        if optargs.opt36_is_set {
+        if optargs.Opt36_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT36_BITMASK
-            c_optargs.opt36 = C.int (optargs.opt36)
+            c_optargs.opt36 = C.int (optargs.Opt36)
         }
-        if optargs.opt37_is_set {
+        if optargs.Opt37_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT37_BITMASK
-            c_optargs.opt37 = C.int (optargs.opt37)
+            c_optargs.opt37 = C.int (optargs.Opt37)
         }
-        if optargs.opt38_is_set {
+        if optargs.Opt38_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT38_BITMASK
-            c_optargs.opt38 = C.int (optargs.opt38)
+            c_optargs.opt38 = C.int (optargs.Opt38)
         }
-        if optargs.opt39_is_set {
+        if optargs.Opt39_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT39_BITMASK
-            c_optargs.opt39 = C.int (optargs.opt39)
+            c_optargs.opt39 = C.int (optargs.Opt39)
         }
-        if optargs.opt40_is_set {
+        if optargs.Opt40_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT40_BITMASK
-            c_optargs.opt40 = C.int (optargs.opt40)
+            c_optargs.opt40 = C.int (optargs.Opt40)
         }
-        if optargs.opt41_is_set {
+        if optargs.Opt41_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT41_BITMASK
-            c_optargs.opt41 = C.int (optargs.opt41)
+            c_optargs.opt41 = C.int (optargs.Opt41)
         }
-        if optargs.opt42_is_set {
+        if optargs.Opt42_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT42_BITMASK
-            c_optargs.opt42 = C.int (optargs.opt42)
+            c_optargs.opt42 = C.int (optargs.Opt42)
         }
-        if optargs.opt43_is_set {
+        if optargs.Opt43_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT43_BITMASK
-            c_optargs.opt43 = C.int (optargs.opt43)
+            c_optargs.opt43 = C.int (optargs.Opt43)
         }
-        if optargs.opt44_is_set {
+        if optargs.Opt44_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT44_BITMASK
-            c_optargs.opt44 = C.int (optargs.opt44)
+            c_optargs.opt44 = C.int (optargs.Opt44)
         }
-        if optargs.opt45_is_set {
+        if optargs.Opt45_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT45_BITMASK
-            c_optargs.opt45 = C.int (optargs.opt45)
+            c_optargs.opt45 = C.int (optargs.Opt45)
         }
-        if optargs.opt46_is_set {
+        if optargs.Opt46_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT46_BITMASK
-            c_optargs.opt46 = C.int (optargs.opt46)
+            c_optargs.opt46 = C.int (optargs.Opt46)
         }
-        if optargs.opt47_is_set {
+        if optargs.Opt47_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT47_BITMASK
-            c_optargs.opt47 = C.int (optargs.opt47)
+            c_optargs.opt47 = C.int (optargs.Opt47)
         }
-        if optargs.opt48_is_set {
+        if optargs.Opt48_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT48_BITMASK
-            c_optargs.opt48 = C.int (optargs.opt48)
+            c_optargs.opt48 = C.int (optargs.Opt48)
         }
-        if optargs.opt49_is_set {
+        if optargs.Opt49_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT49_BITMASK
-            c_optargs.opt49 = C.int (optargs.opt49)
+            c_optargs.opt49 = C.int (optargs.Opt49)
         }
-        if optargs.opt50_is_set {
+        if optargs.Opt50_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT50_BITMASK
-            c_optargs.opt50 = C.int (optargs.opt50)
+            c_optargs.opt50 = C.int (optargs.Opt50)
         }
-        if optargs.opt51_is_set {
+        if optargs.Opt51_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT51_BITMASK
-            c_optargs.opt51 = C.int (optargs.opt51)
+            c_optargs.opt51 = C.int (optargs.Opt51)
         }
-        if optargs.opt52_is_set {
+        if optargs.Opt52_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT52_BITMASK
-            c_optargs.opt52 = C.int (optargs.opt52)
+            c_optargs.opt52 = C.int (optargs.Opt52)
         }
-        if optargs.opt53_is_set {
+        if optargs.Opt53_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT53_BITMASK
-            c_optargs.opt53 = C.int (optargs.opt53)
+            c_optargs.opt53 = C.int (optargs.Opt53)
         }
-        if optargs.opt54_is_set {
+        if optargs.Opt54_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT54_BITMASK
-            c_optargs.opt54 = C.int (optargs.opt54)
+            c_optargs.opt54 = C.int (optargs.Opt54)
         }
-        if optargs.opt55_is_set {
+        if optargs.Opt55_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT55_BITMASK
-            c_optargs.opt55 = C.int (optargs.opt55)
+            c_optargs.opt55 = C.int (optargs.Opt55)
         }
-        if optargs.opt56_is_set {
+        if optargs.Opt56_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT56_BITMASK
-            c_optargs.opt56 = C.int (optargs.opt56)
+            c_optargs.opt56 = C.int (optargs.Opt56)
         }
-        if optargs.opt57_is_set {
+        if optargs.Opt57_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT57_BITMASK
-            c_optargs.opt57 = C.int (optargs.opt57)
+            c_optargs.opt57 = C.int (optargs.Opt57)
         }
-        if optargs.opt58_is_set {
+        if optargs.Opt58_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT58_BITMASK
-            c_optargs.opt58 = C.int (optargs.opt58)
+            c_optargs.opt58 = C.int (optargs.Opt58)
         }
-        if optargs.opt59_is_set {
+        if optargs.Opt59_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT59_BITMASK
-            c_optargs.opt59 = C.int (optargs.opt59)
+            c_optargs.opt59 = C.int (optargs.Opt59)
         }
-        if optargs.opt60_is_set {
+        if optargs.Opt60_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT60_BITMASK
-            c_optargs.opt60 = C.int (optargs.opt60)
+            c_optargs.opt60 = C.int (optargs.Opt60)
         }
-        if optargs.opt61_is_set {
+        if optargs.Opt61_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT61_BITMASK
-            c_optargs.opt61 = C.int (optargs.opt61)
+            c_optargs.opt61 = C.int (optargs.Opt61)
         }
-        if optargs.opt62_is_set {
+        if optargs.Opt62_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT62_BITMASK
-            c_optargs.opt62 = C.int (optargs.opt62)
+            c_optargs.opt62 = C.int (optargs.Opt62)
         }
-        if optargs.opt63_is_set {
+        if optargs.Opt63_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_63_OPTARGS_OPT63_BITMASK
-            c_optargs.opt63 = C.int (optargs.opt63)
+            c_optargs.opt63 = C.int (optargs.Opt63)
         }
     }
 
@@ -5479,9 +5491,9 @@ func (g *Guestfs) Internal_test_close_output () *GuestfsError {
 
 /* Struct carrying optional arguments for Internal_test_only_optargs */
 type OptargsInternal_test_only_optargs struct {
-    /* test field is ignored unless test_is_set == true */
-    test_is_set bool
-    test int
+    /* Test field is ignored unless Test_is_set == true */
+    Test_is_set bool
+    Test int
 }
 
 /* internal_test_only_optargs : internal test function - do not use */
@@ -5491,9 +5503,9 @@ func (g *Guestfs) Internal_test_only_optargs (optargs *OptargsInternal_test_only
     }
     c_optargs := C.struct_guestfs_internal_test_only_optargs_argv{}
     if optargs != nil {
-        if optargs.test_is_set {
+        if optargs.Test_is_set {
             c_optargs.bitmask |= C.GUESTFS_INTERNAL_TEST_ONLY_OPTARGS_TEST_BITMASK
-            c_optargs.test = C.int (optargs.test)
+            c_optargs.test = C.int (optargs.Test)
         }
     }
 
@@ -5883,9 +5895,9 @@ func (g *Guestfs) Internal_test_set_output (filename string) *GuestfsError {
 
 /* Struct carrying optional arguments for Is_blockdev */
 type OptargsIs_blockdev struct {
-    /* followsymlinks field is ignored unless followsymlinks_is_set == true */
-    followsymlinks_is_set bool
-    followsymlinks bool
+    /* Followsymlinks field is ignored unless Followsymlinks_is_set == true */
+    Followsymlinks_is_set bool
+    Followsymlinks bool
 }
 
 /* is_blockdev : test if block device */
@@ -5898,9 +5910,9 @@ func (g *Guestfs) Is_blockdev (path string, optargs *OptargsIs_blockdev) (bool, 
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_is_blockdev_opts_argv{}
     if optargs != nil {
-        if optargs.followsymlinks_is_set {
+        if optargs.Followsymlinks_is_set {
             c_optargs.bitmask |= C.GUESTFS_IS_BLOCKDEV_OPTS_FOLLOWSYMLINKS_BITMASK
-            if optargs.followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
+            if optargs.Followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
         }
     }
 
@@ -5928,9 +5940,9 @@ func (g *Guestfs) Is_busy () (bool, *GuestfsError) {
 
 /* Struct carrying optional arguments for Is_chardev */
 type OptargsIs_chardev struct {
-    /* followsymlinks field is ignored unless followsymlinks_is_set == true */
-    followsymlinks_is_set bool
-    followsymlinks bool
+    /* Followsymlinks field is ignored unless Followsymlinks_is_set == true */
+    Followsymlinks_is_set bool
+    Followsymlinks bool
 }
 
 /* is_chardev : test if character device */
@@ -5943,9 +5955,9 @@ func (g *Guestfs) Is_chardev (path string, optargs *OptargsIs_chardev) (bool, *G
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_is_chardev_opts_argv{}
     if optargs != nil {
-        if optargs.followsymlinks_is_set {
+        if optargs.Followsymlinks_is_set {
             c_optargs.bitmask |= C.GUESTFS_IS_CHARDEV_OPTS_FOLLOWSYMLINKS_BITMASK
-            if optargs.followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
+            if optargs.Followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
         }
     }
 
@@ -5973,9 +5985,9 @@ func (g *Guestfs) Is_config () (bool, *GuestfsError) {
 
 /* Struct carrying optional arguments for Is_dir */
 type OptargsIs_dir struct {
-    /* followsymlinks field is ignored unless followsymlinks_is_set == true */
-    followsymlinks_is_set bool
-    followsymlinks bool
+    /* Followsymlinks field is ignored unless Followsymlinks_is_set == true */
+    Followsymlinks_is_set bool
+    Followsymlinks bool
 }
 
 /* is_dir : test if a directory */
@@ -5988,9 +6000,9 @@ func (g *Guestfs) Is_dir (path string, optargs *OptargsIs_dir) (bool, *GuestfsEr
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_is_dir_opts_argv{}
     if optargs != nil {
-        if optargs.followsymlinks_is_set {
+        if optargs.Followsymlinks_is_set {
             c_optargs.bitmask |= C.GUESTFS_IS_DIR_OPTS_FOLLOWSYMLINKS_BITMASK
-            if optargs.followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
+            if optargs.Followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
         }
     }
 
@@ -6004,9 +6016,9 @@ func (g *Guestfs) Is_dir (path string, optargs *OptargsIs_dir) (bool, *GuestfsEr
 
 /* Struct carrying optional arguments for Is_fifo */
 type OptargsIs_fifo struct {
-    /* followsymlinks field is ignored unless followsymlinks_is_set == true */
-    followsymlinks_is_set bool
-    followsymlinks bool
+    /* Followsymlinks field is ignored unless Followsymlinks_is_set == true */
+    Followsymlinks_is_set bool
+    Followsymlinks bool
 }
 
 /* is_fifo : test if FIFO (named pipe) */
@@ -6019,9 +6031,9 @@ func (g *Guestfs) Is_fifo (path string, optargs *OptargsIs_fifo) (bool, *Guestfs
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_is_fifo_opts_argv{}
     if optargs != nil {
-        if optargs.followsymlinks_is_set {
+        if optargs.Followsymlinks_is_set {
             c_optargs.bitmask |= C.GUESTFS_IS_FIFO_OPTS_FOLLOWSYMLINKS_BITMASK
-            if optargs.followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
+            if optargs.Followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
         }
     }
 
@@ -6035,9 +6047,9 @@ func (g *Guestfs) Is_fifo (path string, optargs *OptargsIs_fifo) (bool, *Guestfs
 
 /* Struct carrying optional arguments for Is_file */
 type OptargsIs_file struct {
-    /* followsymlinks field is ignored unless followsymlinks_is_set == true */
-    followsymlinks_is_set bool
-    followsymlinks bool
+    /* Followsymlinks field is ignored unless Followsymlinks_is_set == true */
+    Followsymlinks_is_set bool
+    Followsymlinks bool
 }
 
 /* is_file : test if a regular file */
@@ -6050,9 +6062,9 @@ func (g *Guestfs) Is_file (path string, optargs *OptargsIs_file) (bool, *Guestfs
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_is_file_opts_argv{}
     if optargs != nil {
-        if optargs.followsymlinks_is_set {
+        if optargs.Followsymlinks_is_set {
             c_optargs.bitmask |= C.GUESTFS_IS_FILE_OPTS_FOLLOWSYMLINKS_BITMASK
-            if optargs.followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
+            if optargs.Followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
         }
     }
 
@@ -6111,9 +6123,9 @@ func (g *Guestfs) Is_ready () (bool, *GuestfsError) {
 
 /* Struct carrying optional arguments for Is_socket */
 type OptargsIs_socket struct {
-    /* followsymlinks field is ignored unless followsymlinks_is_set == true */
-    followsymlinks_is_set bool
-    followsymlinks bool
+    /* Followsymlinks field is ignored unless Followsymlinks_is_set == true */
+    Followsymlinks_is_set bool
+    Followsymlinks bool
 }
 
 /* is_socket : test if socket */
@@ -6126,9 +6138,9 @@ func (g *Guestfs) Is_socket (path string, optargs *OptargsIs_socket) (bool, *Gue
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_is_socket_opts_argv{}
     if optargs != nil {
-        if optargs.followsymlinks_is_set {
+        if optargs.Followsymlinks_is_set {
             c_optargs.bitmask |= C.GUESTFS_IS_SOCKET_OPTS_FOLLOWSYMLINKS_BITMASK
-            if optargs.followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
+            if optargs.Followsymlinks { c_optargs.followsymlinks = 1 } else { c_optargs.followsymlinks = 0}
         }
     }
 
@@ -7287,21 +7299,21 @@ func (g *Guestfs) Max_disks () (int, *GuestfsError) {
 
 /* Struct carrying optional arguments for Md_create */
 type OptargsMd_create struct {
-    /* missingbitmap field is ignored unless missingbitmap_is_set == true */
-    missingbitmap_is_set bool
-    missingbitmap int64
-    /* nrdevices field is ignored unless nrdevices_is_set == true */
-    nrdevices_is_set bool
-    nrdevices int
-    /* spare field is ignored unless spare_is_set == true */
-    spare_is_set bool
-    spare int
-    /* chunk field is ignored unless chunk_is_set == true */
-    chunk_is_set bool
-    chunk int64
-    /* level field is ignored unless level_is_set == true */
-    level_is_set bool
-    level string
+    /* Missingbitmap field is ignored unless Missingbitmap_is_set == true */
+    Missingbitmap_is_set bool
+    Missingbitmap int64
+    /* Nrdevices field is ignored unless Nrdevices_is_set == true */
+    Nrdevices_is_set bool
+    Nrdevices int
+    /* Spare field is ignored unless Spare_is_set == true */
+    Spare_is_set bool
+    Spare int
+    /* Chunk field is ignored unless Chunk_is_set == true */
+    Chunk_is_set bool
+    Chunk int64
+    /* Level field is ignored unless Level_is_set == true */
+    Level_is_set bool
+    Level string
 }
 
 /* md_create : create a Linux md (RAID) device */
@@ -7317,25 +7329,25 @@ func (g *Guestfs) Md_create (name string, devices []string, optargs *OptargsMd_c
     defer free_string_list (c_devices)
     c_optargs := C.struct_guestfs_md_create_argv{}
     if optargs != nil {
-        if optargs.missingbitmap_is_set {
+        if optargs.Missingbitmap_is_set {
             c_optargs.bitmask |= C.GUESTFS_MD_CREATE_MISSINGBITMAP_BITMASK
-            c_optargs.missingbitmap = C.int64_t (optargs.missingbitmap)
+            c_optargs.missingbitmap = C.int64_t (optargs.Missingbitmap)
         }
-        if optargs.nrdevices_is_set {
+        if optargs.Nrdevices_is_set {
             c_optargs.bitmask |= C.GUESTFS_MD_CREATE_NRDEVICES_BITMASK
-            c_optargs.nrdevices = C.int (optargs.nrdevices)
+            c_optargs.nrdevices = C.int (optargs.Nrdevices)
         }
-        if optargs.spare_is_set {
+        if optargs.Spare_is_set {
             c_optargs.bitmask |= C.GUESTFS_MD_CREATE_SPARE_BITMASK
-            c_optargs.spare = C.int (optargs.spare)
+            c_optargs.spare = C.int (optargs.Spare)
         }
-        if optargs.chunk_is_set {
+        if optargs.Chunk_is_set {
             c_optargs.bitmask |= C.GUESTFS_MD_CREATE_CHUNK_BITMASK
-            c_optargs.chunk = C.int64_t (optargs.chunk)
+            c_optargs.chunk = C.int64_t (optargs.Chunk)
         }
-        if optargs.level_is_set {
+        if optargs.Level_is_set {
             c_optargs.bitmask |= C.GUESTFS_MD_CREATE_LEVEL_BITMASK
-            c_optargs.level = C.CString (optargs.level)
+            c_optargs.level = C.CString (optargs.Level)
             defer C.free (unsafe.Pointer (c_optargs.level))
         }
     }
@@ -7472,120 +7484,120 @@ func (g *Guestfs) Mkdtemp (tmpl string) (string, *GuestfsError) {
 
 /* Struct carrying optional arguments for Mke2fs */
 type OptargsMke2fs struct {
-    /* blockscount field is ignored unless blockscount_is_set == true */
-    blockscount_is_set bool
-    blockscount int64
-    /* blocksize field is ignored unless blocksize_is_set == true */
-    blocksize_is_set bool
-    blocksize int64
-    /* fragsize field is ignored unless fragsize_is_set == true */
-    fragsize_is_set bool
-    fragsize int64
-    /* blockspergroup field is ignored unless blockspergroup_is_set == true */
-    blockspergroup_is_set bool
-    blockspergroup int64
-    /* numberofgroups field is ignored unless numberofgroups_is_set == true */
-    numberofgroups_is_set bool
-    numberofgroups int64
-    /* bytesperinode field is ignored unless bytesperinode_is_set == true */
-    bytesperinode_is_set bool
-    bytesperinode int64
-    /* inodesize field is ignored unless inodesize_is_set == true */
-    inodesize_is_set bool
-    inodesize int64
-    /* journalsize field is ignored unless journalsize_is_set == true */
-    journalsize_is_set bool
-    journalsize int64
-    /* numberofinodes field is ignored unless numberofinodes_is_set == true */
-    numberofinodes_is_set bool
-    numberofinodes int64
-    /* stridesize field is ignored unless stridesize_is_set == true */
-    stridesize_is_set bool
-    stridesize int64
-    /* stripewidth field is ignored unless stripewidth_is_set == true */
-    stripewidth_is_set bool
-    stripewidth int64
-    /* maxonlineresize field is ignored unless maxonlineresize_is_set == true */
-    maxonlineresize_is_set bool
-    maxonlineresize int64
-    /* reservedblockspercentage field is ignored unless reservedblockspercentage_is_set == true */
-    reservedblockspercentage_is_set bool
-    reservedblockspercentage int
-    /* mmpupdateinterval field is ignored unless mmpupdateinterval_is_set == true */
-    mmpupdateinterval_is_set bool
-    mmpupdateinterval int
-    /* journaldevice field is ignored unless journaldevice_is_set == true */
-    journaldevice_is_set bool
-    journaldevice string
-    /* label field is ignored unless label_is_set == true */
-    label_is_set bool
-    label string
-    /* lastmounteddir field is ignored unless lastmounteddir_is_set == true */
-    lastmounteddir_is_set bool
-    lastmounteddir string
-    /* creatoros field is ignored unless creatoros_is_set == true */
-    creatoros_is_set bool
-    creatoros string
-    /* fstype field is ignored unless fstype_is_set == true */
-    fstype_is_set bool
-    fstype string
-    /* usagetype field is ignored unless usagetype_is_set == true */
-    usagetype_is_set bool
-    usagetype string
-    /* uuid field is ignored unless uuid_is_set == true */
-    uuid_is_set bool
-    uuid string
-    /* forcecreate field is ignored unless forcecreate_is_set == true */
-    forcecreate_is_set bool
-    forcecreate bool
-    /* writesbandgrouponly field is ignored unless writesbandgrouponly_is_set == true */
-    writesbandgrouponly_is_set bool
-    writesbandgrouponly bool
-    /* lazyitableinit field is ignored unless lazyitableinit_is_set == true */
-    lazyitableinit_is_set bool
-    lazyitableinit bool
-    /* lazyjournalinit field is ignored unless lazyjournalinit_is_set == true */
-    lazyjournalinit_is_set bool
-    lazyjournalinit bool
-    /* testfs field is ignored unless testfs_is_set == true */
-    testfs_is_set bool
-    testfs bool
-    /* discard field is ignored unless discard_is_set == true */
-    discard_is_set bool
-    discard bool
-    /* quotatype field is ignored unless quotatype_is_set == true */
-    quotatype_is_set bool
-    quotatype bool
-    /* extent field is ignored unless extent_is_set == true */
-    extent_is_set bool
-    extent bool
-    /* filetype field is ignored unless filetype_is_set == true */
-    filetype_is_set bool
-    filetype bool
-    /* flexbg field is ignored unless flexbg_is_set == true */
-    flexbg_is_set bool
-    flexbg bool
-    /* hasjournal field is ignored unless hasjournal_is_set == true */
-    hasjournal_is_set bool
-    hasjournal bool
-    /* journaldev field is ignored unless journaldev_is_set == true */
-    journaldev_is_set bool
-    journaldev bool
-    /* largefile field is ignored unless largefile_is_set == true */
-    largefile_is_set bool
-    largefile bool
-    /* quota field is ignored unless quota_is_set == true */
-    quota_is_set bool
-    quota bool
-    /* resizeinode field is ignored unless resizeinode_is_set == true */
-    resizeinode_is_set bool
-    resizeinode bool
-    /* sparsesuper field is ignored unless sparsesuper_is_set == true */
-    sparsesuper_is_set bool
-    sparsesuper bool
-    /* uninitbg field is ignored unless uninitbg_is_set == true */
-    uninitbg_is_set bool
-    uninitbg bool
+    /* Blockscount field is ignored unless Blockscount_is_set == true */
+    Blockscount_is_set bool
+    Blockscount int64
+    /* Blocksize field is ignored unless Blocksize_is_set == true */
+    Blocksize_is_set bool
+    Blocksize int64
+    /* Fragsize field is ignored unless Fragsize_is_set == true */
+    Fragsize_is_set bool
+    Fragsize int64
+    /* Blockspergroup field is ignored unless Blockspergroup_is_set == true */
+    Blockspergroup_is_set bool
+    Blockspergroup int64
+    /* Numberofgroups field is ignored unless Numberofgroups_is_set == true */
+    Numberofgroups_is_set bool
+    Numberofgroups int64
+    /* Bytesperinode field is ignored unless Bytesperinode_is_set == true */
+    Bytesperinode_is_set bool
+    Bytesperinode int64
+    /* Inodesize field is ignored unless Inodesize_is_set == true */
+    Inodesize_is_set bool
+    Inodesize int64
+    /* Journalsize field is ignored unless Journalsize_is_set == true */
+    Journalsize_is_set bool
+    Journalsize int64
+    /* Numberofinodes field is ignored unless Numberofinodes_is_set == true */
+    Numberofinodes_is_set bool
+    Numberofinodes int64
+    /* Stridesize field is ignored unless Stridesize_is_set == true */
+    Stridesize_is_set bool
+    Stridesize int64
+    /* Stripewidth field is ignored unless Stripewidth_is_set == true */
+    Stripewidth_is_set bool
+    Stripewidth int64
+    /* Maxonlineresize field is ignored unless Maxonlineresize_is_set == true */
+    Maxonlineresize_is_set bool
+    Maxonlineresize int64
+    /* Reservedblockspercentage field is ignored unless Reservedblockspercentage_is_set == true */
+    Reservedblockspercentage_is_set bool
+    Reservedblockspercentage int
+    /* Mmpupdateinterval field is ignored unless Mmpupdateinterval_is_set == true */
+    Mmpupdateinterval_is_set bool
+    Mmpupdateinterval int
+    /* Journaldevice field is ignored unless Journaldevice_is_set == true */
+    Journaldevice_is_set bool
+    Journaldevice string
+    /* Label field is ignored unless Label_is_set == true */
+    Label_is_set bool
+    Label string
+    /* Lastmounteddir field is ignored unless Lastmounteddir_is_set == true */
+    Lastmounteddir_is_set bool
+    Lastmounteddir string
+    /* Creatoros field is ignored unless Creatoros_is_set == true */
+    Creatoros_is_set bool
+    Creatoros string
+    /* Fstype field is ignored unless Fstype_is_set == true */
+    Fstype_is_set bool
+    Fstype string
+    /* Usagetype field is ignored unless Usagetype_is_set == true */
+    Usagetype_is_set bool
+    Usagetype string
+    /* Uuid field is ignored unless Uuid_is_set == true */
+    Uuid_is_set bool
+    Uuid string
+    /* Forcecreate field is ignored unless Forcecreate_is_set == true */
+    Forcecreate_is_set bool
+    Forcecreate bool
+    /* Writesbandgrouponly field is ignored unless Writesbandgrouponly_is_set == true */
+    Writesbandgrouponly_is_set bool
+    Writesbandgrouponly bool
+    /* Lazyitableinit field is ignored unless Lazyitableinit_is_set == true */
+    Lazyitableinit_is_set bool
+    Lazyitableinit bool
+    /* Lazyjournalinit field is ignored unless Lazyjournalinit_is_set == true */
+    Lazyjournalinit_is_set bool
+    Lazyjournalinit bool
+    /* Testfs field is ignored unless Testfs_is_set == true */
+    Testfs_is_set bool
+    Testfs bool
+    /* Discard field is ignored unless Discard_is_set == true */
+    Discard_is_set bool
+    Discard bool
+    /* Quotatype field is ignored unless Quotatype_is_set == true */
+    Quotatype_is_set bool
+    Quotatype bool
+    /* Extent field is ignored unless Extent_is_set == true */
+    Extent_is_set bool
+    Extent bool
+    /* Filetype field is ignored unless Filetype_is_set == true */
+    Filetype_is_set bool
+    Filetype bool
+    /* Flexbg field is ignored unless Flexbg_is_set == true */
+    Flexbg_is_set bool
+    Flexbg bool
+    /* Hasjournal field is ignored unless Hasjournal_is_set == true */
+    Hasjournal_is_set bool
+    Hasjournal bool
+    /* Journaldev field is ignored unless Journaldev_is_set == true */
+    Journaldev_is_set bool
+    Journaldev bool
+    /* Largefile field is ignored unless Largefile_is_set == true */
+    Largefile_is_set bool
+    Largefile bool
+    /* Quota field is ignored unless Quota_is_set == true */
+    Quota_is_set bool
+    Quota bool
+    /* Resizeinode field is ignored unless Resizeinode_is_set == true */
+    Resizeinode_is_set bool
+    Resizeinode bool
+    /* Sparsesuper field is ignored unless Sparsesuper_is_set == true */
+    Sparsesuper_is_set bool
+    Sparsesuper bool
+    /* Uninitbg field is ignored unless Uninitbg_is_set == true */
+    Uninitbg_is_set bool
+    Uninitbg bool
 }
 
 /* mke2fs : create an ext2/ext3/ext4 filesystem on device */
@@ -7598,164 +7610,164 @@ func (g *Guestfs) Mke2fs (device string, optargs *OptargsMke2fs) *GuestfsError {
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_mke2fs_argv{}
     if optargs != nil {
-        if optargs.blockscount_is_set {
+        if optargs.Blockscount_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_BLOCKSCOUNT_BITMASK
-            c_optargs.blockscount = C.int64_t (optargs.blockscount)
+            c_optargs.blockscount = C.int64_t (optargs.Blockscount)
         }
-        if optargs.blocksize_is_set {
+        if optargs.Blocksize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_BLOCKSIZE_BITMASK
-            c_optargs.blocksize = C.int64_t (optargs.blocksize)
+            c_optargs.blocksize = C.int64_t (optargs.Blocksize)
         }
-        if optargs.fragsize_is_set {
+        if optargs.Fragsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_FRAGSIZE_BITMASK
-            c_optargs.fragsize = C.int64_t (optargs.fragsize)
+            c_optargs.fragsize = C.int64_t (optargs.Fragsize)
         }
-        if optargs.blockspergroup_is_set {
+        if optargs.Blockspergroup_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_BLOCKSPERGROUP_BITMASK
-            c_optargs.blockspergroup = C.int64_t (optargs.blockspergroup)
+            c_optargs.blockspergroup = C.int64_t (optargs.Blockspergroup)
         }
-        if optargs.numberofgroups_is_set {
+        if optargs.Numberofgroups_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_NUMBEROFGROUPS_BITMASK
-            c_optargs.numberofgroups = C.int64_t (optargs.numberofgroups)
+            c_optargs.numberofgroups = C.int64_t (optargs.Numberofgroups)
         }
-        if optargs.bytesperinode_is_set {
+        if optargs.Bytesperinode_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_BYTESPERINODE_BITMASK
-            c_optargs.bytesperinode = C.int64_t (optargs.bytesperinode)
+            c_optargs.bytesperinode = C.int64_t (optargs.Bytesperinode)
         }
-        if optargs.inodesize_is_set {
+        if optargs.Inodesize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_INODESIZE_BITMASK
-            c_optargs.inodesize = C.int64_t (optargs.inodesize)
+            c_optargs.inodesize = C.int64_t (optargs.Inodesize)
         }
-        if optargs.journalsize_is_set {
+        if optargs.Journalsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_JOURNALSIZE_BITMASK
-            c_optargs.journalsize = C.int64_t (optargs.journalsize)
+            c_optargs.journalsize = C.int64_t (optargs.Journalsize)
         }
-        if optargs.numberofinodes_is_set {
+        if optargs.Numberofinodes_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_NUMBEROFINODES_BITMASK
-            c_optargs.numberofinodes = C.int64_t (optargs.numberofinodes)
+            c_optargs.numberofinodes = C.int64_t (optargs.Numberofinodes)
         }
-        if optargs.stridesize_is_set {
+        if optargs.Stridesize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_STRIDESIZE_BITMASK
-            c_optargs.stridesize = C.int64_t (optargs.stridesize)
+            c_optargs.stridesize = C.int64_t (optargs.Stridesize)
         }
-        if optargs.stripewidth_is_set {
+        if optargs.Stripewidth_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_STRIPEWIDTH_BITMASK
-            c_optargs.stripewidth = C.int64_t (optargs.stripewidth)
+            c_optargs.stripewidth = C.int64_t (optargs.Stripewidth)
         }
-        if optargs.maxonlineresize_is_set {
+        if optargs.Maxonlineresize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_MAXONLINERESIZE_BITMASK
-            c_optargs.maxonlineresize = C.int64_t (optargs.maxonlineresize)
+            c_optargs.maxonlineresize = C.int64_t (optargs.Maxonlineresize)
         }
-        if optargs.reservedblockspercentage_is_set {
+        if optargs.Reservedblockspercentage_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK
-            c_optargs.reservedblockspercentage = C.int (optargs.reservedblockspercentage)
+            c_optargs.reservedblockspercentage = C.int (optargs.Reservedblockspercentage)
         }
-        if optargs.mmpupdateinterval_is_set {
+        if optargs.Mmpupdateinterval_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_MMPUPDATEINTERVAL_BITMASK
-            c_optargs.mmpupdateinterval = C.int (optargs.mmpupdateinterval)
+            c_optargs.mmpupdateinterval = C.int (optargs.Mmpupdateinterval)
         }
-        if optargs.journaldevice_is_set {
+        if optargs.Journaldevice_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_JOURNALDEVICE_BITMASK
-            c_optargs.journaldevice = C.CString (optargs.journaldevice)
+            c_optargs.journaldevice = C.CString (optargs.Journaldevice)
             defer C.free (unsafe.Pointer (c_optargs.journaldevice))
         }
-        if optargs.label_is_set {
+        if optargs.Label_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_LABEL_BITMASK
-            c_optargs.label = C.CString (optargs.label)
+            c_optargs.label = C.CString (optargs.Label)
             defer C.free (unsafe.Pointer (c_optargs.label))
         }
-        if optargs.lastmounteddir_is_set {
+        if optargs.Lastmounteddir_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_LASTMOUNTEDDIR_BITMASK
-            c_optargs.lastmounteddir = C.CString (optargs.lastmounteddir)
+            c_optargs.lastmounteddir = C.CString (optargs.Lastmounteddir)
             defer C.free (unsafe.Pointer (c_optargs.lastmounteddir))
         }
-        if optargs.creatoros_is_set {
+        if optargs.Creatoros_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_CREATOROS_BITMASK
-            c_optargs.creatoros = C.CString (optargs.creatoros)
+            c_optargs.creatoros = C.CString (optargs.Creatoros)
             defer C.free (unsafe.Pointer (c_optargs.creatoros))
         }
-        if optargs.fstype_is_set {
+        if optargs.Fstype_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_FSTYPE_BITMASK
-            c_optargs.fstype = C.CString (optargs.fstype)
+            c_optargs.fstype = C.CString (optargs.Fstype)
             defer C.free (unsafe.Pointer (c_optargs.fstype))
         }
-        if optargs.usagetype_is_set {
+        if optargs.Usagetype_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_USAGETYPE_BITMASK
-            c_optargs.usagetype = C.CString (optargs.usagetype)
+            c_optargs.usagetype = C.CString (optargs.Usagetype)
             defer C.free (unsafe.Pointer (c_optargs.usagetype))
         }
-        if optargs.uuid_is_set {
+        if optargs.Uuid_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_UUID_BITMASK
-            c_optargs.uuid = C.CString (optargs.uuid)
+            c_optargs.uuid = C.CString (optargs.Uuid)
             defer C.free (unsafe.Pointer (c_optargs.uuid))
         }
-        if optargs.forcecreate_is_set {
+        if optargs.Forcecreate_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_FORCECREATE_BITMASK
-            if optargs.forcecreate { c_optargs.forcecreate = 1 } else { c_optargs.forcecreate = 0}
+            if optargs.Forcecreate { c_optargs.forcecreate = 1 } else { c_optargs.forcecreate = 0}
         }
-        if optargs.writesbandgrouponly_is_set {
+        if optargs.Writesbandgrouponly_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_WRITESBANDGROUPONLY_BITMASK
-            if optargs.writesbandgrouponly { c_optargs.writesbandgrouponly = 1 } else { c_optargs.writesbandgrouponly = 0}
+            if optargs.Writesbandgrouponly { c_optargs.writesbandgrouponly = 1 } else { c_optargs.writesbandgrouponly = 0}
         }
-        if optargs.lazyitableinit_is_set {
+        if optargs.Lazyitableinit_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_LAZYITABLEINIT_BITMASK
-            if optargs.lazyitableinit { c_optargs.lazyitableinit = 1 } else { c_optargs.lazyitableinit = 0}
+            if optargs.Lazyitableinit { c_optargs.lazyitableinit = 1 } else { c_optargs.lazyitableinit = 0}
         }
-        if optargs.lazyjournalinit_is_set {
+        if optargs.Lazyjournalinit_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_LAZYJOURNALINIT_BITMASK
-            if optargs.lazyjournalinit { c_optargs.lazyjournalinit = 1 } else { c_optargs.lazyjournalinit = 0}
+            if optargs.Lazyjournalinit { c_optargs.lazyjournalinit = 1 } else { c_optargs.lazyjournalinit = 0}
         }
-        if optargs.testfs_is_set {
+        if optargs.Testfs_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_TESTFS_BITMASK
-            if optargs.testfs { c_optargs.testfs = 1 } else { c_optargs.testfs = 0}
+            if optargs.Testfs { c_optargs.testfs = 1 } else { c_optargs.testfs = 0}
         }
-        if optargs.discard_is_set {
+        if optargs.Discard_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_DISCARD_BITMASK
-            if optargs.discard { c_optargs.discard = 1 } else { c_optargs.discard = 0}
+            if optargs.Discard { c_optargs.discard = 1 } else { c_optargs.discard = 0}
         }
-        if optargs.quotatype_is_set {
+        if optargs.Quotatype_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_QUOTATYPE_BITMASK
-            if optargs.quotatype { c_optargs.quotatype = 1 } else { c_optargs.quotatype = 0}
+            if optargs.Quotatype { c_optargs.quotatype = 1 } else { c_optargs.quotatype = 0}
         }
-        if optargs.extent_is_set {
+        if optargs.Extent_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_EXTENT_BITMASK
-            if optargs.extent { c_optargs.extent = 1 } else { c_optargs.extent = 0}
+            if optargs.Extent { c_optargs.extent = 1 } else { c_optargs.extent = 0}
         }
-        if optargs.filetype_is_set {
+        if optargs.Filetype_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_FILETYPE_BITMASK
-            if optargs.filetype { c_optargs.filetype = 1 } else { c_optargs.filetype = 0}
+            if optargs.Filetype { c_optargs.filetype = 1 } else { c_optargs.filetype = 0}
         }
-        if optargs.flexbg_is_set {
+        if optargs.Flexbg_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_FLEXBG_BITMASK
-            if optargs.flexbg { c_optargs.flexbg = 1 } else { c_optargs.flexbg = 0}
+            if optargs.Flexbg { c_optargs.flexbg = 1 } else { c_optargs.flexbg = 0}
         }
-        if optargs.hasjournal_is_set {
+        if optargs.Hasjournal_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_HASJOURNAL_BITMASK
-            if optargs.hasjournal { c_optargs.hasjournal = 1 } else { c_optargs.hasjournal = 0}
+            if optargs.Hasjournal { c_optargs.hasjournal = 1 } else { c_optargs.hasjournal = 0}
         }
-        if optargs.journaldev_is_set {
+        if optargs.Journaldev_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_JOURNALDEV_BITMASK
-            if optargs.journaldev { c_optargs.journaldev = 1 } else { c_optargs.journaldev = 0}
+            if optargs.Journaldev { c_optargs.journaldev = 1 } else { c_optargs.journaldev = 0}
         }
-        if optargs.largefile_is_set {
+        if optargs.Largefile_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_LARGEFILE_BITMASK
-            if optargs.largefile { c_optargs.largefile = 1 } else { c_optargs.largefile = 0}
+            if optargs.Largefile { c_optargs.largefile = 1 } else { c_optargs.largefile = 0}
         }
-        if optargs.quota_is_set {
+        if optargs.Quota_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_QUOTA_BITMASK
-            if optargs.quota { c_optargs.quota = 1 } else { c_optargs.quota = 0}
+            if optargs.Quota { c_optargs.quota = 1 } else { c_optargs.quota = 0}
         }
-        if optargs.resizeinode_is_set {
+        if optargs.Resizeinode_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_RESIZEINODE_BITMASK
-            if optargs.resizeinode { c_optargs.resizeinode = 1 } else { c_optargs.resizeinode = 0}
+            if optargs.Resizeinode { c_optargs.resizeinode = 1 } else { c_optargs.resizeinode = 0}
         }
-        if optargs.sparsesuper_is_set {
+        if optargs.Sparsesuper_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_SPARSESUPER_BITMASK
-            if optargs.sparsesuper { c_optargs.sparsesuper = 1 } else { c_optargs.sparsesuper = 0}
+            if optargs.Sparsesuper { c_optargs.sparsesuper = 1 } else { c_optargs.sparsesuper = 0}
         }
-        if optargs.uninitbg_is_set {
+        if optargs.Uninitbg_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKE2FS_UNINITBG_BITMASK
-            if optargs.uninitbg { c_optargs.uninitbg = 1 } else { c_optargs.uninitbg = 0}
+            if optargs.Uninitbg { c_optargs.uninitbg = 1 } else { c_optargs.uninitbg = 0}
         }
     }
 
@@ -7912,18 +7924,18 @@ func (g *Guestfs) Mkfifo (mode int, path string) *GuestfsError {
 
 /* Struct carrying optional arguments for Mkfs */
 type OptargsMkfs struct {
-    /* blocksize field is ignored unless blocksize_is_set == true */
-    blocksize_is_set bool
-    blocksize int
-    /* features field is ignored unless features_is_set == true */
-    features_is_set bool
-    features string
-    /* inode field is ignored unless inode_is_set == true */
-    inode_is_set bool
-    inode int
-    /* sectorsize field is ignored unless sectorsize_is_set == true */
-    sectorsize_is_set bool
-    sectorsize int
+    /* Blocksize field is ignored unless Blocksize_is_set == true */
+    Blocksize_is_set bool
+    Blocksize int
+    /* Features field is ignored unless Features_is_set == true */
+    Features_is_set bool
+    Features string
+    /* Inode field is ignored unless Inode_is_set == true */
+    Inode_is_set bool
+    Inode int
+    /* Sectorsize field is ignored unless Sectorsize_is_set == true */
+    Sectorsize_is_set bool
+    Sectorsize int
 }
 
 /* mkfs : make a filesystem */
@@ -7939,22 +7951,22 @@ func (g *Guestfs) Mkfs (fstype string, device string, optargs *OptargsMkfs) *Gue
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_mkfs_opts_argv{}
     if optargs != nil {
-        if optargs.blocksize_is_set {
+        if optargs.Blocksize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_OPTS_BLOCKSIZE_BITMASK
-            c_optargs.blocksize = C.int (optargs.blocksize)
+            c_optargs.blocksize = C.int (optargs.Blocksize)
         }
-        if optargs.features_is_set {
+        if optargs.Features_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_OPTS_FEATURES_BITMASK
-            c_optargs.features = C.CString (optargs.features)
+            c_optargs.features = C.CString (optargs.Features)
             defer C.free (unsafe.Pointer (c_optargs.features))
         }
-        if optargs.inode_is_set {
+        if optargs.Inode_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_OPTS_INODE_BITMASK
-            c_optargs.inode = C.int (optargs.inode)
+            c_optargs.inode = C.int (optargs.Inode)
         }
-        if optargs.sectorsize_is_set {
+        if optargs.Sectorsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_OPTS_SECTORSIZE_BITMASK
-            c_optargs.sectorsize = C.int (optargs.sectorsize)
+            c_optargs.sectorsize = C.int (optargs.Sectorsize)
         }
     }
 
@@ -7988,30 +8000,30 @@ func (g *Guestfs) Mkfs_b (fstype string, blocksize int, device string) *GuestfsE
 
 /* Struct carrying optional arguments for Mkfs_btrfs */
 type OptargsMkfs_btrfs struct {
-    /* allocstart field is ignored unless allocstart_is_set == true */
-    allocstart_is_set bool
-    allocstart int64
-    /* bytecount field is ignored unless bytecount_is_set == true */
-    bytecount_is_set bool
-    bytecount int64
-    /* datatype field is ignored unless datatype_is_set == true */
-    datatype_is_set bool
-    datatype string
-    /* leafsize field is ignored unless leafsize_is_set == true */
-    leafsize_is_set bool
-    leafsize int
-    /* label field is ignored unless label_is_set == true */
-    label_is_set bool
-    label string
-    /* metadata field is ignored unless metadata_is_set == true */
-    metadata_is_set bool
-    metadata string
-    /* nodesize field is ignored unless nodesize_is_set == true */
-    nodesize_is_set bool
-    nodesize int
-    /* sectorsize field is ignored unless sectorsize_is_set == true */
-    sectorsize_is_set bool
-    sectorsize int
+    /* Allocstart field is ignored unless Allocstart_is_set == true */
+    Allocstart_is_set bool
+    Allocstart int64
+    /* Bytecount field is ignored unless Bytecount_is_set == true */
+    Bytecount_is_set bool
+    Bytecount int64
+    /* Datatype field is ignored unless Datatype_is_set == true */
+    Datatype_is_set bool
+    Datatype string
+    /* Leafsize field is ignored unless Leafsize_is_set == true */
+    Leafsize_is_set bool
+    Leafsize int
+    /* Label field is ignored unless Label_is_set == true */
+    Label_is_set bool
+    Label string
+    /* Metadata field is ignored unless Metadata_is_set == true */
+    Metadata_is_set bool
+    Metadata string
+    /* Nodesize field is ignored unless Nodesize_is_set == true */
+    Nodesize_is_set bool
+    Nodesize int
+    /* Sectorsize field is ignored unless Sectorsize_is_set == true */
+    Sectorsize_is_set bool
+    Sectorsize int
 }
 
 /* mkfs_btrfs : create a btrfs filesystem */
@@ -8024,40 +8036,40 @@ func (g *Guestfs) Mkfs_btrfs (devices []string, optargs *OptargsMkfs_btrfs) *Gue
     defer free_string_list (c_devices)
     c_optargs := C.struct_guestfs_mkfs_btrfs_argv{}
     if optargs != nil {
-        if optargs.allocstart_is_set {
+        if optargs.Allocstart_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_ALLOCSTART_BITMASK
-            c_optargs.allocstart = C.int64_t (optargs.allocstart)
+            c_optargs.allocstart = C.int64_t (optargs.Allocstart)
         }
-        if optargs.bytecount_is_set {
+        if optargs.Bytecount_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_BYTECOUNT_BITMASK
-            c_optargs.bytecount = C.int64_t (optargs.bytecount)
+            c_optargs.bytecount = C.int64_t (optargs.Bytecount)
         }
-        if optargs.datatype_is_set {
+        if optargs.Datatype_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_DATATYPE_BITMASK
-            c_optargs.datatype = C.CString (optargs.datatype)
+            c_optargs.datatype = C.CString (optargs.Datatype)
             defer C.free (unsafe.Pointer (c_optargs.datatype))
         }
-        if optargs.leafsize_is_set {
+        if optargs.Leafsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_LEAFSIZE_BITMASK
-            c_optargs.leafsize = C.int (optargs.leafsize)
+            c_optargs.leafsize = C.int (optargs.Leafsize)
         }
-        if optargs.label_is_set {
+        if optargs.Label_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_LABEL_BITMASK
-            c_optargs.label = C.CString (optargs.label)
+            c_optargs.label = C.CString (optargs.Label)
             defer C.free (unsafe.Pointer (c_optargs.label))
         }
-        if optargs.metadata_is_set {
+        if optargs.Metadata_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_METADATA_BITMASK
-            c_optargs.metadata = C.CString (optargs.metadata)
+            c_optargs.metadata = C.CString (optargs.Metadata)
             defer C.free (unsafe.Pointer (c_optargs.metadata))
         }
-        if optargs.nodesize_is_set {
+        if optargs.Nodesize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_NODESIZE_BITMASK
-            c_optargs.nodesize = C.int (optargs.nodesize)
+            c_optargs.nodesize = C.int (optargs.Nodesize)
         }
-        if optargs.sectorsize_is_set {
+        if optargs.Sectorsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKFS_BTRFS_SECTORSIZE_BITMASK
-            c_optargs.sectorsize = C.int (optargs.sectorsize)
+            c_optargs.sectorsize = C.int (optargs.Sectorsize)
         }
     }
 
@@ -8156,12 +8168,12 @@ func (g *Guestfs) Mknod_c (mode int, devmajor int, devminor int, path string) *G
 
 /* Struct carrying optional arguments for Mkswap */
 type OptargsMkswap struct {
-    /* label field is ignored unless label_is_set == true */
-    label_is_set bool
-    label string
-    /* uuid field is ignored unless uuid_is_set == true */
-    uuid_is_set bool
-    uuid string
+    /* Label field is ignored unless Label_is_set == true */
+    Label_is_set bool
+    Label string
+    /* Uuid field is ignored unless Uuid_is_set == true */
+    Uuid_is_set bool
+    Uuid string
 }
 
 /* mkswap : create a swap partition */
@@ -8174,14 +8186,14 @@ func (g *Guestfs) Mkswap (device string, optargs *OptargsMkswap) *GuestfsError {
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_mkswap_opts_argv{}
     if optargs != nil {
-        if optargs.label_is_set {
+        if optargs.Label_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKSWAP_OPTS_LABEL_BITMASK
-            c_optargs.label = C.CString (optargs.label)
+            c_optargs.label = C.CString (optargs.Label)
             defer C.free (unsafe.Pointer (c_optargs.label))
         }
-        if optargs.uuid_is_set {
+        if optargs.Uuid_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKSWAP_OPTS_UUID_BITMASK
-            c_optargs.uuid = C.CString (optargs.uuid)
+            c_optargs.uuid = C.CString (optargs.Uuid)
             defer C.free (unsafe.Pointer (c_optargs.uuid))
         }
     }
@@ -8253,9 +8265,9 @@ func (g *Guestfs) Mkswap_file (path string) *GuestfsError {
 
 /* Struct carrying optional arguments for Mktemp */
 type OptargsMktemp struct {
-    /* suffix field is ignored unless suffix_is_set == true */
-    suffix_is_set bool
-    suffix string
+    /* Suffix field is ignored unless Suffix_is_set == true */
+    Suffix_is_set bool
+    Suffix string
 }
 
 /* mktemp : create a temporary file */
@@ -8268,9 +8280,9 @@ func (g *Guestfs) Mktemp (tmpl string, optargs *OptargsMktemp) (string, *Guestfs
     defer C.free (unsafe.Pointer (c_tmpl))
     c_optargs := C.struct_guestfs_mktemp_argv{}
     if optargs != nil {
-        if optargs.suffix_is_set {
+        if optargs.Suffix_is_set {
             c_optargs.bitmask |= C.GUESTFS_MKTEMP_SUFFIX_BITMASK
-            c_optargs.suffix = C.CString (optargs.suffix)
+            c_optargs.suffix = C.CString (optargs.Suffix)
             defer C.free (unsafe.Pointer (c_optargs.suffix))
         }
     }
@@ -8323,9 +8335,9 @@ func (g *Guestfs) Mount (mountable string, mountpoint string) *GuestfsError {
 
 /* Struct carrying optional arguments for Mount_9p */
 type OptargsMount_9p struct {
-    /* options field is ignored unless options_is_set == true */
-    options_is_set bool
-    options string
+    /* Options field is ignored unless Options_is_set == true */
+    Options_is_set bool
+    Options string
 }
 
 /* mount_9p : mount 9p filesystem */
@@ -8341,9 +8353,9 @@ func (g *Guestfs) Mount_9p (mounttag string, mountpoint string, optargs *Optargs
     defer C.free (unsafe.Pointer (c_mountpoint))
     c_optargs := C.struct_guestfs_mount_9p_argv{}
     if optargs != nil {
-        if optargs.options_is_set {
+        if optargs.Options_is_set {
             c_optargs.bitmask |= C.GUESTFS_MOUNT_9P_OPTIONS_BITMASK
-            c_optargs.options = C.CString (optargs.options)
+            c_optargs.options = C.CString (optargs.Options)
             defer C.free (unsafe.Pointer (c_optargs.options))
         }
     }
@@ -8358,18 +8370,18 @@ func (g *Guestfs) Mount_9p (mounttag string, mountpoint string, optargs *Optargs
 
 /* Struct carrying optional arguments for Mount_local */
 type OptargsMount_local struct {
-    /* readonly field is ignored unless readonly_is_set == true */
-    readonly_is_set bool
-    readonly bool
-    /* options field is ignored unless options_is_set == true */
-    options_is_set bool
-    options string
-    /* cachetimeout field is ignored unless cachetimeout_is_set == true */
-    cachetimeout_is_set bool
-    cachetimeout int
-    /* debugcalls field is ignored unless debugcalls_is_set == true */
-    debugcalls_is_set bool
-    debugcalls bool
+    /* Readonly field is ignored unless Readonly_is_set == true */
+    Readonly_is_set bool
+    Readonly bool
+    /* Options field is ignored unless Options_is_set == true */
+    Options_is_set bool
+    Options string
+    /* Cachetimeout field is ignored unless Cachetimeout_is_set == true */
+    Cachetimeout_is_set bool
+    Cachetimeout int
+    /* Debugcalls field is ignored unless Debugcalls_is_set == true */
+    Debugcalls_is_set bool
+    Debugcalls bool
 }
 
 /* mount_local : mount on the local filesystem */
@@ -8382,22 +8394,22 @@ func (g *Guestfs) Mount_local (localmountpoint string, optargs *OptargsMount_loc
     defer C.free (unsafe.Pointer (c_localmountpoint))
     c_optargs := C.struct_guestfs_mount_local_argv{}
     if optargs != nil {
-        if optargs.readonly_is_set {
+        if optargs.Readonly_is_set {
             c_optargs.bitmask |= C.GUESTFS_MOUNT_LOCAL_READONLY_BITMASK
-            if optargs.readonly { c_optargs.readonly = 1 } else { c_optargs.readonly = 0}
+            if optargs.Readonly { c_optargs.readonly = 1 } else { c_optargs.readonly = 0}
         }
-        if optargs.options_is_set {
+        if optargs.Options_is_set {
             c_optargs.bitmask |= C.GUESTFS_MOUNT_LOCAL_OPTIONS_BITMASK
-            c_optargs.options = C.CString (optargs.options)
+            c_optargs.options = C.CString (optargs.Options)
             defer C.free (unsafe.Pointer (c_optargs.options))
         }
-        if optargs.cachetimeout_is_set {
+        if optargs.Cachetimeout_is_set {
             c_optargs.bitmask |= C.GUESTFS_MOUNT_LOCAL_CACHETIMEOUT_BITMASK
-            c_optargs.cachetimeout = C.int (optargs.cachetimeout)
+            c_optargs.cachetimeout = C.int (optargs.Cachetimeout)
         }
-        if optargs.debugcalls_is_set {
+        if optargs.Debugcalls_is_set {
             c_optargs.bitmask |= C.GUESTFS_MOUNT_LOCAL_DEBUGCALLS_BITMASK
-            if optargs.debugcalls { c_optargs.debugcalls = 1 } else { c_optargs.debugcalls = 0}
+            if optargs.Debugcalls { c_optargs.debugcalls = 1 } else { c_optargs.debugcalls = 0}
         }
     }
 
@@ -8618,21 +8630,21 @@ func (g *Guestfs) Ntfsclone_in (backupfile string, device string) *GuestfsError 
 
 /* Struct carrying optional arguments for Ntfsclone_out */
 type OptargsNtfsclone_out struct {
-    /* metadataonly field is ignored unless metadataonly_is_set == true */
-    metadataonly_is_set bool
-    metadataonly bool
-    /* rescue field is ignored unless rescue_is_set == true */
-    rescue_is_set bool
-    rescue bool
-    /* ignorefscheck field is ignored unless ignorefscheck_is_set == true */
-    ignorefscheck_is_set bool
-    ignorefscheck bool
-    /* preservetimestamps field is ignored unless preservetimestamps_is_set == true */
-    preservetimestamps_is_set bool
-    preservetimestamps bool
-    /* force field is ignored unless force_is_set == true */
-    force_is_set bool
-    force bool
+    /* Metadataonly field is ignored unless Metadataonly_is_set == true */
+    Metadataonly_is_set bool
+    Metadataonly bool
+    /* Rescue field is ignored unless Rescue_is_set == true */
+    Rescue_is_set bool
+    Rescue bool
+    /* Ignorefscheck field is ignored unless Ignorefscheck_is_set == true */
+    Ignorefscheck_is_set bool
+    Ignorefscheck bool
+    /* Preservetimestamps field is ignored unless Preservetimestamps_is_set == true */
+    Preservetimestamps_is_set bool
+    Preservetimestamps bool
+    /* Force field is ignored unless Force_is_set == true */
+    Force_is_set bool
+    Force bool
 }
 
 /* ntfsclone_out : save NTFS to backup file */
@@ -8648,25 +8660,25 @@ func (g *Guestfs) Ntfsclone_out (device string, backupfile string, optargs *Opta
     defer C.free (unsafe.Pointer (c_backupfile))
     c_optargs := C.struct_guestfs_ntfsclone_out_argv{}
     if optargs != nil {
-        if optargs.metadataonly_is_set {
+        if optargs.Metadataonly_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSCLONE_OUT_METADATAONLY_BITMASK
-            if optargs.metadataonly { c_optargs.metadataonly = 1 } else { c_optargs.metadataonly = 0}
+            if optargs.Metadataonly { c_optargs.metadataonly = 1 } else { c_optargs.metadataonly = 0}
         }
-        if optargs.rescue_is_set {
+        if optargs.Rescue_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSCLONE_OUT_RESCUE_BITMASK
-            if optargs.rescue { c_optargs.rescue = 1 } else { c_optargs.rescue = 0}
+            if optargs.Rescue { c_optargs.rescue = 1 } else { c_optargs.rescue = 0}
         }
-        if optargs.ignorefscheck_is_set {
+        if optargs.Ignorefscheck_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSCLONE_OUT_IGNOREFSCHECK_BITMASK
-            if optargs.ignorefscheck { c_optargs.ignorefscheck = 1 } else { c_optargs.ignorefscheck = 0}
+            if optargs.Ignorefscheck { c_optargs.ignorefscheck = 1 } else { c_optargs.ignorefscheck = 0}
         }
-        if optargs.preservetimestamps_is_set {
+        if optargs.Preservetimestamps_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSCLONE_OUT_PRESERVETIMESTAMPS_BITMASK
-            if optargs.preservetimestamps { c_optargs.preservetimestamps = 1 } else { c_optargs.preservetimestamps = 0}
+            if optargs.Preservetimestamps { c_optargs.preservetimestamps = 1 } else { c_optargs.preservetimestamps = 0}
         }
-        if optargs.force_is_set {
+        if optargs.Force_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSCLONE_OUT_FORCE_BITMASK
-            if optargs.force { c_optargs.force = 1 } else { c_optargs.force = 0}
+            if optargs.Force { c_optargs.force = 1 } else { c_optargs.force = 0}
         }
     }
 
@@ -8680,9 +8692,9 @@ func (g *Guestfs) Ntfsclone_out (device string, backupfile string, optargs *Opta
 
 /* Struct carrying optional arguments for Ntfsfix */
 type OptargsNtfsfix struct {
-    /* clearbadsectors field is ignored unless clearbadsectors_is_set == true */
-    clearbadsectors_is_set bool
-    clearbadsectors bool
+    /* Clearbadsectors field is ignored unless Clearbadsectors_is_set == true */
+    Clearbadsectors_is_set bool
+    Clearbadsectors bool
 }
 
 /* ntfsfix : fix common errors and force Windows to check NTFS */
@@ -8695,9 +8707,9 @@ func (g *Guestfs) Ntfsfix (device string, optargs *OptargsNtfsfix) *GuestfsError
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_ntfsfix_argv{}
     if optargs != nil {
-        if optargs.clearbadsectors_is_set {
+        if optargs.Clearbadsectors_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSFIX_CLEARBADSECTORS_BITMASK
-            if optargs.clearbadsectors { c_optargs.clearbadsectors = 1 } else { c_optargs.clearbadsectors = 0}
+            if optargs.Clearbadsectors { c_optargs.clearbadsectors = 1 } else { c_optargs.clearbadsectors = 0}
         }
     }
 
@@ -8711,12 +8723,12 @@ func (g *Guestfs) Ntfsfix (device string, optargs *OptargsNtfsfix) *GuestfsError
 
 /* Struct carrying optional arguments for Ntfsresize */
 type OptargsNtfsresize struct {
-    /* size field is ignored unless size_is_set == true */
-    size_is_set bool
-    size int64
-    /* force field is ignored unless force_is_set == true */
-    force_is_set bool
-    force bool
+    /* Size field is ignored unless Size_is_set == true */
+    Size_is_set bool
+    Size int64
+    /* Force field is ignored unless Force_is_set == true */
+    Force_is_set bool
+    Force bool
 }
 
 /* ntfsresize : resize an NTFS filesystem */
@@ -8729,13 +8741,13 @@ func (g *Guestfs) Ntfsresize (device string, optargs *OptargsNtfsresize) *Guestf
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_ntfsresize_opts_argv{}
     if optargs != nil {
-        if optargs.size_is_set {
+        if optargs.Size_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSRESIZE_OPTS_SIZE_BITMASK
-            c_optargs.size = C.int64_t (optargs.size)
+            c_optargs.size = C.int64_t (optargs.Size)
         }
-        if optargs.force_is_set {
+        if optargs.Force_is_set {
             c_optargs.bitmask |= C.GUESTFS_NTFSRESIZE_OPTS_FORCE_BITMASK
-            if optargs.force { c_optargs.force = 1 } else { c_optargs.force = 0}
+            if optargs.Force { c_optargs.force = 1 } else { c_optargs.force = 0}
         }
     }
 
@@ -9438,9 +9450,9 @@ func (g *Guestfs) Realpath (path string) (string, *GuestfsError) {
 
 /* Struct carrying optional arguments for Remount */
 type OptargsRemount struct {
-    /* rw field is ignored unless rw_is_set == true */
-    rw_is_set bool
-    rw bool
+    /* Rw field is ignored unless Rw_is_set == true */
+    Rw_is_set bool
+    Rw bool
 }
 
 /* remount : remount a filesystem with different options */
@@ -9453,9 +9465,9 @@ func (g *Guestfs) Remount (mountpoint string, optargs *OptargsRemount) *GuestfsE
     defer C.free (unsafe.Pointer (c_mountpoint))
     c_optargs := C.struct_guestfs_remount_argv{}
     if optargs != nil {
-        if optargs.rw_is_set {
+        if optargs.Rw_is_set {
             c_optargs.bitmask |= C.GUESTFS_REMOUNT_RW_BITMASK
-            if optargs.rw { c_optargs.rw = 1 } else { c_optargs.rw = 0}
+            if optargs.Rw { c_optargs.rw = 1 } else { c_optargs.rw = 0}
         }
     }
 
@@ -9662,12 +9674,12 @@ func (g *Guestfs) Rmmountpoint (exemptpath string) *GuestfsError {
 
 /* Struct carrying optional arguments for Rsync */
 type OptargsRsync struct {
-    /* archive field is ignored unless archive_is_set == true */
-    archive_is_set bool
-    archive bool
-    /* deletedest field is ignored unless deletedest_is_set == true */
-    deletedest_is_set bool
-    deletedest bool
+    /* Archive field is ignored unless Archive_is_set == true */
+    Archive_is_set bool
+    Archive bool
+    /* Deletedest field is ignored unless Deletedest_is_set == true */
+    Deletedest_is_set bool
+    Deletedest bool
 }
 
 /* rsync : synchronize the contents of two directories */
@@ -9683,13 +9695,13 @@ func (g *Guestfs) Rsync (src string, dest string, optargs *OptargsRsync) *Guestf
     defer C.free (unsafe.Pointer (c_dest))
     c_optargs := C.struct_guestfs_rsync_argv{}
     if optargs != nil {
-        if optargs.archive_is_set {
+        if optargs.Archive_is_set {
             c_optargs.bitmask |= C.GUESTFS_RSYNC_ARCHIVE_BITMASK
-            if optargs.archive { c_optargs.archive = 1 } else { c_optargs.archive = 0}
+            if optargs.Archive { c_optargs.archive = 1 } else { c_optargs.archive = 0}
         }
-        if optargs.deletedest_is_set {
+        if optargs.Deletedest_is_set {
             c_optargs.bitmask |= C.GUESTFS_RSYNC_DELETEDEST_BITMASK
-            if optargs.deletedest { c_optargs.deletedest = 1 } else { c_optargs.deletedest = 0}
+            if optargs.Deletedest { c_optargs.deletedest = 1 } else { c_optargs.deletedest = 0}
         }
     }
 
@@ -9703,12 +9715,12 @@ func (g *Guestfs) Rsync (src string, dest string, optargs *OptargsRsync) *Guestf
 
 /* Struct carrying optional arguments for Rsync_in */
 type OptargsRsync_in struct {
-    /* archive field is ignored unless archive_is_set == true */
-    archive_is_set bool
-    archive bool
-    /* deletedest field is ignored unless deletedest_is_set == true */
-    deletedest_is_set bool
-    deletedest bool
+    /* Archive field is ignored unless Archive_is_set == true */
+    Archive_is_set bool
+    Archive bool
+    /* Deletedest field is ignored unless Deletedest_is_set == true */
+    Deletedest_is_set bool
+    Deletedest bool
 }
 
 /* rsync_in : synchronize host or remote filesystem with filesystem */
@@ -9724,13 +9736,13 @@ func (g *Guestfs) Rsync_in (remote string, dest string, optargs *OptargsRsync_in
     defer C.free (unsafe.Pointer (c_dest))
     c_optargs := C.struct_guestfs_rsync_in_argv{}
     if optargs != nil {
-        if optargs.archive_is_set {
+        if optargs.Archive_is_set {
             c_optargs.bitmask |= C.GUESTFS_RSYNC_IN_ARCHIVE_BITMASK
-            if optargs.archive { c_optargs.archive = 1 } else { c_optargs.archive = 0}
+            if optargs.Archive { c_optargs.archive = 1 } else { c_optargs.archive = 0}
         }
-        if optargs.deletedest_is_set {
+        if optargs.Deletedest_is_set {
             c_optargs.bitmask |= C.GUESTFS_RSYNC_IN_DELETEDEST_BITMASK
-            if optargs.deletedest { c_optargs.deletedest = 1 } else { c_optargs.deletedest = 0}
+            if optargs.Deletedest { c_optargs.deletedest = 1 } else { c_optargs.deletedest = 0}
         }
     }
 
@@ -9744,12 +9756,12 @@ func (g *Guestfs) Rsync_in (remote string, dest string, optargs *OptargsRsync_in
 
 /* Struct carrying optional arguments for Rsync_out */
 type OptargsRsync_out struct {
-    /* archive field is ignored unless archive_is_set == true */
-    archive_is_set bool
-    archive bool
-    /* deletedest field is ignored unless deletedest_is_set == true */
-    deletedest_is_set bool
-    deletedest bool
+    /* Archive field is ignored unless Archive_is_set == true */
+    Archive_is_set bool
+    Archive bool
+    /* Deletedest field is ignored unless Deletedest_is_set == true */
+    Deletedest_is_set bool
+    Deletedest bool
 }
 
 /* rsync_out : synchronize filesystem with host or remote filesystem */
@@ -9765,13 +9777,13 @@ func (g *Guestfs) Rsync_out (src string, remote string, optargs *OptargsRsync_ou
     defer C.free (unsafe.Pointer (c_remote))
     c_optargs := C.struct_guestfs_rsync_out_argv{}
     if optargs != nil {
-        if optargs.archive_is_set {
+        if optargs.Archive_is_set {
             c_optargs.bitmask |= C.GUESTFS_RSYNC_OUT_ARCHIVE_BITMASK
-            if optargs.archive { c_optargs.archive = 1 } else { c_optargs.archive = 0}
+            if optargs.Archive { c_optargs.archive = 1 } else { c_optargs.archive = 0}
         }
-        if optargs.deletedest_is_set {
+        if optargs.Deletedest_is_set {
             c_optargs.bitmask |= C.GUESTFS_RSYNC_OUT_DELETEDEST_BITMASK
-            if optargs.deletedest { c_optargs.deletedest = 1 } else { c_optargs.deletedest = 0}
+            if optargs.Deletedest { c_optargs.deletedest = 1 } else { c_optargs.deletedest = 0}
         }
     }
 
@@ -9835,13 +9847,16 @@ func (g *Guestfs) Scrub_freespace (dir string) *GuestfsError {
 }
 
 /* set_append : add options to kernel command line */
-func (g *Guestfs) Set_append (append string) *GuestfsError {
+func (g *Guestfs) Set_append (append *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_append")
     }
 
-    c_append := C.CString (append)
-    defer C.free (unsafe.Pointer (c_append))
+    var c_append *C.char = nil
+    if append != nil {
+        c_append = C.CString (*append)
+        defer C.free (unsafe.Pointer (c_append))
+    }
 
     r := C.guestfs_set_append (g.g, c_append)
 
@@ -9903,13 +9918,16 @@ func (g *Guestfs) Set_backend (backend string) *GuestfsError {
 }
 
 /* set_cachedir : set the appliance cache directory */
-func (g *Guestfs) Set_cachedir (cachedir string) *GuestfsError {
+func (g *Guestfs) Set_cachedir (cachedir *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_cachedir")
     }
 
-    c_cachedir := C.CString (cachedir)
-    defer C.free (unsafe.Pointer (c_cachedir))
+    var c_cachedir *C.char = nil
+    if cachedir != nil {
+        c_cachedir = C.CString (*cachedir)
+        defer C.free (unsafe.Pointer (c_cachedir))
+    }
 
     r := C.guestfs_set_cachedir (g.g, c_cachedir)
 
@@ -9938,9 +9956,9 @@ func (g *Guestfs) Set_direct (direct bool) *GuestfsError {
 
 /* Struct carrying optional arguments for Set_e2attrs */
 type OptargsSet_e2attrs struct {
-    /* clear field is ignored unless clear_is_set == true */
-    clear_is_set bool
-    clear bool
+    /* Clear field is ignored unless Clear_is_set == true */
+    Clear_is_set bool
+    Clear bool
 }
 
 /* set_e2attrs : set ext2 file attributes of a file */
@@ -9956,9 +9974,9 @@ func (g *Guestfs) Set_e2attrs (file string, attrs string, optargs *OptargsSet_e2
     defer C.free (unsafe.Pointer (c_attrs))
     c_optargs := C.struct_guestfs_set_e2attrs_argv{}
     if optargs != nil {
-        if optargs.clear_is_set {
+        if optargs.Clear_is_set {
             c_optargs.bitmask |= C.GUESTFS_SET_E2ATTRS_CLEAR_BITMASK
-            if optargs.clear { c_optargs.clear = 1 } else { c_optargs.clear = 0}
+            if optargs.Clear { c_optargs.clear = 1 } else { c_optargs.clear = 0}
         }
     }
 
@@ -10118,13 +10136,16 @@ func (g *Guestfs) Set_network (network bool) *GuestfsError {
 }
 
 /* set_path : set the search path */
-func (g *Guestfs) Set_path (searchpath string) *GuestfsError {
+func (g *Guestfs) Set_path (searchpath *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_path")
     }
 
-    c_searchpath := C.CString (searchpath)
-    defer C.free (unsafe.Pointer (c_searchpath))
+    var c_searchpath *C.char = nil
+    if searchpath != nil {
+        c_searchpath = C.CString (*searchpath)
+        defer C.free (unsafe.Pointer (c_searchpath))
+    }
 
     r := C.guestfs_set_path (g.g, c_searchpath)
 
@@ -10169,13 +10190,16 @@ func (g *Guestfs) Set_program (program string) *GuestfsError {
 }
 
 /* set_qemu : set the qemu binary */
-func (g *Guestfs) Set_qemu (qemu string) *GuestfsError {
+func (g *Guestfs) Set_qemu (qemu *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_qemu")
     }
 
-    c_qemu := C.CString (qemu)
-    defer C.free (unsafe.Pointer (c_qemu))
+    var c_qemu *C.char = nil
+    if qemu != nil {
+        c_qemu = C.CString (*qemu)
+        defer C.free (unsafe.Pointer (c_qemu))
+    }
 
     r := C.guestfs_set_qemu (g.g, c_qemu)
 
@@ -10234,13 +10258,16 @@ func (g *Guestfs) Set_smp (smp int) *GuestfsError {
 }
 
 /* set_tmpdir : set the temporary directory */
-func (g *Guestfs) Set_tmpdir (tmpdir string) *GuestfsError {
+func (g *Guestfs) Set_tmpdir (tmpdir *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_tmpdir")
     }
 
-    c_tmpdir := C.CString (tmpdir)
-    defer C.free (unsafe.Pointer (c_tmpdir))
+    var c_tmpdir *C.char = nil
+    if tmpdir != nil {
+        c_tmpdir = C.CString (*tmpdir)
+        defer C.free (unsafe.Pointer (c_tmpdir))
+    }
 
     r := C.guestfs_set_tmpdir (g.g, c_tmpdir)
 
@@ -10729,9 +10756,9 @@ func (g *Guestfs) Sync () *GuestfsError {
 
 /* Struct carrying optional arguments for Syslinux */
 type OptargsSyslinux struct {
-    /* directory field is ignored unless directory_is_set == true */
-    directory_is_set bool
-    directory string
+    /* Directory field is ignored unless Directory_is_set == true */
+    Directory_is_set bool
+    Directory string
 }
 
 /* syslinux : install the SYSLINUX bootloader */
@@ -10744,9 +10771,9 @@ func (g *Guestfs) Syslinux (device string, optargs *OptargsSyslinux) *GuestfsErr
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_syslinux_argv{}
     if optargs != nil {
-        if optargs.directory_is_set {
+        if optargs.Directory_is_set {
             c_optargs.bitmask |= C.GUESTFS_SYSLINUX_DIRECTORY_BITMASK
-            c_optargs.directory = C.CString (optargs.directory)
+            c_optargs.directory = C.CString (optargs.Directory)
             defer C.free (unsafe.Pointer (c_optargs.directory))
         }
     }
@@ -10797,9 +10824,9 @@ func (g *Guestfs) Tail_n (nrlines int, path string) ([]string, *GuestfsError) {
 
 /* Struct carrying optional arguments for Tar_in */
 type OptargsTar_in struct {
-    /* compress field is ignored unless compress_is_set == true */
-    compress_is_set bool
-    compress string
+    /* Compress field is ignored unless Compress_is_set == true */
+    Compress_is_set bool
+    Compress string
 }
 
 /* tar_in : unpack tarfile to directory */
@@ -10815,9 +10842,9 @@ func (g *Guestfs) Tar_in (tarfile string, directory string, optargs *OptargsTar_
     defer C.free (unsafe.Pointer (c_directory))
     c_optargs := C.struct_guestfs_tar_in_opts_argv{}
     if optargs != nil {
-        if optargs.compress_is_set {
+        if optargs.Compress_is_set {
             c_optargs.bitmask |= C.GUESTFS_TAR_IN_OPTS_COMPRESS_BITMASK
-            c_optargs.compress = C.CString (optargs.compress)
+            c_optargs.compress = C.CString (optargs.Compress)
             defer C.free (unsafe.Pointer (c_optargs.compress))
         }
     }
@@ -10832,15 +10859,15 @@ func (g *Guestfs) Tar_in (tarfile string, directory string, optargs *OptargsTar_
 
 /* Struct carrying optional arguments for Tar_out */
 type OptargsTar_out struct {
-    /* compress field is ignored unless compress_is_set == true */
-    compress_is_set bool
-    compress string
-    /* numericowner field is ignored unless numericowner_is_set == true */
-    numericowner_is_set bool
-    numericowner bool
-    /* excludes field is ignored unless excludes_is_set == true */
-    excludes_is_set bool
-    excludes []string
+    /* Compress field is ignored unless Compress_is_set == true */
+    Compress_is_set bool
+    Compress string
+    /* Numericowner field is ignored unless Numericowner_is_set == true */
+    Numericowner_is_set bool
+    Numericowner bool
+    /* Excludes field is ignored unless Excludes_is_set == true */
+    Excludes_is_set bool
+    Excludes []string
 }
 
 /* tar_out : pack directory into tarfile */
@@ -10856,18 +10883,18 @@ func (g *Guestfs) Tar_out (directory string, tarfile string, optargs *OptargsTar
     defer C.free (unsafe.Pointer (c_tarfile))
     c_optargs := C.struct_guestfs_tar_out_opts_argv{}
     if optargs != nil {
-        if optargs.compress_is_set {
+        if optargs.Compress_is_set {
             c_optargs.bitmask |= C.GUESTFS_TAR_OUT_OPTS_COMPRESS_BITMASK
-            c_optargs.compress = C.CString (optargs.compress)
+            c_optargs.compress = C.CString (optargs.Compress)
             defer C.free (unsafe.Pointer (c_optargs.compress))
         }
-        if optargs.numericowner_is_set {
+        if optargs.Numericowner_is_set {
             c_optargs.bitmask |= C.GUESTFS_TAR_OUT_OPTS_NUMERICOWNER_BITMASK
-            if optargs.numericowner { c_optargs.numericowner = 1 } else { c_optargs.numericowner = 0}
+            if optargs.Numericowner { c_optargs.numericowner = 1 } else { c_optargs.numericowner = 0}
         }
-        if optargs.excludes_is_set {
+        if optargs.Excludes_is_set {
             c_optargs.bitmask |= C.GUESTFS_TAR_OUT_OPTS_EXCLUDES_BITMASK
-            c_optargs.excludes = arg_string_list (optargs.excludes)
+            c_optargs.excludes = arg_string_list (optargs.Excludes)
             defer free_string_list (c_optargs.excludes)
         }
     }
@@ -10973,36 +11000,36 @@ func (g *Guestfs) Truncate_size (path string, size int64) *GuestfsError {
 
 /* Struct carrying optional arguments for Tune2fs */
 type OptargsTune2fs struct {
-    /* force field is ignored unless force_is_set == true */
-    force_is_set bool
-    force bool
-    /* maxmountcount field is ignored unless maxmountcount_is_set == true */
-    maxmountcount_is_set bool
-    maxmountcount int
-    /* mountcount field is ignored unless mountcount_is_set == true */
-    mountcount_is_set bool
-    mountcount int
-    /* errorbehavior field is ignored unless errorbehavior_is_set == true */
-    errorbehavior_is_set bool
-    errorbehavior string
-    /* group field is ignored unless group_is_set == true */
-    group_is_set bool
-    group int64
-    /* intervalbetweenchecks field is ignored unless intervalbetweenchecks_is_set == true */
-    intervalbetweenchecks_is_set bool
-    intervalbetweenchecks int
-    /* reservedblockspercentage field is ignored unless reservedblockspercentage_is_set == true */
-    reservedblockspercentage_is_set bool
-    reservedblockspercentage int
-    /* lastmounteddirectory field is ignored unless lastmounteddirectory_is_set == true */
-    lastmounteddirectory_is_set bool
-    lastmounteddirectory string
-    /* reservedblockscount field is ignored unless reservedblockscount_is_set == true */
-    reservedblockscount_is_set bool
-    reservedblockscount int64
-    /* user field is ignored unless user_is_set == true */
-    user_is_set bool
-    user int64
+    /* Force field is ignored unless Force_is_set == true */
+    Force_is_set bool
+    Force bool
+    /* Maxmountcount field is ignored unless Maxmountcount_is_set == true */
+    Maxmountcount_is_set bool
+    Maxmountcount int
+    /* Mountcount field is ignored unless Mountcount_is_set == true */
+    Mountcount_is_set bool
+    Mountcount int
+    /* Errorbehavior field is ignored unless Errorbehavior_is_set == true */
+    Errorbehavior_is_set bool
+    Errorbehavior string
+    /* Group field is ignored unless Group_is_set == true */
+    Group_is_set bool
+    Group int64
+    /* Intervalbetweenchecks field is ignored unless Intervalbetweenchecks_is_set == true */
+    Intervalbetweenchecks_is_set bool
+    Intervalbetweenchecks int
+    /* Reservedblockspercentage field is ignored unless Reservedblockspercentage_is_set == true */
+    Reservedblockspercentage_is_set bool
+    Reservedblockspercentage int
+    /* Lastmounteddirectory field is ignored unless Lastmounteddirectory_is_set == true */
+    Lastmounteddirectory_is_set bool
+    Lastmounteddirectory string
+    /* Reservedblockscount field is ignored unless Reservedblockscount_is_set == true */
+    Reservedblockscount_is_set bool
+    Reservedblockscount int64
+    /* User field is ignored unless User_is_set == true */
+    User_is_set bool
+    User int64
 }
 
 /* tune2fs : adjust ext2/ext3/ext4 filesystem parameters */
@@ -11015,47 +11042,47 @@ func (g *Guestfs) Tune2fs (device string, optargs *OptargsTune2fs) *GuestfsError
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_tune2fs_argv{}
     if optargs != nil {
-        if optargs.force_is_set {
+        if optargs.Force_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_FORCE_BITMASK
-            if optargs.force { c_optargs.force = 1 } else { c_optargs.force = 0}
+            if optargs.Force { c_optargs.force = 1 } else { c_optargs.force = 0}
         }
-        if optargs.maxmountcount_is_set {
+        if optargs.Maxmountcount_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_MAXMOUNTCOUNT_BITMASK
-            c_optargs.maxmountcount = C.int (optargs.maxmountcount)
+            c_optargs.maxmountcount = C.int (optargs.Maxmountcount)
         }
-        if optargs.mountcount_is_set {
+        if optargs.Mountcount_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_MOUNTCOUNT_BITMASK
-            c_optargs.mountcount = C.int (optargs.mountcount)
+            c_optargs.mountcount = C.int (optargs.Mountcount)
         }
-        if optargs.errorbehavior_is_set {
+        if optargs.Errorbehavior_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_ERRORBEHAVIOR_BITMASK
-            c_optargs.errorbehavior = C.CString (optargs.errorbehavior)
+            c_optargs.errorbehavior = C.CString (optargs.Errorbehavior)
             defer C.free (unsafe.Pointer (c_optargs.errorbehavior))
         }
-        if optargs.group_is_set {
+        if optargs.Group_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_GROUP_BITMASK
-            c_optargs.group = C.int64_t (optargs.group)
+            c_optargs.group = C.int64_t (optargs.Group)
         }
-        if optargs.intervalbetweenchecks_is_set {
+        if optargs.Intervalbetweenchecks_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_INTERVALBETWEENCHECKS_BITMASK
-            c_optargs.intervalbetweenchecks = C.int (optargs.intervalbetweenchecks)
+            c_optargs.intervalbetweenchecks = C.int (optargs.Intervalbetweenchecks)
         }
-        if optargs.reservedblockspercentage_is_set {
+        if optargs.Reservedblockspercentage_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_RESERVEDBLOCKSPERCENTAGE_BITMASK
-            c_optargs.reservedblockspercentage = C.int (optargs.reservedblockspercentage)
+            c_optargs.reservedblockspercentage = C.int (optargs.Reservedblockspercentage)
         }
-        if optargs.lastmounteddirectory_is_set {
+        if optargs.Lastmounteddirectory_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_LASTMOUNTEDDIRECTORY_BITMASK
-            c_optargs.lastmounteddirectory = C.CString (optargs.lastmounteddirectory)
+            c_optargs.lastmounteddirectory = C.CString (optargs.Lastmounteddirectory)
             defer C.free (unsafe.Pointer (c_optargs.lastmounteddirectory))
         }
-        if optargs.reservedblockscount_is_set {
+        if optargs.Reservedblockscount_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_RESERVEDBLOCKSCOUNT_BITMASK
-            c_optargs.reservedblockscount = C.int64_t (optargs.reservedblockscount)
+            c_optargs.reservedblockscount = C.int64_t (optargs.Reservedblockscount)
         }
-        if optargs.user_is_set {
+        if optargs.User_is_set {
             c_optargs.bitmask |= C.GUESTFS_TUNE2FS_USER_BITMASK
-            c_optargs.user = C.int64_t (optargs.user)
+            c_optargs.user = C.int64_t (optargs.User)
         }
     }
 
@@ -11141,12 +11168,12 @@ func (g *Guestfs) Umask (mask int) (int, *GuestfsError) {
 
 /* Struct carrying optional arguments for Umount */
 type OptargsUmount struct {
-    /* force field is ignored unless force_is_set == true */
-    force_is_set bool
-    force bool
-    /* lazyunmount field is ignored unless lazyunmount_is_set == true */
-    lazyunmount_is_set bool
-    lazyunmount bool
+    /* Force field is ignored unless Force_is_set == true */
+    Force_is_set bool
+    Force bool
+    /* Lazyunmount field is ignored unless Lazyunmount_is_set == true */
+    Lazyunmount_is_set bool
+    Lazyunmount bool
 }
 
 /* umount : unmount a filesystem */
@@ -11159,13 +11186,13 @@ func (g *Guestfs) Umount (pathordevice string, optargs *OptargsUmount) *GuestfsE
     defer C.free (unsafe.Pointer (c_pathordevice))
     c_optargs := C.struct_guestfs_umount_opts_argv{}
     if optargs != nil {
-        if optargs.force_is_set {
+        if optargs.Force_is_set {
             c_optargs.bitmask |= C.GUESTFS_UMOUNT_OPTS_FORCE_BITMASK
-            if optargs.force { c_optargs.force = 1 } else { c_optargs.force = 0}
+            if optargs.Force { c_optargs.force = 1 } else { c_optargs.force = 0}
         }
-        if optargs.lazyunmount_is_set {
+        if optargs.Lazyunmount_is_set {
             c_optargs.bitmask |= C.GUESTFS_UMOUNT_OPTS_LAZYUNMOUNT_BITMASK
-            if optargs.lazyunmount { c_optargs.lazyunmount = 1 } else { c_optargs.lazyunmount = 0}
+            if optargs.Lazyunmount { c_optargs.lazyunmount = 1 } else { c_optargs.lazyunmount = 0}
         }
     }
 
@@ -11193,9 +11220,9 @@ func (g *Guestfs) Umount_all () *GuestfsError {
 
 /* Struct carrying optional arguments for Umount_local */
 type OptargsUmount_local struct {
-    /* retry field is ignored unless retry_is_set == true */
-    retry_is_set bool
-    retry bool
+    /* Retry field is ignored unless Retry_is_set == true */
+    Retry_is_set bool
+    Retry bool
 }
 
 /* umount_local : unmount a locally mounted filesystem */
@@ -11205,9 +11232,9 @@ func (g *Guestfs) Umount_local (optargs *OptargsUmount_local) *GuestfsError {
     }
     c_optargs := C.struct_guestfs_umount_local_argv{}
     if optargs != nil {
-        if optargs.retry_is_set {
+        if optargs.Retry_is_set {
             c_optargs.bitmask |= C.GUESTFS_UMOUNT_LOCAL_RETRY_BITMASK
-            if optargs.retry { c_optargs.retry = 1 } else { c_optargs.retry = 0}
+            if optargs.Retry { c_optargs.retry = 1 } else { c_optargs.retry = 0}
         }
     }
 
@@ -11771,27 +11798,27 @@ func (g *Guestfs) Write_file (path string, content string, size int) *GuestfsErr
 
 /* Struct carrying optional arguments for Xfs_admin */
 type OptargsXfs_admin struct {
-    /* extunwritten field is ignored unless extunwritten_is_set == true */
-    extunwritten_is_set bool
-    extunwritten bool
-    /* imgfile field is ignored unless imgfile_is_set == true */
-    imgfile_is_set bool
-    imgfile bool
-    /* v2log field is ignored unless v2log_is_set == true */
-    v2log_is_set bool
-    v2log bool
-    /* projid32bit field is ignored unless projid32bit_is_set == true */
-    projid32bit_is_set bool
-    projid32bit bool
-    /* lazycounter field is ignored unless lazycounter_is_set == true */
-    lazycounter_is_set bool
-    lazycounter bool
-    /* label field is ignored unless label_is_set == true */
-    label_is_set bool
-    label string
-    /* uuid field is ignored unless uuid_is_set == true */
-    uuid_is_set bool
-    uuid string
+    /* Extunwritten field is ignored unless Extunwritten_is_set == true */
+    Extunwritten_is_set bool
+    Extunwritten bool
+    /* Imgfile field is ignored unless Imgfile_is_set == true */
+    Imgfile_is_set bool
+    Imgfile bool
+    /* V2log field is ignored unless V2log_is_set == true */
+    V2log_is_set bool
+    V2log bool
+    /* Projid32bit field is ignored unless Projid32bit_is_set == true */
+    Projid32bit_is_set bool
+    Projid32bit bool
+    /* Lazycounter field is ignored unless Lazycounter_is_set == true */
+    Lazycounter_is_set bool
+    Lazycounter bool
+    /* Label field is ignored unless Label_is_set == true */
+    Label_is_set bool
+    Label string
+    /* Uuid field is ignored unless Uuid_is_set == true */
+    Uuid_is_set bool
+    Uuid string
 }
 
 /* xfs_admin : change parameters of an XFS filesystem */
@@ -11804,34 +11831,34 @@ func (g *Guestfs) Xfs_admin (device string, optargs *OptargsXfs_admin) *GuestfsE
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_xfs_admin_argv{}
     if optargs != nil {
-        if optargs.extunwritten_is_set {
+        if optargs.Extunwritten_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_ADMIN_EXTUNWRITTEN_BITMASK
-            if optargs.extunwritten { c_optargs.extunwritten = 1 } else { c_optargs.extunwritten = 0}
+            if optargs.Extunwritten { c_optargs.extunwritten = 1 } else { c_optargs.extunwritten = 0}
         }
-        if optargs.imgfile_is_set {
+        if optargs.Imgfile_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_ADMIN_IMGFILE_BITMASK
-            if optargs.imgfile { c_optargs.imgfile = 1 } else { c_optargs.imgfile = 0}
+            if optargs.Imgfile { c_optargs.imgfile = 1 } else { c_optargs.imgfile = 0}
         }
-        if optargs.v2log_is_set {
+        if optargs.V2log_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_ADMIN_V2LOG_BITMASK
-            if optargs.v2log { c_optargs.v2log = 1 } else { c_optargs.v2log = 0}
+            if optargs.V2log { c_optargs.v2log = 1 } else { c_optargs.v2log = 0}
         }
-        if optargs.projid32bit_is_set {
+        if optargs.Projid32bit_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_ADMIN_PROJID32BIT_BITMASK
-            if optargs.projid32bit { c_optargs.projid32bit = 1 } else { c_optargs.projid32bit = 0}
+            if optargs.Projid32bit { c_optargs.projid32bit = 1 } else { c_optargs.projid32bit = 0}
         }
-        if optargs.lazycounter_is_set {
+        if optargs.Lazycounter_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_ADMIN_LAZYCOUNTER_BITMASK
-            if optargs.lazycounter { c_optargs.lazycounter = 1 } else { c_optargs.lazycounter = 0}
+            if optargs.Lazycounter { c_optargs.lazycounter = 1 } else { c_optargs.lazycounter = 0}
         }
-        if optargs.label_is_set {
+        if optargs.Label_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_ADMIN_LABEL_BITMASK
-            c_optargs.label = C.CString (optargs.label)
+            c_optargs.label = C.CString (optargs.Label)
             defer C.free (unsafe.Pointer (c_optargs.label))
         }
-        if optargs.uuid_is_set {
+        if optargs.Uuid_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_ADMIN_UUID_BITMASK
-            c_optargs.uuid = C.CString (optargs.uuid)
+            c_optargs.uuid = C.CString (optargs.Uuid)
             defer C.free (unsafe.Pointer (c_optargs.uuid))
         }
     }
@@ -11846,30 +11873,30 @@ func (g *Guestfs) Xfs_admin (device string, optargs *OptargsXfs_admin) *GuestfsE
 
 /* Struct carrying optional arguments for Xfs_growfs */
 type OptargsXfs_growfs struct {
-    /* datasec field is ignored unless datasec_is_set == true */
-    datasec_is_set bool
-    datasec bool
-    /* logsec field is ignored unless logsec_is_set == true */
-    logsec_is_set bool
-    logsec bool
-    /* rtsec field is ignored unless rtsec_is_set == true */
-    rtsec_is_set bool
-    rtsec bool
-    /* datasize field is ignored unless datasize_is_set == true */
-    datasize_is_set bool
-    datasize int64
-    /* logsize field is ignored unless logsize_is_set == true */
-    logsize_is_set bool
-    logsize int64
-    /* rtsize field is ignored unless rtsize_is_set == true */
-    rtsize_is_set bool
-    rtsize int64
-    /* rtextsize field is ignored unless rtextsize_is_set == true */
-    rtextsize_is_set bool
-    rtextsize int64
-    /* maxpct field is ignored unless maxpct_is_set == true */
-    maxpct_is_set bool
-    maxpct int
+    /* Datasec field is ignored unless Datasec_is_set == true */
+    Datasec_is_set bool
+    Datasec bool
+    /* Logsec field is ignored unless Logsec_is_set == true */
+    Logsec_is_set bool
+    Logsec bool
+    /* Rtsec field is ignored unless Rtsec_is_set == true */
+    Rtsec_is_set bool
+    Rtsec bool
+    /* Datasize field is ignored unless Datasize_is_set == true */
+    Datasize_is_set bool
+    Datasize int64
+    /* Logsize field is ignored unless Logsize_is_set == true */
+    Logsize_is_set bool
+    Logsize int64
+    /* Rtsize field is ignored unless Rtsize_is_set == true */
+    Rtsize_is_set bool
+    Rtsize int64
+    /* Rtextsize field is ignored unless Rtextsize_is_set == true */
+    Rtextsize_is_set bool
+    Rtextsize int64
+    /* Maxpct field is ignored unless Maxpct_is_set == true */
+    Maxpct_is_set bool
+    Maxpct int
 }
 
 /* xfs_growfs : expand an existing XFS filesystem */
@@ -11882,37 +11909,37 @@ func (g *Guestfs) Xfs_growfs (path string, optargs *OptargsXfs_growfs) *GuestfsE
     defer C.free (unsafe.Pointer (c_path))
     c_optargs := C.struct_guestfs_xfs_growfs_argv{}
     if optargs != nil {
-        if optargs.datasec_is_set {
+        if optargs.Datasec_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_DATASEC_BITMASK
-            if optargs.datasec { c_optargs.datasec = 1 } else { c_optargs.datasec = 0}
+            if optargs.Datasec { c_optargs.datasec = 1 } else { c_optargs.datasec = 0}
         }
-        if optargs.logsec_is_set {
+        if optargs.Logsec_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_LOGSEC_BITMASK
-            if optargs.logsec { c_optargs.logsec = 1 } else { c_optargs.logsec = 0}
+            if optargs.Logsec { c_optargs.logsec = 1 } else { c_optargs.logsec = 0}
         }
-        if optargs.rtsec_is_set {
+        if optargs.Rtsec_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_RTSEC_BITMASK
-            if optargs.rtsec { c_optargs.rtsec = 1 } else { c_optargs.rtsec = 0}
+            if optargs.Rtsec { c_optargs.rtsec = 1 } else { c_optargs.rtsec = 0}
         }
-        if optargs.datasize_is_set {
+        if optargs.Datasize_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_DATASIZE_BITMASK
-            c_optargs.datasize = C.int64_t (optargs.datasize)
+            c_optargs.datasize = C.int64_t (optargs.Datasize)
         }
-        if optargs.logsize_is_set {
+        if optargs.Logsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_LOGSIZE_BITMASK
-            c_optargs.logsize = C.int64_t (optargs.logsize)
+            c_optargs.logsize = C.int64_t (optargs.Logsize)
         }
-        if optargs.rtsize_is_set {
+        if optargs.Rtsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_RTSIZE_BITMASK
-            c_optargs.rtsize = C.int64_t (optargs.rtsize)
+            c_optargs.rtsize = C.int64_t (optargs.Rtsize)
         }
-        if optargs.rtextsize_is_set {
+        if optargs.Rtextsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_RTEXTSIZE_BITMASK
-            c_optargs.rtextsize = C.int64_t (optargs.rtextsize)
+            c_optargs.rtextsize = C.int64_t (optargs.Rtextsize)
         }
-        if optargs.maxpct_is_set {
+        if optargs.Maxpct_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_GROWFS_MAXPCT_BITMASK
-            c_optargs.maxpct = C.int (optargs.maxpct)
+            c_optargs.maxpct = C.int (optargs.Maxpct)
         }
     }
 
@@ -11944,36 +11971,36 @@ func (g *Guestfs) Xfs_info (pathordevice string) (*XFSInfo, *GuestfsError) {
 
 /* Struct carrying optional arguments for Xfs_repair */
 type OptargsXfs_repair struct {
-    /* forcelogzero field is ignored unless forcelogzero_is_set == true */
-    forcelogzero_is_set bool
-    forcelogzero bool
-    /* nomodify field is ignored unless nomodify_is_set == true */
-    nomodify_is_set bool
-    nomodify bool
-    /* noprefetch field is ignored unless noprefetch_is_set == true */
-    noprefetch_is_set bool
-    noprefetch bool
-    /* forcegeometry field is ignored unless forcegeometry_is_set == true */
-    forcegeometry_is_set bool
-    forcegeometry bool
-    /* maxmem field is ignored unless maxmem_is_set == true */
-    maxmem_is_set bool
-    maxmem int64
-    /* ihashsize field is ignored unless ihashsize_is_set == true */
-    ihashsize_is_set bool
-    ihashsize int64
-    /* bhashsize field is ignored unless bhashsize_is_set == true */
-    bhashsize_is_set bool
-    bhashsize int64
-    /* agstride field is ignored unless agstride_is_set == true */
-    agstride_is_set bool
-    agstride int64
-    /* logdev field is ignored unless logdev_is_set == true */
-    logdev_is_set bool
-    logdev string
-    /* rtdev field is ignored unless rtdev_is_set == true */
-    rtdev_is_set bool
-    rtdev string
+    /* Forcelogzero field is ignored unless Forcelogzero_is_set == true */
+    Forcelogzero_is_set bool
+    Forcelogzero bool
+    /* Nomodify field is ignored unless Nomodify_is_set == true */
+    Nomodify_is_set bool
+    Nomodify bool
+    /* Noprefetch field is ignored unless Noprefetch_is_set == true */
+    Noprefetch_is_set bool
+    Noprefetch bool
+    /* Forcegeometry field is ignored unless Forcegeometry_is_set == true */
+    Forcegeometry_is_set bool
+    Forcegeometry bool
+    /* Maxmem field is ignored unless Maxmem_is_set == true */
+    Maxmem_is_set bool
+    Maxmem int64
+    /* Ihashsize field is ignored unless Ihashsize_is_set == true */
+    Ihashsize_is_set bool
+    Ihashsize int64
+    /* Bhashsize field is ignored unless Bhashsize_is_set == true */
+    Bhashsize_is_set bool
+    Bhashsize int64
+    /* Agstride field is ignored unless Agstride_is_set == true */
+    Agstride_is_set bool
+    Agstride int64
+    /* Logdev field is ignored unless Logdev_is_set == true */
+    Logdev_is_set bool
+    Logdev string
+    /* Rtdev field is ignored unless Rtdev_is_set == true */
+    Rtdev_is_set bool
+    Rtdev string
 }
 
 /* xfs_repair : repair an XFS filesystem */
@@ -11986,46 +12013,46 @@ func (g *Guestfs) Xfs_repair (device string, optargs *OptargsXfs_repair) (int, *
     defer C.free (unsafe.Pointer (c_device))
     c_optargs := C.struct_guestfs_xfs_repair_argv{}
     if optargs != nil {
-        if optargs.forcelogzero_is_set {
+        if optargs.Forcelogzero_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_FORCELOGZERO_BITMASK
-            if optargs.forcelogzero { c_optargs.forcelogzero = 1 } else { c_optargs.forcelogzero = 0}
+            if optargs.Forcelogzero { c_optargs.forcelogzero = 1 } else { c_optargs.forcelogzero = 0}
         }
-        if optargs.nomodify_is_set {
+        if optargs.Nomodify_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_NOMODIFY_BITMASK
-            if optargs.nomodify { c_optargs.nomodify = 1 } else { c_optargs.nomodify = 0}
+            if optargs.Nomodify { c_optargs.nomodify = 1 } else { c_optargs.nomodify = 0}
         }
-        if optargs.noprefetch_is_set {
+        if optargs.Noprefetch_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_NOPREFETCH_BITMASK
-            if optargs.noprefetch { c_optargs.noprefetch = 1 } else { c_optargs.noprefetch = 0}
+            if optargs.Noprefetch { c_optargs.noprefetch = 1 } else { c_optargs.noprefetch = 0}
         }
-        if optargs.forcegeometry_is_set {
+        if optargs.Forcegeometry_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_FORCEGEOMETRY_BITMASK
-            if optargs.forcegeometry { c_optargs.forcegeometry = 1 } else { c_optargs.forcegeometry = 0}
+            if optargs.Forcegeometry { c_optargs.forcegeometry = 1 } else { c_optargs.forcegeometry = 0}
         }
-        if optargs.maxmem_is_set {
+        if optargs.Maxmem_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_MAXMEM_BITMASK
-            c_optargs.maxmem = C.int64_t (optargs.maxmem)
+            c_optargs.maxmem = C.int64_t (optargs.Maxmem)
         }
-        if optargs.ihashsize_is_set {
+        if optargs.Ihashsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_IHASHSIZE_BITMASK
-            c_optargs.ihashsize = C.int64_t (optargs.ihashsize)
+            c_optargs.ihashsize = C.int64_t (optargs.Ihashsize)
         }
-        if optargs.bhashsize_is_set {
+        if optargs.Bhashsize_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_BHASHSIZE_BITMASK
-            c_optargs.bhashsize = C.int64_t (optargs.bhashsize)
+            c_optargs.bhashsize = C.int64_t (optargs.Bhashsize)
         }
-        if optargs.agstride_is_set {
+        if optargs.Agstride_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_AGSTRIDE_BITMASK
-            c_optargs.agstride = C.int64_t (optargs.agstride)
+            c_optargs.agstride = C.int64_t (optargs.Agstride)
         }
-        if optargs.logdev_is_set {
+        if optargs.Logdev_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_LOGDEV_BITMASK
-            c_optargs.logdev = C.CString (optargs.logdev)
+            c_optargs.logdev = C.CString (optargs.Logdev)
             defer C.free (unsafe.Pointer (c_optargs.logdev))
         }
-        if optargs.rtdev_is_set {
+        if optargs.Rtdev_is_set {
             c_optargs.bitmask |= C.GUESTFS_XFS_REPAIR_RTDEV_BITMASK
-            c_optargs.rtdev = C.CString (optargs.rtdev)
+            c_optargs.rtdev = C.CString (optargs.Rtdev)
             defer C.free (unsafe.Pointer (c_optargs.rtdev))
         }
     }

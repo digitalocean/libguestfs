@@ -7821,9 +7821,10 @@ You must call <a class="link" href="GuestfsSession.html#guestfs-session-launch" 
 </p>
 <p>
 This is mainly useful as a negative test. If this returns true, it
-doesn't mean that a particular filesystem can be mounted, since
-filesystems can fail for other reasons such as it being a later version
-of the filesystem, or having incompatible features.
+doesn't mean that a particular filesystem can be created or mounted,
+since filesystems can fail for other reasons such as it being a later
+version of the filesystem, or having incompatible features, or lacking
+the right mkfs.&lt;*fs*&gt; tool.
 </p>
 <p>
 See also <a class="link" href="GuestfsSession.html#guestfs-session-available" title="guestfs_session_available ()"><code class="function">guestfs_session_available()</code></a>,

@@ -173,6 +173,9 @@ Makefile.in
 /gobject/Guestfs-1.0.typelib
 /gobject/guestfs-gobject*.c
 /gobject/guestfs-gobject*.h
+/golang/bindtests.go
+/golang/examples/guestfs-golang.3
+/golang/examples/stamp-guestfs-golang.pod
 /golang/pkg
 /guestfs-release-notes.1
 /guestfsd-in-wine.log
@@ -187,6 +190,7 @@ Makefile.in
 /html/guestfs-erlang.3.html
 /html/guestfs-examples.3.html
 /html/guestfs-faq.1.html
+/html/guestfs-golang.3.html
 /html/guestfs-java.3.html
 /html/guestfs-lua.3.html
 /html/guestfs-ocaml.3.html

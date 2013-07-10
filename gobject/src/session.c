@@ -21060,9 +21060,10 @@ guestfs_session_btrfs_fsck(GuestfsSession *session, const gchar *device, Guestfs
  * You must call guestfs_session_launch() before using this command.
  * 
  * This is mainly useful as a negative test. If this returns true, it
- * doesn't mean that a particular filesystem can be mounted, since
- * filesystems can fail for other reasons such as it being a later version
- * of the filesystem, or having incompatible features.
+ * doesn't mean that a particular filesystem can be created or mounted,
+ * since filesystems can fail for other reasons such as it being a later
+ * version of the filesystem, or having incompatible features, or lacking
+ * the right mkfs.&lt;*fs*&gt; tool.
  * 
  * See also guestfs_session_available(),
  * guestfs_session_feature_available(), "AVAILABILITY" in guestfs(3).

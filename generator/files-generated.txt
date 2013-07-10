@@ -163,6 +163,7 @@ gobject/src/struct-version.c
 gobject/src/struct-xattr.c
 gobject/src/struct-xfsinfo.c
 gobject/src/tristate.c
+golang/bindtests.go
 golang/src/libguestfs.org/guestfs/guestfs.go
 haskell/Bindtests.hs
 haskell/Guestfs.hs

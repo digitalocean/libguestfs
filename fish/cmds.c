@@ -3200,7 +3200,7 @@ struct command_entry btrfs_fsck_cmd_entry = {
 
 struct command_entry filesystem_available_cmd_entry = {
   .name = "filesystem-available",
-  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be mounted, since\n    filesystems can fail for other reasons such as it being a later version\n    of the filesystem, or having incompatible features.\n\n    See also \"available\", \"feature_available\", \"AVAILABILITY\" in guestfs(3).\n\n",
+  .help = "NAME\n    filesystem-available - check if filesystem is available\n\nSYNOPSIS\n     filesystem-available filesystem\n\nDESCRIPTION\n    Check whether libguestfs supports the named filesystem. The argument\n    \"filesystem\" is a filesystem name, such as \"ext3\".\n\n    You must call \"launch\" before using this command.\n\n    This is mainly useful as a negative test. If this returns true, it\n    doesn't mean that a particular filesystem can be created or mounted,\n    since filesystems can fail for other reasons such as it being a later\n    version of the filesystem, or having incompatible features, or lacking\n    the right mkfs.<*fs*> tool.\n\n    See also \"available\", \"feature_available\", \"AVAILABILITY\" in guestfs(3).\n\n",
   .run = run_filesystem_available
 };
 

@@ -129,7 +129,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 @HAVE_ERLANG_TRUE@am__append_10 = erlang erlang/examples
 @HAVE_LUA_TRUE@am__append_11 = lua lua/examples
 @HAVE_GOBJECT_TRUE@am__append_12 = gobject
-@HAVE_GOLANG_TRUE@am__append_13 = golang
+@HAVE_GOLANG_TRUE@am__append_13 = golang golang/examples
 
 # OCaml tools.
 @HAVE_OCAML_TRUE@am__append_14 = resize sparsify sysprep
@@ -353,8 +353,9 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	align cat df edit format inspector rescue bash perl \
 	perl/examples ocaml ocaml/examples python python/examples ruby \
 	ruby/examples java java/examples haskell php erlang \
-	erlang/examples lua lua/examples gobject golang csharp resize \
-	sparsify sysprep tools fuse po-docs
+	erlang/examples lua lua/examples gobject golang \
+	golang/examples csharp resize sparsify sysprep tools fuse \
+	po-docs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1539,6 +1540,7 @@ HTMLFILES = \
 	html/guestfs-examples.3.html \
 	html/guestfs-erlang.3.html \
 	html/guestfs-faq.1.html \
+	html/guestfs-golang.3.html \
 	html/guestfs-java.3.html \
 	html/guestfs-lua.3.html \
 	html/guestfs-ocaml.3.html \
