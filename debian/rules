@@ -25,7 +25,7 @@ BARE_CONFIG_FLAGS = \
 	--disable-daemon --disable-fuse \
 	--disable-ocaml --disable-perl \
 	--disable-erlang --with-java=no \
-	--disable-gobject
+	--disable-gobject --without-java
 
 override_dh_auto_clean:
 	set -e; for p in \
@@ -93,7 +93,8 @@ override_dh_auto_build:
 		default \
 	; do \
 		dh_auto_build --builddir=$(CURDIR)/debian/build-$$p \
-			-- INSTALLDIRS=vendor LD_RUN_PATH=""; \
+			-- INSTALLDIRS=vendor LD_RUN_PATH="" \
+			   EXTRA_JAVAC_FLAGS+="-source 1.6 -target 1.6" ; \
 	done
 
 	# also build part of appliance
