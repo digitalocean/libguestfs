@@ -35,19 +35,6 @@ Vcs-Git: git://git.debian.org/git/pkg-libvirt/libguestfs.git
 Vcs-Browser: http://git.debian.org/?p=pkg-libvirt/libguestfs.git
 XS-Ruby-Versions: all
 
-Package: guestfish
-Section: admin
-Architecture: i386 amd64
-Pre-Depends: ${misc:Pre-Depends}
-Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Description: guest disk image management system - file system shell
- The libguestfs library allows accessing and modifying guest disk
- images.
- .
- Guestfish is a shell and command-line tool for examining and modifying
- virtual machine file systems. It uses libguestfs and exposes all of the
- functionality of the guestfs API; see guestfs(3).
-
 Package: guestfsd
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
@@ -171,15 +158,18 @@ Depends: libguestfs0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
  libsys-virt-perl, libguestfs-perl (= ${binary:Version}),
  libwin-hivex-perl,
  libintl-perl, libstring-shellquote-perl
-Replaces: libguestfs0 (<< 1:1.18.2-1~)
-Breaks: libguestfs0 (<< 1:1.18.2-1~)
+Replaces: guestfish (<< 1:1.22.6-1~),
+ libguestfs0 (<< 1:1.18.2-1~),
+Breaks: guestfish (<< 1:1.22.6-1~),
+ libguestfs0 (<< 1:1.18.2-1~),
 Description: guest disk image management system - tools
  The libguestfs library allows accessing and modifying guest disk
  images.
  .
- This package contains virtualization tools, including virt-cat, virt-df,
- virt-edit, virt-filesystems, virt-inspector, virt-ls, virt-make-fs,
- virt-rescue, virt-resize, virt-tar, and virt-win-reg.
+ This package contains the guestfish interactive shell and various
+ virtualization tools, including virt-cat, virt-df, virt-edit,
+ virt-filesystems, virt-inspector, virt-ls, virt-make-fs, virt-rescue,
+ virt-resize, virt-tar, and virt-win-reg.
 
 Package: libguestfs0-dbg
 Section: debug

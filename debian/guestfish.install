@@ -1,4 +1,0 @@
-usr/bin/guestfish
-usr/share/man/man1/guestfish*
-usr/share/man/*/man1/guestfish*
-usr/share/bash-completion/completions/guestfish
