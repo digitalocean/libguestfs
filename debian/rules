@@ -6,8 +6,8 @@ PYTHONS        := $(filter-out python2.5, $(shell pyversions --installed; py3ver
 PYTHON_DEFAULT := $(shell pyversions --default)
 RUBIES         := $(shell find /usr/bin/ -name 'ruby[12]*' | xargs -n1 readlink -f | xargs -n1 basename)
 RUBY_DEFAULT   := $(shell which ruby | xargs readlink -f | xargs basename)
-LUAS           := lua5.1 lua5.2
-LUA_DEFAULT    := lua5.1
+LUAS           := $(shell find /usr/bin/ -name 'lua5.?' | xargs -n1 readlink -f | xargs -n1 basename)
+LUA_DEFAULT    := $(shell which lua | xargs readlink -f | xargs basename)
 
 DEB_HOST_GNU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's,i[456]86,i386,')
 QEMU_SYSTEM      := qemu-system-$(DEB_HOST_GNU_CPU)
