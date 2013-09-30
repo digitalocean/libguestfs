@@ -4,7 +4,7 @@
 
 PYTHONS        := $(filter-out python2.5, $(shell pyversions --installed; py3versions --installed))
 PYTHON_DEFAULT := $(shell pyversions --default)
-RUBIES         := $(shell find /usr/bin/ -name ruby1\* | xargs -n1 readlink -f | xargs -n1 basename)
+RUBIES         := $(shell find /usr/bin/ -name 'ruby[12]*' | xargs -n1 readlink -f | xargs -n1 basename)
 RUBY_DEFAULT   := $(shell which ruby | xargs readlink -f | xargs basename)
 LUAS           := lua5.1 lua5.2
 LUA_DEFAULT    := lua5.1
