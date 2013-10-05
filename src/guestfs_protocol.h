@@ -3638,6 +3638,36 @@ struct guestfs_set_uuid_args {
 };
 typedef struct guestfs_set_uuid_args guestfs_set_uuid_args;
 
+struct guestfs_journal_open_args {
+	char *directory;
+};
+typedef struct guestfs_journal_open_args guestfs_journal_open_args;
+
+struct guestfs_journal_next_ret {
+	bool_t more;
+};
+typedef struct guestfs_journal_next_ret guestfs_journal_next_ret;
+
+struct guestfs_journal_skip_args {
+	int64_t skip;
+};
+typedef struct guestfs_journal_skip_args guestfs_journal_skip_args;
+
+struct guestfs_journal_skip_ret {
+	int64_t rskip;
+};
+typedef struct guestfs_journal_skip_ret guestfs_journal_skip_ret;
+
+struct guestfs_journal_get_data_threshold_ret {
+	int64_t threshold;
+};
+typedef struct guestfs_journal_get_data_threshold_ret guestfs_journal_get_data_threshold_ret;
+
+struct guestfs_journal_set_data_threshold_args {
+	int64_t threshold;
+};
+typedef struct guestfs_journal_set_data_threshold_args guestfs_journal_set_data_threshold_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4035,9 +4065,16 @@ enum guestfs_procedure {
 	GUESTFS_PROC_CP_R = 401,
 	GUESTFS_PROC_REMOUNT = 402,
 	GUESTFS_PROC_SET_UUID = 403,
+	GUESTFS_PROC_JOURNAL_OPEN = 404,
+	GUESTFS_PROC_JOURNAL_CLOSE = 405,
+	GUESTFS_PROC_JOURNAL_NEXT = 406,
+	GUESTFS_PROC_JOURNAL_SKIP = 407,
+	GUESTFS_PROC_INTERNAL_JOURNAL_GET = 408,
+	GUESTFS_PROC_JOURNAL_GET_DATA_THRESHOLD = 409,
+	GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD = 410,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 403
+#define GUESTFS_MAX_PROC_NR 410
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4665,6 +4702,12 @@ extern  bool_t xdr_guestfs_extlinux_args (XDR *, guestfs_extlinux_args*);
 extern  bool_t xdr_guestfs_cp_r_args (XDR *, guestfs_cp_r_args*);
 extern  bool_t xdr_guestfs_remount_args (XDR *, guestfs_remount_args*);
 extern  bool_t xdr_guestfs_set_uuid_args (XDR *, guestfs_set_uuid_args*);
+extern  bool_t xdr_guestfs_journal_open_args (XDR *, guestfs_journal_open_args*);
+extern  bool_t xdr_guestfs_journal_next_ret (XDR *, guestfs_journal_next_ret*);
+extern  bool_t xdr_guestfs_journal_skip_args (XDR *, guestfs_journal_skip_args*);
+extern  bool_t xdr_guestfs_journal_skip_ret (XDR *, guestfs_journal_skip_ret*);
+extern  bool_t xdr_guestfs_journal_get_data_threshold_ret (XDR *, guestfs_journal_get_data_threshold_ret*);
+extern  bool_t xdr_guestfs_journal_set_data_threshold_args (XDR *, guestfs_journal_set_data_threshold_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5242,6 +5285,12 @@ extern bool_t xdr_guestfs_extlinux_args ();
 extern bool_t xdr_guestfs_cp_r_args ();
 extern bool_t xdr_guestfs_remount_args ();
 extern bool_t xdr_guestfs_set_uuid_args ();
+extern bool_t xdr_guestfs_journal_open_args ();
+extern bool_t xdr_guestfs_journal_next_ret ();
+extern bool_t xdr_guestfs_journal_skip_args ();
+extern bool_t xdr_guestfs_journal_skip_ret ();
+extern bool_t xdr_guestfs_journal_get_data_threshold_ret ();
+extern bool_t xdr_guestfs_journal_set_data_threshold_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

@@ -225,6 +225,7 @@
     <keyword type="function" name="guestfs_session_set_program ()" link="GuestfsSession.html#guestfs-session-set-program"/>
     <keyword type="function" name="guestfs_session_get_program ()" link="GuestfsSession.html#guestfs-session-get-program"/>
     <keyword type="function" name="guestfs_session_add_drive_scratch ()" link="GuestfsSession.html#guestfs-session-add-drive-scratch"/>
+    <keyword type="function" name="guestfs_session_journal_get ()" link="GuestfsSession.html#guestfs-session-journal-get"/>
     <keyword type="function" name="guestfs_session_mount ()" link="GuestfsSession.html#guestfs-session-mount"/>
     <keyword type="function" name="guestfs_session_sync ()" link="GuestfsSession.html#guestfs-session-sync"/>
     <keyword type="function" name="guestfs_session_touch ()" link="GuestfsSession.html#guestfs-session-touch"/>
@@ -610,6 +611,12 @@
     <keyword type="function" name="guestfs_session_cp_r ()" link="GuestfsSession.html#guestfs-session-cp-r"/>
     <keyword type="function" name="guestfs_session_remount ()" link="GuestfsSession.html#guestfs-session-remount"/>
     <keyword type="function" name="guestfs_session_set_uuid ()" link="GuestfsSession.html#guestfs-session-set-uuid"/>
+    <keyword type="function" name="guestfs_session_journal_open ()" link="GuestfsSession.html#guestfs-session-journal-open"/>
+    <keyword type="function" name="guestfs_session_journal_close ()" link="GuestfsSession.html#guestfs-session-journal-close"/>
+    <keyword type="function" name="guestfs_session_journal_next ()" link="GuestfsSession.html#guestfs-session-journal-next"/>
+    <keyword type="function" name="guestfs_session_journal_skip ()" link="GuestfsSession.html#guestfs-session-journal-skip"/>
+    <keyword type="function" name="guestfs_session_journal_get_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-get-data-threshold"/>
+    <keyword type="function" name="guestfs_session_journal_set_data_threshold ()" link="GuestfsSession.html#guestfs-session-journal-set-data-threshold"/>
     <keyword type="signal" name="The &quot;appliance&quot; signal" link="GuestfsSession.html#GuestfsSession-appliance"/>
     <keyword type="signal" name="The &quot;close&quot; signal" link="GuestfsSession.html#GuestfsSession-close"/>
     <keyword type="signal" name="The &quot;enter&quot; signal" link="GuestfsSession.html#GuestfsSession-enter"/>

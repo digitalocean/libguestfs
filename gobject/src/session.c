@@ -7374,6 +7374,63 @@ guestfs_session_add_drive_scratch(GuestfsSession *session, gint64 size, GuestfsA
 }
 
 /**
+ * guestfs_session_journal_get:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * read the current journal entry
+ *
+ * Read the current journal entry. This returns all the fields in the
+ * journal as a set of "(attrname, attrval)" pairs. The @attrname is the
+ * field name (a string).
+ * 
+ * The @attrval is the field value (a binary blob, often but not always a
+ * string). Please note that @attrval is a byte array, *not* a
+ * \0-terminated C string.
+ * 
+ * The length of data may be truncated to the data threshold (see:
+ * guestfs_session_journal_set_data_threshold(),
+ * guestfs_session_journal_get_data_threshold()).
+ * 
+ * If you set the data threshold to unlimited (@0) then this call can read
+ * a journal entry of any size, ie. it is not limited by the libguestfs
+ * protocol.
+ * 
+ * Returns: (transfer full) (array zero-terminated=1) (element-type GuestfsXAttr): an array of XAttr objects, or NULL on error
+ */
+GuestfsXAttr **
+guestfs_session_journal_get(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_get");
+    return NULL;
+  }
+
+  struct guestfs_xattr_list *ret = guestfs_journal_get (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  GuestfsXAttr **l = g_malloc(sizeof(GuestfsXAttr*) * (ret->len + 1));
+  gsize i;
+  for (i = 0; i < ret->len; i++) {
+    l[i] = g_slice_new0(GuestfsXAttr);
+    if (ret->val[i].attrname) l[i]->attrname = g_strdup(ret->val[i].attrname);
+    if (ret->val[i].attrval) {
+      l[i]->attrval = g_byte_array_sized_new(ret->val[i].attrval_len);
+      g_byte_array_append(l[i]->attrval, ret->val[i].attrval, ret->val[i].attrval_len);
+    }
+  }
+  guestfs_free_xattr_list(ret);
+  l[i] = NULL;
+  return l;
+}
+
+/**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
  * @mountable: (transfer none) (type filename):
@@ -24373,6 +24430,224 @@ guestfs_session_set_uuid(GuestfsSession *session, const gchar *device, const gch
   }
 
   int ret = guestfs_set_uuid (g, device, uuid);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_journal_open:
+ * @session: (transfer none): A GuestfsSession object
+ * @directory: (transfer none) (type filename):
+ * @err: A GError object to receive any generated errors
+ *
+ * open the systemd journal
+ *
+ * Open the systemd journal located in @directory. Any previously opened
+ * journal handle is closed.
+ * 
+ * The contents of the journal can be read using
+ * guestfs_session_journal_next() and guestfs_session_journal_get().
+ * 
+ * After you have finished using the journal, you should close the handle
+ * by calling guestfs_session_journal_close().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_journal_open(GuestfsSession *session, const gchar *directory, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_open");
+    return FALSE;
+  }
+
+  int ret = guestfs_journal_open (g, directory);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_journal_close:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * close the systemd journal
+ *
+ * Close the journal handle.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_journal_close(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_close");
+    return FALSE;
+  }
+
+  int ret = guestfs_journal_close (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_journal_next:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * move to the next journal entry
+ *
+ * Move to the next journal entry. You have to call this at least once
+ * after opening the handle before you are able to read data.
+ * 
+ * The returned boolean tells you if there are any more journal records to
+ * read. @true means you can read the next record (eg. using
+ * guestfs_session_journal_get_data()), and @false means you have reached
+ * the end of the journal.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint8
+guestfs_session_journal_next(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_next");
+    return -1;
+  }
+
+  int ret = guestfs_journal_next (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_journal_skip:
+ * @session: (transfer none): A GuestfsSession object
+ * @skip: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * skip forwards or backwards in the journal
+ *
+ * Skip forwards ("skip &ge; 0") or backwards ("skip &lt; 0") in the
+ * journal.
+ * 
+ * The number of entries actually skipped is returned (note "rskip &ge;
+ * 0"). If this is not the same as the absolute value of the skip parameter
+ * ("|skip|") you passed in then it means you have reached the end or the
+ * start of the journal.
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_journal_skip(GuestfsSession *session, gint64 skip, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_skip");
+    return -1;
+  }
+
+  int64_t ret = guestfs_journal_skip (g, skip);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_journal_get_data_threshold:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the data threshold for reading journal entries
+ *
+ * Get the current data threshold for reading journal entries. This is a
+ * hint to the journal that it may truncate data fields to this size when
+ * reading them (note also that it may not truncate them). If this returns
+ * @0, then the threshold is unlimited.
+ * 
+ * See also guestfs_session_journal_set_data_threshold().
+ * 
+ * Returns: the returned value, or -1 on error
+ */
+gint64
+guestfs_session_journal_get_data_threshold(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_get_data_threshold");
+    return -1;
+  }
+
+  int64_t ret = guestfs_journal_get_data_threshold (g);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return -1;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_journal_set_data_threshold:
+ * @session: (transfer none): A GuestfsSession object
+ * @threshold: (type gint64):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the data threshold for reading journal entries
+ *
+ * Set the data threshold for reading journal entries. This is a hint to
+ * the journal that it may truncate data fields to this size when reading
+ * them (note also that it may not truncate them). If you set this to @0,
+ * then the threshold is unlimited.
+ * 
+ * See also guestfs_session_journal_get_data_threshold().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_journal_set_data_threshold(GuestfsSession *session, gint64 threshold, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "journal_set_data_threshold");
+    return FALSE;
+  }
+
+  int ret = guestfs_journal_set_data_threshold (g, threshold);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;

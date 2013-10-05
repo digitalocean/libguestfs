@@ -6293,6 +6293,108 @@ func (g *Guestfs) Isoinfo_device (device string) (*ISOInfo, *GuestfsError) {
     return return_ISOInfo (r), nil
 }
 
+/* journal_close : close the systemd journal */
+func (g *Guestfs) Journal_close () *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("journal_close")
+    }
+
+    r := C.guestfs_journal_close (g.g)
+
+    if r == -1 {
+        return get_error_from_handle (g, "journal_close")
+    }
+    return nil
+}
+
+/* journal_get : read the current journal entry */
+func (g *Guestfs) Journal_get () (*[]XAttr, *GuestfsError) {
+    if g.g == nil {
+        return nil, closed_handle_error ("journal_get")
+    }
+
+    r := C.guestfs_journal_get (g.g)
+
+    if r == nil {
+        return nil, get_error_from_handle (g, "journal_get")
+    }
+    defer C.guestfs_free_xattr_list (r)
+    return return_XAttr_list (r), nil
+}
+
+/* journal_get_data_threshold : get the data threshold for reading journal entries */
+func (g *Guestfs) Journal_get_data_threshold () (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("journal_get_data_threshold")
+    }
+
+    r := C.guestfs_journal_get_data_threshold (g.g)
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "journal_get_data_threshold")
+    }
+    return int64 (r), nil
+}
+
+/* journal_next : move to the next journal entry */
+func (g *Guestfs) Journal_next () (bool, *GuestfsError) {
+    if g.g == nil {
+        return false, closed_handle_error ("journal_next")
+    }
+
+    r := C.guestfs_journal_next (g.g)
+
+    if r == -1 {
+        return false, get_error_from_handle (g, "journal_next")
+    }
+    return r != 0, nil
+}
+
+/* journal_open : open the systemd journal */
+func (g *Guestfs) Journal_open (directory string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("journal_open")
+    }
+
+    c_directory := C.CString (directory)
+    defer C.free (unsafe.Pointer (c_directory))
+
+    r := C.guestfs_journal_open (g.g, c_directory)
+
+    if r == -1 {
+        return get_error_from_handle (g, "journal_open")
+    }
+    return nil
+}
+
+/* journal_set_data_threshold : set the data threshold for reading journal entries */
+func (g *Guestfs) Journal_set_data_threshold (threshold int64) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("journal_set_data_threshold")
+    }
+
+    r := C.guestfs_journal_set_data_threshold (g.g, C.int64_t (threshold))
+
+    if r == -1 {
+        return get_error_from_handle (g, "journal_set_data_threshold")
+    }
+    return nil
+}
+
+/* journal_skip : skip forwards or backwards in the journal */
+func (g *Guestfs) Journal_skip (skip int64) (int64, *GuestfsError) {
+    if g.g == nil {
+        return 0, closed_handle_error ("journal_skip")
+    }
+
+    r := C.guestfs_journal_skip (g.g, C.int64_t (skip))
+
+    if r == -1 {
+        return 0, get_error_from_handle (g, "journal_skip")
+    }
+    return int64 (r), nil
+}
+
 /* kill_subprocess : kill the qemu subprocess */
 func (g *Guestfs) Kill_subprocess () *GuestfsError {
     if g.g == nil {

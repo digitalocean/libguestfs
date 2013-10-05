@@ -1173,6 +1173,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1scrat
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_get
+ * Signature: (J)[Lcom/redhat/et/libguestfs/XAttr;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1get
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _mount
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
@@ -4250,6 +4258,54 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1remount
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1uuid
   (JNIEnv *, jobject, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_open
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1open
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_close
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1close
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_next
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1next
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_skip
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1skip
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_get_data_threshold
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1get_1data_1threshold
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _journal_set_data_threshold
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1journal_1set_1data_1threshold
+  (JNIEnv *, jobject, jlong, jlong);
 
 #ifdef __cplusplus
 }

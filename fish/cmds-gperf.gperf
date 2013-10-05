@@ -261,6 +261,13 @@ extern struct command_entry is_zero_cmd_entry;
 extern struct command_entry is_zero_device_cmd_entry;
 extern struct command_entry isoinfo_cmd_entry;
 extern struct command_entry isoinfo_device_cmd_entry;
+extern struct command_entry journal_close_cmd_entry;
+extern struct command_entry journal_get_cmd_entry;
+extern struct command_entry journal_get_data_threshold_cmd_entry;
+extern struct command_entry journal_next_cmd_entry;
+extern struct command_entry journal_open_cmd_entry;
+extern struct command_entry journal_set_data_threshold_cmd_entry;
+extern struct command_entry journal_skip_cmd_entry;
 extern struct command_entry kill_subprocess_cmd_entry;
 extern struct command_entry launch_cmd_entry;
 extern struct command_entry lcd_cmd_entry;
@@ -972,6 +979,20 @@ is-zero-device, &is_zero_device_cmd_entry
 isoinfo, &isoinfo_cmd_entry
 isoinfo_device, &isoinfo_device_cmd_entry
 isoinfo-device, &isoinfo_device_cmd_entry
+journal_close, &journal_close_cmd_entry
+journal-close, &journal_close_cmd_entry
+journal_get, &journal_get_cmd_entry
+journal-get, &journal_get_cmd_entry
+journal_get_data_threshold, &journal_get_data_threshold_cmd_entry
+journal-get-data-threshold, &journal_get_data_threshold_cmd_entry
+journal_next, &journal_next_cmd_entry
+journal-next, &journal_next_cmd_entry
+journal_open, &journal_open_cmd_entry
+journal-open, &journal_open_cmd_entry
+journal_set_data_threshold, &journal_set_data_threshold_cmd_entry
+journal-set-data-threshold, &journal_set_data_threshold_cmd_entry
+journal_skip, &journal_skip_cmd_entry
+journal-skip, &journal_skip_cmd_entry
 kill_subprocess, &kill_subprocess_cmd_entry
 kill-subprocess, &kill_subprocess_cmd_entry
 launch, &launch_cmd_entry

@@ -7883,6 +7883,66 @@ xdr_guestfs_set_uuid_args (XDR *xdrs, guestfs_set_uuid_args *objp)
 }
 
 bool_t
+xdr_guestfs_journal_open_args (XDR *xdrs, guestfs_journal_open_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->directory, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_journal_next_ret (XDR *xdrs, guestfs_journal_next_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_bool (xdrs, &objp->more))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_journal_skip_args (XDR *xdrs, guestfs_journal_skip_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->skip))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_journal_skip_ret (XDR *xdrs, guestfs_journal_skip_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->rskip))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_journal_get_data_threshold_ret (XDR *xdrs, guestfs_journal_get_data_threshold_ret *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->threshold))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_guestfs_journal_set_data_threshold_args (XDR *xdrs, guestfs_journal_set_data_threshold_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int64_t (xdrs, &objp->threshold))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

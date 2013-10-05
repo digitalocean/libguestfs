@@ -578,5 +578,12 @@ extern int do_extlinux (const char *directory);
 extern int do_cp_r (const char *src, const char *dest);
 extern int do_remount (const char *mountpoint, int rw);
 extern int do_set_uuid (const char *device, const char *uuid);
+extern int do_journal_open (const char *directory);
+extern int do_journal_close (void);
+extern int do_journal_next (void);
+extern int64_t do_journal_skip (int64_t skip);
+extern int do_internal_journal_get (void);
+extern int64_t do_journal_get_data_threshold (void);
+extern int do_journal_set_data_threshold (int64_t threshold);
 
 #endif /* GUESTFSD_ACTIONS_H */

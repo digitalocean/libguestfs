@@ -143,7 +143,7 @@ DIST_COMMON = $(top_srcdir)/common-rules.mk $(srcdir)/Makefile.in \
 @ENABLE_APPLIANCE_TRUE@	tests/mount-local tests/9p tests/rsync \
 @ENABLE_APPLIANCE_TRUE@	tests/bigdirs tests/disk-labels \
 @ENABLE_APPLIANCE_TRUE@	tests/hotplug tests/nbd tests/http \
-@ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/fuzz \
+@ENABLE_APPLIANCE_TRUE@	tests/syslinux tests/journal tests/fuzz \
 @ENABLE_APPLIANCE_TRUE@	tests/regressions
 
 # Language bindings.
@@ -399,7 +399,7 @@ DIST_SUBDIRS = gnulib/lib gnulib/tests tests/data generator src \
 	tests/selinux tests/ntfsclone tests/btrfs tests/xfs \
 	tests/charsets tests/xml tests/mount-local tests/9p \
 	tests/rsync tests/bigdirs tests/disk-labels tests/hotplug \
-	tests/nbd tests/http tests/syslinux tests/fuzz \
+	tests/nbd tests/http tests/syslinux tests/journal tests/fuzz \
 	tests/regressions test-tool fish align cat df edit format \
 	inspector rescue bash perl perl/examples ocaml ocaml/examples \
 	python python/examples ruby ruby/examples java java/examples \
@@ -1410,6 +1410,8 @@ REPLACE_WCWIDTH = @REPLACE_WCWIDTH@
 REPLACE_WRITE = @REPLACE_WRITE@
 RPCGEN = @RPCGEN@
 RUBY = @RUBY@
+SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
+SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
 SELINUX_LIB = @SELINUX_LIB@
 SERVENT_LIB = @SERVENT_LIB@

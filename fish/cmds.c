@@ -150,6 +150,7 @@ static int run_user_cancel (const char *cmd, size_t argc, char *argv[]);
 static int run_set_program (const char *cmd, size_t argc, char *argv[]);
 static int run_get_program (const char *cmd, size_t argc, char *argv[]);
 static int run_add_drive_scratch (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_get (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -535,6 +536,12 @@ static int run_extlinux (const char *cmd, size_t argc, char *argv[]);
 static int run_cp_r (const char *cmd, size_t argc, char *argv[]);
 static int run_remount (const char *cmd, size_t argc, char *argv[]);
 static int run_set_uuid (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_open (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_close (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_next (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_skip (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[]);
+static int run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -1290,6 +1297,12 @@ struct command_entry add_drive_scratch_cmd_entry = {
   .name = "add-drive-scratch",
   .help = "NAME\n    add-drive-scratch - add a temporary scratch drive\n\nSYNOPSIS\n     add-drive-scratch size [name:..] [label:..]\n\nDESCRIPTION\n    This command adds a temporary scratch drive to the handle. The \"size\"\n    parameter is the virtual size (in bytes). The scratch drive is blank\n    initially (all reads return zeroes until you start writing to it). The\n    drive is deleted when the handle is closed.\n\n    The optional arguments \"name\" and \"label\" are passed through to\n    \"add_drive\".\n\n    You can use 'scratch' as an alias for this command.\n\n",
   .run = run_add_drive_scratch
+};
+
+struct command_entry journal_get_cmd_entry = {
+  .name = "journal-get",
+  .help = "NAME\n    journal-get - read the current journal entry\n\nSYNOPSIS\n     journal-get\n\nDESCRIPTION\n    Read the current journal entry. This returns all the fields in the\n    journal as a set of \"(attrname, attrval)\" pairs. The \"attrname\" is the\n    field name (a string).\n\n    The \"attrval\" is the field value (a binary blob, often but not always a\n    string). Please note that \"attrval\" is a byte array, *not* a\n    \\0-terminated C string.\n\n    The length of data may be truncated to the data threshold (see:\n    \"journal_set_data_threshold\", \"journal_get_data_threshold\").\n\n    If you set the data threshold to unlimited (0) then this call can read a\n    journal entry of any size, ie. it is not limited by the libguestfs\n    protocol.\n\n",
+  .run = run_journal_get
 };
 
 struct command_entry mount_cmd_entry = {
@@ -3602,6 +3615,42 @@ struct command_entry set_uuid_cmd_entry = {
   .run = run_set_uuid
 };
 
+struct command_entry journal_open_cmd_entry = {
+  .name = "journal-open",
+  .help = "NAME\n    journal-open - open the systemd journal\n\nSYNOPSIS\n     journal-open directory\n\nDESCRIPTION\n    Open the systemd journal located in \"directory\". Any previously opened\n    journal handle is closed.\n\n    The contents of the journal can be read using \"journal_next\" and\n    \"journal_get\".\n\n    After you have finished using the journal, you should close the handle\n    by calling \"journal_close\".\n\n",
+  .run = run_journal_open
+};
+
+struct command_entry journal_close_cmd_entry = {
+  .name = "journal-close",
+  .help = "NAME\n    journal-close - close the systemd journal\n\nSYNOPSIS\n     journal-close\n\nDESCRIPTION\n    Close the journal handle.\n\n",
+  .run = run_journal_close
+};
+
+struct command_entry journal_next_cmd_entry = {
+  .name = "journal-next",
+  .help = "NAME\n    journal-next - move to the next journal entry\n\nSYNOPSIS\n     journal-next\n\nDESCRIPTION\n    Move to the next journal entry. You have to call this at least once\n    after opening the handle before you are able to read data.\n\n    The returned boolean tells you if there are any more journal records to\n    read. \"true\" means you can read the next record (eg. using\n    \"journal_get_data\"), and \"false\" means you have reached the end of the\n    journal.\n\n",
+  .run = run_journal_next
+};
+
+struct command_entry journal_skip_cmd_entry = {
+  .name = "journal-skip",
+  .help = "NAME\n    journal-skip - skip forwards or backwards in the journal\n\nSYNOPSIS\n     journal-skip skip\n\nDESCRIPTION\n    Skip forwards (\"skip ≥ 0\") or backwards (\"skip < 0\") in the journal.\n\n    The number of entries actually skipped is returned (note \"rskip ≥ 0\").\n    If this is not the same as the absolute value of the skip parameter\n    (\"|skip|\") you passed in then it means you have reached the end or the\n    start of the journal.\n\n",
+  .run = run_journal_skip
+};
+
+struct command_entry journal_get_data_threshold_cmd_entry = {
+  .name = "journal-get-data-threshold",
+  .help = "NAME\n    journal-get-data-threshold - get the data threshold for reading journal\n    entries\n\nSYNOPSIS\n     journal-get-data-threshold\n\nDESCRIPTION\n    Get the current data threshold for reading journal entries. This is a\n    hint to the journal that it may truncate data fields to this size when\n    reading them (note also that it may not truncate them). If this returns\n    0, then the threshold is unlimited.\n\n    See also \"journal_set_data_threshold\".\n\n",
+  .run = run_journal_get_data_threshold
+};
+
+struct command_entry journal_set_data_threshold_cmd_entry = {
+  .name = "journal-set-data-threshold",
+  .help = "NAME\n    journal-set-data-threshold - set the data threshold for reading journal\n    entries\n\nSYNOPSIS\n     journal-set-data-threshold threshold\n\nDESCRIPTION\n    Set the data threshold for reading journal entries. This is a hint to\n    the journal that it may truncate data fields to this size when reading\n    them (note also that it may not truncate them). If you set this to 0,\n    then the threshold is unlimited.\n\n    See also \"journal_get_data_threshold\".\n\n",
+  .run = run_journal_set_data_threshold
+};
+
 void
 list_commands (void)
 {
@@ -3833,6 +3882,13 @@ list_commands (void)
   printf ("%-20s %s\n", "is-zero-device", _("test if a device contains all zero bytes"));
   printf ("%-20s %s\n", "isoinfo", _("get ISO information from primary volume descriptor of ISO file"));
   printf ("%-20s %s\n", "isoinfo-device", _("get ISO information from primary volume descriptor of device"));
+  printf ("%-20s %s\n", "journal-close", _("close the systemd journal"));
+  printf ("%-20s %s\n", "journal-get", _("read the current journal entry"));
+  printf ("%-20s %s\n", "journal-get-data-threshold", _("get the data threshold for reading journal entries"));
+  printf ("%-20s %s\n", "journal-next", _("move to the next journal entry"));
+  printf ("%-20s %s\n", "journal-open", _("open the systemd journal"));
+  printf ("%-20s %s\n", "journal-set-data-threshold", _("set the data threshold for reading journal entries"));
+  printf ("%-20s %s\n", "journal-skip", _("skip forwards or backwards in the journal"));
   printf ("%-20s %s\n", "kill-subprocess", _("kill the qemu subprocess"));
   printf ("%-20s %s\n", "launch", _("launch the qemu subprocess"));
   printf ("%-20s %s\n", "lcd", _("change working directory"));
@@ -7558,6 +7614,27 @@ run_add_drive_scratch (const char *cmd, size_t argc, char *argv[])
   ret = 0;
  out:
  out_size:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_get (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  struct guestfs_xattr_list *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_get (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  print_xattr_list (r);
+  guestfs_free_xattr_list (r);
+ out:
  out_noargs:
   return ret;
 }
@@ -21880,6 +21957,161 @@ run_set_uuid (const char *cmd, size_t argc, char *argv[])
   if (r == -1) goto out;
   ret = 0;
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_open (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  char *directory;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  directory = win_prefix (argv[i++]); /* process "win:" prefix */
+  if (directory == NULL) goto out_directory;
+  r = guestfs_journal_open (g, directory);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+  free (directory);
+ out_directory:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_close (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_close (g);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_next (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_next (g);
+  if (r == -1) goto out;
+  ret = 0;
+  if (r) printf ("true\n"); else printf ("false\n");
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_skip (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+  int64_t skip;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "skip", "xstrtoll", xerr);
+      goto out_skip;
+    }
+    skip = r;
+  }
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_skip:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_get_data_threshold (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int64_t r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1) goto out;
+  ret = 0;
+  printf ("%" PRIi64 "\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_journal_set_data_threshold (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int64_t threshold;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "threshold", "xstrtoll", xerr);
+      goto out_threshold;
+    }
+    threshold = r;
+  }
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_threshold:
  out_noargs:
   return ret;
 }

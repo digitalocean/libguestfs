@@ -1637,6 +1637,16 @@ GuestfsSession
 @Returns: 
 
 
+<!-- ##### FUNCTION guestfs_session_journal_get ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
 <!-- ##### FUNCTION guestfs_session_mount ##### -->
 <para>
 
@@ -6130,6 +6140,69 @@ GuestfsSession
 @session: 
 @device: 
 @uuid: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_journal_open ##### -->
+<para>
+
+</para>
+
+@session: 
+@directory: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_journal_close ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_journal_next ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_journal_skip ##### -->
+<para>
+
+</para>
+
+@session: 
+@skip: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_journal_get_data_threshold ##### -->
+<para>
+
+</para>
+
+@session: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION guestfs_session_journal_set_data_threshold ##### -->
+<para>
+
+</para>
+
+@session: 
+@threshold: 
 @err: 
 @Returns: 
 

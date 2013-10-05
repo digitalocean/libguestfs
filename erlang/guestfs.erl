@@ -278,6 +278,13 @@
 -export([is_zero_device/2]).
 -export([isoinfo/2]).
 -export([isoinfo_device/2]).
+-export([journal_close/1]).
+-export([journal_get/1]).
+-export([journal_get_data_threshold/1]).
+-export([journal_next/1]).
+-export([journal_open/2]).
+-export([journal_set_data_threshold/2]).
+-export([journal_skip/2]).
 -export([kill_subprocess/1]).
 -export([launch/1]).
 -export([lchown/4]).
@@ -1421,6 +1428,27 @@ isoinfo(G, Isofile) ->
 
 isoinfo_device(G, Device) ->
   call_port(G, {isoinfo_device, Device}).
+
+journal_close(G) ->
+  call_port(G, {journal_close}).
+
+journal_get(G) ->
+  call_port(G, {journal_get}).
+
+journal_get_data_threshold(G) ->
+  call_port(G, {journal_get_data_threshold}).
+
+journal_next(G) ->
+  call_port(G, {journal_next}).
+
+journal_open(G, Directory) ->
+  call_port(G, {journal_open, Directory}).
+
+journal_set_data_threshold(G, Threshold) ->
+  call_port(G, {journal_set_data_threshold, Threshold}).
+
+journal_skip(G, Skip) ->
+  call_port(G, {journal_skip, Skip}).
 
 kill_subprocess(G) ->
   call_port(G, {kill_subprocess}).

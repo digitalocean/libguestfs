@@ -6962,6 +6962,59 @@ ruby_guestfs_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
 
 /*
  * call-seq:
+ *   g.journal_get() -> list
+ *
+ * read the current journal entry
+ *
+ * Read the current journal entry. This returns all the
+ * fields in the journal as a set of "(attrname, attrval)"
+ * pairs. The "attrname" is the field name (a string).
+ * 
+ * The "attrval" is the field value (a binary blob, often
+ * but not always a string). Please note that "attrval" is
+ * a byte array, *not* a \0-terminated C string.
+ * 
+ * The length of data may be truncated to the data
+ * threshold (see: "g.journal_set_data_threshold",
+ * "g.journal_get_data_threshold").
+ * 
+ * If you set the data threshold to unlimited (0) then this
+ * call can read a journal entry of any size, ie. it is not
+ * limited by the libguestfs protocol.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_get+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get]).
+ */
+static VALUE
+ruby_guestfs_journal_get (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_get");
+
+
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_journal_get (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_ary_new2 (r->len);
+  size_t i;
+  for (i = 0; i < r->len; ++i) {
+    volatile VALUE hv = rb_hash_new ();
+    rb_hash_aset (hv, rb_str_new2 ("attrname"), rb_str_new2 (r->val[i].attrname));
+    rb_hash_aset (hv, rb_str_new2 ("attrval"), rb_str_new (r->val[i].attrval, r->val[i].attrval_len));
+    rb_ary_push (rv, hv);
+  }
+  guestfs_free_xattr_list (r);
+  return rv;
+}
+
+/*
+ * call-seq:
  *   g.mount(mountable, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
@@ -24524,6 +24577,222 @@ ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.journal_open(directory) -> nil
+ *
+ * open the systemd journal
+ *
+ * Open the systemd journal located in "directory". Any
+ * previously opened journal handle is closed.
+ * 
+ * The contents of the journal can be read using
+ * "g.journal_next" and "g.journal_get".
+ * 
+ * After you have finished using the journal, you should
+ * close the handle by calling "g.journal_close".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_open+[http://libguestfs.org/guestfs.3.html#guestfs_journal_open]).
+ */
+static VALUE
+ruby_guestfs_journal_open (VALUE gv, VALUE directoryv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_open");
+
+  const char *directory = StringValueCStr (directoryv);
+
+  int r;
+
+  r = guestfs_journal_open (g, directory);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.journal_close() -> nil
+ *
+ * close the systemd journal
+ *
+ * Close the journal handle.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_close+[http://libguestfs.org/guestfs.3.html#guestfs_journal_close]).
+ */
+static VALUE
+ruby_guestfs_journal_close (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_close");
+
+
+  int r;
+
+  r = guestfs_journal_close (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.journal_next() -> [True|False]
+ *
+ * move to the next journal entry
+ *
+ * Move to the next journal entry. You have to call this at
+ * least once after opening the handle before you are able
+ * to read data.
+ * 
+ * The returned boolean tells you if there are any more
+ * journal records to read. "true" means you can read the
+ * next record (eg. using "g.journal_get_data"), and
+ * "false" means you have reached the end of the journal.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_next+[http://libguestfs.org/guestfs.3.html#guestfs_journal_next]).
+ */
+static VALUE
+ruby_guestfs_journal_next (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_next");
+
+
+  int r;
+
+  r = guestfs_journal_next (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return INT2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.journal_skip(skip) -> fixnum
+ *
+ * skip forwards or backwards in the journal
+ *
+ * Skip forwards ("skip ≥ 0") or backwards ("skip < 0") in
+ * the journal.
+ * 
+ * The number of entries actually skipped is returned (note
+ * "rskip ≥ 0"). If this is not the same as the absolute
+ * value of the skip parameter ("|skip|") you passed in
+ * then it means you have reached the end or the start of
+ * the journal.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_skip+[http://libguestfs.org/guestfs.3.html#guestfs_journal_skip]).
+ */
+static VALUE
+ruby_guestfs_journal_skip (VALUE gv, VALUE skipv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_skip");
+
+  long long skip = NUM2LL (skipv);
+
+  int64_t r;
+
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.journal_get_data_threshold() -> fixnum
+ *
+ * get the data threshold for reading journal entries
+ *
+ * Get the current data threshold for reading journal
+ * entries. This is a hint to the journal that it may
+ * truncate data fields to this size when reading them
+ * (note also that it may not truncate them). If this
+ * returns 0, then the threshold is unlimited.
+ * 
+ * See also "g.journal_set_data_threshold".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_get_data_threshold+[http://libguestfs.org/guestfs.3.html#guestfs_journal_get_data_threshold]).
+ */
+static VALUE
+ruby_guestfs_journal_get_data_threshold (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_get_data_threshold");
+
+
+  int64_t r;
+
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return ULL2NUM (r);
+}
+
+/*
+ * call-seq:
+ *   g.journal_set_data_threshold(threshold) -> nil
+ *
+ * set the data threshold for reading journal entries
+ *
+ * Set the data threshold for reading journal entries. This
+ * is a hint to the journal that it may truncate data
+ * fields to this size when reading them (note also that it
+ * may not truncate them). If you set this to 0, then the
+ * threshold is unlimited.
+ * 
+ * See also "g.journal_get_data_threshold".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_journal_set_data_threshold+[http://libguestfs.org/guestfs.3.html#guestfs_journal_set_data_threshold]).
+ */
+static VALUE
+ruby_guestfs_journal_set_data_threshold (VALUE gv, VALUE thresholdv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "journal_set_data_threshold");
+
+  long long threshold = NUM2LL (thresholdv);
+
+  int r;
+
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -24849,6 +25118,8 @@ Init__guestfs (void)
         ruby_guestfs_get_program, 0);
   rb_define_method (c_guestfs, "add_drive_scratch",
         ruby_guestfs_add_drive_scratch, -1);
+  rb_define_method (c_guestfs, "journal_get",
+        ruby_guestfs_journal_get, 0);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -25645,4 +25916,16 @@ Init__guestfs (void)
         ruby_guestfs_remount, -1);
   rb_define_method (c_guestfs, "set_uuid",
         ruby_guestfs_set_uuid, 2);
+  rb_define_method (c_guestfs, "journal_open",
+        ruby_guestfs_journal_open, 1);
+  rb_define_method (c_guestfs, "journal_close",
+        ruby_guestfs_journal_close, 0);
+  rb_define_method (c_guestfs, "journal_next",
+        ruby_guestfs_journal_next, 0);
+  rb_define_method (c_guestfs, "journal_skip",
+        ruby_guestfs_journal_skip, 1);
+  rb_define_method (c_guestfs, "journal_get_data_threshold",
+        ruby_guestfs_journal_get_data_threshold, 0);
+  rb_define_method (c_guestfs, "journal_set_data_threshold",
+        ruby_guestfs_journal_set_data_threshold, 1);
 }

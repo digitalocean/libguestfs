@@ -496,6 +496,8 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code><span class="type">gint64</span> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch"><span class="type">GuestfsAddDriveScratch</span></a> *optargs</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<a class="link" href="GuestfsXAttr.html" title="GuestfsXAttr"><span class="returnvalue">GuestfsXAttr</span></a> **     <a class="link" href="GuestfsSession.html#guestfs-session-journal-get" title="guestfs_session_journal_get ()">guestfs_session_journal_get</a>         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-mount" title="guestfs_session_mount ()">guestfs_session_mount</a>               (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountable</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *mountpoint</code></em>,
@@ -1936,6 +1938,23 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-uuid" title="guestfs_session_set_uuid ()">guestfs_session_set_uuid</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *device</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *uuid</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-journal-open" title="guestfs_session_journal_open ()">guestfs_session_journal_open</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-journal-close" title="guestfs_session_journal_close ()">guestfs_session_journal_close</a>       (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint8</span>               <a class="link" href="GuestfsSession.html#guestfs-session-journal-next" title="guestfs_session_journal_next ()">guestfs_session_journal_next</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="GuestfsSession.html#guestfs-session-journal-skip" title="guestfs_session_journal_skip ()">guestfs_session_journal_skip</a>        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> skip</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="GuestfsSession.html#guestfs-session-journal-get-data-threshold" title="guestfs_session_journal_get_data_threshold ()">guestfs_session_journal_get_data_threshold</a>
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-journal-set-data-threshold" title="guestfs_session_journal_set_data_threshold ()">guestfs_session_journal_set_data_threshold</a>
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> threshold</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 </pre>
 </div>
@@ -9459,6 +9478,57 @@ The optional arguments <em class="parameter"><code>name</code></em> and <em clas
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-get"></a><h3>guestfs_session_journal_get ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsXAttr.html" title="GuestfsXAttr"><span class="returnvalue">GuestfsXAttr</span></a> **     guestfs_session_journal_get         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+read the current journal entry
+</p>
+<p>
+Read the current journal entry. This returns all the fields in the
+journal as a set of "(attrname, attrval)" pairs. The <em class="parameter"><code>attrname</code></em> is the
+field name (a string).
+</p>
+<p>
+The <em class="parameter"><code>attrval</code></em> is the field value (a binary blob, often but not always a
+string). Please note that <em class="parameter"><code>attrval</code></em> is a byte array, *not* a
+\0-terminated C string.
+</p>
+<p>
+The length of data may be truncated to the data threshold (see:
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-set-data-threshold" title="guestfs_session_journal_set_data_threshold ()"><code class="function">guestfs_session_journal_set_data_threshold()</code></a>,
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-get-data-threshold" title="guestfs_session_journal_get_data_threshold ()"><code class="function">guestfs_session_journal_get_data_threshold()</code></a>).
+</p>
+<p>
+If you set the data threshold to unlimited (<em class="parameter"><code>0</code></em>) then this call can read
+a journal entry of any size, ie. it is not limited by the libguestfs
+protocol.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an array of XAttr objects, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GuestfsXAttr]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -29069,6 +29139,259 @@ To read the UUID on a filesystem, call <a class="link" href="GuestfsSession.html
 <tr>
 <td><p><span class="term"><em class="parameter"><code>uuid</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-open"></a><h3>guestfs_session_journal_open ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_journal_open        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+open the systemd journal
+</p>
+<p>
+Open the systemd journal located in <em class="parameter"><code>directory</code></em>. Any previously opened
+journal handle is closed.
+</p>
+<p>
+The contents of the journal can be read using
+<a class="link" href="GuestfsSession.html#guestfs-session-journal-next" title="guestfs_session_journal_next ()"><code class="function">guestfs_session_journal_next()</code></a> and <a class="link" href="GuestfsSession.html#guestfs-session-journal-get" title="guestfs_session_journal_get ()"><code class="function">guestfs_session_journal_get()</code></a>.
+</p>
+<p>
+After you have finished using the journal, you should close the handle
+by calling <a class="link" href="GuestfsSession.html#guestfs-session-journal-close" title="guestfs_session_journal_close ()"><code class="function">guestfs_session_journal_close()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>directory</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> filename]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-close"></a><h3>guestfs_session_journal_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_journal_close       (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+close the systemd journal
+</p>
+<p>
+Close the journal handle.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-next"></a><h3>guestfs_session_journal_next ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint8</span>               guestfs_session_journal_next        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+move to the next journal entry
+</p>
+<p>
+Move to the next journal entry. You have to call this at least once
+after opening the handle before you are able to read data.
+</p>
+<p>
+The returned boolean tells you if there are any more journal records to
+read. <em class="parameter"><code>true</code></em> means you can read the next record (eg. using
+<code class="function">guestfs_session_journal_get_data()</code>), and <em class="parameter"><code>false</code></em> means you have reached
+the end of the journal.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-skip"></a><h3>guestfs_session_journal_skip ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              guestfs_session_journal_skip        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> skip</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+skip forwards or backwards in the journal
+</p>
+<p>
+Skip forwards ("skip ≥ 0") or backwards ("skip &lt; 0") in the
+journal.
+</p>
+<p>
+The number of entries actually skipped is returned (note "rskip ≥
+0"). If this is not the same as the absolute value of the skip parameter
+("|skip|") you passed in then it means you have reached the end or the
+start of the journal.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>skip</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> gint64]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-get-data-threshold"></a><h3>guestfs_session_journal_get_data_threshold ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              guestfs_session_journal_get_data_threshold
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get the data threshold for reading journal entries
+</p>
+<p>
+Get the current data threshold for reading journal entries. This is a
+hint to the journal that it may truncate data fields to this size when
+reading them (note also that it may not truncate them). If this returns
+<em class="parameter"><code>0</code></em>, then the threshold is unlimited.
+</p>
+<p>
+See also <a class="link" href="GuestfsSession.html#guestfs-session-journal-set-data-threshold" title="guestfs_session_journal_set_data_threshold ()"><code class="function">guestfs_session_journal_set_data_threshold()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned value, or -1 on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-journal-set-data-threshold"></a><h3>guestfs_session_journal_set_data_threshold ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_journal_set_data_threshold
+                                                        (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> threshold</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set the data threshold for reading journal entries
+</p>
+<p>
+Set the data threshold for reading journal entries. This is a hint to
+the journal that it may truncate data fields to this size when reading
+them (note also that it may not truncate them). If you set this to <em class="parameter"><code>0</code></em>,
+then the threshold is unlimited.
+</p>
+<p>
+See also <a class="link" href="GuestfsSession.html#guestfs-session-journal-get-data-threshold" title="guestfs_session_journal_get_data_threshold ()"><code class="function">guestfs_session_journal_get_data_threshold()</code></a>.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>threshold</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> gint64]</span>
 </td>
 </tr>
 <tr>

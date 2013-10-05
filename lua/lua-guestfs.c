@@ -6603,6 +6603,150 @@ guestfs_lua_isoinfo_device (lua_State *L)
 }
 
 static int
+guestfs_lua_journal_close (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_close");
+
+
+  r = guestfs_journal_close (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_journal_get (lua_State *L)
+{
+  struct guestfs_xattr_list *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_get");
+
+
+  r = guestfs_journal_get (g);
+  if (r == NULL)
+    return last_error (L, g);
+
+  push_xattr_list (L, r);
+  guestfs_free_xattr_list (r);
+  return 1;
+}
+
+static int
+guestfs_lua_journal_get_data_threshold (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_get_data_threshold");
+
+
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
+  return 1;
+}
+
+static int
+guestfs_lua_journal_next (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_next");
+
+
+  r = guestfs_journal_next (g);
+  if (r == -1)
+    return last_error (L, g);
+
+  lua_pushboolean (L, r);
+  return 1;
+}
+
+static int
+guestfs_lua_journal_open (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *directory;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_open");
+
+  directory = luaL_checkstring (L, 2);
+
+  r = guestfs_journal_open (g, directory);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_journal_set_data_threshold (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int64_t threshold;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_set_data_threshold");
+
+  threshold = get_int64 (L, 2);
+
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
+guestfs_lua_journal_skip (lua_State *L)
+{
+  int64_t r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int64_t skip;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "journal_skip");
+
+  skip = get_int64 (L, 2);
+
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1)
+    return last_error (L, g);
+
+  push_int64 (L, r);
+  return 1;
+}
+
+static int
 guestfs_lua_kill_subprocess (lua_State *L)
 {
   int r;
@@ -14769,6 +14913,13 @@ static luaL_Reg methods[] = {
   { "is_zero_device", guestfs_lua_is_zero_device },
   { "isoinfo", guestfs_lua_isoinfo },
   { "isoinfo_device", guestfs_lua_isoinfo_device },
+  { "journal_close", guestfs_lua_journal_close },
+  { "journal_get", guestfs_lua_journal_get },
+  { "journal_get_data_threshold", guestfs_lua_journal_get_data_threshold },
+  { "journal_next", guestfs_lua_journal_next },
+  { "journal_open", guestfs_lua_journal_open },
+  { "journal_set_data_threshold", guestfs_lua_journal_set_data_threshold },
+  { "journal_skip", guestfs_lua_journal_skip },
   { "kill_subprocess", guestfs_lua_kill_subprocess },
   { "launch", guestfs_lua_launch },
   { "lchown", guestfs_lua_lchown },

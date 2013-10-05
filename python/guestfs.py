@@ -2748,6 +2748,30 @@ class GuestFS(object):
         r = libguestfsmod.add_drive_scratch (self._o, size, name, label)
         return r
 
+    def journal_get (self):
+        """Read the current journal entry. This returns all the
+        fields in the journal as a set of "(attrname, attrval)"
+        pairs. The "attrname" is the field name (a string).
+        
+        The "attrval" is the field value (a binary blob, often
+        but not always a string). Please note that "attrval" is
+        a byte array, *not* a \\0-terminated C string.
+        
+        The length of data may be truncated to the data
+        threshold (see: "g.journal_set_data_threshold",
+        "g.journal_get_data_threshold").
+        
+        If you set the data threshold to unlimited (0) then this
+        call can read a journal entry of any size, ie. it is not
+        limited by the libguestfs protocol.
+        
+        This function returns a list of xattrs. Each xattr is
+        represented as a dictionary.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_get (self._o)
+        return r
+
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
@@ -8710,5 +8734,80 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.set_uuid (self._o, device, uuid)
+        return r
+
+    def journal_open (self, directory):
+        """Open the systemd journal located in "directory". Any
+        previously opened journal handle is closed.
+        
+        The contents of the journal can be read using
+        "g.journal_next" and "g.journal_get".
+        
+        After you have finished using the journal, you should
+        close the handle by calling "g.journal_close".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_open (self._o, directory)
+        return r
+
+    def journal_close (self):
+        """Close the journal handle.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_close (self._o)
+        return r
+
+    def journal_next (self):
+        """Move to the next journal entry. You have to call this at
+        least once after opening the handle before you are able
+        to read data.
+        
+        The returned boolean tells you if there are any more
+        journal records to read. "true" means you can read the
+        next record (eg. using "g.journal_get_data"), and
+        "false" means you have reached the end of the journal.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_next (self._o)
+        return r
+
+    def journal_skip (self, skip):
+        """Skip forwards ("skip ≥ 0") or backwards ("skip < 0") in
+        the journal.
+        
+        The number of entries actually skipped is returned (note
+        "rskip ≥ 0"). If this is not the same as the absolute
+        value of the skip parameter ("|skip|") you passed in
+        then it means you have reached the end or the start of
+        the journal.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_skip (self._o, skip)
+        return r
+
+    def journal_get_data_threshold (self):
+        """Get the current data threshold for reading journal
+        entries. This is a hint to the journal that it may
+        truncate data fields to this size when reading them
+        (note also that it may not truncate them). If this
+        returns 0, then the threshold is unlimited.
+        
+        See also "g.journal_set_data_threshold".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_get_data_threshold (self._o)
+        return r
+
+    def journal_set_data_threshold (self, threshold):
+        """Set the data threshold for reading journal entries. This
+        is a hint to the journal that it may truncate data
+        fields to this size when reading them (note also that it
+        may not truncate them). If you set this to 0, then the
+        threshold is unlimited.
+        
+        See also "g.journal_get_data_threshold".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.journal_set_data_threshold (self._o, threshold)
         return r
 

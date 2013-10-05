@@ -263,6 +263,7 @@ gboolean guestfs_session_user_cancel(GuestfsSession *session, GError **err);
 gboolean guestfs_session_set_program(GuestfsSession *session, const gchar *program, GError **err);
 const gchar *guestfs_session_get_program(GuestfsSession *session, GError **err);
 gboolean guestfs_session_add_drive_scratch(GuestfsSession *session, gint64 size, GuestfsAddDriveScratch *optargs, GError **err);
+GuestfsXAttr **guestfs_session_journal_get(GuestfsSession *session, GError **err);
 gboolean guestfs_session_mount(GuestfsSession *session, const gchar *mountable, const gchar *mountpoint, GError **err);
 gboolean guestfs_session_sync(GuestfsSession *session, GError **err);
 gboolean guestfs_session_touch(GuestfsSession *session, const gchar *path, GError **err);
@@ -648,6 +649,12 @@ gboolean guestfs_session_extlinux(GuestfsSession *session, const gchar *director
 gboolean guestfs_session_cp_r(GuestfsSession *session, const gchar *src, const gchar *dest, GError **err);
 gboolean guestfs_session_remount(GuestfsSession *session, const gchar *mountpoint, GuestfsRemount *optargs, GError **err);
 gboolean guestfs_session_set_uuid(GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err);
+gboolean guestfs_session_journal_open(GuestfsSession *session, const gchar *directory, GError **err);
+gboolean guestfs_session_journal_close(GuestfsSession *session, GError **err);
+gint8 guestfs_session_journal_next(GuestfsSession *session, GError **err);
+gint64 guestfs_session_journal_skip(GuestfsSession *session, gint64 skip, GError **err);
+gint64 guestfs_session_journal_get_data_threshold(GuestfsSession *session, GError **err);
+gboolean guestfs_session_journal_set_data_threshold(GuestfsSession *session, gint64 threshold, GError **err);
 
 G_END_DECLS
 

@@ -1122,6 +1122,27 @@ val isoinfo : t -> string -> isoinfo
 val isoinfo_device : t -> string -> isoinfo
 (** get ISO information from primary volume descriptor of device *)
 
+val journal_close : t -> unit
+(** close the systemd journal *)
+
+val journal_get : t -> xattr array
+(** read the current journal entry *)
+
+val journal_get_data_threshold : t -> int64
+(** get the data threshold for reading journal entries *)
+
+val journal_next : t -> bool
+(** move to the next journal entry *)
+
+val journal_open : t -> string -> unit
+(** open the systemd journal *)
+
+val journal_set_data_threshold : t -> int64 -> unit
+(** set the data threshold for reading journal entries *)
+
+val journal_skip : t -> int64 -> int64
+(** skip forwards or backwards in the journal *)
+
 val kill_subprocess : t -> unit
 (** kill the qemu subprocess
 
@@ -2338,6 +2359,13 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method is_zero_device : string -> bool
   method isoinfo : string -> isoinfo
   method isoinfo_device : string -> isoinfo
+  method journal_close : unit -> unit
+  method journal_get : unit -> xattr array
+  method journal_get_data_threshold : unit -> int64
+  method journal_next : unit -> bool
+  method journal_open : string -> unit
+  method journal_set_data_threshold : int64 -> unit
+  method journal_skip : int64 -> int64
   method kill_subprocess : unit -> unit
   method launch : unit -> unit
   method lchown : int -> int -> string -> unit

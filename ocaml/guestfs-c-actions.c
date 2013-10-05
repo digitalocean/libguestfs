@@ -9319,6 +9319,214 @@ ocaml_guestfs_isoinfo_device (value gv, value devicev)
 }
 
 /* Automatically generated wrapper for function
+ * val journal_close : t -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_close (value gv);
+
+value
+ocaml_guestfs_journal_close (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_close");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_close (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_close");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val journal_get : t -> xattr array
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_get (value gv);
+
+value
+ocaml_guestfs_journal_get (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_get");
+
+  struct guestfs_xattr_list *r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_get (g);
+  caml_leave_blocking_section ();
+  if (r == NULL)
+    ocaml_guestfs_raise_error (g, "journal_get");
+
+  rv = copy_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val journal_get_data_threshold : t -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_get_data_threshold (value gv);
+
+value
+ocaml_guestfs_journal_get_data_threshold (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_get_data_threshold");
+
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_get_data_threshold (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_get_data_threshold");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val journal_next : t -> bool
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_next (value gv);
+
+value
+ocaml_guestfs_journal_next (value gv)
+{
+  CAMLparam1 (gv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_next");
+
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_next (g);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_next");
+
+  rv = Val_bool (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val journal_open : t -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_open (value gv, value directoryv);
+
+value
+ocaml_guestfs_journal_open (value gv, value directoryv)
+{
+  CAMLparam2 (gv, directoryv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_open");
+
+  char *directory = guestfs___safe_strdup (g, String_val (directoryv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_open (g, directory);
+  caml_leave_blocking_section ();
+  free (directory);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_open");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val journal_set_data_threshold : t -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_set_data_threshold (value gv, value thresholdv);
+
+value
+ocaml_guestfs_journal_set_data_threshold (value gv, value thresholdv)
+{
+  CAMLparam2 (gv, thresholdv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_set_data_threshold");
+
+  int64_t threshold = Int64_val (thresholdv);
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_set_data_threshold");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val journal_skip : t -> int64 -> int64
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_journal_skip (value gv, value skipv);
+
+value
+ocaml_guestfs_journal_skip (value gv, value skipv)
+{
+  CAMLparam2 (gv, skipv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("journal_skip");
+
+  int64_t skip = Int64_val (skipv);
+  int64_t r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_journal_skip (g, skip);
+  caml_leave_blocking_section ();
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "journal_skip");
+
+  rv = caml_copy_int64 (r);
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val kill_subprocess : t -> unit
  */
 

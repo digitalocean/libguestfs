@@ -422,4 +422,11 @@ const char *function_names[] = {
   [401] = "cp_r",
   [402] = "remount",
   [403] = "set_uuid",
+  [404] = "journal_open",
+  [405] = "journal_close",
+  [406] = "journal_next",
+  [407] = "journal_skip",
+  [408] = "internal_journal_get",
+  [409] = "journal_get_data_threshold",
+  [410] = "journal_set_data_threshold",
 };

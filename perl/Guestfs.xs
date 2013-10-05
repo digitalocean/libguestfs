@@ -2916,6 +2916,26 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
+journal_get (g)
+      guestfs_h *g;
+PREINIT:
+      struct guestfs_xattr_list *r;
+      size_t i;
+      HV *hv;
+ PPCODE:
+      r = guestfs_journal_get (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      EXTEND (SP, r->len);
+      for (i = 0; i < r->len; ++i) {
+        hv = newHV ();
+        (void) hv_store (hv, "attrname", 8, newSVpv (r->val[i].attrname, 0), 0);
+        (void) hv_store (hv, "attrval", 7, newSVpvn (r->val[i].attrval, r->val[i].attrval_len), 0);
+        PUSHs (sv_2mortal (newRV ((SV *) hv)));
+      }
+      guestfs_free_xattr_list (r);
+
+void
 mount (g, mountable, mountpoint)
       guestfs_h *g;
       char *mountable;
@@ -9836,6 +9856,78 @@ PREINIT:
       int r;
  PPCODE:
       r = guestfs_set_uuid (g, device, uuid);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+journal_open (g, directory)
+      guestfs_h *g;
+      char *directory;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_journal_open (g, directory);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+journal_close (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_journal_close (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+journal_next (g)
+      guestfs_h *g;
+PREINIT:
+      int r;
+   CODE:
+      r = guestfs_journal_next (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSViv (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+journal_skip (g, skip)
+      guestfs_h *g;
+      int64_t skip;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_journal_skip (g, skip);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+SV *
+journal_get_data_threshold (g)
+      guestfs_h *g;
+PREINIT:
+      int64_t r;
+   CODE:
+      r = guestfs_journal_get_data_threshold (g);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = my_newSVll (r);
+ OUTPUT:
+      RETVAL
+
+void
+journal_set_data_threshold (g, threshold)
+      guestfs_h *g;
+      int64_t threshold;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_journal_set_data_threshold (g, threshold);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

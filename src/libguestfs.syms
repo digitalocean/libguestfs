@@ -318,6 +318,7 @@
         guestfs_internal_hot_add_drive;
         guestfs_internal_hot_remove_drive;
         guestfs_internal_hot_remove_drive_precheck;
+        guestfs_internal_journal_get;
         guestfs_internal_lstatlist;
         guestfs_internal_lxattrlist;
         guestfs_internal_parse_mountable;
@@ -395,6 +396,13 @@
         guestfs_is_zero_device;
         guestfs_isoinfo;
         guestfs_isoinfo_device;
+        guestfs_journal_close;
+        guestfs_journal_get;
+        guestfs_journal_get_data_threshold;
+        guestfs_journal_next;
+        guestfs_journal_open;
+        guestfs_journal_set_data_threshold;
+        guestfs_journal_skip;
         guestfs_kill_subprocess;
         guestfs_last_errno;
         guestfs_last_error;

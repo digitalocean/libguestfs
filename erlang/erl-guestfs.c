@@ -5063,6 +5063,95 @@ run_isoinfo_device (ETERM *message)
 }
 
 static ETERM *
+run_journal_close (ETERM *message)
+{
+  int r;
+
+  r = guestfs_journal_close (g);
+  if (r == -1)
+    return make_error ("journal_close");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_journal_get (ETERM *message)
+{
+  struct guestfs_xattr_list *r;
+
+  r = guestfs_journal_get (g);
+  if (r == NULL)
+    return make_error ("journal_get");
+
+  ETERM *rt = make_xattr_list (r);
+  guestfs_free_xattr_list (r);
+  return rt;
+}
+
+static ETERM *
+run_journal_get_data_threshold (ETERM *message)
+{
+  int64_t r;
+
+  r = guestfs_journal_get_data_threshold (g);
+  if (r == -1)
+    return make_error ("journal_get_data_threshold");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
+run_journal_next (ETERM *message)
+{
+  int r;
+
+  r = guestfs_journal_next (g);
+  if (r == -1)
+    return make_error ("journal_next");
+
+  return make_bool (r);
+}
+
+static ETERM *
+run_journal_open (ETERM *message)
+{
+  CLEANUP_FREE char *directory = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_journal_open (g, directory);
+  if (r == -1)
+    return make_error ("journal_open");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_journal_set_data_threshold (ETERM *message)
+{
+  int64_t threshold = get_int64 (ARG (0));
+  int r;
+
+  r = guestfs_journal_set_data_threshold (g, threshold);
+  if (r == -1)
+    return make_error ("journal_set_data_threshold");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
+run_journal_skip (ETERM *message)
+{
+  int64_t skip = get_int64 (ARG (0));
+  int64_t r;
+
+  r = guestfs_journal_skip (g, skip);
+  if (r == -1)
+    return make_error ("journal_skip");
+
+  return erl_mk_longlong (r);
+}
+
+static ETERM *
 run_kill_subprocess (ETERM *message)
 {
   int r;
@@ -10497,6 +10586,20 @@ dispatch (ETERM *message)
     return run_isoinfo (message);
   else if (atom_equals (fun, "isoinfo_device"))
     return run_isoinfo_device (message);
+  else if (atom_equals (fun, "journal_close"))
+    return run_journal_close (message);
+  else if (atom_equals (fun, "journal_get"))
+    return run_journal_get (message);
+  else if (atom_equals (fun, "journal_get_data_threshold"))
+    return run_journal_get_data_threshold (message);
+  else if (atom_equals (fun, "journal_next"))
+    return run_journal_next (message);
+  else if (atom_equals (fun, "journal_open"))
+    return run_journal_open (message);
+  else if (atom_equals (fun, "journal_set_data_threshold"))
+    return run_journal_set_data_threshold (message);
+  else if (atom_equals (fun, "journal_skip"))
+    return run_journal_skip (message);
   else if (atom_equals (fun, "kill_subprocess"))
     return run_kill_subprocess (message);
   else if (atom_equals (fun, "launch"))

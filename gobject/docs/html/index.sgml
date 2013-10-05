@@ -158,6 +158,7 @@
 <ANCHOR id="guestfs-session-set-program" href="guestfs/GuestfsSession.html#guestfs-session-set-program">
 <ANCHOR id="guestfs-session-get-program" href="guestfs/GuestfsSession.html#guestfs-session-get-program">
 <ANCHOR id="guestfs-session-add-drive-scratch" href="guestfs/GuestfsSession.html#guestfs-session-add-drive-scratch">
+<ANCHOR id="guestfs-session-journal-get" href="guestfs/GuestfsSession.html#guestfs-session-journal-get">
 <ANCHOR id="guestfs-session-mount" href="guestfs/GuestfsSession.html#guestfs-session-mount">
 <ANCHOR id="guestfs-session-sync" href="guestfs/GuestfsSession.html#guestfs-session-sync">
 <ANCHOR id="guestfs-session-touch" href="guestfs/GuestfsSession.html#guestfs-session-touch">
@@ -543,6 +544,12 @@
 <ANCHOR id="guestfs-session-cp-r" href="guestfs/GuestfsSession.html#guestfs-session-cp-r">
 <ANCHOR id="guestfs-session-remount" href="guestfs/GuestfsSession.html#guestfs-session-remount">
 <ANCHOR id="guestfs-session-set-uuid" href="guestfs/GuestfsSession.html#guestfs-session-set-uuid">
+<ANCHOR id="guestfs-session-journal-open" href="guestfs/GuestfsSession.html#guestfs-session-journal-open">
+<ANCHOR id="guestfs-session-journal-close" href="guestfs/GuestfsSession.html#guestfs-session-journal-close">
+<ANCHOR id="guestfs-session-journal-next" href="guestfs/GuestfsSession.html#guestfs-session-journal-next">
+<ANCHOR id="guestfs-session-journal-skip" href="guestfs/GuestfsSession.html#guestfs-session-journal-skip">
+<ANCHOR id="guestfs-session-journal-get-data-threshold" href="guestfs/GuestfsSession.html#guestfs-session-journal-get-data-threshold">
+<ANCHOR id="guestfs-session-journal-set-data-threshold" href="guestfs/GuestfsSession.html#guestfs-session-journal-set-data-threshold">
 <ANCHOR id="GuestfsSession.signal-details" href="guestfs/GuestfsSession.html#GuestfsSession.signal-details">
 <ANCHOR id="GuestfsSession-appliance" href="guestfs/GuestfsSession.html#GuestfsSession-appliance">
 <ANCHOR id="GuestfsSession-close" href="guestfs/GuestfsSession.html#GuestfsSession-close">

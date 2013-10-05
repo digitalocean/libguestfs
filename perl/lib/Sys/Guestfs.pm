@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.403';
+$VERSION = '0.410';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -3711,6 +3711,78 @@ instead of going through libguestfs.
 
 For information on the primary volume descriptor fields, see
 L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
+
+=item $g->journal_close ();
+
+Close the journal handle.
+
+=item @fields = $g->journal_get ();
+
+Read the current journal entry.  This returns all the fields
+in the journal as a set of C<(attrname, attrval)> pairs.  The
+C<attrname> is the field name (a string).
+
+The C<attrval> is the field value (a binary blob, often but
+not always a string).  Please note that C<attrval> is a byte
+array, I<not> a \0-terminated C string.
+
+The length of data may be truncated to the data threshold
+(see: C<$g-E<gt>journal_set_data_threshold>,
+C<$g-E<gt>journal_get_data_threshold>).
+
+If you set the data threshold to unlimited (C<0>) then this call
+can read a journal entry of any size, ie. it is not limited by
+the libguestfs protocol.
+
+=item $threshold = $g->journal_get_data_threshold ();
+
+Get the current data threshold for reading journal entries.
+This is a hint to the journal that it may truncate data fields to
+this size when reading them (note also that it may not truncate them).
+If this returns C<0>, then the threshold is unlimited.
+
+See also C<$g-E<gt>journal_set_data_threshold>.
+
+=item $more = $g->journal_next ();
+
+Move to the next journal entry.  You have to call this
+at least once after opening the handle before you are able
+to read data.
+
+The returned boolean tells you if there are any more journal
+records to read.  C<true> means you can read the next record
+(eg. using C<$g-E<gt>journal_get_data>), and C<false> means you
+have reached the end of the journal.
+
+=item $g->journal_open ($directory);
+
+Open the systemd journal located in C<directory>.  Any previously
+opened journal handle is closed.
+
+The contents of the journal can be read using C<$g-E<gt>journal_next>
+and C<$g-E<gt>journal_get>.
+
+After you have finished using the journal, you should close the
+handle by calling C<$g-E<gt>journal_close>.
+
+=item $g->journal_set_data_threshold ($threshold);
+
+Set the data threshold for reading journal entries.
+This is a hint to the journal that it may truncate data fields to
+this size when reading them (note also that it may not truncate them).
+If you set this to C<0>, then the threshold is unlimited.
+
+See also C<$g-E<gt>journal_get_data_threshold>.
+
+=item $rskip = $g->journal_skip ($skip);
+
+Skip forwards (C<skip E<ge> 0>) or backwards (C<skip E<lt> 0>) in the
+journal.
+
+The number of entries actually skipped is returned (note S<C<rskip E<ge> 0>>).
+If this is not the same as the absolute value of the skip parameter
+(C<|skip|>) you passed in then it means you have reached the end or
+the start of the journal.
 
 =item $g->kill_subprocess ();
 
@@ -9333,6 +9405,58 @@ use vars qw(%guestfs_introspection);
     ],
     name => "isoinfo_device",
     description => "get ISO information from primary volume descriptor of device",
+  },
+  "journal_close" => {
+    ret => 'void',
+    args => [
+    ],
+    name => "journal_close",
+    description => "close the systemd journal",
+  },
+  "journal_get" => {
+    ret => 'struct xattr list',
+    args => [
+    ],
+    name => "journal_get",
+    description => "read the current journal entry",
+  },
+  "journal_get_data_threshold" => {
+    ret => 'int64',
+    args => [
+    ],
+    name => "journal_get_data_threshold",
+    description => "get the data threshold for reading journal entries",
+  },
+  "journal_next" => {
+    ret => 'bool',
+    args => [
+    ],
+    name => "journal_next",
+    description => "move to the next journal entry",
+  },
+  "journal_open" => {
+    ret => 'void',
+    args => [
+      [ 'directory', 'string(path)', 0 ],
+    ],
+    name => "journal_open",
+    description => "open the systemd journal",
+  },
+  "journal_set_data_threshold" => {
+    ret => 'void',
+    args => [
+      [ 'threshold', 'int64', 0 ],
+    ],
+    name => "journal_set_data_threshold",
+    description => "set the data threshold for reading journal entries",
+  },
+  "journal_skip" => {
+    ret => 'int64',
+    args => [
+      [ 'skip', 'int64', 0 ],
+    ],
+    name => "journal_skip",
+    description => "skip forwards or backwards in the journal",
   },
   "kill_subprocess" => {
     ret => 'void',

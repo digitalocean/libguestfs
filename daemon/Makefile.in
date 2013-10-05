@@ -311,36 +311,38 @@ am_guestfsd_OBJECTS = guestfsd-9p.$(OBJEXT) guestfsd-acl.$(OBJEXT) \
 	guestfsd-htonl.$(OBJEXT) guestfsd-initrd.$(OBJEXT) \
 	guestfsd-inotify.$(OBJEXT) guestfsd-internal.$(OBJEXT) \
 	guestfsd-is.$(OBJEXT) guestfsd-isoinfo.$(OBJEXT) \
-	guestfsd-labels.$(OBJEXT) guestfsd-ldm.$(OBJEXT) \
-	guestfsd-link.$(OBJEXT) guestfsd-ls.$(OBJEXT) \
-	guestfsd-luks.$(OBJEXT) guestfsd-lvm.$(OBJEXT) \
-	guestfsd-lvm-filter.$(OBJEXT) guestfsd-md.$(OBJEXT) \
-	guestfsd-mkfs.$(OBJEXT) guestfsd-mknod.$(OBJEXT) \
-	guestfsd-mktemp.$(OBJEXT) guestfsd-modprobe.$(OBJEXT) \
-	guestfsd-mount.$(OBJEXT) guestfsd-mountable.$(OBJEXT) \
-	guestfsd-names.$(OBJEXT) guestfsd-ntfs.$(OBJEXT) \
-	guestfsd-ntfsclone.$(OBJEXT) guestfsd-optgroups.$(OBJEXT) \
-	guestfsd-parted.$(OBJEXT) guestfsd-pingdaemon.$(OBJEXT) \
-	guestfsd-proto.$(OBJEXT) guestfsd-readdir.$(OBJEXT) \
-	guestfsd-realpath.$(OBJEXT) guestfsd-rename.$(OBJEXT) \
-	guestfsd-rsync.$(OBJEXT) guestfsd-scrub.$(OBJEXT) \
-	guestfsd-selinux.$(OBJEXT) guestfsd-sfdisk.$(OBJEXT) \
-	guestfsd-sleep.$(OBJEXT) guestfsd-stat.$(OBJEXT) \
-	guestfsd-statvfs.$(OBJEXT) guestfsd-strings.$(OBJEXT) \
-	guestfsd-stubs.$(OBJEXT) guestfsd-swap.$(OBJEXT) \
-	guestfsd-sync.$(OBJEXT) guestfsd-syslinux.$(OBJEXT) \
-	guestfsd-tar.$(OBJEXT) guestfsd-truncate.$(OBJEXT) \
-	guestfsd-umask.$(OBJEXT) guestfsd-upload.$(OBJEXT) \
-	guestfsd-utimens.$(OBJEXT) guestfsd-utsname.$(OBJEXT) \
-	guestfsd-uuids.$(OBJEXT) guestfsd-wc.$(OBJEXT) \
-	guestfsd-xattr.$(OBJEXT) guestfsd-xfs.$(OBJEXT) \
-	guestfsd-zero.$(OBJEXT) guestfsd-zerofree.$(OBJEXT)
+	guestfsd-journal.$(OBJEXT) guestfsd-labels.$(OBJEXT) \
+	guestfsd-ldm.$(OBJEXT) guestfsd-link.$(OBJEXT) \
+	guestfsd-ls.$(OBJEXT) guestfsd-luks.$(OBJEXT) \
+	guestfsd-lvm.$(OBJEXT) guestfsd-lvm-filter.$(OBJEXT) \
+	guestfsd-md.$(OBJEXT) guestfsd-mkfs.$(OBJEXT) \
+	guestfsd-mknod.$(OBJEXT) guestfsd-mktemp.$(OBJEXT) \
+	guestfsd-modprobe.$(OBJEXT) guestfsd-mount.$(OBJEXT) \
+	guestfsd-mountable.$(OBJEXT) guestfsd-names.$(OBJEXT) \
+	guestfsd-ntfs.$(OBJEXT) guestfsd-ntfsclone.$(OBJEXT) \
+	guestfsd-optgroups.$(OBJEXT) guestfsd-parted.$(OBJEXT) \
+	guestfsd-pingdaemon.$(OBJEXT) guestfsd-proto.$(OBJEXT) \
+	guestfsd-readdir.$(OBJEXT) guestfsd-realpath.$(OBJEXT) \
+	guestfsd-rename.$(OBJEXT) guestfsd-rsync.$(OBJEXT) \
+	guestfsd-scrub.$(OBJEXT) guestfsd-selinux.$(OBJEXT) \
+	guestfsd-sfdisk.$(OBJEXT) guestfsd-sleep.$(OBJEXT) \
+	guestfsd-stat.$(OBJEXT) guestfsd-statvfs.$(OBJEXT) \
+	guestfsd-strings.$(OBJEXT) guestfsd-stubs.$(OBJEXT) \
+	guestfsd-swap.$(OBJEXT) guestfsd-sync.$(OBJEXT) \
+	guestfsd-syslinux.$(OBJEXT) guestfsd-tar.$(OBJEXT) \
+	guestfsd-truncate.$(OBJEXT) guestfsd-umask.$(OBJEXT) \
+	guestfsd-upload.$(OBJEXT) guestfsd-utimens.$(OBJEXT) \
+	guestfsd-utsname.$(OBJEXT) guestfsd-uuids.$(OBJEXT) \
+	guestfsd-wc.$(OBJEXT) guestfsd-xattr.$(OBJEXT) \
+	guestfsd-xfs.$(OBJEXT) guestfsd-zero.$(OBJEXT) \
+	guestfsd-zerofree.$(OBJEXT)
 guestfsd_OBJECTS = $(am_guestfsd_OBJECTS)
 am__DEPENDENCIES_1 =
 guestfsd_DEPENDENCIES = liberrnostring.a libprotocol.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) \
 	$(top_builddir)/gnulib/lib/.libs/libgnu.a \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -1409,6 +1411,8 @@ REPLACE_WCWIDTH = @REPLACE_WCWIDTH@
 REPLACE_WRITE = @REPLACE_WRITE@
 RPCGEN = @RPCGEN@
 RUBY = @RUBY@
+SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
+SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
 SELINUX_LIB = @SELINUX_LIB@
 SERVENT_LIB = @SERVENT_LIB@
@@ -1598,6 +1602,7 @@ guestfsd_SOURCES = \
 	internal.c \
 	is.c \
 	isoinfo.c \
+	journal.c \
 	labels.c \
 	ldm.c \
 	link.c \
@@ -1657,6 +1662,7 @@ guestfsd_LDADD = \
 	$(SELINUX_LIB) \
 	$(AUGEAS_LIBS) \
 	$(HIVEX_LIBS) \
+	$(SD_JOURNAL_LIBS) \
 	$(top_builddir)/gnulib/lib/.libs/libgnu.a \
 	$(GETADDRINFO_LIB) \
 	$(HOSTENT_LIB) \
@@ -1677,6 +1683,7 @@ guestfsd_CFLAGS = \
 	$(WARN_CFLAGS) $(WERROR_CFLAGS) \
 	$(AUGEAS_CFLAGS) \
 	$(HIVEX_CFLAGS) \
+	$(SD_JOURNAL_CFLAGS) \
 	$(YAJL_CFLAGS) \
 	$(PCRE_CFLAGS)
 
@@ -1849,6 +1856,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-internal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-is.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-isoinfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-journal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-labels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-ldm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guestfsd-link.Po@am__quote@
@@ -2607,6 +2615,20 @@ guestfsd-isoinfo.obj: isoinfo.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='isoinfo.c' object='guestfsd-isoinfo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-isoinfo.obj `if test -f 'isoinfo.c'; then $(CYGPATH_W) 'isoinfo.c'; else $(CYGPATH_W) '$(srcdir)/isoinfo.c'; fi`
+
+guestfsd-journal.o: journal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-journal.o -MD -MP -MF $(DEPDIR)/guestfsd-journal.Tpo -c -o guestfsd-journal.o `test -f 'journal.c' || echo '$(srcdir)/'`journal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-journal.Tpo $(DEPDIR)/guestfsd-journal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='journal.c' object='guestfsd-journal.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-journal.o `test -f 'journal.c' || echo '$(srcdir)/'`journal.c
+
+guestfsd-journal.obj: journal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-journal.obj -MD -MP -MF $(DEPDIR)/guestfsd-journal.Tpo -c -o guestfsd-journal.obj `if test -f 'journal.c'; then $(CYGPATH_W) 'journal.c'; else $(CYGPATH_W) '$(srcdir)/journal.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/guestfsd-journal.Tpo $(DEPDIR)/guestfsd-journal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='journal.c' object='guestfsd-journal.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -c -o guestfsd-journal.obj `if test -f 'journal.c'; then $(CYGPATH_W) 'journal.c'; else $(CYGPATH_W) '$(srcdir)/journal.c'; fi`
 
 guestfsd-labels.o: labels.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(guestfsd_CPPFLAGS) $(CPPFLAGS) $(guestfsd_CFLAGS) $(CFLAGS) -MT guestfsd-labels.o -MD -MP -MF $(DEPDIR)/guestfsd-labels.Tpo -c -o guestfsd-labels.o `test -f 'labels.c' || echo '$(srcdir)/'`labels.c

@@ -32,6 +32,7 @@ extern int optgroup_gdisk_available (void);
 extern int optgroup_grub_available (void);
 extern int optgroup_hivex_available (void);
 extern int optgroup_inotify_available (void);
+extern int optgroup_journal_available (void);
 extern int optgroup_ldm_available (void);
 extern int optgroup_linuxcaps_available (void);
 extern int optgroup_linuxfsuuid_available (void);
@@ -144,6 +145,16 @@ extern int optgroup_zerofree_available (void);
   guestfs_int_inotify_event_list *__attribute__((noreturn)) do_inotify_read (void) { abort (); } \
   int __attribute__((noreturn)) do_inotify_rm_watch (int wd) { abort (); } \
   int optgroup_inotify_available (void) { return 0; }
+
+#define OPTGROUP_JOURNAL_NOT_AVAILABLE \
+  int __attribute__((noreturn)) do_internal_journal_get () { abort (); } \
+  int __attribute__((noreturn)) do_journal_close (void) { abort (); } \
+  int64_t __attribute__((noreturn)) do_journal_get_data_threshold (void) { abort (); } \
+  int __attribute__((noreturn)) do_journal_next (void) { abort (); } \
+  int __attribute__((noreturn)) do_journal_open (const char *directory) { abort (); } \
+  int __attribute__((noreturn)) do_journal_set_data_threshold (int64_t threshold) { abort (); } \
+  int64_t __attribute__((noreturn)) do_journal_skip (int64_t skip) { abort (); } \
+  int optgroup_journal_available (void) { return 0; }
 
 #define OPTGROUP_LDM_NOT_AVAILABLE \
   int __attribute__((noreturn)) do_ldmtool_create_all (void) { abort (); } \

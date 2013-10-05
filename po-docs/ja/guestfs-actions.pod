@@ -5815,6 +5815,115 @@ error.  I<The caller must call C<guestfs_free_isoinfo> after use>.
 
 (1.17.19 において追加)
 
+=head2 guestfs_journal_close
+
+ int
+ guestfs_journal_close (guestfs_h *g);
+
+Close the journal handle.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_journal_get
+
+ struct guestfs_xattr_list *
+ guestfs_journal_get (guestfs_h *g);
+
+Read the current journal entry.  This returns all the fields in the journal
+as a set of C<(attrname, attrval)> pairs.  The C<attrname> is the field name
+(a string).
+
+The C<attrval> is the field value (a binary blob, often but not always a
+string).  Please note that C<attrval> is a byte array, I<not> a
+\0-terminated C string.
+
+The length of data may be truncated to the data threshold (see:
+C<guestfs_journal_set_data_threshold>,
+C<guestfs_journal_get_data_threshold>).
+
+If you set the data threshold to unlimited (C<0>) then this call can read a
+journal entry of any size, ie. it is not limited by the libguestfs protocol.
+
+This function returns a C<struct guestfs_xattr_list *>, or NULL if there was
+an error.  I<The caller must call C<guestfs_free_xattr_list> after use>.
+
+=head2 guestfs_journal_get_data_threshold
+
+ int64_t
+ guestfs_journal_get_data_threshold (guestfs_h *g);
+
+Get the current data threshold for reading journal entries.  This is a hint
+to the journal that it may truncate data fields to this size when reading
+them (note also that it may not truncate them).  If this returns C<0>, then
+the threshold is unlimited.
+
+See also C<guestfs_journal_set_data_threshold>.
+
+この関数はエラーのとき -1 を返します。
+
+=head2 guestfs_journal_next
+
+ int
+ guestfs_journal_next (guestfs_h *g);
+
+Move to the next journal entry.  You have to call this at least once after
+opening the handle before you are able to read data.
+
+The returned boolean tells you if there are any more journal records to
+read.  C<true> means you can read the next record (eg. using
+C<guestfs_journal_get_data>), and C<false> means you have reached the end of
+the journal.
+
+This function returns a C truth value on success or -1 on error.
+
+=head2 guestfs_journal_open
+
+ int
+ guestfs_journal_open (guestfs_h *g,
+                       const char *directory);
+
+Open the systemd journal located in C<directory>.  Any previously opened
+journal handle is closed.
+
+The contents of the journal can be read using C<guestfs_journal_next> and
+C<guestfs_journal_get>.
+
+After you have finished using the journal, you should close the handle by
+calling C<guestfs_journal_close>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_journal_set_data_threshold
+
+ int
+ guestfs_journal_set_data_threshold (guestfs_h *g,
+                                     int64_t threshold);
+
+Set the data threshold for reading journal entries.  This is a hint to the
+journal that it may truncate data fields to this size when reading them
+(note also that it may not truncate them).  If you set this to C<0>, then
+the threshold is unlimited.
+
+See also C<guestfs_journal_get_data_threshold>.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
+=head2 guestfs_journal_skip
+
+ int64_t
+ guestfs_journal_skip (guestfs_h *g,
+                       int64_t skip);
+
+Skip forwards (C<skip E<ge> 0>) or backwards (C<skip E<lt> 0>) in the
+journal.
+
+The number of entries actually skipped is returned (note S<C<rskip E<ge>
+0>>).  If this is not the same as the absolute value of the skip parameter
+(C<|skip|>) you passed in then it means you have reached the end or the
+start of the journal.
+
+この関数はエラーのとき -1 を返します。
+
 =head2 guestfs_kill_subprocess
 
  int

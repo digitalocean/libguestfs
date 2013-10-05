@@ -1597,6 +1597,27 @@ extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo *guestfs_isoinfo (guestfs_h *g,
 #define GUESTFS_HAVE_ISOINFO_DEVICE 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_isoinfo *guestfs_isoinfo_device (guestfs_h *g, const char *device);
 
+#define GUESTFS_HAVE_JOURNAL_CLOSE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_close (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_GET 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_xattr_list *guestfs_journal_get (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_journal_get_data_threshold (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_NEXT 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_next (guestfs_h *g);
+
+#define GUESTFS_HAVE_JOURNAL_OPEN 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_open (guestfs_h *g, const char *directory);
+
+#define GUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD 1
+extern GUESTFS_DLL_PUBLIC int guestfs_journal_set_data_threshold (guestfs_h *g, int64_t threshold);
+
+#define GUESTFS_HAVE_JOURNAL_SKIP 1
+extern GUESTFS_DLL_PUBLIC int64_t guestfs_journal_skip (guestfs_h *g, int64_t skip);
+
 extern GUESTFS_DLL_PUBLIC int guestfs_kill_subprocess (guestfs_h *g)
   GUESTFS_DEPRECATED_BY ("shutdown");
 
@@ -3004,6 +3025,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive (guestfs_h *g, c
 #define GUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE_PRECHECK 1
 extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive_precheck (guestfs_h *g, const char *label);
 
+#define GUESTFS_HAVE_INTERNAL_JOURNAL_GET 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_journal_get (guestfs_h *g, const char *filename);
+
 #define GUESTFS_HAVE_INTERNAL_LSTATLIST 1
 extern GUESTFS_DLL_PUBLIC struct guestfs_stat_list *guestfs_internal_lstatlist (guestfs_h *g, const char *path, char *const *names);
 
@@ -3567,6 +3591,13 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_IS_ZERO_DEVICE 1
 #define LIBGUESTFS_HAVE_ISOINFO 1
 #define LIBGUESTFS_HAVE_ISOINFO_DEVICE 1
+#define LIBGUESTFS_HAVE_JOURNAL_CLOSE 1
+#define LIBGUESTFS_HAVE_JOURNAL_GET 1
+#define LIBGUESTFS_HAVE_JOURNAL_GET_DATA_THRESHOLD 1
+#define LIBGUESTFS_HAVE_JOURNAL_NEXT 1
+#define LIBGUESTFS_HAVE_JOURNAL_OPEN 1
+#define LIBGUESTFS_HAVE_JOURNAL_SET_DATA_THRESHOLD 1
+#define LIBGUESTFS_HAVE_JOURNAL_SKIP 1
 #define LIBGUESTFS_HAVE_KILL_SUBPROCESS 1
 #define LIBGUESTFS_HAVE_LAUNCH 1
 #define LIBGUESTFS_HAVE_LCHOWN 1

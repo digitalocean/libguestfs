@@ -1,3 +1,69 @@
+2013-07-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add tests for the new journal APIs (RHBZ#988100).
+	This relies on the test data from
+	commit b502197ec4f201fa79255243fa09343cf3550ab5.
+
+2013-07-28  Richard W.M. Jones  <rjones@redhat.com>
+
+	New APIs: Add systemd journal support (RHBZ#988100).
+	This adds simple support for reading the journal files from guests
+	that use the systemd journal.
+
+	The new APIs are:
+
+	  journal-open
+	  journal-close
+	  journal-next
+	  journal-skip
+	  journal-get
+	  journal-get-data-threshold
+	  journal-set-data-threshold
+	  internal-journal-get
+
+	More complex journal support (eg. for seeking within the journal,
+	support for cursors) could be added later.
+
+2013-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/guests: Add some systemd journal data to the Fedora test images.
+	The journal data blob comes from a real Fedora 20 (x86-64) machine.
+
+2013-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	src/file.c: Be sure to call guestfs___lazy_make_tmpdir before using g->tmpdir.
+	Although g->tmpdir is always set after launch, and none of these calls
+	should be used before launch, it's always possible that a caller would
+	use one of these APIs before launching the handle.
+
+	If guestfs___lazy_make_tmpdir is not called, then g->tmpdir is NULL,
+	and the constructed filename would look like "(null)/...".
+
+	In fact it's possible to observe this error (although it seems to have
+	no especially bad effects):
+
+	  $ strace guestfish ls / |& fgrep '(null)'
+	  unlink("(null)/ls1")     = -1 ENOENT (No such file or directory)
+
+2013-07-27  Richard W.M. Jones  <rjones@redhat.com>
+
+	generator: Fix the case where a daemon function has one FileIn/FileOut parameter and no other parameters.
+	The FileIn/FileOut parameters are not passed through to the daemon.
+	Previously we generated incorrect RPC code (an empty 'struct
+	guestfs_<fn>_args') because we didn't account for these FileIn/FileOut
+	parameters correctly.
+
+	generator: Fix whitespace.
+
+2013-07-26  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: On RHEL, firstboot script should be called S99... not 99.
+	Thanks: Nicholas Strugnell
+
+2013-07-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.10.
+
 2013-07-23  Richard W.M. Jones  <rjones@redhat.com>
 
 	tests: Use unique or temporary names for temporary files.

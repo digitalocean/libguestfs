@@ -4028,6 +4028,108 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_close (IntPtr h);
+
+    /// <summary>
+    /// close the systemd journal
+    /// </summary>
+    public void journal_close ()
+    {
+      int r;
+      r = guestfs_journal_close (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern _xattr[] guestfs_journal_get (IntPtr h);
+
+    /// <summary>
+    /// read the current journal entry
+    /// </summary>
+    public _xattr[] journal_get ()
+    {
+      _xattr[] r;
+      r = guestfs_journal_get (_handle);
+      if (r == null)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_journal_get_data_threshold (IntPtr h);
+
+    /// <summary>
+    /// get the data threshold for reading journal entries
+    /// </summary>
+    public long journal_get_data_threshold ()
+    {
+      long r;
+      r = guestfs_journal_get_data_threshold (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_next (IntPtr h);
+
+    /// <summary>
+    /// move to the next journal entry
+    /// </summary>
+    public bool journal_next ()
+    {
+      int r;
+      r = guestfs_journal_next (_handle);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r != 0 ? true : false;
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_open (IntPtr h, [In] string directory);
+
+    /// <summary>
+    /// open the systemd journal
+    /// </summary>
+    public void journal_open (string directory)
+    {
+      int r;
+      r = guestfs_journal_open (_handle, directory);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_journal_set_data_threshold (IntPtr h, long threshold);
+
+    /// <summary>
+    /// set the data threshold for reading journal entries
+    /// </summary>
+    public void journal_set_data_threshold (long threshold)
+    {
+      int r;
+      r = guestfs_journal_set_data_threshold (_handle, threshold);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern long guestfs_journal_skip (IntPtr h, long skip);
+
+    /// <summary>
+    /// skip forwards or backwards in the journal
+    /// </summary>
+    public long journal_skip (long skip)
+    {
+      long r;
+      r = guestfs_journal_skip (_handle, skip);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+      return r;
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_kill_subprocess (IntPtr h);
 
     /// <summary>

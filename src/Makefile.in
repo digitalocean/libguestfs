@@ -347,13 +347,14 @@ am_libguestfs_la_OBJECTS = libguestfs_la-actions-0.lo \
 	libguestfs_la-inspect-fs.lo libguestfs_la-inspect-fs-cd.lo \
 	libguestfs_la-inspect-fs-unix.lo \
 	libguestfs_la-inspect-fs-windows.lo \
-	libguestfs_la-inspect-icon.lo libguestfs_la-launch.lo \
-	libguestfs_la-launch-direct.lo libguestfs_la-launch-libvirt.lo \
-	libguestfs_la-launch-unix.lo libguestfs_la-libvirt-auth.lo \
-	libguestfs_la-libvirt-domain.lo libguestfs_la-listfs.lo \
-	libguestfs_la-lpj.lo libguestfs_la-match.lo \
-	libguestfs_la-osinfo.lo libguestfs_la-private-data.lo \
-	libguestfs_la-proto.lo libguestfs_la-tmpdirs.lo
+	libguestfs_la-inspect-icon.lo libguestfs_la-journal.lo \
+	libguestfs_la-launch.lo libguestfs_la-launch-direct.lo \
+	libguestfs_la-launch-libvirt.lo libguestfs_la-launch-unix.lo \
+	libguestfs_la-libvirt-auth.lo libguestfs_la-libvirt-domain.lo \
+	libguestfs_la-listfs.lo libguestfs_la-lpj.lo \
+	libguestfs_la-match.lo libguestfs_la-osinfo.lo \
+	libguestfs_la-private-data.lo libguestfs_la-proto.lo \
+	libguestfs_la-tmpdirs.lo
 libguestfs_la_OBJECTS = $(am_libguestfs_la_OBJECTS)
 libguestfs_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libguestfs_la_CFLAGS) \
@@ -1402,6 +1403,8 @@ REPLACE_WCWIDTH = @REPLACE_WCWIDTH@
 REPLACE_WRITE = @REPLACE_WRITE@
 RPCGEN = @RPCGEN@
 RUBY = @RUBY@
+SD_JOURNAL_CFLAGS = @SD_JOURNAL_CFLAGS@
+SD_JOURNAL_LIBS = @SD_JOURNAL_LIBS@
 SED = @SED@
 SELINUX_LIB = @SELINUX_LIB@
 SERVENT_LIB = @SERVENT_LIB@
@@ -1589,6 +1592,7 @@ libguestfs_la_SOURCES = \
 	inspect-fs-unix.c \
 	inspect-fs-windows.c \
 	inspect-icon.c \
+	journal.c \
 	launch.c \
 	launch-direct.c \
 	launch-libvirt.c \
@@ -1804,6 +1808,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-inspect-fs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-inspect-icon.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-inspect.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-journal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch-direct.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch-libvirt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libguestfs_la-launch-unix.Plo@am__quote@
@@ -2087,6 +2092,13 @@ libguestfs_la-inspect-icon.lo: inspect-icon.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='inspect-icon.c' object='libguestfs_la-inspect-icon.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-inspect-icon.lo `test -f 'inspect-icon.c' || echo '$(srcdir)/'`inspect-icon.c
+
+libguestfs_la-journal.lo: journal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-journal.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-journal.Tpo -c -o libguestfs_la-journal.lo `test -f 'journal.c' || echo '$(srcdir)/'`journal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libguestfs_la-journal.Tpo $(DEPDIR)/libguestfs_la-journal.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='journal.c' object='libguestfs_la-journal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -c -o libguestfs_la-journal.lo `test -f 'journal.c' || echo '$(srcdir)/'`journal.c
 
 libguestfs_la-launch.lo: launch.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libguestfs_la_CPPFLAGS) $(CPPFLAGS) $(libguestfs_la_CFLAGS) $(CFLAGS) -MT libguestfs_la-launch.lo -MD -MP -MF $(DEPDIR)/libguestfs_la-launch.Tpo -c -o libguestfs_la-launch.lo `test -f 'launch.c' || echo '$(srcdir)/'`launch.c

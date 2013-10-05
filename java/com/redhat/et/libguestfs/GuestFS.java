@@ -5193,6 +5193,39 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * read the current journal entry
+   * <p>
+   * Read the current journal entry. This returns all the
+   * fields in the journal as a set of "(attrname, attrval)"
+   * pairs. The "attrname" is the field name (a string).
+   * <p>
+   * The "attrval" is the field value (a binary blob, often
+   * but not always a string). Please note that "attrval" is
+   * a byte array, *not* a \0-terminated C string.
+   * <p>
+   * The length of data may be truncated to the data
+   * threshold (see: "g.journal_set_data_threshold",
+   * "g.journal_get_data_threshold").
+   * <p>
+   * If you set the data threshold to unlimited (0) then this
+   * call can read a journal entry of any size, ie. it is not
+   * limited by the libguestfs protocol.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public XAttr[] journal_get ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_get: handle is closed");
+
+    return _journal_get (g);
+  }
+
+  private native XAttr[] _journal_get (long g)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.
@@ -17583,6 +17616,153 @@ public class GuestFS {
   }
 
   private native void _set_uuid (long g, String device, String uuid)
+    throws LibGuestFSException;
+
+  /**
+   * open the systemd journal
+   * <p>
+   * Open the systemd journal located in "directory". Any
+   * previously opened journal handle is closed.
+   * <p>
+   * The contents of the journal can be read using
+   * "g.journal_next" and "g.journal_get".
+   * <p>
+   * After you have finished using the journal, you should
+   * close the handle by calling "g.journal_close".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void journal_open (String directory)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_open: handle is closed");
+
+    _journal_open (g, directory);
+  }
+
+  private native void _journal_open (long g, String directory)
+    throws LibGuestFSException;
+
+  /**
+   * close the systemd journal
+   * <p>
+   * Close the journal handle.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void journal_close ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_close: handle is closed");
+
+    _journal_close (g);
+  }
+
+  private native void _journal_close (long g)
+    throws LibGuestFSException;
+
+  /**
+   * move to the next journal entry
+   * <p>
+   * Move to the next journal entry. You have to call this at
+   * least once after opening the handle before you are able
+   * to read data.
+   * <p>
+   * The returned boolean tells you if there are any more
+   * journal records to read. "true" means you can read the
+   * next record (eg. using "g.journal_get_data"), and
+   * "false" means you have reached the end of the journal.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public boolean journal_next ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_next: handle is closed");
+
+    return _journal_next (g);
+  }
+
+  private native boolean _journal_next (long g)
+    throws LibGuestFSException;
+
+  /**
+   * skip forwards or backwards in the journal
+   * <p>
+   * Skip forwards ("skip ≥ 0") or backwards ("skip < 0") in
+   * the journal.
+   * <p>
+   * The number of entries actually skipped is returned (note
+   * "rskip ≥ 0"). If this is not the same as the absolute
+   * value of the skip parameter ("|skip|") you passed in
+   * then it means you have reached the end or the start of
+   * the journal.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long journal_skip (long skip)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_skip: handle is closed");
+
+    return _journal_skip (g, skip);
+  }
+
+  private native long _journal_skip (long g, long skip)
+    throws LibGuestFSException;
+
+  /**
+   * get the data threshold for reading journal entries
+   * <p>
+   * Get the current data threshold for reading journal
+   * entries. This is a hint to the journal that it may
+   * truncate data fields to this size when reading them
+   * (note also that it may not truncate them). If this
+   * returns 0, then the threshold is unlimited.
+   * <p>
+   * See also "g.journal_set_data_threshold".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public long journal_get_data_threshold ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_get_data_threshold: handle is closed");
+
+    return _journal_get_data_threshold (g);
+  }
+
+  private native long _journal_get_data_threshold (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the data threshold for reading journal entries
+   * <p>
+   * Set the data threshold for reading journal entries. This
+   * is a hint to the journal that it may truncate data
+   * fields to this size when reading them (note also that it
+   * may not truncate them). If you set this to 0, then the
+   * threshold is unlimited.
+   * <p>
+   * See also "g.journal_get_data_threshold".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void journal_set_data_threshold (long threshold)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("journal_set_data_threshold: handle is closed");
+
+    _journal_set_data_threshold (g, threshold);
+  }
+
+  private native void _journal_set_data_threshold (long g, long threshold)
     throws LibGuestFSException;
 
 }

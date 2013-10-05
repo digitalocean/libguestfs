@@ -3655,6 +3655,89 @@ libguestfs.
 For information on the primary volume descriptor fields, see
 L<http://wiki.osdev.org/ISO_9660#The_Primary_Volume_Descriptor>
 
+=head2 journal-close
+
+ journal-close
+
+Close the journal handle.
+
+=head2 journal-get
+
+ journal-get
+
+Read the current journal entry.  This returns all the fields in the journal
+as a set of C<(attrname, attrval)> pairs.  The C<attrname> is the field name
+(a string).
+
+The C<attrval> is the field value (a binary blob, often but not always a
+string).  Please note that C<attrval> is a byte array, I<not> a
+\0-terminated C string.
+
+The length of data may be truncated to the data threshold (see:
+L</journal-set-data-threshold>, L</journal-get-data-threshold>).
+
+If you set the data threshold to unlimited (C<0>) then this call can read a
+journal entry of any size, ie. it is not limited by the libguestfs protocol.
+
+=head2 journal-get-data-threshold
+
+ journal-get-data-threshold
+
+Get the current data threshold for reading journal entries.  This is a hint
+to the journal that it may truncate data fields to this size when reading
+them (note also that it may not truncate them).  If this returns C<0>, then
+the threshold is unlimited.
+
+See also L</journal-set-data-threshold>.
+
+=head2 journal-next
+
+ journal-next
+
+Move to the next journal entry.  You have to call this at least once after
+opening the handle before you are able to read data.
+
+The returned boolean tells you if there are any more journal records to
+read.  C<true> means you can read the next record (eg. using
+L</journal-get-data>), and C<false> means you have reached the end of the
+journal.
+
+=head2 journal-open
+
+ journal-open directory
+
+Open the systemd journal located in C<directory>.  Any previously opened
+journal handle is closed.
+
+The contents of the journal can be read using L</journal-next> and
+L</journal-get>.
+
+After you have finished using the journal, you should close the handle by
+calling L</journal-close>.
+
+=head2 journal-set-data-threshold
+
+ journal-set-data-threshold threshold
+
+Set the data threshold for reading journal entries.  This is a hint to the
+journal that it may truncate data fields to this size when reading them
+(note also that it may not truncate them).  If you set this to C<0>, then
+the threshold is unlimited.
+
+See also L</journal-get-data-threshold>.
+
+=head2 journal-skip
+
+ journal-skip skip
+
+Skip forwards (C<skip E<ge> 0>) or backwards (C<skip E<lt> 0>) in the
+journal.
+
+The number of entries actually skipped is returned (note S<C<rskip E<ge>
+0>>).  If this is not the same as the absolute value of the skip parameter
+(C<|skip|>) you passed in then it means you have reached the end or the
+start of the journal.
+
 =head2 kill-subprocess
 
  kill-subprocess

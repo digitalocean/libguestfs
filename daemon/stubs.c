@@ -15724,6 +15724,264 @@ done_no_free:
   return;
 }
 
+static void
+journal_open_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_journal_open_args args;
+  char *directory;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_journal_open_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  directory = args.directory;
+  ABS_PATH (directory, , goto done);
+
+  NEED_ROOT (, goto done);
+  r = do_journal_open (directory);
+  if (r == -1)
+    /* do_journal_open has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_journal_open_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+journal_close_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_journal_close ();
+  if (r == -1)
+    /* do_journal_close has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+done_no_free:
+  return;
+}
+
+static void
+journal_next_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_journal_next ();
+  if (r == -1)
+    /* do_journal_next has already called reply_with_error */
+    goto done;
+
+  struct guestfs_journal_next_ret ret;
+  ret.more = r;
+  reply ((xdrproc_t) &xdr_guestfs_journal_next_ret, (char *) &ret);
+done:
+done_no_free:
+  return;
+}
+
+static void
+journal_skip_stub (XDR *xdr_in)
+{
+  int64_t r;
+  struct guestfs_journal_skip_args args;
+  int64_t skip;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_journal_skip_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  skip = args.skip;
+
+  r = do_journal_skip (skip);
+  if (r == -1)
+    /* do_journal_skip has already called reply_with_error */
+    goto done;
+
+  struct guestfs_journal_skip_ret ret;
+  ret.rskip = r;
+  reply ((xdrproc_t) &xdr_guestfs_journal_skip_ret, (char *) &ret);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_journal_skip_args, (char *) &args);
+done_no_free:
+  return;
+}
+
+static void
+internal_journal_get_stub (XDR *xdr_in)
+{
+  int r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_internal_journal_get ();
+  if (r == -1)
+    /* do_internal_journal_get has already called reply_with_error */
+    goto done;
+
+  /* do_internal_journal_get has already sent a reply */
+done:
+done_no_free:
+  return;
+}
+
+static void
+journal_get_data_threshold_stub (XDR *xdr_in)
+{
+  int64_t r;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  r = do_journal_get_data_threshold ();
+  if (r == -1)
+    /* do_journal_get_data_threshold has already called reply_with_error */
+    goto done;
+
+  struct guestfs_journal_get_data_threshold_ret ret;
+  ret.threshold = r;
+  reply ((xdrproc_t) &xdr_guestfs_journal_get_data_threshold_ret, (char *) &ret);
+done:
+done_no_free:
+  return;
+}
+
+static void
+journal_set_data_threshold_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_journal_set_data_threshold_args args;
+  int64_t threshold;
+
+  /* The caller should have checked before calling this. */
+  if (! optgroup_journal_available ()) {
+    reply_with_error_errno (ENOTSUP,
+       "feature '%s' is not available in this\n"
+       "build of libguestfs.  Read 'AVAILABILITY' in the guestfs(3) man page for\n"
+       "how to check for the availability of features.",
+       "journal");
+    goto done_no_free;
+  }
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_journal_set_data_threshold_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  threshold = args.threshold;
+
+  r = do_journal_set_data_threshold (threshold);
+  if (r == -1)
+    /* do_journal_set_data_threshold has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_journal_set_data_threshold_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16914,6 +17172,27 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_SET_UUID:
       set_uuid_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_JOURNAL_OPEN:
+      journal_open_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_JOURNAL_CLOSE:
+      journal_close_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_JOURNAL_NEXT:
+      journal_next_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_JOURNAL_SKIP:
+      journal_skip_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_INTERNAL_JOURNAL_GET:
+      internal_journal_get_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_JOURNAL_GET_DATA_THRESHOLD:
+      journal_get_data_threshold_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_JOURNAL_SET_DATA_THRESHOLD:
+      journal_set_data_threshold_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

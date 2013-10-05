@@ -454,7 +454,13 @@ module Guestfs (
   feature_available,
   extlinux,
   cp_r,
-  set_uuid
+  set_uuid,
+  journal_open,
+  journal_close,
+  journal_next,
+  journal_skip,
+  journal_get_data_threshold,
+  journal_set_data_threshold
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -5704,6 +5710,78 @@ foreign import ccall unsafe "guestfs.h guestfs_set_uuid" c_set_uuid
 set_uuid :: GuestfsH -> String -> String -> IO ()
 set_uuid h device uuid = do
   r <- withCString device $ \device -> withCString uuid $ \uuid -> withForeignPtr h (\p -> c_set_uuid p device uuid)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_open" c_journal_open
+  :: GuestfsP -> CString -> IO CInt
+
+journal_open :: GuestfsH -> String -> IO ()
+journal_open h directory = do
+  r <- withCString directory $ \directory -> withForeignPtr h (\p -> c_journal_open p directory)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_close" c_journal_close
+  :: GuestfsP -> IO CInt
+
+journal_close :: GuestfsH -> IO ()
+journal_close h = do
+  r <- withForeignPtr h (\p -> c_journal_close p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_next" c_journal_next
+  :: GuestfsP -> IO CInt
+
+journal_next :: GuestfsH -> IO Bool
+journal_next h = do
+  r <- withForeignPtr h (\p -> c_journal_next p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (toBool r)
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_skip" c_journal_skip
+  :: GuestfsP -> Int64 -> IO Int64
+
+journal_skip :: GuestfsH -> Integer -> IO Int64
+journal_skip h skip = do
+  r <- withForeignPtr h (\p -> c_journal_skip p (fromIntegral skip))
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_get_data_threshold" c_journal_get_data_threshold
+  :: GuestfsP -> IO Int64
+
+journal_get_data_threshold :: GuestfsH -> IO Int64
+journal_get_data_threshold h = do
+  r <- withForeignPtr h (\p -> c_journal_get_data_threshold p)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return (fromIntegral r)
+
+foreign import ccall unsafe "guestfs.h guestfs_journal_set_data_threshold" c_journal_set_data_threshold
+  :: GuestfsP -> Int64 -> IO CInt
+
+journal_set_data_threshold :: GuestfsH -> Integer -> IO ()
+journal_set_data_threshold h threshold = do
+  r <- withForeignPtr h (\p -> c_journal_set_data_threshold p (fromIntegral threshold))
   if (r == -1)
     then do
       err <- last_error h
