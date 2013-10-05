@@ -32,6 +32,7 @@
 -export([add_drive_opts/2, add_drive_opts/3]).
 -export([add_drive_ro/2]).
 -export([add_drive_ro_with_if/3]).
+-export([add_drive_scratch/2, add_drive_scratch/3]).
 -export([add_drive_with_if/3]).
 -export([aug_clear/2]).
 -export([aug_close/1]).
@@ -465,6 +466,7 @@
 -export([set_smp/2]).
 -export([set_tmpdir/2]).
 -export([set_trace/2]).
+-export([set_uuid/3]).
 -export([set_verbose/2]).
 -export([setcon/2]).
 -export([setxattr/5]).
@@ -628,6 +630,11 @@ add_drive_ro(G, Filename) ->
 
 add_drive_ro_with_if(G, Filename, Iface) ->
   call_port(G, {add_drive_ro_with_if, Filename, Iface}).
+
+add_drive_scratch(G, Size, Optargs) ->
+  call_port(G, {add_drive_scratch, Size, Optargs}).
+add_drive_scratch(G, Size) ->
+  add_drive_scratch(G, Size, []).
 
 add_drive_with_if(G, Filename, Iface) ->
   call_port(G, {add_drive_with_if, Filename, Iface}).
@@ -2013,6 +2020,9 @@ set_tmpdir(G, Tmpdir) ->
 
 set_trace(G, Trace) ->
   call_port(G, {set_trace, Trace}).
+
+set_uuid(G, Device, Uuid) ->
+  call_port(G, {set_uuid, Device, Uuid}).
 
 set_verbose(G, Verbose) ->
   call_port(G, {set_verbose, Verbose}).

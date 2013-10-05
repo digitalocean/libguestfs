@@ -940,6 +940,74 @@ guestfs_parse_environment (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC int
+guestfs_add_drive_scratch_argv (guestfs_h *g,
+                                int64_t size,
+                                const struct guestfs_add_drive_scratch_argv *optargs)
+{
+  struct guestfs_add_drive_scratch_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "add_drive_scratch", 17);
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK) &&
+      optargs->name == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_scratch", "name");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK) &&
+      optargs->label == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_scratch", "label");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffffffc)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "add_drive_scratch", "add_drive_scratch");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "add_drive_scratch");
+    fprintf (trace_buffer.fp, " %" PRIi64, size);
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "name", optargs->name);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "label", optargs->label);
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__add_drive_scratch (g, size, optargs);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "add_drive_scratch");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "add_drive_scratch", "-1");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC struct guestfs_lvm_pv_list *
 guestfs_pvs_full (guestfs_h *g)
 {

@@ -677,6 +677,41 @@ guestfs_lua_add_drive_ro_with_if (lua_State *L)
 }
 
 static int
+guestfs_lua_add_drive_scratch (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  int64_t size;
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "add_drive_scratch");
+
+  size = get_int64 (L, 2);
+
+  /* Check for optional arguments, encoded in a table. */
+  if (lua_type (L, 3) == LUA_TTABLE) {
+    OPTARG_IF_SET (3, "name",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+      optargs_s.name = luaL_checkstring (L, -1);
+    );
+    OPTARG_IF_SET (3, "label",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+      optargs_s.label = luaL_checkstring (L, -1);
+    );
+  }
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_add_drive_with_if (lua_State *L)
 {
   int r;
@@ -11177,6 +11212,29 @@ guestfs_lua_set_trace (lua_State *L)
 }
 
 static int
+guestfs_lua_set_uuid (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *device;
+  const char *uuid;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_uuid");
+
+  device = luaL_checkstring (L, 2);
+  uuid = luaL_checkstring (L, 3);
+
+  r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_verbose (lua_State *L)
 {
   int r;
@@ -14472,6 +14530,7 @@ static luaL_Reg methods[] = {
   { "add_drive", guestfs_lua_add_drive },
   { "add_drive_ro", guestfs_lua_add_drive_ro },
   { "add_drive_ro_with_if", guestfs_lua_add_drive_ro_with_if },
+  { "add_drive_scratch", guestfs_lua_add_drive_scratch },
   { "add_drive_with_if", guestfs_lua_add_drive_with_if },
   { "aug_clear", guestfs_lua_aug_clear },
   { "aug_close", guestfs_lua_aug_close },
@@ -14895,6 +14954,7 @@ static luaL_Reg methods[] = {
   { "set_smp", guestfs_lua_set_smp },
   { "set_tmpdir", guestfs_lua_set_tmpdir },
   { "set_trace", guestfs_lua_set_trace },
+  { "set_uuid", guestfs_lua_set_uuid },
   { "set_verbose", guestfs_lua_set_verbose },
   { "setcon", guestfs_lua_setcon },
   { "setxattr", guestfs_lua_setxattr },

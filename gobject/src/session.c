@@ -7311,6 +7311,69 @@ guestfs_session_get_program(GuestfsSession *session, GError **err)
 }
 
 /**
+ * guestfs_session_add_drive_scratch:
+ * @session: (transfer none): A GuestfsSession object
+ * @size: (type gint64):
+ * @optargs: (transfer none) (allow-none): a GuestfsAddDriveScratch containing optional arguments
+ * @err: A GError object to receive any generated errors
+ *
+ * add a temporary scratch drive
+ *
+ * This command adds a temporary scratch drive to the handle. The @size
+ * parameter is the virtual size (in bytes). The scratch drive is blank
+ * initially (all reads return zeroes until you start writing to it). The
+ * drive is deleted when the handle is closed.
+ * 
+ * The optional arguments @name and @label are passed through to
+ * guestfs_session_add_drive().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_add_drive_scratch(GuestfsSession *session, gint64 size, GuestfsAddDriveScratch *optargs, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "add_drive_scratch");
+    return FALSE;
+  }
+
+  struct guestfs_add_drive_scratch_argv argv;
+  struct guestfs_add_drive_scratch_argv *argvp = NULL;
+
+  if (optargs) {
+    argv.bitmask = 0;
+
+    GValue name_v = {0, };
+    g_value_init(&name_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "name", &name_v);
+    const gchar *name = g_value_get_string(&name_v);
+    if (name != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+      argv.name = name;
+    }
+    GValue label_v = {0, };
+    g_value_init(&label_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "label", &label_v);
+    const gchar *label = g_value_get_string(&label_v);
+    if (label != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+      argv.label = label;
+    }
+    argvp = &argv;
+  }
+  int ret = guestfs_add_drive_scratch_argv (g, size, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
  * guestfs_session_mount:
  * @session: (transfer none): A GuestfsSession object
  * @mountable: (transfer none) (type filename):
@@ -10516,8 +10579,7 @@ guestfs_session_get_e2label(GuestfsSession *session, const gchar *device, GError
  * @uuid. The format of the UUID and alternatives such as @clear, @random
  * and @time are described in the tune2fs(8) manpage.
  * 
- * You can use either guestfs_session_tune2fs_l() or
- * guestfs_session_get_e2uuid() to return the existing UUID of a
+ * You can use guestfs_session_vfs_uuid() to return the existing UUID of a
  * filesystem.
  * 
  * Returns: true on success, false on error
@@ -19965,12 +20027,20 @@ guestfs_session_ntfsclone_in(GuestfsSession *session, const gchar *backupfile, c
  * Only some filesystem types support labels, and libguestfs supports
  * setting labels on only a subset of these.
  * 
- * On ext2/3/4 filesystems, labels are limited to 16 bytes.
+ * ext2, ext3, ext4
+ * Labels are limited to 16 bytes.
  * 
- * On NTFS filesystems, labels are limited to 128 unicode characters.
+ * NTFS
+ * Labels are limited to 128 unicode characters.
  * 
- * Setting the label on a btrfs subvolume will set the label on its parent
- * filesystem.
+ * XFS The label is limited to 12 bytes. The filesystem must not be mounted
+ * when trying to set the label.
+ * 
+ * btrfs
+ * The label is limited to 256 bytes and some characters are not
+ * allowed. Setting the label on a btrfs subvolume will set the label
+ * on its parent filesystem. The filesystem must not be mounted when
+ * trying to set the label.
  * 
  * To read the label on a filesystem, call guestfs_session_vfs_label().
  * 
@@ -24266,6 +24336,43 @@ guestfs_session_remount(GuestfsSession *session, const gchar *mountpoint, Guestf
     argvp = &argv;
   }
   int ret = guestfs_remount_argv (g, mountpoint, argvp);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_set_uuid:
+ * @session: (transfer none): A GuestfsSession object
+ * @device: (transfer none) (type filename):
+ * @uuid: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the filesystem UUID
+ *
+ * Set the filesystem UIUD on @device to @label.
+ * 
+ * Only some filesystem types support setting UUIDs.
+ * 
+ * To read the UUID on a filesystem, call guestfs_session_vfs_uuid().
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_uuid(GuestfsSession *session, const gchar *device, const gchar *uuid, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_uuid");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_uuid (g, device, uuid);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;

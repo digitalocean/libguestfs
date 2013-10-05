@@ -6046,6 +6046,61 @@ py_guestfs_get_program (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+py_guestfs_add_drive_scratch (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  struct guestfs_add_drive_scratch_argv optargs_s;
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  int r;
+  long long size;
+  PyObject *py_name;
+  PyObject *py_label;
+
+  optargs_s.bitmask = 0;
+
+  if (!PyArg_ParseTuple (args, (char *) "OLOO:guestfs_add_drive_scratch",
+                         &py_g, &size, &py_name, &py_label))
+    goto out;
+  g = get_handle (py_g);
+
+  if (py_name != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.name = PyString_AsString (py_name);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_name);
+    optargs_s.name = PyBytes_AS_STRING (bytes);
+#endif
+  }
+  if (py_label != Py_None) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+#ifdef HAVE_PYSTRING_ASSTRING
+    optargs_s.label = PyString_AsString (py_label);
+#else
+    PyObject *bytes;
+    bytes = PyUnicode_AsUTF8String (py_label);
+    optargs_s.label = PyBytes_AS_STRING (bytes);
+#endif
+  }
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
 py_guestfs_mount (PyObject *self, PyObject *args)
 {
   PyThreadState *py_save = NULL;
@@ -21183,6 +21238,42 @@ py_guestfs_remount (PyObject *self, PyObject *args)
   return py_r;
 }
 
+static PyObject *
+py_guestfs_set_uuid (PyObject *self, PyObject *args)
+{
+  PyThreadState *py_save = NULL;
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *device;
+  const char *uuid;
+
+  if (!PyArg_ParseTuple (args, (char *) "Oss:guestfs_set_uuid",
+                         &py_g, &device, &uuid))
+    goto out;
+  g = get_handle (py_g);
+
+  if (PyEval_ThreadsInitialized ())
+    py_save = PyEval_SaveThread ();
+
+  r = guestfs_set_uuid (g, device, uuid);
+
+  if (PyEval_ThreadsInitialized ())
+    PyEval_RestoreThread (py_save);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
 static PyMethodDef methods[] = {
   { (char *) "create", py_guestfs_create, METH_VARARGS, NULL },
   { (char *) "close", py_guestfs_close, METH_VARARGS, NULL },
@@ -21329,6 +21420,7 @@ static PyMethodDef methods[] = {
   { (char *) "user_cancel", py_guestfs_user_cancel, METH_VARARGS, NULL },
   { (char *) "set_program", py_guestfs_set_program, METH_VARARGS, NULL },
   { (char *) "get_program", py_guestfs_get_program, METH_VARARGS, NULL },
+  { (char *) "add_drive_scratch", py_guestfs_add_drive_scratch, METH_VARARGS, NULL },
   { (char *) "mount", py_guestfs_mount, METH_VARARGS, NULL },
   { (char *) "sync", py_guestfs_sync, METH_VARARGS, NULL },
   { (char *) "touch", py_guestfs_touch, METH_VARARGS, NULL },
@@ -21713,6 +21805,7 @@ static PyMethodDef methods[] = {
   { (char *) "extlinux", py_guestfs_extlinux, METH_VARARGS, NULL },
   { (char *) "cp_r", py_guestfs_cp_r, METH_VARARGS, NULL },
   { (char *) "remount", py_guestfs_remount, METH_VARARGS, NULL },
+  { (char *) "set_uuid", py_guestfs_set_uuid, METH_VARARGS, NULL },
   { NULL, NULL, 0, NULL }
 };
 

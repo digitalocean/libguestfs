@@ -674,6 +674,22 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_ro (guestfs_h *g, const char *fi
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_ro_with_if (guestfs_h *g, const char *filename, const char *iface)
   GUESTFS_DEPRECATED_BY ("add_drive");
 
+#define GUESTFS_HAVE_ADD_DRIVE_SCRATCH 1
+#define GUESTFS_ADD_DRIVE_SCRATCH_NAME 0
+#define GUESTFS_ADD_DRIVE_SCRATCH_LABEL 1
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_scratch (guestfs_h *g, int64_t size, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_scratch_va (guestfs_h *g, int64_t size, va_list args);
+
+struct guestfs_add_drive_scratch_argv {
+  uint64_t bitmask;
+# define GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK (UINT64_C(1)<<0)
+  const char *name;
+# define GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK (UINT64_C(1)<<1)
+  const char *label;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_scratch_argv (guestfs_h *g, int64_t size, const struct guestfs_add_drive_scratch_argv *optargs);
+
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_with_if (guestfs_h *g, const char *filename, const char *iface)
   GUESTFS_DEPRECATED_BY ("add_drive");
 
@@ -2449,8 +2465,8 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_e2generation (guestfs_h *g, const char
 extern GUESTFS_DLL_PUBLIC int guestfs_set_e2label (guestfs_h *g, const char *device, const char *label)
   GUESTFS_DEPRECATED_BY ("set_label");
 
-#define GUESTFS_HAVE_SET_E2UUID 1
-extern GUESTFS_DLL_PUBLIC int guestfs_set_e2uuid (guestfs_h *g, const char *device, const char *uuid);
+extern GUESTFS_DLL_PUBLIC int guestfs_set_e2uuid (guestfs_h *g, const char *device, const char *uuid)
+  GUESTFS_DEPRECATED_BY ("set_uuid");
 
 #define GUESTFS_HAVE_SET_LABEL 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_label (guestfs_h *g, const char *mountable, const char *label);
@@ -2493,6 +2509,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_tmpdir (guestfs_h *g, const char *tmpd
 
 #define GUESTFS_HAVE_SET_TRACE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_trace (guestfs_h *g, int trace);
+
+#define GUESTFS_HAVE_SET_UUID 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_uuid (guestfs_h *g, const char *device, const char *uuid);
 
 #define GUESTFS_HAVE_SET_VERBOSE 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_verbose (guestfs_h *g, int verbose);
@@ -3336,6 +3355,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_ADD_DRIVE 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_RO 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_RO_WITH_IF 1
+#define LIBGUESTFS_HAVE_ADD_DRIVE_SCRATCH 1
 #define LIBGUESTFS_HAVE_ADD_DRIVE_WITH_IF 1
 #define LIBGUESTFS_HAVE_AUG_CLEAR 1
 #define LIBGUESTFS_HAVE_AUG_CLOSE 1
@@ -3732,6 +3752,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_SMP 1
 #define LIBGUESTFS_HAVE_SET_TMPDIR 1
 #define LIBGUESTFS_HAVE_SET_TRACE 1
+#define LIBGUESTFS_HAVE_SET_UUID 1
 #define LIBGUESTFS_HAVE_SET_VERBOSE 1
 #define LIBGUESTFS_HAVE_SETCON 1
 #define LIBGUESTFS_HAVE_SETXATTR 1

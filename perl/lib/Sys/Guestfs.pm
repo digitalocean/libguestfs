@@ -82,7 +82,7 @@ use warnings;
 # is added to the libguestfs API.  It is not directly
 # related to the libguestfs version number.
 use vars qw($VERSION);
-$VERSION = '0.402';
+$VERSION = '0.403';
 
 require XSLoader;
 XSLoader::load ('Sys::Guestfs');
@@ -662,6 +662,16 @@ In new code, use the L</add_drive> call instead.
 Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
+
+=item $g->add_drive_scratch ($size [, name => $name] [, label => $label]);
+
+This command adds a temporary scratch drive to the handle.  The
+C<size> parameter is the virtual size (in bytes).  The scratch
+drive is blank initially (all reads return zeroes until you start
+writing to it).  The drive is deleted when the handle is closed.
+
+The optional arguments C<name> and C<label> are passed through to
+C<$g-E<gt>add_drive>.
 
 =item $g->add_drive_with_if ($filename, $iface);
 
@@ -5774,8 +5784,15 @@ C<device> to C<uuid>.  The format of the UUID and alternatives
 such as C<clear>, C<random> and C<time> are described in the
 L<tune2fs(8)> manpage.
 
-You can use either C<$g-E<gt>tune2fs_l> or C<$g-E<gt>get_e2uuid>
-to return the existing UUID of a filesystem.
+You can use C<$g-E<gt>vfs_uuid> to return the existing UUID
+of a filesystem.
+
+I<This function is deprecated.>
+In new code, use the L</set_uuid> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->set_label ($mountable, $label);
 
@@ -5784,12 +5801,29 @@ Set the filesystem label on C<mountable> to C<label>.
 Only some filesystem types support labels, and libguestfs supports
 setting labels on only a subset of these.
 
-On ext2/3/4 filesystems, labels are limited to 16 bytes.
+=over 4
 
-On NTFS filesystems, labels are limited to 128 unicode characters.
+=item ext2, ext3, ext4
 
-Setting the label on a btrfs subvolume will set the label on its parent
-filesystem.
+Labels are limited to 16 bytes.
+
+=item NTFS
+
+Labels are limited to 128 unicode characters.
+
+=item XFS
+
+The label is limited to 12 bytes.  The filesystem must not
+be mounted when trying to set the label.
+
+=item btrfs
+
+The label is limited to 256 bytes and some characters are
+not allowed.  Setting the label on a btrfs subvolume will set the
+label on its parent filesystem.  The filesystem must not be mounted
+when trying to set the label.
+
+=back
 
 To read the label on a filesystem, call C<$g-E<gt>vfs_label>.
 
@@ -5969,6 +6003,14 @@ C<LIBGUESTFS_TRACE> is defined and set to C<1>.
 Trace messages are normally sent to C<stderr>, unless you
 register a callback to send them somewhere else (see
 C<$g-E<gt>set_event_callback>).
+
+=item $g->set_uuid ($device, $uuid);
+
+Set the filesystem UIUD on C<device> to C<label>.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<$g-E<gt>vfs_uuid>.
 
 =item $g->set_verbose ($verbose);
 
@@ -7195,6 +7237,18 @@ use vars qw(%guestfs_introspection);
     ],
     name => "add_drive_ro_with_if",
     description => "add a drive read-only specifying the QEMU block emulation to use",
+  },
+  "add_drive_scratch" => {
+    ret => 'void',
+    args => [
+      [ 'size', 'int64', 0 ],
+    ],
+    optargs => {
+      name => [ 'name', 'string', 0 ],
+      label => [ 'label', 'string', 1 ],
+    },
+    name => "add_drive_scratch",
+    description => "add a temporary scratch drive",
   },
   "add_drive_with_if" => {
     ret => 'void',
@@ -10964,6 +11018,15 @@ use vars qw(%guestfs_introspection);
     ],
     name => "set_trace",
     description => "enable or disable command traces",
+  },
+  "set_uuid" => {
+    ret => 'void',
+    args => [
+      [ 'device', 'string(device)', 0 ],
+      [ 'uuid', 'string', 1 ],
+    ],
+    name => "set_uuid",
+    description => "set the filesystem UUID",
   },
   "set_verbose" => {
     ret => 'void',

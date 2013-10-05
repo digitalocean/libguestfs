@@ -380,6 +380,22 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 add-drive-scratch
+
+=head2 scratch
+
+ add-drive-scratch size [name:..] [label:..]
+
+This command adds a temporary scratch drive to the handle.  The C<size>
+parameter is the virtual size (in bytes).  The scratch drive is blank
+initially (all reads return zeroes until you start writing to it).  The
+drive is deleted when the handle is closed.
+
+The optional arguments C<name> and C<label> are passed through to
+L</add-drive>.
+
+このコマンドは 1 つまたはそれ以上のオプション引数を持つ必要があります。 L</オプション引数> を参照してください。
+
 =head2 add-drive-with-if
 
  add-drive-with-if filename iface
@@ -5870,8 +5886,14 @@ This sets the ext2/3/4 filesystem UUID of the filesystem on C<device> to
 C<uuid>.  The format of the UUID and alternatives such as C<clear>,
 C<random> and C<time> are described in the L<tune2fs(8)> manpage.
 
-You can use either L</tune2fs-l> or L</get-e2uuid> to return the existing
-UUID of a filesystem.
+You can use L</vfs-uuid> to return the existing UUID of a filesystem.
+
+I<This function is deprecated.> In new code, use the L</set-uuid> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 set-label
 
@@ -5881,12 +5903,29 @@ Set the filesystem label on C<mountable> to C<label>.
 
 いくつかのファイルシステム形式のみがラベルをサポートします。そして libguestfs はこれらのサブセットのみにおいてラベルの設定をサポートします。
 
-ext2/3/4 ファイルシステムでは、ラベルは 16 バイトに制限されます。
+=over 4
 
-NTFS ファイルシステムでは、ラベルは 128 Unicode 文字に制限されます。
+=item ext2, ext3, ext4
 
+Labels are limited to 16 bytes.
+
+=item NTFS
+
+Labels are limited to 128 unicode characters.
+
+=item XFS
+
+The label is limited to 12 bytes.  The filesystem must not be mounted when
+trying to set the label.
+
+=item btrfs
+
+The label is limited to 256 bytes and some characters are not allowed.
 Setting the label on a btrfs subvolume will set the label on its parent
-filesystem.
+filesystem.  The filesystem must not be mounted when trying to set the
+label.
+
+=back
 
 ファイルシステムのラベルを読み込むには L</vfs-label> を呼び出します。
 
@@ -6097,6 +6136,16 @@ C<LIBGUESTFS_TRACE> is defined and set to C<1>.
 
 Trace messages are normally sent to C<stderr>, unless you register a
 callback to send them somewhere else (see L</set-event-callback>).
+
+=head2 set-uuid
+
+ set-uuid device uuid
+
+Set the filesystem UIUD on C<device> to C<label>.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call L</vfs-uuid>.
 
 =head2 set-verbose
 

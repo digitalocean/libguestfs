@@ -1,0 +1,54 @@
+<!-- ##### SECTION Title ##### -->
+GuestfsAddDriveScratch
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GuestfsAddDriveScratch ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG GuestfsAddDriveScratch:label ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GuestfsAddDriveScratch:name ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT GuestfsAddDriveScratchClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION guestfs_add_drive_scratch_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

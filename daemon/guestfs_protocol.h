@@ -3632,6 +3632,12 @@ struct guestfs_remount_args {
 };
 typedef struct guestfs_remount_args guestfs_remount_args;
 
+struct guestfs_set_uuid_args {
+	char *device;
+	char *uuid;
+};
+typedef struct guestfs_set_uuid_args guestfs_set_uuid_args;
+
 enum guestfs_procedure {
 	GUESTFS_PROC_MOUNT = 1,
 	GUESTFS_PROC_SYNC = 2,
@@ -4028,9 +4034,10 @@ enum guestfs_procedure {
 	GUESTFS_PROC_EXTLINUX = 400,
 	GUESTFS_PROC_CP_R = 401,
 	GUESTFS_PROC_REMOUNT = 402,
+	GUESTFS_PROC_SET_UUID = 403,
 };
 typedef enum guestfs_procedure guestfs_procedure;
-#define GUESTFS_MAX_PROC_NR 402
+#define GUESTFS_MAX_PROC_NR 403
 #define GUESTFS_MESSAGE_MAX 4194304
 #define GUESTFS_PROGRAM 0x2000F5F5
 #define GUESTFS_PROTOCOL_VERSION 4
@@ -4657,6 +4664,7 @@ extern  bool_t xdr_guestfs_syslinux_args (XDR *, guestfs_syslinux_args*);
 extern  bool_t xdr_guestfs_extlinux_args (XDR *, guestfs_extlinux_args*);
 extern  bool_t xdr_guestfs_cp_r_args (XDR *, guestfs_cp_r_args*);
 extern  bool_t xdr_guestfs_remount_args (XDR *, guestfs_remount_args*);
+extern  bool_t xdr_guestfs_set_uuid_args (XDR *, guestfs_set_uuid_args*);
 extern  bool_t xdr_guestfs_procedure (XDR *, guestfs_procedure*);
 extern  bool_t xdr_guestfs_message_direction (XDR *, guestfs_message_direction*);
 extern  bool_t xdr_guestfs_message_status (XDR *, guestfs_message_status*);
@@ -5233,6 +5241,7 @@ extern bool_t xdr_guestfs_syslinux_args ();
 extern bool_t xdr_guestfs_extlinux_args ();
 extern bool_t xdr_guestfs_cp_r_args ();
 extern bool_t xdr_guestfs_remount_args ();
+extern bool_t xdr_guestfs_set_uuid_args ();
 extern bool_t xdr_guestfs_procedure ();
 extern bool_t xdr_guestfs_message_direction ();
 extern bool_t xdr_guestfs_message_status ();

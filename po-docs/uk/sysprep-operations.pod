@@ -66,6 +66,13 @@ init, or systemd.
 Зауважте, що це може потребувати втручання користувача під час завантаження
 гостьової системи.
 
+=head2 B<fs-uuids> *
+
+Change filesystem UUIDs.
+
+On guests and filesystem types where this is supported, new random UUIDs are
+generated and assigned to filesystems.
+
 =head2 B<hostname> *
 
 Змінити назву вузла гостьової системи.

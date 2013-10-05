@@ -65,6 +65,13 @@ Flag the system for reconfiguration.
 
 Note that this may require user intervention when the guest is booted.
 
+=head2 B<fs-uuids> *
+
+Change filesystem UUIDs.
+
+On guests and filesystem types where this is supported, new random UUIDs are
+generated and assigned to filesystems.
+
 =head2 B<hostname> *
 
 仮想マシンのホスト名を変更します。

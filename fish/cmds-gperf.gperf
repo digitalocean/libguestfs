@@ -43,6 +43,7 @@ extern struct command_entry add_domain_cmd_entry;
 extern struct command_entry add_drive_cmd_entry;
 extern struct command_entry add_drive_ro_cmd_entry;
 extern struct command_entry add_drive_ro_with_if_cmd_entry;
+extern struct command_entry add_drive_scratch_cmd_entry;
 extern struct command_entry add_drive_with_if_cmd_entry;
 extern struct command_entry alloc_cmd_entry;
 extern struct command_entry aug_clear_cmd_entry;
@@ -450,6 +451,7 @@ extern struct command_entry set_selinux_cmd_entry;
 extern struct command_entry set_smp_cmd_entry;
 extern struct command_entry set_tmpdir_cmd_entry;
 extern struct command_entry set_trace_cmd_entry;
+extern struct command_entry set_uuid_cmd_entry;
 extern struct command_entry set_verbose_cmd_entry;
 extern struct command_entry setcon_cmd_entry;
 extern struct command_entry setenv_cmd_entry;
@@ -569,6 +571,9 @@ add-drive-ro, &add_drive_ro_cmd_entry
 add-ro, &add_drive_ro_cmd_entry
 add_drive_ro_with_if, &add_drive_ro_with_if_cmd_entry
 add-drive-ro-with-if, &add_drive_ro_with_if_cmd_entry
+add_drive_scratch, &add_drive_scratch_cmd_entry
+add-drive-scratch, &add_drive_scratch_cmd_entry
+scratch, &add_drive_scratch_cmd_entry
 add_drive_with_if, &add_drive_with_if_cmd_entry
 add-drive-with-if, &add_drive_with_if_cmd_entry
 alloc, &alloc_cmd_entry
@@ -1310,6 +1315,8 @@ tmpdir, &set_tmpdir_cmd_entry
 set_trace, &set_trace_cmd_entry
 set-trace, &set_trace_cmd_entry
 trace, &set_trace_cmd_entry
+set_uuid, &set_uuid_cmd_entry
+set-uuid, &set_uuid_cmd_entry
 set_verbose, &set_verbose_cmd_entry
 set-verbose, &set_verbose_cmd_entry
 verbose, &set_verbose_cmd_entry

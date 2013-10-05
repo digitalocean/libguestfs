@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 # libguestfs
 # Copyright (C) 2013 Red Hat Inc.
 #
@@ -15,17 +16,36 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-include $(top_srcdir)/subdir-rules.mk
+# Miscellaneous btrfs features.
 
-EXTRA_DIST = \
-	$(TESTS)
+use strict;
+use warnings;
 
-TESTS = \
-	disk-info.pl
+use Sys::Guestfs;
 
-TESTS_ENVIRONMENT = $(top_builddir)/run --test $(VG)
+# Allow the test to be skipped since btrfs is often broken.
+exit 77 if $ENV{SKIP_TEST_BTRFS_MISC_PL};
 
-check-valgrind:
-	$(MAKE) VG="@VG@" check
+my $g = Sys::Guestfs->new ();
 
-CLEANFILES = *~
+$g->add_drive_scratch (1024*1024*1024);
+$g->launch ();
+
+# If btrfs is not available, bail.
+unless ($g->feature_available (["btrfs"])) {
+    warn "$0: skipping test because btrfs is not available\n";
+    exit 77;
+}
+
+$g->part_disk ("/dev/sda", "mbr");
+
+$g->mkfs_btrfs (["/dev/sda1"]);
+
+# Setting label.
+$g->set_label ("/dev/sda1", "newlabel");
+my $label = $g->vfs_label ("/dev/sda1");
+die "unexpected label: expecting 'newlabel' but got '$label'"
+    unless $label eq "newlabel";
+
+$g->shutdown ();
+$g->close ();

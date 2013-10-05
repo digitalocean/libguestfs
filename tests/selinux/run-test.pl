@@ -18,6 +18,8 @@
 use strict;
 use warnings;
 
+use File::Temp qw/tempdir/;
+
 use Sys::Guestfs;
 
 # These are two SELinux labels that we assume everyone is allowed to
@@ -105,18 +107,12 @@ my $g = Sys::Guestfs->new ();
 
 #$g->set_selinux (1) if $test_type eq "selinux";
 
-my $testimg = "test.img";
-open FILE, ">$testimg" or die "$testimg: $!";
-truncate FILE, 256*1024*1024 or die "$testimg: truncate: $!";
-close FILE or die "$testimg: $!";
-
-$g->add_drive ($testimg, format => "raw");
+$g->add_drive_scratch (256*1024*1024);
 $g->launch ();
 
 unless ($g->feature_available (["linuxxattrs"])) {
     print "$prog $test_type $test_via: test skipped because 'linuxxattrs' feature not available.\n";
     $g->close ();
-    unlink $testimg;
     exit 77
 }
 
@@ -136,14 +132,14 @@ if ($test_via eq "direct") {
     }
 } else {
     # Make a local mountpoint and mount it.
-    mkdir "mp" or die "mkdir: mp: $!";
-    $g->mount_local ("mp");
+    my $mpdir = tempdir (CLEANUP => 1);
+    $g->mount_local ($mpdir);
 
     # Run the test in another process.
     my $pid = fork ();
     die "fork: $!" unless defined $pid;
     if ($pid == 0) {
-        exec ("$srcdir/run-test.pl", "--test", "mp", $test_type);
+        exec ("$srcdir/run-test.pl", "--test", $mpdir, $test_type);
         die "run-test.pl: exec failed: $!\n";
     }
 
@@ -151,14 +147,11 @@ if ($test_via eq "direct") {
 
     waitpid ($pid, 0);
     $errors++ if $?;
-
-    rmdir "mp" or die "rmdir: mp: $!";
 }
 
 # Finish up.
 $g->shutdown ();
 $g->close ();
-unlink $testimg or die "$testimg: $!";
 
 exit ($errors == 0 ? 0 : 1);
 

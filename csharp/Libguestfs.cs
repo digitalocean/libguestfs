@@ -466,6 +466,20 @@ namespace Guestfs
     }
 
     [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_add_drive_scratch_argv (IntPtr h, long size, void *);
+
+    /// <summary>
+    /// add a temporary scratch drive
+    /// </summary>
+    public void add_drive_scratch (long size)
+    {
+      int r;
+      r = guestfs_add_drive_scratch_argv (_handle, size, NULL);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
     static extern int guestfs_add_drive_with_if (IntPtr h, [In] string filename, [In] string iface);
 
     /// <summary>
@@ -6684,6 +6698,20 @@ namespace Guestfs
     {
       int r;
       r = guestfs_set_trace (_handle, trace);
+      if (r == -1)
+        throw new Error (guestfs_last_error (_handle));
+    }
+
+    [DllImport ("libguestfs.so.0")]
+    static extern int guestfs_set_uuid (IntPtr h, [In] string device, [In] string uuid);
+
+    /// <summary>
+    /// set the filesystem UUID
+    /// </summary>
+    public void set_uuid (string device, string uuid)
+    {
+      int r;
+      r = guestfs_set_uuid (_handle, device, uuid);
       if (r == -1)
         throw new Error (guestfs_last_error (_handle));
     }

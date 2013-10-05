@@ -453,7 +453,8 @@ module Guestfs (
   is_whole_device,
   feature_available,
   extlinux,
-  cp_r
+  cp_r,
+  set_uuid
   ) where
 
 -- Unfortunately some symbols duplicate ones already present
@@ -5691,6 +5692,18 @@ foreign import ccall unsafe "guestfs.h guestfs_cp_r" c_cp_r
 cp_r :: GuestfsH -> String -> String -> IO ()
 cp_r h src dest = do
   r <- withCString src $ \src -> withCString dest $ \dest -> withForeignPtr h (\p -> c_cp_r p src dest)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_set_uuid" c_set_uuid
+  :: GuestfsP -> CString -> CString -> IO CInt
+
+set_uuid :: GuestfsH -> String -> String -> IO ()
+set_uuid h device uuid = do
+  r <- withCString device $ \device -> withCString uuid $ \uuid -> withForeignPtr h (\p -> c_set_uuid p device uuid)
   if (r == -1)
     then do
       err <- last_error h

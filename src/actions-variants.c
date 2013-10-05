@@ -177,6 +177,57 @@ guestfs_add_drive (guestfs_h *g,
 }
 
 int
+guestfs_add_drive_scratch (guestfs_h *g,
+                           int64_t size,
+                           ...)
+{
+  va_list optargs;
+
+  va_start (optargs, size);
+  int r = guestfs_add_drive_scratch_va (g, size, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_add_drive_scratch_va (guestfs_h *g,
+                              int64_t size,
+                              va_list args)
+{
+  struct guestfs_add_drive_scratch_argv optargs_s;
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  int i;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_ADD_DRIVE_SCRATCH_NAME:
+      optargs_s.name = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_SCRATCH_LABEL:
+      optargs_s.label = va_arg (args, const char *);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "add_drive_scratch", i);
+      return -1;
+    }
+
+    uint64_t i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "add_drive_scratch");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_add_drive_scratch_argv (g, size, optargs);
+}
+
+int
 guestfs_btrfs_filesystem_resize (guestfs_h *g,
                                  const char *mountpoint,
                                  ...)

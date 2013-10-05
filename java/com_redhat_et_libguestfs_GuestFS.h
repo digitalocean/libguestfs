@@ -1165,6 +1165,14 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1program
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _add_drive_scratch
+ * Signature: (JJJLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1scratch
+  (JNIEnv *, jobject, jlong, jlong, jlong, jstring, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _mount
  * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
@@ -4234,6 +4242,14 @@ JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1cp_1r
  */
 JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1remount
   (JNIEnv *, jobject, jlong, jstring, jlong, jboolean);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_uuid
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1uuid
+  (JNIEnv *, jobject, jlong, jstring, jstring);
 
 #ifdef __cplusplus
 }

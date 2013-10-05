@@ -5136,6 +5136,63 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
+   * add a temporary scratch drive
+   * <p>
+   * This command adds a temporary scratch drive to the
+   * handle. The "size" parameter is the virtual size (in
+   * bytes). The scratch drive is blank initially (all reads
+   * return zeroes until you start writing to it). The drive
+   * is deleted when the handle is closed.
+   * <p>
+   * The optional arguments "name" and "label" are passed
+   * through to "g.add_drive".
+   * <p>
+   * Optional arguments are supplied in the final
+   * Map<String,Object> parameter, which is a hash of the
+   * argument name to its value (cast to Object). Pass an
+   * empty Map or null for no optional arguments.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void add_drive_scratch (long size, Map<String, Object> optargs)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("add_drive_scratch: handle is closed");
+
+    /* Unpack optional args. */
+    Object _optobj;
+    long _optargs_bitmask = 0;
+    String name = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("name");
+    if (_optobj != null) {
+      name = ((String) _optobj);
+      _optargs_bitmask |= 1L;
+    }
+    String label = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("label");
+    if (_optobj != null) {
+      label = ((String) _optobj);
+      _optargs_bitmask |= 2L;
+    }
+
+    _add_drive_scratch (g, size, _optargs_bitmask, name, label);
+  }
+
+  public void add_drive_scratch (long size)
+    throws LibGuestFSException
+  {
+    add_drive_scratch (size, null);
+  }
+
+  private native void _add_drive_scratch (long g, long size, long _optargs_bitmask, String name, String label)
+    throws LibGuestFSException;
+
+  /**
    * mount a guest disk at a position in the filesystem
    * <p>
    * Mount a guest disk at a position in the filesystem.
@@ -7314,8 +7371,15 @@ public class GuestFS {
    * alternatives such as "clear", "random" and "time" are
    * described in the tune2fs(8) manpage.
    * <p>
-   * You can use either "g.tune2fs_l" or "g.get_e2uuid" to
-   * return the existing UUID of a filesystem.
+   * You can use "g.vfs_uuid" to return the existing UUID of
+   * a filesystem.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "set_uuid" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -14262,13 +14326,21 @@ public class GuestFS {
    * libguestfs supports setting labels on only a subset of
    * these.
    * <p>
-   * On ext2/3/4 filesystems, labels are limited to 16 bytes.
+   * ext2, ext3, ext4
+   * Labels are limited to 16 bytes.
    * <p>
-   * On NTFS filesystems, labels are limited to 128 unicode
-   * characters.
+   * NTFS
+   * Labels are limited to 128 unicode characters.
    * <p>
-   * Setting the label on a btrfs subvolume will set the
-   * label on its parent filesystem.
+   * XFS The label is limited to 12 bytes. The filesystem
+   * must not be mounted when trying to set the label.
+   * <p>
+   * btrfs
+   * The label is limited to 256 bytes and some
+   * characters are not allowed. Setting the label on a
+   * btrfs subvolume will set the label on its parent
+   * filesystem. The filesystem must not be mounted when
+   * trying to set the label.
    * <p>
    * To read the label on a filesystem, call "g.vfs_label".
    * <p>
@@ -17488,6 +17560,29 @@ public class GuestFS {
   }
 
   private native void _remount (long g, String mountpoint, long _optargs_bitmask, boolean rw)
+    throws LibGuestFSException;
+
+  /**
+   * set the filesystem UUID
+   * <p>
+   * Set the filesystem UIUD on "device" to "label".
+   * <p>
+   * Only some filesystem types support setting UUIDs.
+   * <p>
+   * To read the UUID on a filesystem, call "g.vfs_uuid".
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_uuid (String device, String uuid)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_uuid: handle is closed");
+
+    _set_uuid (g, device, uuid);
+  }
+
+  private native void _set_uuid (long g, String device, String uuid)
     throws LibGuestFSException;
 
 }

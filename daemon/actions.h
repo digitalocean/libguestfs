@@ -577,5 +577,6 @@ extern int do_syslinux (const char *device, const char *directory);
 extern int do_extlinux (const char *directory);
 extern int do_cp_r (const char *src, const char *dest);
 extern int do_remount (const char *mountpoint, int rw);
+extern int do_set_uuid (const char *device, const char *uuid);
 
 #endif /* GUESTFSD_ACTIONS_H */

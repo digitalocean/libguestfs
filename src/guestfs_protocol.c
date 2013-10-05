@@ -7871,6 +7871,18 @@ xdr_guestfs_remount_args (XDR *xdrs, guestfs_remount_args *objp)
 }
 
 bool_t
+xdr_guestfs_set_uuid_args (XDR *xdrs, guestfs_set_uuid_args *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_string (xdrs, &objp->device, ~0))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->uuid, ~0))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_guestfs_procedure (XDR *xdrs, guestfs_procedure *objp)
 {
 	register int32_t *buf;

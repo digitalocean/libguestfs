@@ -15689,6 +15689,41 @@ done_no_free:
   return;
 }
 
+static void
+set_uuid_stub (XDR *xdr_in)
+{
+  int r;
+  struct guestfs_set_uuid_args args;
+  char *device;
+  char *uuid;
+
+  if (optargs_bitmask != 0) {
+    reply_with_error ("header optargs_bitmask field must be passed as 0 for calls that don't take optional arguments");
+    goto done_no_free;
+  }
+
+  memset (&args, 0, sizeof args);
+
+  if (!xdr_guestfs_set_uuid_args (xdr_in, &args)) {
+    reply_with_error ("daemon failed to decode procedure arguments");
+    goto done;
+  }
+  device = args.device;
+  RESOLVE_DEVICE (device, , goto done);
+  uuid = args.uuid;
+
+  r = do_set_uuid (device, uuid);
+  if (r == -1)
+    /* do_set_uuid has already called reply_with_error */
+    goto done;
+
+  reply (NULL, NULL);
+done:
+  xdr_free ((xdrproc_t) xdr_guestfs_set_uuid_args, (char *) &args);
+done_no_free:
+  return;
+}
+
 void dispatch_incoming_message (XDR *xdr_in)
 {
   switch (proc_nr) {
@@ -16876,6 +16911,9 @@ void dispatch_incoming_message (XDR *xdr_in)
       break;
     case GUESTFS_PROC_REMOUNT:
       remount_stub (xdr_in);
+      break;
+    case GUESTFS_PROC_SET_UUID:
+      set_uuid_stub (xdr_in);
       break;
     default:
       reply_with_error ("dispatch_incoming_message: unknown procedure number %d, set LIBGUESTFS_PATH to point to the matching libguestfs appliance directory", proc_nr);

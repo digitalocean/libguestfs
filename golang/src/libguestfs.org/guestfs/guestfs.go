@@ -1195,6 +1195,43 @@ func (g *Guestfs) Add_drive_ro_with_if (filename string, iface string) *GuestfsE
     return nil
 }
 
+/* Struct carrying optional arguments for Add_drive_scratch */
+type OptargsAdd_drive_scratch struct {
+    /* Name field is ignored unless Name_is_set == true */
+    Name_is_set bool
+    Name string
+    /* Label field is ignored unless Label_is_set == true */
+    Label_is_set bool
+    Label string
+}
+
+/* add_drive_scratch : add a temporary scratch drive */
+func (g *Guestfs) Add_drive_scratch (size int64, optargs *OptargsAdd_drive_scratch) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("add_drive_scratch")
+    }
+    c_optargs := C.struct_guestfs_add_drive_scratch_argv{}
+    if optargs != nil {
+        if optargs.Name_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK
+            c_optargs.name = C.CString (optargs.Name)
+            defer C.free (unsafe.Pointer (c_optargs.name))
+        }
+        if optargs.Label_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK
+            c_optargs.label = C.CString (optargs.Label)
+            defer C.free (unsafe.Pointer (c_optargs.label))
+        }
+    }
+
+    r := C.guestfs_add_drive_scratch_argv (g.g, C.int64_t (size), &c_optargs)
+
+    if r == -1 {
+        return get_error_from_handle (g, "add_drive_scratch")
+    }
+    return nil
+}
+
 /* add_drive_with_if : add a drive specifying the QEMU block emulation to use */
 func (g *Guestfs) Add_drive_with_if (filename string, iface string) *GuestfsError {
     if g.g == nil {
@@ -10290,6 +10327,26 @@ func (g *Guestfs) Set_trace (trace bool) *GuestfsError {
 
     if r == -1 {
         return get_error_from_handle (g, "set_trace")
+    }
+    return nil
+}
+
+/* set_uuid : set the filesystem UUID */
+func (g *Guestfs) Set_uuid (device string, uuid string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("set_uuid")
+    }
+
+    c_device := C.CString (device)
+    defer C.free (unsafe.Pointer (c_device))
+
+    c_uuid := C.CString (uuid)
+    defer C.free (unsafe.Pointer (c_uuid))
+
+    r := C.guestfs_set_uuid (g.g, c_device, c_uuid)
+
+    if r == -1 {
+        return get_error_from_handle (g, "set_uuid")
     }
     return nil
 }

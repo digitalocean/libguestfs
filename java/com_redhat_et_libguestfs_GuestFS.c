@@ -3740,6 +3740,32 @@ Java_com_redhat_et_libguestfs_GuestFS__1get_1program  (JNIEnv *env, jobject obj,
 }
 
 JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1add_1drive_1scratch  (JNIEnv *env, jobject obj, jlong jg, jlong jsize, jlong joptargs_bitmask, jstring jname, jstring jlabel)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  int64_t size;
+  struct guestfs_add_drive_scratch_argv optargs_s;
+  const struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+
+  size = jsize;
+
+  optargs_s.name = (*env)->GetStringUTFChars (env, jname, NULL);
+  optargs_s.label = (*env)->GetStringUTFChars (env, jlabel, NULL);
+  optargs_s.bitmask = joptargs_bitmask;
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+
+  (*env)->ReleaseStringUTFChars (env, jname, optargs_s.name);
+  (*env)->ReleaseStringUTFChars (env, jlabel, optargs_s.label);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
 Java_com_redhat_et_libguestfs_GuestFS__1mount  (JNIEnv *env, jobject obj, jlong jg, jstring jmountable, jstring jmountpoint)
 {
   guestfs_h *g = (guestfs_h *) (long) jg;
@@ -13688,6 +13714,28 @@ Java_com_redhat_et_libguestfs_GuestFS__1remount  (JNIEnv *env, jobject obj, jlon
   r = guestfs_remount_argv (g, mountpoint, optargs);
 
   (*env)->ReleaseStringUTFChars (env, jmountpoint, mountpoint);
+
+  if (r == -1) {
+    throw_exception (env, guestfs_last_error (g));
+    return;
+  }
+}
+
+JNIEXPORT void JNICALL
+Java_com_redhat_et_libguestfs_GuestFS__1set_1uuid  (JNIEnv *env, jobject obj, jlong jg, jstring jdevice, jstring juuid)
+{
+  guestfs_h *g = (guestfs_h *) (long) jg;
+  int r;
+  const char *device;
+  const char *uuid;
+
+  device = (*env)->GetStringUTFChars (env, jdevice, NULL);
+  uuid = (*env)->GetStringUTFChars (env, juuid, NULL);
+
+  r = guestfs_set_uuid (g, device, uuid);
+
+  (*env)->ReleaseStringUTFChars (env, jdevice, device);
+  (*env)->ReleaseStringUTFChars (env, juuid, uuid);
 
   if (r == -1) {
     throw_exception (env, guestfs_last_error (g));

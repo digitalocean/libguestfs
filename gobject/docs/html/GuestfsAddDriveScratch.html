@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GuestfsAddDriveScratch</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Libguestfs GObject Bindings Reference Manual">
+<link rel="up" href="ch01.html" title="Libguestfs GObject Bindings">
+<link rel="prev" href="GuestfsUmountLocal.html" title="GuestfsUmountLocal">
+<link rel="next" href="GuestfsIsFile.html" title="GuestfsIsFile">
+<meta name="generator" content="GTK-Doc V1.19 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GuestfsUmountLocal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libguestfs GObject Bindings Reference Manual</th>
+<td><a accesskey="n" href="GuestfsIsFile.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GuestfsAddDriveScratch.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GuestfsAddDriveScratch.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GuestfsAddDriveScratch.object-hierarchy" class="shortcut">Object Hierarchy</a>
+                   | 
+                  <a href="#GuestfsAddDriveScratch.properties" class="shortcut">Properties</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GuestfsAddDriveScratch"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GuestfsAddDriveScratch.top_of_page"></a>GuestfsAddDriveScratch</span></h2>
+<p>GuestfsAddDriveScratch — An object encapsulating optional arguments for guestfs_session_add_drive_scratch</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GuestfsAddDriveScratch.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#include &lt;guestfs-gobject.h&gt;
+
+struct              <a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch-struct" title="struct GuestfsAddDriveScratch">GuestfsAddDriveScratch</a>;
+struct              <a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratchClass" title="struct GuestfsAddDriveScratchClass">GuestfsAddDriveScratchClass</a>;
+<a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch"><span class="returnvalue">GuestfsAddDriveScratch</span></a> * <a class="link" href="GuestfsAddDriveScratch.html#guestfs-add-drive-scratch-new" title="guestfs_add_drive_scratch_new ()">guestfs_add_drive_scratch_new</a>  (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveScratch.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GuestfsAddDriveScratch
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveScratch.properties"></a><h2>Properties</h2>
+<pre class="synopsis">
+  "<a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--label" title='The "label" property'>label</a>"                    <span class="type">gchar</span>*                : Read / Write / Construct
+  "<a class="link" href="GuestfsAddDriveScratch.html#GuestfsAddDriveScratch--name" title='The "name" property'>name</a>"                     <span class="type">gchar</span>*                : Read / Write / Construct
+</pre>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveScratch.description"></a><h2>Description</h2>
+<p>
+An object encapsulating optional arguments for guestfs_session_add_drive_scratch
+</p>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveScratch.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GuestfsAddDriveScratch-struct"></a><h3>struct GuestfsAddDriveScratch</h3>
+<pre class="programlisting">struct GuestfsAddDriveScratch;</pre>
+<p>
+An object encapsulating optional arguments for guestfs_session_add_drive_scratch.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDriveScratchClass"></a><h3>struct GuestfsAddDriveScratchClass</h3>
+<pre class="programlisting">struct GuestfsAddDriveScratchClass {
+  GObjectClass parent_class;
+};
+</pre>
+<p>
+A class metadata object for GuestfsAddDriveScratch.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="type">GObjectClass</span> <em class="structfield"><code><a name="GuestfsAddDriveScratchClass.parent-class"></a>parent_class</code></em>;</span></p></td>
+<td>The superclass of GuestfsAddDriveScratchClass</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-add-drive-scratch-new"></a><h3>guestfs_add_drive_scratch_new ()</h3>
+<pre class="programlisting"><a class="link" href="GuestfsAddDriveScratch.html" title="GuestfsAddDriveScratch"><span class="returnvalue">GuestfsAddDriveScratch</span></a> * guestfs_add_drive_scratch_new  (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new GuestfsAddDriveScratch object
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GuestfsAddDriveScratch object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GuestfsAddDriveScratch.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GuestfsAddDriveScratch--label"></a><h3>The <code class="literal">"label"</code> property</h3>
+<pre class="programlisting">  "label"                    <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GuestfsAddDriveScratch--name"></a><h3>The <code class="literal">"name"</code> property</h3>
+<pre class="programlisting">  "name"                     <span class="type">gchar</span>*                : Read / Write / Construct</pre>
+<p>
+A string.
+</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.19</div>
+</body>
+</html>

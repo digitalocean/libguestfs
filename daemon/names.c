@@ -421,4 +421,5 @@ const char *function_names[] = {
   [400] = "extlinux",
   [401] = "cp_r",
   [402] = "remount",
+  [403] = "set_uuid",
 };

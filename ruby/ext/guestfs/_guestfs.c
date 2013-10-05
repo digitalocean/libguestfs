@@ -6899,6 +6899,69 @@ ruby_guestfs_get_program (VALUE gv)
 
 /*
  * call-seq:
+ *   g.add_drive_scratch(size, {optargs...}) -> nil
+ *
+ * add a temporary scratch drive
+ *
+ * This command adds a temporary scratch drive to the
+ * handle. The "size" parameter is the virtual size (in
+ * bytes). The scratch drive is blank initially (all reads
+ * return zeroes until you start writing to it). The drive
+ * is deleted when the handle is closed.
+ * 
+ * The optional arguments "name" and "label" are passed
+ * through to "g.add_drive".
+ * 
+ * Optional arguments are supplied in the final hash
+ * parameter, which is a hash of the argument name to its
+ * value. Pass an empty {} for no optional arguments.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_add_drive_scratch+[http://libguestfs.org/guestfs.3.html#guestfs_add_drive_scratch]).
+ */
+static VALUE
+ruby_guestfs_add_drive_scratch (int argc, VALUE *argv, VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "add_drive_scratch");
+
+  if (argc < 1 || argc > 2)
+    rb_raise (rb_eArgError, "expecting 1 or 2 arguments");
+
+  volatile VALUE sizev = argv[0];
+  volatile VALUE optargsv = argc > 1 ? argv[1] : rb_hash_new ();
+
+  long long size = NUM2LL (sizev);
+
+  Check_Type (optargsv, T_HASH);
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  volatile VALUE v;
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("name")));
+  if (v != Qnil) {
+    optargs_s.name = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("label")));
+  if (v != Qnil) {
+    optargs_s.label = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+  }
+
+  int r;
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
  *   g.mount(mountable, mountpoint) -> nil
  *
  * mount a guest disk at a position in the filesystem
@@ -10217,8 +10280,15 @@ ruby_guestfs_get_e2label (VALUE gv, VALUE devicev)
  * alternatives such as "clear", "random" and "time" are
  * described in the tune2fs(8) manpage.
  * 
- * You can use either "g.tune2fs_l" or "g.get_e2uuid" to
- * return the existing UUID of a filesystem.
+ * You can use "g.vfs_uuid" to return the existing UUID of
+ * a filesystem.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "set_uuid" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -20114,13 +20184,21 @@ ruby_guestfs_ntfsclone_in (VALUE gv, VALUE backupfilev, VALUE devicev)
  * libguestfs supports setting labels on only a subset of
  * these.
  * 
- * On ext2/3/4 filesystems, labels are limited to 16 bytes.
+ * ext2, ext3, ext4
+ * Labels are limited to 16 bytes.
  * 
- * On NTFS filesystems, labels are limited to 128 unicode
- * characters.
+ * NTFS
+ * Labels are limited to 128 unicode characters.
  * 
- * Setting the label on a btrfs subvolume will set the
- * label on its parent filesystem.
+ * XFS The label is limited to 12 bytes. The filesystem
+ * must not be mounted when trying to set the label.
+ * 
+ * btrfs
+ * The label is limited to 256 bytes and some
+ * characters are not allowed. Setting the label on a
+ * btrfs subvolume will set the label on its parent
+ * filesystem. The filesystem must not be mounted when
+ * trying to set the label.
  * 
  * To read the label on a filesystem, call "g.vfs_label".
  *
@@ -24410,6 +24488,42 @@ ruby_guestfs_remount (int argc, VALUE *argv, VALUE gv)
   return Qnil;
 }
 
+/*
+ * call-seq:
+ *   g.set_uuid(device, uuid) -> nil
+ *
+ * set the filesystem UUID
+ *
+ * Set the filesystem UIUD on "device" to "label".
+ * 
+ * Only some filesystem types support setting UUIDs.
+ * 
+ * To read the UUID on a filesystem, call "g.vfs_uuid".
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_uuid+[http://libguestfs.org/guestfs.3.html#guestfs_set_uuid]).
+ */
+static VALUE
+ruby_guestfs_set_uuid (VALUE gv, VALUE devicev, VALUE uuidv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_uuid");
+
+  const char *device = StringValueCStr (devicev);
+  const char *uuid = StringValueCStr (uuidv);
+
+  int r;
+
+  r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
 extern void Init__guestfs (void); /* keep GCC warnings happy */
 
 /* Initialize the module. */
@@ -24733,6 +24847,8 @@ Init__guestfs (void)
         ruby_guestfs_set_program, 1);
   rb_define_method (c_guestfs, "get_program",
         ruby_guestfs_get_program, 0);
+  rb_define_method (c_guestfs, "add_drive_scratch",
+        ruby_guestfs_add_drive_scratch, -1);
   rb_define_method (c_guestfs, "mount",
         ruby_guestfs_mount, 2);
   rb_define_method (c_guestfs, "sync",
@@ -25527,4 +25643,6 @@ Init__guestfs (void)
         ruby_guestfs_cp_r, 2);
   rb_define_method (c_guestfs, "remount",
         ruby_guestfs_remount, -1);
+  rb_define_method (c_guestfs, "set_uuid",
+        ruby_guestfs_set_uuid, 2);
 }

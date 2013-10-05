@@ -2803,6 +2803,11 @@ struct guestfs_remount_args {
   bool rw;
 };
 
+struct guestfs_set_uuid_args {
+  string device<>;
+  string uuid<>;
+};
+
 /* Table of procedure numbers. */
 enum guestfs_procedure {
   GUESTFS_PROC_MOUNT = 1,
@@ -3199,10 +3204,11 @@ enum guestfs_procedure {
   GUESTFS_PROC_SYSLINUX = 399,
   GUESTFS_PROC_EXTLINUX = 400,
   GUESTFS_PROC_CP_R = 401,
-  GUESTFS_PROC_REMOUNT = 402
+  GUESTFS_PROC_REMOUNT = 402,
+  GUESTFS_PROC_SET_UUID = 403
 };
 
-const GUESTFS_MAX_PROC_NR = 402;
+const GUESTFS_MAX_PROC_NR = 403;
 
 /* The remote procedure call protocol. */
 

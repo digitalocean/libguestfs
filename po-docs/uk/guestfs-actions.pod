@@ -511,6 +511,52 @@ QEMU interface emulation to use at run time.
 
 (Додано у 1.0.84)
 
+=head2 guestfs_add_drive_scratch
+
+ int
+ guestfs_add_drive_scratch (guestfs_h *g,
+                            int64_t size,
+                            ...);
+
+You may supply a list of optional arguments to this call.  Use zero or more
+of the following pairs of parameters, and terminate the list with C<-1> on
+its own.  See L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+ GUESTFS_ADD_DRIVE_SCRATCH_NAME, const char *name,
+ GUESTFS_ADD_DRIVE_SCRATCH_LABEL, const char *label,
+
+This command adds a temporary scratch drive to the handle.  The C<size>
+parameter is the virtual size (in bytes).  The scratch drive is blank
+initially (all reads return zeroes until you start writing to it).  The
+drive is deleted when the handle is closed.
+
+The optional arguments C<name> and C<label> are passed through to
+C<guestfs_add_drive>.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
+
+=head2 guestfs_add_drive_scratch_va
+
+ int
+ guestfs_add_drive_scratch_va (guestfs_h *g,
+                               int64_t size,
+                               va_list args);
+
+This is the "va_list variant" of L</guestfs_add_drive_scratch>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
+=head2 guestfs_add_drive_scratch_argv
+
+ int
+ guestfs_add_drive_scratch_argv (guestfs_h *g,
+                                 int64_t size,
+                                 const struct guestfs_add_drive_scratch_argv *optargs);
+
+This is the "argv variant" of L</guestfs_add_drive_scratch>.
+
+Див. L</CALLS WITH OPTIONAL ARGUMENTS>.
+
 =head2 guestfs_add_drive_with_if
 
  int
@@ -5385,6 +5431,8 @@ true.
 
 This function returns a C truth value on success or -1 on error.
 
+(Added in 1.23.4)
+
 =head2 guestfs_is_blockdev_opts_va
 
  int
@@ -5457,6 +5505,8 @@ symlinks) that ends with a chardev also causes the function to return true.
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_chardev_opts_va
 
@@ -5532,6 +5582,8 @@ true.
 
 This function returns a C truth value on success or -1 on error.
 
+(Added in 1.23.4)
+
 =head2 guestfs_is_dir_opts_va
 
  int
@@ -5590,6 +5642,8 @@ symlinks) that ends with a FIFO also causes the function to return true.
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_fifo_opts_va
 
@@ -5650,6 +5704,8 @@ symlinks) that ends with a file also causes the function to return true.
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_file_opts_va
 
@@ -5750,6 +5806,8 @@ symlinks) that ends with a socket also causes the function to return true.
 Див. також C<guestfs_stat>.
 
 This function returns a C truth value on success or -1 on error.
+
+(Added in 1.23.4)
 
 =head2 guestfs_is_socket_opts_va
 
@@ -9313,6 +9371,8 @@ future we may allow other flags to be adjusted.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
+(Added in 1.23.2)
+
 =head2 guestfs_remount_va
 
  int
@@ -9967,12 +10027,18 @@ the existing label on a filesystem.
                      const char *device,
                      const char *uuid);
 
+I<This function is deprecated.> In new code, use the L</guestfs_set_uuid>
+call instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
 This sets the ext2/3/4 filesystem UUID of the filesystem on C<device> to
 C<uuid>.  The format of the UUID and alternatives such as C<clear>,
 C<random> and C<time> are described in the L<tune2fs(8)> manpage.
 
-You can use either C<guestfs_tune2fs_l> or C<guestfs_get_e2uuid> to return
-the existing UUID of a filesystem.
+You can use C<guestfs_vfs_uuid> to return the existing UUID of a filesystem.
 
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
@@ -9990,12 +10056,29 @@ Set the filesystem label on C<mountable> to C<label>.
 Only some filesystem types support labels, and libguestfs supports setting
 labels on only a subset of these.
 
-On ext2/3/4 filesystems, labels are limited to 16 bytes.
+=over 4
 
-On NTFS filesystems, labels are limited to 128 unicode characters.
+=item ext2, ext3, ext4
 
+Labels are limited to 16 bytes.
+
+=item NTFS
+
+Labels are limited to 128 unicode characters.
+
+=item XFS
+
+The label is limited to 12 bytes.  The filesystem must not be mounted when
+trying to set the label.
+
+=item btrfs
+
+The label is limited to 256 bytes and some characters are not allowed.
 Setting the label on a btrfs subvolume will set the label on its parent
-filesystem.
+filesystem.  The filesystem must not be mounted when trying to set the
+label.
+
+=back
 
 To read the label on a filesystem, call C<guestfs_vfs_label>.
 
@@ -10276,6 +10359,21 @@ callback to send them somewhere else (see C<guestfs_set_event_callback>).
 Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 (Додано у 1.0.69)
+
+=head2 guestfs_set_uuid
+
+ int
+ guestfs_set_uuid (guestfs_h *g,
+                   const char *device,
+                   const char *uuid);
+
+Set the filesystem UIUD on C<device> to C<label>.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<guestfs_vfs_uuid>.
+
+Ця функція повертає 0 у разі успіху і -1 у разі помилки.
 
 =head2 guestfs_set_verbose
 

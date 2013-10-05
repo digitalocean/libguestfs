@@ -1,3 +1,136 @@
+2013-07-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Use unique or temporary names for temporary files.
+	Review every test(!) to ensure that it:
+
+	 - Doesn't use a generic name (eg. "test1.img", "test.out") for any
+	   temporary file it needs.
+
+	 - Does instead use a unique name or a temporary name (eg. a name like
+	   "name-of-the-test.img", or a scratch disk).
+
+	 - Does not use 'rm -f' to clean up its temporary files (so we can
+	   detect errors if the wrong temporary file is created or removed).
+
+	This allows tests to be run in parallel, so they don't stomp on each
+	other's temporary files.
+
+2013-07-23  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: For -N option, add drive with explicit format = "raw".
+	Although autodetecting is safe (we always have just created a drive),
+	it saves a little bit of time if we don't have to run qemu-img to
+	detect the disk format with the libvirt backend.
+
+	Note that for prepared drives the format is always raw and we don't
+	anticipate creating drives in other formats.
+
+2013-07-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Allow -N filename=type to use 'filename' instead of 'test1.img' (etc.)
+	So:
+
+	  guestfish -N fs
+
+	is equivalent to:
+
+	  guestfish -N test1.img=fs
+
+2013-07-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Split up long line in --help output.
+
+	fish: Clarify documentation.
+	It's not "the guest" which is launched, but the libguestfs appliance.
+
+	sysprep: Add new fs-uuids operation.
+	This creates new random UUIDs for all filesystems in a guest.
+
+	docs: Document labels and UUIDs in the API overview section.
+
+	New API: Implement set-uuid for ext2/3/4 and XFS (RHBZ#986877).
+	Also includes tests.
+
+2013-07-22  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Implement set-label for XFS and fix it for btrfs (RHBZ#986875).
+	Implement 'set-label' for XFS filesystems.
+
+	Fix the call for btrfs.  Previous
+	commit d5817537fa6c51a7f851ecc5e4e63e60609e0c03 added some bogus
+	documentation implying this call would work for btrfs, but it did
+	not.
+
+	Add tests.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tools: 'test.img' is no longer used.
+	This probably used to be a temporary file used for testing.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Use new guestfs_add_drive_scratch API where possible in tests.
+	Replaces code such as:
+
+	  fd = open "test1.img"
+	  ftruncate fd, size
+	  close fd
+	  g.add_drive "test1.img"
+
+	with the shorter and simpler:
+
+	  g.add_drive_scratch size
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	fish: Link to the new 'scratch' command from the old 'sparse' command.
+
+	tests/lvm: Remove some commented out debugging code.
+
+	tests/c-api: Use guestfs_add_drive_scratch API to create scratch drives.
+	Replaces the old custom code for making and deleting the drives.
+
+	New API: add-drive-scratch.
+	This adds a temporary scratch drive to the handle.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	Revert "tests: Add a regression test for all disk_* info commands (RHBZ#981663)."
+	This reverts commit 2311fb0632a64cfa2bab8bf65c82ffaa042d619e.
+
+	This is no longer needed, since now the disk_* info functions
+	are being properly tested by the C API tests.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/c-api: Remove 'GETKEY:' hack since it's no longer used anywhere.
+
+	tests: Better testing of guestfs_disk_* functions using blank disks from tests/data directory.
+
+	tests/data: Add some blank disks in various sizes and formats for testing.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	ocaml: Rewrite TESTS rule to be compatible with automake 1.13 parallel-tests.
+	Because of this bug in automake:
+
+	  https://lists.gnu.org/archive/html/bug-automake/2013-01/threads.html#00103
+
+	this requires that we duplicate the lists of bytecode (bc) and native
+	code (opt) tests because we cannot use ordinary GNU make macros to
+	construct these lists.
+
+2013-07-20  Richard W.M. Jones  <rjones@redhat.com>
+
+	FAQ: Add section about different packaging strategies for libguestfs.
+
+2013-07-19  Richard W.M. Jones  <rjones@redhat.com>
+
+	Update API support.
+
+	Version 1.23.9.
+
 2013-07-18  Richard W.M. Jones  <rjones@redhat.com>
 
 	mkfs: Use -b size=<size> for xfs (RHBZ#981715).

@@ -2734,6 +2734,20 @@ class GuestFS(object):
         r = libguestfsmod.get_program (self._o)
         return r
 
+    def add_drive_scratch (self, size, name=None, label=None):
+        """This command adds a temporary scratch drive to the
+        handle. The "size" parameter is the virtual size (in
+        bytes). The scratch drive is blank initially (all reads
+        return zeroes until you start writing to it). The drive
+        is deleted when the handle is closed.
+        
+        The optional arguments "name" and "label" are passed
+        through to "g.add_drive".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.add_drive_scratch (self._o, size, name, label)
+        return r
+
     def mount (self, mountable, mountpoint):
         """Mount a guest disk at a position in the filesystem.
         Block devices are named "/dev/sda", "/dev/sdb" and so
@@ -3849,8 +3863,15 @@ class GuestFS(object):
         alternatives such as "clear", "random" and "time" are
         described in the tune2fs(8) manpage.
         
-        You can use either "g.tune2fs_l" or "g.get_e2uuid" to
-        return the existing UUID of a filesystem.
+        You can use "g.vfs_uuid" to return the existing UUID of
+        a filesystem.
+        
+        *This function is deprecated.* In new code, use the
+        "set_uuid" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
         r = libguestfsmod.set_e2uuid (self._o, device, uuid)
@@ -7390,13 +7411,21 @@ class GuestFS(object):
         libguestfs supports setting labels on only a subset of
         these.
         
-        On ext2/3/4 filesystems, labels are limited to 16 bytes.
+        ext2, ext3, ext4
+        Labels are limited to 16 bytes.
         
-        On NTFS filesystems, labels are limited to 128 unicode
-        characters.
+        NTFS
+        Labels are limited to 128 unicode characters.
         
-        Setting the label on a btrfs subvolume will set the
-        label on its parent filesystem.
+        XFS The label is limited to 12 bytes. The filesystem
+        must not be mounted when trying to set the label.
+        
+        btrfs
+        The label is limited to 256 bytes and some
+        characters are not allowed. Setting the label on a
+        btrfs subvolume will set the label on its parent
+        filesystem. The filesystem must not be mounted when
+        trying to set the label.
         
         To read the label on a filesystem, call "g.vfs_label".
         """
@@ -8670,5 +8699,16 @@ class GuestFS(object):
         """
         self._check_not_closed ()
         r = libguestfsmod.remount (self._o, mountpoint, rw)
+        return r
+
+    def set_uuid (self, device, uuid):
+        """Set the filesystem UIUD on "device" to "label".
+        
+        Only some filesystem types support setting UUIDs.
+        
+        To read the UUID on a filesystem, call "g.vfs_uuid".
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_uuid (self._o, device, uuid)
         return r
 

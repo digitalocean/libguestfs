@@ -2880,6 +2880,42 @@ PREINIT:
       RETVAL
 
 void
+add_drive_scratch (g, size, ...)
+      guestfs_h *g;
+      int64_t size;
+PREINIT:
+      int r;
+      struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+      struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+      size_t items_i;
+ PPCODE:
+      if (((items - 2) & 1) != 0)
+        croak ("expecting an even number of extra parameters");
+      for (items_i = 2; items_i < items; items_i += 2) {
+        uint64_t this_mask;
+        const char *this_arg;
+
+        this_arg = SvPV_nolen (ST (items_i));
+        if (STREQ (this_arg, "name")) {
+          optargs_s.name = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+        }
+        else if (STREQ (this_arg, "label")) {
+          optargs_s.label = SvPV_nolen (ST (items_i+1));
+          this_mask = GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+        }
+        else croak ("unknown optional argument '%s'", this_arg);
+        if (optargs_s.bitmask & this_mask)
+          croak ("optional argument '%s' given twice",
+                 this_arg);
+        optargs_s.bitmask |= this_mask;
+      }
+
+      r = guestfs_add_drive_scratch_argv (g, size, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
 mount (g, mountable, mountpoint)
       guestfs_h *g;
       char *mountable;
@@ -9788,6 +9824,18 @@ PREINIT:
       }
 
       r = guestfs_remount_argv (g, mountpoint, optargs);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+void
+set_uuid (g, device, uuid)
+      guestfs_h *g;
+      char *device;
+      char *uuid;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_uuid (g, device, uuid);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 

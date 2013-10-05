@@ -39,6 +39,9 @@
         guestfs_add_drive_opts_va;
         guestfs_add_drive_ro;
         guestfs_add_drive_ro_with_if;
+        guestfs_add_drive_scratch;
+        guestfs_add_drive_scratch_argv;
+        guestfs_add_drive_scratch_va;
         guestfs_add_drive_with_if;
         guestfs_aug_clear;
         guestfs_aug_close;
@@ -626,6 +629,7 @@
         guestfs_set_subprocess_quit_callback;
         guestfs_set_tmpdir;
         guestfs_set_trace;
+        guestfs_set_uuid;
         guestfs_set_verbose;
         guestfs_setcon;
         guestfs_setxattr;

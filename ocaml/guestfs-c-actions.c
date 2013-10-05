@@ -1254,6 +1254,48 @@ ocaml_guestfs_add_drive_ro_with_if (value gv, value filenamev, value ifacev)
 }
 
 /* Automatically generated wrapper for function
+ * val add_drive_scratch : t -> ?name:string -> ?label:string -> int64 -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_add_drive_scratch (value gv, value namev, value labelv, value sizev);
+
+value
+ocaml_guestfs_add_drive_scratch (value gv, value namev, value labelv, value sizev)
+{
+  CAMLparam4 (gv, namev, labelv, sizev);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("add_drive_scratch");
+
+  int64_t size = Int64_val (sizev);
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  if (namev != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+    optargs_s.name = guestfs___safe_strdup (g, String_val (Field (namev, 0)));
+  }
+  if (labelv != Val_int (0)) {
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+    optargs_s.label = guestfs___safe_strdup (g, String_val (Field (labelv, 0)));
+  }
+  int r;
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if (namev != Val_int (0))
+    free ((char *) optargs_s.name);
+  if (labelv != Val_int (0))
+    free ((char *) optargs_s.label);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "add_drive_scratch");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
  * val add_drive_with_if : t -> string -> string -> unit
  */
 
@@ -15649,6 +15691,39 @@ ocaml_guestfs_set_trace (value gv, value tracev)
   r = guestfs_set_trace (g, trace);
   if (r == -1)
     ocaml_guestfs_raise_error (g, "set_trace");
+
+  rv = Val_unit;
+  CAMLreturn (rv);
+}
+
+/* Automatically generated wrapper for function
+ * val set_uuid : t -> string -> string -> unit
+ */
+
+/* Emit prototype to appease gcc's -Wmissing-prototypes. */
+value ocaml_guestfs_set_uuid (value gv, value devicev, value uuidv);
+
+value
+ocaml_guestfs_set_uuid (value gv, value devicev, value uuidv)
+{
+  CAMLparam3 (gv, devicev, uuidv);
+  CAMLlocal1 (rv);
+
+  guestfs_h *g = Guestfs_val (gv);
+  if (g == NULL)
+    ocaml_guestfs_raise_closed ("set_uuid");
+
+  char *device = guestfs___safe_strdup (g, String_val (devicev));
+  char *uuid = guestfs___safe_strdup (g, String_val (uuidv));
+  int r;
+
+  caml_enter_blocking_section ();
+  r = guestfs_set_uuid (g, device, uuid);
+  caml_leave_blocking_section ();
+  free (device);
+  free (uuid);
+  if (r == -1)
+    ocaml_guestfs_raise_error (g, "set_uuid");
 
   rv = Val_unit;
   CAMLreturn (rv);

@@ -46,6 +46,7 @@ SUBDIRS += tests/md
 SUBDIRS += tests/selinux
 SUBDIRS += tests/ntfsclone
 SUBDIRS += tests/btrfs
+SUBDIRS += tests/xfs
 SUBDIRS += tests/charsets
 SUBDIRS += tests/xml
 SUBDIRS += tests/mount-local
@@ -58,7 +59,6 @@ SUBDIRS += tests/nbd
 SUBDIRS += tests/http
 SUBDIRS += tests/syslinux
 SUBDIRS += tests/fuzz
-SUBDIRS += tests/disk-info
 SUBDIRS += tests/regressions
 endif
 

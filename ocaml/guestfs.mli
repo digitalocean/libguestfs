@@ -379,6 +379,9 @@ val add_drive_ro_with_if : t -> string -> string -> unit
     @deprecated Use {!add_drive} instead
  *)
 
+val add_drive_scratch : t -> ?name:string -> ?label:string -> int64 -> unit
+(** add a temporary scratch drive *)
+
 val add_drive_with_if : t -> string -> string -> unit
 (** add a drive specifying the QEMU block emulation to use
 
@@ -1675,7 +1678,10 @@ val set_e2label : t -> string -> string -> unit
  *)
 
 val set_e2uuid : t -> string -> string -> unit
-(** set the ext2/3/4 filesystem UUID *)
+(** set the ext2/3/4 filesystem UUID
+
+    @deprecated Use {!set_uuid} instead
+ *)
 
 val set_label : t -> string -> string -> unit
 (** set filesystem label *)
@@ -1718,6 +1724,9 @@ val set_tmpdir : t -> string option -> unit
 
 val set_trace : t -> bool -> unit
 (** enable or disable command traces *)
+
+val set_uuid : t -> string -> string -> unit
+(** set the filesystem UUID *)
 
 val set_verbose : t -> bool -> unit
 (** set verbose mode *)
@@ -2083,6 +2092,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method add_drive_opts : ?readonly:bool -> ?format:string -> ?iface:string -> ?name:string -> ?label:string -> ?protocol:string -> ?server:string array -> ?username:string -> ?secret:string -> string -> unit
   method add_drive_ro : string -> unit
   method add_drive_ro_with_if : string -> string -> unit
+  method add_drive_scratch : ?name:string -> ?label:string -> int64 -> unit
   method add_drive_with_if : string -> string -> unit
   method aug_clear : string -> unit
   method aug_close : unit -> unit
@@ -2516,6 +2526,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_smp : int -> unit
   method set_tmpdir : string option -> unit
   method set_trace : bool -> unit
+  method set_uuid : string -> string -> unit
   method set_verbose : bool -> unit
   method setcon : string -> unit
   method setxattr : string -> string -> int -> string -> unit

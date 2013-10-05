@@ -817,6 +817,46 @@ run_add_drive_ro_with_if (ETERM *message)
 }
 
 static ETERM *
+run_add_drive_scratch (ETERM *message)
+{
+  int64_t size = get_int64 (ARG (0));
+
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  ETERM *optargst = ARG (1);
+  while (!ERL_IS_EMPTY_LIST (optargst)) {
+    ETERM *hd = ERL_CONS_HEAD (optargst);
+    ETERM *hd_name = ERL_TUPLE_ELEMENT (hd, 0);
+    ETERM *hd_value = ERL_TUPLE_ELEMENT (hd, 1);
+
+    if (atom_equals (hd_name, "name")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+      optargs_s.name = erl_iolist_to_string (hd_value);
+    }
+    else
+    if (atom_equals (hd_name, "label")) {
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+      optargs_s.label = erl_iolist_to_string (hd_value);
+    }
+    else
+      return unknown_optarg ("add_drive_scratch", hd_name);
+    optargst = ERL_CONS_TAIL (optargst);
+  }
+
+  int r;
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK))
+    free ((char *) optargs_s.name);
+  if ((optargs_s.bitmask & GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK))
+    free ((char *) optargs_s.label);
+  if (r == -1)
+    return make_error ("add_drive_scratch");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_add_drive_with_if (ETERM *message)
 {
   CLEANUP_FREE char *filename = erl_iolist_to_string (ARG (0));
@@ -8307,6 +8347,20 @@ run_set_trace (ETERM *message)
 }
 
 static ETERM *
+run_set_uuid (ETERM *message)
+{
+  CLEANUP_FREE char *device = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *uuid = erl_iolist_to_string (ARG (1));
+  int r;
+
+  r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1)
+    return make_error ("set_uuid");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_verbose (ETERM *message)
 {
   int verbose = get_bool (ARG (0));
@@ -9965,6 +10019,8 @@ dispatch (ETERM *message)
     return run_add_drive_ro (message);
   else if (atom_equals (fun, "add_drive_ro_with_if"))
     return run_add_drive_ro_with_if (message);
+  else if (atom_equals (fun, "add_drive_scratch"))
+    return run_add_drive_scratch (message);
   else if (atom_equals (fun, "add_drive_with_if"))
     return run_add_drive_with_if (message);
   else if (atom_equals (fun, "aug_clear"))
@@ -10811,6 +10867,8 @@ dispatch (ETERM *message)
     return run_set_tmpdir (message);
   else if (atom_equals (fun, "set_trace"))
     return run_set_trace (message);
+  else if (atom_equals (fun, "set_uuid"))
+    return run_set_uuid (message);
   else if (atom_equals (fun, "set_verbose"))
     return run_set_verbose (message);
   else if (atom_equals (fun, "setcon"))

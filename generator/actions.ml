@@ -2593,11 +2593,19 @@ data." };
     style = RString "format", [String "filename"], [];
     tests = [
       InitEmpty, Always, TestResultString (
-        [["disk_format"; "GETKEY:test1"]], "raw"), [];
+        [["disk_format"; "../data/blank-disk-1s.raw"]], "raw"), [];
       InitEmpty, Always, TestResultString (
-        [["disk_format"; "GETKEY:test2"]], "raw"), [];
+        [["disk_format"; "../data/blank-disk-1s.qcow2"]], "qcow2"), [];
       InitEmpty, Always, TestResultString (
-        [["disk_format"; "GETKEY:test3"]], "raw"), [];
+        [["disk_format"; "../data/blank-disk-1K.raw"]], "raw"), [];
+      InitEmpty, Always, TestResultString (
+        [["disk_format"; "../data/blank-disk-1K.qcow2"]], "qcow2"), [];
+      InitEmpty, Always, TestResultString (
+        [["disk_format"; "../data/blank-disk-1M.raw"]], "raw"), [];
+      InitEmpty, Always, TestResultString (
+        [["disk_format"; "../data/blank-disk-1M.qcow2"]], "qcow2"), [];
+      InitEmpty, Always, TestResultString (
+        [["disk_format"; "../data/blank-disk-with-backing.qcow2"]], "qcow2"), [];
     ];
     shortdesc = "detect the disk format of a disk image";
     longdesc = "\
@@ -2615,11 +2623,19 @@ See also: L<guestfs(3)/DISK IMAGE FORMATS>" };
     style = RInt64 "size", [String "filename"], [];
     tests = [
       InitEmpty, Always, TestResult (
-        [["disk_virtual_size"; "GETKEY:test1"]], "ret == UINT64_C (524288000)"), [];
+        [["disk_virtual_size"; "../data/blank-disk-1s.raw"]], "ret == 512"), [];
       InitEmpty, Always, TestResult (
-        [["disk_virtual_size"; "GETKEY:test2"]], "ret == UINT64_C (52428800)"), [];
+        [["disk_virtual_size"; "../data/blank-disk-1s.qcow2"]], "ret == 512"), [];
       InitEmpty, Always, TestResult (
-        [["disk_virtual_size"; "GETKEY:test3"]], "ret == UINT64_C (10485760)"), [];
+        [["disk_virtual_size"; "../data/blank-disk-1K.raw"]], "ret == 1024"), [];
+      InitEmpty, Always, TestResult (
+        [["disk_virtual_size"; "../data/blank-disk-1K.qcow2"]], "ret == 1024"), [];
+      InitEmpty, Always, TestResult (
+        [["disk_virtual_size"; "../data/blank-disk-1M.raw"]], "ret == 1024*1024"), [];
+      InitEmpty, Always, TestResult (
+        [["disk_virtual_size"; "../data/blank-disk-1M.qcow2"]], "ret == 1024*1024"), [];
+      InitEmpty, Always, TestResult (
+        [["disk_virtual_size"; "../data/blank-disk-with-backing.qcow2"]], "ret == 1024*1024"), [];
     ];
     shortdesc = "return virtual size of a disk";
     longdesc = "\
@@ -2634,11 +2650,19 @@ circumstances.  See L<guestfs(3)/CVE-2010-3851>." };
     style = RBool "backingfile", [String "filename"], [];
     tests = [
       InitEmpty, Always, TestResultFalse (
-        [["disk_has_backing_file"; "GETKEY:test1"]]), [];
+        [["disk_has_backing_file"; "../data/blank-disk-1s.raw"]]), [];
       InitEmpty, Always, TestResultFalse (
-        [["disk_has_backing_file"; "GETKEY:test2"]]), [];
+        [["disk_has_backing_file"; "../data/blank-disk-1s.qcow2"]]), [];
       InitEmpty, Always, TestResultFalse (
-        [["disk_has_backing_file"; "GETKEY:test3"]]), [];
+        [["disk_has_backing_file"; "../data/blank-disk-1K.raw"]]), [];
+      InitEmpty, Always, TestResultFalse (
+        [["disk_has_backing_file"; "../data/blank-disk-1K.qcow2"]]), [];
+      InitEmpty, Always, TestResultFalse (
+        [["disk_has_backing_file"; "../data/blank-disk-1M.raw"]]), [];
+      InitEmpty, Always, TestResultFalse (
+        [["disk_has_backing_file"; "../data/blank-disk-1M.qcow2"]]), [];
+      InitEmpty, Always, TestResultTrue (
+        [["disk_has_backing_file"; "../data/blank-disk-with-backing.qcow2"]]), [];
     ];
     shortdesc = "return whether disk has a backing file";
     longdesc = "\
@@ -2929,6 +2953,21 @@ it is set to the empty string (but never C<NULL>)." };
     shortdesc = "get the program name";
     longdesc = "\
 Get the program name.  See C<guestfs_set_program>." };
+
+  { defaults with
+    name = "add_drive_scratch";
+    style = RErr, [Int64 "size"], [OString "name"; OString "label"];
+    blocking = false;
+    fish_alias = ["scratch"];
+    shortdesc = "add a temporary scratch drive";
+    longdesc = "\
+This command adds a temporary scratch drive to the handle.  The
+C<size> parameter is the virtual size (in bytes).  The scratch
+drive is blank initially (all reads return zeroes until you start
+writing to it).  The drive is deleted when the handle is closed.
+
+The optional arguments C<name> and C<label> are passed through to
+C<guestfs_add_drive>." };
 
 ]
 
@@ -4703,6 +4742,7 @@ C<device>." };
     name = "set_e2uuid";
     style = RErr, [Device "device"; String "uuid"], [];
     proc_nr = Some 82;
+    deprecated_by = Some "set_uuid";
     tests =
       (let uuid = uuidgen () in [
         InitBasicFS, Always, TestResultString (
@@ -4725,8 +4765,8 @@ C<device> to C<uuid>.  The format of the UUID and alternatives
 such as C<clear>, C<random> and C<time> are described in the
 L<tune2fs(8)> manpage.
 
-You can use either C<guestfs_tune2fs_l> or C<guestfs_get_e2uuid>
-to return the existing UUID of a filesystem." };
+You can use C<guestfs_vfs_uuid> to return the existing UUID
+of a filesystem." };
 
   { defaults with
     name = "get_e2uuid";
@@ -9470,12 +9510,29 @@ Set the filesystem label on C<mountable> to C<label>.
 Only some filesystem types support labels, and libguestfs supports
 setting labels on only a subset of these.
 
-On ext2/3/4 filesystems, labels are limited to 16 bytes.
+=over 4
 
-On NTFS filesystems, labels are limited to 128 unicode characters.
+=item ext2, ext3, ext4
 
-Setting the label on a btrfs subvolume will set the label on its parent
-filesystem.
+Labels are limited to 16 bytes.
+
+=item NTFS
+
+Labels are limited to 128 unicode characters.
+
+=item XFS
+
+The label is limited to 12 bytes.  The filesystem must not
+be mounted when trying to set the label.
+
+=item btrfs
+
+The label is limited to 256 bytes and some characters are
+not allowed.  Setting the label on a btrfs subvolume will set the
+label on its parent filesystem.  The filesystem must not be mounted
+when trying to set the label.
+
+=back
 
 To read the label on a filesystem, call C<guestfs_vfs_label>." };
 
@@ -11282,6 +11339,24 @@ converting a readonly filesystem to be read-write, or vice-versa.
 Note that at the moment you must supply the \"optional\" C<rw>
 parameter.  In future we may allow other flags to be adjusted." };
 
+  { defaults with
+    name = "set_uuid";
+    style = RErr, [Device "device"; String "uuid"], [];
+    proc_nr = Some 403;
+    tests =
+      (let uuid = uuidgen () in [
+        InitBasicFS, Always, TestResultString (
+          [["set_uuid"; "/dev/sda1"; uuid];
+           ["vfs_uuid"; "/dev/sda1"]], uuid), [];
+      ]);
+    shortdesc = "set the filesystem UUID";
+    longdesc = "\
+Set the filesystem UIUD on C<device> to C<label>.
+
+Only some filesystem types support setting UUIDs.
+
+To read the UUID on a filesystem, call C<guestfs_vfs_uuid>." };
+
 ]
 
 (* Non-API meta-commands available only in guestfish.
@@ -11549,7 +11624,9 @@ danger you could run out of real disk space during a write operation.
 
 For more advanced image creation, see L<qemu-img(1)> utility.
 
-Size can be specified using standard suffixes, eg. C<1M>." };
+Size can be specified using standard suffixes, eg. C<1M>.
+
+See also the guestfish L</scratch> command." };
 
   { defaults with
     name = "supported";

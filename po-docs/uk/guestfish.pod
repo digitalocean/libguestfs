@@ -350,9 +350,9 @@ libguestfs misidentifies a filesystem.
 
 Enable QEMU user networking in the guest.
 
-=item B<-N тип>
+=item B<-N [filename=]type>
 
-=item B<--new тип>
+=item B<--new [filename=]type>
 
 =item B<-N help>
 
@@ -1032,15 +1032,16 @@ L<https://bugzilla.redhat.com/show_bug.cgi?id=592910>.
 
 =head1 PREPARED DISK IMAGES
 
-Use the I<-N type> or I<--new type> parameter to select one of a set of
-preformatted disk images that guestfish can make for you to save typing.
-This is particularly useful for testing purposes.  This option is used
-instead of the I<-a> option, and like I<-a> can appear multiple times (and
-can be mixed with I<-a>).
+Use the I<-N [filename=]type> or I<--new [filename=]type> parameter to
+select one of a set of preformatted disk images that guestfish can make for
+you to save typing.  This is particularly useful for testing purposes.  This
+option is used instead of the I<-a> option, and like I<-a> can appear
+multiple times (and can be mixed with I<-a>).
 
 The new disk is called C<test1.img> for the first I<-N>, C<test2.img> for
 the second and so on.  Existing files in the current directory are
-I<overwritten>.
+I<overwritten>.  You can use a different filename by specifying C<filename=>
+before the type (see examples below).
 
 The type briefly describes how the disk should be sized, partitioned, how
 filesystem(s) should be created, and how content should be added.
@@ -1053,12 +1054,13 @@ on a 1GB disk instead.
 Note that the prepared filesystem is not mounted.  You would usually have to
 use the C<mount /dev/sda1 /> command or add the I<-m /dev/sda1> option.
 
-If any I<-N> or I<--new> options are given, the guest is automatically
-launched.
+If any I<-N> or I<--new> options are given, the libguestfs appliance is
+automatically launched.
 
 =head2 ПРИКЛАДИ
 
-Create a 100MB disk with an ext4-formatted partition:
+Create a 100MB disk with an ext4-formatted partition, called C<test1.img> in
+the current directory:
 
  guestfish -N fs:ext4
 
@@ -1069,6 +1071,10 @@ Create a 32MB disk with a VFAT-formatted partition, and mount it:
 Create a blank 200MB disk:
 
  guestfish -N disk:200M
+
+Create a blank 200MB disk called C<blankdisk.img> (instead of C<test1.img>):
+
+ guestfish -N blankdisk.img=disk:200M
 
 __PREPOPTS__
 
@@ -1486,7 +1492,8 @@ to make guestfish case sensitive.
 When using the I<-N> or I<--new> option, the prepared disk or filesystem
 will be created in the file C<test1.img> in the current directory.  The
 second use of I<-N> will use C<test2.img> and so on.  Any existing file with
-the same name will be overwritten.
+the same name will be overwritten.  You can use a different filename by
+using the C<filename=> prefix.
 
 =back
 

@@ -149,6 +149,7 @@ static int run_get_cachedir (const char *cmd, size_t argc, char *argv[]);
 static int run_user_cancel (const char *cmd, size_t argc, char *argv[]);
 static int run_set_program (const char *cmd, size_t argc, char *argv[]);
 static int run_get_program (const char *cmd, size_t argc, char *argv[]);
+static int run_add_drive_scratch (const char *cmd, size_t argc, char *argv[]);
 static int run_mount (const char *cmd, size_t argc, char *argv[]);
 static int run_sync (const char *cmd, size_t argc, char *argv[]);
 static int run_touch (const char *cmd, size_t argc, char *argv[]);
@@ -533,6 +534,7 @@ static int run_syslinux (const char *cmd, size_t argc, char *argv[]);
 static int run_extlinux (const char *cmd, size_t argc, char *argv[]);
 static int run_cp_r (const char *cmd, size_t argc, char *argv[]);
 static int run_remount (const char *cmd, size_t argc, char *argv[]);
+static int run_set_uuid (const char *cmd, size_t argc, char *argv[]);
 
 struct command_entry alloc_cmd_entry = {
   .name = "alloc",
@@ -632,7 +634,7 @@ struct command_entry setenv_cmd_entry = {
 
 struct command_entry sparse_cmd_entry = {
   .name = "sparse",
-  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n",
+  .help = "NAME\n    sparse - create a sparse disk image and add\n\nDESCRIPTION\n     sparse filename size\n\n    This creates an empty sparse file of the given size, and then adds so it\n    can be further examined.\n\n    In all respects it works the same as the \"alloc\" command, except that\n    the image file is allocated sparsely, which means that disk blocks are\n    not assigned to the file until they are needed. Sparse disk files only\n    use space when written to, but they are slower and there is a danger you\n    could run out of real disk space during a write operation.\n\n    For more advanced image creation, see qemu-img(1) utility.\n\n    Size can be specified using standard suffixes, eg. \"1M\".\n\n    See also the guestfish \"scratch\" command.\n\n",
   .run = run_sparse
 };
 
@@ -1284,6 +1286,12 @@ struct command_entry get_program_cmd_entry = {
   .run = run_get_program
 };
 
+struct command_entry add_drive_scratch_cmd_entry = {
+  .name = "add-drive-scratch",
+  .help = "NAME\n    add-drive-scratch - add a temporary scratch drive\n\nSYNOPSIS\n     add-drive-scratch size [name:..] [label:..]\n\nDESCRIPTION\n    This command adds a temporary scratch drive to the handle. The \"size\"\n    parameter is the virtual size (in bytes). The scratch drive is blank\n    initially (all reads return zeroes until you start writing to it). The\n    drive is deleted when the handle is closed.\n\n    The optional arguments \"name\" and \"label\" are passed through to\n    \"add_drive\".\n\n    You can use 'scratch' as an alias for this command.\n\n",
+  .run = run_add_drive_scratch
+};
+
 struct command_entry mount_cmd_entry = {
   .name = "mount",
   .help = "NAME\n    mount - mount a guest disk at a position in the filesystem\n\nSYNOPSIS\n     mount mountable mountpoint\n\nDESCRIPTION\n    Mount a guest disk at a position in the filesystem. Block devices are\n    named \"/dev/sda\", \"/dev/sdb\" and so on, as they were added to the guest.\n    If those block devices contain partitions, they will have the usual\n    names (eg. \"/dev/sda1\"). Also LVM \"/dev/VG/LV\"-style names can be used,\n    or 'mountable' strings returned by \"list_filesystems\" or\n    \"inspect_get_mountpoints\".\n\n    The rules are the same as for mount(2): A filesystem must first be\n    mounted on \"/\" before others can be mounted. Other filesystems can only\n    be mounted on directories which already exist.\n\n    The mounted filesystem is writable, if we have sufficient permissions on\n    the underlying device.\n\n    Before libguestfs 1.13.16, this call implicitly added the options \"sync\"\n    and \"noatime\". The \"sync\" option greatly slowed writes and caused many\n    problems for users. If your program might need to work with older\n    versions of libguestfs, use \"mount_options\" instead (using an empty\n    string for the first parameter if you don't want any options).\n\n",
@@ -1748,7 +1756,7 @@ struct command_entry get_e2label_cmd_entry = {
 
 struct command_entry set_e2uuid_cmd_entry = {
   .name = "set-e2uuid",
-  .help = "NAME\n    set-e2uuid - set the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     set-e2uuid device uuid\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem UUID of the filesystem on \"device\" to\n    \"uuid\". The format of the UUID and alternatives such as \"clear\",\n    \"random\" and \"time\" are described in the tune2fs(8) manpage.\n\n    You can use either \"tune2fs_l\" or \"get_e2uuid\" to return the existing\n    UUID of a filesystem.\n\n",
+  .help = "NAME\n    set-e2uuid - set the ext2/3/4 filesystem UUID\n\nSYNOPSIS\n     set-e2uuid device uuid\n\nDESCRIPTION\n    This sets the ext2/3/4 filesystem UUID of the filesystem on \"device\" to\n    \"uuid\". The format of the UUID and alternatives such as \"clear\",\n    \"random\" and \"time\" are described in the tune2fs(8) manpage.\n\n    You can use \"vfs_uuid\" to return the existing UUID of a filesystem.\n\n    *This function is deprecated.* In new code, use the \"set-uuid\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_set_e2uuid
 };
 
@@ -3062,7 +3070,7 @@ struct command_entry ntfsclone_in_cmd_entry = {
 
 struct command_entry set_label_cmd_entry = {
   .name = "set-label",
-  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    On ext2/3/4 filesystems, labels are limited to 16 bytes.\n\n    On NTFS filesystems, labels are limited to 128 unicode characters.\n\n    Setting the label on a btrfs subvolume will set the label on its parent\n    filesystem.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
+  .help = "NAME\n    set-label - set filesystem label\n\nSYNOPSIS\n     set-label mountable label\n\nDESCRIPTION\n    Set the filesystem label on \"mountable\" to \"label\".\n\n    Only some filesystem types support labels, and libguestfs supports\n    setting labels on only a subset of these.\n\n    ext2, ext3, ext4\n        Labels are limited to 16 bytes.\n\n    NTFS\n        Labels are limited to 128 unicode characters.\n\n    XFS The label is limited to 12 bytes. The filesystem must not be mounted\n        when trying to set the label.\n\n    btrfs\n        The label is limited to 256 bytes and some characters are not\n        allowed. Setting the label on a btrfs subvolume will set the label\n        on its parent filesystem. The filesystem must not be mounted when\n        trying to set the label.\n\n    To read the label on a filesystem, call \"vfs_label\".\n\n",
   .run = run_set_label
 };
 
@@ -3588,6 +3596,12 @@ struct command_entry remount_cmd_entry = {
   .run = run_remount
 };
 
+struct command_entry set_uuid_cmd_entry = {
+  .name = "set-uuid",
+  .help = "NAME\n    set-uuid - set the filesystem UUID\n\nSYNOPSIS\n     set-uuid device uuid\n\nDESCRIPTION\n    Set the filesystem UIUD on \"device\" to \"label\".\n\n    Only some filesystem types support setting UUIDs.\n\n    To read the UUID on a filesystem, call \"vfs_uuid\".\n\n",
+  .run = run_set_uuid
+};
+
 void
 list_commands (void)
 {
@@ -3601,6 +3615,7 @@ list_commands (void)
   printf ("%-20s %s\n", "add-drive", _("add an image to examine or modify"));
   printf ("%-20s %s\n", "add-drive-ro", _("add a drive in snapshot mode (read-only)"));
   printf ("%-20s %s\n", "add-drive-ro-with-if", _("add a drive read-only specifying the QEMU block emulation to use"));
+  printf ("%-20s %s\n", "add-drive-scratch", _("add a temporary scratch drive"));
   printf ("%-20s %s\n", "add-drive-with-if", _("add a drive specifying the QEMU block emulation to use"));
   printf ("%-20s %s\n", "alloc", _("allocate and add a disk file"));
   printf ("%-20s %s\n", "aug-clear", _("clear Augeas path"));
@@ -4008,6 +4023,7 @@ list_commands (void)
   printf ("%-20s %s\n", "set-smp", _("set number of virtual CPUs in appliance"));
   printf ("%-20s %s\n", "set-tmpdir", _("set the temporary directory"));
   printf ("%-20s %s\n", "set-trace", _("enable or disable command traces"));
+  printf ("%-20s %s\n", "set-uuid", _("set the filesystem UUID"));
   printf ("%-20s %s\n", "set-verbose", _("set verbose mode"));
   printf ("%-20s %s\n", "setcon", _("set SELinux security context"));
   printf ("%-20s %s\n", "setenv", _("set an environment variable"));
@@ -7476,6 +7492,72 @@ run_get_program (const char *cmd, size_t argc, char *argv[])
   ret = 0;
   printf ("%s\n", r);
  out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_add_drive_scratch (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  int64_t size;
+  struct guestfs_add_drive_scratch_argv optargs_s = { .bitmask = 0 };
+  struct guestfs_add_drive_scratch_argv *optargs = &optargs_s;
+  size_t i = 0;
+
+  if (argc < 1 || argc > 3) {
+    fprintf (stderr, _("%s should have %d-%d parameter(s)\n"), cmd, 1, 3);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  {
+    strtol_error xerr;
+    long long r;
+
+    xerr = xstrtoll (argv[i++], NULL, 0, &r, xstrtol_suffixes);
+    if (xerr != LONGINT_OK) {
+      fprintf (stderr,
+               _("%s: %s: invalid integer parameter (%s returned %d)\n"),
+               cmd, "size", "xstrtoll", xerr);
+      goto out_size;
+    }
+    size = r;
+  }
+
+  for (; i < argc; ++i) {
+    uint64_t this_mask;
+    const char *this_arg;
+
+    if (STRPREFIX (argv[i], "name:")) {
+      optargs_s.name = &argv[i][5];
+      this_mask = GUESTFS_ADD_DRIVE_SCRATCH_NAME_BITMASK;
+      this_arg = "name";
+    }
+    else if (STRPREFIX (argv[i], "label:")) {
+      optargs_s.label = &argv[i][6];
+      this_mask = GUESTFS_ADD_DRIVE_SCRATCH_LABEL_BITMASK;
+      this_arg = "label";
+    }
+    else {
+      fprintf (stderr, _("%s: unknown optional argument \"%s\"\n"),
+               cmd, argv[i]);
+      goto out;
+    }
+
+    if (optargs_s.bitmask & this_mask) {
+      fprintf (stderr, _("%s: optional argument \"%s\" given twice\n"),
+               cmd, this_arg);
+      goto out;
+    }
+    optargs_s.bitmask |= this_mask;
+  }
+
+  r = guestfs_add_drive_scratch_argv (g, size, optargs);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_size:
  out_noargs:
   return ret;
 }
@@ -21774,6 +21856,30 @@ run_remount (const char *cmd, size_t argc, char *argv[])
  out:
   free (mountpoint);
  out_mountpoint:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_uuid (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *device;
+  const char *uuid;
+  size_t i = 0;
+
+  if (argc != 2) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 2);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  device = argv[i++];
+  uuid = argv[i++];
+  r = guestfs_set_uuid (g, device, uuid);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
  out_noargs:
   return ret;
 }

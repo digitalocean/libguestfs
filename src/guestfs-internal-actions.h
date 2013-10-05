@@ -162,5 +162,6 @@ extern int guestfs__internal_set_libvirt_selinux_norelabel_disks (guestfs_h *g, 
 extern int guestfs__user_cancel (guestfs_h *g);
 extern int guestfs__set_program (guestfs_h *g, const char *program);
 extern const char *guestfs__get_program (guestfs_h *g);
+extern int guestfs__add_drive_scratch (guestfs_h *g, int64_t size, const struct guestfs_add_drive_scratch_argv *optargs);
 
 #endif /* GUESTFS_INTERNAL_ACTIONS_H_ */
