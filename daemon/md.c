@@ -22,7 +22,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <glob.h>
+
+#ifdef HAVE_LINUX_RAID_MD_U_H
+#include <sys/ioctl.h>
+#include <linux/major.h>
+#include <linux/raid/md_u.h>
+#endif /* HAVE_LINUX_RAID_MD_U_H */
 
 #include "daemon.h"
 #include "actions.h"
@@ -176,6 +184,30 @@ glob_errfunc (const char *epath, int eerrno)
   return 1;
 }
 
+/* Check if 'dev' is a real RAID device, because in the case where md
+ * is linked directly into the kernel (not a module), /dev/md0 is
+ * sometimes created.
+ */
+static int
+is_raid_device (const char *dev)
+{
+  int ret = 1;
+
+#if defined(HAVE_LINUX_RAID_MD_U_H) && defined(GET_ARRAY_INFO)
+  int fd;
+  mdu_array_info_t array;
+
+  fd = open (dev, O_RDONLY);
+  if (fd >= 0) {
+    if (ioctl (fd, GET_ARRAY_INFO, &array) == -1 && errno == ENODEV)
+      ret = 0;
+    close (fd);
+  }
+#endif
+
+  return ret;
+}
+
 char **
 do_list_md_devices (void)
 {
@@ -202,19 +234,27 @@ do_list_md_devices (void)
   }
 
   for (size_t i = 0; i < mds.gl_pathc; i++) {
-    size_t len = strlen (mds.gl_pathv[i]) - strlen (PREFIX) - strlen (SUFFIX);
+    size_t len;
+    char *dev, *n;
+
+    len = strlen (mds.gl_pathv[i]) - strlen (PREFIX) - strlen (SUFFIX);
 
 #define DEV "/dev/md"
-    char *dev = malloc (strlen(DEV) + len  + 1);
+    dev = malloc (strlen (DEV) + len + 1);
     if (NULL == dev) {
-      reply_with_perror("malloc");
+      reply_with_perror ("malloc");
       goto error;
     }
 
-    char *n = dev;
-    n = mempcpy(n, DEV, strlen(DEV));
-    n = mempcpy(n, &mds.gl_pathv[i][strlen(PREFIX)], len);
+    n = dev;
+    n = mempcpy (n, DEV, strlen (DEV));
+    n = mempcpy (n, &mds.gl_pathv[i][strlen(PREFIX)], len);
     *n = '\0';
+
+    if (!is_raid_device (dev)) {
+      free (dev);
+      continue;
+    }
 
     if (add_string_nodup (&ret, dev) == -1) goto error;
   }

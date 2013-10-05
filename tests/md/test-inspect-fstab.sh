@@ -23,7 +23,12 @@ set -e
 export LANG=C
 
 guestfish=../../fish/guestfish
-canonical="sed s,/dev/vd,/dev/sd,g"
+canonical="sed -r s,/dev/[abce-ln-z]+d,/dev/sd,g"
+
+if [ "$($guestfish get-backend)" = "uml" ]; then
+    echo "$0: skipping test because uml backend does not support qcow2"
+    exit 77
+fi
 
 rm -f inspect-fstab-1.qcow2 inspect-fstab.fstab inspect-fstab.output
 

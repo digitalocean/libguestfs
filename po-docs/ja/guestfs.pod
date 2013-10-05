@@ -1441,15 +1441,49 @@ selects the User-Mode Linux backend:
 
 C<vmlinux> (or it may be called C<linux>) is the Linux binary, compiled to
 run as a userspace process.  Note that we reuse the qemu variable in the
-handle for convenience; qemu is not involved.  Your Linux distro may provide
-C<vmlinux>, or you may need to compile it yourself from the kernel source
-(which is dead easy, follow the instructions here:
-L<http://user-mode-linux.sourceforge.net/source.html>).
+handle for convenience; qemu is not involved.
 
 User-Mode Linux can be faster and more lightweight than running a full-blown
 virtual machine as the backend (especially if you are already running
 libguestfs in a virtual machine or cloud instance), but it also has some
-important shortcomings.  The main ones are:
+shortcomings compared to the usual qemu/KVM-based backend.
+
+=head3 BUILDING USER-MODE LINUX FROM SOURCE
+
+Your Linux distro may provide UML in which case you can ignore this section.
+
+These instructions are adapted from:
+L<http://user-mode-linux.sourceforge.net/source.html>
+
+=over 4
+
+=item 1. Check out Linux sources
+
+Clone the Linux git repository or download the Linux source tarball.
+
+=item 2. Configure the kernel
+
+B<Note:> All 'make' commands must have C<ARCH=um> added.
+
+ make menuconfig ARCH=um
+
+Make sure any filesystem drivers that you need are compiled into the kernel.
+
+B<Currently, it needs a large amount of extra work to get modules working>.
+It's recommended that you disable module support in the kernel
+configuration, which will cause everything to be compiled into the image.
+
+=item 3. Build the kernel
+
+ make ARCH=um
+
+This will leave a file called C<linux> or C<vmlinux> in the top-level
+directory.  This is the UML kernel.  You should set C<LIBGUESTFS_QEMU> to
+point to this file.
+
+=back
+
+=head3 USER-MODE LINUX DIFFERENCES FROM KVM
 
 =over 4
 
@@ -1462,6 +1496,12 @@ Only plain raw-format images will work.  No qcow2, no backing files.
 No NBD, etc.
 
 =item UML only works on ix86 and x86-64
+
+=item UML is experimental
+
+In particular, support for UML in libguestfs depends on support for UML in
+the upstream kernel.  If UML was ever removed from the upstream Linux
+kernel, then we might remove it from libguestfs too.
 
 =back
 
@@ -3780,16 +3820,31 @@ run by this rule.
 
 ローカルにインストールされた libvirt 仮想マシン (読み込み専用) を使用して、valgrind にあるテスト群のサブセットを実行します。
 
-=item C<make check-with-appliance>
+=item C<make check-direct>
 
 Runs all tests using default appliance back-end.  This only has any effect
 if a non-default backend was selected using C<./configure
 --with-default-backend=...>
 
-=item C<make check-valgrind-with-appliance>
+=item C<make check-valgrind-direct>
 
 Run a subset of the test suite under valgrind using the default appliance
 back-end.
+
+=item C<make check-uml>
+
+Runs all tests using the User-Mode Linux backend.
+
+As there is no standard location for the User-Mode Linux kernel, you I<have>
+to set C<LIBGUESTFS_QEMU> to point to the kernel image, eg:
+
+ make check-uml LIBGUESTFS_QEMU=~/d/linux/vmlinux
+
+=item C<make check-valgrind-uml>
+
+Runs all tests using the User-Mode Linux backend, under valgrind.
+
+As above, you have to set C<LIBGUESTFS_QEMU> to point to the kernel.
 
 =item C<make check-with-upstream-qemu>
 
@@ -3843,6 +3898,14 @@ check-direct
 =item *
 
 check-valgrind-direct
+
+=item *
+
+check-uml
+
+=item *
+
+check-valgrind-uml
 
 =item *
 

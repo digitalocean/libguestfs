@@ -1,3 +1,94 @@
+2013-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.16.
+
+	uml: Add check-uml and check-valgrind-uml to release tests.
+
+	uml: tests: Add 'make check-uml' and 'make check-valgrind-uml' rules.
+	These run the test suite using User-Mode Linux.  Currently you have to
+	set LIBGUESTFS_QEMU to point to the vmlinux binary, but perhaps we
+	can solve that in future.
+
+	uml: virt-make-fs: Modify test so it doesn't use qcow2 under UML.
+	Modify the test so it doesn't try to test qcow2 format when the
+	backend is User-Mode Linux which doesn't support qcow2.
+
+	uml: sparsify: Skip test since it needs qcow2.
+
+	uml: resize: Skip test since it needs qcow2.
+
+	uml: fuse: Skip test since it needs qcow2.
+
+	uml: tests: edit: Skip test since it needs qcow2.
+
+	uml: tests/qemu: Fix tests so they work without support for qcow2.
+
+	uml: tests/md: Skip test-inspect-fstab.sh since it needs qcow2.
+
+	uml: tests/md: Fix test to cope with /dev/ubd* device names.
+
+	uml: tests/luks: Fix assumption that broke /dev/ubd* device names.
+
+	uml: tests/lvm: Fix assumption that broke /dev/ubd* device names.
+
+	uml: tests/mountable: Skip tests that need qcow2.
+
+	uml: tests/disks: Fix test so it can cope with /dev/ubd* device names.
+
+	uml: tests: Skip some tests which cannot work with the UML backend.
+
+	uml: Fix race when multiple handles are used in parallel.
+	See comment for explanation.
+
+	uml: Fix maximum number of disks.
+
+	uml: Fix guestfs_canonical_device_name API to understand /dev/ubd* paths.
+
+	virt-list-filesystems: Fix to use $g->canonical_device_name instead of homebrew function.
+	The homebrew function didn't recognize /dev/ubd* device names, and in
+	any case using the API function is shorter and clearer.
+
+2013-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: list-md-devices: Check if a /dev/md<X> device is valid before returning it.
+	For reasons not fully understood, if md is linked into the kernel (and
+	not a module), a /dev/md0 device node is created.  However this is not
+	a real RAID device.  For example running mdadm --detail /dev/md0 will
+	fail on it.
+
+	Check the /dev/md<X> devices are real RAID devices before returning
+	them from the list-md-devices API.
+
+2013-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: md: Whitespace fixes.
+
+	daemon: If /proc/modules doesn't exist, linuxmodules optgroup is disabled.
+	It likely means the kernel was compiled without modules support.
+
+	tests/regressions: Allow regression test for bug 914931 to be skipped.
+
+2013-08-12  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests/md: Fix error path to display the correct output.
+
+	docs: The old make check-with-appliance/etc rules were renamed.
+	This fixes commit 68990840b64491b39ab8da5f1e46367ae5f01594.
+
+	tests: c-api: Fix device name comparison when using User-Mode Linux.
+	This updates commit 858d6e7176d7b18bc29c8503bbc2887a3b74a272.
+
+	docs: Clearer documentation for User-Mode Linux.
+	This updates commit 858d6e7176d7b18bc29c8503bbc2887a3b74a272.
+
+	launch: direct: Print \n after printing qemu command line.
+	This makes it easier to see error messages printed by qemu.
+
+	daemon: compare_device_names: Fix typo in this function.
+	This would have broken the function if we were comparing mixed
+	/dev/sda and /dev/ubda (ie different length) strings.  Which we never
+	normally do, luckily.
+
 2013-08-11  Richard W.M. Jones  <rjones@redhat.com>
 
 	Version 1.23.15.

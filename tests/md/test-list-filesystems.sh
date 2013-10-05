@@ -37,7 +37,7 @@ rm -f list-fs.output
 # md127 : 20M ext4
 # vg0 : 16M LV (lv0)
 # lv0 : 16M vfat
-../../fish/guestfish <<EOF | sed s,/dev/vd,/dev/sd,g > list-fs.output
+../../fish/guestfish <<EOF | sed -r s,/dev/[abce-ln-z]+d,/dev/sd,g > list-fs.output
 # Add 2 empty disks
 scratch 50M
 scratch 50M
@@ -73,7 +73,7 @@ expected="/dev/sda1: ext3
 # Check the output of list-filesystems
 if [ "$(cat list-fs.output)" != "$expected" ]; then
     echo "$0: error: output of list-filesystems did not match expected output"
-    printf "%s\n" "$output"
+    cat list-fs.output
     exit 1;
 fi
 
