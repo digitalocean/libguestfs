@@ -91,21 +91,6 @@ struct backend_direct_data {
   int virtio_scsi;        /* See function qemu_supports_virtio_scsi */
 };
 
-/* Differences in device names on ARM (virtio-mmio) vs normal
- * hardware with PCI.
- */
-#ifndef __arm__
-#define VIRTIO_BLK "virtio-blk-pci"
-#define VIRTIO_SCSI "virtio-scsi-pci"
-#define VIRTIO_SERIAL "virtio-serial-pci"
-#define VIRTIO_NET "virtio-net-pci"
-#else /* __arm__ */
-#define VIRTIO_BLK "virtio-blk-device"
-#define VIRTIO_SCSI "virtio-scsi-device"
-#define VIRTIO_SERIAL "virtio-serial-device"
-#define VIRTIO_NET "virtio-net-device"
-#endif /* __arm__ */
-
 static int is_openable (guestfs_h *g, const char *path, int flags);
 static char *make_appliance_dev (guestfs_h *g, int virtio_scsi);
 static void print_qemu_command_line (guestfs_h *g, char **argv);
@@ -301,6 +286,11 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   ADD_CMDLINE ("vexpress-a9");
 #endif
 
+#ifdef __powerpc__
+  ADD_CMDLINE ("-M");
+  ADD_CMDLINE ("pseries");
+#endif
+
   /* Try to guess if KVM is available.  We are just checking that
    * /dev/kvm is openable.  That's not reliable, since /dev/kvm
    * might be openable by qemu but not by us (think: SELinux) in
@@ -315,7 +305,14 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    */
   if (qemu_supports (g, data, "-machine")) {
     ADD_CMDLINE ("-machine");
+#ifndef __arm__
     ADD_CMDLINE ("accel=kvm:tcg");
+#else
+    if (has_kvm)
+      ADD_CMDLINE ("accel=kvm:tcg,kernel_irqchip=off");
+    else
+      ADD_CMDLINE ("accel=kvm:tcg");
+#endif
   } else {
     /* qemu sometimes needs this option to enable hardware
      * virtualization, but some versions of 'qemu-kvm' will use KVM
@@ -410,7 +407,15 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
     /* If there's an explicit 'iface', use it.  Otherwise default to
      * virtio-scsi if available.  Otherwise default to virtio-blk.
      */
-    if (drv->iface) {
+    if (drv->iface && STREQ (drv->iface, "virtio")) /* virtio-blk */
+      goto virtio_blk;
+#if defined(__arm__) || defined(__powerpc__)
+    else if (drv->iface && STREQ (drv->iface, "ide")) {
+      error (g, "'ide' interface does not work on ARM or PowerPC");
+      goto cleanup0;
+    }
+#endif
+    else if (drv->iface) {
       ADD_CMDLINE ("-drive");
       ADD_CMDLINE_PRINTF ("%s,if=%s", param, drv->iface);
     }
@@ -421,6 +426,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
       ADD_CMDLINE_PRINTF ("scsi-hd,drive=hd%zu", i);
     }
     else {
+    virtio_blk:
       ADD_CMDLINE ("-drive");
       ADD_CMDLINE_PRINTF ("%s,if=none" /* sic */, param);
       ADD_CMDLINE ("-device");
@@ -1002,7 +1008,7 @@ qemu_supports_virtio_scsi (guestfs_h *g, struct backend_direct_data *data)
     if (old_or_broken_virtio_scsi (g, data))
       data->virtio_scsi = 2;
     else {
-      r = qemu_supports_device (g, data, "virtio-scsi-pci");
+      r = qemu_supports_device (g, data, VIRTIO_SCSI);
       if (r > 0)
         data->virtio_scsi = 1;
       else if (r == 0)

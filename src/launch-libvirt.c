@@ -140,7 +140,7 @@ static xmlChar *construct_libvirt_xml (guestfs_h *g, const struct libvirt_xml_pa
 static void debug_appliance_permissions (guestfs_h *g);
 static void debug_socket_permissions (guestfs_h *g);
 static void libvirt_error (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
-static int is_custom_qemu (guestfs_h *g);
+static int is_custom_hv (guestfs_h *g);
 static int is_blk (const char *path);
 static void ignore_errors (void *ignore, virErrorPtr ignore2);
 static char *make_qcow2_overlay (guestfs_h *g, const char *backing_device, const char *format, const char *selinux_imagelabel);
@@ -374,7 +374,7 @@ launch_libvirt (guestfs_h *g, void *datav, const char *libvirt_uri)
   params.appliance_index = g->nr_drives;
   strcpy (params.appliance_dev, "/dev/sd");
   guestfs___drive_name (params.appliance_index, &params.appliance_dev[7]);
-  params.enable_svirt = ! is_custom_qemu (g);
+  params.enable_svirt = ! is_custom_hv (g);
 
   xml = construct_libvirt_xml (g, &params);
   if (!xml)
@@ -591,7 +591,7 @@ parse_capabilities (guestfs_h *g, const char *capabilities_xml,
 }
 
 static int
-is_custom_qemu (guestfs_h *g)
+is_custom_hv (guestfs_h *g)
 {
   return g->hv && STRNEQ (g->hv, QEMU);
 }
@@ -836,6 +836,7 @@ construct_libvirt_xml_cpu (guestfs_h *g,
   XMLERROR (-1, xmlTextWriterWriteFormatString (xo, "%d", g->memsize));
   XMLERROR (-1, xmlTextWriterEndElement (xo));
 
+#ifndef __arm__
   /* It is faster to pass the CPU host model to the appliance,
    * allowing maximum speed for things like checksums, encryption.
    * Note this may cause problems on some CPUs.  See: RHBZ#870071.
@@ -854,6 +855,7 @@ construct_libvirt_xml_cpu (guestfs_h *g,
     XMLERROR (-1, xmlTextWriterEndElement (xo));
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
+#endif
 
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "vcpu"));
   XMLERROR (-1, xmlTextWriterWriteFormatString (xo, "%d", g->smp));
@@ -891,6 +893,14 @@ construct_libvirt_xml_boot (guestfs_h *g,
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "os"));
 
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "type"));
+#ifdef __arm__
+  XMLERROR (-1,
+            xmlTextWriterWriteAttribute (xo, BAD_CAST "arch",
+                                         BAD_CAST "armv7l"));
+  XMLERROR (-1,
+            xmlTextWriterWriteAttribute (xo, BAD_CAST "machine",
+                                         BAD_CAST "vexpress-a9"));
+#endif
   XMLERROR (-1, xmlTextWriterWriteString (xo, BAD_CAST "hvm"));
   XMLERROR (-1, xmlTextWriterEndElement (xo));
 
@@ -983,14 +993,24 @@ construct_libvirt_xml_devices (guestfs_h *g,
 
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "devices"));
 
-  /* Path to qemu.  Only write this if the user has changed the
+  /* Path to hypervisor.  Only write this if the user has changed the
    * default, otherwise allow libvirt to choose the best one.
    */
-  if (is_custom_qemu (g)) {
+  if (is_custom_hv (g)) {
     XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "emulator"));
     XMLERROR (-1, xmlTextWriterWriteString (xo, BAD_CAST g->hv));
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
+#ifdef __arm__
+  /* Hopefully temporary hack to make ARM work (otherwise libvirt
+   * chooses to run /usr/bin/qemu-kvm).
+   */
+  else {
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "emulator"));
+    XMLERROR (-1, xmlTextWriterWriteString (xo, BAD_CAST QEMU));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
+#endif
 
   /* virtio-scsi controller. */
   XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "controller"));
@@ -1480,9 +1500,28 @@ construct_libvirt_xml_qemu_cmdline (guestfs_h *g,
     XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "qemu:arg"));
     XMLERROR (-1,
               xmlTextWriterWriteAttribute (xo, BAD_CAST "value",
-                                           BAD_CAST "virtio-net-pci,netdev=usernet"));
+                                           BAD_CAST VIRTIO_NET ",netdev=usernet"));
     XMLERROR (-1, xmlTextWriterEndElement (xo));
   }
+
+#ifdef __arm__
+  /* Set kernel_irqchip=off.  Unclear why this is needed.  Is qemu or
+   * the kernel broken?  See:
+   * http://www.mail-archive.com/arm@lists.fedoraproject.org/msg05546.html
+   */
+  if (params->is_kvm) {
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "qemu:arg"));
+    XMLERROR (-1,
+	      xmlTextWriterWriteAttribute (xo, BAD_CAST "value",
+					   BAD_CAST "-machine"));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+    XMLERROR (-1, xmlTextWriterStartElement (xo, BAD_CAST "qemu:arg"));
+    XMLERROR (-1,
+	      xmlTextWriterWriteAttribute (xo, BAD_CAST "value",
+					   BAD_CAST "kernel_irqchip=off"));
+    XMLERROR (-1, xmlTextWriterEndElement (xo));
+  }
+#endif
 
   /* The qemu command line arguments requested by the caller. */
   for (hp = g->hv_params; hp; hp = hp->next) {

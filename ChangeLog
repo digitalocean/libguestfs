@@ -1,3 +1,96 @@
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	docs: Remove misleading / outdated section about other arches from README.
+
+	ppc: inspection: Use iconv "UTF-16LE" instead of "UTF-16".
+	See commit message:
+	https://github.com/libguestfs/hivex/commit/8e31fd84cb1c7edcd897ddaaea407774de459b2e
+
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	inspection: Don't print a warning if \Windows\explorer.exe does not exist.
+	guestfs_case_sensitive_path does not test for file existence.  We have
+	to test for it explicitly.
+
+	This updates commit 9ea6e9701461e594033999150f930cc4fafec4d2.  See the
+	description of that commit for more details.
+
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	ppc: Disallow ide interface.
+	qemu-system-ppc64 lets you add the IDE interface to the appliance, but
+	the appliance kernel ignores it (and consequently can't find the
+	appliance disk so it all goes wrong).  Best to just disallow this.
+
+	Also skip tests that try using iface = 'ide'.
+
+2013-09-10  Richard W.M. Jones  <rjones@redhat.com>
+
+	ppc: Use a larger default memory size on ppc64.
+	Without this, test-max-disks fails when creating device nodes.
+
+2013-09-09  Richard W.M. Jones  <rjones@redhat.com>
+
+	ppc: launch: direct: Use -M pseries.
+
+	arm: launch: direct: Use correct device name for virtio-scsi when detecting.
+
+	tests: Add a regression test that ensure the network can be added.
+	This was only tested before (implicitly) by the rsync test in
+	tests/rsync.  It's better to have an explicit test of this
+	functionality.
+
+	arm: launch: libvirt: Use virtio-net-{pci,device} instead of hard-coding virtio-net-pci.
+	This is so it works on virtio-mmio platforms such as ARM.
+
+	arm: launch: libvirt: Set kernel_irqchip=off for KVM to work around buggy qemu/kernel.
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: libvirt: Force <emulator>.
+	This is a temporary hack, because otherwise libvirt tries to use
+	/usr/bin/qemu-kvm even though this is ARM.
+
+	arm: launch: libvirt: Use vexpress-a9 machine type.
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: libvirt: Don't try setting a cpu model on ARM.
+	One day we may be able to make this work, but presently libvirt says:
+
+	  CPU specification not supported by hypervisor
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: 'is_custom_hv' instead of 'is_custom_qemu'.
+	Just code motion related to the changed from LIBGUESTFS_QEMU
+	to LIBGUESTFS_HV.
+
+	This updates commit 78dbd08dd2115efcc488e8fbcaf9705697eb075b.
+
+2013-09-08  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: tests: 9p: Modify name of virtio-9p-pci device when using virtio-mmio.
+	It's called virtio-9p-device on virtio-mmio.
+
+	arm: Error if iface=ide and skip tests that use iface=ide.
+	ARM doesn't support IDE.  (Well, that's not entirely true as I found a
+	reference to one extremely obscure ARM board that had IDE disks, but
+	qemu-system-arm doesn't appear to support them).
+
+	launch: direct: Handle iface=virtio using virtio-blk path.
+	iface=virtio means use (old) virtio-blk.  Since there's an existing
+	path for using virtio-blk, use that instead of adding if=virtio (which
+	will fail on ARM).
+
+2013-09-07  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: launch: direct: Add kernel_irqchip=off to make ARM KVM work.
+	See:
+	https://lists.fedoraproject.org/pipermail/arm/2013-September/006758.html
+
+	Version 1.23.21.
+
 2013-09-06  Richard W.M. Jones  <rjones@redhat.com>
 
 	arm: appliance: Add support for device trees (dtb's).

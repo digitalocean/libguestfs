@@ -20,7 +20,7 @@
 # freeform string.
 m4_define([libguestfs_major],   [1])
 m4_define([libguestfs_minor],   [23])
-m4_define([libguestfs_release], [21])
+m4_define([libguestfs_release], [22])
 
 AC_INIT([libguestfs],libguestfs_major.libguestfs_minor.libguestfs_release)
 AC_CONFIG_AUX_DIR([build-aux])
@@ -1710,6 +1710,7 @@ AC_CONFIG_FILES([Makefile
                  tests/mount-local/Makefile
                  tests/mountable/Makefile
                  tests/nbd/Makefile
+                 tests/network/Makefile
                  tests/ntfsclone/Makefile
                  tests/parallel/Makefile
                  tests/protocol/Makefile
