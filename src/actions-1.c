@@ -260,8 +260,8 @@ guestfs_internal_test_rbufferouterr (guestfs_h *g,
 
 GUESTFS_DLL_PUBLIC int
 guestfs_config (guestfs_h *g,
-                const char *qemuparam,
-                const char *qemuvalue)
+                const char *hvparam,
+                const char *hvvalue)
 {
   int trace_flag = g->trace;
   struct trace_buffer trace_buffer;
@@ -274,24 +274,24 @@ guestfs_config (guestfs_h *g,
   }
   guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
                                     "config", 6);
-  if (qemuparam == NULL) {
+  if (hvparam == NULL) {
     error (g, "%s: %s: parameter cannot be NULL",
-           "config", "qemuparam");
+           "config", "hvparam");
     return -1;
   }
 
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "config");
-    fprintf (trace_buffer.fp, " \"%s\"", qemuparam);
-    if (qemuvalue)
-      fprintf (trace_buffer.fp, " \"%s\"", qemuvalue);
+    fprintf (trace_buffer.fp, " \"%s\"", hvparam);
+    if (hvvalue)
+      fprintf (trace_buffer.fp, " \"%s\"", hvvalue);
     else
       fprintf (trace_buffer.fp, " null");
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
-  r = guestfs__config (g, qemuparam, qemuvalue);
+  r = guestfs__config (g, hvparam, hvvalue);
 
   if (r != -1) {
     if (trace_flag) {

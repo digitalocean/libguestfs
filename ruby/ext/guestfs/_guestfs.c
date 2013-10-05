@@ -1435,11 +1435,8 @@ ruby_guestfs_internal_test_close_output (VALUE gv)
  * call-seq:
  *   g.launch() -> nil
  *
- * launch the qemu subprocess
+ * launch the backend
  *
- * Internally libguestfs is implemented by running a
- * virtual machine using qemu(1).
- * 
  * You should call this after configuring the handle (eg.
  * adding drives) but before performing any actions.
  * 
@@ -1475,7 +1472,7 @@ ruby_guestfs_launch (VALUE gv)
  * call-seq:
  *   g.wait_ready() -> nil
  *
- * wait until the qemu subprocess launches (no op)
+ * wait until the hypervisor launches (no op)
  *
  * This function is a no op.
  * 
@@ -1521,9 +1518,9 @@ ruby_guestfs_wait_ready (VALUE gv)
  * call-seq:
  *   g.kill_subprocess() -> nil
  *
- * kill the qemu subprocess
+ * kill the hypervisor
  *
- * This kills the qemu subprocess.
+ * This kills the hypervisor.
  * 
  * Do not call this. See: "g.shutdown" instead.
  * 
@@ -1635,39 +1632,38 @@ ruby_guestfs_add_drive_ro (VALUE gv, VALUE filenamev)
 
 /*
  * call-seq:
- *   g.config(qemuparam, qemuvalue) -> nil
+ *   g.config(hvparam, hvvalue) -> nil
  *
- * add qemu parameters
+ * add hypervisor parameters
  *
- * This can be used to add arbitrary qemu command line
- * parameters of the form *-param value*. Actually it's not
- * quite arbitrary - we prevent you from setting some
- * parameters which would interfere with parameters that we
- * use.
+ * This can be used to add arbitrary hypervisor parameters
+ * of the form *-param value*. Actually it's not quite
+ * arbitrary - we prevent you from setting some parameters
+ * which would interfere with parameters that we use.
  * 
- * The first character of "qemuparam" string must be a "-"
+ * The first character of "hvparam" string must be a "-"
  * (dash).
  * 
- * "qemuvalue" can be NULL.
+ * "hvvalue" can be NULL.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_config+[http://libguestfs.org/guestfs.3.html#guestfs_config]).
  */
 static VALUE
-ruby_guestfs_config (VALUE gv, VALUE qemuparamv, VALUE qemuvaluev)
+ruby_guestfs_config (VALUE gv, VALUE hvparamv, VALUE hvvaluev)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "config");
 
-  const char *qemuparam = StringValueCStr (qemuparamv);
-  const char *qemuvalue = !NIL_P (qemuvaluev) ? StringValueCStr (qemuvaluev) : NULL;
+  const char *hvparam = StringValueCStr (hvparamv);
+  const char *hvvalue = !NIL_P (hvvaluev) ? StringValueCStr (hvvaluev) : NULL;
 
   int r;
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -1676,20 +1672,20 @@ ruby_guestfs_config (VALUE gv, VALUE qemuparamv, VALUE qemuvaluev)
 
 /*
  * call-seq:
- *   g.set_qemu(qemu) -> nil
+ *   g.set_qemu(hv) -> nil
  *
- * set the qemu binary
+ * set the hypervisor binary (usually qemu)
  *
- * Set the qemu binary that we will use.
+ * Set the hypervisor binary (usually qemu) that we will
+ * use.
  * 
  * The default is chosen when the library was compiled by
  * the configure script.
  * 
  * You can also override this by setting the
- * "LIBGUESTFS_QEMU" environment variable.
+ * "LIBGUESTFS_HV" environment variable.
  * 
- * Setting "qemu" to "NULL" restores the default qemu
- * binary.
+ * Setting "hv" to "NULL" restores the default qemu binary.
  * 
  * Note that you should call this function as early as
  * possible after creating the handle. This is because some
@@ -1697,26 +1693,33 @@ ruby_guestfs_config (VALUE gv, VALUE qemuparamv, VALUE qemuvaluev)
  * (by running "qemu -help"). If the qemu binary changes,
  * we don't retest features, and so you might see
  * inconsistent results. Using the environment variable
- * "LIBGUESTFS_QEMU" is safest of all since that picks the
+ * "LIBGUESTFS_HV" is safest of all since that picks the
  * qemu binary at the same time as the handle is created.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "set_hv" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
  * +guestfs_set_qemu+[http://libguestfs.org/guestfs.3.html#guestfs_set_qemu]).
  */
 static VALUE
-ruby_guestfs_set_qemu (VALUE gv, VALUE qemuv)
+ruby_guestfs_set_qemu (VALUE gv, VALUE hvv)
 {
   guestfs_h *g;
   Data_Get_Struct (gv, guestfs_h, g);
   if (!g)
     rb_raise (rb_eArgError, "%s: used handle after closing it", "set_qemu");
 
-  const char *qemu = !NIL_P (qemuv) ? StringValueCStr (qemuv) : NULL;
+  const char *hv = !NIL_P (hvv) ? StringValueCStr (hvv) : NULL;
 
   int r;
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
@@ -1727,12 +1730,19 @@ ruby_guestfs_set_qemu (VALUE gv, VALUE qemuv)
  * call-seq:
  *   g.get_qemu() -> string
  *
- * get the qemu binary
+ * get the hypervisor binary (usually qemu)
  *
- * Return the current qemu binary.
+ * Return the current hypervisor binary (usually qemu).
  * 
  * This is always non-NULL. If it wasn't set already, then
  * this will return the default qemu binary name.
+ * 
+ * *This function is deprecated.* In new code, use the
+ * "get_hv" call instead.
+ * 
+ * Deprecated functions will not be removed from the API,
+ * but the fact that they are deprecated indicates that
+ * there are problems with correct use of these functions.
  *
  *
  * (For the C API documentation for this function, see
@@ -1754,6 +1764,91 @@ ruby_guestfs_get_qemu (VALUE gv)
     rb_raise (e_Error, "%s", guestfs_last_error (g));
 
   return rb_str_new2 (r);
+}
+
+/*
+ * call-seq:
+ *   g.set_hv(hv) -> nil
+ *
+ * set the hypervisor binary
+ *
+ * Set the hypervisor binary that we will use. The
+ * hypervisor depends on the backend, but is usually the
+ * location of the qemu/KVM hypervisor. For the uml
+ * backend, it is the location of the "linux" or "vmlinux"
+ * binary.
+ * 
+ * The default is chosen when the library was compiled by
+ * the configure script.
+ * 
+ * You can also override this by setting the
+ * "LIBGUESTFS_HV" environment variable.
+ * 
+ * Note that you should call this function as early as
+ * possible after creating the handle. This is because some
+ * pre-launch operations depend on testing qemu features
+ * (by running "qemu -help"). If the qemu binary changes,
+ * we don't retest features, and so you might see
+ * inconsistent results. Using the environment variable
+ * "LIBGUESTFS_HV" is safest of all since that picks the
+ * qemu binary at the same time as the handle is created.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_set_hv+[http://libguestfs.org/guestfs.3.html#guestfs_set_hv]).
+ */
+static VALUE
+ruby_guestfs_set_hv (VALUE gv, VALUE hvv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "set_hv");
+
+  const char *hv = StringValueCStr (hvv);
+
+  int r;
+
+  r = guestfs_set_hv (g, hv);
+  if (r == -1)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  return Qnil;
+}
+
+/*
+ * call-seq:
+ *   g.get_hv() -> string
+ *
+ * get the hypervisor binary
+ *
+ * Return the current hypervisor binary.
+ * 
+ * This is always non-NULL. If it wasn't set already, then
+ * this will return the default qemu binary name.
+ *
+ *
+ * (For the C API documentation for this function, see
+ * +guestfs_get_hv+[http://libguestfs.org/guestfs.3.html#guestfs_get_hv]).
+ */
+static VALUE
+ruby_guestfs_get_hv (VALUE gv)
+{
+  guestfs_h *g;
+  Data_Get_Struct (gv, guestfs_h, g);
+  if (!g)
+    rb_raise (rb_eArgError, "%s: used handle after closing it", "get_hv");
+
+
+  char *r;
+
+  r = guestfs_get_hv (g);
+  if (r == NULL)
+    rb_raise (e_Error, "%s", guestfs_last_error (g));
+
+  volatile VALUE rv = rb_str_new2 (r);
+  free (r);
+  return rv;
 }
 
 /*
@@ -2203,11 +2298,11 @@ ruby_guestfs_get_state (VALUE gv)
  * call-seq:
  *   g.set_memsize(memsize) -> nil
  *
- * set memory allocated to the qemu subprocess
+ * set memory allocated to the hypervisor
  *
  * This sets the memory size in megabytes allocated to the
- * qemu subprocess. This only has any effect if called
- * before "g.launch".
+ * hypervisor. This only has any effect if called before
+ * "g.launch".
  * 
  * You can also change this by setting the environment
  * variable "LIBGUESTFS_MEMSIZE" before the handle is
@@ -2243,10 +2338,10 @@ ruby_guestfs_set_memsize (VALUE gv, VALUE memsizev)
  * call-seq:
  *   g.get_memsize() -> fixnum
  *
- * get memory allocated to the qemu subprocess
+ * get memory allocated to the hypervisor
  *
  * This gets the memory size in megabytes allocated to the
- * qemu subprocess.
+ * hypervisor.
  * 
  * If "g.set_memsize" was not called on this handle, and if
  * "LIBGUESTFS_MEMSIZE" was not set, then this returns the
@@ -2281,10 +2376,10 @@ ruby_guestfs_get_memsize (VALUE gv)
  * call-seq:
  *   g.get_pid() -> fixnum
  *
- * get PID of qemu subprocess
+ * get PID of hypervisor
  *
- * Return the process ID of the qemu subprocess. If there
- * is no qemu subprocess, then this will return an error.
+ * Return the process ID of the hypervisor. If there is no
+ * hypervisor running, then this will return an error.
  * 
  * This is an internal call used for debugging and testing.
  *
@@ -2603,9 +2698,9 @@ ruby_guestfs_get_direct (VALUE gv)
  *
  * If this is called with the parameter "false" then
  * "g.launch" does not create a recovery process. The
- * purpose of the recovery process is to stop runaway qemu
- * processes in the case where the main program aborts
- * abruptly.
+ * purpose of the recovery process is to stop runaway
+ * hypervisor processes in the case where the main program
+ * aborts abruptly.
  * 
  * This only has any effect if called before "g.launch",
  * and the default is true.
@@ -2614,8 +2709,8 @@ ruby_guestfs_get_direct (VALUE gv)
  * is if the main process will fork itself into the
  * background ("daemonize" itself). In this case the
  * recovery process thinks that the main program has
- * disappeared and so kills qemu, which is not very
- * helpful.
+ * disappeared and so kills the hypervisor, which is not
+ * very helpful.
  *
  *
  * (For the C API documentation for this function, see
@@ -5497,7 +5592,7 @@ ruby_guestfs_canonical_device_name (VALUE gv, VALUE devicev)
  * call-seq:
  *   g.shutdown() -> nil
  *
- * shutdown the qemu subprocess
+ * shutdown the hypervisor
  *
  * This is the opposite of "g.launch". It performs an
  * orderly shutdown of the backend process(es). If the
@@ -10748,8 +10843,8 @@ ruby_guestfs_dmesg (VALUE gv)
  * ping the guest daemon
  *
  * This is a test probe into the guestfs daemon running
- * inside the qemu subprocess. Calling this function checks
- * that the daemon responds to the ping message, without
+ * inside the hypervisor. Calling this function checks that
+ * the daemon responds to the ping message, without
  * affecting the daemon or attached block device(s) in any
  * other way.
  *
@@ -24988,6 +25083,10 @@ Init__guestfs (void)
         ruby_guestfs_set_qemu, 1);
   rb_define_method (c_guestfs, "get_qemu",
         ruby_guestfs_get_qemu, 0);
+  rb_define_method (c_guestfs, "set_hv",
+        ruby_guestfs_set_hv, 1);
+  rb_define_method (c_guestfs, "get_hv",
+        ruby_guestfs_get_hv, 0);
   rb_define_method (c_guestfs, "set_path",
         ruby_guestfs_set_path, 1);
   rb_define_method (c_guestfs, "get_path",

@@ -560,7 +560,7 @@ val compress_out : t -> ?level:int -> string -> string -> string -> unit
 (** output compressed file *)
 
 val config : t -> string -> string option -> unit
-(** add qemu parameters *)
+(** add hypervisor parameters *)
 
 val copy_device_to_device : t -> ?srcoffset:int64 -> ?destoffset:int64 -> ?size:int64 -> ?sparse:bool -> string -> string -> unit
 (** copy from source device to destination device *)
@@ -769,6 +769,9 @@ val get_e2uuid : t -> string -> string
     @deprecated Use {!vfs_uuid} instead
  *)
 
+val get_hv : t -> string
+(** get the hypervisor binary *)
+
 val get_libvirt_requested_credential_challenge : t -> int -> string
 (** challenge of i'th requested credential *)
 
@@ -782,7 +785,7 @@ val get_libvirt_requested_credentials : t -> string array
 (** get list of credentials requested by libvirt *)
 
 val get_memsize : t -> int
-(** get memory allocated to the qemu subprocess *)
+(** get memory allocated to the hypervisor *)
 
 val get_network : t -> bool
 (** get enable network flag *)
@@ -794,13 +797,16 @@ val get_pgroup : t -> bool
 (** get process group flag *)
 
 val get_pid : t -> int
-(** get PID of qemu subprocess *)
+(** get PID of hypervisor *)
 
 val get_program : t -> string
 (** get the program name *)
 
 val get_qemu : t -> string
-(** get the qemu binary *)
+(** get the hypervisor binary (usually qemu)
+
+    @deprecated Use {!get_hv} instead
+ *)
 
 val get_recovery_proc : t -> bool
 (** get recovery process enabled flag *)
@@ -1150,13 +1156,13 @@ val journal_skip : t -> int64 -> int64
 (** skip forwards or backwards in the journal *)
 
 val kill_subprocess : t -> unit
-(** kill the qemu subprocess
+(** kill the hypervisor
 
     @deprecated Use {!shutdown} instead
  *)
 
 val launch : t -> unit
-(** launch the qemu subprocess *)
+(** launch the backend *)
 
 val lchown : t -> int -> int -> string -> unit
 (** change file owner and group *)
@@ -1710,6 +1716,9 @@ val set_e2uuid : t -> string -> string -> unit
     @deprecated Use {!set_uuid} instead
  *)
 
+val set_hv : t -> string -> unit
+(** set the hypervisor binary *)
+
 val set_label : t -> string -> string -> unit
 (** set filesystem label *)
 
@@ -1720,7 +1729,7 @@ val set_libvirt_supported_credentials : t -> string array -> unit
 (** set libvirt credentials supported by calling program *)
 
 val set_memsize : t -> int -> unit
-(** set memory allocated to the qemu subprocess *)
+(** set memory allocated to the hypervisor *)
 
 val set_network : t -> bool -> unit
 (** set enable network flag *)
@@ -1735,7 +1744,10 @@ val set_program : t -> string -> unit
 (** set the program name *)
 
 val set_qemu : t -> string option -> unit
-(** set the qemu binary *)
+(** set the hypervisor binary (usually qemu)
+
+    @deprecated Use {!set_hv} instead
+ *)
 
 val set_recovery_proc : t -> bool -> unit
 (** enable or disable the recovery process *)
@@ -1801,7 +1813,7 @@ val sh_lines : t -> string -> string array
 (** run a command via the shell returning lines *)
 
 val shutdown : t -> unit
-(** shutdown the qemu subprocess *)
+(** shutdown the hypervisor *)
 
 val sleep : t -> int -> unit
 (** sleep for some seconds *)
@@ -1987,7 +1999,7 @@ val vguuid : t -> string -> string
 (** get the UUID of a volume group *)
 
 val wait_ready : t -> unit
-(** wait until the qemu subprocess launches (no op)
+(** wait until the hypervisor launches (no op)
 
     @deprecated Use {!launch} instead
  *)
@@ -2238,6 +2250,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method get_e2generation : string -> int64
   method get_e2label : string -> string
   method get_e2uuid : string -> string
+  method get_hv : unit -> string
   method get_libvirt_requested_credential_challenge : int -> string
   method get_libvirt_requested_credential_defresult : int -> string
   method get_libvirt_requested_credential_prompt : int -> string
@@ -2548,6 +2561,7 @@ class guestfs : ?environment:bool -> ?close_on_exit:bool -> unit -> object
   method set_e2generation : string -> int64 -> unit
   method set_e2label : string -> string -> unit
   method set_e2uuid : string -> string -> unit
+  method set_hv : string -> unit
   method set_label : string -> string -> unit
   method set_libvirt_requested_credential : int -> string -> unit
   method set_libvirt_supported_credentials : string array -> unit

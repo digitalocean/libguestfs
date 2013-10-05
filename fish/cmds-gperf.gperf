@@ -170,6 +170,7 @@ extern struct command_entry get_e2attrs_cmd_entry;
 extern struct command_entry get_e2generation_cmd_entry;
 extern struct command_entry get_e2label_cmd_entry;
 extern struct command_entry get_e2uuid_cmd_entry;
+extern struct command_entry get_hv_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_challenge_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_defresult_cmd_entry;
 extern struct command_entry get_libvirt_requested_credential_prompt_cmd_entry;
@@ -446,6 +447,7 @@ extern struct command_entry set_e2attrs_cmd_entry;
 extern struct command_entry set_e2generation_cmd_entry;
 extern struct command_entry set_e2label_cmd_entry;
 extern struct command_entry set_e2uuid_cmd_entry;
+extern struct command_entry set_hv_cmd_entry;
 extern struct command_entry set_label_cmd_entry;
 extern struct command_entry set_libvirt_requested_credential_cmd_entry;
 extern struct command_entry set_libvirt_supported_credentials_cmd_entry;
@@ -801,6 +803,8 @@ get_e2label, &get_e2label_cmd_entry
 get-e2label, &get_e2label_cmd_entry
 get_e2uuid, &get_e2uuid_cmd_entry
 get-e2uuid, &get_e2uuid_cmd_entry
+get_hv, &get_hv_cmd_entry
+get-hv, &get_hv_cmd_entry
 get_libvirt_requested_credential_challenge, &get_libvirt_requested_credential_challenge_cmd_entry
 get-libvirt-requested-credential-challenge, &get_libvirt_requested_credential_challenge_cmd_entry
 get_libvirt_requested_credential_defresult, &get_libvirt_requested_credential_defresult_cmd_entry
@@ -1303,6 +1307,9 @@ set_e2label, &set_e2label_cmd_entry
 set-e2label, &set_e2label_cmd_entry
 set_e2uuid, &set_e2uuid_cmd_entry
 set-e2uuid, &set_e2uuid_cmd_entry
+set_hv, &set_hv_cmd_entry
+set-hv, &set_hv_cmd_entry
+hv, &set_hv_cmd_entry
 set_label, &set_label_cmd_entry
 set-label, &set_label_cmd_entry
 set_libvirt_requested_credential, &set_libvirt_requested_credential_cmd_entry

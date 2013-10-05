@@ -349,6 +349,22 @@ JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1qemu
 
 /*
  * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _set_hv
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_redhat_et_libguestfs_GuestFS__1set_1hv
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
+ * Method:    _get_hv
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_redhat_et_libguestfs_GuestFS__1get_1hv
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_redhat_et_libguestfs_GuestFS
  * Method:    _set_path
  * Signature: (JLjava/lang/String;)V
  */

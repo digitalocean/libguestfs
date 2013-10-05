@@ -309,10 +309,7 @@ class GuestFS(object):
         return r
 
     def launch (self):
-        """Internally libguestfs is implemented by running a
-        virtual machine using qemu(1).
-        
-        You should call this after configuring the handle (eg.
+        """You should call this after configuring the handle (eg.
         adding drives) but before performing any actions.
         
         Do not call "g.launch" twice on the same handle.
@@ -349,7 +346,7 @@ class GuestFS(object):
         return r
 
     def kill_subprocess (self):
-        """This kills the qemu subprocess.
+        """This kills the hypervisor.
         
         Do not call this. See: "g.shutdown" instead.
         
@@ -393,33 +390,32 @@ class GuestFS(object):
         r = libguestfsmod.add_drive_ro (self._o, filename)
         return r
 
-    def config (self, qemuparam, qemuvalue):
-        """This can be used to add arbitrary qemu command line
-        parameters of the form *-param value*. Actually it's not
-        quite arbitrary - we prevent you from setting some
-        parameters which would interfere with parameters that we
-        use.
+    def config (self, hvparam, hvvalue):
+        """This can be used to add arbitrary hypervisor parameters
+        of the form *-param value*. Actually it's not quite
+        arbitrary - we prevent you from setting some parameters
+        which would interfere with parameters that we use.
         
-        The first character of "qemuparam" string must be a "-"
+        The first character of "hvparam" string must be a "-"
         (dash).
         
-        "qemuvalue" can be NULL.
+        "hvvalue" can be NULL.
         """
         self._check_not_closed ()
-        r = libguestfsmod.config (self._o, qemuparam, qemuvalue)
+        r = libguestfsmod.config (self._o, hvparam, hvvalue)
         return r
 
-    def set_qemu (self, qemu):
-        """Set the qemu binary that we will use.
+    def set_qemu (self, hv):
+        """Set the hypervisor binary (usually qemu) that we will
+        use.
         
         The default is chosen when the library was compiled by
         the configure script.
         
         You can also override this by setting the
-        "LIBGUESTFS_QEMU" environment variable.
+        "LIBGUESTFS_HV" environment variable.
         
-        Setting "qemu" to "NULL" restores the default qemu
-        binary.
+        Setting "hv" to "NULL" restores the default qemu binary.
         
         Note that you should call this function as early as
         possible after creating the handle. This is because some
@@ -427,21 +423,71 @@ class GuestFS(object):
         (by running "qemu -help"). If the qemu binary changes,
         we don't retest features, and so you might see
         inconsistent results. Using the environment variable
-        "LIBGUESTFS_QEMU" is safest of all since that picks the
+        "LIBGUESTFS_HV" is safest of all since that picks the
         qemu binary at the same time as the handle is created.
+        
+        *This function is deprecated.* In new code, use the
+        "set_hv" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
         """
         self._check_not_closed ()
-        r = libguestfsmod.set_qemu (self._o, qemu)
+        r = libguestfsmod.set_qemu (self._o, hv)
         return r
 
     def get_qemu (self):
-        """Return the current qemu binary.
+        """Return the current hypervisor binary (usually qemu).
+        
+        This is always non-NULL. If it wasn't set already, then
+        this will return the default qemu binary name.
+        
+        *This function is deprecated.* In new code, use the
+        "get_hv" call instead.
+        
+        Deprecated functions will not be removed from the API,
+        but the fact that they are deprecated indicates that
+        there are problems with correct use of these functions.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.get_qemu (self._o)
+        return r
+
+    def set_hv (self, hv):
+        """Set the hypervisor binary that we will use. The
+        hypervisor depends on the backend, but is usually the
+        location of the qemu/KVM hypervisor. For the uml
+        backend, it is the location of the "linux" or "vmlinux"
+        binary.
+        
+        The default is chosen when the library was compiled by
+        the configure script.
+        
+        You can also override this by setting the
+        "LIBGUESTFS_HV" environment variable.
+        
+        Note that you should call this function as early as
+        possible after creating the handle. This is because some
+        pre-launch operations depend on testing qemu features
+        (by running "qemu -help"). If the qemu binary changes,
+        we don't retest features, and so you might see
+        inconsistent results. Using the environment variable
+        "LIBGUESTFS_HV" is safest of all since that picks the
+        qemu binary at the same time as the handle is created.
+        """
+        self._check_not_closed ()
+        r = libguestfsmod.set_hv (self._o, hv)
+        return r
+
+    def get_hv (self):
+        """Return the current hypervisor binary.
         
         This is always non-NULL. If it wasn't set already, then
         this will return the default qemu binary name.
         """
         self._check_not_closed ()
-        r = libguestfsmod.get_qemu (self._o)
+        r = libguestfsmod.get_hv (self._o)
         return r
 
     def set_path (self, searchpath):
@@ -585,8 +631,8 @@ class GuestFS(object):
 
     def set_memsize (self, memsize):
         """This sets the memory size in megabytes allocated to the
-        qemu subprocess. This only has any effect if called
-        before "g.launch".
+        hypervisor. This only has any effect if called before
+        "g.launch".
         
         You can also change this by setting the environment
         variable "LIBGUESTFS_MEMSIZE" before the handle is
@@ -601,7 +647,7 @@ class GuestFS(object):
 
     def get_memsize (self):
         """This gets the memory size in megabytes allocated to the
-        qemu subprocess.
+        hypervisor.
         
         If "g.set_memsize" was not called on this handle, and if
         "LIBGUESTFS_MEMSIZE" was not set, then this returns the
@@ -615,8 +661,8 @@ class GuestFS(object):
         return r
 
     def get_pid (self):
-        """Return the process ID of the qemu subprocess. If there
-        is no qemu subprocess, then this will return an error.
+        """Return the process ID of the hypervisor. If there is no
+        hypervisor running, then this will return an error.
         
         This is an internal call used for debugging and testing.
         """
@@ -745,9 +791,9 @@ class GuestFS(object):
     def set_recovery_proc (self, recoveryproc):
         """If this is called with the parameter "false" then
         "g.launch" does not create a recovery process. The
-        purpose of the recovery process is to stop runaway qemu
-        processes in the case where the main program aborts
-        abruptly.
+        purpose of the recovery process is to stop runaway
+        hypervisor processes in the case where the main program
+        aborts abruptly.
         
         This only has any effect if called before "g.launch",
         and the default is true.
@@ -756,8 +802,8 @@ class GuestFS(object):
         is if the main process will fork itself into the
         background ("daemonize" itself). In this case the
         recovery process thinks that the main program has
-        disappeared and so kills qemu, which is not very
-        helpful.
+        disappeared and so kills the hypervisor, which is not
+        very helpful.
         """
         self._check_not_closed ()
         r = libguestfsmod.set_recovery_proc (self._o, recoveryproc)
@@ -4053,8 +4099,8 @@ class GuestFS(object):
 
     def ping_daemon (self):
         """This is a test probe into the guestfs daemon running
-        inside the qemu subprocess. Calling this function checks
-        that the daemon responds to the ping message, without
+        inside the hypervisor. Calling this function checks that
+        the daemon responds to the ping message, without
         affecting the daemon or attached block device(s) in any
         other way.
         """

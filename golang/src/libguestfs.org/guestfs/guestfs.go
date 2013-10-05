@@ -2366,22 +2366,22 @@ func (g *Guestfs) Compress_out (ctype string, file string, zfile string, optargs
     return nil
 }
 
-/* config : add qemu parameters */
-func (g *Guestfs) Config (qemuparam string, qemuvalue *string) *GuestfsError {
+/* config : add hypervisor parameters */
+func (g *Guestfs) Config (hvparam string, hvvalue *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("config")
     }
 
-    c_qemuparam := C.CString (qemuparam)
-    defer C.free (unsafe.Pointer (c_qemuparam))
+    c_hvparam := C.CString (hvparam)
+    defer C.free (unsafe.Pointer (c_hvparam))
 
-    var c_qemuvalue *C.char = nil
-    if qemuvalue != nil {
-        c_qemuvalue = C.CString (*qemuvalue)
-        defer C.free (unsafe.Pointer (c_qemuvalue))
+    var c_hvvalue *C.char = nil
+    if hvvalue != nil {
+        c_hvvalue = C.CString (*hvvalue)
+        defer C.free (unsafe.Pointer (c_hvvalue))
     }
 
-    r := C.guestfs_config (g.g, c_qemuparam, c_qemuvalue)
+    r := C.guestfs_config (g.g, c_hvparam, c_hvvalue)
 
     if r == -1 {
         return get_error_from_handle (g, "config")
@@ -3634,6 +3634,21 @@ func (g *Guestfs) Get_e2uuid (device string) (string, *GuestfsError) {
     return C.GoString (r), nil
 }
 
+/* get_hv : get the hypervisor binary */
+func (g *Guestfs) Get_hv () (string, *GuestfsError) {
+    if g.g == nil {
+        return "", closed_handle_error ("get_hv")
+    }
+
+    r := C.guestfs_get_hv (g.g)
+
+    if r == nil {
+        return "", get_error_from_handle (g, "get_hv")
+    }
+    defer C.free (unsafe.Pointer (r))
+    return C.GoString (r), nil
+}
+
 /* get_libvirt_requested_credential_challenge : challenge of i'th requested credential */
 func (g *Guestfs) Get_libvirt_requested_credential_challenge (index int) (string, *GuestfsError) {
     if g.g == nil {
@@ -3694,7 +3709,7 @@ func (g *Guestfs) Get_libvirt_requested_credentials () ([]string, *GuestfsError)
     return return_string_list (r), nil
 }
 
-/* get_memsize : get memory allocated to the qemu subprocess */
+/* get_memsize : get memory allocated to the hypervisor */
 func (g *Guestfs) Get_memsize () (int, *GuestfsError) {
     if g.g == nil {
         return 0, closed_handle_error ("get_memsize")
@@ -3750,7 +3765,7 @@ func (g *Guestfs) Get_pgroup () (bool, *GuestfsError) {
     return r != 0, nil
 }
 
-/* get_pid : get PID of qemu subprocess */
+/* get_pid : get PID of hypervisor */
 func (g *Guestfs) Get_pid () (int, *GuestfsError) {
     if g.g == nil {
         return 0, closed_handle_error ("get_pid")
@@ -3778,7 +3793,7 @@ func (g *Guestfs) Get_program () (string, *GuestfsError) {
     return C.GoString (r), nil
 }
 
-/* get_qemu : get the qemu binary */
+/* get_qemu : get the hypervisor binary (usually qemu) */
 func (g *Guestfs) Get_qemu () (string, *GuestfsError) {
     if g.g == nil {
         return "", closed_handle_error ("get_qemu")
@@ -6439,7 +6454,7 @@ func (g *Guestfs) Journal_skip (skip int64) (int64, *GuestfsError) {
     return int64 (r), nil
 }
 
-/* kill_subprocess : kill the qemu subprocess */
+/* kill_subprocess : kill the hypervisor */
 func (g *Guestfs) Kill_subprocess () *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("kill_subprocess")
@@ -6453,7 +6468,7 @@ func (g *Guestfs) Kill_subprocess () *GuestfsError {
     return nil
 }
 
-/* launch : launch the qemu subprocess */
+/* launch : launch the backend */
 func (g *Guestfs) Launch () *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("launch")
@@ -10228,6 +10243,23 @@ func (g *Guestfs) Set_e2uuid (device string, uuid string) *GuestfsError {
     return nil
 }
 
+/* set_hv : set the hypervisor binary */
+func (g *Guestfs) Set_hv (hv string) *GuestfsError {
+    if g.g == nil {
+        return closed_handle_error ("set_hv")
+    }
+
+    c_hv := C.CString (hv)
+    defer C.free (unsafe.Pointer (c_hv))
+
+    r := C.guestfs_set_hv (g.g, c_hv)
+
+    if r == -1 {
+        return get_error_from_handle (g, "set_hv")
+    }
+    return nil
+}
+
 /* set_label : set filesystem label */
 func (g *Guestfs) Set_label (mountable string, label string) *GuestfsError {
     if g.g == nil {
@@ -10287,7 +10319,7 @@ func (g *Guestfs) Set_libvirt_supported_credentials (creds []string) *GuestfsErr
     return nil
 }
 
-/* set_memsize : set memory allocated to the qemu subprocess */
+/* set_memsize : set memory allocated to the hypervisor */
 func (g *Guestfs) Set_memsize (memsize int) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_memsize")
@@ -10372,19 +10404,19 @@ func (g *Guestfs) Set_program (program string) *GuestfsError {
     return nil
 }
 
-/* set_qemu : set the qemu binary */
-func (g *Guestfs) Set_qemu (qemu *string) *GuestfsError {
+/* set_qemu : set the hypervisor binary (usually qemu) */
+func (g *Guestfs) Set_qemu (hv *string) *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("set_qemu")
     }
 
-    var c_qemu *C.char = nil
-    if qemu != nil {
-        c_qemu = C.CString (*qemu)
-        defer C.free (unsafe.Pointer (c_qemu))
+    var c_hv *C.char = nil
+    if hv != nil {
+        c_hv = C.CString (*hv)
+        defer C.free (unsafe.Pointer (c_hv))
     }
 
-    r := C.guestfs_set_qemu (g.g, c_qemu)
+    r := C.guestfs_set_qemu (g.g, c_hv)
 
     if r == -1 {
         return get_error_from_handle (g, "set_qemu")
@@ -10704,7 +10736,7 @@ func (g *Guestfs) Sh_lines (command string) ([]string, *GuestfsError) {
     return return_string_list (r), nil
 }
 
-/* shutdown : shutdown the qemu subprocess */
+/* shutdown : shutdown the hypervisor */
 func (g *Guestfs) Shutdown () *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("shutdown")
@@ -11847,7 +11879,7 @@ func (g *Guestfs) Vguuid (vgname string) (string, *GuestfsError) {
     return C.GoString (r), nil
 }
 
-/* wait_ready : wait until the qemu subprocess launches (no op) */
+/* wait_ready : wait until the hypervisor launches (no op) */
 func (g *Guestfs) Wait_ready () *GuestfsError {
     if g.g == nil {
         return closed_handle_error ("wait_ready")

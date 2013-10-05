@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <unistd.h>
@@ -91,7 +92,7 @@ alloc_cmdline (guestfs_h *g)
 {
   g->direct.cmdline_size = 1;
   g->direct.cmdline = safe_malloc (g, sizeof (char *));
-  g->direct.cmdline[0] = g->qemu;
+  g->direct.cmdline[0] = g->hv;
 }
 
 static void
@@ -257,7 +258,8 @@ launch_direct (guestfs_h *g, const char *arg)
   if (r == 0) {			/* Child (qemu). */
     char buf[256];
     int virtio_scsi = qemu_supports_virtio_scsi (g);
-    struct qemu_param *qp;
+    struct hv_param *hp;
+    bool has_kvm;
 
     /* Set up the full command line.  Do this in the subprocess so we
      * don't need to worry about cleaning up.
@@ -290,6 +292,14 @@ launch_direct (guestfs_h *g, const char *arg)
 
     add_cmdline (g, "-nographic");
 
+    /* Try to guess if KVM is available.  We are just checking that
+     * /dev/kvm is openable.  That's not reliable, since /dev/kvm
+     * might be openable by qemu but not by us (think: SELinux) in
+     * which case the user would not get hardware virtualization,
+     * although at least shouldn't fail.
+     */
+    has_kvm = is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC);
+
     /* The qemu -machine option (added 2010-12) is a bit more sane
      * since it falls back through various different acceleration
      * modes, so try that first (thanks Markus Armbruster).
@@ -301,23 +311,26 @@ launch_direct (guestfs_h *g, const char *arg)
       /* qemu sometimes needs this option to enable hardware
        * virtualization, but some versions of 'qemu-kvm' will use KVM
        * regardless (even where this option appears in the help text).
-       * It is rumoured that there are versions of qemu where supplying
-       * this option when hardware virtualization is not available will
-       * cause qemu to fail, so we we have to check at least that
-       * /dev/kvm is openable.  That's not reliable, since /dev/kvm
-       * might be openable by qemu but not by us (think: SELinux) in
-       * which case the user would not get hardware virtualization,
-       * although at least shouldn't fail.  A giant clusterfuck with the
-       * qemu command line, again.
+       * It is rumoured that there are versions of qemu where
+       * supplying this option when hardware virtualization is not
+       * available will cause qemu to fail.  A giant clusterfuck with
+       * the qemu command line, again.
        */
-      if (qemu_supports (g, "-enable-kvm") &&
-          is_openable (g, "/dev/kvm", O_RDWR|O_CLOEXEC))
+      if (qemu_supports (g, "-enable-kvm") && has_kvm)
         add_cmdline (g, "-enable-kvm");
     }
 
-    /* Specify the host CPU for speed, and kvmclock for stability. */
-    add_cmdline (g, "-cpu");
-    add_cmdline (g, "host,+kvmclock");
+    /* -cpu host only works if KVM is available. */
+    if (has_kvm) {
+      /* Specify the host CPU for speed, and kvmclock for stability. */
+      add_cmdline (g, "-cpu");
+      add_cmdline (g, "host,+kvmclock");
+    } else {
+      /* Specify default CPU for speed, and kvmclock for stability. */
+      snprintf (buf, sizeof buf, "qemu%d,+kvmclock", SIZEOF_LONG*8);
+      add_cmdline (g, "-cpu");
+      add_cmdline (g, buf);
+    }
 
     if (g->smp > 1) {
       snprintf (buf, sizeof buf, "%d", g->smp);
@@ -462,10 +475,10 @@ launch_direct (guestfs_h *g, const char *arg)
       add_cmdline_shell_unquoted (g, QEMU_OPTIONS);
 
     /* Add any qemu parameters. */
-    for (qp = g->qemu_params; qp; qp = qp->next) {
-      add_cmdline (g, qp->qemu_param);
-      if (qp->qemu_value)
-        add_cmdline (g, qp->qemu_value);
+    for (hp = g->hv_params; hp; hp = hp->next) {
+      add_cmdline (g, hp->hv_param);
+      if (hp->hv_value)
+        add_cmdline (g, hp->hv_value);
     }
 
     /* Finish off the command line. */
@@ -517,8 +530,8 @@ launch_direct (guestfs_h *g, const char *arg)
 
     TRACE0 (launch_run_qemu);
 
-    execv (g->qemu, g->direct.cmdline); /* Run qemu. */
-    perror (g->qemu);
+    execv (g->hv, g->direct.cmdline); /* Run qemu. */
+    perror (g->hv);
     _exit (EXIT_FAILURE);
   }
 
@@ -778,7 +791,7 @@ test_qemu (guestfs_h *g)
   free (g->direct.qemu_devices);
   g->direct.qemu_devices = NULL;
 
-  guestfs___cmd_add_arg (cmd1, g->qemu);
+  guestfs___cmd_add_arg (cmd1, g->hv);
   guestfs___cmd_add_arg (cmd1, "-nographic");
   guestfs___cmd_add_arg (cmd1, "-help");
   guestfs___cmd_set_stdout_callback (cmd1, read_all, &g->direct.qemu_help,
@@ -787,7 +800,7 @@ test_qemu (guestfs_h *g)
   if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
 
-  guestfs___cmd_add_arg (cmd2, g->qemu);
+  guestfs___cmd_add_arg (cmd2, g->hv);
   guestfs___cmd_add_arg (cmd2, "-nographic");
   guestfs___cmd_add_arg (cmd2, "-version");
   guestfs___cmd_set_stdout_callback (cmd2, read_all, &g->direct.qemu_version,
@@ -798,7 +811,7 @@ test_qemu (guestfs_h *g)
 
   parse_qemu_version (g);
 
-  guestfs___cmd_add_arg (cmd3, g->qemu);
+  guestfs___cmd_add_arg (cmd3, g->hv);
   guestfs___cmd_add_arg (cmd3, "-nographic");
   guestfs___cmd_add_arg (cmd3, "-machine");
   guestfs___cmd_add_arg (cmd3, "accel=kvm:tcg");
@@ -818,7 +831,7 @@ test_qemu (guestfs_h *g)
   if (r == -1)
     return -1;
 
-  guestfs___external_command_failed (g, r, g->qemu, NULL);
+  guestfs___external_command_failed (g, r, g->hv, NULL);
   return -1;
 }
 
@@ -1039,7 +1052,7 @@ shutdown_direct (guestfs_h *g, int check_for_errors)
       ret = -1;
     }
     else if (!WIFEXITED (status) || WEXITSTATUS (status) != 0) {
-      guestfs___external_command_failed (g, status, g->qemu, NULL);
+      guestfs___external_command_failed (g, status, g->hv, NULL);
       ret = -1;
     }
   }

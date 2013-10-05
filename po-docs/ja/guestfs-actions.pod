@@ -1820,16 +1820,16 @@ L</CALLS WITH OPTIONAL ARGUMENTS> 参照。
 
  int
  guestfs_config (guestfs_h *g,
-                 const char *qemuparam,
-                 const char *qemuvalue);
+                 const char *hvparam,
+                 const char *hvvalue);
 
-This can be used to add arbitrary qemu command line parameters of the form
-I<-param value>.  Actually it's not quite arbitrary - we prevent you from
-setting some parameters which would interfere with parameters that we use.
+This can be used to add arbitrary hypervisor parameters of the form I<-param
+value>.  Actually it's not quite arbitrary - we prevent you from setting
+some parameters which would interfere with parameters that we use.
 
-The first character of C<qemuparam> string must be a C<-> (dash).
+The first character of C<hvparam> string must be a C<-> (dash).
 
-C<qemuvalue> は NULL の可能性があります。
+C<hvvalue> can be NULL.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -3367,6 +3367,18 @@ these functions.
 
 (1.0.15 において追加)
 
+=head2 guestfs_get_hv
+
+ char *
+ guestfs_get_hv (guestfs_h *g);
+
+Return the current hypervisor binary.
+
+This is always non-NULL.  If it wasn't set already, then this will return
+the default qemu binary name.
+
+この関数は文字列を返します。エラー時は NULL です。 I<呼び出し元は使用後に返された文字列を開放する必要があります>。
+
 =head2 guestfs_get_libvirt_requested_credential_challenge
 
  char *
@@ -3440,7 +3452,7 @@ strings and the array after use>.
  int
  guestfs_get_memsize (guestfs_h *g);
 
-これは QEMU サブプロセスに割り当てられているメモリー容量をメガバイト単位で取得します。
+This gets the memory size in megabytes allocated to the hypervisor.
 
 If C<guestfs_set_memsize> was not called on this handle, and if
 C<LIBGUESTFS_MEMSIZE> was not set, then this returns the compiled-in default
@@ -3494,8 +3506,8 @@ This function returns a C truth value on success or -1 on error.
  int
  guestfs_get_pid (guestfs_h *g);
 
-Return the process ID of the qemu subprocess.  If there is no qemu
-subprocess, then this will return an error.
+Return the process ID of the hypervisor.  If there is no hypervisor running,
+then this will return an error.
 
 This is an internal call used for debugging and testing.
 
@@ -3520,7 +3532,14 @@ the guest handle and must I<not> be freed.
  const char *
  guestfs_get_qemu (guestfs_h *g);
 
-現在の QEMU バイナリーを返します。
+I<This function is deprecated.> In new code, use the L</guestfs_get_hv> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+Return the current hypervisor binary (usually qemu).
 
 This is always non-NULL.  If it wasn't set already, then this will return
 the default qemu binary name.
@@ -5966,7 +5985,7 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
-これにより QEMU のサブプロセスがキルされます
+This kills the hypervisor.
 
 これを呼び出してはいけません。代わりに C<guestfs_shutdown> を参照してください。
 
@@ -5978,9 +5997,6 @@ these functions.
 
  int
  guestfs_launch (guestfs_h *g);
-
-Internally libguestfs is implemented by running a virtual machine using
-L<qemu(1)>.
 
 You should call this after configuring the handle (eg. adding drives) but
 before performing any actions.
@@ -8923,10 +8939,9 @@ C<guestfs_part_to_dev> 参照。
  int
  guestfs_ping_daemon (guestfs_h *g);
 
-This is a test probe into the guestfs daemon running inside the qemu
-subprocess.  Calling this function checks that the daemon responds to the
-ping message, without affecting the daemon or attached block device(s) in
-any other way.
+This is a test probe into the guestfs daemon running inside the hypervisor.
+Calling this function checks that the daemon responds to the ping message,
+without affecting the daemon or attached block device(s) in any other way.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -10011,6 +10026,30 @@ You can use C<guestfs_vfs_uuid> to return the existing UUID of a filesystem.
 
 (1.0.15 において追加)
 
+=head2 guestfs_set_hv
+
+ int
+ guestfs_set_hv (guestfs_h *g,
+                 const char *hv);
+
+Set the hypervisor binary that we will use.  The hypervisor depends on the
+backend, but is usually the location of the qemu/KVM hypervisor.  For the
+uml backend, it is the location of the C<linux> or C<vmlinux> binary.
+
+The default is chosen when the library was compiled by the configure script.
+
+You can also override this by setting the C<LIBGUESTFS_HV> environment
+variable.
+
+Note that you should call this function as early as possible after creating
+the handle.  This is because some pre-launch operations depend on testing
+qemu features (by running C<qemu -help>).  If the qemu binary changes, we
+don't retest features, and so you might see inconsistent results.  Using the
+environment variable C<LIBGUESTFS_HV> is safest of all since that picks the
+qemu binary at the same time as the handle is created.
+
+この関数は、成功のとき 0 を、エラーのとき -1 を返します。
+
 =head2 guestfs_set_label
 
  int
@@ -10117,8 +10156,8 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
  guestfs_set_memsize (guestfs_h *g,
                       int memsize);
 
-This sets the memory size in megabytes allocated to the qemu subprocess.
-This only has any effect if called before C<guestfs_launch>.
+This sets the memory size in megabytes allocated to the hypervisor.  This
+only has any effect if called before C<guestfs_launch>.
 
 ハンドルが設定される前に環境変数 C<LIBGUESTFS_MEMSIZE> を設定することにより、これを変更できます。
 
@@ -10204,23 +10243,30 @@ string (but never C<NULL>).
 
  int
  guestfs_set_qemu (guestfs_h *g,
-                   const char *qemu);
+                   const char *hv);
 
-使用したい QEMU バイナリーを設定します。
+I<This function is deprecated.> In new code, use the L</guestfs_set_hv> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
+
+Set the hypervisor binary (usually qemu) that we will use.
 
 The default is chosen when the library was compiled by the configure script.
 
-You can also override this by setting the C<LIBGUESTFS_QEMU> environment
+You can also override this by setting the C<LIBGUESTFS_HV> environment
 variable.
 
-Setting C<qemu> to C<NULL> restores the default qemu binary.
+Setting C<hv> to C<NULL> restores the default qemu binary.
 
 Note that you should call this function as early as possible after creating
 the handle.  This is because some pre-launch operations depend on testing
 qemu features (by running C<qemu -help>).  If the qemu binary changes, we
 don't retest features, and so you might see inconsistent results.  Using the
-environment variable C<LIBGUESTFS_QEMU> is safest of all since that picks
-the qemu binary at the same time as the handle is created.
+environment variable C<LIBGUESTFS_HV> is safest of all since that picks the
+qemu binary at the same time as the handle is created.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 
@@ -10234,7 +10280,7 @@ the qemu binary at the same time as the handle is created.
 
 If this is called with the parameter C<false> then C<guestfs_launch> does
 not create a recovery process.  The purpose of the recovery process is to
-stop runaway qemu processes in the case where the main program aborts
+stop runaway hypervisor processes in the case where the main program aborts
 abruptly.
 
 This only has any effect if called before C<guestfs_launch>, and the default
@@ -10243,7 +10289,7 @@ is true.
 About the only time when you would want to disable this is if the main
 process will fork itself into the background ("daemonize" itself).  In this
 case the recovery process thinks that the main program has disappeared and
-so kills qemu, which is not very helpful.
+so kills the hypervisor, which is not very helpful.
 
 この関数は、成功のとき 0 を、エラーのとき -1 を返します。
 

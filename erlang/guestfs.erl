@@ -151,6 +151,7 @@
 -export([get_e2generation/2]).
 -export([get_e2label/2]).
 -export([get_e2uuid/2]).
+-export([get_hv/1]).
 -export([get_libvirt_requested_credential_challenge/2]).
 -export([get_libvirt_requested_credential_defresult/2]).
 -export([get_libvirt_requested_credential_prompt/2]).
@@ -461,6 +462,7 @@
 -export([set_e2generation/3]).
 -export([set_e2label/3]).
 -export([set_e2uuid/3]).
+-export([set_hv/2]).
 -export([set_label/3]).
 -export([set_libvirt_requested_credential/3]).
 -export([set_libvirt_supported_credentials/2]).
@@ -827,8 +829,8 @@ compress_out(G, Ctype, File, Zfile, Optargs) ->
 compress_out(G, Ctype, File, Zfile) ->
   compress_out(G, Ctype, File, Zfile, []).
 
-config(G, Qemuparam, Qemuvalue) ->
-  call_port(G, {config, Qemuparam, Qemuvalue}).
+config(G, Hvparam, Hvvalue) ->
+  call_port(G, {config, Hvparam, Hvvalue}).
 
 copy_device_to_device(G, Src, Dest, Optargs) ->
   call_port(G, {copy_device_to_device, Src, Dest, Optargs}).
@@ -1018,6 +1020,9 @@ get_e2label(G, Device) ->
 
 get_e2uuid(G, Device) ->
   call_port(G, {get_e2uuid, Device}).
+
+get_hv(G) ->
+  call_port(G, {get_hv}).
 
 get_libvirt_requested_credential_challenge(G, Index) ->
   call_port(G, {get_libvirt_requested_credential_challenge, Index}).
@@ -2015,6 +2020,9 @@ set_e2label(G, Device, Label) ->
 set_e2uuid(G, Device, Uuid) ->
   call_port(G, {set_e2uuid, Device, Uuid}).
 
+set_hv(G, Hv) ->
+  call_port(G, {set_hv, Hv}).
+
 set_label(G, Mountable, Label) ->
   call_port(G, {set_label, Mountable, Label}).
 
@@ -2039,8 +2047,8 @@ set_pgroup(G, Pgroup) ->
 set_program(G, Program) ->
   call_port(G, {set_program, Program}).
 
-set_qemu(G, Qemu) ->
-  call_port(G, {set_qemu, Qemu}).
+set_qemu(G, Hv) ->
+  call_port(G, {set_qemu, Hv}).
 
 set_recovery_proc(G, Recoveryproc) ->
   call_port(G, {set_recovery_proc, Recoveryproc}).

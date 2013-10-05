@@ -1164,15 +1164,15 @@ default for this parameter depends on the compression program being used.
 
 =head2 config
 
- config qemuparam qemuvalue
+ config hvparam hvvalue
 
-This can be used to add arbitrary qemu command line parameters of the form
-I<-param value>.  Actually it's not quite arbitrary - we prevent you from
-setting some parameters which would interfere with parameters that we use.
+This can be used to add arbitrary hypervisor parameters of the form I<-param
+value>.  Actually it's not quite arbitrary - we prevent you from setting
+some parameters which would interfere with parameters that we use.
 
-The first character of C<qemuparam> string must be a C<-> (dash).
+The first character of C<hvparam> string must be a C<-> (dash).
 
-C<qemuvalue> は NULL の可能性があります。
+C<hvvalue> can be NULL.
 
 =head2 copy-device-to-device
 
@@ -2108,6 +2108,15 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 get-hv
+
+ get-hv
+
+Return the current hypervisor binary.
+
+This is always non-NULL.  If it wasn't set already, then this will return
+the default qemu binary name.
+
 =head2 get-libvirt-requested-credential-challenge
 
  get-libvirt-requested-credential-challenge index
@@ -2155,7 +2164,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
  get-memsize
 
-これは QEMU サブプロセスに割り当てられているメモリー容量をメガバイト単位で取得します。
+This gets the memory size in megabytes allocated to the hypervisor.
 
 If L</set-memsize> was not called on this handle, and if
 C<LIBGUESTFS_MEMSIZE> was not set, then this returns the compiled-in default
@@ -2190,8 +2199,8 @@ the default path.
 
  get-pid
 
-Return the process ID of the qemu subprocess.  If there is no qemu
-subprocess, then this will return an error.
+Return the process ID of the hypervisor.  If there is no hypervisor running,
+then this will return an error.
 
 This is an internal call used for debugging and testing.
 
@@ -2205,10 +2214,17 @@ Get the program name.  See L</set-program>.
 
  get-qemu
 
-現在の QEMU バイナリーを返します。
+Return the current hypervisor binary (usually qemu).
 
 This is always non-NULL.  If it wasn't set already, then this will return
 the default qemu binary name.
+
+I<This function is deprecated.> In new code, use the L</get-hv> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 get-recovery-proc
 
@@ -3685,7 +3701,7 @@ start of the journal.
 
  kill-subprocess
 
-これにより QEMU のサブプロセスがキルされます
+This kills the hypervisor.
 
 これを呼び出さないでください。代わりに L</shutdown> を参照してください。
 
@@ -3700,9 +3716,6 @@ these functions.
 =head2 run
 
  launch
-
-Internally libguestfs is implemented by running a virtual machine using
-L<qemu(1)>.
 
 You should call this after configuring the handle (eg. adding drives) but
 before performing any actions.
@@ -5367,10 +5380,9 @@ L</part-to-dev> 参照。
 
  ping-daemon
 
-This is a test probe into the guestfs daemon running inside the qemu
-subprocess.  Calling this function checks that the daemon responds to the
-ping message, without affecting the daemon or attached block device(s) in
-any other way.
+This is a test probe into the guestfs daemon running inside the hypervisor.
+Calling this function checks that the daemon responds to the ping message,
+without affecting the daemon or attached block device(s) in any other way.
 
 =head2 pread
 
@@ -5999,6 +6011,28 @@ Deprecated functions will not be removed from the API, but the fact that
 they are deprecated indicates that there are problems with correct use of
 these functions.
 
+=head2 set-hv
+
+=head2 hv
+
+ set-hv hv
+
+Set the hypervisor binary that we will use.  The hypervisor depends on the
+backend, but is usually the location of the qemu/KVM hypervisor.  For the
+uml backend, it is the location of the C<linux> or C<vmlinux> binary.
+
+The default is chosen when the library was compiled by the configure script.
+
+You can also override this by setting the C<LIBGUESTFS_HV> environment
+variable.
+
+Note that you should call this function as early as possible after creating
+the handle.  This is because some pre-launch operations depend on testing
+qemu features (by running C<qemu -help>).  If the qemu binary changes, we
+don't retest features, and so you might see inconsistent results.  Using the
+environment variable C<LIBGUESTFS_HV> is safest of all since that picks the
+qemu binary at the same time as the handle is created.
+
 =head2 set-label
 
  set-label mountable label
@@ -6084,7 +6118,8 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 
  set-memsize memsize
 
-QEMU サブプロセスに割り当てられるメモリー容量をメガバイト単位で設定します。 L</launch> 前に呼び出されるときのみ効果があります。
+This sets the memory size in megabytes allocated to the hypervisor.  This
+only has any effect if called before L</launch>.
 
 ハンドルが設定される前に環境変数 C<LIBGUESTFS_MEMSIZE> を設定することにより、これを変更できます。
 
@@ -6149,23 +6184,30 @@ string (but never C<NULL>).
 
 =head2 qemu
 
- set-qemu qemu
+ set-qemu hv
 
-使用したい QEMU バイナリーを設定します。
+Set the hypervisor binary (usually qemu) that we will use.
 
 The default is chosen when the library was compiled by the configure script.
 
-You can also override this by setting the C<LIBGUESTFS_QEMU> environment
+You can also override this by setting the C<LIBGUESTFS_HV> environment
 variable.
 
-Setting C<qemu> to C<NULL> restores the default qemu binary.
+Setting C<hv> to C<NULL> restores the default qemu binary.
 
 Note that you should call this function as early as possible after creating
 the handle.  This is because some pre-launch operations depend on testing
 qemu features (by running C<qemu -help>).  If the qemu binary changes, we
 don't retest features, and so you might see inconsistent results.  Using the
-environment variable C<LIBGUESTFS_QEMU> is safest of all since that picks
-the qemu binary at the same time as the handle is created.
+environment variable C<LIBGUESTFS_HV> is safest of all since that picks the
+qemu binary at the same time as the handle is created.
+
+I<This function is deprecated.> In new code, use the L</set-hv> call
+instead.
+
+Deprecated functions will not be removed from the API, but the fact that
+they are deprecated indicates that there are problems with correct use of
+these functions.
 
 =head2 set-recovery-proc
 
@@ -6175,7 +6217,8 @@ the qemu binary at the same time as the handle is created.
 
 If this is called with the parameter C<false> then L</launch> does not
 create a recovery process.  The purpose of the recovery process is to stop
-runaway qemu processes in the case where the main program aborts abruptly.
+runaway hypervisor processes in the case where the main program aborts
+abruptly.
 
 This only has any effect if called before L</launch>, and the default is
 true.
@@ -6183,7 +6226,7 @@ true.
 About the only time when you would want to disable this is if the main
 process will fork itself into the background ("daemonize" itself).  In this
 case the recovery process thinks that the main program has disappeared and
-so kills qemu, which is not very helpful.
+so kills the hypervisor, which is not very helpful.
 
 =head2 set-selinux
 

@@ -189,6 +189,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_get_e2generation, NULL)
   PHP_FE (guestfs_get_e2label, NULL)
   PHP_FE (guestfs_get_e2uuid, NULL)
+  PHP_FE (guestfs_get_hv, NULL)
   PHP_FE (guestfs_get_libvirt_requested_credential_challenge, NULL)
   PHP_FE (guestfs_get_libvirt_requested_credential_defresult, NULL)
   PHP_FE (guestfs_get_libvirt_requested_credential_prompt, NULL)
@@ -489,6 +490,7 @@ static zend_function_entry guestfs_php_functions[] = {
   PHP_FE (guestfs_set_e2generation, NULL)
   PHP_FE (guestfs_set_e2label, NULL)
   PHP_FE (guestfs_set_e2uuid, NULL)
+  PHP_FE (guestfs_set_hv, NULL)
   PHP_FE (guestfs_set_label, NULL)
   PHP_FE (guestfs_set_libvirt_requested_credential, NULL)
   PHP_FE (guestfs_set_libvirt_supported_credentials, NULL)
@@ -3389,13 +3391,13 @@ PHP_FUNCTION (guestfs_config)
 {
   zval *z_g;
   guestfs_h *g;
-  char *qemuparam;
-  int qemuparam_size;
-  char *qemuvalue;
-  int qemuvalue_size;
+  char *hvparam;
+  int hvparam_size;
+  char *hvvalue;
+  int hvvalue_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rss!",
-        &z_g, &qemuparam, &qemuparam_size, &qemuvalue, &qemuvalue_size) == FAILURE) {
+        &z_g, &hvparam, &hvparam_size, &hvvalue, &hvvalue_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -3405,18 +3407,18 @@ PHP_FUNCTION (guestfs_config)
     RETURN_FALSE;
   }
 
-  if (strlen (qemuparam) != qemuparam_size) {
-    fprintf (stderr, "libguestfs: config: parameter 'qemuparam' contains embedded ASCII NUL.\n");
+  if (strlen (hvparam) != hvparam_size) {
+    fprintf (stderr, "libguestfs: config: parameter 'hvparam' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
-  if (strlen (qemuvalue) != qemuvalue_size) {
-    fprintf (stderr, "libguestfs: config: parameter 'qemuvalue' contains embedded ASCII NUL.\n");
+  if (strlen (hvvalue) != hvvalue_size) {
+    fprintf (stderr, "libguestfs: config: parameter 'hvvalue' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
   int r;
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
 
   if (r == -1) {
     RETURN_FALSE;
@@ -5707,6 +5709,34 @@ PHP_FUNCTION (guestfs_get_e2uuid)
 
   char *r;
   r = guestfs_get_e2uuid (g, device);
+
+  if (r == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r_copy = estrdup (r);
+  free (r);
+  RETURN_STRING (r_copy, 0);
+}
+
+PHP_FUNCTION (guestfs_get_hv)
+{
+  zval *z_g;
+  guestfs_h *g;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "r",
+        &z_g) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  char *r;
+  r = guestfs_get_hv (g);
 
   if (r == NULL) {
     RETURN_FALSE;
@@ -17434,6 +17464,39 @@ PHP_FUNCTION (guestfs_set_e2uuid)
   RETURN_TRUE;
 }
 
+PHP_FUNCTION (guestfs_set_hv)
+{
+  zval *z_g;
+  guestfs_h *g;
+  char *hv;
+  int hv_size;
+
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs",
+        &z_g, &hv, &hv_size) == FAILURE) {
+    RETURN_FALSE;
+  }
+
+  ZEND_FETCH_RESOURCE (g, guestfs_h *, &z_g, -1, PHP_GUESTFS_HANDLE_RES_NAME,
+                       res_guestfs_h);
+  if (g == NULL) {
+    RETURN_FALSE;
+  }
+
+  if (strlen (hv) != hv_size) {
+    fprintf (stderr, "libguestfs: set_hv: parameter 'hv' contains embedded ASCII NUL.\n");
+    RETURN_FALSE;
+  }
+
+  int r;
+  r = guestfs_set_hv (g, hv);
+
+  if (r == -1) {
+    RETURN_FALSE;
+  }
+
+  RETURN_TRUE;
+}
+
 PHP_FUNCTION (guestfs_set_label)
 {
   zval *z_g;
@@ -17712,11 +17775,11 @@ PHP_FUNCTION (guestfs_set_qemu)
 {
   zval *z_g;
   guestfs_h *g;
-  char *qemu;
-  int qemu_size;
+  char *hv;
+  int hv_size;
 
   if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs!",
-        &z_g, &qemu, &qemu_size) == FAILURE) {
+        &z_g, &hv, &hv_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -17726,13 +17789,13 @@ PHP_FUNCTION (guestfs_set_qemu)
     RETURN_FALSE;
   }
 
-  if (strlen (qemu) != qemu_size) {
-    fprintf (stderr, "libguestfs: set_qemu: parameter 'qemu' contains embedded ASCII NUL.\n");
+  if (strlen (hv) != hv_size) {
+    fprintf (stderr, "libguestfs: set_qemu: parameter 'hv' contains embedded ASCII NUL.\n");
     RETURN_FALSE;
   }
 
   int r;
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
 
   if (r == -1) {
     RETURN_FALSE;

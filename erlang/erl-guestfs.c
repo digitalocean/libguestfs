@@ -1761,15 +1761,15 @@ run_compress_out (ETERM *message)
 static ETERM *
 run_config (ETERM *message)
 {
-  CLEANUP_FREE char *qemuparam = erl_iolist_to_string (ARG (0));
-  CLEANUP_FREE char *qemuvalue;
+  CLEANUP_FREE char *hvparam = erl_iolist_to_string (ARG (0));
+  CLEANUP_FREE char *hvvalue;
   if (atom_equals (ARG (1), "undefined"))
-    qemuvalue = NULL;
+    hvvalue = NULL;
   else
-    qemuvalue = erl_iolist_to_string (ARG (1));
+    hvvalue = erl_iolist_to_string (ARG (1));
   int r;
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1)
     return make_error ("config");
 
@@ -2794,6 +2794,20 @@ run_get_e2uuid (ETERM *message)
   r = guestfs_get_e2uuid (g, device);
   if (r == NULL)
     return make_error ("get_e2uuid");
+
+  ETERM *rt = erl_mk_string (r);
+  free (r);
+  return rt;
+}
+
+static ETERM *
+run_get_hv (ETERM *message)
+{
+  char *r;
+
+  r = guestfs_get_hv (g);
+  if (r == NULL)
+    return make_error ("get_hv");
 
   ETERM *rt = erl_mk_string (r);
   free (r);
@@ -8272,6 +8286,19 @@ run_set_e2uuid (ETERM *message)
 }
 
 static ETERM *
+run_set_hv (ETERM *message)
+{
+  CLEANUP_FREE char *hv = erl_iolist_to_string (ARG (0));
+  int r;
+
+  r = guestfs_set_hv (g, hv);
+  if (r == -1)
+    return make_error ("set_hv");
+
+  return erl_mk_atom ("ok");
+}
+
+static ETERM *
 run_set_label (ETERM *message)
 {
   CLEANUP_FREE char *mountable = erl_iolist_to_string (ARG (0));
@@ -8386,14 +8413,14 @@ run_set_program (ETERM *message)
 static ETERM *
 run_set_qemu (ETERM *message)
 {
-  CLEANUP_FREE char *qemu;
+  CLEANUP_FREE char *hv;
   if (atom_equals (ARG (0), "undefined"))
-    qemu = NULL;
+    hv = NULL;
   else
-    qemu = erl_iolist_to_string (ARG (0));
+    hv = erl_iolist_to_string (ARG (0));
   int r;
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1)
     return make_error ("set_qemu");
 
@@ -10380,6 +10407,8 @@ dispatch (ETERM *message)
     return run_get_e2label (message);
   else if (atom_equals (fun, "get_e2uuid"))
     return run_get_e2uuid (message);
+  else if (atom_equals (fun, "get_hv"))
+    return run_get_hv (message);
   else if (atom_equals (fun, "get_libvirt_requested_credential_challenge"))
     return run_get_libvirt_requested_credential_challenge (message);
   else if (atom_equals (fun, "get_libvirt_requested_credential_defresult"))
@@ -10980,6 +11009,8 @@ dispatch (ETERM *message)
     return run_set_e2label (message);
   else if (atom_equals (fun, "set_e2uuid"))
     return run_set_e2uuid (message);
+  else if (atom_equals (fun, "set_hv"))
+    return run_set_hv (message);
   else if (atom_equals (fun, "set_label"))
     return run_set_label (message);
   else if (atom_equals (fun, "set_libvirt_requested_credential"))

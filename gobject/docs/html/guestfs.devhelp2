@@ -123,6 +123,8 @@
     <keyword type="function" name="guestfs_session_config ()" link="GuestfsSession.html#guestfs-session-config"/>
     <keyword type="function" name="guestfs_session_set_qemu ()" link="GuestfsSession.html#guestfs-session-set-qemu"/>
     <keyword type="function" name="guestfs_session_get_qemu ()" link="GuestfsSession.html#guestfs-session-get-qemu"/>
+    <keyword type="function" name="guestfs_session_set_hv ()" link="GuestfsSession.html#guestfs-session-set-hv"/>
+    <keyword type="function" name="guestfs_session_get_hv ()" link="GuestfsSession.html#guestfs-session-get-hv"/>
     <keyword type="function" name="guestfs_session_set_path ()" link="GuestfsSession.html#guestfs-session-set-path"/>
     <keyword type="function" name="guestfs_session_get_path ()" link="GuestfsSession.html#guestfs-session-get-path"/>
     <keyword type="function" name="guestfs_session_set_append ()" link="GuestfsSession.html#guestfs-session-set-append"/>

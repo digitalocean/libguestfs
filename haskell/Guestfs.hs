@@ -48,6 +48,8 @@ module Guestfs (
   config,
   set_qemu,
   get_qemu,
+  set_hv,
+  get_hv,
   set_path,
   get_path,
   set_append,
@@ -778,8 +780,8 @@ foreign import ccall unsafe "guestfs.h guestfs_config" c_config
   :: GuestfsP -> CString -> CString -> IO CInt
 
 config :: GuestfsH -> String -> Maybe String -> IO ()
-config h qemuparam qemuvalue = do
-  r <- withCString qemuparam $ \qemuparam -> maybeWith withCString qemuvalue $ \qemuvalue -> withForeignPtr h (\p -> c_config p qemuparam qemuvalue)
+config h hvparam hvvalue = do
+  r <- withCString hvparam $ \hvparam -> maybeWith withCString hvvalue $ \hvvalue -> withForeignPtr h (\p -> c_config p hvparam hvvalue)
   if (r == -1)
     then do
       err <- last_error h
@@ -790,8 +792,8 @@ foreign import ccall unsafe "guestfs.h guestfs_set_qemu" c_set_qemu
   :: GuestfsP -> CString -> IO CInt
 
 set_qemu :: GuestfsH -> Maybe String -> IO ()
-set_qemu h qemu = do
-  r <- maybeWith withCString qemu $ \qemu -> withForeignPtr h (\p -> c_set_qemu p qemu)
+set_qemu h hv = do
+  r <- maybeWith withCString hv $ \hv -> withForeignPtr h (\p -> c_set_qemu p hv)
   if (r == -1)
     then do
       err <- last_error h
@@ -804,6 +806,30 @@ foreign import ccall unsafe "guestfs.h guestfs_get_qemu" c_get_qemu
 get_qemu :: GuestfsH -> IO String
 get_qemu h = do
   r <- withForeignPtr h (\p -> c_get_qemu p)
+  if (r == nullPtr)
+    then do
+      err <- last_error h
+      fail err
+    else peekCString r
+
+foreign import ccall unsafe "guestfs.h guestfs_set_hv" c_set_hv
+  :: GuestfsP -> CString -> IO CInt
+
+set_hv :: GuestfsH -> String -> IO ()
+set_hv h hv = do
+  r <- withCString hv $ \hv -> withForeignPtr h (\p -> c_set_hv p hv)
+  if (r == -1)
+    then do
+      err <- last_error h
+      fail err
+    else return ()
+
+foreign import ccall unsafe "guestfs.h guestfs_get_hv" c_get_hv
+  :: GuestfsP -> IO CString
+
+get_hv :: GuestfsH -> IO String
+get_hv h = do
+  r <- withForeignPtr h (\p -> c_get_hv p)
   if (r == nullPtr)
     then do
       err <- last_error h

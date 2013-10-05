@@ -229,6 +229,40 @@ guestfs_wait_ready (guestfs_h *g)
   return r;
 }
 
+GUESTFS_DLL_PUBLIC char *
+guestfs_get_hv (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char *r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "get_hv", 6);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "get_hv");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__get_hv (g);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "get_hv");
+      fprintf (trace_buffer.fp, "\"%s\"", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "get_hv", "NULL");
+  }
+
+  return r;
+}
+
 GUESTFS_DLL_PUBLIC int
 guestfs_get_direct (guestfs_h *g)
 {

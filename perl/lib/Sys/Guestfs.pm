@@ -1357,16 +1357,16 @@ The optional C<level> parameter controls compression level.  The
 meaning and default for this parameter depends on the compression
 program being used.
 
-=item $g->config ($qemuparam, $qemuvalue);
+=item $g->config ($hvparam, $hvvalue);
 
-This can be used to add arbitrary qemu command line parameters
-of the form I<-param value>.  Actually it's not quite arbitrary - we
+This can be used to add arbitrary hypervisor parameters of the
+form I<-param value>.  Actually it's not quite arbitrary - we
 prevent you from setting some parameters which would interfere with
 parameters that we use.
 
-The first character of C<qemuparam> string must be a C<-> (dash).
+The first character of C<hvparam> string must be a C<-> (dash).
 
-C<qemuvalue> can be NULL.
+C<hvvalue> can be NULL.
 
 =item $g->copy_device_to_device ($src, $dest [, srcoffset => $srcoffset] [, destoffset => $destoffset] [, size => $size] [, sparse => $sparse]);
 
@@ -2245,6 +2245,13 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=item $hv = $g->get_hv ();
+
+Return the current hypervisor binary.
+
+This is always non-NULL.  If it wasn't set already, then this will
+return the default qemu binary name.
+
 =item $challenge = $g->get_libvirt_requested_credential_challenge ($index);
 
 Get the challenge (provided by libvirt) for the C<index>'th
@@ -2283,7 +2290,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 =item $memsize = $g->get_memsize ();
 
 This gets the memory size in megabytes allocated to the
-qemu subprocess.
+hypervisor.
 
 If C<$g-E<gt>set_memsize> was not called
 on this handle, and if C<LIBGUESTFS_MEMSIZE> was not set,
@@ -2309,8 +2316,8 @@ This returns the process group flag.
 
 =item $pid = $g->get_pid ();
 
-Return the process ID of the qemu subprocess.  If there is no
-qemu subprocess, then this will return an error.
+Return the process ID of the hypervisor.  If there is no
+hypervisor running, then this will return an error.
 
 This is an internal call used for debugging and testing.
 
@@ -2318,12 +2325,19 @@ This is an internal call used for debugging and testing.
 
 Get the program name.  See C<$g-E<gt>set_program>.
 
-=item $qemu = $g->get_qemu ();
+=item $hv = $g->get_qemu ();
 
-Return the current qemu binary.
+Return the current hypervisor binary (usually qemu).
 
 This is always non-NULL.  If it wasn't set already, then this will
 return the default qemu binary name.
+
+I<This function is deprecated.>
+In new code, use the L</get_hv> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $recoveryproc = $g->get_recovery_proc ();
 
@@ -3804,7 +3818,7 @@ the start of the journal.
 
 =item $g->kill_subprocess ();
 
-This kills the qemu subprocess.
+This kills the hypervisor.
 
 Do not call this.  See: C<$g-E<gt>shutdown> instead.
 
@@ -3816,9 +3830,6 @@ fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
 =item $g->launch ();
-
-Internally libguestfs is implemented by running a virtual machine
-using L<qemu(1)>.
 
 You should call this after configuring the handle
 (eg. adding drives) but before performing any actions.
@@ -5342,7 +5353,7 @@ See also C<$g-E<gt>part_to_dev>.
 =item $g->ping_daemon ();
 
 This is a test probe into the guestfs daemon running inside
-the qemu subprocess.  Calling this function checks that the
+the hypervisor.  Calling this function checks that the
 daemon responds to the ping message, without affecting the daemon
 or attached block device(s) in any other way.
 
@@ -5884,6 +5895,27 @@ Deprecated functions will not be removed from the API, but the
 fact that they are deprecated indicates that there are problems
 with correct use of these functions.
 
+=item $g->set_hv ($hv);
+
+Set the hypervisor binary that we will use.  The hypervisor
+depends on the backend, but is usually the location of the
+qemu/KVM hypervisor.  For the uml backend, it is the location
+of the C<linux> or C<vmlinux> binary.
+
+The default is chosen when the library was compiled by the
+configure script.
+
+You can also override this by setting the C<LIBGUESTFS_HV>
+environment variable.
+
+Note that you should call this function as early as possible
+after creating the handle.  This is because some pre-launch
+operations depend on testing qemu features (by running C<qemu -help>).
+If the qemu binary changes, we don't retest features, and
+so you might see inconsistent results.  Using the environment
+variable C<LIBGUESTFS_HV> is safest of all since that picks
+the qemu binary at the same time as the handle is created.
+
 =item $g->set_label ($mountable, $label);
 
 Set the filesystem label on C<mountable> to C<label>.
@@ -5962,7 +5994,7 @@ See L<guestfs(3)/LIBVIRT AUTHENTICATION> for documentation and example code.
 =item $g->set_memsize ($memsize);
 
 This sets the memory size in megabytes allocated to the
-qemu subprocess.  This only has any effect if called before
+hypervisor.  This only has any effect if called before
 C<$g-E<gt>launch>.
 
 You can also change this by setting the environment
@@ -6014,31 +6046,38 @@ When the handle is created, the program name in the handle is
 set to the basename from C<argv[0]>.  If that was not possible,
 it is set to the empty string (but never C<NULL>).
 
-=item $g->set_qemu ($qemu);
+=item $g->set_qemu ($hv);
 
-Set the qemu binary that we will use.
+Set the hypervisor binary (usually qemu) that we will use.
 
 The default is chosen when the library was compiled by the
 configure script.
 
-You can also override this by setting the C<LIBGUESTFS_QEMU>
+You can also override this by setting the C<LIBGUESTFS_HV>
 environment variable.
 
-Setting C<qemu> to C<NULL> restores the default qemu binary.
+Setting C<hv> to C<NULL> restores the default qemu binary.
 
 Note that you should call this function as early as possible
 after creating the handle.  This is because some pre-launch
 operations depend on testing qemu features (by running C<qemu -help>).
 If the qemu binary changes, we don't retest features, and
 so you might see inconsistent results.  Using the environment
-variable C<LIBGUESTFS_QEMU> is safest of all since that picks
+variable C<LIBGUESTFS_HV> is safest of all since that picks
 the qemu binary at the same time as the handle is created.
+
+I<This function is deprecated.>
+In new code, use the L</set_hv> call instead.
+
+Deprecated functions will not be removed from the API, but the
+fact that they are deprecated indicates that there are problems
+with correct use of these functions.
 
 =item $g->set_recovery_proc ($recoveryproc);
 
 If this is called with the parameter C<false> then
 C<$g-E<gt>launch> does not create a recovery process.  The
-purpose of the recovery process is to stop runaway qemu
+purpose of the recovery process is to stop runaway hypervisor
 processes in the case where the main program aborts abruptly.
 
 This only has any effect if called before C<$g-E<gt>launch>,
@@ -6048,7 +6087,7 @@ About the only time when you would want to disable this is
 if the main process will fork itself into the background
 ("daemonize" itself).  In this case the recovery process
 thinks that the main program has disappeared and so kills
-qemu, which is not very helpful.
+the hypervisor, which is not very helpful.
 
 =item $g->set_selinux ($selinux);
 
@@ -7847,11 +7886,11 @@ use vars qw(%guestfs_introspection);
   "config" => {
     ret => 'void',
     args => [
-      [ 'qemuparam', 'string', 0 ],
-      [ 'qemuvalue', 'nullable string', 1 ],
+      [ 'hvparam', 'string', 0 ],
+      [ 'hvvalue', 'nullable string', 1 ],
     ],
     name => "config",
-    description => "add qemu parameters",
+    description => "add hypervisor parameters",
   },
   "copy_device_to_device" => {
     ret => 'void',
@@ -8379,6 +8418,13 @@ use vars qw(%guestfs_introspection);
     name => "get_e2uuid",
     description => "get the ext2/3/4 filesystem UUID",
   },
+  "get_hv" => {
+    ret => 'string',
+    args => [
+    ],
+    name => "get_hv",
+    description => "get the hypervisor binary",
+  },
   "get_libvirt_requested_credential_challenge" => {
     ret => 'string',
     args => [
@@ -8415,7 +8461,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_memsize",
-    description => "get memory allocated to the qemu subprocess",
+    description => "get memory allocated to the hypervisor",
   },
   "get_network" => {
     ret => 'bool',
@@ -8443,7 +8489,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_pid",
-    description => "get PID of qemu subprocess",
+    description => "get PID of hypervisor",
   },
   "get_program" => {
     ret => 'const string',
@@ -8457,7 +8503,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "get_qemu",
-    description => "get the qemu binary",
+    description => "get the hypervisor binary (usually qemu)",
   },
   "get_recovery_proc" => {
     ret => 'bool',
@@ -9499,14 +9545,14 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "kill_subprocess",
-    description => "kill the qemu subprocess",
+    description => "kill the hypervisor",
   },
   "launch" => {
     ret => 'void',
     args => [
     ],
     name => "launch",
-    description => "launch the qemu subprocess",
+    description => "launch the backend",
   },
   "lchown" => {
     ret => 'void',
@@ -11065,6 +11111,14 @@ use vars qw(%guestfs_introspection);
     name => "set_e2uuid",
     description => "set the ext2/3/4 filesystem UUID",
   },
+  "set_hv" => {
+    ret => 'void',
+    args => [
+      [ 'hv', 'string', 0 ],
+    ],
+    name => "set_hv",
+    description => "set the hypervisor binary",
+  },
   "set_label" => {
     ret => 'void',
     args => [
@@ -11097,7 +11151,7 @@ use vars qw(%guestfs_introspection);
       [ 'memsize', 'int', 0 ],
     ],
     name => "set_memsize",
-    description => "set memory allocated to the qemu subprocess",
+    description => "set memory allocated to the hypervisor",
   },
   "set_network" => {
     ret => 'void',
@@ -11134,10 +11188,10 @@ use vars qw(%guestfs_introspection);
   "set_qemu" => {
     ret => 'void',
     args => [
-      [ 'qemu', 'nullable string', 0 ],
+      [ 'hv', 'nullable string', 0 ],
     ],
     name => "set_qemu",
-    description => "set the qemu binary",
+    description => "set the hypervisor binary (usually qemu)",
   },
   "set_recovery_proc" => {
     ret => 'void',
@@ -11294,7 +11348,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "shutdown",
-    description => "shutdown the qemu subprocess",
+    description => "shutdown the hypervisor",
   },
   "sleep" => {
     ret => 'void',
@@ -11780,7 +11834,7 @@ use vars qw(%guestfs_introspection);
     args => [
     ],
     name => "wait_ready",
-    description => "wait until the qemu subprocess launches (no op)",
+    description => "wait until the hypervisor launches (no op)",
   },
   "wc_c" => {
     ret => 'int',

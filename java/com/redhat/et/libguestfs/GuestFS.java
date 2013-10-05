@@ -1176,10 +1176,7 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * launch the qemu subprocess
-   * <p>
-   * Internally libguestfs is implemented by running a
-   * virtual machine using qemu(1).
+   * launch the backend
    * <p>
    * You should call this after configuring the handle (eg.
    * adding drives) but before performing any actions.
@@ -1205,7 +1202,7 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * wait until the qemu subprocess launches (no op)
+   * wait until the hypervisor launches (no op)
    * <p>
    * This function is a no op.
    * <p>
@@ -1240,9 +1237,9 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * kill the qemu subprocess
+   * kill the hypervisor
    * <p>
-   * This kills the qemu subprocess.
+   * This kills the hypervisor.
    * <p>
    * Do not call this. See: "g.shutdown" instead.
    * <p>
@@ -1321,46 +1318,45 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * add qemu parameters
+   * add hypervisor parameters
    * <p>
-   * This can be used to add arbitrary qemu command line
-   * parameters of the form *-param value*. Actually it's not
-   * quite arbitrary - we prevent you from setting some
-   * parameters which would interfere with parameters that we
-   * use.
+   * This can be used to add arbitrary hypervisor parameters
+   * of the form *-param value*. Actually it's not quite
+   * arbitrary - we prevent you from setting some parameters
+   * which would interfere with parameters that we use.
    * <p>
-   * The first character of "qemuparam" string must be a "-"
+   * The first character of "hvparam" string must be a "-"
    * (dash).
    * <p>
-   * "qemuvalue" can be NULL.
+   * "hvvalue" can be NULL.
    * <p>
    * @throws LibGuestFSException
    */
-  public void config (String qemuparam, String qemuvalue)
+  public void config (String hvparam, String hvvalue)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("config: handle is closed");
 
-    _config (g, qemuparam, qemuvalue);
+    _config (g, hvparam, hvvalue);
   }
 
-  private native void _config (long g, String qemuparam, String qemuvalue)
+  private native void _config (long g, String hvparam, String hvvalue)
     throws LibGuestFSException;
 
   /**
-   * set the qemu binary
+   * set the hypervisor binary (usually qemu)
    * <p>
-   * Set the qemu binary that we will use.
+   * Set the hypervisor binary (usually qemu) that we will
+   * use.
    * <p>
    * The default is chosen when the library was compiled by
    * the configure script.
    * <p>
    * You can also override this by setting the
-   * "LIBGUESTFS_QEMU" environment variable.
+   * "LIBGUESTFS_HV" environment variable.
    * <p>
-   * Setting "qemu" to "NULL" restores the default qemu
-   * binary.
+   * Setting "hv" to "NULL" restores the default qemu binary.
    * <p>
    * Note that you should call this function as early as
    * possible after creating the handle. This is because some
@@ -1368,30 +1364,44 @@ public class GuestFS {
    * (by running "qemu -help"). If the qemu binary changes,
    * we don't retest features, and so you might see
    * inconsistent results. Using the environment variable
-   * "LIBGUESTFS_QEMU" is safest of all since that picks the
+   * "LIBGUESTFS_HV" is safest of all since that picks the
    * qemu binary at the same time as the handle is created.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "set_hv" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
-  public void set_qemu (String qemu)
+  public void set_qemu (String hv)
     throws LibGuestFSException
   {
     if (g == 0)
       throw new LibGuestFSException ("set_qemu: handle is closed");
 
-    _set_qemu (g, qemu);
+    _set_qemu (g, hv);
   }
 
-  private native void _set_qemu (long g, String qemu)
+  private native void _set_qemu (long g, String hv)
     throws LibGuestFSException;
 
   /**
-   * get the qemu binary
+   * get the hypervisor binary (usually qemu)
    * <p>
-   * Return the current qemu binary.
+   * Return the current hypervisor binary (usually qemu).
    * <p>
    * This is always non-NULL. If it wasn't set already, then
    * this will return the default qemu binary name.
+   * <p>
+   * *This function is deprecated.* In new code, use the
+   * "get_hv" call instead.
+   * <p>
+   * Deprecated functions will not be removed from the API,
+   * but the fact that they are deprecated indicates that
+   * there are problems with correct use of these functions.
    * <p>
    * @throws LibGuestFSException
    */
@@ -1405,6 +1415,66 @@ public class GuestFS {
   }
 
   private native String _get_qemu (long g)
+    throws LibGuestFSException;
+
+  /**
+   * set the hypervisor binary
+   * <p>
+   * Set the hypervisor binary that we will use. The
+   * hypervisor depends on the backend, but is usually the
+   * location of the qemu/KVM hypervisor. For the uml
+   * backend, it is the location of the "linux" or "vmlinux"
+   * binary.
+   * <p>
+   * The default is chosen when the library was compiled by
+   * the configure script.
+   * <p>
+   * You can also override this by setting the
+   * "LIBGUESTFS_HV" environment variable.
+   * <p>
+   * Note that you should call this function as early as
+   * possible after creating the handle. This is because some
+   * pre-launch operations depend on testing qemu features
+   * (by running "qemu -help"). If the qemu binary changes,
+   * we don't retest features, and so you might see
+   * inconsistent results. Using the environment variable
+   * "LIBGUESTFS_HV" is safest of all since that picks the
+   * qemu binary at the same time as the handle is created.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public void set_hv (String hv)
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("set_hv: handle is closed");
+
+    _set_hv (g, hv);
+  }
+
+  private native void _set_hv (long g, String hv)
+    throws LibGuestFSException;
+
+  /**
+   * get the hypervisor binary
+   * <p>
+   * Return the current hypervisor binary.
+   * <p>
+   * This is always non-NULL. If it wasn't set already, then
+   * this will return the default qemu binary name.
+   * <p>
+   * @throws LibGuestFSException
+   */
+  public String get_hv ()
+    throws LibGuestFSException
+  {
+    if (g == 0)
+      throw new LibGuestFSException ("get_hv: handle is closed");
+
+    return _get_hv (g);
+  }
+
+  private native String _get_hv (long g)
     throws LibGuestFSException;
 
   /**
@@ -1703,11 +1773,11 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * set memory allocated to the qemu subprocess
+   * set memory allocated to the hypervisor
    * <p>
    * This sets the memory size in megabytes allocated to the
-   * qemu subprocess. This only has any effect if called
-   * before "g.launch".
+   * hypervisor. This only has any effect if called before
+   * "g.launch".
    * <p>
    * You can also change this by setting the environment
    * variable "LIBGUESTFS_MEMSIZE" before the handle is
@@ -1731,10 +1801,10 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * get memory allocated to the qemu subprocess
+   * get memory allocated to the hypervisor
    * <p>
    * This gets the memory size in megabytes allocated to the
-   * qemu subprocess.
+   * hypervisor.
    * <p>
    * If "g.set_memsize" was not called on this handle, and if
    * "LIBGUESTFS_MEMSIZE" was not set, then this returns the
@@ -1758,10 +1828,10 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * get PID of qemu subprocess
+   * get PID of hypervisor
    * <p>
-   * Return the process ID of the qemu subprocess. If there
-   * is no qemu subprocess, then this will return an error.
+   * Return the process ID of the hypervisor. If there is no
+   * hypervisor running, then this will return an error.
    * <p>
    * This is an internal call used for debugging and testing.
    * <p>
@@ -1983,9 +2053,9 @@ public class GuestFS {
    * <p>
    * If this is called with the parameter "false" then
    * "g.launch" does not create a recovery process. The
-   * purpose of the recovery process is to stop runaway qemu
-   * processes in the case where the main program aborts
-   * abruptly.
+   * purpose of the recovery process is to stop runaway
+   * hypervisor processes in the case where the main program
+   * aborts abruptly.
    * <p>
    * This only has any effect if called before "g.launch",
    * and the default is true.
@@ -1994,8 +2064,8 @@ public class GuestFS {
    * is if the main process will fork itself into the
    * background ("daemonize" itself). In this case the
    * recovery process thinks that the main program has
-   * disappeared and so kills qemu, which is not very
-   * helpful.
+   * disappeared and so kills the hypervisor, which is not
+   * very helpful.
    * <p>
    * @throws LibGuestFSException
    */
@@ -4266,7 +4336,7 @@ public class GuestFS {
     throws LibGuestFSException;
 
   /**
-   * shutdown the qemu subprocess
+   * shutdown the hypervisor
    * <p>
    * This is the opposite of "g.launch". It performs an
    * orderly shutdown of the backend process(es). If the
@@ -7690,8 +7760,8 @@ public class GuestFS {
    * ping the guest daemon
    * <p>
    * This is a test probe into the guestfs daemon running
-   * inside the qemu subprocess. Calling this function checks
-   * that the daemon responds to the ping message, without
+   * inside the hypervisor. Calling this function checks that
+   * the daemon responds to the ping message, without
    * affecting the daemon or attached block device(s) in any
    * other way.
    * <p>

@@ -229,6 +229,7 @@
         guestfs_get_e2label;
         guestfs_get_e2uuid;
         guestfs_get_error_handler;
+        guestfs_get_hv;
         guestfs_get_libvirt_requested_credential_challenge;
         guestfs_get_libvirt_requested_credential_defresult;
         guestfs_get_libvirt_requested_credential_prompt;
@@ -619,6 +620,7 @@
         guestfs_set_e2uuid;
         guestfs_set_error_handler;
         guestfs_set_event_callback;
+        guestfs_set_hv;
         guestfs_set_label;
         guestfs_set_launch_done_callback;
         guestfs_set_libvirt_requested_credential;

@@ -37,6 +37,7 @@ SUBDIRS += tests/guests
 SUBDIRS += tests/c-api
 SUBDIRS += tests/tmpdirs
 SUBDIRS += tests/protocol
+SUBDIRS += tests/events
 SUBDIRS += tests/parallel
 SUBDIRS += tests/disks
 SUBDIRS += tests/mountable
@@ -143,7 +144,6 @@ EXTRA_DIST = \
 	autogen.sh \
 	bindtests \
 	contrib/autobuild/autobuild.sh \
-	contrib/guestfsd-in-wine.sh \
 	contrib/intro/libguestfs-intro.html \
 	contrib/intro/overview.png \
 	contrib/intro/overview.svg \
@@ -343,7 +343,7 @@ check-release:
 	  check-valgrind \
 	  check-direct \
 	  check-valgrind-direct
-	$(MAKE) -j1 LIBGUESTFS_QEMU=$(HOME)/d/linux/vmlinux \
+	$(MAKE) -j1 LIBGUESTFS_HV=$(HOME)/d/linux-um/vmlinux \
 	  check-uml \
 	  check-valgrind-uml
 	$(MAKE) -j1 \
@@ -406,7 +406,7 @@ check-with-upstream-qemu:
 
 check-with-upstream-qemu-1: $(top_builddir)/qemu-wrapper.sh
 	$(QEMUBINARY) --version
-	$(MAKE) LIBGUESTFS_QEMU=$(abs_top_builddir)/qemu-wrapper.sh check
+	$(MAKE) LIBGUESTFS_HV=$(abs_top_builddir)/qemu-wrapper.sh check
 
 $(top_builddir)/qemu-wrapper.sh: Makefile
 	rm -f $@ $@-t

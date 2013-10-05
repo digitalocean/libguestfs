@@ -172,13 +172,18 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Guest
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-config" title="guestfs_session_config ()">guestfs_session_config</a>              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *qemuparam</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *qemuvalue</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hvparam</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hvvalue</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-qemu" title="guestfs_session_set_qemu ()">guestfs_session_set_qemu</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *qemu</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hv</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 const <span class="returnvalue">gchar</span> *       <a class="link" href="GuestfsSession.html#guestfs-session-get-qemu" title="guestfs_session_get_qemu ()">guestfs_session_get_qemu</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-hv" title="guestfs_session_set_hv ()">guestfs_session_set_hv</a>              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hv</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="GuestfsSession.html#guestfs-session-get-hv" title="guestfs_session_get_hv ()">guestfs_session_get_hv</a>              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="GuestfsSession.html#guestfs-session-set-path" title="guestfs_session_set_path ()">guestfs_session_set_path</a>            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *searchpath</code></em>,
@@ -3529,11 +3534,7 @@ You probably don't want to call this function.
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_launch              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-launch the qemu subprocess
-</p>
-<p>
-Internally libguestfs is implemented by running a virtual machine using
-qemu(1).
+launch the backend
 </p>
 <p>
 You should call this after configuring the handle (eg. adding drives)
@@ -3573,7 +3574,7 @@ to create, so create a new one for each launch.
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_wait_ready          (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-wait until the qemu subprocess launches (no op)
+wait until the hypervisor launches (no op)
 </p>
 <p>
 This function is a no op.
@@ -3617,10 +3618,10 @@ API.
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_kill_subprocess     (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-kill the qemu subprocess
+kill the hypervisor
 </p>
 <p>
-This kills the qemu subprocess.
+This kills the hypervisor.
 </p>
 <p>
 Do not call this. See: <a class="link" href="GuestfsSession.html#guestfs-session-shutdown" title="guestfs_session_shutdown ()"><code class="function">guestfs_session_shutdown()</code></a> instead.
@@ -3736,23 +3737,23 @@ read-only, with the format being detected automatically.
 <div class="refsect2">
 <a name="guestfs-session-config"></a><h3>guestfs_session_config ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_config              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *qemuparam</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *qemuvalue</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hvparam</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hvvalue</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-add qemu parameters
+add hypervisor parameters
 </p>
 <p>
-This can be used to add arbitrary qemu command line parameters of the
-form *-param value*. Actually it's not quite arbitrary - we prevent you
-from setting some parameters which would interfere with parameters that
-we use.
+This can be used to add arbitrary hypervisor parameters of the form
+*-param value*. Actually it's not quite arbitrary - we prevent you from
+setting some parameters which would interfere with parameters that we
+use.
 </p>
 <p>
-The first character of <em class="parameter"><code>qemuparam</code></em> string must be a @- (dash).
+The first character of <em class="parameter"><code>hvparam</code></em> string must be a @- (dash).
 </p>
 <p>
-<em class="parameter"><code>qemuvalue</code></em> can be NULL.
+<em class="parameter"><code>hvvalue</code></em> can be NULL.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -3766,12 +3767,12 @@ The first character of <em class="parameter"><code>qemuparam</code></em> string 
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>qemuparam</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>hvparam</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>qemuvalue</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>hvvalue</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
@@ -3790,32 +3791,32 @@ The first character of <em class="parameter"><code>qemuparam</code></em> string 
 <div class="refsect2">
 <a name="guestfs-session-set-qemu"></a><h3>guestfs_session_set_qemu ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_qemu            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
-                                                         <em class="parameter"><code>const <span class="type">gchar</span> *qemu</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hv</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-set the qemu binary
+set the hypervisor binary (usually qemu)
 </p>
 <p>
-Set the qemu binary that we will use.
+Set the hypervisor binary (usually qemu) that we will use.
 </p>
 <p>
 The default is chosen when the library was compiled by the configure
 script.
 </p>
 <p>
-You can also override this by setting the <em class="parameter"><code>LIBGUESTFS_QEMU</code></em> environment
+You can also override this by setting the <em class="parameter"><code>LIBGUESTFS_HV</code></em> environment
 variable.
 </p>
 <p>
-Setting <em class="parameter"><code>qemu</code></em> to <em class="parameter"><code>NULL</code></em> restores the default qemu binary.
+Setting <em class="parameter"><code>hv</code></em> to <em class="parameter"><code>NULL</code></em> restores the default qemu binary.
 </p>
 <p>
 Note that you should call this function as early as possible after
 creating the handle. This is because some pre-launch operations depend
 on testing qemu features (by running "qemu -help"). If the qemu binary
 changes, we don't retest features, and so you might see inconsistent
-results. Using the environment variable <em class="parameter"><code>LIBGUESTFS_QEMU</code></em> is safest of
-all since that picks the qemu binary at the same time as the handle is
+results. Using the environment variable <em class="parameter"><code>LIBGUESTFS_HV</code></em> is safest of all
+since that picks the qemu binary at the same time as the handle is
 created.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
@@ -3830,7 +3831,7 @@ created.
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>qemu</code></em> :</span></p></td>
+<td><p><span class="term"><em class="parameter"><code>hv</code></em> :</span></p></td>
 <td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
@@ -3851,10 +3852,10 @@ created.
 <pre class="programlisting">const <span class="returnvalue">gchar</span> *       guestfs_session_get_qemu            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-get the qemu binary
+get the hypervisor binary (usually qemu)
 </p>
 <p>
-Return the current qemu binary.
+Return the current hypervisor binary (usually qemu).
 </p>
 <p>
 This is always non-NULL. If it wasn't set already, then this will return
@@ -3878,6 +3879,102 @@ the default qemu binary name.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-set-hv"></a><h3>guestfs_session_set_hv ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_set_hv              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *hv</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+set the hypervisor binary
+</p>
+<p>
+Set the hypervisor binary that we will use. The hypervisor depends on
+the backend, but is usually the location of the qemu/KVM hypervisor. For
+the uml backend, it is the location of the <em class="parameter"><code>linux</code></em> or <em class="parameter"><code>vmlinux</code></em> binary.
+</p>
+<p>
+The default is chosen when the library was compiled by the configure
+script.
+</p>
+<p>
+You can also override this by setting the <em class="parameter"><code>LIBGUESTFS_HV</code></em> environment
+variable.
+</p>
+<p>
+Note that you should call this function as early as possible after
+creating the handle. This is because some pre-launch operations depend
+on testing qemu features (by running "qemu -help"). If the qemu binary
+changes, we don't retest features, and so you might see inconsistent
+results. Using the environment variable <em class="parameter"><code>LIBGUESTFS_HV</code></em> is safest of all
+since that picks the qemu binary at the same time as the handle is
+created.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>hv</code></em> :</span></p></td>
+<td>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>true on success, false on error</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="guestfs-session-get-hv"></a><h3>guestfs_session_get_hv ()</h3>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             guestfs_session_get_hv              (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+get the hypervisor binary
+</p>
+<p>
+Return the current hypervisor binary.
+</p>
+<p>
+This is always non-NULL. If it wasn't set already, then this will return
+the default qemu binary name.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>session</code></em> :</span></p></td>
+<td>A GuestfsSession object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>A GError object to receive any generated errors</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the returned string, or NULL on error. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -4404,11 +4501,11 @@ For more information on states, see guestfs(3).
                                                          <em class="parameter"><code><span class="type">gint32</span> memsize</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-set memory allocated to the qemu subprocess
+set memory allocated to the hypervisor
 </p>
 <p>
-This sets the memory size in megabytes allocated to the qemu subprocess.
-This only has any effect if called before <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a>.
+This sets the memory size in megabytes allocated to the hypervisor. This
+only has any effect if called before <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a>.
 </p>
 <p>
 You can also change this by setting the environment variable
@@ -4450,10 +4547,10 @@ For more information on the architecture of libguestfs, see guestfs(3).
 <pre class="programlisting"><span class="returnvalue">gint32</span>              guestfs_session_get_memsize         (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-get memory allocated to the qemu subprocess
+get memory allocated to the hypervisor
 </p>
 <p>
-This gets the memory size in megabytes allocated to the qemu subprocess.
+This gets the memory size in megabytes allocated to the hypervisor.
 </p>
 <p>
 If <a class="link" href="GuestfsSession.html#guestfs-session-set-memsize" title="guestfs_session_set_memsize ()"><code class="function">guestfs_session_set_memsize()</code></a> was not called on this handle, and if
@@ -4491,11 +4588,11 @@ For more information on the architecture of libguestfs, see guestfs(3).
 <pre class="programlisting"><span class="returnvalue">gint32</span>              guestfs_session_get_pid             (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-get PID of qemu subprocess
+get PID of hypervisor
 </p>
 <p>
-Return the process ID of the qemu subprocess. If there is no qemu
-subprocess, then this will return an error.
+Return the process ID of the hypervisor. If there is no hypervisor
+running, then this will return an error.
 </p>
 <p>
 This is an internal call used for debugging and testing.
@@ -4853,8 +4950,8 @@ enable or disable the recovery process
 <p>
 If this is called with the parameter <em class="parameter"><code>false</code></em> then
 <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a> does not create a recovery process. The purpose
-of the recovery process is to stop runaway qemu processes in the case
-where the main program aborts abruptly.
+of the recovery process is to stop runaway hypervisor processes in the
+case where the main program aborts abruptly.
 </p>
 <p>
 This only has any effect if called before <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a>, and
@@ -4864,7 +4961,7 @@ the default is true.
 About the only time when you would want to disable this is if the main
 process will fork itself into the background ("daemonize" itself). In
 this case the recovery process thinks that the main program has
-disappeared and so kills qemu, which is not very helpful.
+disappeared and so kills the hypervisor, which is not very helpful.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -7896,7 +7993,7 @@ Other strings are returned unmodified.
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            guestfs_session_shutdown            (<em class="parameter"><code><a class="link" href="GuestfsSession.html" title="GuestfsSession"><span class="type">GuestfsSession</span></a> *session</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
 <p>
-shutdown the qemu subprocess
+shutdown the hypervisor
 </p>
 <p>
 This is the opposite of <a class="link" href="GuestfsSession.html#guestfs-session-launch" title="guestfs_session_launch ()"><code class="function">guestfs_session_launch()</code></a>. It performs an orderly
@@ -13011,7 +13108,7 @@ debugging and internals
 </p>
 <p>
 The <a class="link" href="GuestfsSession.html#guestfs-session-debug" title="guestfs_session_debug ()"><code class="function">guestfs_session_debug()</code></a> command exposes some internals of <em class="parameter"><code>guestfsd</code></em>
-(the guestfs daemon) that runs inside the qemu subprocess.
+(the guestfs daemon) that runs inside the hypervisor.
 </p>
 <p>
 There is no comprehensive help for this command. You have to look at the
@@ -13797,8 +13894,8 @@ variable "LIBGUESTFS_DEBUG=1" before running the program.
 ping the guest daemon
 </p>
 <p>
-This is a test probe into the guestfs daemon running inside the qemu
-subprocess. Calling this function checks that the daemon responds to the
+This is a test probe into the guestfs daemon running inside the
+hypervisor. Calling this function checks that the daemon responds to the
 ping message, without affecting the daemon or attached block device(s)
 in any other way.
 </p>

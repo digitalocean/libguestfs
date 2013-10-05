@@ -892,6 +892,8 @@ guestfs_session_add_drive_ro
 guestfs_session_config
 guestfs_session_set_qemu
 guestfs_session_get_qemu
+guestfs_session_set_hv
+guestfs_session_get_hv
 guestfs_session_set_path
 guestfs_session_get_path
 guestfs_session_set_append

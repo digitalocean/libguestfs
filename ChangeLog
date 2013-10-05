@@ -1,4 +1,47 @@
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove contrib file from EXTRA_DIST.
+	This fixes commit 36d29700dcef01d681d41f0b593a16e7814e3ee1.
+
+	guestfs-performance: Add a section on the performance of UML.
+
+	Rename 'qemu' as 'hv', 'LIBGUESTFS_QEMU' as 'LIBGUESTFS_HV'.
+
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: libvirt: Don't enable <cpu mode="host-model"> on TCG.
+	It's fairly pointless to do this with TCG, since all we would be doing
+	is emulating a more complicated processor slowly.  Also it may be the
+	cause of subtle problems we see during testing.
+
+	This updates commit 6f76fdb41eb6bd124fbc3d084f5c2a3371b37d9b.
+
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	launch: direct: Don't use -cpu host on TCG.
+	qemu -cpu \? documents this as:
+
+	host  KVM processor with all supported host features (only available in KVM mode)
+
+	And indeed if you try it with TCG you'll get this error:
+
+	Unable to find CPU definition: host
+
+	This fixes commit 038ed0a08eaed33e62a27c9f91780a25de0bc08c.
+
+2013-08-14  Richard W.M. Jones  <rjones@redhat.com>
+
+	tests: Add a test that console log messages make it up to events.
+	In Rawhide, the console was briefly broken although it "fixed itself"
+	when libvirtd was restarted.
+
 2013-08-13  Richard W.M. Jones  <rjones@redhat.com>
+
+	Remove contrib/guestfsd-in-wine.sh.
+	Added in 2009, unlikely it still works since I doubt it has been
+	compiled since then.
+
+	uml: Change (temporary) path to UML binary.
 
 	Version 1.23.16.
 

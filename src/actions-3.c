@@ -160,7 +160,7 @@ guestfs_launch (guestfs_h *g)
 
 GUESTFS_DLL_PUBLIC int
 guestfs_set_qemu (guestfs_h *g,
-                  const char *qemu)
+                  const char *hv)
 {
   int trace_flag = g->trace;
   struct trace_buffer trace_buffer;
@@ -176,14 +176,14 @@ guestfs_set_qemu (guestfs_h *g,
   if (trace_flag) {
     guestfs___trace_open (&trace_buffer);
     fprintf (trace_buffer.fp, "%s", "set_qemu");
-    if (qemu)
-      fprintf (trace_buffer.fp, " \"%s\"", qemu);
+    if (hv)
+      fprintf (trace_buffer.fp, " \"%s\"", hv);
     else
       fprintf (trace_buffer.fp, " null");
     guestfs___trace_send_line (g, &trace_buffer);
   }
 
-  r = guestfs__set_qemu (g, qemu);
+  r = guestfs__set_qemu (g, hv);
 
   if (r != -1) {
     if (trace_flag) {
@@ -197,6 +197,53 @@ guestfs_set_qemu (guestfs_h *g,
     if (trace_flag)
       guestfs___trace (g, "%s = %s (error)",
                        "set_qemu", "-1");
+  }
+
+  return r;
+}
+
+GUESTFS_DLL_PUBLIC int
+guestfs_set_hv (guestfs_h *g,
+                const char *hv)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  if (g->state != CONFIG) {
+    error (g, "%s: this function can only be called in the config state",
+              "set_hv");
+    return -1;
+  }
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "set_hv", 6);
+  if (hv == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "set_hv", "hv");
+    return -1;
+  }
+
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "set_hv");
+    fprintf (trace_buffer.fp, " \"%s\"", hv);
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__set_hv (g, hv);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "set_hv");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "set_hv", "-1");
   }
 
   return r;

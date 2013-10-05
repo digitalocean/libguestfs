@@ -56,6 +56,8 @@
 <ANCHOR id="guestfs-session-config" href="guestfs/GuestfsSession.html#guestfs-session-config">
 <ANCHOR id="guestfs-session-set-qemu" href="guestfs/GuestfsSession.html#guestfs-session-set-qemu">
 <ANCHOR id="guestfs-session-get-qemu" href="guestfs/GuestfsSession.html#guestfs-session-get-qemu">
+<ANCHOR id="guestfs-session-set-hv" href="guestfs/GuestfsSession.html#guestfs-session-set-hv">
+<ANCHOR id="guestfs-session-get-hv" href="guestfs/GuestfsSession.html#guestfs-session-get-hv">
 <ANCHOR id="guestfs-session-set-path" href="guestfs/GuestfsSession.html#guestfs-session-set-path">
 <ANCHOR id="guestfs-session-get-path" href="guestfs/GuestfsSession.html#guestfs-session-get-path">
 <ANCHOR id="guestfs-session-set-append" href="guestfs/GuestfsSession.html#guestfs-session-set-append">

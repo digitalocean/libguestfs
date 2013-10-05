@@ -1182,25 +1182,25 @@ PREINIT:
         croak ("%s", guestfs_last_error (g));
 
 void
-config (g, qemuparam, qemuvalue)
+config (g, hvparam, hvvalue)
       guestfs_h *g;
-      char *qemuparam;
-      char *qemuvalue = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
+      char *hvparam;
+      char *hvvalue = SvOK(ST(2)) ? SvPV_nolen(ST(2)) : NULL;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_config (g, qemuparam, qemuvalue);
+      r = guestfs_config (g, hvparam, hvvalue);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
 void
-set_qemu (g, qemu)
+set_qemu (g, hv)
       guestfs_h *g;
-      char *qemu = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
+      char *hv = SvOK(ST(1)) ? SvPV_nolen(ST(1)) : NULL;
 PREINIT:
       int r;
  PPCODE:
-      r = guestfs_set_qemu (g, qemu);
+      r = guestfs_set_qemu (g, hv);
       if (r == -1)
         croak ("%s", guestfs_last_error (g));
 
@@ -1214,6 +1214,31 @@ PREINIT:
       if (r == NULL)
         croak ("%s", guestfs_last_error (g));
       RETVAL = newSVpv (r, 0);
+ OUTPUT:
+      RETVAL
+
+void
+set_hv (g, hv)
+      guestfs_h *g;
+      char *hv;
+PREINIT:
+      int r;
+ PPCODE:
+      r = guestfs_set_hv (g, hv);
+      if (r == -1)
+        croak ("%s", guestfs_last_error (g));
+
+SV *
+get_hv (g)
+      guestfs_h *g;
+PREINIT:
+      char *r;
+   CODE:
+      r = guestfs_get_hv (g);
+      if (r == NULL)
+        croak ("%s", guestfs_last_error (g));
+      RETVAL = newSVpv (r, 0);
+      free (r);
  OUTPUT:
       RETVAL
 

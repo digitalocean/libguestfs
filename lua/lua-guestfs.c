@@ -2078,17 +2078,17 @@ guestfs_lua_config (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *qemuparam;
-  const char *qemuvalue;
+  const char *hvparam;
+  const char *hvvalue;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "config");
 
-  qemuparam = luaL_checkstring (L, 2);
-  qemuvalue = luaL_optstring (L, 3, NULL);
+  hvparam = luaL_checkstring (L, 2);
+  hvvalue = luaL_optstring (L, 3, NULL);
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1)
     return last_error (L, g);
 
@@ -3546,6 +3546,27 @@ guestfs_lua_get_e2uuid (lua_State *L)
   device = luaL_checkstring (L, 2);
 
   r = guestfs_get_e2uuid (g, device);
+  if (r == NULL)
+    return last_error (L, g);
+
+  lua_pushstring (L, r);
+  free (r);
+  return 1;
+}
+
+static int
+guestfs_lua_get_hv (lua_State *L)
+{
+  char *r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "get_hv");
+
+
+  r = guestfs_get_hv (g);
   if (r == NULL)
     return last_error (L, g);
 
@@ -11105,6 +11126,27 @@ guestfs_lua_set_e2uuid (lua_State *L)
 }
 
 static int
+guestfs_lua_set_hv (lua_State *L)
+{
+  int r;
+  struct userdata *u = get_handle (L, 1);
+  guestfs_h *g = u->g;
+  const char *hv;
+
+  if (g == NULL)
+    luaL_error (L, "Guestfs.%s: handle is closed",
+                "set_hv");
+
+  hv = luaL_checkstring (L, 2);
+
+  r = guestfs_set_hv (g, hv);
+  if (r == -1)
+    return last_error (L, g);
+
+  return 0;
+}
+
+static int
 guestfs_lua_set_label (lua_State *L)
 {
   int r;
@@ -11284,15 +11326,15 @@ guestfs_lua_set_qemu (lua_State *L)
   int r;
   struct userdata *u = get_handle (L, 1);
   guestfs_h *g = u->g;
-  const char *qemu;
+  const char *hv;
 
   if (g == NULL)
     luaL_error (L, "Guestfs.%s: handle is closed",
                 "set_qemu");
 
-  qemu = luaL_optstring (L, 2, NULL);
+  hv = luaL_optstring (L, 2, NULL);
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1)
     return last_error (L, g);
 
@@ -14842,6 +14884,7 @@ static luaL_Reg methods[] = {
   { "get_e2generation", guestfs_lua_get_e2generation },
   { "get_e2label", guestfs_lua_get_e2label },
   { "get_e2uuid", guestfs_lua_get_e2uuid },
+  { "get_hv", guestfs_lua_get_hv },
   { "get_libvirt_requested_credential_challenge", guestfs_lua_get_libvirt_requested_credential_challenge },
   { "get_libvirt_requested_credential_defresult", guestfs_lua_get_libvirt_requested_credential_defresult },
   { "get_libvirt_requested_credential_prompt", guestfs_lua_get_libvirt_requested_credential_prompt },
@@ -15142,6 +15185,7 @@ static luaL_Reg methods[] = {
   { "set_e2generation", guestfs_lua_set_e2generation },
   { "set_e2label", guestfs_lua_set_e2label },
   { "set_e2uuid", guestfs_lua_set_e2uuid },
+  { "set_hv", guestfs_lua_set_hv },
   { "set_label", guestfs_lua_set_label },
   { "set_libvirt_requested_credential", guestfs_lua_set_libvirt_requested_credential },
   { "set_libvirt_supported_credentials", guestfs_lua_set_libvirt_supported_credentials },

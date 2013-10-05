@@ -51,6 +51,8 @@ static int run_add_drive_ro (const char *cmd, size_t argc, char *argv[]);
 static int run_config (const char *cmd, size_t argc, char *argv[]);
 static int run_set_qemu (const char *cmd, size_t argc, char *argv[]);
 static int run_get_qemu (const char *cmd, size_t argc, char *argv[]);
+static int run_set_hv (const char *cmd, size_t argc, char *argv[]);
+static int run_get_hv (const char *cmd, size_t argc, char *argv[]);
 static int run_set_path (const char *cmd, size_t argc, char *argv[]);
 static int run_get_path (const char *cmd, size_t argc, char *argv[]);
 static int run_set_append (const char *cmd, size_t argc, char *argv[]);
@@ -667,13 +669,13 @@ struct command_entry unsetenv_cmd_entry = {
 
 struct command_entry launch_cmd_entry = {
   .name = "launch",
-  .help = "NAME\n    launch - launch the qemu subprocess\n\nSYNOPSIS\n     launch\n\nDESCRIPTION\n    Internally libguestfs is implemented by running a virtual machine using\n    qemu(1).\n\n    You should call this after configuring the handle (eg. adding drives)\n    but before performing any actions.\n\n    Do not call \"launch\" twice on the same handle. Although it will not give\n    an error (for historical reasons), the precise behaviour when you do\n    this is not well defined. Handles are very cheap to create, so create a\n    new one for each launch.\n\n    You can use 'run' as an alias for this command.\n\n",
+  .help = "NAME\n    launch - launch the backend\n\nSYNOPSIS\n     launch\n\nDESCRIPTION\n    You should call this after configuring the handle (eg. adding drives)\n    but before performing any actions.\n\n    Do not call \"launch\" twice on the same handle. Although it will not give\n    an error (for historical reasons), the precise behaviour when you do\n    this is not well defined. Handles are very cheap to create, so create a\n    new one for each launch.\n\n    You can use 'run' as an alias for this command.\n\n",
   .run = run_launch
 };
 
 struct command_entry kill_subprocess_cmd_entry = {
   .name = "kill-subprocess",
-  .help = "NAME\n    kill-subprocess - kill the qemu subprocess\n\nSYNOPSIS\n     kill-subprocess\n\nDESCRIPTION\n    This kills the qemu subprocess.\n\n    Do not call this. See: \"shutdown\" instead.\n\n    *This function is deprecated.* In new code, use the \"shutdown\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
+  .help = "NAME\n    kill-subprocess - kill the hypervisor\n\nSYNOPSIS\n     kill-subprocess\n\nDESCRIPTION\n    This kills the hypervisor.\n\n    Do not call this. See: \"shutdown\" instead.\n\n    *This function is deprecated.* In new code, use the \"shutdown\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_kill_subprocess
 };
 
@@ -691,20 +693,32 @@ struct command_entry add_drive_ro_cmd_entry = {
 
 struct command_entry config_cmd_entry = {
   .name = "config",
-  .help = "NAME\n    config - add qemu parameters\n\nSYNOPSIS\n     config qemuparam qemuvalue\n\nDESCRIPTION\n    This can be used to add arbitrary qemu command line parameters of the\n    form *-param value*. Actually it's not quite arbitrary - we prevent you\n    from setting some parameters which would interfere with parameters that\n    we use.\n\n    The first character of \"qemuparam\" string must be a \"-\" (dash).\n\n    \"qemuvalue\" can be NULL.\n\n",
+  .help = "NAME\n    config - add hypervisor parameters\n\nSYNOPSIS\n     config hvparam hvvalue\n\nDESCRIPTION\n    This can be used to add arbitrary hypervisor parameters of the form\n    *-param value*. Actually it's not quite arbitrary - we prevent you from\n    setting some parameters which would interfere with parameters that we\n    use.\n\n    The first character of \"hvparam\" string must be a \"-\" (dash).\n\n    \"hvvalue\" can be NULL.\n\n",
   .run = run_config
 };
 
 struct command_entry set_qemu_cmd_entry = {
   .name = "set-qemu",
-  .help = "NAME\n    set-qemu - set the qemu binary\n\nSYNOPSIS\n     set-qemu qemu\n\nDESCRIPTION\n    Set the qemu binary that we will use.\n\n    The default is chosen when the library was compiled by the configure\n    script.\n\n    You can also override this by setting the \"LIBGUESTFS_QEMU\" environment\n    variable.\n\n    Setting \"qemu\" to \"NULL\" restores the default qemu binary.\n\n    Note that you should call this function as early as possible after\n    creating the handle. This is because some pre-launch operations depend\n    on testing qemu features (by running \"qemu -help\"). If the qemu binary\n    changes, we don't retest features, and so you might see inconsistent\n    results. Using the environment variable \"LIBGUESTFS_QEMU\" is safest of\n    all since that picks the qemu binary at the same time as the handle is\n    created.\n\n    You can use 'qemu' as an alias for this command.\n\n",
+  .help = "NAME\n    set-qemu - set the hypervisor binary (usually qemu)\n\nSYNOPSIS\n     set-qemu hv\n\nDESCRIPTION\n    Set the hypervisor binary (usually qemu) that we will use.\n\n    The default is chosen when the library was compiled by the configure\n    script.\n\n    You can also override this by setting the \"LIBGUESTFS_HV\" environment\n    variable.\n\n    Setting \"hv\" to \"NULL\" restores the default qemu binary.\n\n    Note that you should call this function as early as possible after\n    creating the handle. This is because some pre-launch operations depend\n    on testing qemu features (by running \"qemu -help\"). If the qemu binary\n    changes, we don't retest features, and so you might see inconsistent\n    results. Using the environment variable \"LIBGUESTFS_HV\" is safest of all\n    since that picks the qemu binary at the same time as the handle is\n    created.\n\n    *This function is deprecated.* In new code, use the \"set-hv\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n    You can use 'qemu' as an alias for this command.\n\n",
   .run = run_set_qemu
 };
 
 struct command_entry get_qemu_cmd_entry = {
   .name = "get-qemu",
-  .help = "NAME\n    get-qemu - get the qemu binary\n\nSYNOPSIS\n     get-qemu\n\nDESCRIPTION\n    Return the current qemu binary.\n\n    This is always non-NULL. If it wasn't set already, then this will return\n    the default qemu binary name.\n\n",
+  .help = "NAME\n    get-qemu - get the hypervisor binary (usually qemu)\n\nSYNOPSIS\n     get-qemu\n\nDESCRIPTION\n    Return the current hypervisor binary (usually qemu).\n\n    This is always non-NULL. If it wasn't set already, then this will return\n    the default qemu binary name.\n\n    *This function is deprecated.* In new code, use the \"get-hv\" call\n    instead.\n\n    Deprecated functions will not be removed from the API, but the fact that\n    they are deprecated indicates that there are problems with correct use\n    of these functions.\n\n",
   .run = run_get_qemu
+};
+
+struct command_entry set_hv_cmd_entry = {
+  .name = "set-hv",
+  .help = "NAME\n    set-hv - set the hypervisor binary\n\nSYNOPSIS\n     set-hv hv\n\nDESCRIPTION\n    Set the hypervisor binary that we will use. The hypervisor depends on\n    the backend, but is usually the location of the qemu/KVM hypervisor. For\n    the uml backend, it is the location of the \"linux\" or \"vmlinux\" binary.\n\n    The default is chosen when the library was compiled by the configure\n    script.\n\n    You can also override this by setting the \"LIBGUESTFS_HV\" environment\n    variable.\n\n    Note that you should call this function as early as possible after\n    creating the handle. This is because some pre-launch operations depend\n    on testing qemu features (by running \"qemu -help\"). If the qemu binary\n    changes, we don't retest features, and so you might see inconsistent\n    results. Using the environment variable \"LIBGUESTFS_HV\" is safest of all\n    since that picks the qemu binary at the same time as the handle is\n    created.\n\n    You can use 'hv' as an alias for this command.\n\n",
+  .run = run_set_hv
+};
+
+struct command_entry get_hv_cmd_entry = {
+  .name = "get-hv",
+  .help = "NAME\n    get-hv - get the hypervisor binary\n\nSYNOPSIS\n     get-hv\n\nDESCRIPTION\n    Return the current hypervisor binary.\n\n    This is always non-NULL. If it wasn't set already, then this will return\n    the default qemu binary name.\n\n",
+  .run = run_get_hv
 };
 
 struct command_entry set_path_cmd_entry = {
@@ -763,19 +777,19 @@ struct command_entry is_config_cmd_entry = {
 
 struct command_entry set_memsize_cmd_entry = {
   .name = "set-memsize",
-  .help = "NAME\n    set-memsize - set memory allocated to the qemu subprocess\n\nSYNOPSIS\n     set-memsize memsize\n\nDESCRIPTION\n    This sets the memory size in megabytes allocated to the qemu subprocess.\n    This only has any effect if called before \"launch\".\n\n    You can also change this by setting the environment variable\n    \"LIBGUESTFS_MEMSIZE\" before the handle is created.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n    You can use 'memsize' as an alias for this command.\n\n",
+  .help = "NAME\n    set-memsize - set memory allocated to the hypervisor\n\nSYNOPSIS\n     set-memsize memsize\n\nDESCRIPTION\n    This sets the memory size in megabytes allocated to the hypervisor. This\n    only has any effect if called before \"launch\".\n\n    You can also change this by setting the environment variable\n    \"LIBGUESTFS_MEMSIZE\" before the handle is created.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n    You can use 'memsize' as an alias for this command.\n\n",
   .run = run_set_memsize
 };
 
 struct command_entry get_memsize_cmd_entry = {
   .name = "get-memsize",
-  .help = "NAME\n    get-memsize - get memory allocated to the qemu subprocess\n\nSYNOPSIS\n     get-memsize\n\nDESCRIPTION\n    This gets the memory size in megabytes allocated to the qemu subprocess.\n\n    If \"set_memsize\" was not called on this handle, and if\n    \"LIBGUESTFS_MEMSIZE\" was not set, then this returns the compiled-in\n    default value for memsize.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n",
+  .help = "NAME\n    get-memsize - get memory allocated to the hypervisor\n\nSYNOPSIS\n     get-memsize\n\nDESCRIPTION\n    This gets the memory size in megabytes allocated to the hypervisor.\n\n    If \"set_memsize\" was not called on this handle, and if\n    \"LIBGUESTFS_MEMSIZE\" was not set, then this returns the compiled-in\n    default value for memsize.\n\n    For more information on the architecture of libguestfs, see guestfs(3).\n\n",
   .run = run_get_memsize
 };
 
 struct command_entry get_pid_cmd_entry = {
   .name = "get-pid",
-  .help = "NAME\n    get-pid - get PID of qemu subprocess\n\nSYNOPSIS\n     get-pid\n\nDESCRIPTION\n    Return the process ID of the qemu subprocess. If there is no qemu\n    subprocess, then this will return an error.\n\n    This is an internal call used for debugging and testing.\n\n    You can use 'pid' as an alias for this command.\n\n",
+  .help = "NAME\n    get-pid - get PID of hypervisor\n\nSYNOPSIS\n     get-pid\n\nDESCRIPTION\n    Return the process ID of the hypervisor. If there is no hypervisor\n    running, then this will return an error.\n\n    This is an internal call used for debugging and testing.\n\n    You can use 'pid' as an alias for this command.\n\n",
   .run = run_get_pid
 };
 
@@ -823,7 +837,7 @@ struct command_entry get_direct_cmd_entry = {
 
 struct command_entry set_recovery_proc_cmd_entry = {
   .name = "set-recovery-proc",
-  .help = "NAME\n    set-recovery-proc - enable or disable the recovery process\n\nSYNOPSIS\n     set-recovery-proc recoveryproc\n\nDESCRIPTION\n    If this is called with the parameter \"false\" then \"launch\" does not\n    create a recovery process. The purpose of the recovery process is to\n    stop runaway qemu processes in the case where the main program aborts\n    abruptly.\n\n    This only has any effect if called before \"launch\", and the default is\n    true.\n\n    About the only time when you would want to disable this is if the main\n    process will fork itself into the background (\"daemonize\" itself). In\n    this case the recovery process thinks that the main program has\n    disappeared and so kills qemu, which is not very helpful.\n\n    You can use 'recovery-proc' as an alias for this command.\n\n",
+  .help = "NAME\n    set-recovery-proc - enable or disable the recovery process\n\nSYNOPSIS\n     set-recovery-proc recoveryproc\n\nDESCRIPTION\n    If this is called with the parameter \"false\" then \"launch\" does not\n    create a recovery process. The purpose of the recovery process is to\n    stop runaway hypervisor processes in the case where the main program\n    aborts abruptly.\n\n    This only has any effect if called before \"launch\", and the default is\n    true.\n\n    About the only time when you would want to disable this is if the main\n    process will fork itself into the background (\"daemonize\" itself). In\n    this case the recovery process thinks that the main program has\n    disappeared and so kills the hypervisor, which is not very helpful.\n\n    You can use 'recovery-proc' as an alias for this command.\n\n",
   .run = run_set_recovery_proc
 };
 
@@ -1111,7 +1125,7 @@ struct command_entry canonical_device_name_cmd_entry = {
 
 struct command_entry shutdown_cmd_entry = {
   .name = "shutdown",
-  .help = "NAME\n    shutdown - shutdown the qemu subprocess\n\nSYNOPSIS\n     shutdown\n\nDESCRIPTION\n    This is the opposite of \"launch\". It performs an orderly shutdown of the\n    backend process(es). If the autosync flag is set (which is the default)\n    then the disk image is synchronized.\n\n    If the subprocess exits with an error then this function will return an\n    error, which should *not* be ignored (it may indicate that the disk\n    image could not be written out properly).\n\n    It is safe to call this multiple times. Extra calls are ignored.\n\n    This call does *not* close or free up the handle. You still need to call\n    \"close\" afterwards.\n\n    \"close\" will call this if you don't do it explicitly, but note that any\n    errors are ignored in that case.\n\n",
+  .help = "NAME\n    shutdown - shutdown the hypervisor\n\nSYNOPSIS\n     shutdown\n\nDESCRIPTION\n    This is the opposite of \"launch\". It performs an orderly shutdown of the\n    backend process(es). If the autosync flag is set (which is the default)\n    then the disk image is synchronized.\n\n    If the subprocess exits with an error then this function will return an\n    error, which should *not* be ignored (it may indicate that the disk\n    image could not be written out properly).\n\n    It is safe to call this multiple times. Extra calls are ignored.\n\n    This call does *not* close or free up the handle. You still need to call\n    \"close\" afterwards.\n\n    \"close\" will call this if you don't do it explicitly, but note that any\n    errors are ignored in that case.\n\n",
   .run = run_shutdown
 };
 
@@ -1735,7 +1749,7 @@ struct command_entry mount_vfs_cmd_entry = {
 
 struct command_entry debug_cmd_entry = {
   .name = "debug",
-  .help = "NAME\n    debug - debugging and internals\n\nSYNOPSIS\n     debug subcmd extraargs\n\nDESCRIPTION\n    The \"debug\" command exposes some internals of \"guestfsd\" (the guestfs\n    daemon) that runs inside the qemu subprocess.\n\n    There is no comprehensive help for this command. You have to look at the\n    file \"daemon/debug.c\" in the libguestfs source to find out what you can\n    do.\n\n",
+  .help = "NAME\n    debug - debugging and internals\n\nSYNOPSIS\n     debug subcmd extraargs\n\nDESCRIPTION\n    The \"debug\" command exposes some internals of \"guestfsd\" (the guestfs\n    daemon) that runs inside the hypervisor.\n\n    There is no comprehensive help for this command. You have to look at the\n    file \"daemon/debug.c\" in the libguestfs source to find out what you can\n    do.\n\n",
   .run = run_debug
 };
 
@@ -1831,7 +1845,7 @@ struct command_entry dmesg_cmd_entry = {
 
 struct command_entry ping_daemon_cmd_entry = {
   .name = "ping-daemon",
-  .help = "NAME\n    ping-daemon - ping the guest daemon\n\nSYNOPSIS\n     ping-daemon\n\nDESCRIPTION\n    This is a test probe into the guestfs daemon running inside the qemu\n    subprocess. Calling this function checks that the daemon responds to the\n    ping message, without affecting the daemon or attached block device(s)\n    in any other way.\n\n",
+  .help = "NAME\n    ping-daemon - ping the guest daemon\n\nSYNOPSIS\n     ping-daemon\n\nDESCRIPTION\n    This is a test probe into the guestfs daemon running inside the\n    hypervisor. Calling this function checks that the daemon responds to the\n    ping message, without affecting the daemon or attached block device(s)\n    in any other way.\n\n",
   .run = run_ping_daemon
 };
 
@@ -3738,7 +3752,7 @@ list_commands (void)
   printf ("%-20s %s\n", "command-lines", _("run a command, returning lines"));
   printf ("%-20s %s\n", "compress-device-out", _("output compressed device"));
   printf ("%-20s %s\n", "compress-out", _("output compressed file"));
-  printf ("%-20s %s\n", "config", _("add qemu parameters"));
+  printf ("%-20s %s\n", "config", _("add hypervisor parameters"));
   printf ("%-20s %s\n", "copy-device-to-device", _("copy from source device to destination device"));
   printf ("%-20s %s\n", "copy-device-to-file", _("copy from source device to destination file"));
   printf ("%-20s %s\n", "copy-file-to-device", _("copy from source file to destination device"));
@@ -3805,17 +3819,18 @@ list_commands (void)
   printf ("%-20s %s\n", "get-e2generation", _("get ext2 file generation of a file"));
   printf ("%-20s %s\n", "get-e2label", _("get the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "get-e2uuid", _("get the ext2/3/4 filesystem UUID"));
+  printf ("%-20s %s\n", "get-hv", _("get the hypervisor binary"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-challenge", _("challenge of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-defresult", _("default result of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credential-prompt", _("prompt of i'th requested credential"));
   printf ("%-20s %s\n", "get-libvirt-requested-credentials", _("get list of credentials requested by libvirt"));
-  printf ("%-20s %s\n", "get-memsize", _("get memory allocated to the qemu subprocess"));
+  printf ("%-20s %s\n", "get-memsize", _("get memory allocated to the hypervisor"));
   printf ("%-20s %s\n", "get-network", _("get enable network flag"));
   printf ("%-20s %s\n", "get-path", _("get the search path"));
   printf ("%-20s %s\n", "get-pgroup", _("get process group flag"));
-  printf ("%-20s %s\n", "get-pid", _("get PID of qemu subprocess"));
+  printf ("%-20s %s\n", "get-pid", _("get PID of hypervisor"));
   printf ("%-20s %s\n", "get-program", _("get the program name"));
-  printf ("%-20s %s\n", "get-qemu", _("get the qemu binary"));
+  printf ("%-20s %s\n", "get-qemu", _("get the hypervisor binary (usually qemu)"));
   printf ("%-20s %s\n", "get-recovery-proc", _("get recovery process enabled flag"));
   printf ("%-20s %s\n", "get-selinux", _("get SELinux enabled flag"));
   printf ("%-20s %s\n", "get-smp", _("get number of virtual CPUs in appliance"));
@@ -3905,8 +3920,8 @@ list_commands (void)
   printf ("%-20s %s\n", "journal-open", _("open the systemd journal"));
   printf ("%-20s %s\n", "journal-set-data-threshold", _("set the data threshold for reading journal entries"));
   printf ("%-20s %s\n", "journal-skip", _("skip forwards or backwards in the journal"));
-  printf ("%-20s %s\n", "kill-subprocess", _("kill the qemu subprocess"));
-  printf ("%-20s %s\n", "launch", _("launch the qemu subprocess"));
+  printf ("%-20s %s\n", "kill-subprocess", _("kill the hypervisor"));
+  printf ("%-20s %s\n", "launch", _("launch the backend"));
   printf ("%-20s %s\n", "lcd", _("change working directory"));
   printf ("%-20s %s\n", "lchown", _("change file owner and group"));
   printf ("%-20s %s\n", "ldmtool-create-all", _("scan and create Windows dynamic disk volumes"));
@@ -4081,15 +4096,16 @@ list_commands (void)
   printf ("%-20s %s\n", "set-e2generation", _("set ext2 file generation of a file"));
   printf ("%-20s %s\n", "set-e2label", _("set the ext2/3/4 filesystem label"));
   printf ("%-20s %s\n", "set-e2uuid", _("set the ext2/3/4 filesystem UUID"));
+  printf ("%-20s %s\n", "set-hv", _("set the hypervisor binary"));
   printf ("%-20s %s\n", "set-label", _("set filesystem label"));
   printf ("%-20s %s\n", "set-libvirt-requested-credential", _("pass requested credential back to libvirt"));
   printf ("%-20s %s\n", "set-libvirt-supported-credentials", _("set libvirt credentials supported by calling program"));
-  printf ("%-20s %s\n", "set-memsize", _("set memory allocated to the qemu subprocess"));
+  printf ("%-20s %s\n", "set-memsize", _("set memory allocated to the hypervisor"));
   printf ("%-20s %s\n", "set-network", _("set enable network flag"));
   printf ("%-20s %s\n", "set-path", _("set the search path"));
   printf ("%-20s %s\n", "set-pgroup", _("set process group flag"));
   printf ("%-20s %s\n", "set-program", _("set the program name"));
-  printf ("%-20s %s\n", "set-qemu", _("set the qemu binary"));
+  printf ("%-20s %s\n", "set-qemu", _("set the hypervisor binary (usually qemu)"));
   printf ("%-20s %s\n", "set-recovery-proc", _("enable or disable the recovery process"));
   printf ("%-20s %s\n", "set-selinux", _("set SELinux enabled or disabled at appliance boot"));
   printf ("%-20s %s\n", "set-smp", _("set number of virtual CPUs in appliance"));
@@ -4108,7 +4124,7 @@ list_commands (void)
   printf ("%-20s %s\n", "sfdisk-l", _("display the partition table"));
   printf ("%-20s %s\n", "sh", _("run a command via the shell"));
   printf ("%-20s %s\n", "sh-lines", _("run a command via the shell returning lines"));
-  printf ("%-20s %s\n", "shutdown", _("shutdown the qemu subprocess"));
+  printf ("%-20s %s\n", "shutdown", _("shutdown the hypervisor"));
   printf ("%-20s %s\n", "sleep", _("sleep for some seconds"));
   printf ("%-20s %s\n", "sparse", _("create a sparse disk image and add"));
   printf ("%-20s %s\n", "stat", _("get file information"));
@@ -4808,8 +4824,8 @@ run_config (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *qemuparam;
-  const char *qemuvalue;
+  const char *hvparam;
+  const char *hvvalue;
   size_t i = 0;
 
   if (argc != 2) {
@@ -4817,10 +4833,10 @@ run_config (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  qemuparam = argv[i++];
-  qemuvalue = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  hvparam = argv[i++];
+  hvvalue = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -4833,7 +4849,7 @@ run_set_qemu (const char *cmd, size_t argc, char *argv[])
 {
   int ret = -1;
   int r;
-  const char *qemu;
+  const char *hv;
   size_t i = 0;
 
   if (argc != 1) {
@@ -4841,9 +4857,9 @@ run_set_qemu (const char *cmd, size_t argc, char *argv[])
     fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
     goto out_noargs;
   }
-  qemu = STRNEQ (argv[i], "") ? argv[i] : NULL;
+  hv = STRNEQ (argv[i], "") ? argv[i] : NULL;
   i++;
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
   if (r == -1) goto out;
   ret = 0;
  out:
@@ -4866,6 +4882,49 @@ run_get_qemu (const char *cmd, size_t argc, char *argv[])
   if (r == NULL) goto out;
   ret = 0;
   printf ("%s\n", r);
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_set_hv (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  int r;
+  const char *hv;
+  size_t i = 0;
+
+  if (argc != 1) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 1);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  hv = argv[i++];
+  r = guestfs_set_hv (g, hv);
+  if (r == -1) goto out;
+  ret = 0;
+ out:
+ out_noargs:
+  return ret;
+}
+
+static int
+run_get_hv (const char *cmd, size_t argc, char *argv[])
+{
+  int ret = -1;
+  char *r;
+
+  if (argc != 0) {
+    fprintf (stderr, _("%s should have %d parameter(s)\n"), cmd, 0);
+    fprintf (stderr, _("type 'help %s' for help on %s\n"), cmd, cmd);
+    goto out_noargs;
+  }
+  r = guestfs_get_hv (g);
+  if (r == NULL) goto out;
+  ret = 0;
+  printf ("%s\n", r);
+  free (r);
  out:
  out_noargs:
   return ret;

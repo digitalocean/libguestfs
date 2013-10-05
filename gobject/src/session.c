@@ -2119,11 +2119,8 @@ guestfs_session_internal_test_close_output(GuestfsSession *session, GError **err
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * launch the qemu subprocess
+ * launch the backend
  *
- * Internally libguestfs is implemented by running a virtual machine using
- * qemu(1).
- * 
  * You should call this after configuring the handle (eg. adding drives)
  * but before performing any actions.
  * 
@@ -2159,7 +2156,7 @@ guestfs_session_launch(GuestfsSession *session, GError **err)
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * wait until the qemu subprocess launches (no op)
+ * wait until the hypervisor launches (no op)
  *
  * This function is a no op.
  * 
@@ -2199,9 +2196,9 @@ guestfs_session_wait_ready(GuestfsSession *session, GError **err)
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * kill the qemu subprocess
+ * kill the hypervisor
  *
- * This kills the qemu subprocess.
+ * This kills the hypervisor.
  * 
  * Do not call this. See: guestfs_session_shutdown() instead.
  * 
@@ -2300,25 +2297,25 @@ guestfs_session_add_drive_ro(GuestfsSession *session, const gchar *filename, GEr
 /**
  * guestfs_session_config:
  * @session: (transfer none): A GuestfsSession object
- * @qemuparam: (transfer none) (type utf8):
- * @qemuvalue: (transfer none) (type utf8) (allow-none):
+ * @hvparam: (transfer none) (type utf8):
+ * @hvvalue: (transfer none) (type utf8) (allow-none):
  * @err: A GError object to receive any generated errors
  *
- * add qemu parameters
+ * add hypervisor parameters
  *
- * This can be used to add arbitrary qemu command line parameters of the
- * form *-param value*. Actually it's not quite arbitrary - we prevent you
- * from setting some parameters which would interfere with parameters that
- * we use.
+ * This can be used to add arbitrary hypervisor parameters of the form
+ * *-param value*. Actually it's not quite arbitrary - we prevent you from
+ * setting some parameters which would interfere with parameters that we
+ * use.
  * 
- * The first character of @qemuparam string must be a @- (dash).
+ * The first character of @hvparam string must be a @- (dash).
  * 
- * @qemuvalue can be NULL.
+ * @hvvalue can be NULL.
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_config(GuestfsSession *session, const gchar *qemuparam, const gchar *qemuvalue, GError **err)
+guestfs_session_config(GuestfsSession *session, const gchar *hvparam, const gchar *hvvalue, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -2328,7 +2325,7 @@ guestfs_session_config(GuestfsSession *session, const gchar *qemuparam, const gc
     return FALSE;
   }
 
-  int ret = guestfs_config (g, qemuparam, qemuvalue);
+  int ret = guestfs_config (g, hvparam, hvvalue);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2340,33 +2337,33 @@ guestfs_session_config(GuestfsSession *session, const gchar *qemuparam, const gc
 /**
  * guestfs_session_set_qemu:
  * @session: (transfer none): A GuestfsSession object
- * @qemu: (transfer none) (type utf8) (allow-none):
+ * @hv: (transfer none) (type utf8) (allow-none):
  * @err: A GError object to receive any generated errors
  *
- * set the qemu binary
+ * set the hypervisor binary (usually qemu)
  *
- * Set the qemu binary that we will use.
+ * Set the hypervisor binary (usually qemu) that we will use.
  * 
  * The default is chosen when the library was compiled by the configure
  * script.
  * 
- * You can also override this by setting the @LIBGUESTFS_QEMU environment
+ * You can also override this by setting the @LIBGUESTFS_HV environment
  * variable.
  * 
- * Setting @qemu to @NULL restores the default qemu binary.
+ * Setting @hv to @NULL restores the default qemu binary.
  * 
  * Note that you should call this function as early as possible after
  * creating the handle. This is because some pre-launch operations depend
  * on testing qemu features (by running "qemu -help"). If the qemu binary
  * changes, we don't retest features, and so you might see inconsistent
- * results. Using the environment variable @LIBGUESTFS_QEMU is safest of
- * all since that picks the qemu binary at the same time as the handle is
+ * results. Using the environment variable @LIBGUESTFS_HV is safest of all
+ * since that picks the qemu binary at the same time as the handle is
  * created.
  * 
  * Returns: true on success, false on error
  */
 gboolean
-guestfs_session_set_qemu(GuestfsSession *session, const gchar *qemu, GError **err)
+guestfs_session_set_qemu(GuestfsSession *session, const gchar *hv, GError **err)
 {
   guestfs_h *g = session->priv->g;
   if (g == NULL) {
@@ -2376,7 +2373,7 @@ guestfs_session_set_qemu(GuestfsSession *session, const gchar *qemu, GError **er
     return FALSE;
   }
 
-  int ret = guestfs_set_qemu (g, qemu);
+  int ret = guestfs_set_qemu (g, hv);
   if (ret == -1) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return FALSE;
@@ -2390,9 +2387,9 @@ guestfs_session_set_qemu(GuestfsSession *session, const gchar *qemu, GError **er
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * get the qemu binary
+ * get the hypervisor binary (usually qemu)
  *
- * Return the current qemu binary.
+ * Return the current hypervisor binary (usually qemu).
  * 
  * This is always non-NULL. If it wasn't set already, then this will return
  * the default qemu binary name.
@@ -2411,6 +2408,88 @@ guestfs_session_get_qemu(GuestfsSession *session, GError **err)
   }
 
   const char *ret = guestfs_get_qemu (g);
+  if (ret == NULL) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return NULL;
+  }
+
+  return ret;
+}
+
+/**
+ * guestfs_session_set_hv:
+ * @session: (transfer none): A GuestfsSession object
+ * @hv: (transfer none) (type utf8):
+ * @err: A GError object to receive any generated errors
+ *
+ * set the hypervisor binary
+ *
+ * Set the hypervisor binary that we will use. The hypervisor depends on
+ * the backend, but is usually the location of the qemu/KVM hypervisor. For
+ * the uml backend, it is the location of the @linux or @vmlinux binary.
+ * 
+ * The default is chosen when the library was compiled by the configure
+ * script.
+ * 
+ * You can also override this by setting the @LIBGUESTFS_HV environment
+ * variable.
+ * 
+ * Note that you should call this function as early as possible after
+ * creating the handle. This is because some pre-launch operations depend
+ * on testing qemu features (by running "qemu -help"). If the qemu binary
+ * changes, we don't retest features, and so you might see inconsistent
+ * results. Using the environment variable @LIBGUESTFS_HV is safest of all
+ * since that picks the qemu binary at the same time as the handle is
+ * created.
+ * 
+ * Returns: true on success, false on error
+ */
+gboolean
+guestfs_session_set_hv(GuestfsSession *session, const gchar *hv, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "set_hv");
+    return FALSE;
+  }
+
+  int ret = guestfs_set_hv (g, hv);
+  if (ret == -1) {
+    g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * guestfs_session_get_hv:
+ * @session: (transfer none): A GuestfsSession object
+ * @err: A GError object to receive any generated errors
+ *
+ * get the hypervisor binary
+ *
+ * Return the current hypervisor binary.
+ * 
+ * This is always non-NULL. If it wasn't set already, then this will return
+ * the default qemu binary name.
+ * 
+ * Returns: (transfer full): the returned string, or NULL on error
+ */
+gchar *
+guestfs_session_get_hv(GuestfsSession *session, GError **err)
+{
+  guestfs_h *g = session->priv->g;
+  if (g == NULL) {
+    g_set_error(err, GUESTFS_ERROR, 0,
+                "attempt to call %s after the session has been closed",
+                "get_hv");
+    return NULL;
+  }
+
+  char *ret = guestfs_get_hv (g);
   if (ret == NULL) {
     g_set_error_literal(err, GUESTFS_ERROR, 0, guestfs_last_error(g));
     return NULL;
@@ -2873,10 +2952,10 @@ guestfs_session_get_state(GuestfsSession *session, GError **err)
  * @memsize: (type gint32):
  * @err: A GError object to receive any generated errors
  *
- * set memory allocated to the qemu subprocess
+ * set memory allocated to the hypervisor
  *
- * This sets the memory size in megabytes allocated to the qemu subprocess.
- * This only has any effect if called before guestfs_session_launch().
+ * This sets the memory size in megabytes allocated to the hypervisor. This
+ * only has any effect if called before guestfs_session_launch().
  * 
  * You can also change this by setting the environment variable
  * @LIBGUESTFS_MEMSIZE before the handle is created.
@@ -2910,9 +2989,9 @@ guestfs_session_set_memsize(GuestfsSession *session, gint32 memsize, GError **er
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * get memory allocated to the qemu subprocess
+ * get memory allocated to the hypervisor
  *
- * This gets the memory size in megabytes allocated to the qemu subprocess.
+ * This gets the memory size in megabytes allocated to the hypervisor.
  * 
  * If guestfs_session_set_memsize() was not called on this handle, and if
  * @LIBGUESTFS_MEMSIZE was not set, then this returns the compiled-in
@@ -2947,10 +3026,10 @@ guestfs_session_get_memsize(GuestfsSession *session, GError **err)
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * get PID of qemu subprocess
+ * get PID of hypervisor
  *
- * Return the process ID of the qemu subprocess. If there is no qemu
- * subprocess, then this will return an error.
+ * Return the process ID of the hypervisor. If there is no hypervisor
+ * running, then this will return an error.
  * 
  * This is an internal call used for debugging and testing.
  * 
@@ -3266,8 +3345,8 @@ guestfs_session_get_direct(GuestfsSession *session, GError **err)
  *
  * If this is called with the parameter @false then
  * guestfs_session_launch() does not create a recovery process. The purpose
- * of the recovery process is to stop runaway qemu processes in the case
- * where the main program aborts abruptly.
+ * of the recovery process is to stop runaway hypervisor processes in the
+ * case where the main program aborts abruptly.
  * 
  * This only has any effect if called before guestfs_session_launch(), and
  * the default is true.
@@ -3275,7 +3354,7 @@ guestfs_session_get_direct(GuestfsSession *session, GError **err)
  * About the only time when you would want to disable this is if the main
  * process will fork itself into the background ("daemonize" itself). In
  * this case the recovery process thinks that the main program has
- * disappeared and so kills qemu, which is not very helpful.
+ * disappeared and so kills the hypervisor, which is not very helpful.
  * 
  * Returns: true on success, false on error
  */
@@ -6045,7 +6124,7 @@ guestfs_session_canonical_device_name(GuestfsSession *session, const gchar *devi
  * @session: (transfer none): A GuestfsSession object
  * @err: A GError object to receive any generated errors
  *
- * shutdown the qemu subprocess
+ * shutdown the hypervisor
  *
  * This is the opposite of guestfs_session_launch(). It performs an orderly
  * shutdown of the backend process(es). If the autosync flag is set (which
@@ -10417,7 +10496,7 @@ guestfs_session_mount_vfs(GuestfsSession *session, const gchar *options, const g
  * debugging and internals
  *
  * The guestfs_session_debug() command exposes some internals of @guestfsd
- * (the guestfs daemon) that runs inside the qemu subprocess.
+ * (the guestfs daemon) that runs inside the hypervisor.
  * 
  * There is no comprehensive help for this command. You have to look at the
  * file "daemon/debug.c" in the libguestfs source to find out what you can
@@ -11027,8 +11106,8 @@ guestfs_session_dmesg(GuestfsSession *session, GError **err)
  *
  * ping the guest daemon
  *
- * This is a test probe into the guestfs daemon running inside the qemu
- * subprocess. Calling this function checks that the daemon responds to the
+ * This is a test probe into the guestfs daemon running inside the
+ * hypervisor. Calling this function checks that the daemon responds to the
  * ping message, without affecting the daemon or attached block device(s)
  * in any other way.
  * 

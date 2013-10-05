@@ -908,7 +908,7 @@ struct guestfs_compress_out_argv {
 extern GUESTFS_DLL_PUBLIC int guestfs_compress_out_argv (guestfs_h *g, const char *ctype, const char *file, const char *zfile, const struct guestfs_compress_out_argv *optargs);
 
 #define GUESTFS_HAVE_CONFIG 1
-extern GUESTFS_DLL_PUBLIC int guestfs_config (guestfs_h *g, const char *qemuparam, const char *qemuvalue);
+extern GUESTFS_DLL_PUBLIC int guestfs_config (guestfs_h *g, const char *hvparam, const char *hvvalue);
 
 #define GUESTFS_HAVE_COPY_DEVICE_TO_DEVICE 1
 #define GUESTFS_COPY_DEVICE_TO_DEVICE_SRCOFFSET 0
@@ -1189,6 +1189,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_get_e2label (guestfs_h *g, const char *d
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_e2uuid (guestfs_h *g, const char *device)
   GUESTFS_DEPRECATED_BY ("vfs_uuid");
 
+#define GUESTFS_HAVE_GET_HV 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_get_hv (guestfs_h *g);
+
 #define GUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_libvirt_requested_credential_challenge (guestfs_h *g, int index);
 
@@ -1219,8 +1222,8 @@ extern GUESTFS_DLL_PUBLIC int guestfs_get_pid (guestfs_h *g);
 #define GUESTFS_HAVE_GET_PROGRAM 1
 extern GUESTFS_DLL_PUBLIC const char *guestfs_get_program (guestfs_h *g);
 
-#define GUESTFS_HAVE_GET_QEMU 1
-extern GUESTFS_DLL_PUBLIC const char *guestfs_get_qemu (guestfs_h *g);
+extern GUESTFS_DLL_PUBLIC const char *guestfs_get_qemu (guestfs_h *g)
+  GUESTFS_DEPRECATED_BY ("get_hv");
 
 #define GUESTFS_HAVE_GET_RECOVERY_PROC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_get_recovery_proc (guestfs_h *g);
@@ -2495,6 +2498,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_e2label (guestfs_h *g, const char *dev
 extern GUESTFS_DLL_PUBLIC int guestfs_set_e2uuid (guestfs_h *g, const char *device, const char *uuid)
   GUESTFS_DEPRECATED_BY ("set_uuid");
 
+#define GUESTFS_HAVE_SET_HV 1
+extern GUESTFS_DLL_PUBLIC int guestfs_set_hv (guestfs_h *g, const char *hv);
+
 #define GUESTFS_HAVE_SET_LABEL 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_label (guestfs_h *g, const char *mountable, const char *label);
 
@@ -2519,8 +2525,8 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_pgroup (guestfs_h *g, int pgroup);
 #define GUESTFS_HAVE_SET_PROGRAM 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_program (guestfs_h *g, const char *program);
 
-#define GUESTFS_HAVE_SET_QEMU 1
-extern GUESTFS_DLL_PUBLIC int guestfs_set_qemu (guestfs_h *g, const char *qemu);
+extern GUESTFS_DLL_PUBLIC int guestfs_set_qemu (guestfs_h *g, const char *hv)
+  GUESTFS_DEPRECATED_BY ("set_hv");
 
 #define GUESTFS_HAVE_SET_RECOVERY_PROC 1
 extern GUESTFS_DLL_PUBLIC int guestfs_set_recovery_proc (guestfs_h *g, int recoveryproc);
@@ -3504,6 +3510,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_GET_E2GENERATION 1
 #define LIBGUESTFS_HAVE_GET_E2LABEL 1
 #define LIBGUESTFS_HAVE_GET_E2UUID 1
+#define LIBGUESTFS_HAVE_GET_HV 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_CHALLENGE 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_DEFRESULT 1
 #define LIBGUESTFS_HAVE_GET_LIBVIRT_REQUESTED_CREDENTIAL_PROMPT 1
@@ -3777,6 +3784,7 @@ extern GUESTFS_DLL_PUBLIC void guestfs_free_internal_mountable_list (struct gues
 #define LIBGUESTFS_HAVE_SET_E2GENERATION 1
 #define LIBGUESTFS_HAVE_SET_E2LABEL 1
 #define LIBGUESTFS_HAVE_SET_E2UUID 1
+#define LIBGUESTFS_HAVE_SET_HV 1
 #define LIBGUESTFS_HAVE_SET_LABEL 1
 #define LIBGUESTFS_HAVE_SET_LIBVIRT_REQUESTED_CREDENTIAL 1
 #define LIBGUESTFS_HAVE_SET_LIBVIRT_SUPPORTED_CREDENTIALS 1

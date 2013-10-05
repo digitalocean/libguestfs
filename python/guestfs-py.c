@@ -2490,15 +2490,15 @@ py_guestfs_config (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *qemuparam;
-  const char *qemuvalue;
+  const char *hvparam;
+  const char *hvvalue;
 
   if (!PyArg_ParseTuple (args, (char *) "Osz:guestfs_config",
-                         &py_g, &qemuparam, &qemuvalue))
+                         &py_g, &hvparam, &hvvalue))
     goto out;
   g = get_handle (py_g);
 
-  r = guestfs_config (g, qemuparam, qemuvalue);
+  r = guestfs_config (g, hvparam, hvvalue);
 
   if (r == -1) {
     PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
@@ -2519,14 +2519,14 @@ py_guestfs_set_qemu (PyObject *self, PyObject *args)
   guestfs_h *g;
   PyObject *py_r = NULL;
   int r;
-  const char *qemu;
+  const char *hv;
 
   if (!PyArg_ParseTuple (args, (char *) "Oz:guestfs_set_qemu",
-                         &py_g, &qemu))
+                         &py_g, &hv))
     goto out;
   g = get_handle (py_g);
 
-  r = guestfs_set_qemu (g, qemu);
+  r = guestfs_set_qemu (g, hv);
 
   if (r == -1) {
     PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
@@ -2565,6 +2565,65 @@ py_guestfs_get_qemu (PyObject *self, PyObject *args)
 #else
   py_r = PyUnicode_FromString (r);
 #endif
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_set_hv (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  int r;
+  const char *hv;
+
+  if (!PyArg_ParseTuple (args, (char *) "Os:guestfs_set_hv",
+                         &py_g, &hv))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_set_hv (g, hv);
+
+  if (r == -1) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+  Py_INCREF (Py_None);
+  py_r = Py_None;
+
+ out:
+  return py_r;
+}
+
+static PyObject *
+py_guestfs_get_hv (PyObject *self, PyObject *args)
+{
+  PyObject *py_g;
+  guestfs_h *g;
+  PyObject *py_r = NULL;
+  char *r;
+
+  if (!PyArg_ParseTuple (args, (char *) "O:guestfs_get_hv",
+                         &py_g))
+    goto out;
+  g = get_handle (py_g);
+
+  r = guestfs_get_hv (g);
+
+  if (r == NULL) {
+    PyErr_SetString (PyExc_RuntimeError, guestfs_last_error (g));
+    goto out;
+  }
+
+#ifdef HAVE_PYSTRING_ASSTRING
+  py_r = PyString_FromString (r);
+#else
+  py_r = PyUnicode_FromString (r);
+#endif
+  free (r);
 
  out:
   return py_r;
@@ -21631,6 +21690,8 @@ static PyMethodDef methods[] = {
   { (char *) "config", py_guestfs_config, METH_VARARGS, NULL },
   { (char *) "set_qemu", py_guestfs_set_qemu, METH_VARARGS, NULL },
   { (char *) "get_qemu", py_guestfs_get_qemu, METH_VARARGS, NULL },
+  { (char *) "set_hv", py_guestfs_set_hv, METH_VARARGS, NULL },
+  { (char *) "get_hv", py_guestfs_get_hv, METH_VARARGS, NULL },
   { (char *) "set_path", py_guestfs_set_path, METH_VARARGS, NULL },
   { (char *) "get_path", py_guestfs_get_path, METH_VARARGS, NULL },
   { (char *) "set_append", py_guestfs_set_append, METH_VARARGS, NULL },
