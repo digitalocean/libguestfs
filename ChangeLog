@@ -1,4 +1,77 @@
+2013-08-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Add "notes" field for notes on shortcomings, bugs, etc.
+	Instead of keeping this information as comments in the source, put it
+	into the virt-sysprep(1) man page.
+
+2013-08-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Various code refactorings of the operations.
+	 - Use 'op' instead of 'xxx_op' for operation table.
+	 - Add a 'defaults' for the operation table and remove any default
+	   values.
+
+	This is just code motion and there is no functional change.
+
+2013-08-03  Richard W.M. Jones  <rjones@redhat.com>
+
+	resize: Mark progress bar functions as "noalloc".
+	Avoids GC overhead and turns these into simple C calls.  See:
+	http://camltastic.blogspot.co.uk/2008/08/tip-calling-c-functions-directly-with.html
+
+	resize: Mark isatty function as "noalloc".
+	This turns it into an ordinary C call without the unnecessary [in this
+	case] GC frame overhead.  See:
+	http://camltastic.blogspot.co.uk/2008/08/tip-calling-c-functions-directly-with.html
+
+	FAQ: Tips about using direct backend and fixed appliance on Fedora/RHEL.
+
+	FAQ: Common problem with Debian is not running update-guestfs-appliance.
+
+2013-08-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Allow root and non-root passwords to be set.
+	This adds a virt-sysprep 'password' operation which adds the
+	following command line options:
+
+	  --root-password     Set the guest's root password.
+	  --password          Set any guest password.
+
+2013-08-02  Richard W.M. Jones  <rjones@redhat.com>
+
+	sysprep: Disable fs-uuids operation by default.
+	Disable this operation because it is more likely than not to break
+	Linux guests.
+
+	To fix this properly will involve finding all the places in the guest
+	where the UUIDs are used to locate and mount filesystems,
+	eg. /etc/fstab and possibly initramfs.
+
+	This updates commit 8965368eb89532ac1613fffb0a3a661f005bae81.
+
+2013-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	journal: Fix incorrect printf format specifier for 32-bit.
+	journal.c: In function 'do_journal_skip':
+	journal.c:134:5: error: format '%zd' expects argument of type 'signed size_t', but argument 3 has type 'int64_t' [-Werror=format=]
+	     reply_with_perror_errno (-r, "failed to skip %zd journal entries", skip);
+	     ^
+
+	This fixes commit 5cb7f294f6a5a8b4a68e940c30ca9af0fe0741d5.
+
+2013-07-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	arm: Avoid cast-align warning.
+	Note the 64-bit int field really isn't aligned.  We hope that the ARM
+	kernel this is running on will do the appropriate fix ups.
+
+2013-07-31  Nicholas Strugnell  <nstrug@redhat.com>
+
+	sysprep: rhn_systemid: delete osad-auth.conf file in RHN configuration
+
 2013-07-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	Version 1.23.12.
 
 	tests: fish: Add valgrind testing to various existing tests.
 	This involves running ./guestfish under $VG (== valgrind + options,

@@ -499,7 +499,7 @@ Wanlong Gao, Fujitsu Ltd.
 
 =head1 АВТОРСЬКІ ПРАВА
 
-© Red Hat Inc., 2011–2012
+Copyright (C) 2011-2013 Red Hat Inc.
 
 Copyright (C) 2012 Fujitsu Ltd.
 

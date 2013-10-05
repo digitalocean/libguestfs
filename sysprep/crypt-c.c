@@ -1,4 +1,4 @@
-/* virt-resize - interface to isatty
+/* virt-sysprep - interface to crypt(3)
  * Copyright (C) 2013 Red Hat Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,17 +22,23 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <caml/alloc.h>
 #include <caml/memory.h>
 #include <caml/mlvalues.h>
 
-/* RHEL 5-era ocaml didn't have Unix.isatty.
- *
- * Note this function is marked as "noalloc" so it must not call any
- * OCaml allocation functions:
- * http://camltastic.blogspot.co.uk/2008/08/tip-calling-c-functions-directly-with.html
- */
 value
-virt_resize_isatty_stdout (value unitv)
+virt_sysprep_crypt (value keyv, value saltv)
 {
-  return isatty (1) ? Val_true : Val_false;
+  CAMLparam2 (keyv, saltv);
+  CAMLlocal1 (rv);
+  char *r;
+
+  /* Note that crypt returns a pointer to a statically allocated
+   * buffer in glibc.  For this and other reasons, this function
+   * is not thread safe.
+   */
+  r = crypt (String_val (keyv), String_val (saltv));
+  rv = caml_copy_string (r);
+
+  CAMLreturn (rv);
 }

@@ -40,16 +40,23 @@ let rec fs_uuids_perform g root =
   ) fses;
   []
 
-let fs_uuids_op = {
-  name = "fs-uuids";
-  enabled_by_default = true;
-  heading = s_"Change filesystem UUIDs";
-  pod_description = Some (s_"\
+let op = {
+  defaults with
+    name = "fs-uuids";
+    enabled_by_default = false;
+    heading = s_"Change filesystem UUIDs";
+    pod_description = Some (s_"\
 On guests and filesystem types where this is supported,
 new random UUIDs are generated and assigned to filesystems.");
-  extra_args = [];
-  perform_on_filesystems = None;
-  perform_on_devices = Some fs_uuids_perform;
+    pod_notes = Some (s_"\
+The fs-uuids operation is disabled by default because it does
+not yet find and update all the places in the guest that use
+the UUIDs.  For example C</etc/fstab> or the bootloader.
+Enabling this operation is more likely than not to make your
+guest unbootable.
+
+See: L<https://bugzilla.redhat.com/show_bug.cgi?id=991641>");
+    perform_on_devices = Some fs_uuids_perform;
 }
 
-let () = register_operation fs_uuids_op
+let () = register_operation op

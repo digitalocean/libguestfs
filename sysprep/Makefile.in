@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # libguestfs virt-sysprep tool
-# Copyright (C) 2012 Red Hat Inc.
+# Copyright (C) 2012-2013 Red Hat Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1466,6 +1466,7 @@ operations = \
 	pacct_log \
 	package_manager_cache \
 	pam_data \
+	password \
 	puppet_data_log \
 	random_seed \
 	rhn_systemid \
@@ -1483,6 +1484,9 @@ operations = \
 
 # Alphabetical order.
 SOURCES = \
+	crypt-c.c \
+	crypt.ml \
+	crypt.mli \
 	firstboot.ml \
 	firstboot.mli \
 	main.ml \
@@ -1498,6 +1502,8 @@ SOURCES = \
 @HAVE_OCAML_TRUE@	$(top_builddir)/fish/guestfish-uri.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/uri-c.o \
 @HAVE_OCAML_TRUE@	$(top_builddir)/resize/uRI.cmx \
+@HAVE_OCAML_TRUE@	crypt-c.o \
+@HAVE_OCAML_TRUE@	crypt.cmx \
 @HAVE_OCAML_TRUE@	firstboot.cmx \
 @HAVE_OCAML_TRUE@	sysprep_operation.cmx \
 @HAVE_OCAML_TRUE@	$(patsubst %,sysprep_operation_%.cmx,$(operations)) \
@@ -1515,10 +1521,14 @@ SOURCES = \
 @HAVE_OCAML_TRUE@OCAMLCFLAGS = -g -warn-error CDEFLMPSUVYZX $(OCAMLPACKAGES)
 @HAVE_OCAML_TRUE@OCAMLOPTFLAGS = $(OCAMLCFLAGS)
 @HAVE_OCAML_TRUE@OCAMLCLIBS = \
-@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses \
+@HAVE_OCAML_TRUE@	$(LIBXML2_LIBS) -lncurses -lcrypt \
 @HAVE_OCAML_TRUE@	-L../src/.libs -lutils \
 @HAVE_OCAML_TRUE@	-L../gnulib/lib/.libs -lgnu
 
+
+# automake will decide we don't need C support in this file.  Really
+# we do, so we have to provide it ourselves.
+@HAVE_OCAML_TRUE@DEFAULT_INCLUDES = -I. -I$(top_builddir) -I$(shell $(OCAMLC) -where)
 
 # Manual pages and HTML files for the website.
 @HAVE_OCAML_TRUE@man_MANS = virt-sysprep.1
@@ -1539,7 +1549,7 @@ DISTCLEANFILES = .depend
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cmi .cmo .cmx .ml .mli
+.SUFFIXES: .c .cmi .cmo .cmx .ml .mli .o
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/subdir-rules.mk $(top_srcdir)/common-rules.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -2001,6 +2011,9 @@ $(top_builddir)/generator/generator:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlc $(OCAMLCFLAGS) -c $< -o $@
 @HAVE_OCAML_TRUE@.ml.cmx:
 @HAVE_OCAML_TRUE@	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -c $< -o $@
+
+@HAVE_OCAML_TRUE@.c.o:
+@HAVE_OCAML_TRUE@	$(CC) $(CFLAGS) $(PROF_CFLAGS) $(DEFAULT_INCLUDES) -c $< -o $@
 
 @HAVE_OCAML_TRUE@virt-sysprep.1 $(top_builddir)/html/virt-sysprep.1.html: stamp-virt-sysprep.pod
 

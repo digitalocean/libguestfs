@@ -38,6 +38,10 @@ type operation = {
   pod_description : string option;
   (** POD-format long description, used for the man page. *)
 
+  pod_notes : string option;
+  (** POD-format notes, used for the man page to describe any
+      problems, shortcomings or bugs with this operation. *)
+
   extra_args : ((Arg.key * Arg.spec * Arg.doc) * string) list;
   (** Extra command-line arguments, if any.  eg. The [hostname]
       operation has an extra [--hostname] parameter.
@@ -74,6 +78,9 @@ type operation = {
       the guest filesystem(s) are {i not} mounted.  This allows the
       operation to work directly on block devices, LVs etc. *)
 }
+
+val defaults : operation
+(** This is so operations can write [let op = { defaults with ... }]. *)
 
 val register_operation : operation -> unit
 (** Register an operation. *)
