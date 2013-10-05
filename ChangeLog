@@ -1,4 +1,118 @@
+2013-09-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	drives: Don't need to call free_drive_servers since preceding code checks servers == NULL.
+
+	rescue: Use cachemode "unsafe" for the virt-rescue --scratch option.
+
+	sparsify: Use cachemode "unsafe" for the overlay disk.
+
+	drives: Ensure all scratch drives use cachemode "unsafe".
+	They are _scratch_ drives so any data on them doesn't matter and can
+	be reconstructed in the event of a host system crash.
+
+2013-09-01  Richard W.M. Jones  <rjones@redhat.com>
+
+	add_drive: Introduce 'cachemode' parameter to control drive caching.
+	This commit adds an optional 'cachemode' parameter to the 'add_drive'
+	API to control caching.  This corresponds approximately to the
+	'-drive ...,cache=' parameter in qemu, but the choices are much more
+	restrictive, just 'writeback' or 'unsafe', for reasons outlined below.
+
+	The caching modes supported by recent QEMU are:
+
+	  writeback:
+	   - Reports data writes completed when data is present in the host
+	     page cache.
+	     Only safe provided guest correctly issues flush operations.
+
+	  writethrough:
+	   - Reports data writes completed only when each write has been
+	     flushed to disk.  Performance is reported as not good.
+
+	  none:
+	   - Uses O_DIRECT (avoids all interaction with host cache), but does
+	     not ensure every write is flushed to disk.
+	     Only safe provided guest correctly issues flush operations.
+
+	  directsync:
+	   - Uses O_DIRECT (avoids all interaction with host cache), and
+	     ensures every write has been flushed to disk.
+
+	  unsafe:
+	   - No special handling.
+
+	Since the libguestfs appliance kernel always issues flush operations
+	(eg. for filesystem journalling and for sync) the following modes can
+	be ignored: 'directsync', 'writethrough'.
+
+	That leaves 'writeback', 'none' and 'unsafe'.  However 'none' is both
+	a constant source of pain (RHBZ#994517), is inefficient because it
+	doesn't use the host cache, and does not give us any safety guarantees
+	over and above 'writeback'.  Therefore we should ignore 'none'.
+
+	This leaves 'writeback' (safe) and 'unsafe' (fast, useful for scratch
+	disks), which is what we implement in this patch.
+
+	Note that the previous behaviour was to use 'none' if possible, else
+	to use 'writeback'.  The new behaviour is to use 'writeback' only
+	which is (in safety terms) equivalent to 'none', and also faster and
+	less painful (RHBZ#994517).
+
+	This patch also allows you to specify a cache mode for network drives
+	which also previously defaulted to 'writeback'.
+
+	There is a considerable performance benefit to using unsafe (for
+	scratch disks only, of course).  The C API tests only use scratch
+	disks (since they are just tests, the final state of the disk doesn't
+	matter), and this decreases total run time from 202 seconds to 163
+	seconds, about 25% faster.
+
+2013-08-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Test for qcow2 features instead of keying off qemu-img version.
+	Test whether qcow2 features are possible in qemu-img instead of
+	assuming they are by keying off the version.
+
+	Also use the 'lazy_refcounts' flag, if available.  It may make writing
+	to the overlay file marginally faster (however I tested it and there
+	was no measurable difference).
+
+2013-08-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	sparsify: Fix signal handling.
+	If you don't have a ^C (SIGINT) signal handler at all, then at_exit
+	handlers are not called so you end up leaving the large temporary
+	overlay file lying around.  That was fixed, incorrectly, by
+	commit 7283a5a2765c0670e9dceec70e626a49a30d269c.
+
+	However the code now would delete the overlay file in the SIGINT
+	handler but otherwise continue running until basically it tries to
+	read the overlay file (now deleted) and fails.  So it kind of worked,
+	by accident.
+
+	Fix this so that the signal handler calls exit, thus ensuring both
+	that the exit handler is called (to delete the file) and that the
+	program actually exits as soon as possible.
+
+	This also refactors the unlink_on_exit function into a utility.
+
+2013-08-31  Richard W.M. Jones  <rjones@redhat.com>
+
+	daemon: Add comment about how zero_free_space would be better if we could do cancellation.
+
+2013-08-30  Richard W.M. Jones  <rjones@redhat.com>
+
+	configure: Fix stupid typo which caused compressed images to always be used.
+	Libguestfs won't work if you try to use it with supermin < 4.1.4
+	because the logic for detecting if compressed images can be used was
+	wrong (it was always enabled, instead of disabled for supermin < 4.1.4).
+
 2013-08-29  Richard W.M. Jones  <rjones@redhat.com>
+
+	Rename virt-{cat,edit,filesystems,inspector,ls,rescue}.c to *.c.
+	This is just renaming of files.
+
+	Version 1.23.19.
 
 	uml: Skip tests/md/test-inspect-fstab-md.sh
 	Hangs at various places during the test, eg. running mdadm, mounting

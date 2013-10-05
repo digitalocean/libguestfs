@@ -641,6 +641,7 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive (guestfs_h *g, const char *filen
 #define GUESTFS_ADD_DRIVE_OPTS_SERVER 6
 #define GUESTFS_ADD_DRIVE_OPTS_USERNAME 7
 #define GUESTFS_ADD_DRIVE_OPTS_SECRET 8
+#define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE 9
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
 
@@ -664,6 +665,8 @@ struct guestfs_add_drive_opts_argv {
   const char *username;
 # define GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK (UINT64_C(1)<<8)
   const char *secret;
+# define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK (UINT64_C(1)<<9)
+  const char *cachemode;
 };
 
 extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);

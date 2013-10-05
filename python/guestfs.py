@@ -1281,7 +1281,7 @@ class GuestFS(object):
         r = self._maybe_convert_to_dict (r)
         return r
 
-    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None):
+    def add_drive (self, filename, readonly=None, format=None, iface=None, name=None, label=None, protocol=None, server=None, username=None, secret=None, cachemode=None):
         """This function adds a disk image called "filename" to the
         handle. "filename" may be a regular host file or a host
         device.
@@ -1458,9 +1458,34 @@ class GuestFS(object):
         username will be looked up in the default keychain
         locations, or if no username is given, then no
         authentication will be used.
+        
+        "cachemode"
+        Choose whether or not libguestfs will obey sync
+        operations (safe but slow) or not (unsafe but fast).
+        The possible values for this string are:
+        
+        "cachemode = "writeback""
+        This is the default.
+        
+        Write operations in the API do not return until
+        a write(2) call has completed in the host [but
+        note this does not imply that anything gets
+        written to disk].
+        
+        Sync operations in the API, including implicit
+        syncs caused by filesystem journalling, will not
+        return until an fdatasync(2) call has completed
+        in the host, indicating that data has been
+        committed to disk.
+        
+        "cachemode = "unsafe""
+        In this mode, there are no guarantees.
+        Libguestfs may cache anything and ignore sync
+        requests. This is suitable only for scratch or
+        temporary disks.
         """
         self._check_not_closed ()
-        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret)
+        r = libguestfsmod.add_drive (self._o, filename, readonly, format, iface, name, label, protocol, server, username, secret, cachemode)
         return r
 
     add_drive_opts = add_drive

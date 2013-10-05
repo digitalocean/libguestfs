@@ -801,6 +801,7 @@
 <ANCHOR id="GuestfsAddDriveClass" href="guestfs/GuestfsAddDrive.html#GuestfsAddDriveClass">
 <ANCHOR id="guestfs-add-drive-new" href="guestfs/GuestfsAddDrive.html#guestfs-add-drive-new">
 <ANCHOR id="GuestfsAddDrive.property-details" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive.property-details">
+<ANCHOR id="GuestfsAddDrive--cachemode" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--cachemode">
 <ANCHOR id="GuestfsAddDrive--format" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--format">
 <ANCHOR id="GuestfsAddDrive--iface" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--iface">
 <ANCHOR id="GuestfsAddDrive--label" href="guestfs/GuestfsAddDrive.html#GuestfsAddDrive--label">

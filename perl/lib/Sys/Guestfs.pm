@@ -444,7 +444,7 @@ Disks with the E<lt>readonly/E<gt> flag are skipped.
 The other optional parameters are passed directly through to
 C<$g-E<gt>add_drive_opts>.
 
-=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret]);
+=item $g->add_drive ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode]);
 
 This function adds a disk image called C<filename> to the handle.
 C<filename> may be a regular host file or a host device.
@@ -630,9 +630,37 @@ If not given, then a secret matching the given username will be looked up in the
 default keychain locations, or if no username is given, then no authentication
 will be used.
 
+=item C<cachemode>
+
+Choose whether or not libguestfs will obey sync operations (safe but slow)
+or not (unsafe but fast).  The possible values for this string are:
+
+=over 4
+
+=item C<cachemode = "writeback">
+
+This is the default.
+
+Write operations in the API do not return until a L<write(2)>
+call has completed in the host [but note this does not imply
+that anything gets written to disk].
+
+Sync operations in the API, including implicit syncs caused by
+filesystem journalling, will not return until an L<fdatasync(2)>
+call has completed in the host, indicating that data has been
+committed to disk.
+
+=item C<cachemode = "unsafe">
+
+In this mode, there are no guarantees.  Libguestfs may cache
+anything and ignore sync requests.  This is suitable only
+for scratch or temporary disks.
+
 =back
 
-=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret]);
+=back
+
+=item $g->add_drive_opts ($filename [, readonly => $readonly] [, format => $format] [, iface => $iface] [, name => $name] [, label => $label] [, protocol => $protocol] [, server => $server] [, username => $username] [, secret => $secret] [, cachemode => $cachemode]);
 
 This is an alias of L</add_drive>.
 
@@ -7356,6 +7384,7 @@ use vars qw(%guestfs_introspection);
       server => [ 'server', 'string list', 6 ],
       username => [ 'username', 'string', 7 ],
       secret => [ 'secret', 'string', 8 ],
+      cachemode => [ 'cachemode', 'string', 9 ],
     },
     name => "add_drive",
     description => "add an image to examine or modify",

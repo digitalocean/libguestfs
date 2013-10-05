@@ -3796,6 +3796,31 @@ ruby_guestfs_list_filesystems (VALUE gv)
  * locations, or if no username is given, then no
  * authentication will be used.
  * 
+ * "cachemode"
+ * Choose whether or not libguestfs will obey sync
+ * operations (safe but slow) or not (unsafe but fast).
+ * The possible values for this string are:
+ * 
+ * "cachemode = "writeback""
+ * This is the default.
+ * 
+ * Write operations in the API do not return until
+ * a write(2) call has completed in the host [but
+ * note this does not imply that anything gets
+ * written to disk].
+ * 
+ * Sync operations in the API, including implicit
+ * syncs caused by filesystem journalling, will not
+ * return until an fdatasync(2) call has completed
+ * in the host, indicating that data has been
+ * committed to disk.
+ * 
+ * "cachemode = "unsafe""
+ * In this mode, there are no guarantees.
+ * Libguestfs may cache anything and ignore sync
+ * requests. This is suitable only for scratch or
+ * temporary disks.
+ * 
  * Optional arguments are supplied in the final hash
  * parameter, which is a hash of the argument name to its
  * value. Pass an empty {} for no optional arguments.
@@ -3881,6 +3906,11 @@ ruby_guestfs_add_drive (int argc, VALUE *argv, VALUE gv)
   if (v != Qnil) {
     optargs_s.secret = StringValueCStr (v);
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+  }
+  v = rb_hash_lookup (optargsv, ID2SYM (rb_intern ("cachemode")));
+  if (v != Qnil) {
+    optargs_s.cachemode = StringValueCStr (v);
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
   }
 
   int r;

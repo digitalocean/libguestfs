@@ -26,6 +26,11 @@ GuestfsAddDrive
 </para>
 
 
+<!-- ##### ARG GuestfsAddDrive:cachemode ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GuestfsAddDrive:format ##### -->
 <para>
 

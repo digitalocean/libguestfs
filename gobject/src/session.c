@@ -4387,6 +4387,28 @@ guestfs_session_list_filesystems(GuestfsSession *session, GError **err)
  * looked up in the default keychain locations, or if no username is
  * given, then no authentication will be used.
  * 
+ * @cachemode
+ * Choose whether or not libguestfs will obey sync operations (safe but
+ * slow) or not (unsafe but fast). The possible values for this string
+ * are:
+ * 
+ * "cachemode = "writeback""
+ * This is the default.
+ * 
+ * Write operations in the API do not return until a write(2) call
+ * has completed in the host [but note this does not imply that
+ * anything gets written to disk].
+ * 
+ * Sync operations in the API, including implicit syncs caused by
+ * filesystem journalling, will not return until an fdatasync(2)
+ * call has completed in the host, indicating that data has been
+ * committed to disk.
+ * 
+ * "cachemode = "unsafe""
+ * In this mode, there are no guarantees. Libguestfs may cache
+ * anything and ignore sync requests. This is suitable only for
+ * scratch or temporary disks.
+ * 
  * Returns: true on success, false on error
  */
 gboolean
@@ -4469,6 +4491,14 @@ guestfs_session_add_drive(GuestfsSession *session, const gchar *filename, Guestf
     if (secret != NULL) {
       argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
       argv.secret = secret;
+    }
+    GValue cachemode_v = {0, };
+    g_value_init(&cachemode_v, G_TYPE_STRING);
+    g_object_get_property(G_OBJECT(optargs), "cachemode", &cachemode_v);
+    const gchar *cachemode = g_value_get_string(&cachemode_v);
+    if (cachemode != NULL) {
+      argv.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+      argv.cachemode = cachemode;
     }
     argvp = &argv;
   }

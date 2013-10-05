@@ -904,9 +904,11 @@ PHP_FUNCTION (guestfs_add_drive)
   int optargs_t_username_size = -1;
   char *optargs_t_secret = NULL;
   int optargs_t_secret_size = -1;
+  char *optargs_t_cachemode = NULL;
+  int optargs_t_cachemode_size = -1;
 
-  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa!ss",
-        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size, &optargs_t_secret, &optargs_t_secret_size) == FAILURE) {
+  if (zend_parse_parameters (ZEND_NUM_ARGS() TSRMLS_CC, "rs|bsssssa!sss",
+        &z_g, &filename, &filename_size, &optargs_t_readonly, &optargs_t_format, &optargs_t_format_size, &optargs_t_iface, &optargs_t_iface_size, &optargs_t_name, &optargs_t_name_size, &optargs_t_label, &optargs_t_label_size, &optargs_t_protocol, &optargs_t_protocol_size, &optargs_t_server, &optargs_t_username, &optargs_t_username_size, &optargs_t_secret, &optargs_t_secret_size, &optargs_t_cachemode, &optargs_t_cachemode_size) == FAILURE) {
     RETURN_FALSE;
   }
 
@@ -980,6 +982,10 @@ PHP_FUNCTION (guestfs_add_drive)
   if (optargs_t_secret != NULL) {
     optargs_s.secret = optargs_t_secret;
     optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
+  }
+  if (optargs_t_cachemode != NULL) {
+    optargs_s.cachemode = optargs_t_cachemode;
+    optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
   }
 
   int r;

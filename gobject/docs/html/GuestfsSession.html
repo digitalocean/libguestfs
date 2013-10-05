@@ -6169,6 +6169,33 @@ If not given, then a secret matching the given username will be
 looked up in the default keychain locations, or if no username is
 given, then no authentication will be used.
 </p>
+<p>
+<em class="parameter"><code>cachemode</code></em>
+Choose whether or not libguestfs will obey sync operations (safe but
+slow) or not (unsafe but fast). The possible values for this string
+are:
+</p>
+<p>
+"cachemode = "writeback""
+This is the default.
+</p>
+<p>
+Write operations in the API do not return until a write(2) call
+has completed in the host [but note this does not imply that
+anything gets written to disk].
+</p>
+<p>
+Sync operations in the API, including implicit syncs caused by
+filesystem journalling, will not return until an fdatasync(2)
+call has completed in the host, indicating that data has been
+committed to disk.
+</p>
+<p>
+"cachemode = "unsafe""
+In this mode, there are no guarantees. Libguestfs may cache
+anything and ignore sync requests. This is suitable only for
+scratch or temporary disks.
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">

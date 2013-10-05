@@ -622,6 +622,10 @@ guestfs_lua_add_drive (lua_State *L)
       optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK;
       optargs_s.secret = luaL_checkstring (L, -1);
     );
+    OPTARG_IF_SET (3, "cachemode",
+      optargs_s.bitmask |= GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK;
+      optargs_s.cachemode = luaL_checkstring (L, -1);
+    );
   }
 
   r = guestfs_add_drive_opts_argv (g, filename, optargs);

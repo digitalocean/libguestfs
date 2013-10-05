@@ -1092,6 +1092,9 @@ type OptargsAdd_drive struct {
     /* Secret field is ignored unless Secret_is_set == true */
     Secret_is_set bool
     Secret string
+    /* Cachemode field is ignored unless Cachemode_is_set == true */
+    Cachemode_is_set bool
+    Cachemode string
 }
 
 /* add_drive : add an image to examine or modify */
@@ -1147,6 +1150,11 @@ func (g *Guestfs) Add_drive (filename string, optargs *OptargsAdd_drive) *Guestf
             c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK
             c_optargs.secret = C.CString (optargs.Secret)
             defer C.free (unsafe.Pointer (c_optargs.secret))
+        }
+        if optargs.Cachemode_is_set {
+            c_optargs.bitmask |= C.GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK
+            c_optargs.cachemode = C.CString (optargs.Cachemode)
+            defer C.free (unsafe.Pointer (c_optargs.cachemode))
         }
     }
 

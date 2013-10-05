@@ -731,6 +731,7 @@
     <keyword type="struct" name="struct GuestfsAddDrive" link="GuestfsAddDrive.html#GuestfsAddDrive-struct"/>
     <keyword type="struct" name="struct GuestfsAddDriveClass" link="GuestfsAddDrive.html#GuestfsAddDriveClass"/>
     <keyword type="function" name="guestfs_add_drive_new ()" link="GuestfsAddDrive.html#guestfs-add-drive-new"/>
+    <keyword type="property" name="The &quot;cachemode&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--cachemode"/>
     <keyword type="property" name="The &quot;format&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--format"/>
     <keyword type="property" name="The &quot;iface&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--iface"/>
     <keyword type="property" name="The &quot;label&quot; property" link="GuestfsAddDrive.html#GuestfsAddDrive--label"/>

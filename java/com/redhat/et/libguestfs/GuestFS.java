@@ -2917,6 +2917,31 @@ public class GuestFS {
    * locations, or if no username is given, then no
    * authentication will be used.
    * <p>
+   * "cachemode"
+   * Choose whether or not libguestfs will obey sync
+   * operations (safe but slow) or not (unsafe but fast).
+   * The possible values for this string are:
+   * <p>
+   * "cachemode = "writeback""
+   * This is the default.
+   * <p>
+   * Write operations in the API do not return until
+   * a write(2) call has completed in the host [but
+   * note this does not imply that anything gets
+   * written to disk].
+   * <p>
+   * Sync operations in the API, including implicit
+   * syncs caused by filesystem journalling, will not
+   * return until an fdatasync(2) call has completed
+   * in the host, indicating that data has been
+   * committed to disk.
+   * <p>
+   * "cachemode = "unsafe""
+   * In this mode, there are no guarantees.
+   * Libguestfs may cache anything and ignore sync
+   * requests. This is suitable only for scratch or
+   * temporary disks.
+   * <p>
    * Optional arguments are supplied in the final
    * Map<String,Object> parameter, which is a hash of the
    * argument name to its value (cast to Object). Pass an
@@ -3005,8 +3030,16 @@ public class GuestFS {
       secret = ((String) _optobj);
       _optargs_bitmask |= 256L;
     }
+    String cachemode = "";
+    _optobj = null;
+    if (optargs != null)
+      _optobj = optargs.get ("cachemode");
+    if (_optobj != null) {
+      cachemode = ((String) _optobj);
+      _optargs_bitmask |= 512L;
+    }
 
-    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret);
+    _add_drive (g, filename, _optargs_bitmask, readonly, format, iface, name, label, protocol, server, username, secret, cachemode);
   }
 
   public void add_drive (String filename)
@@ -3027,7 +3060,7 @@ public class GuestFS {
     add_drive (filename, null);
   }
 
-  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret)
+  private native void _add_drive (long g, String filename, long _optargs_bitmask, boolean readonly, String format, String iface, String name, String label, String protocol, String[] server, String username, String secret, String cachemode)
     throws LibGuestFSException;
 
   /**
